@@ -108,6 +108,11 @@ export const deploymentConfigurations: DeploymentConfiguration[] = [
   },
 ];
 
+export const selfApplicationDeploymentConfigurations: SelfApplicationDeploymentConfiguration[] = [
+    selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
+    selfApplicationDeploymentLibrary  as SelfApplicationDeploymentConfiguration,
+];
+
 
 
 // ################################################################################################
@@ -196,7 +201,7 @@ export const DisplayLoadingInfo:FC<{reportUuid?:string}> = (props:{reportUuid?:s
 // ############################################################################################################
 // ############################################################################################################
 export function createDeploymentCompositeAction(
-  miroirConfig: MiroirConfigClient,
+  // miroirConfig: MiroirConfigClient,
   deploymentUuid: Uuid,
   deploymentConfiguration: StoreUnitConfiguration,
 ): CompositeAction {
@@ -246,7 +251,7 @@ export function createDeploymentCompositeAction(
 // ################################################################################################
 export function resetAndinitializeDeploymentCompositeAction(
   // miroirConfig: MiroirConfigClient,
-  deploymentUuid: Uuid,
+  // deploymentUuid: Uuid,
   storeUnitConfiguration: StoreUnitConfiguration,
   initApplicationParameters: InitApplicationParameters,
   appEntitesAndInstances: ApplicationEntitiesAndInstances
@@ -259,7 +264,8 @@ export function resetAndinitializeDeploymentCompositeAction(
   //   throw new Error(`Configuration for deployment ${deploymentUuid} not found in ${JSON.stringify(miroirConfig, null, 2)}`);
   // };
   const typedAdminConfigurationDeploymentLibrary:AdminApplicationDeploymentConfiguration = adminConfigurationDeploymentLibrary as any;
-  
+
+  const deploymentUuid = initApplicationParameters.adminApplicationDeploymentConfiguration.uuid;
   // const initApplicationParametersForlibrary: InitApplicationParameters = {
   //   dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
   //   metaModel: defaultMiroirMetaModel,
@@ -272,7 +278,7 @@ export function resetAndinitializeDeploymentCompositeAction(
   // }
 
 
-  log.info("createDeploymentCompositeAction deploymentConfiguration", deploymentUuid, storeUnitConfiguration);
+  log.info("createDeploymentCompositeAction deploymentConfiguration", initApplicationParameters.adminApplicationDeploymentConfiguration.uuid, storeUnitConfiguration);
   return {
     actionType: "compositeAction",
     actionLabel: "beforeAll",
@@ -320,7 +326,7 @@ export function resetAndinitializeDeploymentCompositeAction(
           actionType: "modelAction",
           actionName: "initModel",
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-          deploymentUuid: initApplicationParameters.selfApplicationDeploymentConfiguration.uuid,
+          deploymentUuid: deploymentUuid,
           params: initApplicationParameters,
         },
       },
@@ -331,7 +337,7 @@ export function resetAndinitializeDeploymentCompositeAction(
           actionType: "modelAction",
           actionName: "rollback",
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-          deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+          deploymentUuid: deploymentUuid,
         },
       },
       {
@@ -340,7 +346,7 @@ export function resetAndinitializeDeploymentCompositeAction(
         domainAction: {
           actionType: "modelAction",
           actionName: "createEntity",
-          deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+          deploymentUuid: deploymentUuid,
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           entities: appEntitesAndInstances,
         },
@@ -352,7 +358,7 @@ export function resetAndinitializeDeploymentCompositeAction(
           actionType: "modelAction",
           actionName: "commit",
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-          deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+          deploymentUuid: deploymentUuid,
         },
       },
       {
@@ -363,7 +369,7 @@ export function resetAndinitializeDeploymentCompositeAction(
           actionName: "createInstance",
           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
           applicationSection: "data",
-          deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+          deploymentUuid: deploymentUuid,
           objects: appEntitesAndInstances.map((e) => {
             return {
               parentName: e.entity.name,
@@ -510,7 +516,7 @@ export async function createLibraryDeploymentDEFUNCT(
   deploymentConfiguration: StoreUnitConfiguration,
 ) {
 
-  const action = createDeploymentCompositeAction(miroirConfig, adminConfigurationDeploymentLibrary.uuid, deploymentConfiguration);
+  const action = createDeploymentCompositeAction(adminConfigurationDeploymentLibrary.uuid, deploymentConfiguration);
   const result = await domainController.handleCompositeAction(action, defaultMiroirMetaModel);
 }
 
@@ -643,8 +649,14 @@ export async function createDeploymentGetPersistenceStoreController(
   log.info('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ createDeploymentGetPersistenceStoreController started');
   let result:any = undefined;
   try {
-    const createLocalDeploymentCompositeAction = createDeploymentCompositeAction(miroirConfig, deploymentUuid, storeUnitConfiguration);
-    const createDeploymentResult = await domainController.handleCompositeAction(createLocalDeploymentCompositeAction, defaultMiroirMetaModel);
+    const createLocalDeploymentCompositeAction = createDeploymentCompositeAction(
+      deploymentUuid,
+      storeUnitConfiguration
+    );
+    const createDeploymentResult = await domainController.handleCompositeAction(
+      createLocalDeploymentCompositeAction,
+      defaultMiroirMetaModel
+    );
 
     if (createDeploymentResult.status != "ok") {
       console.error('Error createDeploymentGetPersistenceStoreController',JSON.stringify(createDeploymentResult, null, 2));
@@ -695,11 +707,12 @@ export async function createMiroirDeploymentGetPersistenceStoreController(
 export async function miroirBeforeEach_resetAndInitApplicationDeployments(
   // miroirConfig: MiroirConfigClient,
   domainController: DomainControllerInterface,
-  deploymentConfigurations: DeploymentConfiguration[],
+  // deploymentConfigurations: DeploymentConfiguration[],
+  deployments: SelfApplicationDeploymentConfiguration[], // TODO: use Deployment Entity Type!
 ):Promise<void> {
   
   log.info('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeEach_resetAndInitApplicationDeployments');
-    await resetAndInitApplicationDeploymentNew(domainController, deploymentConfigurations);
+    await resetAndInitApplicationDeploymentNew(domainController, deployments);
     // console.trace("miroirBeforeEach_resetAndInitApplicationDeployments miroir model state", await localMiroirPersistenceStoreController.getModelState());
     // console.trace("miroirBeforeEach_resetAndInitApplicationDeployments miroir data state", await localMiroirPersistenceStoreController.getDataState());
     // console.trace("miroirBeforeEach_resetAndInitApplicationDeployments library app model state", await localAppPersistenceStoreController.getModelState());
@@ -935,10 +948,6 @@ export async function runTestOrTestSuite(
   const fullTestName = expect.getState().currentTestName ?? "no test name";
   log.info("STARTING test:", fullTestName);
 
-  // await chainVitestSteps(
-  //   fullTestName,
-  //   {},
-  //   async () => {
   switch (testAction.testActionType) {
     case "testCompositeActionSuite": {
       const queryResult: ActionReturnType = await domainController.handleTestCompositeActionSuite(
@@ -972,11 +981,5 @@ export async function runTestOrTestSuite(
       throw new Error("testCompositeActionTemplate not implemented yet!");
     }
   }
-  //   },
-  //   undefined, // expected result transformation
-  //   undefined, // name to give to result
-  //   "void",
-  //   undefined
-  // );
 }
 

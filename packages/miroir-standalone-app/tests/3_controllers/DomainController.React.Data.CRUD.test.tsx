@@ -57,6 +57,7 @@ import {
   miroirBeforeEach_resetAndInitApplicationDeployments,
   renderWithProviders,
   resetApplicationDeployments,
+  selfApplicationDeploymentConfigurations,
   setupMiroirTest
 } from "../utils/tests-utils.js";
 
@@ -146,7 +147,7 @@ beforeAll(
     miroirContext = localmiroirContext;
 
     const createMiroirDeploymentCompositeAction = createDeploymentCompositeAction(
-      miroirConfig,
+      // miroirConfig,
       adminConfigurationDeploymentMiroir.uuid,
       miroirtDeploymentStorageConfiguration,
     );
@@ -155,7 +156,7 @@ beforeAll(
       throw new Error("Failed to create Miroir deployment: " + JSON.stringify(createDeploymentResult));
     }
 
-    const action = createDeploymentCompositeAction(miroirConfig, adminConfigurationDeploymentLibrary.uuid, libraryDeploymentStorageConfiguration);
+    const action = createDeploymentCompositeAction(adminConfigurationDeploymentLibrary.uuid, libraryDeploymentStorageConfiguration);
     const result = await domainController.handleCompositeAction(action, defaultMiroirMetaModel);
   
     // await createLibraryDeploymentDEFUNCT(
@@ -171,7 +172,8 @@ beforeEach(
   async () => {
     await miroirBeforeEach_resetAndInitApplicationDeployments(
       domainController,
-      deploymentConfigurations,
+      // deploymentConfigurations,
+      selfApplicationDeploymentConfigurations
     );
     const libraryEntitesAndInstances = [
       {

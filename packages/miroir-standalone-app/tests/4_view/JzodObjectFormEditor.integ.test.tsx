@@ -56,7 +56,8 @@ import {
   loadTestConfigFiles,
   miroirBeforeEach_resetAndInitApplicationDeployments,
   miroirIntegrationTestEnvironmentFactory,
-  renderWithProvidersWithContextProvider
+  renderWithProvidersWithContextProvider,
+  selfApplicationDeploymentConfigurations
 } from "miroir-standalone-app/tests/utils/tests-utils";
 
 import {
@@ -125,11 +126,12 @@ beforeAll(
 beforeEach(
   async () => {
     await miroirBeforeEach_resetAndInitApplicationDeployments(
-      miroirConfig,
+      // miroirConfig,
       testEnvironment.domainController, // {} as DomainController,
-      deploymentConfigurations, 
-      testEnvironment.localMiroirPersistenceStoreController,
-      testEnvironment.localAppPersistenceStoreController
+      selfApplicationDeploymentConfigurations,
+      // deploymentConfigurations, 
+      // testEnvironment.localMiroirPersistenceStoreController,
+      // testEnvironment.localAppPersistenceStoreController
     );
   }
 )

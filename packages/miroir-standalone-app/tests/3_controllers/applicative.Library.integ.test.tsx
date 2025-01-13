@@ -39,10 +39,14 @@ import {
   SelfApplicationDeploymentConfiguration,
   selfApplicationDeploymentLibrary,
   selfApplicationDeploymentMiroir,
+  selfApplicationLibrary,
   selfApplicationMiroir,
+  selfApplicationModelBranchLibraryMasterBranch,
   selfApplicationModelBranchMiroirMasterBranch,
+  selfApplicationStoreBasedConfigurationLibrary,
   selfApplicationStoreBasedConfigurationMiroir,
   selfApplicationVersionInitialMiroirVersion,
+  selfApplicationVersionLibraryInitialVersion,
   StoreUnitConfiguration,
   TestSuiteResult
 } from "miroir-core";
@@ -61,12 +65,14 @@ import {
   deleteAndCloseApplicationDeployments,
   loadTestConfigFiles,
   miroirBeforeEach_resetAndInitApplicationDeployments,
+  resetAndinitializeDeploymentCompositeAction,
   runTestOrTestSuite,
   setupMiroirTest,
   TestActionParams
 } from "../utils/tests-utils.js";
 import { cleanLevel } from './constants.js';
 import { LoggerOptions } from 'miroir-core/src/0_interfaces/4-services/LoggerInterface.js';
+import { AdminApplicationDeploymentConfiguration } from 'miroir-core/src/0_interfaces/1_core/StorageConfiguration.js';
 
 let domainController: DomainControllerInterface;
 let localCache: LocalCache;
@@ -116,10 +122,33 @@ const miroirtDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConf
   ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid]
   : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentMiroir.uuid];
 
+const miroirStoreUnitConfigurationForTest: StoreUnitConfiguration = {
+  "admin": {
+    "emulatedServerType": "filesystem",
+    "directory":"./tests/tmp/miroir_admin"
+  },
+  "model": {
+    "emulatedServerType": "filesystem",
+    "directory":"./tests/tmp/miroir_model"
+  },
+  "data": {
+    "emulatedServerType": "filesystem",
+    "directory":"./tests/tmp/miroir_data"
+  }
+}
+
+const typedAdminConfigurationDeploymentMiroir = {
+  ...adminConfigurationDeploymentMiroir,
+  configuration: miroirStoreUnitConfigurationForTest,
+} as AdminApplicationDeploymentConfiguration;
+
 const testApplicationDeploymentUuid = adminConfigurationDeploymentLibrary.uuid;
 const testDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
   ? miroirConfig.client.deploymentStorageConfig[testApplicationDeploymentUuid]
   : miroirConfig.client.serverConfig.storeSectionConfiguration[testApplicationDeploymentUuid];
+
+const typedAdminConfigurationDeploymentLibrary:AdminApplicationDeploymentConfiguration = adminConfigurationDeploymentLibrary as any;
+
 
 // ################################################################################################
 beforeAll(
@@ -137,9 +166,10 @@ beforeAll(
     miroirContext = localmiroirContext;
 
     const createMiroirDeploymentCompositeAction = createDeploymentCompositeAction(
-      miroirConfig,
-      adminConfigurationDeploymentMiroir.uuid,
-      miroirtDeploymentStorageConfiguration,
+      typedAdminConfigurationDeploymentMiroir.uuid,
+      typedAdminConfigurationDeploymentMiroir.configuration,
+      // miroirtDeploymentStorageConfiguration,
+      // miroirStoreUnitConfigurationForTest,
     );
     const createDeploymentResult = await domainController.handleCompositeAction(createMiroirDeploymentCompositeAction, defaultMiroirMetaModel);
     if (createDeploymentResult.status !== "ok") {
@@ -156,10 +186,12 @@ beforeEach(
     await miroirBeforeEach_resetAndInitApplicationDeployments(
       domainController,
       [
-        {
-          adminConfigurationDeployment: adminConfigurationDeploymentMiroir,
-          selfApplicationDeployment: selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
-        },
+        selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration
+        // {
+        //   // adminConfigurationDeployment: typedAdminConfigurationDeploymentMiroir,
+        //   adminConfigurationDeployment: adminConfigurationDeploymentMiroir,
+        //   selfApplicationDeployment: selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
+        // },
       ],
     );
   }
@@ -180,7 +212,7 @@ afterAll(
       domainController,
       [
         {
-          adminConfigurationDeployment: adminConfigurationDeploymentMiroir,
+          adminConfigurationDeployment: typedAdminConfigurationDeploymentMiroir,
           selfApplicationDeployment: selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
         },
       ],
@@ -254,145 +286,161 @@ const adminConfigurationDeploymentForTest = {
   }
 }
 
+
+
 const testActions: Record<string, TestActionParams> = {
   "applicative.Library.integ.test": {
     testActionType: "testCompositeActionSuite",
-    deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
     testActionLabel: "applicative.Library.integ.test",
     testCompositeAction: {
       testType: "testCompositeActionSuite",
       testLabel: "applicative.Library.integ.test",
       beforeAll: createDeploymentCompositeAction(
-        miroirConfig,
         testApplicationDeploymentUuid,
         testDeploymentStorageConfiguration
       ),
-      beforeEach: {
-        actionType: "compositeAction",
-        actionLabel: "beforeEach",
-        actionName: "sequence",
-        definition: [
-          {
-            compositeActionType: "domainAction",
-            compositeActionStepLabel: "resetLibraryStore",
-            domainAction: {
-              actionType: "modelAction",
-              actionName: "resetModel",
-              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-            },
-          },
-          {
-            compositeActionType: "domainAction",
-            compositeActionStepLabel: "initLibraryStore",
-            domainAction: {
-              actionType: "modelAction",
-              actionName: "initModel",
-              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              deploymentUuid: selfApplicationDeploymentLibrary.uuid,
-              params: {
-                dataStoreType:
-                  adminConfigurationDeploymentLibrary.uuid == adminConfigurationDeploymentMiroir.uuid
-                    ? "miroir"
-                    : "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
-                metaModel: defaultMiroirMetaModel,
-                selfApplication: selfApplicationMiroir,
-                selfApplicationDeploymentConfiguration: selfApplicationDeploymentLibrary,
-                applicationModelBranch: selfApplicationModelBranchMiroirMasterBranch,
-                applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationMiroir,
-                applicationVersion: selfApplicationVersionInitialMiroirVersion,
-              },
-            },
-          },
-          {
-            compositeActionType: "domainAction",
-            compositeActionStepLabel: "initLibraryStore",
-            domainAction: {
-              actionType: "modelAction",
-              actionName: "rollback",
-              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-            },
-          },
-          {
-            compositeActionType: "domainAction",
-            compositeActionStepLabel: "CreateLibraryStoreEntities",
-            domainAction: {
-              actionType: "modelAction",
-              actionName: "createEntity",
-              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              entities: libraryEntitesAndInstances,
-            },
-          },
-          {
-            compositeActionType: "domainAction",
-            compositeActionStepLabel: "CommitLibraryStoreEntities",
-            domainAction: {
-              actionType: "modelAction",
-              actionName: "commit",
-              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-            },
-          },
-          {
-            compositeActionType: "domainAction",
-            compositeActionStepLabel: "CreateLibraryStoreInstances",
-            domainAction: {
-              actionType: "instanceAction",
-              actionName: "createInstance",
-              endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-              applicationSection: "data",
-              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-              objects: libraryEntitesAndInstances.map((e) => {
-                return {
-                  parentName: e.entity.name,
-                  parentUuid: e.entity.uuid,
-                  applicationSection: "data",
-                  instances: e.instances,
-                };
-              }),
-            },
-          },
-        ],
-      },
-      afterEach: {
-        actionType: "compositeAction",
-        actionLabel: "afterEach",
-        actionName: "sequence",
-        definition: [
-          {
-            compositeActionType: "domainAction",
-            compositeActionStepLabel: "resetLibraryStore",
-            domainAction: {
-              actionType: "modelAction",
-              actionName: "resetModel",
-              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-            },
-          },
-        ],
-      },
-      afterAll: {
-        actionType: "compositeAction",
-        actionLabel: "afterEach",
-        actionName: "sequence",
-        definition: [
-          {
-            compositeActionType: "domainAction",
-            compositeActionStepLabel: "resetLibraryStore",
-            domainAction: {
-              actionType: "storeManagementAction",
-              actionName: "deleteStore",
-              endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-              configuration: miroirConfig.client.emulateServer
-                ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentLibrary.uuid]
-                : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentLibrary.uuid],
-            },
-          },
-        ],
-      },
+      beforeEach: resetAndinitializeDeploymentCompositeAction(
+        // selfApplicationDeploymentLibrary.uuid,
+        typedAdminConfigurationDeploymentLibrary.configuration,
+        {
+          dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
+          metaModel: defaultMiroirMetaModel,
+          selfApplication: selfApplicationLibrary,
+          adminApplicationDeploymentConfiguration: typedAdminConfigurationDeploymentLibrary,
+          selfApplicationDeploymentConfiguration: selfApplicationDeploymentLibrary,
+          applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,
+          applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationLibrary,
+          applicationVersion: selfApplicationVersionLibraryInitialVersion,
+        },
+        libraryEntitesAndInstances,
+      ),
+      // beforeEach: {
+      //   actionType: "compositeAction",
+      //   actionLabel: "beforeEach",
+      //   actionName: "sequence",
+      //   definition: [
+      //     {
+      //       compositeActionType: "domainAction",
+      //       compositeActionStepLabel: "resetLibraryStore",
+      //       domainAction: {
+      //         actionType: "modelAction",
+      //         actionName: "resetModel",
+      //         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+      //         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      //       },
+      //     },
+      //     {
+      //       compositeActionType: "domainAction",
+      //       compositeActionStepLabel: "initLibraryStore",
+      //       domainAction: {
+      //         actionType: "modelAction",
+      //         actionName: "initModel",
+      //         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+      //         deploymentUuid: selfApplicationDeploymentLibrary.uuid,
+      //         params: {
+      //           dataStoreType:
+      //             adminConfigurationDeploymentLibrary.uuid == typedAdminConfigurationDeploymentMiroir.uuid
+      //               ? "miroir"
+      //               : "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
+      //           metaModel: defaultMiroirMetaModel,
+      //           selfApplication: selfApplicationMiroir,
+      //           selfApplicationDeploymentConfiguration: selfApplicationDeploymentLibrary,
+      //           applicationModelBranch: selfApplicationModelBranchMiroirMasterBranch,
+      //           applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationMiroir,
+      //           applicationVersion: selfApplicationVersionInitialMiroirVersion,
+      //         },
+      //       },
+      //     },
+      //     {
+      //       compositeActionType: "domainAction",
+      //       compositeActionStepLabel: "initLibraryStore",
+      //       domainAction: {
+      //         actionType: "modelAction",
+      //         actionName: "rollback",
+      //         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+      //         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      //       },
+      //     },
+      //     {
+      //       compositeActionType: "domainAction",
+      //       compositeActionStepLabel: "CreateLibraryStoreEntities",
+      //       domainAction: {
+      //         actionType: "modelAction",
+      //         actionName: "createEntity",
+      //         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      //         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+      //         entities: libraryEntitesAndInstances,
+      //       },
+      //     },
+      //     {
+      //       compositeActionType: "domainAction",
+      //       compositeActionStepLabel: "CommitLibraryStoreEntities",
+      //       domainAction: {
+      //         actionType: "modelAction",
+      //         actionName: "commit",
+      //         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+      //         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      //       },
+      //     },
+      //     {
+      //       compositeActionType: "domainAction",
+      //       compositeActionStepLabel: "CreateLibraryStoreInstances",
+      //       domainAction: {
+      //         actionType: "instanceAction",
+      //         actionName: "createInstance",
+      //         endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+      //         applicationSection: "data",
+      //         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      //         objects: libraryEntitesAndInstances.map((e) => {
+      //           return {
+      //             parentName: e.entity.name,
+      //             parentUuid: e.entity.uuid,
+      //             applicationSection: "data",
+      //             instances: e.instances,
+      //           };
+      //         }),
+      //       },
+      //     },
+      //   ],
+      // },
+      // afterEach: {
+      //   actionType: "compositeAction",
+      //   actionLabel: "afterEach",
+      //   actionName: "sequence",
+      //   definition: [
+      //     {
+      //       compositeActionType: "domainAction",
+      //       compositeActionStepLabel: "resetLibraryStore",
+      //       domainAction: {
+      //         actionType: "modelAction",
+      //         actionName: "resetModel",
+      //         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+      //         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      //       },
+      //     },
+      //   ],
+      // },
+      // afterAll: {
+      //   actionType: "compositeAction",
+      //   actionLabel: "afterEach",
+      //   actionName: "sequence",
+      //   definition: [
+      //     {
+      //       compositeActionType: "domainAction",
+      //       compositeActionStepLabel: "resetLibraryStore",
+      //       domainAction: {
+      //         actionType: "storeManagementAction",
+      //         actionName: "deleteStore",
+      //         endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+      //         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      //         configuration: miroirConfig.client.emulateServer
+      //           ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentLibrary.uuid]
+      //           : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentLibrary.uuid],
+      //       },
+      //     },
+      //   ],
+      // },
       testCompositeActions: {
         "get Entity Entity from Miroir": {
           testType: "testCompositeAction",
@@ -421,12 +469,12 @@ const testActions: Record<string, TestActionParams> = {
                   actionName: "runQuery",
                   endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                   applicationSection: "model", // TODO: give only selfApplication section in individual queries?
-                  deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                  deploymentUuid: typedAdminConfigurationDeploymentMiroir.uuid,
                   query: {
                     queryType: "boxedQueryWithExtractorCombinerTransformer",
-                    deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                    deploymentUuid: typedAdminConfigurationDeploymentMiroir.uuid,
                     pageParams: {
-                      currentDeploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                      currentDeploymentUuid: typedAdminConfigurationDeploymentMiroir.uuid,
                     },
                     queryParams: {},
                     contextResults: {},
@@ -467,7 +515,7 @@ const testActions: Record<string, TestActionParams> = {
   // ]
   // "create new SelfApplication": {
   //   testActionType: "testCompositeAction",
-  //   deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+  //   deploymentUuid: typedAdminConfigurationDeploymentMiroir.uuid,
   //   compositeTestAction: {
   //     testType: "testCompositeAction",
   //     compositeAction: {
@@ -907,63 +955,16 @@ const testActions: Record<string, TestActionParams> = {
 // TODO: duplicate test with ExtractorTemplatePersistenceStoreRunner.integ.test.tsx
 describe.sequential("DomainNewController.CompositeAction.integ.test", () => {
   it.each(Object.entries(testActions))("test %s", async (currentTestName, testAction: TestActionParams) => {
-        const testSuiteResults = await runTestOrTestSuite(
-          localCache,
-          domainController,
-          testAction
-        );
-        globalTestSuiteResults = testSuiteResults.status == "ok"? testSuiteResults.returnedDomainElement.elementValue as any : globalTestSuiteResults;
-        console.log("testSuiteResults", testSuiteResults);
+    const testSuiteResults = await runTestOrTestSuite(
+      localCache,
+      domainController,
+      testAction
+    );
+    globalTestSuiteResults = testSuiteResults.status == "ok"? testSuiteResults.returnedDomainElement.elementValue as any : globalTestSuiteResults;
+    for (const [testLabel, testResult] of Object.entries(globalTestSuiteResults)) {
+      expect(testResult.testResult, `${testLabel} failed!`).toBe("ok");
+    }
+    console.log("testSuiteResults", testSuiteResults);
     
-  //   // Manually set the currentTestName
-  //   // expect.getState().currentTestName = `DomainNewController.CompositeAction.integ.test/${currentTestName}`;
-  //   const fullTestName = expect.getState().currentTestName ?? "no test name";
-  //   log.info("STARTING test:", fullTestName);
-  //   // expect(currentTestName != undefined).toBeTruthy();
-  //   // expect(testParams.testAssertions).toBeDefined();
-
-  //   await chainVitestSteps(
-  //     fullTestName,
-  //     {},
-  //     async () => {
-  //       switch (testAction.testActionType) {
-  //         case "testCompositeActionSuite": {
-  //           const queryResult: ActionReturnType = await domainController.handleTestCompositeActionSuite(
-  //             testAction.testCompositeAction,
-  //             {},
-  //             localCache.currentModel(testAction.deploymentUuid)
-  //           );
-  //           console.log(
-  //             "test testCompositeActionSuite",
-  //             fullTestName,
-  //             ": queryResult=",
-  //             JSON.stringify(queryResult, null, 2)
-  //           );
-  //           return queryResult;
-  //         }
-  //         case "testCompositeAction": {
-  //           const queryResult: ActionReturnType = await domainController.handleTestCompositeAction(
-  //             testAction.testCompositeAction,
-  //             {},
-  //             localCache.currentModel(testAction.deploymentUuid)
-  //           );
-  //           console.log(
-  //             "test testCompositeAction",
-  //             fullTestName,
-  //             ": queryResult=",
-  //             JSON.stringify(queryResult, null, 2)
-  //           );
-  //           return queryResult;
-  //         }
-  //         case "testCompositeActionTemplate": {
-  //           throw new Error("testCompositeActionTemplate not implemented yet!");
-  //         }
-  //       }
-  //     },
-  //     undefined, // expected result transformation
-  //     undefined, // name to give to result
-  //     "void",
-  //     undefined // expectedValue
-  //   );
   });
 });

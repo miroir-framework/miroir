@@ -17,15 +17,6 @@ export const TableComponentTypeSchema = z.enum(["EntityInstance", "JSON_ARRAY"])
 
 export type TableComponentType = z.infer<typeof TableComponentTypeSchema>;
 
-// export const TableComponentCellSchema = z.object({
-//   link: z.string().optional(),
-//   value: z.any(),
-// });
-// export type TableComponentCell = z.infer<typeof TableComponentCellSchema>;
-
-// export const TableComponentRowSchema = z.record(TableComponentCellSchema);
-// export type TableComponentRow = z.infer<typeof TableComponentRowSchema>;
-
 export const tableComponentCorePropsSchema = z.object({
   columnDefs: z.object({ columnDefs: z.array(z.any()) }),
   instancesToDisplay: entityInstancesUuidIndex.optional(), // TODO: lower it down to TableCompnentEntityInstancePropsSchema, this should not appear in TableComponentJsonArrayPropsSchema

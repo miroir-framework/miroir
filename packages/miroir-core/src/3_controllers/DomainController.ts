@@ -134,11 +134,12 @@ export async function resetAndInitApplicationDeployment(
 }
 export async function resetAndInitApplicationDeploymentNew(
   domainController: DomainControllerInterface,
-  deployments: DeploymentConfiguration[], // TODO: use Deployment Entity Type!
+  // deployments: DeploymentConfiguration[], // TODO: use Deployment Entity Type!
+  deployments: SelfApplicationDeploymentConfiguration[], // TODO: use Deployment Entity Type!
 ) {
   // const mappedDeployments = deployments.map(d=>d.adminConfigurationDeployment);
-  const mappedDeployments = deployments.map(d=>d.selfApplicationDeployment);
-  return resetAndInitApplicationDeployment(domainController, mappedDeployments);
+  // const mappedDeployments = deployments.map(d=>d.selfApplicationDeployment);
+  return resetAndInitApplicationDeployment(domainController, deployments);
 }
 // ################################################################################################
 // ################################################################################################
@@ -338,7 +339,12 @@ export class DomainController implements DomainControllerInterface {
                 //   e.entity["name"],
                 //   entityInstanceCollection
                 // );
-                log.info("DomainController loadConfigurationFromPersistenceStore found instances for section",e.section,"entity", e.entity.name);
+                log.info(
+                  "DomainController loadConfigurationFromPersistenceStore found instances for section",
+                  e.section,
+                  "entity",
+                  e.entity.name
+                );
                 instances.push(context["entityInstanceCollection"].returnedDomainElement.elementValue);
                 latestInstances = context["entityInstanceCollection"].returnedDomainElement.elementValue;
                 return context;
@@ -361,10 +367,11 @@ export class DomainController implements DomainControllerInterface {
                     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                     objects: [latestInstances],
                   }
-                )
-              }
-              )
-              .catch((reason) => log.error(reason));
+                );
+              })
+              .catch(
+                (reason) => log.error(reason)
+              );
           }
 
           // removes current transaction
@@ -395,6 +402,8 @@ export class DomainController implements DomainControllerInterface {
         });
     } catch (error) {
       log.warn("DomainController loadConfigurationFromPersistenceStore caught error:", error);
+      // throw error;
+      return Promise.resolve({ status: "error", errorType: "FailedToDeployModule", errorMessage: "DomainController loadConfigurationFromPersistenceStore caught error: " + error });
     }
     return Promise.resolve(ACTION_OK);
   }

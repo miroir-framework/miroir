@@ -3,7 +3,7 @@
   "parentName": "AdminApplication",
   "parentUuid": "25d935e7-9e93-42c2-aade-0472b883492b",
   "name": "Paris",
-  "defaultLabel": "The Paris AdminApplication.",
-  "description": "This AdminApplication contains the Paris model and data",
+  "defaultLabel": "The Paris selfApplication.",
+  "description": "This selfApplication contains the Paris model and data",
   "selfApplication": "70e02039-e283-4381-9575-8c52aed18a87"
 }

@@ -75,6 +75,7 @@ import {
   miroirBeforeEach_resetAndInitApplicationDeployments,
   resetAndinitializeDeploymentCompositeAction,
   resetApplicationDeployments,
+  selfApplicationDeploymentConfigurations,
   setupMiroirTest
 } from "../utils/tests-utils.js";
 import { AdminApplicationDeploymentConfiguration } from 'miroir-core/src/0_interfaces/1_core/StorageConfiguration.js';
@@ -231,21 +232,22 @@ beforeEach(
     await miroirBeforeEach_resetAndInitApplicationDeployments(
       // miroirConfig,
       domainController,
-      [
-        {
-          adminConfigurationDeployment: adminConfigurationDeploymentMiroir,
-          selfApplicationDeployment: selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
-        },
-        {
-          adminConfigurationDeployment: adminConfigurationDeploymentLibrary,
-          selfApplicationDeployment: selfApplicationDeploymentLibrary as SelfApplicationDeploymentConfiguration,
-        },
-      ],
+      selfApplicationDeploymentConfigurations,
+      // [
+      //   {
+      //     adminConfigurationDeployment: adminConfigurationDeploymentMiroir,
+      //     selfApplicationDeployment: selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
+      //   },
+      //   {
+      //     adminConfigurationDeployment: adminConfigurationDeploymentLibrary,
+      //     selfApplicationDeployment: selfApplicationDeploymentLibrary as SelfApplicationDeploymentConfiguration,
+      //   },
+      // ],
     );
     console.log("beforeEach done");
     const initResult:ActionReturnType = await domainController.handleCompositeAction(
       resetAndinitializeDeploymentCompositeAction(
-        selfApplicationDeploymentLibrary.uuid,
+        // selfApplicationDeploymentLibrary.uuid,
         typedAdminConfigurationDeploymentLibrary.configuration,
         {
           dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment

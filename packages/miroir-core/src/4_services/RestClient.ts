@@ -43,19 +43,15 @@ export class RestClient implements RestClientInterface {
     try {
       if (body) {
         config.body = JSON.stringify(body);
-        // config.body = body;
       }
       // log.info("RestClient for header", method, endpoint, "sending body", config.body);
-      // log.info("RestClient for header", method, endpoint, "using config", JSON.stringify(config, undefined, 2));
-      log.info("RestClient for header", method, endpoint, "using config", config, undefined, 2);
 
-      log.info("RestClient using fetch", this.customFetch);
       const response = await this.customFetch(endpoint, config);
 
       const responseText: string = await response.text();
       log.info("RestClient response length", responseText.length, responseText);
       const data = responseText.length > 0 ? JSON.parse(responseText) : undefined;
-      log.info("RestClient parsed response", data);
+      // log.info("RestClient parsed response", data);
       if (response.ok) {
         return {
           status: response.status,

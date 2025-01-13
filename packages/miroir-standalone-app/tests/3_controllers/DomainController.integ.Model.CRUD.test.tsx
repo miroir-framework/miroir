@@ -171,11 +171,14 @@ beforeAll(
     miroirContext = localmiroirContext;
 
     const createMiroirDeploymentCompositeAction = createDeploymentCompositeAction(
-      miroirConfig,
+      // miroirConfig,
       adminConfigurationDeploymentMiroir.uuid,
       miroirtDeploymentStorageConfiguration,
     );
-    const createDeploymentResult = await domainController.handleCompositeAction(createMiroirDeploymentCompositeAction, defaultMiroirMetaModel);
+    const createDeploymentResult = await domainController.handleCompositeAction(
+      createMiroirDeploymentCompositeAction,
+      defaultMiroirMetaModel
+    );
     if (createDeploymentResult.status !== "ok") {
       throw new Error("Failed to create Miroir deployment: " + JSON.stringify(createDeploymentResult));
     }
@@ -190,10 +193,11 @@ beforeEach(
     await miroirBeforeEach_resetAndInitApplicationDeployments(
       domainController,
       [
-        {
-          adminConfigurationDeployment: adminConfigurationDeploymentMiroir,
-          selfApplicationDeployment: selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
-        },
+        selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
+        // {
+        //   adminConfigurationDeployment: adminConfigurationDeploymentMiroir,
+        //   selfApplicationDeployment: selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
+        // },
       ],
     );
   }
@@ -207,7 +211,12 @@ afterAll(
       domainController,
       deploymentConfigurations,
     );
-    console.log("globalTestSuiteResults:\n", Object.values(globalTestSuiteResults).map((r) => "\"" + r.testLabel + "\": " + r.testResult).join("\n"));
+    console.log(
+      "globalTestSuiteResults:\n",
+      Object.values(globalTestSuiteResults)
+        .map((r) => '"' + r.testLabel + '": ' + r.testResult)
+        .join("\n")
+    );
 
   }
 )
@@ -225,12 +234,12 @@ const testActions: Record<string, TestActionParams> = {
       testType: "testCompositeActionSuite",
       testLabel: "DomainController.integ.Model.CRUD",
       beforeAll: createDeploymentCompositeAction(
-        miroirConfig,
+        // miroirConfig,
         adminConfigurationDeploymentLibrary.uuid,
         testDeploymentStorageConfiguration
       ),
       beforeEach: resetAndinitializeDeploymentCompositeAction(
-        selfApplicationDeploymentLibrary.uuid,
+        // selfApplicationDeploymentLibrary.uuid,
         typedAdminConfigurationDeploymentLibrary.configuration,
         {
           dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment

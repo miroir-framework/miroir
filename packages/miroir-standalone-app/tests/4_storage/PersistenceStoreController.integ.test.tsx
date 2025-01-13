@@ -55,6 +55,7 @@ import {
   deploymentConfigurations,
   loadTestConfigFiles,
   miroirBeforeEach_resetAndInitApplicationDeployments,
+  selfApplicationDeploymentConfigurations,
   setupMiroirTest
 } from "../utils/tests-utils.js";
 import { packageName, cleanLevel } from '../../src/constants.js';
@@ -243,8 +244,8 @@ beforeAll(
 // ################################################################################################
 beforeEach(
   async  () => {
-    // await miroirBeforeEach_resetAndInitApplicationDeployments(domainController, deploymentConfigurations);
-    await resetAndInitApplicationDeploymentNew(domainController, deploymentConfigurations);
+    await miroirBeforeEach_resetAndInitApplicationDeployments(domainController, selfApplicationDeploymentConfigurations);
+    // await resetAndInitApplicationDeploymentNew(domainController, deploymentConfigurations);
   }
 )
 

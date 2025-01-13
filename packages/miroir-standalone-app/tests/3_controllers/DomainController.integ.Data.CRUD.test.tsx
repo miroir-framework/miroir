@@ -178,7 +178,7 @@ beforeAll(
     miroirContext = localmiroirContext;
 
     const createMiroirDeploymentCompositeAction = createDeploymentCompositeAction(
-      miroirConfig,
+      // miroirConfig,
       adminConfigurationDeploymentMiroir.uuid,
       miroirtDeploymentStorageConfiguration,
     );
@@ -201,10 +201,11 @@ beforeEach(
     await miroirBeforeEach_resetAndInitApplicationDeployments(
       domainController,
       [
-        {
-          adminConfigurationDeployment: adminConfigurationDeploymentMiroir,
-          selfApplicationDeployment: selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
-        },
+        selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
+        // {
+        //   adminConfigurationDeployment: adminConfigurationDeploymentMiroir,
+        //   selfApplicationDeployment: selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
+        // },
       ],
     );
   }
@@ -236,12 +237,12 @@ const testActions: Record<string, TestActionParams> = {
       testType: "testCompositeActionSuite",
       testLabel: "DomainController.integ.Data.CRUD",
       beforeAll: createDeploymentCompositeAction(
-        miroirConfig,
+        // miroirConfig,
         testApplicationDeploymentUuid,
         testDeploymentStorageConfiguration
       ),
       beforeEach: resetAndinitializeDeploymentCompositeAction(
-        selfApplicationDeploymentLibrary.uuid,
+        // selfApplicationDeploymentLibrary.uuid,
         typedAdminConfigurationDeploymentLibrary.configuration,
         {
           dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment

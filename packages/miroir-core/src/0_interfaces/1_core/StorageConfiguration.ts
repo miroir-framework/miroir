@@ -74,7 +74,6 @@ export type ApplicationModelLevel = z.infer<typeof ApplicationModelLevelSchema>;
 
 
 export const AdminApplicationDeploymentConfigurationSchema = EntityInstanceWithNameSchema.extend({
-  // uuid: z.string().uuid(),
   type: ClientServerDistributionModeSchema,
   defaultLabel: z.string(),
   description: z.string(),
@@ -82,26 +81,7 @@ export const AdminApplicationDeploymentConfigurationSchema = EntityInstanceWithN
   selfApplication:z.string().uuid().optional(),
   applicationVersion:z.string().uuid().optional(),
   applicationModelLevel: ApplicationModelLevelSchema,
-  // model: ModelStorageLocationSchema.optional(), // in the case of a designer access, the zone where the model can be edited.
-  // data: ModelStorageLocationSchema.optional(),
   configuration: storeUnitConfiguration
 });
 
 export type AdminApplicationDeploymentConfiguration = z.infer<typeof AdminApplicationDeploymentConfigurationSchema>;
-
-
-
-// export const SelfApplicationDeploymentConfigurationSchema = EntityInstanceWithNameSchema.extend({
-//   // uuid: z.string().uuid(),
-//   type: ClientServerDistributionModeSchema,
-//   defaultLabel: z.string(),
-//   description: z.string(),
-//   // metaModel: ModelStorageLocation,
-//   selfApplication:z.string().uuid().optional(),
-//   applicationVersion:z.string().uuid().optional(),
-//   applicationModelLevel: ApplicationModelLevelSchema,
-//   model: ModelStorageLocationSchema.optional(), // in the case of a designer access, the zone where the model can be edited.
-//   data: ModelStorageLocationSchema.optional(),
-// });
-
-// export type SelfApplicationDeploymentConfiguration = z.infer<typeof SelfApplicationDeploymentConfigurationSchema>;

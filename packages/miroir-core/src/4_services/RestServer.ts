@@ -355,11 +355,11 @@ export async function queryTemplateActionHandler(
   body: HttpRequestBodyFormat,
   params: any,
 ):Promise<void> {
-  log.info("RestServer queryTemplateActionHandler params", params, "body", body);
-  console.log("queryTemplateActionHandler called with method", method);
-  console.log("queryTemplateActionHandler called with effectiveUrl", effectiveUrl);
-  console.log("queryTemplateActionHandler called with","body", JSON.stringify(body, undefined, 2));
-  console.log("queryTemplateActionHandler called with params", JSON.stringify(params,undefined,2));
+  // log.info("RestServer queryTemplateActionHandler params", params, "body", body);
+  // console.log("queryTemplateActionHandler called with method", method);
+  // console.log("queryTemplateActionHandler called with effectiveUrl", effectiveUrl);
+  // console.log("queryTemplateActionHandler called with","body", JSON.stringify(body, undefined, 2));
+  // console.log("queryTemplateActionHandler called with params", JSON.stringify(params,undefined,2));
 
 
   /**

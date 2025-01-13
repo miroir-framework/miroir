@@ -55,7 +55,7 @@ export const ImporterCorePropsSchema = z.object({
 export type ImporterCoreProps = z.infer<typeof ImporterCorePropsSchema>;
 
 const imageMimeType = /image\/(png|jpg|jpeg)/i;
-const excelMimeType = /selfApplication\//i;
+const excelMimeType = /application\//i;
 
 const pageLabel = "Importer";
 const emptyString = ""
