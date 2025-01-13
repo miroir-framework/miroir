@@ -129,7 +129,7 @@ export function getBasicStoreUnitConfiguration(
 
 }
 
-
+// ################################################################################################
 export function getBasicApplicationConfiguration(
   applicationName: string,
   paramSelfApplicationUuid: Uuid,

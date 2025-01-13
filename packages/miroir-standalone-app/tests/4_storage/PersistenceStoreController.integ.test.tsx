@@ -51,6 +51,7 @@ import { cleanLevel, packageName } from '../../src/constants.js';
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { miroirAppStartup } from '../../src/startup.js';
 import {
+  adminApplicationDeploymentConfigurations,
   createDeploymentCompositeAction,
   createMiroirDeploymentGetPersistenceStoreController,
   deleteAndCloseApplicationDeployments,
@@ -100,8 +101,6 @@ myConsoleLog("received loggerOptions", JSON.stringify(loggerOptions, null, 2));
 MiroirLoggerFactory.startRegisteredLoggers(
   loglevelnext,
   (defaultLevels as any)[loggerOptions.defaultLevel],
-  // loggerOptions.defaultTemplate,
-  // loggerOptions.specificLoggerOptions
 );
 myConsoleLog("started registered loggers DONE");
 
@@ -195,16 +194,7 @@ afterAll(
     await deleteAndCloseApplicationDeployments(
       miroirConfig,
       domainController,
-      [
-        {
-          adminConfigurationDeployment: adminConfigurationDeploymentMiroir,
-          selfApplicationDeployment: selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
-        },
-        {
-          adminConfigurationDeployment: adminConfigurationDeploymentLibrary,
-          selfApplicationDeployment: selfApplicationDeploymentLibrary as SelfApplicationDeploymentConfiguration,
-        },
-      ],
+      adminApplicationDeploymentConfigurations
     );
 
     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done deleteAndCloseApplicationDeployments")
@@ -375,12 +365,10 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
       "entityInstanceCollection",
       [
         "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-        // "35c5608a-7678-4f07-a4ec-76fc5bc35424",
         "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
         "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
         "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
         "5e81e1b9-38be-487c-b3e5-53796c57fccf",
-        // "7990c0c9-86c3-40a1-a121-036c91b55ed7",
         "a659d350-dd97-4da9-91de-524fa01745dc",
         "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
         "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
@@ -775,7 +763,7 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
 
     const instanceAdded = (await localAppPersistenceStoreController?.upsertInstance('data', book1 as EntityInstance)) as ActionError;
     console.log("instanceAdded", instanceAdded)
-    expect({errorType: instanceAdded.error.errorType, errorMessage: instanceAdded.error.errorMessage}, "failed to add Book instance").toEqual({
+    expect({errorType: instanceAdded.errorType, errorMessage: instanceAdded.errorMessage}, "failed to add Book instance").toEqual({
       errorType: "FailedToUpdateInstance",
       errorMessage: "failed to upsert instance caef8a59-39eb-48b5-ad59-a7642d3a1e8f of entity e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
     });
@@ -839,12 +827,12 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
     await chainVitestSteps(
       "actualTest_getInstancesAndCheckResult",
       {},
-      async () => localAppPersistenceStoreController.getInstances("data",entityAuthor.uuid),
+      async () => localAppPersistenceStoreController.getInstances("data", entityAuthor.uuid),
       (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.elementValue.instances),
       undefined, // name to give to result
       "entityInstanceCollection",
       []
-    )
+    );
   });
 
   // ################################################################################################
@@ -858,7 +846,7 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
     const instanceDeletedError = instanceDeleted as ActionError;
     console.log("instanceDeletedError", instanceDeletedError)
     expect(
-      { errorType: instanceDeletedError.error.errorType, errorMessage: instanceDeletedError.error.errorMessage },
+      { errorType: instanceDeletedError.errorType, errorMessage: instanceDeletedError.errorMessage },
       "failed to delete Author"
     ).toEqual({
       errorType: "FailedToDeleteInstance",

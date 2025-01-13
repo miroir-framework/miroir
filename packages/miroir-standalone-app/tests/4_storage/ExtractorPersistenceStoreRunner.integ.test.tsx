@@ -279,11 +279,8 @@ afterAll(
       miroirConfig,
       domainController,
       [
-        {
-          adminConfigurationDeployment: adminConfigurationDeploymentMiroir,
-          selfApplicationDeployment: selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
-        },
-      ],
+        adminConfigurationDeploymentMiroir as AdminApplicationDeploymentConfiguration,
+      ]
     );
     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done deleteAndCloseApplicationDeployments")
 

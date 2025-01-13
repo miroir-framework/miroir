@@ -50,6 +50,7 @@ import {
 } from "miroir-core";
 
 import {
+  adminApplicationDeploymentConfigurations,
   createDeploymentCompositeAction,
   deleteAndCloseApplicationDeployments,
   deploymentConfigurations,
@@ -302,7 +303,8 @@ afterAll(
     await deleteAndCloseApplicationDeployments(
       miroirConfig,
       domainController,
-      deploymentConfigurations,
+      // deploymentConfigurations,
+      adminApplicationDeploymentConfigurations,
     );
   }
 )

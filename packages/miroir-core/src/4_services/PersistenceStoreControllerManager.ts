@@ -159,8 +159,6 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
     storeUnitConfiguration: StoreUnitConfiguration,
     initApplicationParameters: InitApplicationParameters,
   ): Promise<ActionVoidReturnType> {
-    // await adminPersistenceStoreController.deleteStore(storeUnitConfiguration.admin);
-    // await adminPersistenceStoreController.createStore(storeUnitConfiguration.admin);
     await this.addPersistenceStoreController(
       newDeploymentUuid,
       storeUnitConfiguration
@@ -180,10 +178,8 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
           initApplicationParameters.metaModel,
           initApplicationParameters.dataStoreType,
           initApplicationParameters.selfApplication,
-          // initApplicationParameters.selfApplicationDeploymentConfiguration,
           initApplicationParameters.applicationModelBranch,
           initApplicationParameters.applicationVersion,
-          // initApplicationParameters.applicationStoreBasedConfiguration
         );
         console.log(
           "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ deployModule initApplication",

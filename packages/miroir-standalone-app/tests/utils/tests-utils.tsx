@@ -112,6 +112,11 @@ export const selfApplicationDeploymentConfigurations: SelfApplicationDeploymentC
     selfApplicationDeploymentLibrary  as SelfApplicationDeploymentConfiguration,
 ];
 
+export const adminApplicationDeploymentConfigurations: AdminApplicationDeploymentConfiguration[] = [
+    adminConfigurationDeploymentMiroir as AdminApplicationDeploymentConfiguration,
+    adminConfigurationDeploymentLibrary as AdminApplicationDeploymentConfiguration,
+];
+
 
 
 // ################################################################################################
@@ -649,19 +654,20 @@ export async function resetApplicationDeployments(
 export async function deleteAndCloseApplicationDeployments(
   miroirConfig: MiroirConfigClient,
   domainController: DomainControllerInterface,
-  deploymentConfigurations: DeploymentConfiguration[],
+  // deploymentConfigurations: DeploymentConfiguration[],
+  deploymentConfigurations: AdminApplicationDeploymentConfiguration[],
 ) {
   log.info('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ deleteAndCloseApplicationDeployments');
   log.info('deleteAndCloseApplicationDeployments delete test stores.');
   for (const d of deploymentConfigurations) {
     const storeUnitConfiguration = miroirConfig.client.emulateServer
-    ? miroirConfig.client.deploymentStorageConfig[d.adminConfigurationDeployment.uuid]
-    : miroirConfig.client.serverConfig.storeSectionConfiguration[d.adminConfigurationDeployment.uuid];
+    ? miroirConfig.client.deploymentStorageConfig[d.uuid]
+    : miroirConfig.client.serverConfig.storeSectionConfiguration[d.uuid];
     const deletedStore = await domainController.handleAction({
       actionType: "storeManagementAction",
       actionName: "deleteStore",
       endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-      deploymentUuid: d.adminConfigurationDeployment.uuid,
+      deploymentUuid: d.uuid,
       configuration: storeUnitConfiguration
     });
     if (deletedStore?.status != "ok") {
@@ -677,12 +683,12 @@ export async function deleteAndCloseApplicationDeployments(
         actionType: "storeManagementAction",
         actionName: "closeStore",
         endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-        deploymentUuid: d.adminConfigurationDeployment.uuid,
+        deploymentUuid: d.uuid,
         });
       if (deletedStore?.status != "ok") {
         console.error('Error afterAll',JSON.stringify(deletedStore, null, 2));
       } else {
-        log.info('deleteAndCloseApplicationDeployments closing deployment:', d.adminConfigurationDeployment.uuid, "DONE!"); // TODO: really???
+        log.info('deleteAndCloseApplicationDeployments closing deployment:', d.uuid, "DONE!"); // TODO: really???
       }
     }
   log.info('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done afterAll');

@@ -30,6 +30,7 @@ import {
 import { TestUtilsTableComponent } from "../utils/TestUtilsTableComponent.js";
 import {
   DisplayLoadingInfo,
+  adminApplicationDeploymentConfigurations,
   createDeploymentCompositeAction,
   deleteAndCloseApplicationDeployments,
   deploymentConfigurations,
@@ -149,7 +150,8 @@ afterAll(
     await deleteAndCloseApplicationDeployments(
       miroirConfig,
       domainController,
-      deploymentConfigurations, 
+      // deploymentConfigurations,
+      adminApplicationDeploymentConfigurations,
     );
   }
 )

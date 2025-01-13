@@ -549,6 +549,10 @@ export {
   // getReportSectionTargetEntityUuid,
 } from './1_core/Report.js';
 export {
+  getBasicApplicationConfiguration,
+  getBasicStoreUnitConfiguration,
+} from './2_domain/Deployment.js';
+export {
   extractEntityJzodSchemaFromDeploymentEntityState,
   selectEntityInstanceFromDeploymentEntityState,
   selectEntityInstanceUuidIndexFromDeploymentEntityState,

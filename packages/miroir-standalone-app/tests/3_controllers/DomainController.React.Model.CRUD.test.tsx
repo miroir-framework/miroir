@@ -56,6 +56,7 @@ import {
 import { TestUtilsTableComponent } from "miroir-standalone-app/tests/utils/TestUtilsTableComponent.js";
 import {
   DisplayLoadingInfo,
+  adminApplicationDeploymentConfigurations,
   createDeploymentCompositeAction,
   deleteAndCloseApplicationDeployments,
   deploymentConfigurations,
@@ -185,7 +186,8 @@ afterAll(
     await deleteAndCloseApplicationDeployments(
       miroirConfig,
       domainController,
-      deploymentConfigurations, 
+      // deploymentConfigurations,
+      adminApplicationDeploymentConfigurations,
     );
   }
 )
