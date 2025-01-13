@@ -540,7 +540,7 @@ export {
 export {
   applicationModelEntities,
   defaultMiroirMetaModel,
-  getCurrentEntityDefinition,
+  // getCurrentEntityDefinition,
   getReportsAndEntitiesDefinitionsForDeploymentUuid,
   metaModelEntities,
   miroirModelEntities,

@@ -103,64 +103,64 @@ import entityDefinitionReportV1 from "../../assets/miroir_model/54b9c72f-d4f3-4d
 import entityDefinitionDeployment from "../../assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/c50240e7-c451-46c2-b60a-07b3172a5ef9.json" assert { type: "json" };
 import { transformerMenuV1 } from "../../index.js";
 
-export const defaultMiroirMetaModel: MetaModel = {
-  configuration: [instanceConfigurationReference],
-  entities: [
-    entitySelfApplication as Entity,
-    entitySelfApplicationDeploymentConfiguration as Entity,
-    entitySelfApplicationModelBranch as Entity,
-    entitySelfApplicationVersion as Entity,
-    entityEntity as Entity,
-    entityEntityDefinition as Entity,
-    entityJzodSchema as Entity,
-    entityMenu as Entity,
-    entityReport as Entity,
-    entityStoreBasedConfiguration as Entity,
-    entitySelfApplicationVersion as Entity,
-  ],
-  entityDefinitions: [
-    entityDefinitionSelfApplication as EntityDefinition,
-    entityDefinitionSelfApplicationDeploymentConfiguration as EntityDefinition,
-    entityDefinitionSelfApplicationModelBranch as EntityDefinition,
-    entityDefinitionSelfApplicationVersion as EntityDefinition,
-    entityDefinitionEntity as EntityDefinition,
-    entityDefinitionEntityDefinition as EntityDefinition,
-    entityDefinitionJzodSchema as EntityDefinition,
-    entityDefinitionMenu as EntityDefinition,
-    entityDefinitionReport as EntityDefinition,
-    entityDefinitionStoreBasedConfiguration as EntityDefinition,
-  ],
-  jzodSchemas: [
-    jzodSchemajzodMiroirBootstrapSchema as JzodSchema,
-  ],
-  menus: [
-    menuDefaultMiroir as Menu,
-  ],
-  applicationVersions:[
-    selfApplicationVersionInitialMiroirVersion
-  ],
-  reports: [
-    reportApplicationDeploymentConfigurationList as Report,
-    reportApplicationList as Report,
-    reportApplicationModelBranchList as Report,
-    reportApplicationVersionList as Report,
-    reportConfigurationList as Report,
-    reportEntityDefinitionList as Report,
-    reportEntityList as Report,
-    reportJzodSchemaList as Report,
-    reportMenuList as Report,
-    reportReportList as Report,
-  ],
-  applicationVersionCrossEntityDefinition: [
-    applicationVersionInitialMiroirVersionCrossEntityDefinitionApplication,
-    applicationVersionInitialMiroirVersionCrossEntityDefinitionApplicationModelBranch,
-    applicationVersionInitialMiroirVersionCrossEntityDefinitionApplicationVersion,
-    applicationVersionInitialMiroirVersionCrossEntityDefinitionEntity,
-    applicationVersionInitialMiroirVersionCrossEntityDefinitionEntityDefinition,
-    applicationVersionInitialMiroirVersionCrossEntityDefinitionReport,
-    applicationVersionInitialMiroirVersionCrossEntityDefinitionStoreBasedConfiguration,
-  ]
-}
+// export const defaultMiroirMetaModel: MetaModel = {
+//   configuration: [instanceConfigurationReference],
+//   entities: [
+//     entitySelfApplication as Entity,
+//     // entitySelfApplicationDeploymentConfiguration as Entity,
+//     entitySelfApplicationModelBranch as Entity,
+//     entitySelfApplicationVersion as Entity,
+//     entityEntity as Entity,
+//     entityEntityDefinition as Entity,
+//     entityJzodSchema as Entity,
+//     entityMenu as Entity,
+//     entityReport as Entity,
+//     // entityStoreBasedConfiguration as Entity,
+//     entitySelfApplicationVersion as Entity,
+//   ],
+//   entityDefinitions: [
+//     entityDefinitionSelfApplication as EntityDefinition,
+//     // entityDefinitionSelfApplicationDeploymentConfiguration as EntityDefinition,
+//     entityDefinitionSelfApplicationModelBranch as EntityDefinition,
+//     entityDefinitionSelfApplicationVersion as EntityDefinition,
+//     entityDefinitionEntity as EntityDefinition,
+//     entityDefinitionEntityDefinition as EntityDefinition,
+//     entityDefinitionJzodSchema as EntityDefinition,
+//     entityDefinitionMenu as EntityDefinition,
+//     entityDefinitionReport as EntityDefinition,
+//     // entityDefinitionStoreBasedConfiguration as EntityDefinition,
+//   ],
+//   jzodSchemas: [
+//     jzodSchemajzodMiroirBootstrapSchema as JzodSchema,
+//   ],
+//   menus: [
+//     menuDefaultMiroir as Menu,
+//   ],
+//   applicationVersions:[
+//     selfApplicationVersionInitialMiroirVersion
+//   ],
+//   reports: [
+//     reportApplicationDeploymentConfigurationList as Report,
+//     reportApplicationList as Report,
+//     reportApplicationModelBranchList as Report,
+//     reportApplicationVersionList as Report,
+//     reportConfigurationList as Report,
+//     reportEntityDefinitionList as Report,
+//     reportEntityList as Report,
+//     reportJzodSchemaList as Report,
+//     reportMenuList as Report,
+//     reportReportList as Report,
+//   ],
+//   applicationVersionCrossEntityDefinition: [
+//     applicationVersionInitialMiroirVersionCrossEntityDefinitionApplication,
+//     applicationVersionInitialMiroirVersionCrossEntityDefinitionApplicationModelBranch,
+//     applicationVersionInitialMiroirVersionCrossEntityDefinitionApplicationVersion,
+//     applicationVersionInitialMiroirVersionCrossEntityDefinitionEntity,
+//     applicationVersionInitialMiroirVersionCrossEntityDefinitionEntityDefinition,
+//     applicationVersionInitialMiroirVersionCrossEntityDefinitionReport,
+//     // applicationVersionInitialMiroirVersionCrossEntityDefinitionStoreBasedConfiguration,
+//   ]
+// }
 
 
 // ################################################################################################

@@ -147,15 +147,15 @@ export function getBasicApplicationConfiguration(
     dataStoreType:
       adminConfigurationDeploymentLibrary.uuid == adminConfigurationDeploymentMiroir.uuid ? "miroir" : "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
     metaModel: defaultMiroirMetaModel,
-    adminApplicationDeploymentConfiguration: {
-      ...typedAdminConfigurationDeploymentLibrary,
-      uuid: adminConfigurationDeploymentUuid,
-      selfApplication: selfApplicationUuid,
-      configuration: getBasicStoreUnitConfiguration(applicationNameLC, {
-        emulatedServerType: "filesystem",
-        rootDirectory: `../miroir-core/src/assets`
-      }),
-    },
+    // adminApplicationDeploymentConfiguration: {
+    //   ...typedAdminConfigurationDeploymentLibrary,
+    //   uuid: adminConfigurationDeploymentUuid,
+    //   selfApplication: selfApplicationUuid,
+    //   configuration: getBasicStoreUnitConfiguration(applicationNameLC, {
+    //     emulatedServerType: "filesystem",
+    //     rootDirectory: `../miroir-core/src/assets`
+    //   }),
+    // },
     selfApplication: {
       ...selfApplicationLibrary,
       uuid: selfApplicationUuid,
@@ -163,11 +163,11 @@ export function getBasicApplicationConfiguration(
       defaultLabel: `The ${applicationName} selfApplication`,
       description: `The model and data of the ${applicationName} selfApplication`,
     },
-    selfApplicationDeploymentConfiguration: {
-      ...selfApplicationDeploymentLibrary,
-      selfApplication: selfApplicationUuid,
-      uuid: adminConfigurationDeploymentUuid,
-    },
+    // selfApplicationDeploymentConfiguration: {
+    //   ...selfApplicationDeploymentLibrary,
+    //   selfApplication: selfApplicationUuid,
+    //   uuid: adminConfigurationDeploymentUuid,
+    // },
     applicationModelBranch: {
       ...selfApplicationModelBranchLibraryMasterBranch,
       uuid: applicationModelBranchUuid,
@@ -175,10 +175,10 @@ export function getBasicApplicationConfiguration(
       headVersion: selfApplicationVersionUuid,
       description: `The master branch of the ${applicationName} SelfApplication`,
     } as any,
-    applicationStoreBasedConfiguration: {
-      ...selfApplicationStoreBasedConfigurationLibrary,
-      defaultLabel: `The reference configuration for the ${applicationName} selfApplication storage`,
-    } as any,
+    // applicationStoreBasedConfiguration: {
+    //   ...selfApplicationStoreBasedConfigurationLibrary,
+    //   defaultLabel: `The reference configuration for the ${applicationName} selfApplication storage`,
+    // } as any,
     applicationVersion: {
       ...selfApplicationVersionLibraryInitialVersion,
       uuid: selfApplicationVersionUuid,

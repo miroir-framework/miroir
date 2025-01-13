@@ -46,10 +46,10 @@ describe("deployment.unit.test", () => {
           "defaultLabel": "The Library selfApplication",
           "description": "The model and data of the Library selfApplication",
         },
-        adminApplicationDeploymentConfiguration: typedAdminConfigurationDeploymentLibrary,
-        selfApplicationDeploymentConfiguration: selfApplicationDeploymentLibrary,
+        // adminApplicationDeploymentConfiguration: typedAdminConfigurationDeploymentLibrary,
+        // selfApplicationDeploymentConfiguration: selfApplicationDeploymentLibrary,
         applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,
-        applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationLibrary,
+        // applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationLibrary,
         applicationVersion: selfApplicationVersionLibraryInitialVersion,
       }
 
@@ -91,26 +91,26 @@ describe("deployment.unit.test", () => {
         dataStoreType:
           adminConfigurationDeploymentLibrary.uuid == adminConfigurationDeploymentMiroir.uuid ? "miroir" : "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
         metaModel: defaultMiroirMetaModel,
-        adminApplicationDeploymentConfiguration: {
-          ...typedAdminConfigurationDeploymentLibrary,
-          uuid: adminApplicationDeploymentConfigurationUuid,
-          selfApplication: selfApplicationUuid,
-          configuration: {
-            ...typedAdminConfigurationDeploymentLibrary.configuration,
-            // admin: {
-            //   ...adminConfigurationDeploymentLibrary.configuration.admin,
-            //   directory:  `../miroir-core/src/assets/admin`
-            // },
-            model: {
-              ...adminConfigurationDeploymentLibrary.configuration.model,
-              directory: `../miroir-core/src/assets/${applicationNameLC}_model`,
-            } as StoreSectionConfiguration,
-            data: {
-              ...adminConfigurationDeploymentLibrary.configuration.model,
-              directory: `../miroir-core/src/assets/${applicationNameLC}_data`,
-            } as StoreSectionConfiguration,
-          },
-        },
+        // adminApplicationDeploymentConfiguration: {
+        //   ...typedAdminConfigurationDeploymentLibrary,
+        //   uuid: adminApplicationDeploymentConfigurationUuid,
+        //   selfApplication: selfApplicationUuid,
+        //   configuration: {
+        //     ...typedAdminConfigurationDeploymentLibrary.configuration,
+        //     // admin: {
+        //     //   ...adminConfigurationDeploymentLibrary.configuration.admin,
+        //     //   directory:  `../miroir-core/src/assets/admin`
+        //     // },
+        //     model: {
+        //       ...adminConfigurationDeploymentLibrary.configuration.model,
+        //       directory: `../miroir-core/src/assets/${applicationNameLC}_model`,
+        //     } as StoreSectionConfiguration,
+        //     data: {
+        //       ...adminConfigurationDeploymentLibrary.configuration.model,
+        //       directory: `../miroir-core/src/assets/${applicationNameLC}_data`,
+        //     } as StoreSectionConfiguration,
+        //   },
+        // },
         selfApplication: {
           ...selfApplicationLibrary,
           uuid: selfApplicationUuid,
@@ -118,11 +118,11 @@ describe("deployment.unit.test", () => {
           defaultLabel: `The ${applicationName} selfApplication`,
           description: `The model and data of the ${applicationName} selfApplication`,
         },
-        selfApplicationDeploymentConfiguration: {
-          ...selfApplicationDeploymentLibrary,
-          uuid: adminApplicationDeploymentConfigurationUuid,
-          selfApplication: selfApplicationUuid,
-        },
+        // selfApplicationDeploymentConfiguration: {
+        //   ...selfApplicationDeploymentLibrary,
+        //   uuid: adminApplicationDeploymentConfigurationUuid,
+        //   selfApplication: selfApplicationUuid,
+        // },
         applicationModelBranch: {
           ...selfApplicationModelBranchLibraryMasterBranch,
           uuid: applicationModelBranchUuid,
@@ -130,10 +130,10 @@ describe("deployment.unit.test", () => {
           headVersion: selfApplicationVersionUuid,
           description: `The master branch of the ${applicationName} SelfApplication`,
         } as any,
-        applicationStoreBasedConfiguration: {
-          ...selfApplicationStoreBasedConfigurationLibrary,
-          defaultLabel: `The reference configuration for the ${applicationName} selfApplication storage`,
-        } as any,
+        // applicationStoreBasedConfiguration: {
+        //   ...selfApplicationStoreBasedConfigurationLibrary,
+        //   defaultLabel: `The reference configuration for the ${applicationName} selfApplication storage`,
+        // } as any,
         applicationVersion: {
           ...selfApplicationVersionLibraryInitialVersion,
           uuid: selfApplicationVersionUuid,

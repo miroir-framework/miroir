@@ -313,11 +313,10 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
         params.metaModel,
         params.dataStoreType,
         params.selfApplication,
-        // params.applicationDeploymentConfiguration,
-        params.selfApplicationDeploymentConfiguration,
+        // params.selfApplicationDeploymentConfiguration,
         params.applicationModelBranch,
         params.applicationVersion,
-        params.applicationStoreBasedConfiguration
+        // params.applicationStoreBasedConfiguration
       );
       log.info(
         "ActionRunner.ts initApplicationDeploymentStore miroir model/initModel contents",
@@ -329,11 +328,10 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
         params.metaModel,
         "app",
         params.selfApplication,
-        // params.applicationDeploymentConfiguration,
-        params.selfApplicationDeploymentConfiguration,
+        // params.selfApplicationDeploymentConfiguration,
         params.applicationModelBranch,
         params.applicationVersion,
-        params.applicationStoreBasedConfiguration
+        // params.applicationStoreBasedConfiguration
       );
       log.info(
         "ActionRunner.ts initApplicationDeploymentStore app model/initModel contents",
@@ -347,21 +345,20 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     metaModel:MetaModel,
     dataStoreType: DataStoreApplicationType,
     selfApplication: SelfApplication,
-    // selfApplicationDeploymentConfiguration: EntityInstance,
-    selfApplicationDeploymentConfiguration: SelfApplicationDeploymentConfiguration,
+    // selfApplicationDeploymentConfiguration: SelfApplicationDeploymentConfiguration,
     selfApplicationModelBranch: EntityInstance,
     selfApplicationVersion: EntityInstance,
-    selfApplicationStoreBasedConfiguration: EntityInstance,
+    // selfApplicationStoreBasedConfiguration: EntityInstance,
   ):Promise<ActionReturnType>{
     await modelInitialize(
       metaModel,
       this,
       dataStoreType,
       selfApplication,
-      selfApplicationDeploymentConfiguration,
+      // selfApplicationDeploymentConfiguration,
       selfApplicationModelBranch,
       selfApplicationVersion,
-      selfApplicationStoreBasedConfiguration,
+      // selfApplicationStoreBasedConfiguration,
     );
     return Promise.resolve(ACTION_OK);
   }

@@ -857,9 +857,9 @@ describe.sequential(
                         : "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
                     metaModel: defaultMiroirMetaModel,
                     selfApplication: selfApplicationMiroir,
-                    selfApplicationDeploymentConfiguration: selfApplicationDeploymentLibrary,
+                    // selfApplicationDeploymentConfiguration: selfApplicationDeploymentLibrary,
                     applicationModelBranch: selfApplicationModelBranchMiroirMasterBranch,
-                    applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationMiroir,
+                    // applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationMiroir,
                     applicationVersion: selfApplicationVersionInitialMiroirVersion,
                   },
                 },
@@ -1116,9 +1116,9 @@ describe.sequential(
                         : "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
                     metaModel: defaultMiroirMetaModel,
                     selfApplication: selfApplicationMiroir,
-                    selfApplicationDeploymentConfiguration: selfApplicationDeploymentLibrary,
+                    // selfApplicationDeploymentConfiguration: selfApplicationDeploymentLibrary,
                     applicationModelBranch: selfApplicationModelBranchMiroirMasterBranch,
-                    applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationMiroir,
+                    // applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationMiroir,
                     applicationVersion: selfApplicationVersionInitialMiroirVersion,
                   },
                 },

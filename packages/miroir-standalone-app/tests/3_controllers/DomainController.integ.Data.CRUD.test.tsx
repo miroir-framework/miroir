@@ -234,15 +234,14 @@ const testActions: Record<string, TestActionParams> = {
         testDeploymentStorageConfiguration
       ),
       beforeEach: resetAndinitializeDeploymentCompositeAction(
-        typedAdminConfigurationDeploymentLibrary.configuration,
+        adminConfigurationDeploymentLibrary.uuid,
         {
           dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
           metaModel: defaultMiroirMetaModel,
           selfApplication: selfApplicationLibrary,
-          adminApplicationDeploymentConfiguration: typedAdminConfigurationDeploymentLibrary,
-          selfApplicationDeploymentConfiguration: selfApplicationDeploymentLibrary,
+          // selfApplicationDeploymentConfiguration: selfApplicationDeploymentLibrary,
           applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,
-          applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationLibrary,
+          // applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationLibrary,
           applicationVersion: selfApplicationVersionLibraryInitialVersion,
         },
         libraryEntitiesAndInstancesWithoutBook3,

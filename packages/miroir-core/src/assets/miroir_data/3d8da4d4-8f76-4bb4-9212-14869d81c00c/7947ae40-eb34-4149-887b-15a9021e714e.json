@@ -58,13 +58,6 @@
                     "relativePath": "selfApplication"
                   }
                 },
-                "selfApplicationDeploymentConfiguration": {
-                  "type": "schemaReference",
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "selfApplicationDeploymentConfiguration"
-                  }
-                },
                 "applicationModelBranch": {
                   "type": "schemaReference",
                   "definition": {
@@ -73,13 +66,6 @@
                   }
                 },
                 "applicationVersion": {
-                  "type": "schemaReference",
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "entityInstance"
-                  }
-                },
-                "applicationStoreBasedConfiguration": {
                   "type": "schemaReference",
                   "definition": {
                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",

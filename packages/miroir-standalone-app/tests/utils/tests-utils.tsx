@@ -200,25 +200,15 @@ export const DisplayLoadingInfo:FC<{reportUuid?:string}> = (props:{reportUuid?:s
 // ############################################################################################################
 // ############################################################################################################
 export function createDeploymentCompositeAction(
-  // miroirConfig: MiroirConfigClient,
   deploymentUuid: Uuid,
   deploymentConfiguration: StoreUnitConfiguration,
 ): CompositeAction {
-  // const deploymentConfiguration = miroirConfig.client.emulateServer
-  // ? miroirConfig.client.deploymentStorageConfig[deploymentUuid]
-  // : miroirConfig.client.serverConfig.storeSectionConfiguration[deploymentUuid];
-
-  // if (!deploymentConfiguration) {
-  //   throw new Error(`Configuration for deployment ${deploymentUuid} not found in ${JSON.stringify(miroirConfig, null, 2)}`);
-  // };
-
   log.info("createDeploymentCompositeAction deploymentConfiguration", deploymentUuid, deploymentConfiguration);
   return {
     actionType: "compositeAction",
     actionLabel: "beforeAll",
     actionName: "sequence",
     definition: [
-      // TODO: openStore first!
       {
         compositeActionType: "domainAction",
         compositeActionStepLabel: "openStore",
@@ -249,15 +239,16 @@ export function createDeploymentCompositeAction(
 
 // ################################################################################################
 export function resetAndinitializeDeploymentCompositeAction(
-  storeUnitConfiguration: StoreUnitConfiguration,
+  adminApplicationDeploymentUuid: Uuid,
   initApplicationParameters: InitApplicationParameters,
   appEntitesAndInstances: ApplicationEntitiesAndInstances
 ): CompositeAction {
   // const typedAdminConfigurationDeploymentLibrary:AdminApplicationDeploymentConfiguration = adminConfigurationDeploymentLibrary as any;
 
-  const deploymentUuid = initApplicationParameters.adminApplicationDeploymentConfiguration.uuid;
+  // const deploymentUuid = initApplicationParameters.selfApplicationDeploymentConfiguration.uuid;
+  const deploymentUuid = adminApplicationDeploymentUuid;
 
-  log.info("createDeploymentCompositeAction deploymentConfiguration", initApplicationParameters.adminApplicationDeploymentConfiguration.uuid, storeUnitConfiguration);
+  log.info("createDeploymentCompositeAction deploymentConfiguration", adminApplicationDeploymentUuid);
   return {
     actionType: "compositeAction",
     actionLabel: "beforeAll",

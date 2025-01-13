@@ -22,7 +22,9 @@ import {
   entityDefinitionAuthor,
   entityDefinitionBook,
   entityDefinitionPublisher,
+  entityEndpointVersion,
   entityEntity,
+  entityEntityDefinition,
   EntityInstance,
   entityMenu,
   entityPublisher,
@@ -234,15 +236,14 @@ beforeEach(
     await resetAndInitApplicationDeployment(domainController, selfApplicationDeploymentConfigurations);
     const initResult:ActionReturnType = await domainController.handleCompositeAction(
       resetAndinitializeDeploymentCompositeAction(
-        typedAdminConfigurationDeploymentLibrary.configuration,
+        adminConfigurationDeploymentLibrary.uuid,
         {
           dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
           metaModel: defaultMiroirMetaModel,
           selfApplication: selfApplicationLibrary,
-          adminApplicationDeploymentConfiguration: typedAdminConfigurationDeploymentLibrary,
-          selfApplicationDeploymentConfiguration: selfApplicationDeploymentLibrary,
+          // selfApplicationDeploymentConfiguration: selfApplicationDeploymentLibrary,
           applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,
-          applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationLibrary,
+          // applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationLibrary,
           applicationVersion: selfApplicationVersionLibraryInitialVersion,
         },
         libraryEntitiesAndInstances
@@ -404,16 +405,6 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
           conceptLevel: "MetaModel",
           description: "The Metaclass for entities.",
         },
-        "35c5608a-7678-4f07-a4ec-76fc5bc35424": {
-          uuid: "35c5608a-7678-4f07-a4ec-76fc5bc35424",
-          parentName: "Entity",
-          parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-          parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
-          name: "SelfApplicationDeploymentConfiguration",
-          selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          conceptLevel: "Model",
-          description: "An SelfApplication Deployment",
-        },
         "3d8da4d4-8f76-4bb4-9212-14869d81c00c": {
           uuid: "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
           parentName: "Entity",
@@ -454,16 +445,16 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
           conceptLevel: "Model",
           description: "Common Jzod Schema definitions, available to all Entity definitions",
         },
-        "7990c0c9-86c3-40a1-a121-036c91b55ed7": {
-          uuid: "7990c0c9-86c3-40a1-a121-036c91b55ed7",
-          parentName: "Entity",
-          parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-          parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
-          name: "StoreBasedConfiguration",
-          selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          conceptLevel: "Model",
-          description: "A configuration of storage-related aspects of a Model.",
-        },
+        // "7990c0c9-86c3-40a1-a121-036c91b55ed7": {
+        //   uuid: "7990c0c9-86c3-40a1-a121-036c91b55ed7",
+        //   parentName: "Entity",
+        //   parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+        //   parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
+        //   name: "StoreBasedConfiguration",
+        //   selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+        //   conceptLevel: "Model",
+        //   description: "A configuration of storage-related aspects of a Model.",
+        // },
         "a659d350-dd97-4da9-91de-524fa01745dc": {
           uuid: "a659d350-dd97-4da9-91de-524fa01745dc",
           parentName: "Entity",
@@ -543,10 +534,6 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
                 applicationSection: applicationSection,
                 parentName: entityEntity.name,
                 parentUuid: entityEntity.uuid,
-                // parentUuid: {
-                //   transformerType: "constantUuid",
-                //   constantUuidValue: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                // },
               },
             },
           },
@@ -712,7 +699,8 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
                 parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                 filter: {
                   attributeName: "name",
-                  value: "or",
+                  // value: "or",
+                  value: "en",
                 },
               },
             },
@@ -728,7 +716,10 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
         ),
       undefined, // name to give to result
       "object",
-      [entityReport, entityStoreBasedConfiguration].sort((a, b) => a.name.localeCompare(b.name))
+      // [entityReport, entityStoreBasedConfiguration].sort((a, b) => a.name.localeCompare(b.name))
+      [entityEndpointVersion, entityEntity, entityEntityDefinition, entityMenu].sort((a, b) =>
+        a.name.localeCompare(b.name)
+      )
     );
   });
   

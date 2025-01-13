@@ -180,13 +180,16 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
           initApplicationParameters.metaModel,
           initApplicationParameters.dataStoreType,
           initApplicationParameters.selfApplication,
-          // initApplicationParameters.adminApplicationDeploymentConfiguration, // TODO: should be selfApplicationDeploymentConfiguration?
-          initApplicationParameters.selfApplicationDeploymentConfiguration,
+          // initApplicationParameters.selfApplicationDeploymentConfiguration,
           initApplicationParameters.applicationModelBranch,
           initApplicationParameters.applicationVersion,
-          initApplicationParameters.applicationStoreBasedConfiguration
+          // initApplicationParameters.applicationStoreBasedConfiguration
         );
-        console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ deployModule initApplication',initApplicationParameters.dataStoreType,"END");
+        console.log(
+          "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ deployModule initApplication",
+          initApplicationParameters.dataStoreType,
+          "END"
+        );
       } catch (error) {
         console.error('could not initApplication for',initApplicationParameters.dataStoreType,"datastore, can not go further!");
         throw(error);

@@ -98,13 +98,13 @@ export function selectCurrentDeploymentModel(
           ? Object.values(domainState[deploymentUuid][deploymentUuid == adminConfigurationDeploymentMiroir.uuid?"data":"model"][entityReport.uuid]) as Report[]
           : []
         ),
-        configuration: (
-          domainState[deploymentUuid] &&
-          domainState[deploymentUuid][deploymentUuid == adminConfigurationDeploymentMiroir.uuid?"data":"model"] &&
-          domainState[deploymentUuid][deploymentUuid == adminConfigurationDeploymentMiroir.uuid?"data":"model"][entityStoreBasedConfiguration.uuid]
-          ? Object.values(domainState[deploymentUuid][deploymentUuid == adminConfigurationDeploymentMiroir.uuid?"data":"model"][entityStoreBasedConfiguration.uuid]) as StoreBasedConfiguration[]
-          : []
-        ),
+        // configuration: (
+        //   domainState[deploymentUuid] &&
+        //   domainState[deploymentUuid][deploymentUuid == adminConfigurationDeploymentMiroir.uuid?"data":"model"] &&
+        //   domainState[deploymentUuid][deploymentUuid == adminConfigurationDeploymentMiroir.uuid?"data":"model"][entityStoreBasedConfiguration.uuid]
+        //   ? Object.values(domainState[deploymentUuid][deploymentUuid == adminConfigurationDeploymentMiroir.uuid?"data":"model"][entityStoreBasedConfiguration.uuid]) as StoreBasedConfiguration[]
+        //   : []
+        // ),
         applicationVersions: (
           domainState[deploymentUuid] &&
           domainState[deploymentUuid][deploymentUuid == adminConfigurationDeploymentMiroir.uuid?"data":"model"] &&

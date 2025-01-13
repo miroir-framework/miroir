@@ -162,12 +162,9 @@ export interface InitApplicationParameters {
   metaModel:MetaModel,
   dataStoreType: DataStoreType,
   selfApplication: SelfApplication,
-  // adminApplicationDeploymentConfiguration: SelfApplicationDeploymentConfiguration,
-  adminApplicationDeploymentConfiguration: AdminApplicationDeploymentConfiguration,
-  selfApplicationDeploymentConfiguration: SelfApplicationDeploymentConfiguration,
   applicationModelBranch: EntityInstance,
   applicationVersion: EntityInstance,
-  applicationStoreBasedConfiguration: EntityInstance,
+  // applicationStoreBasedConfiguration: EntityInstance,
 }
 
 // ###############################################################################################################
@@ -184,11 +181,9 @@ export interface PersistenceStoreControllerInterface
     metaModel: MetaModel,
     dataStoreType: DataStoreApplicationType,
     selfApplication: SelfApplication,
-    selfApplicationDeploymentConfiguration: SelfApplicationDeploymentConfiguration,
-    // adminApplicationDeploymentConfiguration: AdminApplicationDeploymentConfiguration,
     applicationModelBranch: EntityInstance,
     applicationVersion: EntityInstance,
-    applicationStoreBasedConfiguration: EntityInstance
+    // applicationStoreBasedConfiguration: EntityInstance
   ): Promise<ActionReturnType>;
 
   createModelStorageSpaceForInstancesOfEntity(

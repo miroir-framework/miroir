@@ -111,9 +111,9 @@ export async function resetAndInitApplicationDeployment(
         metaModel: defaultMiroirMetaModel,
         // TODO: this is wrong, selfApplication, selfApplication version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
         selfApplication: selfApplicationMiroir,
-        selfApplicationDeploymentConfiguration: selfAdminConfigurationDeployment,
+        // selfApplicationDeploymentConfiguration: selfAdminConfigurationDeployment,
         applicationModelBranch: selfApplicationModelBranchMiroirMasterBranch,
-        applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationMiroir,
+        // applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationMiroir,
         applicationVersion: selfApplicationVersionInitialMiroirVersion,
       },
     }, defaultMiroirMetaModel);
@@ -1594,7 +1594,8 @@ export class DomainController implements DomainControllerInterface {
               parentUuid: entitySelfApplicationVersion?.uuid,
               description: "TODO: no description yet",
               name: "TODO: No label was given to this version.",
-              previousVersion: currentModel?.configuration[0]?.definition?.currentApplicationVersion,
+              // previousVersion: currentModel?.configuration[0]?.definition?.currentApplicationVersion,
+              previousVersion: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", // TODO: how to get the previous version? The current version shall be found somewhere in the schema
               branch: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", // TODO: this is wrong, selfApplication, selfApplication version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
               selfApplication: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", // TODO: this is wrong, selfApplication, selfApplication version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
             };

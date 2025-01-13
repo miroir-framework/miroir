@@ -678,16 +678,16 @@ export function getMiroirFundamentalJzodSchema(
                 },
               },
             },
-            configuration: {
-              type: "array",
-              definition: {
-                type: "schemaReference",
-                definition: {
-                  absolutePath: miroirFundamentalJzodSchemaUuid,
-                  relativePath: "storeBasedConfiguration",
-                },
-              },
-            },
+            // configuration: {
+            //   type: "array",
+            //   definition: {
+            //     type: "schemaReference",
+            //     definition: {
+            //       absolutePath: miroirFundamentalJzodSchemaUuid,
+            //       relativePath: "storeBasedConfiguration",
+            //     },
+            //   },
+            // },
             entities: {
               type: "array",
               definition: {

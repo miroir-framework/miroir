@@ -9,6 +9,7 @@ import { z } from "zod";
 import {
   adminConfigurationDeploymentMiroir,
   SelfApplicationDeploymentConfiguration,
+  selfApplicationDeploymentConfiguration,
   ApplicationSection,
   applicationSection,
   DeploymentEntityState,
@@ -31,7 +32,6 @@ import {
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunner,
   SyncQueryRunnerParams,
-  selfApplicationDeploymentConfiguration
 } from "miroir-core";
 
 import { Button } from "@mui/material";
@@ -213,23 +213,28 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
   const currentModel: MetaModel = useCurrentModel(props.deploymentUuid)
 
-  const displayedDeploymentDefinition: SelfApplicationDeploymentConfiguration | undefined = deployments.find(
-    (d) => d.uuid == props.deploymentUuid
-  );
-  log.info("ReportSectionListDisplay displayedDeploymentDefinition", displayedDeploymentDefinition);
+  // const displayedDeploymentDefinition: SelfApplicationDeploymentConfiguration | undefined = deployments.find(
+  //   (d) => d.uuid == props.deploymentUuid
+  // );
+  // log.info("ReportSectionListDisplay displayedDeploymentDefinition", displayedDeploymentDefinition);
+  log.info("ReportSectionListDisplay props.deploymentUuid", props.deploymentUuid);
 
   const domainController: DomainControllerInterface = useDomainControllerService();
 
   const { availableReports, entities, entityDefinitions } = useMemo(() => {
-    return displayedDeploymentDefinition &&
+    // return displayedDeploymentDefinition &&
+    return props.deploymentUuid &&
       context.deploymentUuidToReportsEntitiesDefinitionsMapping &&
-      context.deploymentUuidToReportsEntitiesDefinitionsMapping[displayedDeploymentDefinition?.uuid]
-      ? context.deploymentUuidToReportsEntitiesDefinitionsMapping[displayedDeploymentDefinition?.uuid][
+      context.deploymentUuidToReportsEntitiesDefinitionsMapping[props.deploymentUuid]
+      ? context.deploymentUuidToReportsEntitiesDefinitionsMapping[props.deploymentUuid][
+      // context.deploymentUuidToReportsEntitiesDefinitionsMapping[displayedDeploymentDefinition?.uuid]
+      // ? context.deploymentUuidToReportsEntitiesDefinitionsMapping[displayedDeploymentDefinition?.uuid][
         props.chosenApplicationSection
         ]
       : { availableReports: [], entities: [], entityDefinitions: [] };
   }, [
-    displayedDeploymentDefinition,
+    props.deploymentUuid,
+    // displayedDeploymentDefinition,
     context.deploymentUuidToReportsEntitiesDefinitionsMapping,
     props.chosenApplicationSection,
   ]);

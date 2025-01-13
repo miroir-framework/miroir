@@ -5721,16 +5721,6 @@ export const miroirFundamentalJzodSchema = {
               }
             }
           },
-          "configuration": {
-            "type": "array",
-            "definition": {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "storeBasedConfiguration"
-              }
-            }
-          },
           "entities": {
             "type": "array",
             "definition": {
@@ -8583,13 +8573,6 @@ export const miroirFundamentalJzodSchema = {
               "relativePath": "selfApplication"
             }
           },
-          "selfApplicationDeploymentConfiguration": {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "selfApplicationDeploymentConfiguration"
-            }
-          },
           "applicationModelBranch": {
             "type": "schemaReference",
             "definition": {
@@ -8598,13 +8581,6 @@ export const miroirFundamentalJzodSchema = {
             }
           },
           "applicationVersion": {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "entityInstance"
-            }
-          },
-          "applicationStoreBasedConfiguration": {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
@@ -8716,13 +8692,6 @@ export const miroirFundamentalJzodSchema = {
                   "relativePath": "selfApplication"
                 }
               },
-              "selfApplicationDeploymentConfiguration": {
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "selfApplicationDeploymentConfiguration"
-                }
-              },
               "applicationModelBranch": {
                 "type": "schemaReference",
                 "definition": {
@@ -8731,13 +8700,6 @@ export const miroirFundamentalJzodSchema = {
                 }
               },
               "applicationVersion": {
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "entityInstance"
-                }
-              },
-              "applicationStoreBasedConfiguration": {
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
@@ -9082,13 +9044,6 @@ export const miroirFundamentalJzodSchema = {
                       "relativePath": "selfApplication"
                     }
                   },
-                  "selfApplicationDeploymentConfiguration": {
-                    "type": "schemaReference",
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "selfApplicationDeploymentConfiguration"
-                    }
-                  },
                   "applicationModelBranch": {
                     "type": "schemaReference",
                     "definition": {
@@ -9097,13 +9052,6 @@ export const miroirFundamentalJzodSchema = {
                     }
                   },
                   "applicationVersion": {
-                    "type": "schemaReference",
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "entityInstance"
-                    }
-                  },
-                  "applicationStoreBasedConfiguration": {
                     "type": "schemaReference",
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
@@ -21116,27 +21064,6 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "configuration": {
-                "type": "union",
-                "definition": [
-                  {
-                    "type": "array",
-                    "definition": {
-                      "type": "schemaReference",
-                      "definition": {
-                        "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeBasedConfiguration"
-                      },
-                      "context": {}
-                    }
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "carryOnObject"
-                    }
-                  }
-                ]
-              },
               "entities": {
                 "type": "union",
                 "definition": [
@@ -22384,13 +22311,6 @@ export const miroirFundamentalJzodSchema = {
                         },
                         "context": {}
                       },
-                      "selfApplicationDeploymentConfiguration": {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selfApplicationDeploymentConfiguration"
-                        },
-                        "context": {}
-                      },
                       "applicationModelBranch": {
                         "type": "schemaReference",
                         "definition": {
@@ -22399,13 +22319,6 @@ export const miroirFundamentalJzodSchema = {
                         "context": {}
                       },
                       "applicationVersion": {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance"
-                        },
-                        "context": {}
-                      },
-                      "applicationStoreBasedConfiguration": {
                         "type": "schemaReference",
                         "definition": {
                           "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance"
