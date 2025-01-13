@@ -69,7 +69,7 @@ import { cleanLevel, packageName } from '../3_controllers/constants.js';
 import { ApplicationEntitiesAndInstances } from '../utils/tests-utils-testOnLibrary.js';
 import {
   chainVitestSteps,
-  createLibraryDeploymentDEFUNCT,
+  createDeploymentCompositeAction,
   createMiroirDeploymentGetPersistenceStoreController,
   deleteAndCloseApplicationDeployments,
   deploymentConfigurations,
@@ -209,7 +209,12 @@ beforeAll(
     } else {
       throw new Error("beforeAll failed initialization!");
     }
-    await createLibraryDeploymentDEFUNCT(miroirConfig, domainController, libraryDeploymentStorageConfiguration);
+    const createLibraryDeploymentAction = createDeploymentCompositeAction(adminConfigurationDeploymentLibrary.uuid, libraryDeploymentStorageConfiguration);
+    const result = await domainController.handleCompositeAction(createLibraryDeploymentAction, defaultMiroirMetaModel);
+
+    if (result.status !== "ok") {
+      throw new Error("beforeAll failed createLibraryDeploymentAction!");
+    }
 
     const tmplocalAppPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(
       adminConfigurationDeploymentLibrary.uuid

@@ -126,8 +126,6 @@ const libraryDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConf
 console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 
 let domainController: DomainControllerInterface;
-let localAppPersistenceStoreController: PersistenceStoreControllerInterface;
-let localMiroirPersistenceStoreController: PersistenceStoreControllerInterface;
 let localCache: LocalCache;
 let miroirContext: MiroirContextInterface;
 let persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface;
@@ -147,7 +145,6 @@ beforeAll(
     miroirContext = localmiroirContext;
 
     const createMiroirDeploymentCompositeAction = createDeploymentCompositeAction(
-      // miroirConfig,
       adminConfigurationDeploymentMiroir.uuid,
       miroirtDeploymentStorageConfiguration,
     );
@@ -159,11 +156,6 @@ beforeAll(
     const action = createDeploymentCompositeAction(adminConfigurationDeploymentLibrary.uuid, libraryDeploymentStorageConfiguration);
     const result = await domainController.handleCompositeAction(action, defaultMiroirMetaModel);
   
-    // await createLibraryDeploymentDEFUNCT(
-    //   miroirConfig,
-    //   domainController,
-    // )
-
     return Promise.resolve();
   }
 )

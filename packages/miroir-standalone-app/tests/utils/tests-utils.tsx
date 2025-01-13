@@ -452,17 +452,6 @@ export async function addEntitiesAndInstances(
 }
 
 // ################################################################################################
-export async function createLibraryDeploymentDEFUNCT(
-  miroirConfig: MiroirConfigClient,
-  domainController: DomainControllerInterface,
-  deploymentConfiguration: StoreUnitConfiguration,
-) {
-
-  const action = createDeploymentCompositeAction(adminConfigurationDeploymentLibrary.uuid, deploymentConfiguration);
-  const result = await domainController.handleCompositeAction(action, defaultMiroirMetaModel);
-}
-
-// ################################################################################################
 // ################################################################################################
 export interface MiroirIntegrationTestEnvironment {
   localMiroirPersistenceStoreController: PersistenceStoreControllerInterface,

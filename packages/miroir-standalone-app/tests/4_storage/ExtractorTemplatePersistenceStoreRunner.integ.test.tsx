@@ -17,6 +17,7 @@ import {
   book6,
   ConfigurationService,
   defaultLevels,
+  defaultMiroirMetaModel,
   DomainControllerInterface,
   entityAuthor,
   entityBook,
@@ -59,7 +60,7 @@ import { miroirAppStartup } from '../../src/startup.js';
 import {
   addEntitiesAndInstances,
   chainVitestSteps,
-  createLibraryDeploymentDEFUNCT,
+  createDeploymentCompositeAction,
   createMiroirDeploymentGetPersistenceStoreController,
   deploymentConfigurations,
   loadTestConfigFiles,
@@ -165,7 +166,13 @@ beforeAll(
     } else {
       throw new Error("beforeAll failed initialization!");
     }
-    await createLibraryDeploymentDEFUNCT(miroirConfig, domainController, libraryDeploymentStorageConfiguration);
+
+    const createLibraryDeploymentAction = createDeploymentCompositeAction(adminConfigurationDeploymentLibrary.uuid, libraryDeploymentStorageConfiguration);
+    const result = await domainController.handleCompositeAction(createLibraryDeploymentAction, defaultMiroirMetaModel);
+
+    if (result.status !== "ok") {
+      throw new Error("beforeAll failed createLibraryDeploymentAction!");
+    }
 
     const tmplocalAppPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(
       adminConfigurationDeploymentLibrary.uuid
