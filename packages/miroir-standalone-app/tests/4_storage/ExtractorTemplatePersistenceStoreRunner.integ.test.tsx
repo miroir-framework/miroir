@@ -43,6 +43,7 @@ import {
   publisher3,
   Report,
   reportBookList,
+  resetAndInitApplicationDeployment,
   StoreUnitConfiguration
 } from "miroir-core";
 
@@ -52,6 +53,7 @@ import { LocalCache } from 'miroir-localcache-redux';
 import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
 import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
 import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
+import { cleanLevel, packageName } from '../../src/constants.js';
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { miroirAppStartup } from '../../src/startup.js';
 import {
@@ -61,12 +63,10 @@ import {
   createMiroirDeploymentGetPersistenceStoreController,
   deploymentConfigurations,
   loadTestConfigFiles,
-  miroirBeforeEach_resetAndInitApplicationDeployments,
   resetApplicationDeployments,
   selfApplicationDeploymentConfigurations,
   setupMiroirTest
 } from "../utils/tests-utils.js";
-import { cleanLevel, packageName } from '../../src/constants.js';
 
 let domainController: DomainControllerInterface;
 let localCache: LocalCache;
@@ -182,11 +182,8 @@ beforeAll(
 // ################################################################################################
 beforeEach(
   async  () => {
-    await miroirBeforeEach_resetAndInitApplicationDeployments(
-      domainController,
-      // deploymentConfigurations,
-      selfApplicationDeploymentConfigurations,
-    );
+    await resetAndInitApplicationDeployment(domainController, selfApplicationDeploymentConfigurations);
+    document.body.innerHTML = '';
     await addEntitiesAndInstances(
       localAppPersistenceStoreController,
       domainController,

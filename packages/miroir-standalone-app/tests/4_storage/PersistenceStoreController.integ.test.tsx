@@ -35,7 +35,7 @@ import {
   entityReport,
   ignorePostgresExtraAttributesOnList,
   miroirCoreStartup,
-  resetAndInitApplicationDeploymentNew,
+  resetAndInitApplicationDeployment,
   selfApplicationDeploymentLibrary,
   selfApplicationDeploymentMiroir
 } from "miroir-core";
@@ -46,21 +46,17 @@ import { LocalCache } from 'miroir-localcache-redux';
 import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
 import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
 import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
+import { cleanLevel, packageName } from '../../src/constants.js';
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
+import { miroirAppStartup } from '../../src/startup.js';
 import {
-  createDeploymentGetPersistenceStoreController,
   createLibraryDeploymentDEFUNCT,
   createMiroirDeploymentGetPersistenceStoreController,
   deleteAndCloseApplicationDeployments,
-  deploymentConfigurations,
   loadTestConfigFiles,
-  miroirBeforeEach_resetAndInitApplicationDeployments,
   selfApplicationDeploymentConfigurations,
   setupMiroirTest
 } from "../utils/tests-utils.js";
-import { packageName, cleanLevel } from '../../src/constants.js';
-import { miroirAppStartup } from '../../src/startup.js';
-import { ErrorMessage } from 'formik';
 
 let domainController: DomainControllerInterface;
 let localCache: LocalCache;
@@ -244,8 +240,7 @@ beforeAll(
 // ################################################################################################
 beforeEach(
   async  () => {
-    await miroirBeforeEach_resetAndInitApplicationDeployments(domainController, selfApplicationDeploymentConfigurations);
-    // await resetAndInitApplicationDeploymentNew(domainController, deploymentConfigurations);
+    await resetAndInitApplicationDeployment(domainController, selfApplicationDeploymentConfigurations);
   }
 )
 

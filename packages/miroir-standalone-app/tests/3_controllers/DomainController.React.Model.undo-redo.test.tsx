@@ -23,7 +23,8 @@ import {
   entityDefinitionBook,
   entityEntity,
   entityReport,
-  miroirCoreStartup
+  miroirCoreStartup,
+  resetAndInitApplicationDeployment
 } from "miroir-core";
 
 import { TestUtilsTableComponent } from "../utils/TestUtilsTableComponent.js";
@@ -33,7 +34,6 @@ import {
   deleteAndCloseApplicationDeployments,
   deploymentConfigurations,
   loadTestConfigFiles,
-  miroirBeforeEach_resetAndInitApplicationDeployments,
   renderWithProviders,
   resetApplicationDeployments,
   selfApplicationDeploymentConfigurations,
@@ -137,11 +137,10 @@ beforeAll(
 
 beforeEach(
   async () => {
-    await miroirBeforeEach_resetAndInitApplicationDeployments(
-      domainController,
-      // deploymentConfigurations,
+    await resetAndInitApplicationDeployment(domainController,
       selfApplicationDeploymentConfigurations,
     );
+    document.body.innerHTML = '';
   }
 )
 

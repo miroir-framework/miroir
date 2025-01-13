@@ -673,7 +673,6 @@ export {
 } from "./3_controllers/ConfigurationService.js";
 export {
   resetAndInitApplicationDeployment,
-  resetAndInitApplicationDeploymentNew,
   DeploymentConfiguration,
   DomainController,
 } from "./3_controllers/DomainController.js";

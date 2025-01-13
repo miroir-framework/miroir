@@ -2,7 +2,6 @@ import { describe, expect } from 'vitest';
 
 // import { miroirFileSystemStoreSectionStartup } from "../dist/bundle";
 import {
-  ActionReturnType,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
   author1,
@@ -15,7 +14,6 @@ import {
   book5,
   book6,
   ConfigurationService,
-  defaultLevels,
   defaultMiroirMetaModel,
   DomainControllerInterface,
   entityAuthor,
@@ -36,22 +34,21 @@ import {
   publisher1,
   publisher2,
   publisher3,
+  resetAndInitApplicationDeployment,
   SelfApplicationDeploymentConfiguration,
   selfApplicationDeploymentLibrary,
   selfApplicationDeploymentMiroir,
   selfApplicationLibrary,
-  selfApplicationMiroir,
   selfApplicationModelBranchLibraryMasterBranch,
-  selfApplicationModelBranchMiroirMasterBranch,
   selfApplicationStoreBasedConfigurationLibrary,
-  selfApplicationStoreBasedConfigurationMiroir,
-  selfApplicationVersionInitialMiroirVersion,
   selfApplicationVersionLibraryInitialVersion,
   StoreUnitConfiguration,
   TestSuiteResult
 } from "miroir-core";
 
 
+import { AdminApplicationDeploymentConfiguration } from 'miroir-core/src/0_interfaces/1_core/StorageConfiguration.js';
+import { LoggerOptions } from 'miroir-core/src/0_interfaces/4-services/LoggerInterface.js';
 import { packageName } from 'miroir-core/src/constants.js';
 import { LocalCache } from 'miroir-localcache-redux';
 import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
@@ -60,19 +57,15 @@ import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { miroirAppStartup } from '../../src/startup.js';
 import {
-  chainVitestSteps,
   createDeploymentCompositeAction,
   deleteAndCloseApplicationDeployments,
   loadTestConfigFiles,
-  miroirBeforeEach_resetAndInitApplicationDeployments,
   resetAndinitializeDeploymentCompositeAction,
   runTestOrTestSuite,
   setupMiroirTest,
   TestActionParams
 } from "../utils/tests-utils.js";
 import { cleanLevel } from './constants.js';
-import { LoggerOptions } from 'miroir-core/src/0_interfaces/4-services/LoggerInterface.js';
-import { AdminApplicationDeploymentConfiguration } from 'miroir-core/src/0_interfaces/1_core/StorageConfiguration.js';
 
 let domainController: DomainControllerInterface;
 let localCache: LocalCache;
@@ -183,17 +176,10 @@ beforeAll(
 // ################################################################################################
 beforeEach(
   async  () => {
-    await miroirBeforeEach_resetAndInitApplicationDeployments(
-      domainController,
-      [
-        selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration
-        // {
-        //   // adminConfigurationDeployment: typedAdminConfigurationDeploymentMiroir,
-        //   adminConfigurationDeployment: adminConfigurationDeploymentMiroir,
-        //   selfApplicationDeployment: selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
-        // },
-      ],
-    );
+    await resetAndInitApplicationDeployment(domainController, [
+      selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
+    ]);
+    document.body.innerHTML = '';
   }
 )
 

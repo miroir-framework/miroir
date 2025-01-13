@@ -132,15 +132,6 @@ export async function resetAndInitApplicationDeployment(
   }
   return Promise.resolve(ACTION_OK);
 }
-export async function resetAndInitApplicationDeploymentNew(
-  domainController: DomainControllerInterface,
-  // deployments: DeploymentConfiguration[], // TODO: use Deployment Entity Type!
-  deployments: SelfApplicationDeploymentConfiguration[], // TODO: use Deployment Entity Type!
-) {
-  // const mappedDeployments = deployments.map(d=>d.adminConfigurationDeployment);
-  // const mappedDeployments = deployments.map(d=>d.selfApplicationDeployment);
-  return resetAndInitApplicationDeployment(domainController, deployments);
-}
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################

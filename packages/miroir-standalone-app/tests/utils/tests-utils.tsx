@@ -43,7 +43,6 @@ import {
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
   defaultMiroirMetaModel,
-  resetAndInitApplicationDeploymentNew,
   selfApplicationDeploymentLibrary,
   selfApplicationDeploymentMiroir
 } from "miroir-core";
@@ -250,33 +249,13 @@ export function createDeploymentCompositeAction(
 
 // ################################################################################################
 export function resetAndinitializeDeploymentCompositeAction(
-  // miroirConfig: MiroirConfigClient,
-  // deploymentUuid: Uuid,
   storeUnitConfiguration: StoreUnitConfiguration,
   initApplicationParameters: InitApplicationParameters,
   appEntitesAndInstances: ApplicationEntitiesAndInstances
 ): CompositeAction {
-  // const deploymentConfiguration = miroirConfig.client.emulateServer
-  // ? miroirConfig.client.deploymentStorageConfig[deploymentUuid]
-  // : miroirConfig.client.serverConfig.storeSectionConfiguration[deploymentUuid];
-
-  // if (!deploymentConfiguration) {
-  //   throw new Error(`Configuration for deployment ${deploymentUuid} not found in ${JSON.stringify(miroirConfig, null, 2)}`);
-  // };
-  const typedAdminConfigurationDeploymentLibrary:AdminApplicationDeploymentConfiguration = adminConfigurationDeploymentLibrary as any;
+  // const typedAdminConfigurationDeploymentLibrary:AdminApplicationDeploymentConfiguration = adminConfigurationDeploymentLibrary as any;
 
   const deploymentUuid = initApplicationParameters.adminApplicationDeploymentConfiguration.uuid;
-  // const initApplicationParametersForlibrary: InitApplicationParameters = {
-  //   dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
-  //   metaModel: defaultMiroirMetaModel,
-  //   selfApplication: selfApplicationLibrary,
-  //   adminApplicationDeploymentConfiguration: typedAdminConfigurationDeploymentLibrary,
-  //   selfApplicationDeploymentConfiguration: selfApplicationDeploymentLibrary,
-  //   applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,
-  //   applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationLibrary,
-  //   applicationVersion: selfApplicationVersionLibraryInitialVersion,
-  // }
-
 
   log.info("createDeploymentCompositeAction deploymentConfiguration", initApplicationParameters.adminApplicationDeploymentConfiguration.uuid, storeUnitConfiguration);
   return {
@@ -284,31 +263,6 @@ export function resetAndinitializeDeploymentCompositeAction(
     actionLabel: "beforeAll",
     actionName: "sequence",
     definition: [
-      // TODO: openStore first!
-      // {
-      //   compositeActionType: "domainAction",
-      //   compositeActionStepLabel: "openStore",
-      //   domainAction: {
-      //     actionType: "storeManagementAction",
-      //     actionName: "openStore",
-      //     endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-      //     deploymentUuid: deploymentUuid,
-      //     configuration: {
-      //       [deploymentUuid]: storeUnitConfiguration,
-      //     },
-      //   },
-      // },
-      // {
-      //   compositeActionType: "domainAction",
-      //   compositeActionStepLabel: "createStore",
-      //   domainAction: {
-      //     actionType: "storeManagementAction",
-      //     actionName: "createStore",
-      //     endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-      //     deploymentUuid: deploymentUuid,
-      //     configuration: storeUnitConfiguration,
-      //   },
-      // },
       {
         compositeActionType: "domainAction",
         compositeActionStepLabel: "resetApplicationStore",
@@ -380,18 +334,6 @@ export function resetAndinitializeDeploymentCompositeAction(
           }),
         },
       },
-
-      // {
-      //   compositeActionType: "domainAction",
-      //   compositeActionStepLabel: "initializeStore",
-      //   domainAction: {
-      //     actionType: "storeManagementAction",
-      //     actionName: "initializeStore",
-      //     endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-      //     deploymentUuid: deploymentUuid,
-      //     configuration: storeUnitConfiguration,
-      //   },
-      // }
     ],
   };
 }
@@ -703,25 +645,6 @@ export async function createMiroirDeploymentGetPersistenceStoreController(
   return Promise.resolve({localMiroirPersistenceStoreController, localAppPersistenceStoreController:undefined});
 }
 
-// ###############################################################################################
-export async function miroirBeforeEach_resetAndInitApplicationDeployments(
-  // miroirConfig: MiroirConfigClient,
-  domainController: DomainControllerInterface,
-  // deploymentConfigurations: DeploymentConfiguration[],
-  deployments: SelfApplicationDeploymentConfiguration[], // TODO: use Deployment Entity Type!
-):Promise<void> {
-  
-  log.info('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeEach_resetAndInitApplicationDeployments');
-    await resetAndInitApplicationDeploymentNew(domainController, deployments);
-    // console.trace("miroirBeforeEach_resetAndInitApplicationDeployments miroir model state", await localMiroirPersistenceStoreController.getModelState());
-    // console.trace("miroirBeforeEach_resetAndInitApplicationDeployments miroir data state", await localMiroirPersistenceStoreController.getDataState());
-    // console.trace("miroirBeforeEach_resetAndInitApplicationDeployments library app model state", await localAppPersistenceStoreController.getModelState());
-    // console.trace("miroirBeforeEach_resetAndInitApplicationDeployments library app data state", await localAppPersistenceStoreController.getDataState());
-  log.info('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done miroirBeforeEach_resetAndInitApplicationDeployments');
-  document.body.innerHTML = '';
-
-  return Promise.resolve();
-}
 
 // #################################################################################################################
 export async function resetApplicationDeployments(

@@ -42,6 +42,7 @@ import {
   modelEndpointV1,
   persistenceEndpointVersionV1,
   queryEndpointVersionV1,
+  resetAndInitApplicationDeployment,
   resolveReferencesForJzodSchemaAndValueObject,
   storeManagementEndpoint,
   testEndpointVersionV1,
@@ -52,9 +53,7 @@ import {
 
 import {
   MiroirIntegrationTestEnvironment,
-  deploymentConfigurations,
   loadTestConfigFiles,
-  miroirBeforeEach_resetAndInitApplicationDeployments,
   miroirIntegrationTestEnvironmentFactory,
   renderWithProvidersWithContextProvider,
   selfApplicationDeploymentConfigurations
@@ -125,14 +124,8 @@ beforeAll(
 
 beforeEach(
   async () => {
-    await miroirBeforeEach_resetAndInitApplicationDeployments(
-      // miroirConfig,
-      testEnvironment.domainController, // {} as DomainController,
-      selfApplicationDeploymentConfigurations,
-      // deploymentConfigurations, 
-      // testEnvironment.localMiroirPersistenceStoreController,
-      // testEnvironment.localAppPersistenceStoreController
-    );
+    await resetAndInitApplicationDeployment(testEnvironment.domainController, selfApplicationDeploymentConfigurations);
+    document.body.innerHTML = '';
   }
 )
 

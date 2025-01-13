@@ -32,6 +32,7 @@ import {
   publisher1,
   publisher2,
   publisher3,
+  resetAndInitApplicationDeployment,
   SelfApplicationDeploymentConfiguration,
   selfApplicationDeploymentLibrary,
   selfApplicationDeploymentMiroir,
@@ -48,7 +49,6 @@ import {
   deleteAndCloseApplicationDeployments,
   deploymentConfigurations,
   loadTestConfigFiles,
-  miroirBeforeEach_resetAndInitApplicationDeployments,
   resetAndinitializeDeploymentCompositeAction,
   runTestOrTestSuite,
   setupMiroirTest,
@@ -178,7 +178,6 @@ beforeAll(
     miroirContext = localmiroirContext;
 
     const createMiroirDeploymentCompositeAction = createDeploymentCompositeAction(
-      // miroirConfig,
       adminConfigurationDeploymentMiroir.uuid,
       miroirtDeploymentStorageConfiguration,
     );
@@ -198,16 +197,10 @@ beforeAll(
 // TODO: move it in TestCompositeAction.beforeEach
 beforeEach(
   async () => {
-    await miroirBeforeEach_resetAndInitApplicationDeployments(
-      domainController,
-      [
-        selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
-        // {
-        //   adminConfigurationDeployment: adminConfigurationDeploymentMiroir,
-        //   selfApplicationDeployment: selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
-        // },
-      ],
-    );
+    await resetAndInitApplicationDeployment(domainController, [
+      selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
+    ]);
+    document.body.innerHTML = '';
   }
 )
 
@@ -237,12 +230,10 @@ const testActions: Record<string, TestActionParams> = {
       testType: "testCompositeActionSuite",
       testLabel: "DomainController.integ.Data.CRUD",
       beforeAll: createDeploymentCompositeAction(
-        // miroirConfig,
         testApplicationDeploymentUuid,
         testDeploymentStorageConfiguration
       ),
       beforeEach: resetAndinitializeDeploymentCompositeAction(
-        // selfApplicationDeploymentLibrary.uuid,
         typedAdminConfigurationDeploymentLibrary.configuration,
         {
           dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment

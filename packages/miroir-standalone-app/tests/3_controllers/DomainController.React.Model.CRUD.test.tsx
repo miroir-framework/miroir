@@ -45,7 +45,7 @@ import {
   publisher1,
   publisher2,
   publisher3,
-  reportReportList,
+  resetAndInitApplicationDeployment,
   selfApplicationDeploymentLibrary,
   selfApplicationMiroir,
   selfApplicationModelBranchMiroirMasterBranch,
@@ -60,7 +60,6 @@ import {
   deleteAndCloseApplicationDeployments,
   deploymentConfigurations,
   loadTestConfigFiles,
-  miroirBeforeEach_resetAndInitApplicationDeployments,
   renderWithProviders,
   resetApplicationDeployments,
   selfApplicationDeploymentConfigurations,
@@ -164,11 +163,10 @@ beforeAll(
 
 beforeEach(
   async () => {
-    await miroirBeforeEach_resetAndInitApplicationDeployments(
-      domainController,
-      // deploymentConfigurations, 
+    await resetAndInitApplicationDeployment(domainController,
       selfApplicationDeploymentConfigurations,
     );
+    document.body.innerHTML = '';
   }
 )
 

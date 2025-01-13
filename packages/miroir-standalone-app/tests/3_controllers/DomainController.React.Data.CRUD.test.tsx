@@ -40,6 +40,7 @@ import {
   publisher1,
   publisher2,
   publisher3,
+  resetAndInitApplicationDeployment,
   selfApplicationDeploymentLibrary,
   selfApplicationMiroir,
   selfApplicationModelBranchMiroirMasterBranch,
@@ -54,7 +55,6 @@ import {
   deploymentConfigurations,
   DisplayLoadingInfo,
   loadTestConfigFiles,
-  miroirBeforeEach_resetAndInitApplicationDeployments,
   renderWithProviders,
   resetApplicationDeployments,
   selfApplicationDeploymentConfigurations,
@@ -170,11 +170,10 @@ beforeAll(
 
 beforeEach(
   async () => {
-    await miroirBeforeEach_resetAndInitApplicationDeployments(
-      domainController,
-      // deploymentConfigurations,
-      selfApplicationDeploymentConfigurations
+    await resetAndInitApplicationDeployment(domainController,
+      selfApplicationDeploymentConfigurations,
     );
+
     const libraryEntitesAndInstances = [
       {
         entity: entityAuthor as MetaEntity,
@@ -302,7 +301,7 @@ beforeEach(
       {},
       defaultMiroirMetaModel
     );
-
+    document.body.innerHTML = '';
   }
 )
 

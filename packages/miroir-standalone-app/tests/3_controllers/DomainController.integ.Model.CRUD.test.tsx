@@ -23,6 +23,7 @@ import {
   publisher1,
   publisher2,
   publisher3,
+  resetAndInitApplicationDeployment,
   SelfApplicationDeploymentConfiguration,
   selfApplicationDeploymentLibrary,
   selfApplicationDeploymentMiroir,
@@ -39,7 +40,6 @@ import {
   deleteAndCloseApplicationDeployments,
   deploymentConfigurations,
   loadTestConfigFiles,
-  miroirBeforeEach_resetAndInitApplicationDeployments,
   resetAndinitializeDeploymentCompositeAction,
   runTestOrTestSuite,
   setupMiroirTest,
@@ -58,7 +58,9 @@ import { LocalCache } from "miroir-localcache-redux";
 import { ConfigurationService, defaultMiroirMetaModel, Entity, entityEntity, JzodElement } from "miroir-core";
 import { packageName } from 'miroir-core/src/constants.js';
 import {
-  ApplicationEntitiesAndInstances
+  ApplicationEntitiesAndInstances,
+  testOnLibrary_deleteLibraryDeployment,
+  testOnLibrary_resetLibraryDeployment
 } from "../utils/tests-utils-testOnLibrary.js";
 // import { loglevelnext } from '../../src/loglevelnextImporter.js';
 import { AdminApplicationDeploymentConfiguration } from 'miroir-core/src/0_interfaces/1_core/StorageConfiguration.js';
@@ -171,7 +173,6 @@ beforeAll(
     miroirContext = localmiroirContext;
 
     const createMiroirDeploymentCompositeAction = createDeploymentCompositeAction(
-      // miroirConfig,
       adminConfigurationDeploymentMiroir.uuid,
       miroirtDeploymentStorageConfiguration,
     );
@@ -190,16 +191,10 @@ beforeAll(
 
 beforeEach(
   async () => {
-    await miroirBeforeEach_resetAndInitApplicationDeployments(
-      domainController,
-      [
-        selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
-        // {
-        //   adminConfigurationDeployment: adminConfigurationDeploymentMiroir,
-        //   selfApplicationDeployment: selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
-        // },
-      ],
-    );
+    await resetAndInitApplicationDeployment(domainController, [
+      selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
+    ]);
+    document.body.innerHTML = '';
   }
 )
 
@@ -222,9 +217,6 @@ afterAll(
 )
 
 
-// const entityDefinitionPublisherWithoutIcon = { ...entityDefinitionPublisher };
-// delete (entityDefinitionPublisherWithoutIcon as any).icon;
-
 const testActions: Record<string, TestActionParams> = {
   "DomainController.integ.Model.CRUD": {
     testActionType: "testCompositeActionSuite",
@@ -234,12 +226,10 @@ const testActions: Record<string, TestActionParams> = {
       testType: "testCompositeActionSuite",
       testLabel: "DomainController.integ.Model.CRUD",
       beforeAll: createDeploymentCompositeAction(
-        // miroirConfig,
         adminConfigurationDeploymentLibrary.uuid,
         testDeploymentStorageConfiguration
       ),
       beforeEach: resetAndinitializeDeploymentCompositeAction(
-        // selfApplicationDeploymentLibrary.uuid,
         typedAdminConfigurationDeploymentLibrary.configuration,
         {
           dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
@@ -259,8 +249,8 @@ const testActions: Record<string, TestActionParams> = {
           },
         ]
       ),
-      // afterEach: testOnLibrary_resetLibraryDeployment(miroirConfig),
-      // afterAll: testOnLibrary_deleteLibraryDeployment(miroirConfig),
+      afterEach: testOnLibrary_resetLibraryDeployment(miroirConfig),
+      afterAll: testOnLibrary_deleteLibraryDeployment(miroirConfig),
       testCompositeActions: {
         "Refresh all Instances": {
           testType: "testCompositeAction",

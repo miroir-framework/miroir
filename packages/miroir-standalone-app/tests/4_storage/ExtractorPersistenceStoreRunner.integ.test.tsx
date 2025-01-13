@@ -37,6 +37,7 @@ import {
   publisher1,
   publisher2,
   publisher3,
+  resetAndInitApplicationDeployment,
   SelfApplicationDeploymentConfiguration,
   selfApplicationLibrary,
   selfApplicationModelBranchLibraryMasterBranch,
@@ -55,6 +56,7 @@ import {
   selfApplicationDeploymentLibrary,
   selfApplicationDeploymentMiroir,
 } from "miroir-core";
+import { AdminApplicationDeploymentConfiguration } from 'miroir-core/src/0_interfaces/1_core/StorageConfiguration.js';
 import { LoggerOptions } from 'miroir-core/src/0_interfaces/4-services/LoggerInterface.js';
 import { miroirCoreStartup } from 'miroir-core/src/startup.js';
 import { LocalCache } from 'miroir-localcache-redux';
@@ -72,13 +74,11 @@ import {
   deleteAndCloseApplicationDeployments,
   deploymentConfigurations,
   loadTestConfigFiles,
-  miroirBeforeEach_resetAndInitApplicationDeployments,
   resetAndinitializeDeploymentCompositeAction,
   resetApplicationDeployments,
   selfApplicationDeploymentConfigurations,
   setupMiroirTest
 } from "../utils/tests-utils.js";
-import { AdminApplicationDeploymentConfiguration } from 'miroir-core/src/0_interfaces/1_core/StorageConfiguration.js';
 
 let domainController: DomainControllerInterface;
 let localCache: LocalCache;
@@ -127,9 +127,6 @@ myConsoleLog("received loggerOptions", JSON.stringify(loggerOptions, null, 2));
 MiroirLoggerFactory.startRegisteredLoggers(
   loglevelnext,
   loggerOptions,
-  // (defaultLevels as any)[loggerOptions.defaultLevel],
-  // loggerOptions.defaultTemplate,
-  // loggerOptions.specificLoggerOptions
 );
 myConsoleLog("started registered loggers DONE");
 
@@ -229,25 +226,9 @@ beforeAll(
 // ################################################################################################
 beforeEach(
   async  () => {
-    await miroirBeforeEach_resetAndInitApplicationDeployments(
-      // miroirConfig,
-      domainController,
-      selfApplicationDeploymentConfigurations,
-      // [
-      //   {
-      //     adminConfigurationDeployment: adminConfigurationDeploymentMiroir,
-      //     selfApplicationDeployment: selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
-      //   },
-      //   {
-      //     adminConfigurationDeployment: adminConfigurationDeploymentLibrary,
-      //     selfApplicationDeployment: selfApplicationDeploymentLibrary as SelfApplicationDeploymentConfiguration,
-      //   },
-      // ],
-    );
-    console.log("beforeEach done");
+    await resetAndInitApplicationDeployment(domainController, selfApplicationDeploymentConfigurations);
     const initResult:ActionReturnType = await domainController.handleCompositeAction(
       resetAndinitializeDeploymentCompositeAction(
-        // selfApplicationDeploymentLibrary.uuid,
         typedAdminConfigurationDeploymentLibrary.configuration,
         {
           dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
@@ -260,13 +241,6 @@ beforeEach(
           applicationVersion: selfApplicationVersionLibraryInitialVersion,
         },
         libraryEntitiesAndInstances
-        // [
-        //   {
-        //     entity: entityPublisher as MetaEntity,
-        //     entityDefinition: entityDefinitionPublisher as EntityDefinition,
-        //     instances: [publisher1 as EntityInstance, publisher2 as EntityInstance, publisher3 as EntityInstance],
-        //   },
-        // ]
       ),
       // testOnLibrary_resetInitAndAddTestDataToLibraryDeployment(miroirConfig, libraryEntitiesAndInstances),
       {},
@@ -275,6 +249,8 @@ beforeEach(
     if (initResult.status !== "ok") {
       throw new Error("beforeEach failed initialization!");
     }
+    document.body.innerHTML = '';
+    console.log("beforeEach done");
   }
 )
 
