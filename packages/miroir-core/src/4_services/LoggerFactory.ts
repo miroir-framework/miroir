@@ -22,8 +22,8 @@ export function templateLogLevelOptionsFactory(
     prefix: {
       level: (opts) => `${opts.level}`,
       name: (opts) => opts.logger.name,
-      testSuite: (opts) => LoggerGlobalContext.getTestSuite() ?? "*",
-      test: (opts) => testSeparator + (LoggerGlobalContext.getTest() ? LoggerGlobalContext.getTest() : "*"),
+      testSuite: (opts) => LoggerGlobalContext.getTestSuite() ?? "*NoTestSuite*",
+      test: (opts) => testSeparator + (LoggerGlobalContext.getTest() ? LoggerGlobalContext.getTest() : "*NoTest*"),
       testAssertion: (opts) =>
         testSeparator + (LoggerGlobalContext.getTestAssertion() ? LoggerGlobalContext.getTestAssertion() : "*"),
       compositeAction: (opts) =>

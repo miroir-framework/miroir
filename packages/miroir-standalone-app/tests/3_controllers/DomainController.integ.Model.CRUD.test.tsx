@@ -40,6 +40,7 @@ import {
   createDeploymentCompositeAction,
   deleteAndCloseApplicationDeployments,
   deploymentConfigurations,
+  displayTestSuiteResults,
   loadTestConfigFiles,
   resetAndinitializeDeploymentCompositeAction,
   runTestOrTestSuite,
@@ -205,16 +206,9 @@ afterAll(
     await deleteAndCloseApplicationDeployments(
       miroirConfig,
       domainController,
-      // deploymentConfigurations,
       adminApplicationDeploymentConfigurations,
     );
-    console.log(
-      "globalTestSuiteResults:\n",
-      Object.values(globalTestSuiteResults)
-        .map((r) => '"' + r.testLabel + '": ' + r.testResult)
-        .join("\n")
-    );
-
+    displayTestSuiteResults(Object.keys(testActions)[0]);
   }
 )
 
@@ -1272,16 +1266,14 @@ const testActions: Record<string, TestActionParams> = {
 
 describe.sequential("DomainController.integ.Model.CRUD",
   () => {
-  it.each(Object.entries(testActions))("test %s", async (currentTestName, testAction: TestActionParams) => {
+  it.each(Object.entries(testActions))("test %s", async (currentTestSuiteName, testAction: TestActionParams) => {
     const testSuiteResults = await runTestOrTestSuite(
       localCache,
       domainController,
       testAction
     );
-    globalTestSuiteResults = testSuiteResults.status == "ok"? testSuiteResults.returnedDomainElement.elementValue as any : globalTestSuiteResults;
-    console.log("testSuiteResults", testSuiteResults);
-    for (const [testLabel, testResult] of Object.entries(globalTestSuiteResults)) {
-      expect(testResult.testResult, `${testLabel} failed!`).toBe("ok");
+    if (testSuiteResults.status !== "ok") {
+      expect(testSuiteResults.status, `${currentTestSuiteName} failed!`).toBe("ok");
     }
   }, globalTimeOut);
 

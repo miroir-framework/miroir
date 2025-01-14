@@ -49,6 +49,7 @@ import {
   createDeploymentCompositeAction,
   deleteAndCloseApplicationDeployments,
   deploymentConfigurations,
+  displayTestSuiteResults,
   loadTestConfigFiles,
   resetAndinitializeDeploymentCompositeAction,
   runTestOrTestSuite,
@@ -213,12 +214,7 @@ afterAll(
       // deploymentConfigurations,
       adminApplicationDeploymentConfigurations
     );
-    console.log(
-      "globalTestSuiteResults:\n",
-      Object.values(globalTestSuiteResults)
-        .map((r) => '"' + r.testLabel + '": ' + r.testResult)
-        .join("\n")
-    );
+    displayTestSuiteResults(Object.keys(testActions)[0]);
   }
 )
 
@@ -241,9 +237,7 @@ const testActions: Record<string, TestActionParams> = {
           dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
           metaModel: defaultMiroirMetaModel,
           selfApplication: selfApplicationLibrary,
-          // selfApplicationDeploymentConfiguration: selfApplicationDeploymentLibrary,
           applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,
-          // applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationLibrary,
           applicationVersion: selfApplicationVersionLibraryInitialVersion,
         },
         libraryEntitiesAndInstancesWithoutBook3,
@@ -1027,17 +1021,22 @@ const testActions: Record<string, TestActionParams> = {
 
 describe.sequential("DomainController.integ.Data.CRUD",
   () => {
-  it.each(Object.entries(testActions))("test %s", async (currentTestName, testAction: TestActionParams) => {
+  it.each(Object.entries(testActions))("test %s", async (currentTestSuiteName, testAction: TestActionParams) => {
     const testSuiteResults = await runTestOrTestSuite(
       localCache,
       domainController,
       testAction
     );
-    globalTestSuiteResults = testSuiteResults.status == "ok"? testSuiteResults.returnedDomainElement.elementValue as any : globalTestSuiteResults;
-    for (const [testLabel, testResult] of Object.entries(globalTestSuiteResults)) {
-      expect(testResult.testResult, `${testLabel} failed!`).toBe("ok");
+    if (testSuiteResults.status !== "ok") {
+      expect(testSuiteResults.status, `${currentTestSuiteName} failed!`).toBe("ok");
     }
-    console.log("testSuiteResults", testSuiteResults);
+      // globalTestSuiteResults = testSuiteResults.status == "ok"? testSuiteResults.returnedDomainElement.elementValue as any : globalTestSuiteResults;
+    // for (const [testLabel, testResult] of Object.entries(globalTestSuiteResults)) {
+    //   expect(testResult.testResult, `${testLabel} failed!`).toBe("ok");
+    // }
+    // console.log("testSuiteResults", testSuiteResults);
+    // displayTestSuiteResults(testSuiteResults, currentTestSuiteName);
+    
   }, globalTimeOut);
   } //  end describe('DomainController.Data.CRUD.React',
 )

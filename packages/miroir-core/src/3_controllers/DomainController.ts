@@ -43,6 +43,7 @@ import {
   RunBoxedQueryTemplateAction,
   RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
   SelfApplicationDeploymentConfiguration,
+  TestAssertion,
   TestCompositeAction,
   TestCompositeActionSuite,
   TransactionalInstanceAction,
@@ -71,6 +72,7 @@ import { resolvePathOnObject } from "../tools.js";
 import { cleanLevel } from "./constants.js";
 import { Endpoint } from "./Endpoint.js";
 import { CallUtils } from "./ErrorHandling/CallUtils.js";
+import { TestSuiteContext } from '../4_services/TestSuiteContext.js';
 
 
 
@@ -143,7 +145,6 @@ export async function resetAndInitApplicationDeployment(
  */
 export class DomainController implements DomainControllerInterface {
   private callUtil: CallUtils;
-
 
   getPersistenceStoreAccessMode(): "local" | "remote" {
     return this.persistenceStoreAccessMode;
@@ -299,7 +300,7 @@ export class DomainController implements DomainControllerInterface {
             toFetchEntities.map((e) => ({ section: e.section, name: e.entity.name, uuid: e.entity.uuid }))
           );
           let instances: EntityInstanceCollection[] = []; //TODO: replace with functional implementation
-          let latestInstances: EntityInstanceCollection | undefined= undefined; //TODO: replace with functional implementation
+          let latestInstances: EntityInstanceCollection | undefined = undefined; //TODO: replace with functional implementation
           for (const e of toFetchEntities) {
             // makes sequential calls to interface. Make parallel calls instead using Promise.all?
             log.info(
@@ -360,9 +361,7 @@ export class DomainController implements DomainControllerInterface {
                   }
                 );
               })
-              .catch(
-                (reason) => log.error(reason)
-              );
+              .catch((reason) => log.error(reason));
           }
 
           // removes current transaction
@@ -394,7 +393,11 @@ export class DomainController implements DomainControllerInterface {
     } catch (error) {
       log.warn("DomainController loadConfigurationFromPersistenceStore caught error:", error);
       // throw error;
-      return Promise.resolve({ status: "error", errorType: "FailedToDeployModule", errorMessage: "DomainController loadConfigurationFromPersistenceStore caught error: " + error });
+      return Promise.resolve({
+        status: "error",
+        errorType: "FailedToDeployModule",
+        errorMessage: "DomainController loadConfigurationFromPersistenceStore caught error: " + error,
+      });
     }
     return Promise.resolve(ACTION_OK);
   }
@@ -413,19 +416,19 @@ export class DomainController implements DomainControllerInterface {
       LoggerGlobalContext.setAction(runBoxedExtractorOrQueryAction.actionName);
       log.info(
         "handleQueryActionOrBoxedExtractorAction",
-          // "deploymentUuid",
-          // runBoxedExtractorOrQueryAction.deploymentUuid,
-          "persistenceStoreAccessMode=",
-          this.persistenceStoreAccessMode,
-          "actionName=",
-          (runBoxedExtractorOrQueryAction as any).actionName,
-          "actionType=",
-          runBoxedExtractorOrQueryAction?.actionType,
-          "queryExecutionStrategy=",
-          runBoxedExtractorOrQueryAction.queryExecutionStrategy,
-          "objects=",
-          JSON.stringify((runBoxedExtractorOrQueryAction as any)["objects"], null, 2)
-        );
+        // "deploymentUuid",
+        // runBoxedExtractorOrQueryAction.deploymentUuid,
+        "persistenceStoreAccessMode=",
+        this.persistenceStoreAccessMode,
+        "actionName=",
+        (runBoxedExtractorOrQueryAction as any).actionName,
+        "actionType=",
+        runBoxedExtractorOrQueryAction?.actionType,
+        "queryExecutionStrategy=",
+        runBoxedExtractorOrQueryAction.queryExecutionStrategy,
+        "objects=",
+        JSON.stringify((runBoxedExtractorOrQueryAction as any)["objects"], null, 2)
+      );
       /**
        * TODO: if the query is contaioned whithin a transactional action, it shall only access the localCache
        * if a query is contained whithin a composite action, then it shall access only the persistent storage (?)
@@ -561,7 +564,9 @@ export class DomainController implements DomainControllerInterface {
        * we're on the server side. Shall we execute the query on the localCache or on the persistentStore?
        */
 
-      const result: ActionReturnType = await this.persistenceStoreLocalOrRemote.handlePersistenceAction(runBoxedQueryTemplateAction);
+      const result: ActionReturnType = await this.persistenceStoreLocalOrRemote.handlePersistenceAction(
+        runBoxedQueryTemplateAction
+      );
       log.info("DomainController handleQueryTemplateActionForServerONLY callPersistenceAction Result=", result);
       return result;
     } else {
@@ -723,11 +728,11 @@ export class DomainController implements DomainControllerInterface {
   /**
    * TestCompositeActions shall allow access to both localCache and persistence store, unlike CompositeActions
    * which are limited to persistence store access. The target is that CompositeActoins have to be replayable!
-   * 
-   * @param testAction 
-   * @param actionParamValues 
-   * @param currentModel 
-   * @returns 
+   *
+   * @param testAction
+   * @param actionParamValues
+   * @param currentModel
+   * @returns
    */
   async handleTestCompositeAction(
     // testAction: TestAction_runTestCompositeAction,
@@ -798,17 +803,23 @@ export class DomainController implements DomainControllerInterface {
     testAction: TestCompositeActionSuite,
     actionParamValues: Record<string, any>,
     currentModel: MetaModel
-  // ): Promise<ActionVoidReturnType> {
-  ): Promise<ActionReturnType> {
+    // ): Promise<ActionVoidReturnType> {
+  // ): Promise<ActionReturnType> {
+  ): Promise<ActionVoidReturnType> {
     const localActionParams = { ...actionParamValues };
     let localContext: Record<string, any> = { ...actionParamValues };
 
-    log.info("handleTestCompositeActionSuite testAction", testAction, "localActionParams", Object.keys(localActionParams));
+    log.info(
+      "handleTestCompositeActionSuite testAction",
+      testAction,
+      "localActionParams",
+      Object.keys(localActionParams)
+    );
 
     const testSuiteResult: Record<string, TestResult> = {};
 
     try {
-      LoggerGlobalContext.setTestSuite(testAction.testLabel);
+      TestSuiteContext.setTestSuite(testAction.testLabel);
 
       if (testAction.beforeAll) {
         LoggerGlobalContext.setTest("beforeAll");
@@ -821,13 +832,17 @@ export class DomainController implements DomainControllerInterface {
       } else {
         log.info("handleTestCompositeActionSuite no beforeAll!");
       }
-  
+
       for (const testCompositeAction of Object.entries(testAction.testCompositeActions)) {
         // expect.getState().currentTestName = testCompositeAction[0];
         log.info("handleTestCompositeActionSuite test", testCompositeAction[0], "beforeEach");
-  
+
         if (testAction.beforeEach) {
-          log.info("handleTestCompositeActionSuite beforeEach", testAction.beforeEach.actionLabel, testAction.beforeEach);
+          log.info(
+            "handleTestCompositeActionSuite beforeEach",
+            testAction.beforeEach.actionLabel,
+            testAction.beforeEach
+          );
           LoggerGlobalContext.setTest(testCompositeAction[1].testLabel + ".beforeEach");
           const beforeAllResult = await this.handleCompositeAction(
             testAction.beforeEach,
@@ -846,9 +861,9 @@ export class DomainController implements DomainControllerInterface {
         } else {
           log.info("handleTestCompositeActionSuite", testCompositeAction[0], "no beforeEach!");
         }
-  
+
         if (testCompositeAction[1].beforeTestSetupAction) {
-          LoggerGlobalContext.setTest(testCompositeAction[1].testLabel + ".beforeTestSetupAction");
+          TestSuiteContext.setTest(testCompositeAction[1].testLabel + ".beforeTestSetupAction");
           log.info(
             "handleTestCompositeActionSuite",
             testCompositeAction[0],
@@ -869,11 +884,11 @@ export class DomainController implements DomainControllerInterface {
               JSON.stringify(beforeTestResult, null, 2)
             );
           }
-          LoggerGlobalContext.setTest(undefined);
+          TestSuiteContext.setTest(undefined);
         } else {
           log.info("handleTestCompositeActionSuite", testCompositeAction[0], "no beforeTestSetupAction!");
         }
-  
+
         const localTestCompositeAction: CompositeAction = {
           ...testCompositeAction[1].compositeAction,
           definition: [
@@ -881,16 +896,29 @@ export class DomainController implements DomainControllerInterface {
             ...testCompositeAction[1].testCompositeActionAssertions,
           ],
         };
-        LoggerGlobalContext.setTest(testCompositeAction[1].testLabel);
+        TestSuiteContext.setTest(testCompositeAction[1].testLabel);
         const testResult = await this.handleCompositeAction(localTestCompositeAction, localActionParams, currentModel);
-        LoggerGlobalContext.setTest(undefined);
-        testSuiteResult[testCompositeAction[1].testLabel] = {testLabel: testCompositeAction[1].testLabel,  testResult: testResult.status};
+        // const testResult = await this.handleTestCompositeAction(localTestCompositeAction, localActionParams, currentModel);
+        // if (testResult.status == "ok") {
+        //   testSuiteResult[testCompositeAction[1].testLabel] = {
+        //     testLabel: testCompositeAction[1].testLabel,
+        //     testResult: testResult.status,
+        //   };
+        // } else {
+        //   testSuiteResult[testCompositeAction[1].testLabel] = {
+        //     testLabel: testCompositeAction[1].testLabel,
+        //     testResult: testResult.status,
+        //     failedAssertionName: JSON.stringify(testResult, null, 2),
+        //     // testError: testResult.errorMessage,
+        //   };
+        // }
         // if (testResult?.status != "ok") {
         //   log.error("Error on test", JSON.stringify(testResult, null, 2));
         // }
+        TestSuiteContext.setTest(undefined);
 
         if (testCompositeAction[1].afterTestCleanupAction) {
-          LoggerGlobalContext.setTest(testCompositeAction[1].testLabel + ".afterTestCleanupAction");
+          TestSuiteContext.setTest(testCompositeAction[1].testLabel + ".afterTestCleanupAction");
           log.info(
             "handleTestCompositeAction",
             testCompositeAction[0],
@@ -911,13 +939,13 @@ export class DomainController implements DomainControllerInterface {
               JSON.stringify(afterTestResult, null, 2)
             );
           }
-          LoggerGlobalContext.setTest(undefined);
+          TestSuiteContext.setTest(undefined);
         } else {
           log.info("handleTestCompositeActionSuite", testCompositeAction[0], "no afterTestSetupAction!");
         }
-  
+
         if (testAction.afterEach) {
-          LoggerGlobalContext.setTest(testCompositeAction[1].testLabel + ".afterEach");
+          TestSuiteContext.setTest(testCompositeAction[1].testLabel + ".afterEach");
           log.info(
             "handleTestCompositeActionSuite",
             testCompositeAction[0],
@@ -925,7 +953,11 @@ export class DomainController implements DomainControllerInterface {
             testAction.afterEach.actionLabel,
             testAction.beforeAll
           );
-          const beforeAllResult = await this.handleCompositeAction(testAction.afterEach, localActionParams, currentModel);
+          const beforeAllResult = await this.handleCompositeAction(
+            testAction.afterEach,
+            localActionParams,
+            currentModel
+          );
           if (beforeAllResult?.status != "ok") {
             log.error(
               "handleTestCompositeActionSuite",
@@ -934,28 +966,28 @@ export class DomainController implements DomainControllerInterface {
               JSON.stringify(beforeAllResult, null, 2)
             );
           }
-          LoggerGlobalContext.setTest(undefined);
+          TestSuiteContext.setTest(undefined);
         } else {
           log.info("handleTestCompositeActionSuite", testCompositeAction[0], "no afterEach!");
         }
       }
-  
+
       if (testAction.afterAll) {
-        LoggerGlobalContext.setTest("afterAll");
+        TestSuiteContext.setTest("afterAll");
         log.info("handleTestCompositeActionSuite afterAll", testAction.afterAll.actionLabel, testAction.beforeAll);
         const afterAllResult = await this.handleCompositeAction(testAction.afterAll, localActionParams, currentModel);
         if (afterAllResult?.status != "ok") {
           log.error("Error on afterAll", JSON.stringify(afterAllResult, null, 2));
         }
-        LoggerGlobalContext.setTest(undefined);
+        TestSuiteContext.setTest(undefined);
       } else {
         log.info("handleTestCompositeActionSuite no afterAll!");
       }
-      // return Promise.resolve(ACTION_OK);
-      return Promise.resolve({
-        status: "ok",
-        returnedDomainElement: { elementType: "any", elementValue: testSuiteResult },
-      });
+      return Promise.resolve(ACTION_OK);
+      // return Promise.resolve({
+      //   status: "ok",
+      //   returnedDomainElement: { elementType: "any", elementValue: testSuiteResult },
+      // });
     } catch (error) {
       log.error("handleTestCompositeActionSuite caught error", error);
       return Promise.resolve({
@@ -964,9 +996,123 @@ export class DomainController implements DomainControllerInterface {
         errorMessage: "handleTestCompositeActionSuite caught error: " + JSON.stringify(error, null, 2),
       });
     } finally {
-      LoggerGlobalContext.reset();
+      TestSuiteContext.resetContext();
     }
+  }
 
+  // ################################################################################################
+  async handleTestCompositeActionAssertionNOTUSED(
+    // compositeAction: CompositeAction,
+    runTestCompositeActionAssertion: {
+      compositeActionType: "runTestCompositeActionAssertion";
+      compositeActionStepLabel?: string | undefined;
+      nameGivenToResult: string;
+      testAssertion: TestAssertion;
+    },
+    actionParamValues: Record<string, any>,
+    currentModel: MetaModel
+  ): Promise<ActionVoidReturnType> {
+    let actionResult: ActionVoidReturnType | undefined = undefined;
+    const localActionParams = { ...actionParamValues };
+    let localContext: Record<string, any> = { ...actionParamValues };
+
+    if (!ConfigurationService.testImplementation) {
+      throw new Error(
+        "ConfigurationService.testImplementation is not set, please inject a test implementation using ConfigurationService.registerTestImplementation on startup if you want to run tests at runtime."
+      );
+    }
+    let valueToTest: any = undefined;
+    try {
+      TestSuiteContext.setTestAssertion(runTestCompositeActionAssertion.testAssertion.testLabel);
+      const prePreValueToTest = runTestCompositeActionAssertion.testAssertion.definition.resultTransformer
+        ? transformer_extended_apply(
+            "runtime",
+            "ROOT" /**WHAT?? */,
+            runTestCompositeActionAssertion.testAssertion.definition.resultTransformer,
+            {},
+            localContext
+          )
+        : localContext;
+
+      const preValueToTest = resolvePathOnObject(
+        prePreValueToTest,
+        runTestCompositeActionAssertion.testAssertion.definition.resultAccessPath ?? []
+      );
+
+      valueToTest = Array.isArray(preValueToTest)
+        ? ignorePostgresExtraAttributesOnList(
+            preValueToTest,
+            runTestCompositeActionAssertion.testAssertion.definition.ignoreAttributes ?? []
+          )
+        : ignorePostgresExtraAttributesOnObject(
+            preValueToTest,
+            runTestCompositeActionAssertion.testAssertion.definition.ignoreAttributes ?? []
+          );
+      log.info(
+        "handleCompositeAction runTestCompositeActionAssertion to handle",
+        JSON.stringify(runTestCompositeActionAssertion.testAssertion, null, 2),
+        // "preValueToTest typeof", typeof preValueToTest,
+        // "preValueToTest instanceof Array", preValueToTest instanceof Array,
+        "preValueToTest is array",
+        Array.isArray(preValueToTest),
+        // "preValueToTest object proto is array", JSON.stringify(Object.prototype.toString.call(preValueToTest)),
+        // "preValueToTest constuctor is array", preValueToTest.constructor === Array,
+        "preValueToTest",
+        JSON.stringify(preValueToTest, null, 2),
+        "valueToTest",
+        JSON.stringify(valueToTest, null, 2)
+      );
+      try {
+        ConfigurationService.testImplementation
+          .expect(valueToTest, runTestCompositeActionAssertion.nameGivenToResult)
+          .toEqual(runTestCompositeActionAssertion.testAssertion.definition.expectedValue);
+          log.info(
+            "handleCompositeAction runTestCompositeActionAssertion test passed",
+            runTestCompositeActionAssertion.testAssertion
+          );
+          actionResult = {
+            status: "ok",
+            returnedDomainElement: { elementType: "void" },
+          };
+          TestSuiteContext.setTestAssertionResult({
+            assertionName: runTestCompositeActionAssertion.testAssertion.testLabel,
+            assertionResult: "ok",
+            // assertionExpectedValue: runTestCompositeActionAssertion.testAssertion.definition.expectedValue,
+            // assertionActualValue: valueToTest,
+          });
+      } catch (error) {
+        TestSuiteContext.setTestAssertionResult({
+          assertionName: runTestCompositeActionAssertion.testAssertion.testLabel,
+          assertionResult: "error",
+          assertionExpectedValue: runTestCompositeActionAssertion.testAssertion.definition.expectedValue,
+          assertionActualValue: valueToTest,
+        });
+        return {
+          status: "ok",
+          returnedDomainElement: { elementType: "void" },
+        };
+      }
+    } catch (error) {
+      log.error("handleCompositeAction runTestCompositeActionAssertion error", error);
+      // TODO: 2 try catch blocks, one for the expect, one for the rest
+      TestSuiteContext.setTestAssertionResult({
+        assertionName: runTestCompositeActionAssertion.testAssertion.testLabel,
+        assertionResult: "error",
+        // TODO: set error message
+        // assertionExpectedValue: runTestCompositeActionAssertion.testAssertion.definition.expectedValue,
+        // assertionActualValue: valueToTest,
+      });
+      // return {
+      //   status: "ok",
+      //   returnedDomainElement: { elementType: "void" },
+      // };
+      throw new Error(
+        "handleCompositeAction runTestCompositeActionAssertion error" + JSON.stringify(error, null, 2)
+      );
+    } finally {
+      TestSuiteContext.setTestAssertion(undefined);
+    }
+    return actionResult;
 
   }
 
@@ -980,7 +1126,12 @@ export class DomainController implements DomainControllerInterface {
     const localActionParams = { ...actionParamValues };
     let localContext: Record<string, any> = { ...actionParamValues };
 
-    log.info("handleCompositeAction compositeAction", compositeAction, "localActionParams keys", Object.keys(localActionParams));
+    log.info(
+      "handleCompositeAction compositeAction",
+      compositeAction,
+      "localActionParams keys",
+      Object.keys(localActionParams)
+    );
     // log.info("handleCompositeAction compositeAction", JSON.stringify(compositeAction, null, 2), "localActionParams keys", Object.keys(localActionParams));
     // log.info("handleCompositeAction compositeAction", compositeAction, "localActionParams", localActionParams);
     // const resolved: any = resolveCompositeActionTemplate(compositeAction, localActionParams, currentModel);
@@ -1007,7 +1158,10 @@ export class DomainController implements DomainControllerInterface {
             break;
           }
           case "domainAction": {
-            if (currentAction.domainAction.actionType !== "modelAction" || (currentAction.domainAction as any).actionName !== "initModel") {
+            if (
+              currentAction.domainAction.actionType !== "modelAction" ||
+              (currentAction.domainAction as any).actionName !== "initModel"
+            ) {
               log.info(
                 "handleCompositeAction domainAction action to handle",
                 JSON.stringify(currentAction.domainAction, null, 2)
@@ -1015,8 +1169,18 @@ export class DomainController implements DomainControllerInterface {
             }
             actionResult = await this.handleAction(currentAction.domainAction, currentModel);
             if (actionResult?.status != "ok") {
-              log.error("handleCompositeAction Error on action", JSON.stringify(currentAction, null, 2), "actionResult", JSON.stringify(actionResult, null, 2));
-              throw new Error("handleCompositeAction Error on action" + JSON.stringify(currentAction, null, 2) + "actionResult" + JSON.stringify(actionResult, null, 2));
+              log.error(
+                "handleCompositeAction Error on action",
+                JSON.stringify(currentAction, null, 2),
+                "actionResult",
+                JSON.stringify(actionResult, null, 2)
+              );
+              throw new Error(
+                "handleCompositeAction Error on action" +
+                  JSON.stringify(currentAction, null, 2) +
+                  "actionResult" +
+                  JSON.stringify(actionResult, null, 2)
+              );
             }
             break;
           }
@@ -1027,7 +1191,7 @@ export class DomainController implements DomainControllerInterface {
               "with actionParamValues",
               actionParamValues
             );
-  
+
             actionResult = await this.handleQueryTemplateActionForServerONLY(currentAction.queryTemplate);
             if (actionResult?.status != "ok") {
               log.error(
@@ -1054,7 +1218,7 @@ export class DomainController implements DomainControllerInterface {
               "with actionParamValues",
               actionParamValues
             );
-  
+
             actionResult = await this.handleBoxedExtractorTemplateActionForServerONLY(currentAction.queryTemplate);
             if (actionResult?.status != "ok") {
               log.error(
@@ -1078,14 +1242,14 @@ export class DomainController implements DomainControllerInterface {
             // throw new Error(
             //   "handleCompositeAction can not handle query actions: " + JSON.stringify(currentAction)
             // );
-  
+
             log.info(
               "handleCompositeAction runBoxedExtractorOrQueryAction to handle",
               currentAction,
               "with actionParamValues",
               actionParamValues
             );
-  
+
             actionResult = await this.handleQueryActionOrBoxedExtractorAction(currentAction.query);
             if (actionResult?.status != "ok") {
               log.error(
@@ -1109,13 +1273,19 @@ export class DomainController implements DomainControllerInterface {
             throw new Error("handleCompositeAction can not handle query actions: " + JSON.stringify(currentAction));
           }
           case "runTestCompositeActionAssertion": {
+            // return this.handleTestCompositeActionAssertion(
+            //   currentAction,
+            //   localActionParams,
+            //   currentModel
+            // );
             if (!ConfigurationService.testImplementation) {
               throw new Error(
                 "ConfigurationService.testImplementation is not set, please inject a test implementation using ConfigurationService.registerTestImplementation on startup if you want to run tests at runtime."
               );
             }
+            let valueToTest: any = undefined;
             try {
-              LoggerGlobalContext.setTestAssertion(currentAction.testAssertion.testLabel);
+              TestSuiteContext.setTestAssertion(currentAction.testAssertion.testLabel);
               const prePreValueToTest = currentAction.testAssertion.definition.resultTransformer
                 ? transformer_extended_apply(
                     "runtime",
@@ -1125,13 +1295,13 @@ export class DomainController implements DomainControllerInterface {
                     localContext
                   )
                 : localContext;
-    
+        
               const preValueToTest = resolvePathOnObject(
                 prePreValueToTest,
                 currentAction.testAssertion.definition.resultAccessPath ?? []
               );
-    
-              const valueToTest = Array.isArray(preValueToTest)
+        
+              valueToTest = Array.isArray(preValueToTest)
                 ? ignorePostgresExtraAttributesOnList(
                     preValueToTest,
                     currentAction.testAssertion.definition.ignoreAttributes ?? []
@@ -1154,17 +1324,117 @@ export class DomainController implements DomainControllerInterface {
                 "valueToTest",
                 JSON.stringify(valueToTest, null, 2)
               );
-              ConfigurationService.testImplementation
-                .expect(valueToTest, currentAction.nameGivenToResult)
-                .toEqual(currentAction.testAssertion.definition.expectedValue);
-              log.info("handleCompositeAction runTestCompositeActionAssertion test passed", currentAction.testAssertion);
-              actionResult = { status: "ok", returnedDomainElement: { "elementType": "void"} };
+              try {
+                ConfigurationService.testImplementation
+                  .expect(valueToTest, currentAction.nameGivenToResult)
+                  .toEqual(currentAction.testAssertion.definition.expectedValue);
+                  log.info(
+                    "handleCompositeAction runTestCompositeActionAssertion test passed",
+                    currentAction.testAssertion
+                  );
+                  actionResult = {
+                    status: "ok",
+                    returnedDomainElement: { elementType: "void" },
+                  };
+                  TestSuiteContext.setTestAssertionResult({
+                    assertionName: currentAction.testAssertion.testLabel,
+                    assertionResult: "ok",
+                    // assertionExpectedValue: runTestCompositeActionAssertion.testAssertion.definition.expectedValue,
+                    // assertionActualValue: valueToTest,
+                  });
+              } catch (error) {
+                TestSuiteContext.setTestAssertionResult({
+                  assertionName: currentAction.testAssertion.testLabel,
+                  assertionResult: "error",
+                  assertionExpectedValue: currentAction.testAssertion.definition.expectedValue,
+                  assertionActualValue: valueToTest,
+                });
+                return {
+                  status: "ok",
+                  returnedDomainElement: { elementType: "void" },
+                };
+              }
             } catch (error) {
               log.error("handleCompositeAction runTestCompositeActionAssertion error", error);
-              throw new Error("handleCompositeAction runTestCompositeActionAssertion error" + JSON.stringify(error, null, 2));
+              // TODO: 2 try catch blocks, one for the expect, one for the rest
+              TestSuiteContext.setTestAssertionResult({
+                assertionName: currentAction.testAssertion.testLabel,
+                assertionResult: "error",
+                // TODO: set error message
+                // assertionExpectedValue: runTestCompositeActionAssertion.testAssertion.definition.expectedValue,
+                // assertionActualValue: valueToTest,
+              });
+              // return {
+              //   status: "ok",
+              //   returnedDomainElement: { elementType: "void" },
+              // };
+              throw new Error(
+                "handleCompositeAction runTestCompositeActionAssertion error" + JSON.stringify(error, null, 2)
+              );
             } finally {
-              LoggerGlobalContext.setTestAssertion(undefined);
+              TestSuiteContext.setTestAssertion(undefined);
             }
+                    // try {
+            //   LoggerGlobalContext.setTestAssertion(currentAction.testAssertion.testLabel);
+            //   const prePreValueToTest = currentAction.testAssertion.definition.resultTransformer
+            //     ? transformer_extended_apply(
+            //         "runtime",
+            //         "ROOT" /**WHAT?? */,
+            //         currentAction.testAssertion.definition.resultTransformer,
+            //         {},
+            //         localContext
+            //       )
+            //     : localContext;
+
+            //   const preValueToTest = resolvePathOnObject(
+            //     prePreValueToTest,
+            //     currentAction.testAssertion.definition.resultAccessPath ?? []
+            //   );
+
+            //   const valueToTest = Array.isArray(preValueToTest)
+            //     ? ignorePostgresExtraAttributesOnList(
+            //         preValueToTest,
+            //         currentAction.testAssertion.definition.ignoreAttributes ?? []
+            //       )
+            //     : ignorePostgresExtraAttributesOnObject(
+            //         preValueToTest,
+            //         currentAction.testAssertion.definition.ignoreAttributes ?? []
+            //       );
+            //   log.info(
+            //     "handleCompositeAction runTestCompositeActionAssertion to handle",
+            //     JSON.stringify(currentAction.testAssertion, null, 2),
+            //     // "preValueToTest typeof", typeof preValueToTest,
+            //     // "preValueToTest instanceof Array", preValueToTest instanceof Array,
+            //     "preValueToTest is array",
+            //     Array.isArray(preValueToTest),
+            //     // "preValueToTest object proto is array", JSON.stringify(Object.prototype.toString.call(preValueToTest)),
+            //     // "preValueToTest constuctor is array", preValueToTest.constructor === Array,
+            //     "preValueToTest",
+            //     JSON.stringify(preValueToTest, null, 2),
+            //     "valueToTest",
+            //     JSON.stringify(valueToTest, null, 2)
+            //   );
+            //   ConfigurationService.testImplementation
+            //     .expect(valueToTest, currentAction.nameGivenToResult)
+            //     .toEqual(currentAction.testAssertion.definition.expectedValue);
+            //   log.info(
+            //     "handleCompositeAction runTestCompositeActionAssertion test passed",
+            //     currentAction.testAssertion
+            //   );
+            //   actionResult = {
+            //     status: "ok",
+            //     returnedDomainElement: { elementType: "void" },
+            //     // testExpectedValue: currentAction.testAssertion.definition.expectedValue,
+            //     // testReturnedValue: valueToTest,
+            //   };
+            // } catch (error) {
+            //   log.error("handleCompositeAction runTestCompositeActionAssertion error", error);
+            //   throw new Error(
+            //     "handleCompositeAction runTestCompositeActionAssertion error" + JSON.stringify(error, null, 2)
+            //   );
+            // } finally {
+            //   LoggerGlobalContext.setTestAssertion(undefined);
+            // }
             break;
           }
           default: {
@@ -1384,8 +1654,8 @@ export class DomainController implements DomainControllerInterface {
         actionType: domainAction.actionType,
         actionName: "*",
         actionHandlerKind: "*",
-      }
-    }
+      },
+    };
     for (const l of Object.entries(levels)) {
       if (
         this.actionHandler[l[1].actionType] &&
@@ -1394,7 +1664,9 @@ export class DomainController implements DomainControllerInterface {
       ) {
         const levelhandler = (this.actionHandler[l[1].actionType][l[1].actionName] as any)[l[1].actionHandlerKind];
         log.info(
-          "DomainController getActionHandler using level", l[0], "for actionType=" +
+          "DomainController getActionHandler using level",
+          l[0],
+          "for actionType=" +
             domainAction.actionType +
             " actionName=" +
             (domainAction as any).actionName +
@@ -1406,7 +1678,10 @@ export class DomainController implements DomainControllerInterface {
     }
 
     throw new Error(
-      "DomainController getActionHandler could not find handler for actionType=" + domainAction.actionType + " actionName=" + (domainAction as any).actionName
+      "DomainController getActionHandler could not find handler for actionType=" +
+        domainAction.actionType +
+        " actionName=" +
+        (domainAction as any).actionName
     );
   }
 
@@ -1437,7 +1712,9 @@ export class DomainController implements DomainControllerInterface {
       storeManagementAction: {
         resetAndInitApplicationDeployment: { "*": resetAndInitApplicationDeployment },
         "*": {
-          local: this.persistenceStoreLocalOrRemote.handleStoreOrBundleActionForLocalStore.bind(this.persistenceStoreLocalOrRemote),
+          local: this.persistenceStoreLocalOrRemote.handleStoreOrBundleActionForLocalStore.bind(
+            this.persistenceStoreLocalOrRemote
+          ),
           // remote: this.callUtil.callRemotePersistenceAction.bind(this.callUtil),
           remote: boundRemotePersistenceAction,
         },
@@ -1460,9 +1737,8 @@ export class DomainController implements DomainControllerInterface {
         },
       },
     };
-  
   }
-  
+
   // ##############################################################################################
   async handleInstanceAction(deploymentUuid: Uuid, instanceAction: InstanceAction): Promise<ActionVoidReturnType> {
     log.info(
@@ -1797,15 +2073,16 @@ export class DomainController implements DomainControllerInterface {
         }
         case "storeManagementAction": {
           if (domainAction.actionName == "resetAndInitApplicationDeployment") {
-            await resetAndInitApplicationDeployment(this, domainAction.deployments as any as SelfApplicationDeploymentConfiguration[]); // TODO: works because only uuid of deployments is accessed in resetAndInitApplicationDeployment
+            await resetAndInitApplicationDeployment(
+              this,
+              domainAction.deployments as any as SelfApplicationDeploymentConfiguration[]
+            ); // TODO: works because only uuid of deployments is accessed in resetAndInitApplicationDeployment
             // await this.callAsyncActionHandler(domainAction, "*", currentModel, this, domainAction.deployments);
           } else {
             try {
               switch (this.persistenceStoreAccessMode) {
                 case "local": {
-                  await this.persistenceStoreLocalOrRemote.handleStoreOrBundleActionForLocalStore(
-                    domainAction
-                  );
+                  await this.persistenceStoreLocalOrRemote.handleStoreOrBundleActionForLocalStore(domainAction);
                   // await this.callAsyncActionHandler(domainAction, "local", currentModel, domainAction);
                   break;
                 }
@@ -1824,7 +2101,8 @@ export class DomainController implements DomainControllerInterface {
                     this.persistenceStoreAccessMode
                   );
                   throw new Error(
-                    "DomainController handleAction storeManagementAction unknown persistenceStoreAccessMode " + this.persistenceStoreAccessMode
+                    "DomainController handleAction storeManagementAction unknown persistenceStoreAccessMode " +
+                      this.persistenceStoreAccessMode
                   );
                   break;
                 }
@@ -1900,7 +2178,10 @@ export class DomainController implements DomainControllerInterface {
           break;
         }
         default:
-          log.error("DomainController handleAction action could not be taken into account, unkown action", domainAction);
+          log.error(
+            "DomainController handleAction action could not be taken into account, unkown action",
+            domainAction
+          );
       }
       return Promise.resolve(ACTION_OK);
     } catch (error) {

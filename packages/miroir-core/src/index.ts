@@ -491,11 +491,12 @@ export {
   StoreInterface,
 } from "./0_interfaces/4-services/PersistenceInterface.js";
 export {
+  AdminStoreFactoryRegister,
+  InitApplicationParameters,
   PersistenceStoreAbstractInterface,
   PersistenceStoreAbstractSectionInterface,
   PersistenceStoreAdminSectionInterface,
   PersistenceStoreAdminSectionFactory,
-  AdminStoreFactoryRegister,
   PersistenceStoreDataSectionInterface,
   PersistenceStoreModelSectionInterface,
   PersistenceStoreEntitySectionAbstractInterface,
@@ -726,6 +727,10 @@ export {
 export {
   generateRestServiceResponse,
 } from './4_services/RestTools.js';
+export {
+  TestSuiteContext
+} from './4_services/TestSuiteContext.js';
+
 export {
   ignorePostgresExtraAttributesOnList,
   ignorePostgresExtraAttributesOnObject,

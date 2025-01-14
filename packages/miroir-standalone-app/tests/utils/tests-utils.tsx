@@ -39,6 +39,7 @@ import {
   TestCompositeAction,
   TestCompositeActionSuite,
   TestCompositeActionTemplate,
+  TestSuiteContext,
   Uuid,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
@@ -103,7 +104,7 @@ export const deploymentConfigurations: DeploymentConfiguration[] = [
   },
   {
     adminConfigurationDeployment: adminConfigurationDeploymentLibrary,
-    selfApplicationDeployment: selfApplicationDeploymentLibrary  as SelfApplicationDeploymentConfiguration,
+    selfApplicationDeployment: selfApplicationDeploymentLibrary as SelfApplicationDeploymentConfiguration,
   },
 ];
 
@@ -868,8 +869,16 @@ export async function runTestOrTestSuite(
         "received results for test testCompositeActionSuite",
         fullTestName,
         ": queryResult=",
-        JSON.stringify(queryResult, null, 2)
+        JSON.stringify(queryResult, null, 2),
+        "TestContextResults",
+        JSON.stringify(TestSuiteContext.getTestAssertionsResults(), null, 2)
       );
+      // log.info(
+      //   "received results for test testCompositeActionSuite",
+      //   fullTestName,
+      //   ": queryResult=",
+      //   JSON.stringify(queryResult, null, 2)
+      // );
       return queryResult;
     }
     case "testCompositeAction": {
@@ -892,3 +901,27 @@ export async function runTestOrTestSuite(
   }
 }
 
+// ################################################################################################
+export function displayTestSuiteResults(currentTestSuiteName: string) {
+  console.log("============ results of testSuite: ", currentTestSuiteName);
+  // const currentTestSuiteName = currentTestSuiteName;
+  const globalTestSuiteResults = TestSuiteContext.getTestSuiteResult(currentTestSuiteName);
+  // console.log("globalTestSuiteResults", JSON.stringify(globalTestSuiteResults, null, 2));
+  // console.log("============ results of testSuite: ", currentTestSuiteName);
+  for (const testResult of Object.values(globalTestSuiteResults[currentTestSuiteName])) {
+    if (testResult.testResult !== "ok") {
+      for (const [testAssertionLabel, testAssertionResult] of Object.entries(testResult.testAssertionsResults)) {
+        if (testAssertionResult.assertionResult !== "ok") {
+          console.log("testAssertionResult", JSON.stringify(testAssertionResult, null, 2));
+          expect(testAssertionResult.assertionActualValue, `${currentTestSuiteName} > ${testResult.testLabel} > ${testAssertionLabel} failed!`).toBe(testAssertionResult.assertionExpectedValue);
+        }
+      }
+    } else {
+      // console.log("testResult", JSON.stringify(testResult, null, 2));
+      expect(testResult.testResult, `${currentTestSuiteName} > ${testResult.testLabel} failed!`).toBe("ok");
+      console.log(testResult.testLabel, "ok");
+    }
+  }
+  TestSuiteContext.resetResults();
+  console.log("============ end of results of testSuite");
+}
