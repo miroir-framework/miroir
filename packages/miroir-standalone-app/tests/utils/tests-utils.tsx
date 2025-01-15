@@ -39,6 +39,7 @@ import {
   TestCompositeAction,
   TestCompositeActionSuite,
   TestCompositeActionTemplate,
+  TestCompositeActionTemplateSuite,
   TestSuiteContext,
   Uuid,
   adminConfigurationDeploymentLibrary,
@@ -72,24 +73,31 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 // ################################################################################################
 // ################################################################################################
-export type TestActionParams = {
-  testActionType: "testCompositeActionSuite",
-  testActionLabel: string,
-  deploymentUuid: Uuid,
-  testCompositeAction: TestCompositeActionSuite,
-} 
-| {
-  testActionType: "testCompositeAction",
-  testActionLabel: string,
-  deploymentUuid: Uuid,
-  testCompositeAction: TestCompositeAction,
-} 
-| {
-  testActionType: "testCompositeActionTemplate",
-  testActionLabel: string,
-  deploymentUuid: Uuid,
-  compositeTestActionTemplate: TestCompositeActionTemplate,
-} 
+export type TestActionParams =
+  | {
+      testActionType: "testCompositeActionSuite";
+      testActionLabel: string;
+      deploymentUuid: Uuid;
+      testCompositeAction: TestCompositeActionSuite;
+    }
+  | {
+      testActionType: "testCompositeAction";
+      testActionLabel: string;
+      deploymentUuid: Uuid;
+      testCompositeAction: TestCompositeAction;
+    }
+  | {
+      testActionType: "testCompositeActionTemplate";
+      testActionLabel: string;
+      deploymentUuid: Uuid;
+      compositeTestActionTemplate: TestCompositeActionTemplate;
+    }
+  | {
+      testActionType: "testCompositeActionTemplateSuite";
+      testActionLabel: string;
+      deploymentUuid: Uuid;
+      testCompositeAction: TestCompositeActionTemplateSuite;
+    }; 
 
 
 
@@ -895,11 +903,28 @@ export async function runTestOrTestSuite(
       );
       return queryResult;
     }
+    case "testCompositeActionTemplateSuite": {
+      const queryResult: ActionReturnType = await domainController.handleTestCompositeActionTemplateSuite(
+        testAction.testCompositeAction,
+        {},
+        localCache.currentModel(testAction.deploymentUuid)
+      );
+      log.info(
+        "received results for test testCompositeActionSuite",
+        fullTestName,
+        ": queryResult=",
+        JSON.stringify(queryResult, null, 2),
+        "TestContextResults",
+        JSON.stringify(TestSuiteContext.getTestAssertionsResults(), null, 2)
+      );
+      return queryResult;
+    }
     case "testCompositeActionTemplate": {
       throw new Error("testCompositeActionTemplate not implemented yet!");
     }
   }
 }
+
 
 // ################################################################################################
 export function displayTestSuiteResults(currentTestSuiteName: string) {

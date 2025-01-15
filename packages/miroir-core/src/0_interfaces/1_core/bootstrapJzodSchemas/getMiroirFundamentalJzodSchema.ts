@@ -599,6 +599,9 @@ export function getMiroirFundamentalJzodSchema(
         testCompositeActionTemplate: (entityDefinitionTest.jzodSchema as any).definition.definition.definition.find(
           (e: any) => e.definition.testType.definition == "testCompositeActionTemplate"
         ),
+        testCompositeActionTemplateSuite: (entityDefinitionTest.jzodSchema as any).definition.definition.definition.find(
+          (e: any) => e.definition.testType.definition == "testCompositeActionTemplateSuite"
+        ),
         testAssertion: (entityDefinitionTest.jzodSchema as any).definition.definition.definition.find(
           (e: any) => e.definition.testType.definition == "testAssertion"
         ),

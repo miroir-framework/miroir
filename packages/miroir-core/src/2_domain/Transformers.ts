@@ -1316,6 +1316,7 @@ export function transformer_apply(
   // );
   if (typeof transformer == "object") {
     if (transformer instanceof Array) {
+      log.info("transformer_apply called for array:", JSON.stringify(transformer, null, 2));
       return innerTransformer_array_apply(step, label, transformer, queryParams, contextResults);
     } else {
       // TODO: improve test, refuse interpretation of build transformer in runtime step
@@ -1368,6 +1369,7 @@ export function transformer_extended_apply(
 
   if (typeof transformer == "object") {
     if (transformer instanceof Array) {
+
       result = innerTransformer_array_apply(step, label, transformer, queryParams, contextResults);
     } else {
       // TODO: improve test, refuse interpretation of build transformer in runtime step

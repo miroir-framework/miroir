@@ -96,13 +96,6 @@
               "optional": true,
               "tag": { "value": { "defaultLabel": "Module Deployment Uuid", "editable": false } }
             },
-            "templates": {
-              "type": "record",
-              "optional": true,
-              "definition": {
-                "type": "any"
-              }
-            },
             "definition": {
               "type": "array",
               "definition": {

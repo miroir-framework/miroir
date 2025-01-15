@@ -1,4 +1,5 @@
 import {
+  CompositeAction,
   CompositeActionDefinition,
   CompositeActionTemplate,
   MetaModel,
@@ -8,7 +9,7 @@ import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { MiroirLoggerFactory } from "../4_services/LoggerFactory.js";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
-import { transformer_extended_apply } from "./Transformers.js";
+import { transformer_apply, transformer_extended_apply } from "./Transformers.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -22,12 +23,16 @@ export function resolveCompositeActionTemplate(
   currentModel: MetaModel
 // ): CompositeAction {
 ): {
-  resolvedCompositeActionDefinition: CompositeActionDefinition,
+  // resolvedCompositeActionDefinition: CompositeActionDefinition,
+  resolvedCompositeActionDefinition: CompositeAction,
   resolvedCompositeActionTemplates: Record<string,any>
 } {
+  if (!compositeActionTemplate || !(compositeActionTemplate as any)["actionType"]) {
+    throw new Error("resolveCompositeActionTemplate compositeActionTemplate is undefined");
+  }
   const localActionParams = { ...actionParamValues };
   let localContext: Record<string, any> = { ...actionParamValues }; 
-  const compositeActionLabel = (compositeActionTemplate as any).label??"NO_ACTION_LABEL";
+  const compositeActionLabel = (compositeActionTemplate as any).actionLabel??"NO_ACTION_LABEL";
 
   log.info(
     "resolveCompositeActionTemplate compositeActionTemplate",
@@ -62,7 +67,8 @@ export function resolveCompositeActionTemplate(
         "newLocalParameters",
         newLocalParameters
       );
-      const resolvedTemplate = transformer_extended_apply(
+      // const resolvedTemplate = transformer_extended_apply(
+      const resolvedTemplate = transformer_apply(
         "build",
         t[0],
         t[1] as any,
@@ -79,22 +85,33 @@ export function resolveCompositeActionTemplate(
   }
 
   const actionParamsAndTemplates = { ...localActionParams, ...resolvedCompositeActionTemplates };
-  const resolvedCompositeActionDefinition: CompositeActionDefinition = transformer_extended_apply(
+  // const resolvedCompositeActionDefinition: CompositeAction = transformer_extended_apply(
+  const resolvedCompositeActionDefinition: CompositeAction = transformer_apply(
     "build",
     compositeActionLabel,
     (compositeActionTemplate as any).definition as any as TransformerForBuild,
     actionParamsAndTemplates,
     localContext
   ).elementValue;
-
-  // log.info("resolveCompositeActionTemplate", compositeActionLabel, "localActionParams", Object.keys(localActionParams));
   log.info(
     "resolveCompositeActionTemplate", compositeActionLabel, "resolvedCompositeActionDefinition",
     // resolvedCompositeActionDefinition
     JSON.stringify(resolvedCompositeActionDefinition, null, 2)
   );
+
+  const resolvedCompositeAction: CompositeAction = {
+    actionType: "compositeAction",
+    actionName: "sequence",
+    actionLabel: compositeActionLabel,
+    deploymentUuid: (compositeActionTemplate as CompositeAction).deploymentUuid,
+    // templates: resolvedCompositeActionTemplates, // TODO: TEMPLATES IN COMPOSITE ACTION?
+    definition: resolvedCompositeActionDefinition as any,
+  }
+  log.info("resolveCompositeActionTemplate", compositeActionLabel, "resolvedCompositeAction", resolvedCompositeAction);
+
+  // log.info("resolveCompositeActionTemplate", compositeActionLabel, "localActionParams", Object.keys(localActionParams));
   return {
-    resolvedCompositeActionDefinition,
+    resolvedCompositeActionDefinition: resolvedCompositeAction,
     resolvedCompositeActionTemplates,
   };
 

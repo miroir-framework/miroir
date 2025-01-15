@@ -325,6 +325,8 @@ export {
   testCompositeAction,
   TestCompositeActionSuite,
   testCompositeActionSuite,
+  TestCompositeActionTemplateSuite,
+  testCompositeActionTemplateSuite,
   TestCompositeActionTemplate,
   testCompositeActionTemplate,
 }

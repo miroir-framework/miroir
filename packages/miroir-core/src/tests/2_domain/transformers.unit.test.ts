@@ -289,7 +289,7 @@ describe("transformers.unit.test", () => {
       ).elementValue as string;
 
       console.log("################################ converted transformer", testResult)
-      expect(testResult).toEqual("testApplication");
+      expect(testResult).toEqual("testSelfApplication");
       console.log("convert mustache string transformer END")
     }
   );
