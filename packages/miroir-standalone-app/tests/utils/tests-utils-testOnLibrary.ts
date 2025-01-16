@@ -75,7 +75,7 @@ export function testOnLibrary_resetLibraryDeployment(miroirConfig: MiroirConfigC
     actionName: "sequence",
     definition: [
       {
-        compositeActionType: "domainAction",
+        actionType: "domainAction",
         compositeActionStepLabel: "resetLibraryStore",
         domainAction: {
           actionType: "modelAction",
@@ -94,7 +94,7 @@ export function testOnLibrary_deleteLibraryDeployment(miroirConfig: MiroirConfig
     actionName: "sequence",
     definition: [
       {
-        compositeActionType: "domainAction",
+        actionType: "domainAction",
         compositeActionStepLabel: "deleteLibraryStore",
         domainAction: {
           actionType: "storeManagementAction",

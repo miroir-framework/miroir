@@ -166,7 +166,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         actionName: "sequence",
         definition: [
           // {
-          //   compositeActionType: "domainAction",
+          //   actionType: "domainAction",
           //   domainAction: {
           //     actionType: "storeManagementAction",
           //     actionName: "openStore",
@@ -193,49 +193,49 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
           //   }
           // },
           // {
-          //   compositeActionType: "domainAction",
+          //   actionType: "domainAction",
           //   domainAction: {
           //     transformerType: "parameterReference",
           //     referenceName: "createStoreAction",
           //   }
           // },
           // {
-          //   compositeActionType: "domainAction",
+          //   actionType: "domainAction",
           //   domainAction: {
           //     transformerType: "parameterReference",
           //     referenceName: "resetAndInitAction",
           //   }
           // },
           // {
-          //   compositeActionType: "domainAction",
+          //   actionType: "domainAction",
           //   domainAction: {
           //     transformerType: "parameterReference",
           //     referenceName: "createSelfApplicationAction",
           //   }
           // },
           // {
-          //   compositeActionType: "domainAction",
+          //   actionType: "domainAction",
           //   domainAction: {
           //     transformerType: "parameterReference",
           //     referenceName: "createApplicationForAdminAction",
           //   }
           // },
           // {
-          //   compositeActionType: "domainAction",
+          //   actionType: "domainAction",
           //   domainAction: {
           //     transformerType: "parameterReference",
           //     referenceName: "createAdminDeploymentAction",
           //   }
           // },
           // {
-          //   compositeActionType: "domainAction",
+          //   actionType: "domainAction",
           //   domainAction: {
           //     transformerType: "parameterReference",
           //     referenceName: "createNewApplicationMenuAction",
           //   }
           // },
           // {
-          //   compositeActionType: "domainAction",
+          //   actionType: "domainAction",
           //   domainAction: {
           //     transformerType: "parameterReference",
           //     referenceName: "commitAction",
@@ -552,7 +552,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       definition: [
         // createEntity
         {
-          compositeActionType: "domainAction",
+          actionType: "domainAction",
           compositeActionStepLabel: "createEntity",
           domainAction: {
             actionType: "modelAction",
@@ -578,7 +578,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         } as any,
         // createReports
         {
-          compositeActionType: "domainAction",
+          actionType: "domainAction",
           compositeActionStepLabel: "createReports",
           domainAction: {
             actionType: "transactionalInstanceAction",
@@ -619,7 +619,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         },
         // commit
         {
-          compositeActionType: "domainAction",
+          actionType: "domainAction",
           compositeActionStepLabel: "commit",
           domainAction: {
             actionName: "commit",
@@ -637,8 +637,8 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         },
         // instances for new Entity, put in "menuUpdateQueryResult"
         {
-          // compositeActionType: "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
-          compositeActionType: "runBoxedQueryTemplateAction",
+          // actionType: "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
+          actionType: "runBoxedQueryTemplateAction",
           nameGivenToResult: "menuUpdateQueryResult",
           queryTemplate: {
             // actionType: "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
@@ -733,7 +733,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
           }
         },
         {
-          compositeActionType: "domainAction",
+          actionType: "domainAction",
           compositeActionStepLabel: "updateMenu",
           domainAction: {
             actionType: "transactionalInstanceAction",
@@ -772,7 +772,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         },
         // commit
         {
-          compositeActionType: "domainAction",
+          actionType: "domainAction",
           compositeActionStepLabel: "commit",
           domainAction: {
             actionName: "commit",
@@ -786,7 +786,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         },
         // insert imported instances
         {
-          compositeActionType: "domainAction",
+          actionType: "domainAction",
           domainAction: {
             actionType: "instanceAction",
             actionName: "createInstance",
@@ -814,7 +814,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         },
         // rollback / refresh
         {
-          compositeActionType: "domainAction",
+          actionType: "domainAction",
           compositeActionStepLabel: "rollback",
           domainAction: {
             actionName: "rollback",
@@ -1142,7 +1142,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       definition: [
         // createEntity
         {
-          compositeActionType: "domainAction",
+          actionType: "domainAction",
           compositeActionStepLabel: "splitEntity_createEntity",
           domainAction: {
             actionType: "modelAction",
@@ -1168,7 +1168,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         },
         // updateSplittedEntityAction
         {
-          compositeActionType: "domainAction",
+          actionType: "domainAction",
           compositeActionStepLabel: "splitEntity_updateSplittedEntityAction",
           domainAction: {
             actionType: "modelAction",
@@ -1218,7 +1218,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         },
         // commit
         {
-          compositeActionType: "domainAction",
+          actionType: "domainAction",
           compositeActionStepLabel: "splitEntity_updateSplittedEntityAction_commit",
           domainAction: {
             actionName: "commit",
@@ -1232,7 +1232,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         },
         // insert createEntity_newEntity "List" and "Details" Reports
         {
-          compositeActionType: "domainAction",
+          actionType: "domainAction",
           compositeActionStepLabel: "splitEntity_createReports",
           domainAction: {
             actionType: "transactionalInstanceAction",
@@ -1273,7 +1273,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         },
         // commit
         {
-          compositeActionType: "domainAction",
+          actionType: "domainAction",
           compositeActionStepLabel: "splitEntity_createReports_commit",
           domainAction: {
             actionName: "commit",
@@ -1287,7 +1287,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         },
         // refresh / rollback
         {
-          compositeActionType: "domainAction",
+          actionType: "domainAction",
           compositeActionStepLabel: "splitEntity_refresh",
           domainAction: {
             actionName: "rollback",
@@ -1323,8 +1323,8 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       definition: [
         // find unique municipalities from fountains
         {
-          // compositeActionType: "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
-          compositeActionType: "runBoxedQueryTemplateAction",
+          // actionType: "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
+          actionType: "runBoxedQueryTemplateAction",
           compositeActionStepLabel: "calculateNewEntityDefinionAndReports",
           nameGivenToResult: newEntityName,
           queryTemplate: {
@@ -1428,7 +1428,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         // } as any, // TODO: why is type inferrence failing?
         // update Menu
         {
-          compositeActionType: "domainAction",
+          actionType: "domainAction",
           compositeActionStepLabel: "updateMenu",
           domainAction: {
             actionType: "transactionalInstanceAction",
@@ -1481,7 +1481,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         },
         // commit
         {
-          compositeActionType: "domainAction",
+          actionType: "domainAction",
           compositeActionStepLabel: "insertMunicipalities_commitForUpdateMenu",
           domainAction: {
             actionName: "commit",
@@ -1495,8 +1495,8 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         },
         // update splitted entity instances with foreign key of instances of new entity
         {
-          // compositeActionType: "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
-          compositeActionType: "runBoxedQueryTemplateAction",
+          // actionType: "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
+          actionType: "runBoxedQueryTemplateAction",
           compositeActionStepLabel: "calculateEntityInstances",
           nameGivenToResult: newEntityName,
           queryTemplate: {
@@ -1675,7 +1675,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         // } as any, // TODO: why is type inferrence failing?
         // insert new Entity instance with new uuid for each
         {
-          compositeActionType: "domainAction",
+          actionType: "domainAction",
           compositeActionStepLabel: "insertMunicipalities",
           domainAction: {
             actionType: "instanceAction",
@@ -1708,7 +1708,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         },
         // update SplittedEntity with new FK attribute
         {
-          compositeActionType: "domainAction",
+          actionType: "domainAction",
           compositeActionStepLabel: "updateFountains",
           domainAction: {
             actionType: 'instanceAction',
@@ -2000,7 +2000,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     definition: [
       // openStoreAction
       {
-        compositeActionType: "domainAction",
+        actionType: "domainAction",
         compositeActionStepLabel: "openStoreAction",
         domainAction: {
           actionType: "storeManagementAction",
@@ -2030,7 +2030,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       },
       // createStoreAction
       {
-        compositeActionType: "domainAction",
+        actionType: "domainAction",
         compositeActionStepLabel: "createStoreAction",
         domainAction: {
           actionType: "storeManagementAction",
@@ -2052,7 +2052,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       },
       // resetAndInitAction
       {
-        compositeActionType: "domainAction",
+        actionType: "domainAction",
         compositeActionStepLabel: "resetAndInitAction",
         domainAction: {
           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
@@ -2073,7 +2073,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       },
       // createSelfApplicationAction
       {
-        compositeActionType: "domainAction",
+        actionType: "domainAction",
         compositeActionStepLabel: "createSelfApplicationAction",
         domainAction: {
           actionType: "instanceAction",
@@ -2107,7 +2107,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       },
       // createApplicationForAdminAction
       {
-        compositeActionType: "domainAction",
+        actionType: "domainAction",
         compositeActionStepLabel: "createApplicationForAdminAction",
         domainAction: {
           actionType: "instanceAction",
@@ -2145,7 +2145,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       },
       // createAdminDeploymentAction
       {
-        compositeActionType: "domainAction",
+        actionType: "domainAction",
         compositeActionStepLabel: "createAdminDeploymentAction",
         domainAction: {
           actionType: "instanceAction",
@@ -2183,7 +2183,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       },
       // createNewApplicationMenuAction
       {
-        compositeActionType: "domainAction",
+        actionType: "domainAction",
         compositeActionStepLabel: "createNewApplicationMenuAction",
         domainAction: {
           actionType: "instanceAction",
@@ -2221,7 +2221,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       },
       // commitAction
       {
-        compositeActionType: "domainAction",
+        actionType: "domainAction",
         compositeActionStepLabel: "commitAction",
         domainAction: {
           actionName: "commit",

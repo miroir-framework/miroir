@@ -237,7 +237,7 @@ const adminConfigurationDeploymentParis = {
 //   //     definition: [
 //   //       // createEntity
 //   //       {
-//   //         compositeActionType: "domainAction",
+//   //         actionType: "domainAction",
 //   //         compositeActionStepLabel: "createEntity",
 //   //         domainAction: {
 //   //           actionType: "modelAction",
@@ -263,7 +263,7 @@ const adminConfigurationDeploymentParis = {
 //   //       } as any,
 //   //       // createReports
 //   //       {
-//   //         compositeActionType: "domainAction",
+//   //         actionType: "domainAction",
 //   //         compositeActionStepLabel: "createReports",
 //   //         domainAction: {
 //   //           actionType: "transactionalInstanceAction",
@@ -304,7 +304,7 @@ const adminConfigurationDeploymentParis = {
 //   //       },
 //   //       // commit
 //   //       {
-//   //         compositeActionType: "domainAction",
+//   //         actionType: "domainAction",
 //   //         compositeActionStepLabel: "commit",
 //   //         domainAction: {
 //   //           actionName: "commit",
@@ -322,7 +322,7 @@ const adminConfigurationDeploymentParis = {
 //   //       },
 //   //       // instances for new Entity, put in "menuUpdateQueryResult"
 //   //       {
-//   //         compositeActionType: "runBoxedQueryTemplateAction",
+//   //         actionType: "runBoxedQueryTemplateAction",
           
 //   //         nameGivenToResult: "menuUpdateQueryResult",
 //   //         queryTemplate: {
@@ -417,7 +417,7 @@ const adminConfigurationDeploymentParis = {
 //   //         }
 //   //       },
 //   //       {
-//   //         compositeActionType: "domainAction",
+//   //         actionType: "domainAction",
 //   //         compositeActionStepLabel: "updateMenu",
 //   //         domainAction: {
 //   //           actionType: "transactionalInstanceAction",
@@ -456,7 +456,7 @@ const adminConfigurationDeploymentParis = {
 //   //       },
 //   //       // commit
 //   //       {
-//   //         compositeActionType: "domainAction",
+//   //         actionType: "domainAction",
 //   //         compositeActionStepLabel: "commit",
 //   //         domainAction: {
 //   //           actionName: "commit",
@@ -470,7 +470,7 @@ const adminConfigurationDeploymentParis = {
 //   //       },
 //   //       // insert imported instances
 //   //       {
-//   //         compositeActionType: "domainAction",
+//   //         actionType: "domainAction",
 //   //         domainAction: {
 //   //           actionType: "instanceAction",
 //   //           actionName: "createInstance",
@@ -498,7 +498,7 @@ const adminConfigurationDeploymentParis = {
 //   //       },
 //   //       // rollback / refresh
 //   //       {
-//   //         compositeActionType: "domainAction",
+//   //         actionType: "domainAction",
 //   //         compositeActionStepLabel: "rollback",
 //   //         domainAction: {
 //   //           actionName: "rollback",
@@ -577,7 +577,7 @@ const adminConfigurationDeploymentParis = {
 
 //   //   const expectedResult = [
 //   //     {
-//   //       compositeActionType: "domainAction",
+//   //       actionType: "domainAction",
 //   //       compositeActionStepLabel: "createEntity",
 //   //       domainAction: {
 //   //         actionType: "modelAction",
@@ -647,7 +647,7 @@ const adminConfigurationDeploymentParis = {
 //   //       },
 //   //     },
 //   //     {
-//   //       compositeActionType: "domainAction",
+//   //       actionType: "domainAction",
 //   //       compositeActionStepLabel: "createReports",
 //   //       domainAction: {
 //   //         actionType: "transactionalInstanceAction",
@@ -735,7 +735,7 @@ const adminConfigurationDeploymentParis = {
 //   //       },
 //   //     },
 //   //     {
-//   //       compositeActionType: "domainAction",
+//   //       actionType: "domainAction",
 //   //       compositeActionStepLabel: "commit",
 //   //       domainAction: {
 //   //         actionName: "commit",
@@ -745,7 +745,7 @@ const adminConfigurationDeploymentParis = {
 //   //       },
 //   //     },
 //   //     {
-//   //       compositeActionType: "runBoxedQueryTemplateAction",
+//   //       actionType: "runBoxedQueryTemplateAction",
 //   //       nameGivenToResult: "menuUpdateQueryResult",
 //   //       queryTemplate: {
 //   //         actionType: "runBoxedQueryTemplateAction",
@@ -806,7 +806,7 @@ const adminConfigurationDeploymentParis = {
 //   //       },
 //   //     },
 //   //     {
-//   //       compositeActionType: "domainAction",
+//   //       actionType: "domainAction",
 //   //       compositeActionStepLabel: "updateMenu",
 //   //       domainAction: {
 //   //         actionType: "transactionalInstanceAction",
@@ -841,7 +841,7 @@ const adminConfigurationDeploymentParis = {
 //   //       },
 //   //     },
 //   //     {
-//   //       compositeActionType: "domainAction",
+//   //       actionType: "domainAction",
 //   //       compositeActionStepLabel: "commit",
 //   //       domainAction: {
 //   //         actionName: "commit",
@@ -851,7 +851,7 @@ const adminConfigurationDeploymentParis = {
 //   //       },
 //   //     },
 //   //     {
-//   //       compositeActionType: "domainAction",
+//   //       actionType: "domainAction",
 //   //       domainAction: {
 //   //         actionType: "instanceAction",
 //   //         actionName: "createInstance",
@@ -869,7 +869,7 @@ const adminConfigurationDeploymentParis = {
 //   //       },
 //   //     },
 //   //     {
-//   //       compositeActionType: "domainAction",
+//   //       actionType: "domainAction",
 //   //       compositeActionStepLabel: "rollback",
 //   //       domainAction: {
 //   //         actionName: "rollback",
@@ -963,7 +963,7 @@ const adminConfigurationDeploymentParis = {
 //       definition: [
 //         // update splitted entity instances with foreign key of instances of new entity
 //         {
-//           compositeActionType: "runBoxedQueryTemplateAction",
+//           actionType: "runBoxedQueryTemplateAction",
 //           compositeActionStepLabel: "calculateEntityInstances",
 //           nameGivenToResult: newEntityName,
 //           queryTemplate: {
@@ -1023,7 +1023,7 @@ const adminConfigurationDeploymentParis = {
 //       templates: {},
 //       definition: [
 //         {
-//           compositeActionType: "runBoxedQueryTemplateAction",
+//           actionType: "runBoxedQueryTemplateAction",
 //           compositeActionStepLabel: "calculateEntityInstances",
 //           nameGivenToResult: "Test2",
 //           queryTemplate: {
@@ -1113,7 +1113,7 @@ describe('resolveTestCompositeActionTemplate', () => {
         definition: [
           // createEntity
           {
-            compositeActionType: "domainAction",
+            actionType: "domainAction",
             compositeActionStepLabel: "createEntity",
             domainAction: {
               actionType: "modelAction",
@@ -1200,42 +1200,42 @@ describe('resolveTestCompositeActionTemplate', () => {
         // templates: (testCompositeActionTemplate.compositeActionTemplate as any).templates,
         definition: [
           {
-            compositeActionType: "domainAction",
-            compositeActionStepLabel: "createEntity",
-            domainAction: {
-              actionType: "modelAction",
-              actionName: "createEntity",
-              deploymentUuid: currentDeploymentUuid,
-              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              entities: [
-                {
-                  entity: {
-                    uuid: actionEffectiveParamsCreateEntity.createEntity_newEntityUuid,
-                    parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                    selfApplication: currentApplicationUuid,
-                    description: "newEntityDescription",
-                    name: "newEntityName",
-                  },
-                  entityDefinition: {
-                    name: "newEntityName",
-                    uuid: actionEffectiveParamsCreateEntity.createEntity_newEntityDefinitionUuid,
-                    parentName: "EntityDefinition",
-                    parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
-                    entityUuid: actionEffectiveParamsCreateEntity.createEntity_newEntityUuid,
-                    conceptLevel: "Model",
-                    defaultInstanceDetailsReportUuid:
-                      actionEffectiveParamsCreateEntity.createEntity_newEntityDetailsReportUuid,
-                    jzodSchema: {
-                      type: "object",
-                      definition: {
-                        a: { type: "string" },
-                        b: { type: "number" },
-                      },
+            // actionType: "domainAction",
+            // compositeActionStepLabel: "createEntity",
+            // domainAction: {
+            actionType: "modelAction",
+            actionName: "createEntity",
+            deploymentUuid: currentDeploymentUuid,
+            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+            entities: [
+              {
+                entity: {
+                  uuid: actionEffectiveParamsCreateEntity.createEntity_newEntityUuid,
+                  parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                  selfApplication: currentApplicationUuid,
+                  description: "newEntityDescription",
+                  name: "newEntityName",
+                },
+                entityDefinition: {
+                  name: "newEntityName",
+                  uuid: actionEffectiveParamsCreateEntity.createEntity_newEntityDefinitionUuid,
+                  parentName: "EntityDefinition",
+                  parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+                  entityUuid: actionEffectiveParamsCreateEntity.createEntity_newEntityUuid,
+                  conceptLevel: "Model",
+                  defaultInstanceDetailsReportUuid:
+                    actionEffectiveParamsCreateEntity.createEntity_newEntityDetailsReportUuid,
+                  jzodSchema: {
+                    type: "object",
+                    definition: {
+                      a: { type: "string" },
+                      b: { type: "number" },
                     },
                   },
                 },
-              ],
-            },
+              },
+            ],
+          // },
           },
         ],
       },

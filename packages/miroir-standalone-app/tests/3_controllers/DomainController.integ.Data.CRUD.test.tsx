@@ -1,4 +1,4 @@
-import { describe, expect } from 'vitest';
+import { describe, expect } from "vitest";
 
 // import process from "process";
 
@@ -34,30 +34,25 @@ import {
   publisher3,
   resetAndInitApplicationDeployment,
   SelfApplicationDeploymentConfiguration,
-  selfApplicationDeploymentLibrary,
   selfApplicationDeploymentMiroir,
   selfApplicationLibrary,
   selfApplicationModelBranchLibraryMasterBranch,
-  selfApplicationStoreBasedConfigurationLibrary,
   selfApplicationVersionLibraryInitialVersion,
   StoreUnitConfiguration,
-  TestSuiteResult
+  TestSuiteResult,
 } from "miroir-core";
 
 import {
   adminApplicationDeploymentConfigurations,
   createDeploymentCompositeAction,
   deleteAndCloseApplicationDeployments,
-  deploymentConfigurations,
   displayTestSuiteResults,
   loadTestConfigFiles,
   resetAndinitializeDeploymentCompositeAction,
   runTestOrTestSuite,
   setupMiroirTest,
-  TestActionParams
+  TestActionParams,
 } from "../utils/tests-utils.js";
-
-
 
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
@@ -67,18 +62,17 @@ import { miroirAppStartup } from "../../src/startup.js";
 import { LocalCache } from "miroir-localcache-redux";
 
 import { ConfigurationService, defaultMiroirMetaModel } from "miroir-core";
-import { AdminApplicationDeploymentConfiguration } from 'miroir-core/src/0_interfaces/1_core/StorageConfiguration.js';
-import { LoggerOptions } from 'miroir-core/src/0_interfaces/4-services/LoggerInterface.js';
-import { loglevelnext } from '../../src/loglevelnextImporter.js';
+import { AdminApplicationDeploymentConfiguration } from "miroir-core/src/0_interfaces/1_core/StorageConfiguration.js";
+import { LoggerOptions } from "miroir-core/src/0_interfaces/4-services/LoggerInterface.js";
+import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import {
   ApplicationEntitiesAndInstances,
   testOnLibrary_deleteLibraryDeployment,
-  testOnLibrary_resetLibraryDeployment
+  testOnLibrary_resetLibraryDeployment,
 } from "../utils/tests-utils-testOnLibrary.js";
-import { cleanLevel, packageName } from './constants.js';
+import { cleanLevel, packageName } from "./constants.js";
 
-
-const env:any = (import.meta as any).env
+const env: any = (import.meta as any).env;
 
 console.log("@@@@@@@@@@@@@@@@@@ env", env);
 
@@ -86,49 +80,45 @@ const myConsoleLog = (...args: any[]) => console.log(fileName, ...args);
 const fileName = "DomainController.integ.Data.CRUD.test";
 myConsoleLog(fileName, "received env", JSON.stringify(env, null, 2));
 
-let miroirConfig:any;
-let loggerOptions:LoggerOptions;
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, fileName)
-).then((logger: LoggerInterface) => {log = logger});
+let miroirConfig: any;
+let loggerOptions: LoggerOptions;
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, fileName)).then(
+  (logger: LoggerInterface) => {
+    log = logger;
+  }
+);
 
 miroirAppStartup();
 miroirCoreStartup();
 miroirFileSystemStoreSectionStartup();
 miroirIndexedDbStoreSectionStartup();
 miroirPostgresStoreSectionStartup();
-ConfigurationService.registerTestImplementation({expect: expect as any});
+ConfigurationService.registerTestImplementation({ expect: expect as any });
 
-const {miroirConfig: miroirConfigParam, logConfig} = await loadTestConfigFiles(env)
+const { miroirConfig: miroirConfigParam, logConfig } = await loadTestConfigFiles(env);
 miroirConfig = miroirConfigParam;
 loggerOptions = logConfig;
 myConsoleLog("received miroirConfig", JSON.stringify(miroirConfig, null, 2));
-myConsoleLog(
-  "received miroirConfig.client",
-  JSON.stringify(miroirConfig.client, null, 2)
-);
+myConsoleLog("received miroirConfig.client", JSON.stringify(miroirConfig.client, null, 2));
 myConsoleLog("received loggerOptions", JSON.stringify(loggerOptions, null, 2));
-MiroirLoggerFactory.startRegisteredLoggers(
-  loglevelnext,
-  loggerOptions,
-);
+MiroirLoggerFactory.startRegisteredLoggers(loglevelnext, loggerOptions);
 myConsoleLog("started registered loggers DONE");
 
 const globalTimeOut = 30000;
 // const globalTimeOut = 10^9;
 const miroirtDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
-? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid]
-: miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentMiroir.uuid];
+  ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid]
+  : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentMiroir.uuid];
 
 const testApplicationDeploymentUuid = adminConfigurationDeploymentLibrary.uuid;
 
 const testDeploymentStorageConfiguration = miroirConfig.client.emulateServer
-? miroirConfig.client.deploymentStorageConfig[testApplicationDeploymentUuid]
-: miroirConfig.client.serverConfig.storeSectionConfiguration[testApplicationDeploymentUuid];
+  ? miroirConfig.client.deploymentStorageConfig[testApplicationDeploymentUuid]
+  : miroirConfig.client.serverConfig.storeSectionConfiguration[testApplicationDeploymentUuid];
 
-const typedAdminConfigurationDeploymentLibrary:AdminApplicationDeploymentConfiguration = adminConfigurationDeploymentLibrary as any;
-
+const typedAdminConfigurationDeploymentLibrary: AdminApplicationDeploymentConfiguration =
+  adminConfigurationDeploymentLibrary as any;
 
 let domainController: DomainControllerInterface;
 let localCache: LocalCache;
@@ -136,7 +126,7 @@ let miroirContext: MiroirContextInterface;
 let persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface;
 let globalTestSuiteResults: TestSuiteResult = {};
 
-export const libraryEntitiesAndInstancesWithoutBook3: ApplicationEntitiesAndInstances  = [
+export const libraryEntitiesAndInstancesWithoutBook3: ApplicationEntitiesAndInstances = [
   {
     entity: entityAuthor as MetaEntity,
     entityDefinition: entityDefinitionAuthor as EntityDefinition,
@@ -161,63 +151,54 @@ export const libraryEntitiesAndInstancesWithoutBook3: ApplicationEntitiesAndInst
   },
 ];
 
+beforeAll(async () => {
+  // Establish requests interception layer before all tests.
+  myConsoleLog("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ beforeAll");
+  const {
+    persistenceStoreControllerManagerForClient: localpersistenceStoreControllerManager,
+    domainController: localdomainController,
+    localCache: locallocalCache,
+    miroirContext: localmiroirContext,
+  } = await setupMiroirTest(miroirConfig);
 
+  persistenceStoreControllerManager = localpersistenceStoreControllerManager;
+  domainController = localdomainController;
+  localCache = locallocalCache;
+  miroirContext = localmiroirContext;
 
-beforeAll(
-  async () => {
-    // Establish requests interception layer before all tests.
-    myConsoleLog("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ beforeAll");
-    const {
-      persistenceStoreControllerManagerForClient: localpersistenceStoreControllerManager,
-      domainController: localdomainController,
-      localCache: locallocalCache,
-      miroirContext: localmiroirContext,
-    } = await setupMiroirTest(miroirConfig);
-
-    persistenceStoreControllerManager = localpersistenceStoreControllerManager;
-    domainController = localdomainController;
-    localCache = locallocalCache;
-    miroirContext = localmiroirContext;
-
-    const createMiroirDeploymentCompositeAction = createDeploymentCompositeAction(
-      adminConfigurationDeploymentMiroir.uuid,
-      miroirtDeploymentStorageConfiguration,
-    );
-    const createDeploymentResult = await domainController.handleCompositeAction(
-      createMiroirDeploymentCompositeAction,
-      defaultMiroirMetaModel
-    );
-    if (createDeploymentResult.status !== "ok") {
-      throw new Error("Failed to create Miroir deployment: " + JSON.stringify(createDeploymentResult));
-    }
-    myConsoleLog("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ beforeAll DONE");
-
-    return Promise.resolve();
+  const createMiroirDeploymentCompositeAction = createDeploymentCompositeAction(
+    adminConfigurationDeploymentMiroir.uuid,
+    miroirtDeploymentStorageConfiguration
+  );
+  const createDeploymentResult = await domainController.handleCompositeAction(
+    createMiroirDeploymentCompositeAction,
+    defaultMiroirMetaModel
+  );
+  if (createDeploymentResult.status !== "ok") {
+    throw new Error("Failed to create Miroir deployment: " + JSON.stringify(createDeploymentResult));
   }
-)
+  myConsoleLog("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ beforeAll DONE");
+
+  return Promise.resolve();
+});
 
 // TODO: move it in TestCompositeAction.beforeEach
-beforeEach(
-  async () => {
-    await resetAndInitApplicationDeployment(domainController, [
-      selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
-    ]);
-    document.body.innerHTML = '';
-  }
-)
+beforeEach(async () => {
+  await resetAndInitApplicationDeployment(domainController, [
+    selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
+  ]);
+  document.body.innerHTML = "";
+});
 
-afterAll(
-  async () => {
-    await deleteAndCloseApplicationDeployments(
-      miroirConfig,
-      domainController,
-      // deploymentConfigurations,
-      adminApplicationDeploymentConfigurations
-    );
-    displayTestSuiteResults(Object.keys(testActions)[0]);
-  }
-)
-
+afterAll(async () => {
+  await deleteAndCloseApplicationDeployments(
+    miroirConfig,
+    domainController,
+    // deploymentConfigurations,
+    adminApplicationDeploymentConfigurations
+  );
+  displayTestSuiteResults(Object.keys(testActions)[0]);
+});
 
 const testActions: Record<string, TestActionParams> = {
   "DomainController.integ.Data.CRUD": {
@@ -227,10 +208,7 @@ const testActions: Record<string, TestActionParams> = {
     testCompositeAction: {
       testType: "testCompositeActionSuite",
       testLabel: "DomainController.integ.Data.CRUD",
-      beforeAll: createDeploymentCompositeAction(
-        testApplicationDeploymentUuid,
-        testDeploymentStorageConfiguration
-      ),
+      beforeAll: createDeploymentCompositeAction(testApplicationDeploymentUuid, testDeploymentStorageConfiguration),
       beforeEach: resetAndinitializeDeploymentCompositeAction(
         adminConfigurationDeploymentLibrary.uuid,
         {
@@ -240,7 +218,7 @@ const testActions: Record<string, TestActionParams> = {
           applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,
           applicationVersion: selfApplicationVersionLibraryInitialVersion,
         },
-        libraryEntitiesAndInstancesWithoutBook3,
+        libraryEntitiesAndInstancesWithoutBook3
       ),
       afterEach: testOnLibrary_resetLibraryDeployment(miroirConfig),
       afterAll: testOnLibrary_deleteLibraryDeployment(miroirConfig),
@@ -254,28 +232,22 @@ const testActions: Record<string, TestActionParams> = {
             actionName: "sequence",
             definition: [
               {
-                compositeActionType: "domainAction",
-                compositeActionStepLabel: "refreshMiroirLocalCache",
-                domainAction: {
-                  actionName: "rollback",
-                  actionType: "modelAction",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-                },
+                actionType: "modelAction",
+                actionName: "rollback",
+                actionLabel: "refreshMiroirLocalCache",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
               },
               {
-                compositeActionType: "domainAction",
-                compositeActionStepLabel: "refreshLibraryLocalCache",
-                domainAction: {
-                  actionName: "rollback",
-                  actionType: "modelAction",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: testApplicationDeploymentUuid,
-                },
+                actionName: "rollback",
+                actionLabel: "refreshLibraryLocalCache",
+                actionType: "modelAction",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                deploymentUuid: testApplicationDeploymentUuid,
               },
               {
-                compositeActionType: "runBoxedExtractorOrQueryAction",
-                compositeActionStepLabel: "calculateNewEntityDefinionAndReports",
+                actionType: "compositeRunBoxedExtractorOrQueryAction",
+                actionLabel: "calculateNewEntityDefinionAndReports",
                 nameGivenToResult: "entityBookList",
                 query: {
                   actionType: "runBoxedExtractorOrQueryAction",
@@ -311,8 +283,8 @@ const testActions: Record<string, TestActionParams> = {
           testCompositeActionAssertions: [
             // TODO: test length of entityBookList.books!
             {
-              compositeActionType: "runTestCompositeActionAssertion",
-              compositeActionStepLabel: "checkNumberOfBooks",
+              actionType: "compositeRunTestAssertion",
+              actionLabel: "checkNumberOfBooks",
               nameGivenToResult: "checkNumberOfBooks",
               testAssertion: {
                 testType: "testAssertion",
@@ -333,8 +305,8 @@ const testActions: Record<string, TestActionParams> = {
               },
             },
             {
-              compositeActionType: "runTestCompositeActionAssertion",
-              compositeActionStepLabel: "checkEntityBooks",
+              actionType: "compositeRunTestAssertion",
+              actionLabel: "checkEntityBooks",
               nameGivenToResult: "checkEntityBooks",
               testAssertion: {
                 testType: "testAssertion",
@@ -363,47 +335,38 @@ const testActions: Record<string, TestActionParams> = {
             actionName: "sequence",
             definition: [
               {
-                compositeActionType: "domainAction",
-                compositeActionStepLabel: "refreshMiroirLocalCache",
-                domainAction: {
-                  actionName: "rollback",
-                  actionType: "modelAction",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-                },
+                actionName: "rollback",
+                actionType: "modelAction",
+                actionLabel: "refreshMiroirLocalCache",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
               },
               {
-                compositeActionType: "domainAction",
-                compositeActionStepLabel: "refreshLibraryLocalCache",
-                domainAction: {
-                  actionName: "rollback",
-                  actionType: "modelAction",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: testApplicationDeploymentUuid,
-                },
+                actionName: "rollback",
+                actionType: "modelAction",
+                actionLabel: "refreshLibraryLocalCache",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                deploymentUuid: testApplicationDeploymentUuid,
               },
               {
-                compositeActionType: "domainAction",
-                compositeActionStepLabel: "addBook3",
-                domainAction: {
-                  actionType: "instanceAction",
-                  actionName: "createInstance",
-                  endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-                  applicationSection: "data",
-                  deploymentUuid: testApplicationDeploymentUuid,
-                  objects: [
-                    {
-                      parentName: book3.parentName,
-                      parentUuid: book3.parentUuid,
-                      applicationSection: "data",
-                      instances: [book3 as EntityInstance],
-                    },
-                  ],
-                },
+                actionType: "instanceAction",
+                actionName: "createInstance",
+                actionLabel: "addBook3",
+                endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                applicationSection: "data",
+                deploymentUuid: testApplicationDeploymentUuid,
+                objects: [
+                  {
+                    parentName: book3.parentName,
+                    parentUuid: book3.parentUuid,
+                    applicationSection: "data",
+                    instances: [book3 as EntityInstance],
+                  },
+                ],
               },
               {
-                compositeActionType: "runBoxedExtractorOrQueryAction",
-                compositeActionStepLabel: "calculateNewEntityDefinionAndReports",
+                actionType: "compositeRunBoxedExtractorOrQueryAction",
+                actionLabel: "calculateNewEntityDefinionAndReports",
                 nameGivenToResult: "entityBookList",
                 query: {
                   actionType: "runBoxedExtractorOrQueryAction",
@@ -439,8 +402,8 @@ const testActions: Record<string, TestActionParams> = {
           testCompositeActionAssertions: [
             // TODO: test length of entityBookList.books!
             {
-              compositeActionType: "runTestCompositeActionAssertion",
-              compositeActionStepLabel: "checkNumberOfBooks",
+              actionType: "compositeRunTestAssertion",
+              actionLabel: "checkNumberOfBooks",
               nameGivenToResult: "checkNumberOfBooks",
               testAssertion: {
                 testType: "testAssertion",
@@ -461,22 +424,15 @@ const testActions: Record<string, TestActionParams> = {
               },
             },
             {
-              compositeActionType: "runTestCompositeActionAssertion",
-              compositeActionStepLabel: "checkEntityBooks",
+              actionType: "compositeRunTestAssertion",
+              actionLabel: "checkEntityBooks",
               nameGivenToResult: "checkEntityBooks",
               testAssertion: {
                 testType: "testAssertion",
                 testLabel: "checkEntityBooks",
                 definition: {
                   resultAccessPath: ["entityBookList", "books"],
-                  expectedValue: [
-                    book3,
-                    book4,
-                    book6,
-                    book5,
-                    book1,
-                    book2,
-                  ],
+                  expectedValue: [book3, book4, book6, book5, book1, book2],
                 },
               },
             },
@@ -491,47 +447,38 @@ const testActions: Record<string, TestActionParams> = {
             actionName: "sequence",
             definition: [
               {
-                compositeActionType: "domainAction",
-                compositeActionStepLabel: "refreshMiroirLocalCache",
-                domainAction: {
-                  actionName: "rollback",
-                  actionType: "modelAction",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-                },
+                actionName: "rollback",
+                actionType: "modelAction",
+                actionLabel: "refreshMiroirLocalCache",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
               },
               {
-                compositeActionType: "domainAction",
-                compositeActionStepLabel: "refreshLibraryLocalCache",
-                domainAction: {
-                  actionName: "rollback",
-                  actionType: "modelAction",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: testApplicationDeploymentUuid,
-                },
+                actionType: "modelAction",
+                actionName: "rollback",
+                actionLabel: "refreshLibraryLocalCache",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                deploymentUuid: testApplicationDeploymentUuid,
               },
               {
-                compositeActionType: "domainAction",
-                compositeActionStepLabel: "addBook3",
-                domainAction: {
-                  actionType: "instanceAction",
-                  actionName: "createInstance",
-                  endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-                  applicationSection: "data",
-                  deploymentUuid: testApplicationDeploymentUuid,
-                  objects: [
-                    {
-                      parentName: book3.parentName,
-                      parentUuid: book3.parentUuid,
-                      applicationSection: "data",
-                      instances: [book3 as EntityInstance],
-                    },
-                  ],
-                },
+                actionType: "instanceAction",
+                actionName: "createInstance",
+                actionLabel: "addBook3",
+                endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                applicationSection: "data",
+                deploymentUuid: testApplicationDeploymentUuid,
+                objects: [
+                  {
+                    parentName: book3.parentName,
+                    parentUuid: book3.parentUuid,
+                    applicationSection: "data",
+                    instances: [book3 as EntityInstance],
+                  },
+                ],
               },
               {
-                compositeActionType: "runBoxedExtractorOrQueryAction",
-                compositeActionStepLabel: "calculateNewEntityDefinionAndReports",
+                actionType: "compositeRunBoxedExtractorOrQueryAction",
+                actionLabel: "calculateNewEntityDefinionAndReports",
                 nameGivenToResult: "entityBookList",
                 query: {
                   actionType: "runBoxedExtractorOrQueryAction",
@@ -567,8 +514,8 @@ const testActions: Record<string, TestActionParams> = {
           testCompositeActionAssertions: [
             // TODO: test length of entityBookList.books!
             {
-              compositeActionType: "runTestCompositeActionAssertion",
-              compositeActionStepLabel: "checkNumberOfBooks",
+              actionType: "compositeRunTestAssertion",
+              actionLabel: "checkNumberOfBooks",
               nameGivenToResult: "checkNumberOfBooks",
               testAssertion: {
                 testType: "testAssertion",
@@ -589,22 +536,15 @@ const testActions: Record<string, TestActionParams> = {
               },
             },
             {
-              compositeActionType: "runTestCompositeActionAssertion",
-              compositeActionStepLabel: "checkEntityBooks",
+              actionType: "compositeRunTestAssertion",
+              actionLabel: "checkEntityBooks",
               nameGivenToResult: "checkEntityBooks",
               testAssertion: {
                 testType: "testAssertion",
                 testLabel: "checkEntityBooks",
                 definition: {
                   resultAccessPath: ["entityBookList", "books"],
-                  expectedValue: [
-                    book3,
-                    book4,
-                    book6,
-                    book5,
-                    book1,
-                    book2,
-                  ],
+                  expectedValue: [book3, book4, book6, book5, book1, book2],
                 },
               },
             },
@@ -619,47 +559,38 @@ const testActions: Record<string, TestActionParams> = {
             actionName: "sequence",
             definition: [
               {
-                compositeActionType: "domainAction",
-                compositeActionStepLabel: "refreshMiroirLocalCache",
-                domainAction: {
-                  actionName: "rollback",
-                  actionType: "modelAction",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-                },
+                actionName: "rollback",
+                actionType: "modelAction",
+                actionLabel: "refreshMiroirLocalCache",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
               },
               {
-                compositeActionType: "domainAction",
-                compositeActionStepLabel: "refreshLibraryLocalCache",
-                domainAction: {
-                  actionName: "rollback",
-                  actionType: "modelAction",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: testApplicationDeploymentUuid,
-                },
+                actionName: "rollback",
+                actionType: "modelAction",
+                actionLabel: "refreshLibraryLocalCache",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                deploymentUuid: testApplicationDeploymentUuid,
               },
               {
-                compositeActionType: "domainAction",
-                compositeActionStepLabel: "deleteBook2",
-                domainAction: {
-                  actionType: "instanceAction",
-                  actionName: "deleteInstance",
-                  endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-                  applicationSection: "data",
-                  deploymentUuid: testApplicationDeploymentUuid,
-                  objects: [
-                    {
-                      parentName: book2.parentName,
-                      parentUuid: book2.parentUuid,
-                      applicationSection: "data",
-                      instances: [book2 as EntityInstance],
-                    },
-                  ],
-                },
+                actionType: "instanceAction",
+                actionName: "deleteInstance",
+                actionLabel: "deleteBook2",
+                endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                applicationSection: "data",
+                deploymentUuid: testApplicationDeploymentUuid,
+                objects: [
+                  {
+                    parentName: book2.parentName,
+                    parentUuid: book2.parentUuid,
+                    applicationSection: "data",
+                    instances: [book2 as EntityInstance],
+                  },
+                ],
               },
               {
-                compositeActionType: "runBoxedExtractorOrQueryAction",
-                compositeActionStepLabel: "calculateNewEntityDefinionAndReports",
+                actionType: "compositeRunBoxedExtractorOrQueryAction",
+                actionLabel: "calculateNewEntityDefinionAndReports",
                 nameGivenToResult: "entityBookList",
                 query: {
                   actionType: "runBoxedExtractorOrQueryAction",
@@ -695,8 +626,8 @@ const testActions: Record<string, TestActionParams> = {
           testCompositeActionAssertions: [
             // TODO: test length of entityBookList.books!
             {
-              compositeActionType: "runTestCompositeActionAssertion",
-              compositeActionStepLabel: "checkNumberOfBooks",
+              actionType: "compositeRunTestAssertion",
+              actionLabel: "checkNumberOfBooks",
               nameGivenToResult: "checkNumberOfBooks",
               testAssertion: {
                 testType: "testAssertion",
@@ -717,8 +648,8 @@ const testActions: Record<string, TestActionParams> = {
               },
             },
             {
-              compositeActionType: "runTestCompositeActionAssertion",
-              compositeActionStepLabel: "checkEntityBooks",
+              actionType: "compositeRunTestAssertion",
+              actionLabel: "checkEntityBooks",
               nameGivenToResult: "checkEntityBooks",
               testAssertion: {
                 testType: "testAssertion",
@@ -747,57 +678,45 @@ const testActions: Record<string, TestActionParams> = {
             actionName: "sequence",
             definition: [
               {
-                compositeActionType: "domainAction",
-                compositeActionStepLabel: "refreshMiroirLocalCache",
-                domainAction: {
-                  actionName: "rollback",
-                  actionType: "modelAction",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-                },
+                actionName: "rollback",
+                actionType: "modelAction",
+                actionLabel: "refreshMiroirLocalCache",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
               },
               {
-                compositeActionType: "domainAction",
-                compositeActionStepLabel: "refreshLibraryLocalCache",
-                domainAction: {
-                  actionName: "rollback",
-                  actionType: "modelAction",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: testApplicationDeploymentUuid,
-                },
+                actionName: "rollback",
+                actionType: "modelAction",
+                actionLabel: "refreshLibraryLocalCache",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                deploymentUuid: testApplicationDeploymentUuid,
               },
               {
-                compositeActionType: "domainAction",
-                compositeActionStepLabel: "addBook3",
-                domainAction: {
-                  actionType: "instanceAction",
-                  actionName: "deleteInstance",
-                  endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-                  applicationSection: "data",
-                  deploymentUuid: testApplicationDeploymentUuid,
-                  objects: [
-                    {
-                      parentName: book2.parentName,
-                      parentUuid: book2.parentUuid,
-                      applicationSection: "data",
-                      instances: [book2 as EntityInstance],
-                    },
-                  ],
-                },
+                actionType: "instanceAction",
+                actionName: "deleteInstance",
+                actionLabel: "addBook3",
+                endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                applicationSection: "data",
+                deploymentUuid: testApplicationDeploymentUuid,
+                objects: [
+                  {
+                    parentName: book2.parentName,
+                    parentUuid: book2.parentUuid,
+                    applicationSection: "data",
+                    instances: [book2 as EntityInstance],
+                  },
+                ],
               },
               {
-                compositeActionType: "domainAction",
-                compositeActionStepLabel: "refreshLibraryLocalCache",
-                domainAction: {
-                  actionName: "rollback",
-                  actionType: "modelAction",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: testApplicationDeploymentUuid,
-                },
+                actionName: "rollback",
+                actionType: "modelAction",
+                actionLabel: "refreshLibraryLocalCache",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                deploymentUuid: testApplicationDeploymentUuid,
               },
               {
-                compositeActionType: "runBoxedExtractorOrQueryAction",
-                compositeActionStepLabel: "calculateNewEntityDefinionAndReports",
+                actionType: "compositeRunBoxedExtractorOrQueryAction",
+                actionLabel: "calculateNewEntityDefinionAndReports",
                 nameGivenToResult: "entityBookList",
                 query: {
                   actionType: "runBoxedExtractorOrQueryAction",
@@ -833,8 +752,8 @@ const testActions: Record<string, TestActionParams> = {
           testCompositeActionAssertions: [
             // TODO: test length of entityBookList.books!
             {
-              compositeActionType: "runTestCompositeActionAssertion",
-              compositeActionStepLabel: "checkNumberOfBooks",
+              actionType: "compositeRunTestAssertion",
+              actionLabel: "checkNumberOfBooks",
               nameGivenToResult: "checkNumberOfBooks",
               testAssertion: {
                 testType: "testAssertion",
@@ -855,8 +774,8 @@ const testActions: Record<string, TestActionParams> = {
               },
             },
             {
-              compositeActionType: "runTestCompositeActionAssertion",
-              compositeActionStepLabel: "checkEntityBooks",
+              actionType: "compositeRunTestAssertion",
+              actionLabel: "checkEntityBooks",
               nameGivenToResult: "checkEntityBooks",
               testAssertion: {
                 testType: "testAssertion",
@@ -885,52 +804,43 @@ const testActions: Record<string, TestActionParams> = {
             actionName: "sequence",
             definition: [
               {
-                compositeActionType: "domainAction",
-                compositeActionStepLabel: "refreshMiroirLocalCache",
-                domainAction: {
-                  actionName: "rollback",
-                  actionType: "modelAction",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-                },
+                actionName: "rollback",
+                actionType: "modelAction",
+                actionLabel: "refreshMiroirLocalCache",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
               },
               {
-                compositeActionType: "domainAction",
-                compositeActionStepLabel: "refreshLibraryLocalCache",
-                domainAction: {
-                  actionName: "rollback",
-                  actionType: "modelAction",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: testApplicationDeploymentUuid,
-                },
+                actionName: "rollback",
+                actionType: "modelAction",
+                actionLabel: "refreshLibraryLocalCache",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                deploymentUuid: testApplicationDeploymentUuid,
               },
               {
-                compositeActionType: "domainAction",
-                compositeActionStepLabel: "updateBook2",
-                domainAction: {
-                  actionType: "instanceAction",
-                  actionName: "updateInstance",
-                  endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-                  applicationSection: "data",
-                  deploymentUuid: testApplicationDeploymentUuid,
-                  objects: [
-                    {
-                      parentName: book4.parentName,
-                      parentUuid: book4.parentUuid,
-                      applicationSection: "data",
-                      instances: [
-                        Object.assign({}, book4, {
-                          name: "Tthe Bride Wore Blackk",
-                          author: "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
-                        }) as EntityInstance,
-                      ],
-                    },
-                  ],
-                },
+                actionType: "instanceAction",
+                actionName: "updateInstance",
+                actionLabel: "updateBook2",
+                endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                applicationSection: "data",
+                deploymentUuid: testApplicationDeploymentUuid,
+                objects: [
+                  {
+                    parentName: book4.parentName,
+                    parentUuid: book4.parentUuid,
+                    applicationSection: "data",
+                    instances: [
+                      Object.assign({}, book4, {
+                        name: "Tthe Bride Wore Blackk",
+                        author: "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+                      }) as EntityInstance,
+                    ],
+                  },
+                ],
               },
               {
-                compositeActionType: "runBoxedExtractorOrQueryAction",
-                compositeActionStepLabel: "calculateNewEntityDefinionAndReports",
+                actionType: "compositeRunBoxedExtractorOrQueryAction",
+                actionLabel: "calculateNewEntityDefinionAndReports",
                 nameGivenToResult: "entityBookList",
                 query: {
                   actionType: "runBoxedExtractorOrQueryAction",
@@ -966,8 +876,8 @@ const testActions: Record<string, TestActionParams> = {
           testCompositeActionAssertions: [
             // TODO: test length of entityBookList.books!
             {
-              compositeActionType: "runTestCompositeActionAssertion",
-              compositeActionStepLabel: "checkNumberOfBooks",
+              actionType: "compositeRunTestAssertion",
+              actionLabel: "checkNumberOfBooks",
               nameGivenToResult: "checkNumberOfBooks",
               testAssertion: {
                 testType: "testAssertion",
@@ -989,8 +899,8 @@ const testActions: Record<string, TestActionParams> = {
               },
             },
             {
-              compositeActionType: "runTestCompositeActionAssertion",
-              compositeActionStepLabel: "checkEntityBooks",
+              actionType: "compositeRunTestAssertion",
+              actionLabel: "checkEntityBooks",
               nameGivenToResult: "checkEntityBooks",
               testAssertion: {
                 testType: "testAssertion",
@@ -1018,26 +928,24 @@ const testActions: Record<string, TestActionParams> = {
   },
 };
 
-
-describe.sequential("DomainController.integ.Data.CRUD",
+describe.sequential(
+  "DomainController.integ.Data.CRUD",
   () => {
-  it.each(Object.entries(testActions))("test %s", async (currentTestSuiteName, testAction: TestActionParams) => {
-    const testSuiteResults = await runTestOrTestSuite(
-      localCache,
-      domainController,
-      testAction
+    it.each(Object.entries(testActions))(
+      "test %s",
+      async (currentTestSuiteName, testAction: TestActionParams) => {
+        const testSuiteResults = await runTestOrTestSuite(localCache, domainController, testAction);
+        if (testSuiteResults.status !== "ok") {
+          expect(testSuiteResults.status, `${currentTestSuiteName} failed!`).toBe("ok");
+        }
+        // globalTestSuiteResults = testSuiteResults.status == "ok"? testSuiteResults.returnedDomainElement.elementValue as any : globalTestSuiteResults;
+        // for (const [testLabel, testResult] of Object.entries(globalTestSuiteResults)) {
+        //   expect(testResult.testResult, `${testLabel} failed!`).toBe("ok");
+        // }
+        // console.log("testSuiteResults", testSuiteResults);
+        // displayTestSuiteResults(testSuiteResults, currentTestSuiteName);
+      },
+      globalTimeOut
     );
-    if (testSuiteResults.status !== "ok") {
-      expect(testSuiteResults.status, `${currentTestSuiteName} failed!`).toBe("ok");
-    }
-      // globalTestSuiteResults = testSuiteResults.status == "ok"? testSuiteResults.returnedDomainElement.elementValue as any : globalTestSuiteResults;
-    // for (const [testLabel, testResult] of Object.entries(globalTestSuiteResults)) {
-    //   expect(testResult.testResult, `${testLabel} failed!`).toBe("ok");
-    // }
-    // console.log("testSuiteResults", testSuiteResults);
-    // displayTestSuiteResults(testSuiteResults, currentTestSuiteName);
-    
-  }, globalTimeOut);
   } //  end describe('DomainController.Data.CRUD.React',
-)
-
+);

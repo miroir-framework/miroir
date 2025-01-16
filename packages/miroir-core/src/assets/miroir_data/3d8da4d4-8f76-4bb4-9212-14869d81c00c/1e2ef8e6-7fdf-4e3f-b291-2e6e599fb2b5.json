@@ -108,41 +108,27 @@
               "type": "array",
               "definition": {
                 "type": "union",
-                "discriminator": "compositeActionType",
+                "discriminator": "actionType",
                 "definition": [
                   {
-                    "type": "object",
-                    "definition": {
-                      "compositeActionType": { "type": "literal", "definition": "domainAction" },
-                      "compositeActionStepLabel": { "type": "string", "optional": true },
-                      "domainAction": {
                     "type": "schemaReference",
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "domainAction"
-                        }
-                      }
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "compositeAction"
                     }
                   },
                   {
                     "type": "object",
                     "definition": {
-                      "compositeActionType": { "type": "literal", "definition": "compositeAction" },
-                      "compositeActionStepLabel": { "type": "string", "optional": true },
-                      "compositeAction": {
-                        "type": "schemaReference",
-                        "definition": {
-                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "compositeAction"
-                        }
-                      }
-                    }
-                  },
-                  {
-                    "type": "object",
-                    "definition": {
-                      "compositeActionType": { "type": "literal", "definition": "runBoxedQueryTemplateAction" },
-                      "compositeActionStepLabel": { "type": "string", "optional": true },
+                      "actionType": { "type": "literal", "definition": "compositeRunBoxedQueryTemplateAction" },
+                      "actionLabel": { "type": "string", "optional": true },
                       "nameGivenToResult": { "type": "string" },
                       "queryTemplate": {
                         "type": "schemaReference",
@@ -156,8 +142,8 @@
                   {
                     "type": "object",
                     "definition": {
-                      "compositeActionType": { "type": "literal", "definition": "runBoxedExtractorTemplateAction" },
-                      "compositeActionStepLabel": { "type": "string", "optional": true },
+                      "actionType": { "type": "literal", "definition": "compositeRunBoxedExtractorTemplateAction" },
+                      "actionLabel": { "type": "string", "optional": true },
                       "nameGivenToResult": { "type": "string" },
                       "queryTemplate": {
                         "type": "schemaReference",
@@ -171,8 +157,8 @@
                   {
                     "type": "object",
                     "definition": {
-                      "compositeActionType": { "type": "literal", "definition": "runBoxedExtractorOrQueryAction" },
-                      "compositeActionStepLabel": { "type": "string", "optional": true },
+                      "actionType": { "type": "literal", "definition": "compositeRunBoxedExtractorOrQueryAction" },
+                      "actionLabel": { "type": "string", "optional": true },
                       "nameGivenToResult": { "type": "string" },
                       "query": {
                         "type": "schemaReference",
@@ -186,8 +172,8 @@
                   {
                     "type": "object",
                     "definition": {
-                      "compositeActionType": { "type": "literal", "definition": "runBoxedQueryTemplateOrBoxedExtractorTemplateAction" },
-                      "compositeActionStepLabel": { "type": "string", "optional": true },
+                      "actionType": { "type": "literal", "definition": "compositeRunBoxedQueryTemplateOrBoxedExtractorTemplateAction" },
+                      "actionLabel": { "type": "string", "optional": true },
                       "nameGivenToResult": { "type": "string" },
                       "queryTemplate": {
                         "type": "schemaReference",
@@ -201,8 +187,8 @@
                   {
                     "type": "object",
                     "definition": {
-                      "compositeActionType": { "type": "literal", "definition": "runTestCompositeActionAssertion" },
-                      "compositeActionStepLabel": { "type": "string", "optional": true },
+                      "actionType": { "type": "literal", "definition": "compositeRunTestAssertion" },
+                      "actionLabel": { "type": "string", "optional": true },
                       "nameGivenToResult": { "type": "string" },
                       "testAssertion": {
                         "type": "schemaReference",

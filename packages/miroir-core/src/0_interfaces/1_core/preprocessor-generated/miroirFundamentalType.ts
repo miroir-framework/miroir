@@ -897,7 +897,7 @@ export type TestCompositeAction = {
     beforeTestSetupAction?: CompositeAction | undefined;
     afterTestCleanupAction?: CompositeAction | undefined;
     compositeAction: CompositeAction;
-    testCompositeActionAssertions: RunTestCompositeActionAssertion[];
+    testCompositeActionAssertions: CompositeRunTestAssertion[];
 };
 export type TestCompositeActionSuite = {
     testType: "testCompositeActionSuite";
@@ -916,7 +916,7 @@ export type TestCompositeActionTemplate = {
     beforeTestSetupAction?: CompositeActionTemplate | undefined;
     afterTestCleanupAction?: CompositeActionTemplate | undefined;
     compositeActionTemplate: CompositeActionTemplate;
-    testCompositeActionAssertions: RunTestCompositeActionAssertion[];
+    testCompositeActionAssertions: CompositeRunTestAssertion[];
 };
 export type TestCompositeActionTemplateSuite = {
     testType: "testCompositeActionTemplateSuite";
@@ -959,14 +959,14 @@ export type Test = {
         beforeTestSetupAction?: CompositeAction | undefined;
         afterTestCleanupAction?: CompositeAction | undefined;
         compositeAction: CompositeAction;
-        testCompositeActionAssertions: RunTestCompositeActionAssertion[];
+        testCompositeActionAssertions: CompositeRunTestAssertion[];
     } | {
         testType: "testCompositeActionTemplate";
         testLabel: string;
         beforeTestSetupAction?: CompositeActionTemplate | undefined;
         afterTestCleanupAction?: CompositeActionTemplate | undefined;
         compositeActionTemplate: CompositeActionTemplate;
-        testCompositeActionAssertions: RunTestCompositeActionAssertion[];
+        testCompositeActionAssertions: CompositeRunTestAssertion[];
     } | {
         testType: "testCompositeActionTemplateSuite";
         testLabel: string;
@@ -1712,18 +1712,21 @@ export type ModelActionInitModelParams = {
 export type ModelActionCommit = {
     actionType: "modelAction";
     actionName: "commit";
+    actionLabel?: string | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
     deploymentUuid: string;
 };
 export type ModelActionRollback = {
     actionType: "modelAction";
     actionName: "rollback";
+    actionLabel?: string | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
     deploymentUuid: string;
 };
 export type ModelActionInitModel = {
     actionType: "modelAction";
     actionName: "initModel";
+    actionLabel?: string | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
     deploymentUuid: string;
     params: {
@@ -1737,18 +1740,21 @@ export type ModelActionInitModel = {
 export type ModelActionResetModel = {
     actionType: "modelAction";
     actionName: "resetModel";
+    actionLabel?: string | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
     deploymentUuid: string;
 };
 export type ModelActionResetData = {
     actionType: "modelAction";
     actionName: "resetData";
+    actionLabel?: string | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
     deploymentUuid: string;
 };
 export type ModelActionAlterEntityAttribute = {
     actionType: "modelAction";
     actionName: "alterEntityAttribute";
+    actionLabel?: string | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
     transactional?: boolean | undefined;
     deploymentUuid: string;
@@ -1765,6 +1771,7 @@ export type ModelActionAlterEntityAttribute = {
 export type ModelActionCreateEntity = {
     actionType: "modelAction";
     actionName: "createEntity";
+    actionLabel?: string | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
     transactional?: boolean | undefined;
     deploymentUuid: string;
@@ -1776,6 +1783,7 @@ export type ModelActionCreateEntity = {
 export type ModelActionDropEntity = {
     actionType: "modelAction";
     actionName: "dropEntity";
+    actionLabel?: string | undefined;
     transactional?: boolean | undefined;
     deploymentUuid: string;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
@@ -1785,6 +1793,7 @@ export type ModelActionDropEntity = {
 export type ModelActionRenameEntity = {
     actionType: "modelAction";
     actionName: "renameEntity";
+    actionLabel?: string | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
     transactional?: boolean | undefined;
     deploymentUuid: string;
@@ -1796,6 +1805,7 @@ export type ModelActionRenameEntity = {
 export type ModelAction = {
     actionType: "modelAction";
     actionName: "initModel";
+    actionLabel?: string | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
     deploymentUuid: string;
     params: {
@@ -1808,31 +1818,37 @@ export type ModelAction = {
 } | {
     actionType: "modelAction";
     actionName: "commit";
+    actionLabel?: string | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
     deploymentUuid: string;
 } | {
     actionType: "modelAction";
     actionName: "rollback";
+    actionLabel?: string | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
     deploymentUuid: string;
 } | {
     actionType: "modelAction";
     actionName: "remoteLocalCacheRollback";
+    actionLabel?: string | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
     deploymentUuid: string;
 } | {
     actionType: "modelAction";
     actionName: "resetModel";
+    actionLabel?: string | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
     deploymentUuid: string;
 } | {
     actionType: "modelAction";
     actionName: "resetData";
+    actionLabel?: string | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
     deploymentUuid: string;
 } | {
     actionType: "modelAction";
     actionName: "alterEntityAttribute";
+    actionLabel?: string | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
     transactional?: boolean | undefined;
     deploymentUuid: string;
@@ -1848,6 +1864,7 @@ export type ModelAction = {
 } | {
     actionType: "modelAction";
     actionName: "renameEntity";
+    actionLabel?: string | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
     transactional?: boolean | undefined;
     deploymentUuid: string;
@@ -1858,6 +1875,7 @@ export type ModelAction = {
 } | {
     actionType: "modelAction";
     actionName: "createEntity";
+    actionLabel?: string | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
     transactional?: boolean | undefined;
     deploymentUuid: string;
@@ -1868,6 +1886,7 @@ export type ModelAction = {
 } | {
     actionType: "modelAction";
     actionName: "dropEntity";
+    actionLabel?: string | undefined;
     transactional?: boolean | undefined;
     deploymentUuid: string;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
@@ -1980,11 +1999,13 @@ export type InstanceAction = {
 export type UndoRedoAction = {
     actionType: "undoRedoAction";
     actionName: "undo";
+    actionLabel?: string | undefined;
     endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389";
     deploymentUuid: string;
 } | {
     actionType: "undoRedoAction";
     actionName: "redo";
+    actionLabel?: string | undefined;
     endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389";
     deploymentUuid: string;
 };
@@ -2133,37 +2154,29 @@ export type RunBoxedExtractorAction = {
     deploymentUuid: string;
     query: BoxedExtractorOrCombinerReturningObjectOrObjectList;
 };
-export type CompositeActionDefinition = ({
-    compositeActionType: "domainAction";
-    compositeActionStepLabel?: string | undefined;
-    domainAction: DomainAction;
-} | {
-    compositeActionType: "compositeAction";
-    compositeActionStepLabel?: string | undefined;
-    compositeAction: CompositeAction;
-} | {
-    compositeActionType: "runBoxedQueryTemplateAction";
-    compositeActionStepLabel?: string | undefined;
+export type CompositeActionDefinition = (DomainAction | CompositeAction | {
+    actionType: "compositeRunBoxedQueryTemplateAction";
+    actionLabel?: string | undefined;
     nameGivenToResult: string;
     queryTemplate: RunBoxedQueryTemplateAction;
 } | {
-    compositeActionType: "runBoxedExtractorTemplateAction";
-    compositeActionStepLabel?: string | undefined;
+    actionType: "compositeRunBoxedExtractorTemplateAction";
+    actionLabel?: string | undefined;
     nameGivenToResult: string;
     queryTemplate: RunBoxedExtractorTemplateAction;
 } | {
-    compositeActionType: "runBoxedExtractorOrQueryAction";
-    compositeActionStepLabel?: string | undefined;
+    actionType: "compositeRunBoxedExtractorOrQueryAction";
+    actionLabel?: string | undefined;
     nameGivenToResult: string;
     query: RunBoxedExtractorOrQueryAction;
 } | {
-    compositeActionType: "runBoxedQueryTemplateOrBoxedExtractorTemplateAction";
-    compositeActionStepLabel?: string | undefined;
+    actionType: "compositeRunBoxedQueryTemplateOrBoxedExtractorTemplateAction";
+    actionLabel?: string | undefined;
     nameGivenToResult: string;
     queryTemplate: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction;
 } | {
-    compositeActionType: "runTestCompositeActionAssertion";
-    compositeActionStepLabel?: string | undefined;
+    actionType: "compositeRunTestAssertion";
+    actionLabel?: string | undefined;
     nameGivenToResult: string;
     testAssertion: TestAssertion;
 })[];
@@ -2175,44 +2188,36 @@ export type CompositeAction = {
     templates?: {
         [x: string]: any;
     } | undefined;
-    definition: ({
-        compositeActionType: "domainAction";
-        compositeActionStepLabel?: string | undefined;
-        domainAction: DomainAction;
-    } | {
-        compositeActionType: "compositeAction";
-        compositeActionStepLabel?: string | undefined;
-        compositeAction: CompositeAction;
-    } | {
-        compositeActionType: "runBoxedQueryTemplateAction";
-        compositeActionStepLabel?: string | undefined;
+    definition: (DomainAction | CompositeAction | {
+        actionType: "compositeRunBoxedQueryTemplateAction";
+        actionLabel?: string | undefined;
         nameGivenToResult: string;
         queryTemplate: RunBoxedQueryTemplateAction;
     } | {
-        compositeActionType: "runBoxedExtractorTemplateAction";
-        compositeActionStepLabel?: string | undefined;
+        actionType: "compositeRunBoxedExtractorTemplateAction";
+        actionLabel?: string | undefined;
         nameGivenToResult: string;
         queryTemplate: RunBoxedExtractorTemplateAction;
     } | {
-        compositeActionType: "runBoxedExtractorOrQueryAction";
-        compositeActionStepLabel?: string | undefined;
+        actionType: "compositeRunBoxedExtractorOrQueryAction";
+        actionLabel?: string | undefined;
         nameGivenToResult: string;
         query: RunBoxedExtractorOrQueryAction;
     } | {
-        compositeActionType: "runBoxedQueryTemplateOrBoxedExtractorTemplateAction";
-        compositeActionStepLabel?: string | undefined;
+        actionType: "compositeRunBoxedQueryTemplateOrBoxedExtractorTemplateAction";
+        actionLabel?: string | undefined;
         nameGivenToResult: string;
         queryTemplate: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction;
     } | {
-        compositeActionType: "runTestCompositeActionAssertion";
-        compositeActionStepLabel?: string | undefined;
+        actionType: "compositeRunTestAssertion";
+        actionLabel?: string | undefined;
         nameGivenToResult: string;
         testAssertion: TestAssertion;
     })[];
 };
-export type RunTestCompositeActionAssertion = {
-    compositeActionType: "runTestCompositeActionAssertion";
-    compositeActionStepLabel?: string | undefined;
+export type CompositeRunTestAssertion = {
+    actionType: "compositeRunTestAssertion";
+    actionLabel?: string | undefined;
     nameGivenToResult: string;
     testAssertion: TestAssertion;
 };
@@ -2229,37 +2234,29 @@ export type DomainAction = UndoRedoAction | StoreOrBundleAction | ModelAction | 
     templates?: {
         [x: string]: any;
     } | undefined;
-    definition: ({
-        compositeActionType: "domainAction";
-        compositeActionStepLabel?: string | undefined;
-        domainAction: DomainAction;
-    } | {
-        compositeActionType: "compositeAction";
-        compositeActionStepLabel?: string | undefined;
-        compositeAction: CompositeAction;
-    } | {
-        compositeActionType: "runBoxedQueryTemplateAction";
-        compositeActionStepLabel?: string | undefined;
+    definition: (DomainAction | CompositeAction | {
+        actionType: "compositeRunBoxedQueryTemplateAction";
+        actionLabel?: string | undefined;
         nameGivenToResult: string;
         queryTemplate: RunBoxedQueryTemplateAction;
     } | {
-        compositeActionType: "runBoxedExtractorTemplateAction";
-        compositeActionStepLabel?: string | undefined;
+        actionType: "compositeRunBoxedExtractorTemplateAction";
+        actionLabel?: string | undefined;
         nameGivenToResult: string;
         queryTemplate: RunBoxedExtractorTemplateAction;
     } | {
-        compositeActionType: "runBoxedExtractorOrQueryAction";
-        compositeActionStepLabel?: string | undefined;
+        actionType: "compositeRunBoxedExtractorOrQueryAction";
+        actionLabel?: string | undefined;
         nameGivenToResult: string;
         query: RunBoxedExtractorOrQueryAction;
     } | {
-        compositeActionType: "runBoxedQueryTemplateOrBoxedExtractorTemplateAction";
-        compositeActionStepLabel?: string | undefined;
+        actionType: "compositeRunBoxedQueryTemplateOrBoxedExtractorTemplateAction";
+        actionLabel?: string | undefined;
         nameGivenToResult: string;
         queryTemplate: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction;
     } | {
-        compositeActionType: "runTestCompositeActionAssertion";
-        compositeActionStepLabel?: string | undefined;
+        actionType: "compositeRunTestAssertion";
+        actionLabel?: string | undefined;
         nameGivenToResult: string;
         testAssertion: TestAssertion;
     })[];
@@ -2268,10 +2265,12 @@ export type ModelActionReplayableAction = ModelActionAlterEntityAttribute | Mode
 export type BundleAction = {
     actionType: "bundleAction";
     actionName: "createBundle";
+    actionLabel?: string | undefined;
     deploymentUuid: string;
 } | {
     actionType: "bundleAction";
     actionName: "deleteBundle";
+    actionLabel?: string | undefined;
     deploymentUuid: string;
 };
 export type StoreOrBundleAction = StoreManagementAction | BundleAction;
@@ -3164,11 +3163,13 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction = {
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction = {
     actionType: "undoRedoAction" | CarryOnObject;
     actionName: "undo" | CarryOnObject;
+    actionLabel?: ((string | undefined) | CarryOnObject) | undefined;
     endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389" | CarryOnObject;
     deploymentUuid: string | CarryOnObject;
 } | {
     actionType: "undoRedoAction" | CarryOnObject;
     actionName: "redo" | CarryOnObject;
+    actionLabel?: ((string | undefined) | CarryOnObject) | undefined;
     endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389" | CarryOnObject;
     deploymentUuid: string | CarryOnObject;
 } | CarryOnObject;
@@ -3176,6 +3177,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeOrBundleAction = C
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction = {
     actionType: "modelAction" | CarryOnObject;
     actionName: "initModel" | CarryOnObject;
+    actionLabel?: ((string | undefined) | CarryOnObject) | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e" | CarryOnObject;
     deploymentUuid: string | CarryOnObject;
     params: CarryOnObject | {
@@ -3188,31 +3190,37 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction = {
 } | {
     actionType: "modelAction" | CarryOnObject;
     actionName: "commit" | CarryOnObject;
+    actionLabel?: ((string | undefined) | CarryOnObject) | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e" | CarryOnObject;
     deploymentUuid: string | CarryOnObject;
 } | {
     actionType: "modelAction" | CarryOnObject;
     actionName: "rollback" | CarryOnObject;
+    actionLabel?: ((string | undefined) | CarryOnObject) | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e" | CarryOnObject;
     deploymentUuid: string | CarryOnObject;
 } | {
     actionType: "modelAction" | CarryOnObject;
     actionName: "remoteLocalCacheRollback" | CarryOnObject;
+    actionLabel?: ((string | undefined) | CarryOnObject) | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e" | CarryOnObject;
     deploymentUuid: string | CarryOnObject;
 } | {
     actionType: "modelAction" | CarryOnObject;
     actionName: "resetModel" | CarryOnObject;
+    actionLabel?: ((string | undefined) | CarryOnObject) | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e" | CarryOnObject;
     deploymentUuid: string | CarryOnObject;
 } | {
     actionType: "modelAction" | CarryOnObject;
     actionName: "resetData" | CarryOnObject;
+    actionLabel?: ((string | undefined) | CarryOnObject) | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e" | CarryOnObject;
     deploymentUuid: string | CarryOnObject;
 } | {
     actionType: "modelAction" | CarryOnObject;
     actionName: "alterEntityAttribute" | CarryOnObject;
+    actionLabel?: ((string | undefined) | CarryOnObject) | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e" | CarryOnObject;
     transactional?: ((boolean | undefined) | CarryOnObject) | undefined;
     deploymentUuid: string | CarryOnObject;
@@ -3228,6 +3236,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction = {
 } | {
     actionType: "modelAction" | CarryOnObject;
     actionName: "renameEntity" | CarryOnObject;
+    actionLabel?: ((string | undefined) | CarryOnObject) | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e" | CarryOnObject;
     transactional?: ((boolean | undefined) | CarryOnObject) | undefined;
     deploymentUuid: string | CarryOnObject;
@@ -3238,6 +3247,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction = {
 } | {
     actionType: "modelAction" | CarryOnObject;
     actionName: "createEntity" | CarryOnObject;
+    actionLabel?: ((string | undefined) | CarryOnObject) | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e" | CarryOnObject;
     transactional?: ((boolean | undefined) | CarryOnObject) | undefined;
     deploymentUuid: string | CarryOnObject;
@@ -3248,6 +3258,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction = {
 } | {
     actionType: "modelAction" | CarryOnObject;
     actionName: "dropEntity" | CarryOnObject;
+    actionLabel?: ((string | undefined) | CarryOnObject) | undefined;
     transactional?: ((boolean | undefined) | CarryOnObject) | undefined;
     deploymentUuid: string | CarryOnObject;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e" | CarryOnObject;
@@ -3360,10 +3371,12 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transactionalInstanceAc
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_bundleAction = {
     actionType: "bundleAction" | CarryOnObject;
     actionName: "createBundle" | CarryOnObject;
+    actionLabel?: ((string | undefined) | CarryOnObject) | undefined;
     deploymentUuid: string | CarryOnObject;
 } | {
     actionType: "bundleAction" | CarryOnObject;
     actionName: "deleteBundle" | CarryOnObject;
+    actionLabel?: ((string | undefined) | CarryOnObject) | undefined;
     deploymentUuid: string | CarryOnObject;
 } | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeOrBundleAction | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction | {
@@ -3379,72 +3392,56 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction = CarryOn_
     templates?: (({
         [x: string]: any | CarryOnObject;
     } | undefined) | CarryOnObject) | undefined;
-    definition: ({
-        compositeActionType: "domainAction" | CarryOnObject;
-        compositeActionStepLabel?: ((string | undefined) | CarryOnObject) | undefined;
-        domainAction: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction;
-    } | {
-        compositeActionType: "compositeAction" | CarryOnObject;
-        compositeActionStepLabel?: ((string | undefined) | CarryOnObject) | undefined;
-        compositeAction: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction;
-    } | {
-        compositeActionType: "runBoxedQueryTemplateAction" | CarryOnObject;
-        compositeActionStepLabel?: ((string | undefined) | CarryOnObject) | undefined;
+    definition: (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction | {
+        actionType: "compositeRunBoxedQueryTemplateAction" | CarryOnObject;
+        actionLabel?: ((string | undefined) | CarryOnObject) | undefined;
         nameGivenToResult: string | CarryOnObject;
         queryTemplate: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryTemplateAction;
     } | {
-        compositeActionType: "runBoxedExtractorTemplateAction" | CarryOnObject;
-        compositeActionStepLabel?: ((string | undefined) | CarryOnObject) | undefined;
+        actionType: "compositeRunBoxedExtractorTemplateAction" | CarryOnObject;
+        actionLabel?: ((string | undefined) | CarryOnObject) | undefined;
         nameGivenToResult: string | CarryOnObject;
         queryTemplate: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorTemplateAction;
     } | {
-        compositeActionType: "runBoxedExtractorOrQueryAction" | CarryOnObject;
-        compositeActionStepLabel?: ((string | undefined) | CarryOnObject) | undefined;
+        actionType: "compositeRunBoxedExtractorOrQueryAction" | CarryOnObject;
+        actionLabel?: ((string | undefined) | CarryOnObject) | undefined;
         nameGivenToResult: string | CarryOnObject;
         query: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction;
     } | {
-        compositeActionType: "runBoxedQueryTemplateOrBoxedExtractorTemplateAction" | CarryOnObject;
-        compositeActionStepLabel?: ((string | undefined) | CarryOnObject) | undefined;
+        actionType: "compositeRunBoxedQueryTemplateOrBoxedExtractorTemplateAction" | CarryOnObject;
+        actionLabel?: ((string | undefined) | CarryOnObject) | undefined;
         nameGivenToResult: string | CarryOnObject;
         queryTemplate: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryTemplateOrBoxedExtractorTemplateAction;
     } | {
-        compositeActionType: "runTestCompositeActionAssertion" | CarryOnObject;
-        compositeActionStepLabel?: ((string | undefined) | CarryOnObject) | undefined;
+        actionType: "compositeRunTestAssertion" | CarryOnObject;
+        actionLabel?: ((string | undefined) | CarryOnObject) | undefined;
         nameGivenToResult: string | CarryOnObject;
         testAssertion: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion;
     } | CarryOnObject)[] | CarryOnObject;
 } | CarryOnObject;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeActionDefinition = ({
-    compositeActionType: "domainAction" | CarryOnObject;
-    compositeActionStepLabel?: ((string | undefined) | CarryOnObject) | undefined;
-    domainAction: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction;
-} | {
-    compositeActionType: "compositeAction" | CarryOnObject;
-    compositeActionStepLabel?: ((string | undefined) | CarryOnObject) | undefined;
-    compositeAction: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction;
-} | {
-    compositeActionType: "runBoxedQueryTemplateAction" | CarryOnObject;
-    compositeActionStepLabel?: ((string | undefined) | CarryOnObject) | undefined;
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeActionDefinition = (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction | {
+    actionType: "compositeRunBoxedQueryTemplateAction" | CarryOnObject;
+    actionLabel?: ((string | undefined) | CarryOnObject) | undefined;
     nameGivenToResult: string | CarryOnObject;
     queryTemplate: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryTemplateAction;
 } | {
-    compositeActionType: "runBoxedExtractorTemplateAction" | CarryOnObject;
-    compositeActionStepLabel?: ((string | undefined) | CarryOnObject) | undefined;
+    actionType: "compositeRunBoxedExtractorTemplateAction" | CarryOnObject;
+    actionLabel?: ((string | undefined) | CarryOnObject) | undefined;
     nameGivenToResult: string | CarryOnObject;
     queryTemplate: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorTemplateAction;
 } | {
-    compositeActionType: "runBoxedExtractorOrQueryAction" | CarryOnObject;
-    compositeActionStepLabel?: ((string | undefined) | CarryOnObject) | undefined;
+    actionType: "compositeRunBoxedExtractorOrQueryAction" | CarryOnObject;
+    actionLabel?: ((string | undefined) | CarryOnObject) | undefined;
     nameGivenToResult: string | CarryOnObject;
     query: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction;
 } | {
-    compositeActionType: "runBoxedQueryTemplateOrBoxedExtractorTemplateAction" | CarryOnObject;
-    compositeActionStepLabel?: ((string | undefined) | CarryOnObject) | undefined;
+    actionType: "compositeRunBoxedQueryTemplateOrBoxedExtractorTemplateAction" | CarryOnObject;
+    actionLabel?: ((string | undefined) | CarryOnObject) | undefined;
     nameGivenToResult: string | CarryOnObject;
     queryTemplate: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryTemplateOrBoxedExtractorTemplateAction;
 } | {
-    compositeActionType: "runTestCompositeActionAssertion" | CarryOnObject;
-    compositeActionStepLabel?: ((string | undefined) | CarryOnObject) | undefined;
+    actionType: "compositeRunTestAssertion" | CarryOnObject;
+    actionLabel?: ((string | undefined) | CarryOnObject) | undefined;
     nameGivenToResult: string | CarryOnObject;
     testAssertion: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion;
 } | CarryOnObject)[] | CarryOnObject;
@@ -3456,37 +3453,29 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction = Carry
     templates?: (({
         [x: string]: any | CarryOnObject;
     } | undefined) | CarryOnObject) | undefined;
-    definition: ({
-        compositeActionType: "domainAction" | CarryOnObject;
-        compositeActionStepLabel?: ((string | undefined) | CarryOnObject) | undefined;
-        domainAction: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction;
-    } | {
-        compositeActionType: "compositeAction" | CarryOnObject;
-        compositeActionStepLabel?: ((string | undefined) | CarryOnObject) | undefined;
-        compositeAction: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction;
-    } | {
-        compositeActionType: "runBoxedQueryTemplateAction" | CarryOnObject;
-        compositeActionStepLabel?: ((string | undefined) | CarryOnObject) | undefined;
+    definition: (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction | {
+        actionType: "compositeRunBoxedQueryTemplateAction" | CarryOnObject;
+        actionLabel?: ((string | undefined) | CarryOnObject) | undefined;
         nameGivenToResult: string | CarryOnObject;
         queryTemplate: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryTemplateAction;
     } | {
-        compositeActionType: "runBoxedExtractorTemplateAction" | CarryOnObject;
-        compositeActionStepLabel?: ((string | undefined) | CarryOnObject) | undefined;
+        actionType: "compositeRunBoxedExtractorTemplateAction" | CarryOnObject;
+        actionLabel?: ((string | undefined) | CarryOnObject) | undefined;
         nameGivenToResult: string | CarryOnObject;
         queryTemplate: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorTemplateAction;
     } | {
-        compositeActionType: "runBoxedExtractorOrQueryAction" | CarryOnObject;
-        compositeActionStepLabel?: ((string | undefined) | CarryOnObject) | undefined;
+        actionType: "compositeRunBoxedExtractorOrQueryAction" | CarryOnObject;
+        actionLabel?: ((string | undefined) | CarryOnObject) | undefined;
         nameGivenToResult: string | CarryOnObject;
         query: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction;
     } | {
-        compositeActionType: "runBoxedQueryTemplateOrBoxedExtractorTemplateAction" | CarryOnObject;
-        compositeActionStepLabel?: ((string | undefined) | CarryOnObject) | undefined;
+        actionType: "compositeRunBoxedQueryTemplateOrBoxedExtractorTemplateAction" | CarryOnObject;
+        actionLabel?: ((string | undefined) | CarryOnObject) | undefined;
         nameGivenToResult: string | CarryOnObject;
         queryTemplate: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryTemplateOrBoxedExtractorTemplateAction;
     } | {
-        compositeActionType: "runTestCompositeActionAssertion" | CarryOnObject;
-        compositeActionStepLabel?: ((string | undefined) | CarryOnObject) | undefined;
+        actionType: "compositeRunTestAssertion" | CarryOnObject;
+        actionLabel?: ((string | undefined) | CarryOnObject) | undefined;
         nameGivenToResult: string | CarryOnObject;
         testAssertion: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion;
     } | CarryOnObject)[] | CarryOnObject;
@@ -4236,12 +4225,12 @@ export const bundle: z.ZodType<Bundle> = z.object({uuid:z.string().uuid(), paren
 export const deployment: z.ZodType<Deployment> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), name:z.string(), defaultLabel:z.string(), description:z.string().optional(), adminApplication:z.string().uuid(), bundle:z.string().uuid(), configuration:z.lazy(() =>storeUnitConfiguration).optional(), model:z.lazy(() =>jzodObject).optional(), data:z.lazy(() =>jzodObject).optional()}).strict();
 export const entity: z.ZodType<Entity> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data"]).optional(), selfApplication:z.string().uuid().optional(), name:z.string(), author:z.string().uuid().optional(), description:z.string().optional()}).strict();
 export const entityDefinition: z.ZodType<EntityDefinition> = z.object({uuid:z.string().uuid(), parentName:z.string(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), name:z.string(), entityUuid:z.string().uuid(), conceptLevel:z.enum(["MetaModel","Model","Data"]).optional(), description:z.string().optional(), defaultInstanceDetailsReportUuid:z.string().uuid().optional(), viewAttributes:z.array(z.string()).optional(), icon:z.string().optional(), jzodSchema:z.lazy(() =>jzodObject)}).strict();
-export const testCompositeAction: z.ZodType<TestCompositeAction> = z.object({testType:z.literal("testCompositeAction"), testLabel:z.string(), beforeTestSetupAction:z.lazy(() =>compositeAction).optional(), afterTestCleanupAction:z.lazy(() =>compositeAction).optional(), compositeAction:z.lazy(() =>compositeAction), testCompositeActionAssertions:z.array(z.lazy(() =>runTestCompositeActionAssertion))}).strict();
+export const testCompositeAction: z.ZodType<TestCompositeAction> = z.object({testType:z.literal("testCompositeAction"), testLabel:z.string(), beforeTestSetupAction:z.lazy(() =>compositeAction).optional(), afterTestCleanupAction:z.lazy(() =>compositeAction).optional(), compositeAction:z.lazy(() =>compositeAction), testCompositeActionAssertions:z.array(z.lazy(() =>compositeRunTestAssertion))}).strict();
 export const testCompositeActionSuite: z.ZodType<TestCompositeActionSuite> = z.object({testType:z.literal("testCompositeActionSuite"), testLabel:z.string(), beforeAll:z.lazy(() =>compositeAction).optional(), beforeEach:z.lazy(() =>compositeAction).optional(), afterEach:z.lazy(() =>compositeAction).optional(), afterAll:z.lazy(() =>compositeAction).optional(), testCompositeActions:z.record(z.string(),z.lazy(() =>testCompositeAction))}).strict();
-export const testCompositeActionTemplate: z.ZodType<TestCompositeActionTemplate> = z.object({testType:z.literal("testCompositeActionTemplate"), testLabel:z.string(), beforeTestSetupAction:z.lazy(() =>compositeActionTemplate).optional(), afterTestCleanupAction:z.lazy(() =>compositeActionTemplate).optional(), compositeActionTemplate:z.lazy(() =>compositeActionTemplate), testCompositeActionAssertions:z.array(z.lazy(() =>runTestCompositeActionAssertion))}).strict();
+export const testCompositeActionTemplate: z.ZodType<TestCompositeActionTemplate> = z.object({testType:z.literal("testCompositeActionTemplate"), testLabel:z.string(), beforeTestSetupAction:z.lazy(() =>compositeActionTemplate).optional(), afterTestCleanupAction:z.lazy(() =>compositeActionTemplate).optional(), compositeActionTemplate:z.lazy(() =>compositeActionTemplate), testCompositeActionAssertions:z.array(z.lazy(() =>compositeRunTestAssertion))}).strict();
 export const testCompositeActionTemplateSuite: z.ZodType<TestCompositeActionTemplateSuite> = z.object({testType:z.literal("testCompositeActionTemplateSuite"), testLabel:z.string(), beforeAll:z.lazy(() =>compositeActionTemplate).optional(), beforeEach:z.lazy(() =>compositeActionTemplate).optional(), afterEach:z.lazy(() =>compositeActionTemplate).optional(), afterAll:z.lazy(() =>compositeActionTemplate).optional(), testCompositeActions:z.record(z.string(),z.lazy(() =>testCompositeActionTemplate))}).strict();
 export const testAssertion: z.ZodType<TestAssertion> = z.object({testType:z.literal("testAssertion"), testLabel:z.string(), definition:z.object({resultAccessPath:z.array(z.string()).optional(), resultTransformer:z.lazy(() =>extendedTransformerForRuntime).optional(), ignoreAttributes:z.array(z.string()).optional(), expectedValue:z.any()}).strict()}).strict();
-export const test: z.ZodType<Test> = z.object({uuid:z.string(), parentName:z.string().optional(), parentUuid:z.string(), definition:z.union([z.object({testType:z.literal("testCompositeActionSuite"), testLabel:z.string(), beforeAll:z.lazy(() =>compositeAction).optional(), beforeEach:z.lazy(() =>compositeAction).optional(), afterEach:z.lazy(() =>compositeAction).optional(), afterAll:z.lazy(() =>compositeAction).optional(), testCompositeActions:z.record(z.string(),z.lazy(() =>testCompositeAction))}).strict(), z.object({testType:z.literal("testCompositeAction"), testLabel:z.string(), beforeTestSetupAction:z.lazy(() =>compositeAction).optional(), afterTestCleanupAction:z.lazy(() =>compositeAction).optional(), compositeAction:z.lazy(() =>compositeAction), testCompositeActionAssertions:z.array(z.lazy(() =>runTestCompositeActionAssertion))}).strict(), z.object({testType:z.literal("testCompositeActionTemplate"), testLabel:z.string(), beforeTestSetupAction:z.lazy(() =>compositeActionTemplate).optional(), afterTestCleanupAction:z.lazy(() =>compositeActionTemplate).optional(), compositeActionTemplate:z.lazy(() =>compositeActionTemplate), testCompositeActionAssertions:z.array(z.lazy(() =>runTestCompositeActionAssertion))}).strict(), z.object({testType:z.literal("testCompositeActionTemplateSuite"), testLabel:z.string(), beforeAll:z.lazy(() =>compositeActionTemplate).optional(), beforeEach:z.lazy(() =>compositeActionTemplate).optional(), afterEach:z.lazy(() =>compositeActionTemplate).optional(), afterAll:z.lazy(() =>compositeActionTemplate).optional(), testCompositeActions:z.record(z.string(),z.lazy(() =>testCompositeActionTemplate))}).strict(), z.object({testType:z.literal("testAssertion"), testLabel:z.string(), definition:z.object({resultAccessPath:z.array(z.string()).optional(), resultTransformer:z.lazy(() =>extendedTransformerForRuntime).optional(), ignoreAttributes:z.array(z.string()).optional(), expectedValue:z.any()}).strict()}).strict()])}).strict();
+export const test: z.ZodType<Test> = z.object({uuid:z.string(), parentName:z.string().optional(), parentUuid:z.string(), definition:z.union([z.object({testType:z.literal("testCompositeActionSuite"), testLabel:z.string(), beforeAll:z.lazy(() =>compositeAction).optional(), beforeEach:z.lazy(() =>compositeAction).optional(), afterEach:z.lazy(() =>compositeAction).optional(), afterAll:z.lazy(() =>compositeAction).optional(), testCompositeActions:z.record(z.string(),z.lazy(() =>testCompositeAction))}).strict(), z.object({testType:z.literal("testCompositeAction"), testLabel:z.string(), beforeTestSetupAction:z.lazy(() =>compositeAction).optional(), afterTestCleanupAction:z.lazy(() =>compositeAction).optional(), compositeAction:z.lazy(() =>compositeAction), testCompositeActionAssertions:z.array(z.lazy(() =>compositeRunTestAssertion))}).strict(), z.object({testType:z.literal("testCompositeActionTemplate"), testLabel:z.string(), beforeTestSetupAction:z.lazy(() =>compositeActionTemplate).optional(), afterTestCleanupAction:z.lazy(() =>compositeActionTemplate).optional(), compositeActionTemplate:z.lazy(() =>compositeActionTemplate), testCompositeActionAssertions:z.array(z.lazy(() =>compositeRunTestAssertion))}).strict(), z.object({testType:z.literal("testCompositeActionTemplateSuite"), testLabel:z.string(), beforeAll:z.lazy(() =>compositeActionTemplate).optional(), beforeEach:z.lazy(() =>compositeActionTemplate).optional(), afterEach:z.lazy(() =>compositeActionTemplate).optional(), afterAll:z.lazy(() =>compositeActionTemplate).optional(), testCompositeActions:z.record(z.string(),z.lazy(() =>testCompositeActionTemplate))}).strict(), z.object({testType:z.literal("testAssertion"), testLabel:z.string(), definition:z.object({resultAccessPath:z.array(z.string()).optional(), resultTransformer:z.lazy(() =>extendedTransformerForRuntime).optional(), ignoreAttributes:z.array(z.string()).optional(), expectedValue:z.any()}).strict()}).strict()])}).strict();
 export const selfApplicationDeploymentConfiguration: z.ZodType<SelfApplicationDeploymentConfiguration> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), name:z.string(), defaultLabel:z.string(), description:z.string().optional(), selfApplication:z.string().uuid()}).strict();
 export const miroirMenuItem: z.ZodType<MiroirMenuItem> = z.object({label:z.string(), section:z.lazy(() =>applicationSection), selfApplication:z.string(), reportUuid:z.string(), instanceUuid:z.string().optional(), icon:z.string()}).strict();
 export const menuItemArray: z.ZodType<MenuItemArray> = z.array(z.lazy(() =>miroirMenuItem));
@@ -4354,21 +4343,21 @@ export const actionEntityInstanceCollectionReturnType: z.ZodType<ActionEntityIns
 export const actionSuccess: z.ZodType<ActionSuccess> = z.object({status:z.literal("ok"), returnedDomainElement:z.lazy(() =>domainElement)}).strict();
 export const actionReturnType: z.ZodType<ActionReturnType> = z.union([z.lazy(() =>actionError), z.lazy(() =>actionSuccess)]);
 export const modelActionInitModelParams: z.ZodType<ModelActionInitModelParams> = z.object({metaModel:z.lazy(() =>metaModel), dataStoreType:z.lazy(() =>dataStoreType), selfApplication:z.lazy(() =>selfApplication), applicationModelBranch:z.lazy(() =>entityInstance), applicationVersion:z.lazy(() =>entityInstance)}).strict();
-export const modelActionCommit: z.ZodType<ModelActionCommit> = z.object({actionType:z.literal("modelAction"), actionName:z.literal("commit"), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.string().uuid()}).strict();
-export const modelActionRollback: z.ZodType<ModelActionRollback> = z.object({actionType:z.literal("modelAction"), actionName:z.literal("rollback"), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.string().uuid()}).strict();
-export const modelActionInitModel: z.ZodType<ModelActionInitModel> = z.object({actionType:z.literal("modelAction"), actionName:z.literal("initModel"), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.string().uuid(), params:z.object({metaModel:z.lazy(() =>metaModel), dataStoreType:z.lazy(() =>dataStoreType), selfApplication:z.lazy(() =>selfApplication), applicationModelBranch:z.lazy(() =>entityInstance), applicationVersion:z.lazy(() =>entityInstance)}).strict()}).strict();
-export const modelActionResetModel: z.ZodType<ModelActionResetModel> = z.object({actionType:z.literal("modelAction"), actionName:z.literal("resetModel"), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.string().uuid()}).strict();
-export const modelActionResetData: z.ZodType<ModelActionResetData> = z.object({actionType:z.literal("modelAction"), actionName:z.literal("resetData"), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.string().uuid()}).strict();
-export const modelActionAlterEntityAttribute: z.ZodType<ModelActionAlterEntityAttribute> = z.object({actionType:z.literal("modelAction"), actionName:z.literal("alterEntityAttribute"), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), transactional:z.boolean().optional(), deploymentUuid:z.string().uuid(), entityName:z.string(), entityUuid:z.string(), entityDefinitionUuid:z.string(), addColumns:z.array(z.object({name:z.string(), definition:z.lazy(() =>jzodElement)}).strict()).optional(), removeColumns:z.array(z.string()).optional(), update:z.lazy(() =>jzodElement).optional()}).strict();
-export const modelActionCreateEntity: z.ZodType<ModelActionCreateEntity> = z.object({actionType:z.literal("modelAction"), actionName:z.literal("createEntity"), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), transactional:z.boolean().optional(), deploymentUuid:z.string().uuid(), entities:z.array(z.object({entity:z.lazy(() =>entity), entityDefinition:z.lazy(() =>entityDefinition)}).strict())}).strict();
-export const modelActionDropEntity: z.ZodType<ModelActionDropEntity> = z.object({actionType:z.literal("modelAction"), actionName:z.literal("dropEntity"), transactional:z.boolean().optional(), deploymentUuid:z.string().uuid(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), entityUuid:z.string(), entityDefinitionUuid:z.string()}).strict();
-export const modelActionRenameEntity: z.ZodType<ModelActionRenameEntity> = z.object({actionType:z.literal("modelAction"), actionName:z.literal("renameEntity"), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), transactional:z.boolean().optional(), deploymentUuid:z.string().uuid(), entityName:z.string().optional(), entityUuid:z.string(), entityDefinitionUuid:z.string(), targetValue:z.string()}).strict();
-export const modelAction: z.ZodType<ModelAction> = z.union([z.object({actionType:z.literal("modelAction"), actionName:z.literal("initModel"), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.string().uuid(), params:z.object({metaModel:z.lazy(() =>metaModel), dataStoreType:z.lazy(() =>dataStoreType), selfApplication:z.lazy(() =>selfApplication), applicationModelBranch:z.lazy(() =>entityInstance), applicationVersion:z.lazy(() =>entityInstance)}).strict()}).strict(), z.object({actionType:z.literal("modelAction"), actionName:z.literal("commit"), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.string().uuid()}).strict(), z.object({actionType:z.literal("modelAction"), actionName:z.literal("rollback"), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.string().uuid()}).strict(), z.object({actionType:z.literal("modelAction"), actionName:z.literal("remoteLocalCacheRollback"), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.string().uuid()}).strict(), z.object({actionType:z.literal("modelAction"), actionName:z.literal("resetModel"), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.string().uuid()}).strict(), z.object({actionType:z.literal("modelAction"), actionName:z.literal("resetData"), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.string().uuid()}).strict(), z.object({actionType:z.literal("modelAction"), actionName:z.literal("alterEntityAttribute"), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), transactional:z.boolean().optional(), deploymentUuid:z.string().uuid(), entityName:z.string(), entityUuid:z.string(), entityDefinitionUuid:z.string(), addColumns:z.array(z.object({name:z.string(), definition:z.lazy(() =>jzodElement)}).strict()).optional(), removeColumns:z.array(z.string()).optional(), update:z.lazy(() =>jzodElement).optional()}).strict(), z.object({actionType:z.literal("modelAction"), actionName:z.literal("renameEntity"), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), transactional:z.boolean().optional(), deploymentUuid:z.string().uuid(), entityName:z.string().optional(), entityUuid:z.string(), entityDefinitionUuid:z.string(), targetValue:z.string()}).strict(), z.object({actionType:z.literal("modelAction"), actionName:z.literal("createEntity"), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), transactional:z.boolean().optional(), deploymentUuid:z.string().uuid(), entities:z.array(z.object({entity:z.lazy(() =>entity), entityDefinition:z.lazy(() =>entityDefinition)}).strict())}).strict(), z.object({actionType:z.literal("modelAction"), actionName:z.literal("dropEntity"), transactional:z.boolean().optional(), deploymentUuid:z.string().uuid(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), entityUuid:z.string(), entityDefinitionUuid:z.string()}).strict()]);
+export const modelActionCommit: z.ZodType<ModelActionCommit> = z.object({actionType:z.literal("modelAction"), actionName:z.literal("commit"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.string().uuid()}).strict();
+export const modelActionRollback: z.ZodType<ModelActionRollback> = z.object({actionType:z.literal("modelAction"), actionName:z.literal("rollback"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.string().uuid()}).strict();
+export const modelActionInitModel: z.ZodType<ModelActionInitModel> = z.object({actionType:z.literal("modelAction"), actionName:z.literal("initModel"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.string().uuid(), params:z.object({metaModel:z.lazy(() =>metaModel), dataStoreType:z.lazy(() =>dataStoreType), selfApplication:z.lazy(() =>selfApplication), applicationModelBranch:z.lazy(() =>entityInstance), applicationVersion:z.lazy(() =>entityInstance)}).strict()}).strict();
+export const modelActionResetModel: z.ZodType<ModelActionResetModel> = z.object({actionType:z.literal("modelAction"), actionName:z.literal("resetModel"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.string().uuid()}).strict();
+export const modelActionResetData: z.ZodType<ModelActionResetData> = z.object({actionType:z.literal("modelAction"), actionName:z.literal("resetData"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.string().uuid()}).strict();
+export const modelActionAlterEntityAttribute: z.ZodType<ModelActionAlterEntityAttribute> = z.object({actionType:z.literal("modelAction"), actionName:z.literal("alterEntityAttribute"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), transactional:z.boolean().optional(), deploymentUuid:z.string().uuid(), entityName:z.string(), entityUuid:z.string(), entityDefinitionUuid:z.string(), addColumns:z.array(z.object({name:z.string(), definition:z.lazy(() =>jzodElement)}).strict()).optional(), removeColumns:z.array(z.string()).optional(), update:z.lazy(() =>jzodElement).optional()}).strict();
+export const modelActionCreateEntity: z.ZodType<ModelActionCreateEntity> = z.object({actionType:z.literal("modelAction"), actionName:z.literal("createEntity"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), transactional:z.boolean().optional(), deploymentUuid:z.string().uuid(), entities:z.array(z.object({entity:z.lazy(() =>entity), entityDefinition:z.lazy(() =>entityDefinition)}).strict())}).strict();
+export const modelActionDropEntity: z.ZodType<ModelActionDropEntity> = z.object({actionType:z.literal("modelAction"), actionName:z.literal("dropEntity"), actionLabel:z.string().optional(), transactional:z.boolean().optional(), deploymentUuid:z.string().uuid(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), entityUuid:z.string(), entityDefinitionUuid:z.string()}).strict();
+export const modelActionRenameEntity: z.ZodType<ModelActionRenameEntity> = z.object({actionType:z.literal("modelAction"), actionName:z.literal("renameEntity"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), transactional:z.boolean().optional(), deploymentUuid:z.string().uuid(), entityName:z.string().optional(), entityUuid:z.string(), entityDefinitionUuid:z.string(), targetValue:z.string()}).strict();
+export const modelAction: z.ZodType<ModelAction> = z.union([z.object({actionType:z.literal("modelAction"), actionName:z.literal("initModel"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.string().uuid(), params:z.object({metaModel:z.lazy(() =>metaModel), dataStoreType:z.lazy(() =>dataStoreType), selfApplication:z.lazy(() =>selfApplication), applicationModelBranch:z.lazy(() =>entityInstance), applicationVersion:z.lazy(() =>entityInstance)}).strict()}).strict(), z.object({actionType:z.literal("modelAction"), actionName:z.literal("commit"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.string().uuid()}).strict(), z.object({actionType:z.literal("modelAction"), actionName:z.literal("rollback"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.string().uuid()}).strict(), z.object({actionType:z.literal("modelAction"), actionName:z.literal("remoteLocalCacheRollback"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.string().uuid()}).strict(), z.object({actionType:z.literal("modelAction"), actionName:z.literal("resetModel"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.string().uuid()}).strict(), z.object({actionType:z.literal("modelAction"), actionName:z.literal("resetData"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.string().uuid()}).strict(), z.object({actionType:z.literal("modelAction"), actionName:z.literal("alterEntityAttribute"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), transactional:z.boolean().optional(), deploymentUuid:z.string().uuid(), entityName:z.string(), entityUuid:z.string(), entityDefinitionUuid:z.string(), addColumns:z.array(z.object({name:z.string(), definition:z.lazy(() =>jzodElement)}).strict()).optional(), removeColumns:z.array(z.string()).optional(), update:z.lazy(() =>jzodElement).optional()}).strict(), z.object({actionType:z.literal("modelAction"), actionName:z.literal("renameEntity"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), transactional:z.boolean().optional(), deploymentUuid:z.string().uuid(), entityName:z.string().optional(), entityUuid:z.string(), entityDefinitionUuid:z.string(), targetValue:z.string()}).strict(), z.object({actionType:z.literal("modelAction"), actionName:z.literal("createEntity"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), transactional:z.boolean().optional(), deploymentUuid:z.string().uuid(), entities:z.array(z.object({entity:z.lazy(() =>entity), entityDefinition:z.lazy(() =>entityDefinition)}).strict())}).strict(), z.object({actionType:z.literal("modelAction"), actionName:z.literal("dropEntity"), actionLabel:z.string().optional(), transactional:z.boolean().optional(), deploymentUuid:z.string().uuid(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), entityUuid:z.string(), entityDefinitionUuid:z.string()}).strict()]);
 export const testAction_runTestCompositeAction: z.ZodType<TestAction_runTestCompositeAction> = z.object({actionType:z.literal("testAction"), actionName:z.literal("runTestCompositeAction"), endpoint:z.literal("a9139e2d-a714-4c9c-bdee-c104488e2eaa"), deploymentUuid:z.string().uuid(), applicationSection:z.lazy(() =>applicationSection), testToRun:z.lazy(() =>testCompositeAction)}).strict();
 export const testAction_runTestCase: z.ZodType<TestAction_runTestCase> = z.object({actionType:z.literal("testAction"), actionName:z.literal("runTestCase"), endpoint:z.literal("a9139e2d-a714-4c9c-bdee-c104488e2eaa"), deploymentUuid:z.string().uuid(), applicationSection:z.lazy(() =>applicationSection), testToRun:z.lazy(() =>testAssertion)}).strict();
 export const instanceCUDAction: z.ZodType<InstanceCUDAction> = z.union([z.object({actionType:z.literal("instanceAction"), actionName:z.literal("createInstance"), actionLabel:z.string().optional(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.string().uuid(), applicationSection:z.lazy(() =>applicationSection), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict(), z.object({actionType:z.literal("instanceAction"), actionName:z.literal("deleteInstance"), actionLabel:z.string().optional(), deploymentUuid:z.string().uuid(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), applicationSection:z.lazy(() =>applicationSection), includeInTransaction:z.boolean().optional(), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict(), z.object({actionType:z.literal("instanceAction"), actionName:z.literal("updateInstance"), actionLabel:z.string().optional(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.string().uuid(), applicationSection:z.lazy(() =>applicationSection), includeInTransaction:z.boolean().optional(), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict()]);
 export const instanceAction: z.ZodType<InstanceAction> = z.union([z.object({actionType:z.literal("instanceAction"), actionName:z.literal("createInstance"), actionLabel:z.string().optional(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.string().uuid(), applicationSection:z.lazy(() =>applicationSection), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict(), z.object({actionType:z.literal("instanceAction"), actionName:z.literal("deleteInstance"), actionLabel:z.string().optional(), deploymentUuid:z.string().uuid(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), applicationSection:z.lazy(() =>applicationSection), includeInTransaction:z.boolean().optional(), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict(), z.object({actionType:z.literal("instanceAction"), actionName:z.literal("deleteInstanceWithCascade"), actionLabel:z.string().optional(), deploymentUuid:z.string().uuid(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), applicationSection:z.lazy(() =>applicationSection), includeInTransaction:z.boolean().optional(), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict(), z.object({actionType:z.literal("instanceAction"), actionName:z.literal("updateInstance"), actionLabel:z.string().optional(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.string().uuid(), applicationSection:z.lazy(() =>applicationSection), includeInTransaction:z.boolean().optional(), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict(), z.object({actionType:z.literal("instanceAction"), actionName:z.literal("loadNewInstancesInLocalCache"), actionLabel:z.string().optional(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.string().uuid(), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict(), z.object({actionType:z.literal("instanceAction"), actionName:z.literal("getInstance"), actionLabel:z.string().optional(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.string().uuid(), applicationSection:z.lazy(() =>applicationSection), parentUuid:z.string().uuid(), uuid:z.string().uuid()}).strict(), z.object({actionType:z.literal("instanceAction"), actionName:z.literal("getInstances"), actionLabel:z.string().optional(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.string().uuid(), applicationSection:z.lazy(() =>applicationSection), parentUuid:z.string().uuid()}).strict()]);
-export const undoRedoAction: z.ZodType<UndoRedoAction> = z.union([z.object({actionType:z.literal("undoRedoAction"), actionName:z.literal("undo"), endpoint:z.literal("71c04f8e-c687-4ea7-9a19-bc98d796c389"), deploymentUuid:z.string().uuid()}).strict(), z.object({actionType:z.literal("undoRedoAction"), actionName:z.literal("redo"), endpoint:z.literal("71c04f8e-c687-4ea7-9a19-bc98d796c389"), deploymentUuid:z.string().uuid()}).strict()]);
+export const undoRedoAction: z.ZodType<UndoRedoAction> = z.union([z.object({actionType:z.literal("undoRedoAction"), actionName:z.literal("undo"), actionLabel:z.string().optional(), endpoint:z.literal("71c04f8e-c687-4ea7-9a19-bc98d796c389"), deploymentUuid:z.string().uuid()}).strict(), z.object({actionType:z.literal("undoRedoAction"), actionName:z.literal("redo"), actionLabel:z.string().optional(), endpoint:z.literal("71c04f8e-c687-4ea7-9a19-bc98d796c389"), deploymentUuid:z.string().uuid()}).strict()]);
 export const transactionalInstanceAction: z.ZodType<TransactionalInstanceAction> = z.object({actionType:z.literal("transactionalInstanceAction"), actionLabel:z.string().optional(), deploymentUuid:z.string().uuid().optional(), instanceAction:z.lazy(() =>instanceCUDAction)}).strict();
 export const localCacheAction: z.ZodType<LocalCacheAction> = z.union([z.lazy(() =>undoRedoAction), z.lazy(() =>modelAction), z.lazy(() =>instanceAction), z.lazy(() =>transactionalInstanceAction)]);
 export const storeManagementAction: z.ZodType<StoreManagementAction> = z.union([z.object({actionType:z.literal("storeManagementAction"), actionName:z.literal("createStore"), actionLabel:z.string().optional(), endpoint:z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), configuration:z.lazy(() =>storeUnitConfiguration), deploymentUuid:z.string().uuid()}).strict(), z.object({actionType:z.literal("storeManagementAction"), actionName:z.literal("deleteStore"), actionLabel:z.string().optional(), endpoint:z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), deploymentUuid:z.string().uuid(), configuration:z.lazy(() =>storeUnitConfiguration)}).strict(), z.object({actionType:z.literal("storeManagementAction"), actionName:z.literal("resetAndInitApplicationDeployment"), actionLabel:z.string().optional(), endpoint:z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), deployments:z.array(z.lazy(() =>deployment)), deploymentUuid:z.string().uuid()}).strict(), z.object({actionType:z.literal("storeManagementAction"), actionName:z.literal("openStore"), actionLabel:z.string().optional(), endpoint:z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), configuration:z.record(z.string(),z.lazy(() =>storeUnitConfiguration)), deploymentUuid:z.string().uuid()}).strict(), z.object({actionType:z.literal("storeManagementAction"), actionName:z.literal("closeStore"), actionLabel:z.string().optional(), endpoint:z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), deploymentUuid:z.string().uuid()}).strict()]);
@@ -4381,12 +4370,12 @@ export const runBoxedQueryTemplateAction: z.ZodType<RunBoxedQueryTemplateAction>
 export const runBoxedExtractorTemplateAction: z.ZodType<RunBoxedExtractorTemplateAction> = z.object({actionType:z.literal("runBoxedExtractorTemplateAction"), actionName:z.literal("runQuery"), endpoint:z.literal("9e404b3c-368c-40cb-be8b-e3c28550c25e"), applicationSection:z.lazy(() =>applicationSection).optional(), deploymentUuid:z.string().uuid(), query:z.lazy(() =>boxedExtractorTemplateReturningObjectOrObjectList)}).strict();
 export const runBoxedQueryAction: z.ZodType<RunBoxedQueryAction> = z.object({actionType:z.literal("runBoxedQueryAction"), actionName:z.literal("runQuery"), actionLabel:z.string().optional(), endpoint:z.literal("9e404b3c-368c-40cb-be8b-e3c28550c25e"), applicationSection:z.lazy(() =>applicationSection).optional(), deploymentUuid:z.string().uuid(), query:z.lazy(() =>boxedQueryWithExtractorCombinerTransformer)}).strict();
 export const runBoxedExtractorAction: z.ZodType<RunBoxedExtractorAction> = z.object({actionType:z.literal("runBoxedExtractorAction"), actionName:z.literal("runQuery"), actionLabel:z.string().optional(), endpoint:z.literal("9e404b3c-368c-40cb-be8b-e3c28550c25e"), applicationSection:z.lazy(() =>applicationSection).optional(), deploymentUuid:z.string().uuid(), query:z.lazy(() =>boxedExtractorOrCombinerReturningObjectOrObjectList)}).strict();
-export const compositeActionDefinition: z.ZodType<CompositeActionDefinition> = z.array(z.union([z.object({compositeActionType:z.literal("domainAction"), compositeActionStepLabel:z.string().optional(), domainAction:z.lazy(() =>domainAction)}).strict(), z.object({compositeActionType:z.literal("compositeAction"), compositeActionStepLabel:z.string().optional(), compositeAction:z.lazy(() =>compositeAction)}).strict(), z.object({compositeActionType:z.literal("runBoxedQueryTemplateAction"), compositeActionStepLabel:z.string().optional(), nameGivenToResult:z.string(), queryTemplate:z.lazy(() =>runBoxedQueryTemplateAction)}).strict(), z.object({compositeActionType:z.literal("runBoxedExtractorTemplateAction"), compositeActionStepLabel:z.string().optional(), nameGivenToResult:z.string(), queryTemplate:z.lazy(() =>runBoxedExtractorTemplateAction)}).strict(), z.object({compositeActionType:z.literal("runBoxedExtractorOrQueryAction"), compositeActionStepLabel:z.string().optional(), nameGivenToResult:z.string(), query:z.lazy(() =>runBoxedExtractorOrQueryAction)}).strict(), z.object({compositeActionType:z.literal("runBoxedQueryTemplateOrBoxedExtractorTemplateAction"), compositeActionStepLabel:z.string().optional(), nameGivenToResult:z.string(), queryTemplate:z.lazy(() =>runBoxedQueryTemplateOrBoxedExtractorTemplateAction)}).strict(), z.object({compositeActionType:z.literal("runTestCompositeActionAssertion"), compositeActionStepLabel:z.string().optional(), nameGivenToResult:z.string(), testAssertion:z.lazy(() =>testAssertion)}).strict()]));
-export const compositeAction: z.ZodType<CompositeAction> = z.object({actionType:z.literal("compositeAction"), actionName:z.literal("sequence"), actionLabel:z.string().optional(), deploymentUuid:z.string().uuid().optional(), templates:z.record(z.string(),z.any()).optional(), definition:z.array(z.union([z.object({compositeActionType:z.literal("domainAction"), compositeActionStepLabel:z.string().optional(), domainAction:z.lazy(() =>domainAction)}).strict(), z.object({compositeActionType:z.literal("compositeAction"), compositeActionStepLabel:z.string().optional(), compositeAction:z.lazy(() =>compositeAction)}).strict(), z.object({compositeActionType:z.literal("runBoxedQueryTemplateAction"), compositeActionStepLabel:z.string().optional(), nameGivenToResult:z.string(), queryTemplate:z.lazy(() =>runBoxedQueryTemplateAction)}).strict(), z.object({compositeActionType:z.literal("runBoxedExtractorTemplateAction"), compositeActionStepLabel:z.string().optional(), nameGivenToResult:z.string(), queryTemplate:z.lazy(() =>runBoxedExtractorTemplateAction)}).strict(), z.object({compositeActionType:z.literal("runBoxedExtractorOrQueryAction"), compositeActionStepLabel:z.string().optional(), nameGivenToResult:z.string(), query:z.lazy(() =>runBoxedExtractorOrQueryAction)}).strict(), z.object({compositeActionType:z.literal("runBoxedQueryTemplateOrBoxedExtractorTemplateAction"), compositeActionStepLabel:z.string().optional(), nameGivenToResult:z.string(), queryTemplate:z.lazy(() =>runBoxedQueryTemplateOrBoxedExtractorTemplateAction)}).strict(), z.object({compositeActionType:z.literal("runTestCompositeActionAssertion"), compositeActionStepLabel:z.string().optional(), nameGivenToResult:z.string(), testAssertion:z.lazy(() =>testAssertion)}).strict()]))}).strict();
-export const runTestCompositeActionAssertion: z.ZodType<RunTestCompositeActionAssertion> = z.object({compositeActionType:z.literal("runTestCompositeActionAssertion"), compositeActionStepLabel:z.string().optional(), nameGivenToResult:z.string(), testAssertion:z.lazy(() =>testAssertion)}).strict();
-export const domainAction: z.ZodType<DomainAction> = z.union([z.lazy(() =>undoRedoAction), z.lazy(() =>storeOrBundleAction), z.lazy(() =>modelAction), z.lazy(() =>instanceAction), z.object({actionType:z.literal("transactionalInstanceAction"), actionLabel:z.string().optional(), deploymentUuid:z.string().uuid().optional(), instanceAction:z.lazy(() =>instanceCUDAction)}).strict(), z.object({actionType:z.literal("compositeAction"), actionName:z.literal("sequence"), actionLabel:z.string().optional(), deploymentUuid:z.string().uuid().optional(), templates:z.record(z.string(),z.any()).optional(), definition:z.array(z.union([z.object({compositeActionType:z.literal("domainAction"), compositeActionStepLabel:z.string().optional(), domainAction:z.lazy(() =>domainAction)}).strict(), z.object({compositeActionType:z.literal("compositeAction"), compositeActionStepLabel:z.string().optional(), compositeAction:z.lazy(() =>compositeAction)}).strict(), z.object({compositeActionType:z.literal("runBoxedQueryTemplateAction"), compositeActionStepLabel:z.string().optional(), nameGivenToResult:z.string(), queryTemplate:z.lazy(() =>runBoxedQueryTemplateAction)}).strict(), z.object({compositeActionType:z.literal("runBoxedExtractorTemplateAction"), compositeActionStepLabel:z.string().optional(), nameGivenToResult:z.string(), queryTemplate:z.lazy(() =>runBoxedExtractorTemplateAction)}).strict(), z.object({compositeActionType:z.literal("runBoxedExtractorOrQueryAction"), compositeActionStepLabel:z.string().optional(), nameGivenToResult:z.string(), query:z.lazy(() =>runBoxedExtractorOrQueryAction)}).strict(), z.object({compositeActionType:z.literal("runBoxedQueryTemplateOrBoxedExtractorTemplateAction"), compositeActionStepLabel:z.string().optional(), nameGivenToResult:z.string(), queryTemplate:z.lazy(() =>runBoxedQueryTemplateOrBoxedExtractorTemplateAction)}).strict(), z.object({compositeActionType:z.literal("runTestCompositeActionAssertion"), compositeActionStepLabel:z.string().optional(), nameGivenToResult:z.string(), testAssertion:z.lazy(() =>testAssertion)}).strict()]))}).strict()]);
+export const compositeActionDefinition: z.ZodType<CompositeActionDefinition> = z.array(z.union([z.lazy(() =>domainAction), z.lazy(() =>compositeAction), z.object({actionType:z.literal("compositeRunBoxedQueryTemplateAction"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), queryTemplate:z.lazy(() =>runBoxedQueryTemplateAction)}).strict(), z.object({actionType:z.literal("compositeRunBoxedExtractorTemplateAction"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), queryTemplate:z.lazy(() =>runBoxedExtractorTemplateAction)}).strict(), z.object({actionType:z.literal("compositeRunBoxedExtractorOrQueryAction"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), query:z.lazy(() =>runBoxedExtractorOrQueryAction)}).strict(), z.object({actionType:z.literal("compositeRunBoxedQueryTemplateOrBoxedExtractorTemplateAction"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), queryTemplate:z.lazy(() =>runBoxedQueryTemplateOrBoxedExtractorTemplateAction)}).strict(), z.object({actionType:z.literal("compositeRunTestAssertion"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), testAssertion:z.lazy(() =>testAssertion)}).strict()]));
+export const compositeAction: z.ZodType<CompositeAction> = z.object({actionType:z.literal("compositeAction"), actionName:z.literal("sequence"), actionLabel:z.string().optional(), deploymentUuid:z.string().uuid().optional(), templates:z.record(z.string(),z.any()).optional(), definition:z.array(z.union([z.lazy(() =>domainAction), z.lazy(() =>compositeAction), z.object({actionType:z.literal("compositeRunBoxedQueryTemplateAction"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), queryTemplate:z.lazy(() =>runBoxedQueryTemplateAction)}).strict(), z.object({actionType:z.literal("compositeRunBoxedExtractorTemplateAction"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), queryTemplate:z.lazy(() =>runBoxedExtractorTemplateAction)}).strict(), z.object({actionType:z.literal("compositeRunBoxedExtractorOrQueryAction"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), query:z.lazy(() =>runBoxedExtractorOrQueryAction)}).strict(), z.object({actionType:z.literal("compositeRunBoxedQueryTemplateOrBoxedExtractorTemplateAction"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), queryTemplate:z.lazy(() =>runBoxedQueryTemplateOrBoxedExtractorTemplateAction)}).strict(), z.object({actionType:z.literal("compositeRunTestAssertion"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), testAssertion:z.lazy(() =>testAssertion)}).strict()]))}).strict();
+export const compositeRunTestAssertion: z.ZodType<CompositeRunTestAssertion> = z.object({actionType:z.literal("compositeRunTestAssertion"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), testAssertion:z.lazy(() =>testAssertion)}).strict();
+export const domainAction: z.ZodType<DomainAction> = z.union([z.lazy(() =>undoRedoAction), z.lazy(() =>storeOrBundleAction), z.lazy(() =>modelAction), z.lazy(() =>instanceAction), z.object({actionType:z.literal("transactionalInstanceAction"), actionLabel:z.string().optional(), deploymentUuid:z.string().uuid().optional(), instanceAction:z.lazy(() =>instanceCUDAction)}).strict(), z.object({actionType:z.literal("compositeAction"), actionName:z.literal("sequence"), actionLabel:z.string().optional(), deploymentUuid:z.string().uuid().optional(), templates:z.record(z.string(),z.any()).optional(), definition:z.array(z.union([z.lazy(() =>domainAction), z.lazy(() =>compositeAction), z.object({actionType:z.literal("compositeRunBoxedQueryTemplateAction"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), queryTemplate:z.lazy(() =>runBoxedQueryTemplateAction)}).strict(), z.object({actionType:z.literal("compositeRunBoxedExtractorTemplateAction"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), queryTemplate:z.lazy(() =>runBoxedExtractorTemplateAction)}).strict(), z.object({actionType:z.literal("compositeRunBoxedExtractorOrQueryAction"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), query:z.lazy(() =>runBoxedExtractorOrQueryAction)}).strict(), z.object({actionType:z.literal("compositeRunBoxedQueryTemplateOrBoxedExtractorTemplateAction"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), queryTemplate:z.lazy(() =>runBoxedQueryTemplateOrBoxedExtractorTemplateAction)}).strict(), z.object({actionType:z.literal("compositeRunTestAssertion"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), testAssertion:z.lazy(() =>testAssertion)}).strict()]))}).strict()]);
 export const modelActionReplayableAction: z.ZodType<ModelActionReplayableAction> = z.union([z.lazy(() =>modelActionAlterEntityAttribute), z.lazy(() =>modelActionCreateEntity), z.lazy(() =>modelActionDropEntity), z.lazy(() =>modelActionRenameEntity)]);
-export const bundleAction: z.ZodType<BundleAction> = z.union([z.object({actionType:z.literal("bundleAction"), actionName:z.literal("createBundle"), deploymentUuid:z.string().uuid()}).strict(), z.object({actionType:z.literal("bundleAction"), actionName:z.literal("deleteBundle"), deploymentUuid:z.string().uuid()}).strict()]);
+export const bundleAction: z.ZodType<BundleAction> = z.union([z.object({actionType:z.literal("bundleAction"), actionName:z.literal("createBundle"), actionLabel:z.string().optional(), deploymentUuid:z.string().uuid()}).strict(), z.object({actionType:z.literal("bundleAction"), actionName:z.literal("deleteBundle"), actionLabel:z.string().optional(), deploymentUuid:z.string().uuid()}).strict()]);
 export const storeOrBundleAction: z.ZodType<StoreOrBundleAction> = z.union([z.lazy(() =>storeManagementAction), z.lazy(() =>bundleAction)]);
 export const actionTransformer: z.ZodType<ActionTransformer> = z.object({transformerType:z.literal("actionTransformer")}).strict();
 export const dataTransformer: z.ZodType<DataTransformer> = z.object({transformerType:z.literal("dataTransformer")}).strict();
@@ -4479,16 +4468,16 @@ export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeBasedConfiguratio
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration> = z.union([z.lazy(() =>carryOnObject), z.object({admin:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeSectionConfiguration), model:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeSectionConfiguration), data:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeSectionConfiguration)}).strict()]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeSectionConfiguration: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeSectionConfiguration> = z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_indexedDbStoreSectionConfiguration), z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_filesystemDbStoreSectionConfiguration), z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_sqlDbStoreSectionConfiguration), z.lazy(() =>carryOnObject)]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction> = z.union([z.object({actionType:z.union([z.literal("instanceAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("createInstance"), z.lazy(() =>carryOnObject)]), actionLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), endpoint:z.union([z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), applicationSection:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), objects:z.union([z.array(z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection)), z.lazy(() =>carryOnObject)])}).strict(), z.object({actionType:z.union([z.literal("instanceAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("deleteInstance"), z.lazy(() =>carryOnObject)]), actionLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), z.lazy(() =>carryOnObject)]), applicationSection:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), includeInTransaction:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), objects:z.union([z.array(z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection)), z.lazy(() =>carryOnObject)])}).strict(), z.object({actionType:z.union([z.literal("instanceAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("updateInstance"), z.lazy(() =>carryOnObject)]), actionLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), endpoint:z.union([z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), applicationSection:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), includeInTransaction:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), objects:z.union([z.array(z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection)), z.lazy(() =>carryOnObject)])}).strict(), z.lazy(() =>carryOnObject)]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction> = z.union([z.object({actionType:z.union([z.literal("undoRedoAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("undo"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("71c04f8e-c687-4ea7-9a19-bc98d796c389"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict(), z.object({actionType:z.union([z.literal("undoRedoAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("redo"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("71c04f8e-c687-4ea7-9a19-bc98d796c389"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict(), z.lazy(() =>carryOnObject)]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction> = z.union([z.object({actionType:z.union([z.literal("undoRedoAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("undo"), z.lazy(() =>carryOnObject)]), actionLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), endpoint:z.union([z.literal("71c04f8e-c687-4ea7-9a19-bc98d796c389"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict(), z.object({actionType:z.union([z.literal("undoRedoAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("redo"), z.lazy(() =>carryOnObject)]), actionLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), endpoint:z.union([z.literal("71c04f8e-c687-4ea7-9a19-bc98d796c389"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict(), z.lazy(() =>carryOnObject)]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeOrBundleAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeOrBundleAction> = z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeManagementAction), z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_bundleAction), z.lazy(() =>carryOnObject)]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction> = z.union([z.object({actionType:z.union([z.literal("modelAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("initModel"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), params:z.union([z.lazy(() =>carryOnObject), z.object({metaModel:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_metaModel), dataStoreType:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_dataStoreType), selfApplication:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selfApplication), applicationModelBranch:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance), applicationVersion:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance)}).strict()])}).strict(), z.object({actionType:z.union([z.literal("modelAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("commit"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict(), z.object({actionType:z.union([z.literal("modelAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("rollback"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict(), z.object({actionType:z.union([z.literal("modelAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("remoteLocalCacheRollback"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict(), z.object({actionType:z.union([z.literal("modelAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("resetModel"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict(), z.object({actionType:z.union([z.literal("modelAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("resetData"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict(), z.object({actionType:z.union([z.literal("modelAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("alterEntityAttribute"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), z.lazy(() =>carryOnObject)]), transactional:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), entityName:z.union([z.string(), z.lazy(() =>carryOnObject)]), entityUuid:z.union([z.string(), z.lazy(() =>carryOnObject)]), entityDefinitionUuid:z.union([z.string(), z.lazy(() =>carryOnObject)]), addColumns:z.union([z.array(z.union([z.lazy(() =>carryOnObject), z.object({name:z.union([z.string(), z.lazy(() =>carryOnObject)]), definition:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement)}).strict()])).optional(), z.lazy(() =>carryOnObject)]).optional(), removeColumns:z.union([z.array(z.union([z.string(), z.lazy(() =>carryOnObject)])).optional(), z.lazy(() =>carryOnObject)]).optional(), update:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement).optional()}).strict(), z.object({actionType:z.union([z.literal("modelAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("renameEntity"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), z.lazy(() =>carryOnObject)]), transactional:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), entityName:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), entityUuid:z.union([z.string(), z.lazy(() =>carryOnObject)]), entityDefinitionUuid:z.union([z.string(), z.lazy(() =>carryOnObject)]), targetValue:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict(), z.object({actionType:z.union([z.literal("modelAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("createEntity"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), z.lazy(() =>carryOnObject)]), transactional:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), entities:z.union([z.array(z.union([z.lazy(() =>carryOnObject), z.object({entity:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity), entityDefinition:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition)}).strict()])), z.lazy(() =>carryOnObject)])}).strict(), z.object({actionType:z.union([z.literal("modelAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("dropEntity"), z.lazy(() =>carryOnObject)]), transactional:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), z.lazy(() =>carryOnObject)]), entityUuid:z.union([z.string(), z.lazy(() =>carryOnObject)]), entityDefinitionUuid:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict(), z.lazy(() =>carryOnObject)]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction> = z.union([z.object({actionType:z.union([z.literal("modelAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("initModel"), z.lazy(() =>carryOnObject)]), actionLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), endpoint:z.union([z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), params:z.union([z.lazy(() =>carryOnObject), z.object({metaModel:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_metaModel), dataStoreType:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_dataStoreType), selfApplication:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selfApplication), applicationModelBranch:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance), applicationVersion:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance)}).strict()])}).strict(), z.object({actionType:z.union([z.literal("modelAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("commit"), z.lazy(() =>carryOnObject)]), actionLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), endpoint:z.union([z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict(), z.object({actionType:z.union([z.literal("modelAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("rollback"), z.lazy(() =>carryOnObject)]), actionLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), endpoint:z.union([z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict(), z.object({actionType:z.union([z.literal("modelAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("remoteLocalCacheRollback"), z.lazy(() =>carryOnObject)]), actionLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), endpoint:z.union([z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict(), z.object({actionType:z.union([z.literal("modelAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("resetModel"), z.lazy(() =>carryOnObject)]), actionLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), endpoint:z.union([z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict(), z.object({actionType:z.union([z.literal("modelAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("resetData"), z.lazy(() =>carryOnObject)]), actionLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), endpoint:z.union([z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict(), z.object({actionType:z.union([z.literal("modelAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("alterEntityAttribute"), z.lazy(() =>carryOnObject)]), actionLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), endpoint:z.union([z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), z.lazy(() =>carryOnObject)]), transactional:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), entityName:z.union([z.string(), z.lazy(() =>carryOnObject)]), entityUuid:z.union([z.string(), z.lazy(() =>carryOnObject)]), entityDefinitionUuid:z.union([z.string(), z.lazy(() =>carryOnObject)]), addColumns:z.union([z.array(z.union([z.lazy(() =>carryOnObject), z.object({name:z.union([z.string(), z.lazy(() =>carryOnObject)]), definition:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement)}).strict()])).optional(), z.lazy(() =>carryOnObject)]).optional(), removeColumns:z.union([z.array(z.union([z.string(), z.lazy(() =>carryOnObject)])).optional(), z.lazy(() =>carryOnObject)]).optional(), update:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement).optional()}).strict(), z.object({actionType:z.union([z.literal("modelAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("renameEntity"), z.lazy(() =>carryOnObject)]), actionLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), endpoint:z.union([z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), z.lazy(() =>carryOnObject)]), transactional:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), entityName:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), entityUuid:z.union([z.string(), z.lazy(() =>carryOnObject)]), entityDefinitionUuid:z.union([z.string(), z.lazy(() =>carryOnObject)]), targetValue:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict(), z.object({actionType:z.union([z.literal("modelAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("createEntity"), z.lazy(() =>carryOnObject)]), actionLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), endpoint:z.union([z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), z.lazy(() =>carryOnObject)]), transactional:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), entities:z.union([z.array(z.union([z.lazy(() =>carryOnObject), z.object({entity:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity), entityDefinition:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition)}).strict()])), z.lazy(() =>carryOnObject)])}).strict(), z.object({actionType:z.union([z.literal("modelAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("dropEntity"), z.lazy(() =>carryOnObject)]), actionLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), transactional:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), z.lazy(() =>carryOnObject)]), entityUuid:z.union([z.string(), z.lazy(() =>carryOnObject)]), entityDefinitionUuid:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict(), z.lazy(() =>carryOnObject)]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction> = z.union([z.object({actionType:z.union([z.literal("instanceAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("createInstance"), z.lazy(() =>carryOnObject)]), actionLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), endpoint:z.union([z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), applicationSection:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), objects:z.union([z.array(z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection)), z.lazy(() =>carryOnObject)])}).strict(), z.object({actionType:z.union([z.literal("instanceAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("deleteInstance"), z.lazy(() =>carryOnObject)]), actionLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), z.lazy(() =>carryOnObject)]), applicationSection:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), includeInTransaction:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), objects:z.union([z.array(z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection)), z.lazy(() =>carryOnObject)])}).strict(), z.object({actionType:z.union([z.literal("instanceAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("deleteInstanceWithCascade"), z.lazy(() =>carryOnObject)]), actionLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), z.lazy(() =>carryOnObject)]), applicationSection:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), includeInTransaction:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), objects:z.union([z.array(z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection)), z.lazy(() =>carryOnObject)])}).strict(), z.object({actionType:z.union([z.literal("instanceAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("updateInstance"), z.lazy(() =>carryOnObject)]), actionLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), endpoint:z.union([z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), applicationSection:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), includeInTransaction:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), objects:z.union([z.array(z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection)), z.lazy(() =>carryOnObject)])}).strict(), z.object({actionType:z.union([z.literal("instanceAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("loadNewInstancesInLocalCache"), z.lazy(() =>carryOnObject)]), actionLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), endpoint:z.union([z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), objects:z.union([z.array(z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection)), z.lazy(() =>carryOnObject)])}).strict(), z.object({actionType:z.union([z.literal("instanceAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("getInstance"), z.lazy(() =>carryOnObject)]), actionLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), endpoint:z.union([z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), applicationSection:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), parentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), uuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict(), z.object({actionType:z.union([z.literal("instanceAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("getInstances"), z.lazy(() =>carryOnObject)]), actionLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), endpoint:z.union([z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), applicationSection:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), parentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict(), z.lazy(() =>carryOnObject)]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeManagementAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeManagementAction> = z.union([z.object({actionType:z.union([z.literal("storeManagementAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("createStore"), z.lazy(() =>carryOnObject)]), actionLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), endpoint:z.union([z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), z.lazy(() =>carryOnObject)]), configuration:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict(), z.object({actionType:z.union([z.literal("storeManagementAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("deleteStore"), z.lazy(() =>carryOnObject)]), actionLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), endpoint:z.union([z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), configuration:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration)}).strict(), z.object({actionType:z.union([z.literal("storeManagementAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("resetAndInitApplicationDeployment"), z.lazy(() =>carryOnObject)]), actionLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), endpoint:z.union([z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), z.lazy(() =>carryOnObject)]), deployments:z.union([z.array(z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_deployment)), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict(), z.object({actionType:z.union([z.literal("storeManagementAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("openStore"), z.lazy(() =>carryOnObject)]), actionLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), endpoint:z.union([z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), z.lazy(() =>carryOnObject)]), configuration:z.union([z.record(z.string(),z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration)), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict(), z.object({actionType:z.union([z.literal("storeManagementAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("closeStore"), z.lazy(() =>carryOnObject)]), actionLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), endpoint:z.union([z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict(), z.lazy(() =>carryOnObject)]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transactionalInstanceAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transactionalInstanceAction> = z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("transactionalInstanceAction"), z.lazy(() =>carryOnObject)]), actionLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), deploymentUuid:z.union([z.string().uuid().optional(), z.lazy(() =>carryOnObject)]).optional(), instanceAction:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction)}).strict()]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_bundleAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_bundleAction> = z.union([z.object({actionType:z.union([z.literal("bundleAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("createBundle"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict(), z.object({actionType:z.union([z.literal("bundleAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("deleteBundle"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict(), z.lazy(() =>carryOnObject)]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction> = z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction), z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeOrBundleAction), z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction), z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction), z.object({actionType:z.union([z.literal("transactionalInstanceAction"), z.lazy(() =>carryOnObject)]), actionLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), deploymentUuid:z.union([z.string().uuid().optional(), z.lazy(() =>carryOnObject)]).optional(), instanceAction:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction)}).strict(), z.object({actionType:z.union([z.literal("compositeAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("sequence"), z.lazy(() =>carryOnObject)]), actionLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), deploymentUuid:z.union([z.string().uuid().optional(), z.lazy(() =>carryOnObject)]).optional(), templates:z.union([z.record(z.string(),z.union([z.any(), z.lazy(() =>carryOnObject)])).optional(), z.lazy(() =>carryOnObject)]).optional(), definition:z.union([z.array(z.union([z.object({compositeActionType:z.union([z.literal("domainAction"), z.lazy(() =>carryOnObject)]), compositeActionStepLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), domainAction:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction)}).strict(), z.object({compositeActionType:z.union([z.literal("compositeAction"), z.lazy(() =>carryOnObject)]), compositeActionStepLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), compositeAction:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction)}).strict(), z.object({compositeActionType:z.union([z.literal("runBoxedQueryTemplateAction"), z.lazy(() =>carryOnObject)]), compositeActionStepLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), nameGivenToResult:z.union([z.string(), z.lazy(() =>carryOnObject)]), queryTemplate:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryTemplateAction)}).strict(), z.object({compositeActionType:z.union([z.literal("runBoxedExtractorTemplateAction"), z.lazy(() =>carryOnObject)]), compositeActionStepLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), nameGivenToResult:z.union([z.string(), z.lazy(() =>carryOnObject)]), queryTemplate:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorTemplateAction)}).strict(), z.object({compositeActionType:z.union([z.literal("runBoxedExtractorOrQueryAction"), z.lazy(() =>carryOnObject)]), compositeActionStepLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), nameGivenToResult:z.union([z.string(), z.lazy(() =>carryOnObject)]), query:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction)}).strict(), z.object({compositeActionType:z.union([z.literal("runBoxedQueryTemplateOrBoxedExtractorTemplateAction"), z.lazy(() =>carryOnObject)]), compositeActionStepLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), nameGivenToResult:z.union([z.string(), z.lazy(() =>carryOnObject)]), queryTemplate:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryTemplateOrBoxedExtractorTemplateAction)}).strict(), z.object({compositeActionType:z.union([z.literal("runTestCompositeActionAssertion"), z.lazy(() =>carryOnObject)]), compositeActionStepLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), nameGivenToResult:z.union([z.string(), z.lazy(() =>carryOnObject)]), testAssertion:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion)}).strict(), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict(), z.lazy(() =>carryOnObject)]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeActionDefinition: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeActionDefinition> = z.union([z.array(z.union([z.object({compositeActionType:z.union([z.literal("domainAction"), z.lazy(() =>carryOnObject)]), compositeActionStepLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), domainAction:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction)}).strict(), z.object({compositeActionType:z.union([z.literal("compositeAction"), z.lazy(() =>carryOnObject)]), compositeActionStepLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), compositeAction:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction)}).strict(), z.object({compositeActionType:z.union([z.literal("runBoxedQueryTemplateAction"), z.lazy(() =>carryOnObject)]), compositeActionStepLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), nameGivenToResult:z.union([z.string(), z.lazy(() =>carryOnObject)]), queryTemplate:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryTemplateAction)}).strict(), z.object({compositeActionType:z.union([z.literal("runBoxedExtractorTemplateAction"), z.lazy(() =>carryOnObject)]), compositeActionStepLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), nameGivenToResult:z.union([z.string(), z.lazy(() =>carryOnObject)]), queryTemplate:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorTemplateAction)}).strict(), z.object({compositeActionType:z.union([z.literal("runBoxedExtractorOrQueryAction"), z.lazy(() =>carryOnObject)]), compositeActionStepLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), nameGivenToResult:z.union([z.string(), z.lazy(() =>carryOnObject)]), query:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction)}).strict(), z.object({compositeActionType:z.union([z.literal("runBoxedQueryTemplateOrBoxedExtractorTemplateAction"), z.lazy(() =>carryOnObject)]), compositeActionStepLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), nameGivenToResult:z.union([z.string(), z.lazy(() =>carryOnObject)]), queryTemplate:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryTemplateOrBoxedExtractorTemplateAction)}).strict(), z.object({compositeActionType:z.union([z.literal("runTestCompositeActionAssertion"), z.lazy(() =>carryOnObject)]), compositeActionStepLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), nameGivenToResult:z.union([z.string(), z.lazy(() =>carryOnObject)]), testAssertion:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion)}).strict(), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction> = z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("compositeAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("sequence"), z.lazy(() =>carryOnObject)]), actionLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), deploymentUuid:z.union([z.string().uuid().optional(), z.lazy(() =>carryOnObject)]).optional(), templates:z.union([z.record(z.string(),z.union([z.any(), z.lazy(() =>carryOnObject)])).optional(), z.lazy(() =>carryOnObject)]).optional(), definition:z.union([z.array(z.union([z.object({compositeActionType:z.union([z.literal("domainAction"), z.lazy(() =>carryOnObject)]), compositeActionStepLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), domainAction:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction)}).strict(), z.object({compositeActionType:z.union([z.literal("compositeAction"), z.lazy(() =>carryOnObject)]), compositeActionStepLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), compositeAction:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction)}).strict(), z.object({compositeActionType:z.union([z.literal("runBoxedQueryTemplateAction"), z.lazy(() =>carryOnObject)]), compositeActionStepLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), nameGivenToResult:z.union([z.string(), z.lazy(() =>carryOnObject)]), queryTemplate:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryTemplateAction)}).strict(), z.object({compositeActionType:z.union([z.literal("runBoxedExtractorTemplateAction"), z.lazy(() =>carryOnObject)]), compositeActionStepLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), nameGivenToResult:z.union([z.string(), z.lazy(() =>carryOnObject)]), queryTemplate:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorTemplateAction)}).strict(), z.object({compositeActionType:z.union([z.literal("runBoxedExtractorOrQueryAction"), z.lazy(() =>carryOnObject)]), compositeActionStepLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), nameGivenToResult:z.union([z.string(), z.lazy(() =>carryOnObject)]), query:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction)}).strict(), z.object({compositeActionType:z.union([z.literal("runBoxedQueryTemplateOrBoxedExtractorTemplateAction"), z.lazy(() =>carryOnObject)]), compositeActionStepLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), nameGivenToResult:z.union([z.string(), z.lazy(() =>carryOnObject)]), queryTemplate:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryTemplateOrBoxedExtractorTemplateAction)}).strict(), z.object({compositeActionType:z.union([z.literal("runTestCompositeActionAssertion"), z.lazy(() =>carryOnObject)]), compositeActionStepLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), nameGivenToResult:z.union([z.string(), z.lazy(() =>carryOnObject)]), testAssertion:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion)}).strict(), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_bundleAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_bundleAction> = z.union([z.object({actionType:z.union([z.literal("bundleAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("createBundle"), z.lazy(() =>carryOnObject)]), actionLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict(), z.object({actionType:z.union([z.literal("bundleAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("deleteBundle"), z.lazy(() =>carryOnObject)]), actionLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict(), z.lazy(() =>carryOnObject)]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction> = z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction), z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeOrBundleAction), z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction), z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction), z.object({actionType:z.union([z.literal("transactionalInstanceAction"), z.lazy(() =>carryOnObject)]), actionLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), deploymentUuid:z.union([z.string().uuid().optional(), z.lazy(() =>carryOnObject)]).optional(), instanceAction:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction)}).strict(), z.object({actionType:z.union([z.literal("compositeAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("sequence"), z.lazy(() =>carryOnObject)]), actionLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), deploymentUuid:z.union([z.string().uuid().optional(), z.lazy(() =>carryOnObject)]).optional(), templates:z.union([z.record(z.string(),z.union([z.any(), z.lazy(() =>carryOnObject)])).optional(), z.lazy(() =>carryOnObject)]).optional(), definition:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction), z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction), z.object({actionType:z.union([z.literal("compositeRunBoxedQueryTemplateAction"), z.lazy(() =>carryOnObject)]), actionLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), nameGivenToResult:z.union([z.string(), z.lazy(() =>carryOnObject)]), queryTemplate:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryTemplateAction)}).strict(), z.object({actionType:z.union([z.literal("compositeRunBoxedExtractorTemplateAction"), z.lazy(() =>carryOnObject)]), actionLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), nameGivenToResult:z.union([z.string(), z.lazy(() =>carryOnObject)]), queryTemplate:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorTemplateAction)}).strict(), z.object({actionType:z.union([z.literal("compositeRunBoxedExtractorOrQueryAction"), z.lazy(() =>carryOnObject)]), actionLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), nameGivenToResult:z.union([z.string(), z.lazy(() =>carryOnObject)]), query:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction)}).strict(), z.object({actionType:z.union([z.literal("compositeRunBoxedQueryTemplateOrBoxedExtractorTemplateAction"), z.lazy(() =>carryOnObject)]), actionLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), nameGivenToResult:z.union([z.string(), z.lazy(() =>carryOnObject)]), queryTemplate:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryTemplateOrBoxedExtractorTemplateAction)}).strict(), z.object({actionType:z.union([z.literal("compositeRunTestAssertion"), z.lazy(() =>carryOnObject)]), actionLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), nameGivenToResult:z.union([z.string(), z.lazy(() =>carryOnObject)]), testAssertion:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion)}).strict(), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict(), z.lazy(() =>carryOnObject)]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeActionDefinition: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeActionDefinition> = z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction), z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction), z.object({actionType:z.union([z.literal("compositeRunBoxedQueryTemplateAction"), z.lazy(() =>carryOnObject)]), actionLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), nameGivenToResult:z.union([z.string(), z.lazy(() =>carryOnObject)]), queryTemplate:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryTemplateAction)}).strict(), z.object({actionType:z.union([z.literal("compositeRunBoxedExtractorTemplateAction"), z.lazy(() =>carryOnObject)]), actionLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), nameGivenToResult:z.union([z.string(), z.lazy(() =>carryOnObject)]), queryTemplate:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorTemplateAction)}).strict(), z.object({actionType:z.union([z.literal("compositeRunBoxedExtractorOrQueryAction"), z.lazy(() =>carryOnObject)]), actionLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), nameGivenToResult:z.union([z.string(), z.lazy(() =>carryOnObject)]), query:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction)}).strict(), z.object({actionType:z.union([z.literal("compositeRunBoxedQueryTemplateOrBoxedExtractorTemplateAction"), z.lazy(() =>carryOnObject)]), actionLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), nameGivenToResult:z.union([z.string(), z.lazy(() =>carryOnObject)]), queryTemplate:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryTemplateOrBoxedExtractorTemplateAction)}).strict(), z.object({actionType:z.union([z.literal("compositeRunTestAssertion"), z.lazy(() =>carryOnObject)]), actionLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), nameGivenToResult:z.union([z.string(), z.lazy(() =>carryOnObject)]), testAssertion:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion)}).strict(), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction> = z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("compositeAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("sequence"), z.lazy(() =>carryOnObject)]), actionLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), deploymentUuid:z.union([z.string().uuid().optional(), z.lazy(() =>carryOnObject)]).optional(), templates:z.union([z.record(z.string(),z.union([z.any(), z.lazy(() =>carryOnObject)])).optional(), z.lazy(() =>carryOnObject)]).optional(), definition:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction), z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction), z.object({actionType:z.union([z.literal("compositeRunBoxedQueryTemplateAction"), z.lazy(() =>carryOnObject)]), actionLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), nameGivenToResult:z.union([z.string(), z.lazy(() =>carryOnObject)]), queryTemplate:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryTemplateAction)}).strict(), z.object({actionType:z.union([z.literal("compositeRunBoxedExtractorTemplateAction"), z.lazy(() =>carryOnObject)]), actionLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), nameGivenToResult:z.union([z.string(), z.lazy(() =>carryOnObject)]), queryTemplate:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorTemplateAction)}).strict(), z.object({actionType:z.union([z.literal("compositeRunBoxedExtractorOrQueryAction"), z.lazy(() =>carryOnObject)]), actionLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), nameGivenToResult:z.union([z.string(), z.lazy(() =>carryOnObject)]), query:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction)}).strict(), z.object({actionType:z.union([z.literal("compositeRunBoxedQueryTemplateOrBoxedExtractorTemplateAction"), z.lazy(() =>carryOnObject)]), actionLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), nameGivenToResult:z.union([z.string(), z.lazy(() =>carryOnObject)]), queryTemplate:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryTemplateOrBoxedExtractorTemplateAction)}).strict(), z.object({actionType:z.union([z.literal("compositeRunTestAssertion"), z.lazy(() =>carryOnObject)]), actionLabel:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), nameGivenToResult:z.union([z.string(), z.lazy(() =>carryOnObject)]), testAssertion:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion)}).strict(), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict()]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion> = z.union([z.lazy(() =>carryOnObject), z.object({testType:z.union([z.literal("testAssertion"), z.lazy(() =>carryOnObject)]), testLabel:z.union([z.string(), z.lazy(() =>carryOnObject)]), definition:z.union([z.lazy(() =>carryOnObject), z.object({resultAccessPath:z.union([z.array(z.union([z.string(), z.lazy(() =>carryOnObject)])).optional(), z.lazy(() =>carryOnObject)]).optional(), resultTransformer:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extendedTransformerForRuntime).optional(), ignoreAttributes:z.union([z.array(z.union([z.string(), z.lazy(() =>carryOnObject)])).optional(), z.lazy(() =>carryOnObject)]).optional(), expectedValue:z.union([z.any(), z.lazy(() =>carryOnObject)])}).strict()])}).strict()]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAction_runTestCase: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAction_runTestCase> = z.union([z.lazy(() =>carryOnObject), z.object({actionType:z.union([z.literal("testAction"), z.lazy(() =>carryOnObject)]), actionName:z.union([z.literal("runTestCase"), z.lazy(() =>carryOnObject)]), endpoint:z.union([z.literal("a9139e2d-a714-4c9c-bdee-c104488e2eaa"), z.lazy(() =>carryOnObject)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), applicationSection:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), testToRun:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion)}).strict()]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_shippingBox: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_shippingBox> = z.union([z.lazy(() =>carryOnObject), z.object({deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), pageParams:z.union([z.record(z.string(),z.union([z.any(), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)]), queryParams:z.union([z.record(z.string(),z.union([z.any(), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)]), contextResults:z.union([z.record(z.string(),z.union([z.any(), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict()]);

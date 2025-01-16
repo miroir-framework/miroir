@@ -20,6 +20,7 @@
               "type": "literal",
               "definition": "initModel"
             },
+            "actionLabel": { "type": "string", "optional": true },
             "endpoint": {
               "type": "literal",
               "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
@@ -89,6 +90,7 @@
               "type": "literal",
               "definition": "commit"
             },
+            "actionLabel": { "type": "string", "optional": true },
             "endpoint": {
               "type": "literal",
               "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
@@ -118,6 +120,7 @@
               "type": "literal",
               "definition": "rollback"
             },
+            "actionLabel": { "type": "string", "optional": true },
             "endpoint": {
               "type": "literal",
               "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
@@ -147,6 +150,7 @@
               "type": "literal",
               "definition": "remoteLocalCacheRollback"
             },
+            "actionLabel": { "type": "string", "optional": true },
             "endpoint": {
               "type": "literal",
               "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
@@ -176,6 +180,7 @@
               "type": "literal",
               "definition": "resetModel"
             },
+            "actionLabel": { "type": "string", "optional": true },
             "endpoint": {
               "type": "literal",
               "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
@@ -205,6 +210,7 @@
               "type": "literal",
               "definition": "resetData"
             },
+            "actionLabel": { "type": "string", "optional": true },
             "endpoint": {
               "type": "literal",
               "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
@@ -234,6 +240,7 @@
               "type": "literal",
               "definition": "alterEntityAttribute"
             },
+            "actionLabel": { "type": "string", "optional": true },
             "endpoint": {
               "type": "literal",
               "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
@@ -320,6 +327,7 @@
               "type": "literal",
               "definition": "renameEntity"
             },
+            "actionLabel": { "type": "string", "optional": true },
             "endpoint": {
               "type": "literal",
               "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
@@ -376,6 +384,7 @@
               "type": "literal",
               "definition": "createEntity"
             },
+            "actionLabel": { "type": "string", "optional": true },
             "endpoint": {
               "type": "literal",
               "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
@@ -431,6 +440,7 @@
               "type": "literal",
               "definition": "dropEntity"
             },
+            "actionLabel": { "type": "string", "optional": true },
             "transactional": {
               "type": "boolean",
               "optional": true

@@ -1,4 +1,4 @@
-import { describe, expect } from 'vitest';
+import { describe, expect } from "vitest";
 
 import { fetch as crossFetch } from "cross-fetch";
 // import process from "process";
@@ -25,11 +25,9 @@ import {
   publisher3,
   resetAndInitApplicationDeployment,
   SelfApplicationDeploymentConfiguration,
-  selfApplicationDeploymentLibrary,
   selfApplicationDeploymentMiroir,
   selfApplicationLibrary,
   selfApplicationModelBranchLibraryMasterBranch,
-  selfApplicationStoreBasedConfigurationLibrary,
   selfApplicationVersionLibraryInitialVersion,
   StoreUnitConfiguration,
   TestSuiteResult
@@ -39,7 +37,6 @@ import {
   adminApplicationDeploymentConfigurations,
   createDeploymentCompositeAction,
   deleteAndCloseApplicationDeployments,
-  deploymentConfigurations,
   displayTestSuiteResults,
   loadTestConfigFiles,
   resetAndinitializeDeploymentCompositeAction,
@@ -47,8 +44,6 @@ import {
   setupMiroirTest,
   TestActionParams
 } from "../utils/tests-utils.js";
-
-
 
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
@@ -58,73 +53,70 @@ import { miroirAppStartup } from "../../src/startup.js";
 import { LocalCache } from "miroir-localcache-redux";
 
 import { ConfigurationService, defaultMiroirMetaModel, Entity, entityEntity, JzodElement } from "miroir-core";
-import { packageName } from 'miroir-core/src/constants.js';
+import { packageName } from "miroir-core/src/constants.js";
 import {
   ApplicationEntitiesAndInstances,
   testOnLibrary_deleteLibraryDeployment,
-  testOnLibrary_resetLibraryDeployment
+  testOnLibrary_resetLibraryDeployment,
 } from "../utils/tests-utils-testOnLibrary.js";
 // import { loglevelnext } from '../../src/loglevelnextImporter.js';
-import { AdminApplicationDeploymentConfiguration } from 'miroir-core/src/0_interfaces/1_core/StorageConfiguration.js';
-import { LoggerOptions } from 'miroir-core/src/0_interfaces/4-services/LoggerInterface.js';
-import { loglevelnext } from '../../src/loglevelnextImporter.js';
-import { cleanLevel } from './constants.js';
+import { AdminApplicationDeploymentConfiguration } from "miroir-core/src/0_interfaces/1_core/StorageConfiguration.js";
+import { LoggerOptions } from "miroir-core/src/0_interfaces/4-services/LoggerInterface.js";
+import { loglevelnext } from "../../src/loglevelnextImporter.js";
+import { cleanLevel } from "./constants.js";
 
-
-const env:any = (import.meta as any).env
+const env: any = (import.meta as any).env;
 console.log("@@@@@@@@@@@@@@@@@@ env", env);
 
 const myConsoleLog = (...args: any[]) => console.log(fileName, ...args);
 const fileName = "DomainController.integ.Data.CRUD.test";
 myConsoleLog(fileName, "received env", JSON.stringify(env, null, 2));
 
-let miroirConfig:any;
-let loggerOptions:LoggerOptions;
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, fileName)
-).then((logger: LoggerInterface) => {log = logger});
+let miroirConfig: any;
+let loggerOptions: LoggerOptions;
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, fileName)).then(
+  (logger: LoggerInterface) => {
+    log = logger;
+  }
+);
 
 miroirAppStartup();
 miroirCoreStartup();
 miroirFileSystemStoreSectionStartup();
 miroirIndexedDbStoreSectionStartup();
 miroirPostgresStoreSectionStartup();
-ConfigurationService.registerTestImplementation({expect: expect as any});
+ConfigurationService.registerTestImplementation({ expect: expect as any });
 
-const {miroirConfig: miroirConfigParam, logConfig} = await loadTestConfigFiles(env)
+const { miroirConfig: miroirConfigParam, logConfig } = await loadTestConfigFiles(env);
 miroirConfig = miroirConfigParam;
 loggerOptions = logConfig;
 myConsoleLog("received miroirConfig", JSON.stringify(miroirConfig, null, 2));
-myConsoleLog(
-  "received miroirConfig.client",
-  JSON.stringify(miroirConfig.client, null, 2)
-);
+myConsoleLog("received miroirConfig.client", JSON.stringify(miroirConfig.client, null, 2));
 myConsoleLog("received loggerOptions", JSON.stringify(loggerOptions, null, 2));
-MiroirLoggerFactory.startRegisteredLoggers(
-  loglevelnext,
-  loggerOptions,
-);
+MiroirLoggerFactory.startRegisteredLoggers(loglevelnext, loggerOptions);
 myConsoleLog("started registered loggers DONE");
 
 const globalTimeOut = 30000;
 // const globalTimeOut = 10^9;
 const columnForTestDefinition: JzodElement = {
-  "type": "number", "optional": true, "tag": { "value": { "id":6, "defaultLabel": "Gender (narrow-minded)", "editable": true }}
+  type: "number",
+  optional: true,
+  tag: { value: { id: 6, defaultLabel: "Gender (narrow-minded)", editable: true } },
 };
 // const globalTimeOut = 10^9;
 const miroirtDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
-? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid]
-: miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentMiroir.uuid];
+  ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid]
+  : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentMiroir.uuid];
 
 const testApplicationDeploymentUuid = adminConfigurationDeploymentLibrary.uuid;
 
 const testDeploymentStorageConfiguration = miroirConfig.client.emulateServer
-? miroirConfig.client.deploymentStorageConfig[testApplicationDeploymentUuid]
-: miroirConfig.client.serverConfig.storeSectionConfiguration[testApplicationDeploymentUuid];
+  ? miroirConfig.client.deploymentStorageConfig[testApplicationDeploymentUuid]
+  : miroirConfig.client.serverConfig.storeSectionConfiguration[testApplicationDeploymentUuid];
 
-const typedAdminConfigurationDeploymentLibrary:AdminApplicationDeploymentConfiguration = adminConfigurationDeploymentLibrary as any;
-
+const typedAdminConfigurationDeploymentLibrary: AdminApplicationDeploymentConfiguration =
+  adminConfigurationDeploymentLibrary as any;
 
 let domainController: DomainControllerInterface;
 let localCache: LocalCache;
@@ -132,7 +124,7 @@ let miroirContext: MiroirContextInterface;
 let persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface;
 let globalTestSuiteResults: TestSuiteResult = {};
 
-export const libraryEntitiesAndInstancesWithoutBook3: ApplicationEntitiesAndInstances  = [
+export const libraryEntitiesAndInstancesWithoutBook3: ApplicationEntitiesAndInstances = [
   // {
   //   entity: entityAuthor as MetaEntity,
   //   entityDefinition: entityDefinitionAuthor as EntityDefinition,
@@ -157,61 +149,48 @@ export const libraryEntitiesAndInstancesWithoutBook3: ApplicationEntitiesAndInst
   // },
 ];
 
+beforeAll(async () => {
+  // Establish requests interception layer before all tests.
+  console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ beforeAll");
+  const {
+    persistenceStoreControllerManagerForClient: localpersistenceStoreControllerManager,
+    domainController: localdomainController,
+    localCache: locallocalCache,
+    miroirContext: localmiroirContext,
+  } = await setupMiroirTest(miroirConfig, crossFetch);
 
-beforeAll(
-  async () => {
-    // Establish requests interception layer before all tests.
-    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ beforeAll");
-    const {
-      persistenceStoreControllerManagerForClient: localpersistenceStoreControllerManager,
-      domainController: localdomainController,
-      localCache: locallocalCache,
-      miroirContext: localmiroirContext,
-    } = await setupMiroirTest(miroirConfig, crossFetch);
+  persistenceStoreControllerManager = localpersistenceStoreControllerManager;
+  domainController = localdomainController;
+  localCache = locallocalCache;
+  miroirContext = localmiroirContext;
 
-    persistenceStoreControllerManager = localpersistenceStoreControllerManager;
-    domainController = localdomainController;
-    localCache = locallocalCache;
-    miroirContext = localmiroirContext;
-
-    const createMiroirDeploymentCompositeAction = createDeploymentCompositeAction(
-      adminConfigurationDeploymentMiroir.uuid,
-      miroirtDeploymentStorageConfiguration,
-    );
-    const createDeploymentResult = await domainController.handleCompositeAction(
-      createMiroirDeploymentCompositeAction,
-      defaultMiroirMetaModel
-    );
-    if (createDeploymentResult.status !== "ok") {
-      throw new Error("Failed to create Miroir deployment: " + JSON.stringify(createDeploymentResult));
-    }
-    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ beforeAll DONE");
-
-    return Promise.resolve();
+  const createMiroirDeploymentCompositeAction = createDeploymentCompositeAction(
+    adminConfigurationDeploymentMiroir.uuid,
+    miroirtDeploymentStorageConfiguration
+  );
+  const createDeploymentResult = await domainController.handleCompositeAction(
+    createMiroirDeploymentCompositeAction,
+    defaultMiroirMetaModel
+  );
+  if (createDeploymentResult.status !== "ok") {
+    throw new Error("Failed to create Miroir deployment: " + JSON.stringify(createDeploymentResult));
   }
-)
+  console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ beforeAll DONE");
 
-beforeEach(
-  async () => {
-    await resetAndInitApplicationDeployment(domainController, [
-      selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
-    ]);
-    document.body.innerHTML = '';
-  }
-)
+  return Promise.resolve();
+});
 
+beforeEach(async () => {
+  await resetAndInitApplicationDeployment(domainController, [
+    selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
+  ]);
+  document.body.innerHTML = "";
+});
 
-afterAll(
-  async () => {
-    await deleteAndCloseApplicationDeployments(
-      miroirConfig,
-      domainController,
-      adminApplicationDeploymentConfigurations,
-    );
-    displayTestSuiteResults(Object.keys(testActions)[0]);
-  }
-)
-
+afterAll(async () => {
+  await deleteAndCloseApplicationDeployments(miroirConfig, domainController, adminApplicationDeploymentConfigurations);
+  displayTestSuiteResults(Object.keys(testActions)[0]);
+});
 
 const testActions: Record<string, TestActionParams> = {
   "DomainController.integ.Model.CRUD": {
@@ -256,28 +235,22 @@ const testActions: Record<string, TestActionParams> = {
             actionName: "sequence",
             definition: [
               {
-                compositeActionType: "domainAction",
-                compositeActionStepLabel: "refreshMiroirLocalCache",
-                domainAction: {
-                  actionName: "rollback",
-                  actionType: "modelAction",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-                },
+                actionName: "rollback",
+                actionType: "modelAction",
+                actionLabel: "refreshMiroirLocalCache",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
               },
               {
-                compositeActionType: "domainAction",
-                compositeActionStepLabel: "refreshLibraryLocalCache",
-                domainAction: {
-                  actionName: "rollback",
-                  actionType: "modelAction",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                },
+                actionName: "rollback",
+                actionType: "modelAction",
+                actionLabel: "refreshLibraryLocalCache",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
               },
               {
-                compositeActionType: "runBoxedExtractorOrQueryAction",
-                compositeActionStepLabel: "calculateNewEntityDefinionAndReports",
+                actionType: "compositeRunBoxedExtractorOrQueryAction",
+                actionLabel: "calculateNewEntityDefinionAndReports",
                 nameGivenToResult: "libraryEntityList",
                 query: {
                   actionType: "runBoxedExtractorOrQueryAction",
@@ -313,8 +286,8 @@ const testActions: Record<string, TestActionParams> = {
           testCompositeActionAssertions: [
             // TODO: test length of entityBookList.books!
             {
-              compositeActionType: "runTestCompositeActionAssertion",
-              compositeActionStepLabel: "checkNumberOfEntitiesInLibraryApplicationDeployment",
+              actionType: "compositeRunTestAssertion",
+              actionLabel: "checkNumberOfEntitiesInLibraryApplicationDeployment",
               nameGivenToResult: "checkNumberOfEntities",
               testAssertion: {
                 testType: "testAssertion",
@@ -345,55 +318,43 @@ const testActions: Record<string, TestActionParams> = {
             actionName: "sequence",
             definition: [
               {
-                compositeActionType: "domainAction",
-                compositeActionStepLabel: "refreshMiroirLocalCache",
-                domainAction: {
-                  actionName: "rollback",
-                  actionType: "modelAction",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-                },
+                actionName: "rollback",
+                actionLabel: "refreshMiroirLocalCache",
+                actionType: "modelAction",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
               },
               {
-                compositeActionType: "domainAction",
-                compositeActionStepLabel: "refreshLibraryLocalCache",
-                domainAction: {
-                  actionName: "rollback",
-                  actionType: "modelAction",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                },
+                actionName: "rollback",
+                actionType: "modelAction",
+                actionLabel: "refreshLibraryLocalCache",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
               },
               {
-                compositeActionType: "domainAction",
-                compositeActionStepLabel: "addEntityAuthor",
-                domainAction: {
-                  actionType: "modelAction",
-                  actionName: "createEntity",
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  entities: [
-                    {
-                      entity: entityAuthor as Entity,
-                      entityDefinition: entityDefinitionAuthor as EntityDefinition,
-                    },
-                  ],
-                },
+                actionType: "modelAction",
+                actionName: "createEntity",
+                actionLabel: "addEntityAuthor",
+                deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                entities: [
+                  {
+                    entity: entityAuthor as Entity,
+                    entityDefinition: entityDefinitionAuthor as EntityDefinition,
+                  },
+                ],
               },
               {
-                compositeActionType: "domainAction",
-                compositeActionStepLabel: "commitLibraryLocalCache",
-                domainAction: {
-                  actionName: "commit",
-                  actionType: "modelAction",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                },
+                actionName: "commit",
+                actionType: "modelAction",
+                actionLabel: "commitLibraryLocalCache",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
               },
               {
                 // performs query on local cache for emulated server, and on server for remote server
-                compositeActionType: "runBoxedExtractorOrQueryAction",
-                compositeActionStepLabel: "calculateNewEntityDefinionAndReports",
+                actionType: "compositeRunBoxedExtractorOrQueryAction",
+                actionLabel: "calculateNewEntityDefinionAndReports",
                 nameGivenToResult: "libraryEntityList",
                 query: {
                   actionType: "runBoxedExtractorOrQueryAction",
@@ -429,8 +390,8 @@ const testActions: Record<string, TestActionParams> = {
           testCompositeActionAssertions: [
             // TODO: test length of entityBookList.books!
             {
-              compositeActionType: "runTestCompositeActionAssertion",
-              compositeActionStepLabel: "checkNumberOfBooks",
+              actionType: "compositeRunTestAssertion",
+              actionLabel: "checkNumberOfBooks",
               nameGivenToResult: "checkNumberOfEntities",
               testAssertion: {
                 testType: "testAssertion",
@@ -451,8 +412,8 @@ const testActions: Record<string, TestActionParams> = {
               },
             },
             {
-              compositeActionType: "runTestCompositeActionAssertion",
-              compositeActionStepLabel: "checkEntityBooks",
+              actionType: "compositeRunTestAssertion",
+              actionLabel: "checkEntityBooks",
               nameGivenToResult: "checkEntityList",
               testAssertion: {
                 testType: "testAssertion",
@@ -475,54 +436,42 @@ const testActions: Record<string, TestActionParams> = {
             actionName: "sequence",
             definition: [
               {
-                compositeActionType: "domainAction",
-                compositeActionStepLabel: "refreshMiroirLocalCache",
-                domainAction: {
-                  actionName: "rollback",
-                  actionType: "modelAction",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-                },
+                actionName: "rollback",
+                actionType: "modelAction",
+                actionLabel: "refreshMiroirLocalCache",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
               },
               {
-                compositeActionType: "domainAction",
-                compositeActionStepLabel: "refreshLibraryLocalCache",
-                domainAction: {
-                  actionName: "rollback",
-                  actionType: "modelAction",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                },
+                actionName: "rollback",
+                actionType: "modelAction",
+                actionLabel: "refreshLibraryLocalCache",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
               },
               {
-                compositeActionType: "domainAction",
-                compositeActionStepLabel: "addEntityAuthor",
-                domainAction: {
-                  actionType: "modelAction",
-                  actionName: "createEntity",
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  entities: [
-                    {
-                      entity: entityAuthor as Entity,
-                      entityDefinition: entityDefinitionAuthor as EntityDefinition,
-                    },
-                  ],
-                },
+                actionType: "modelAction",
+                actionName: "createEntity",
+                actionLabel: "addEntityAuthor",
+                deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                entities: [
+                  {
+                    entity: entityAuthor as Entity,
+                    entityDefinition: entityDefinitionAuthor as EntityDefinition,
+                  },
+                ],
               },
               {
-                compositeActionType: "domainAction",
-                compositeActionStepLabel: "refreshLibraryLocalCache2",
-                domainAction: {
-                  actionName: "rollback",
-                  actionType: "modelAction",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                },
+                actionName: "rollback",
+                actionType: "modelAction",
+                actionLabel: "refreshLibraryLocalCache2",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
               },
               {
-                compositeActionType: "runBoxedExtractorOrQueryAction",
-                compositeActionStepLabel: "calculateNewEntityDefinionAndReports",
+                actionType: "compositeRunBoxedExtractorOrQueryAction",
+                actionLabel: "calculateNewEntityDefinionAndReports",
                 nameGivenToResult: "libraryEntityList",
                 query: {
                   actionType: "runBoxedExtractorOrQueryAction",
@@ -558,8 +507,8 @@ const testActions: Record<string, TestActionParams> = {
           testCompositeActionAssertions: [
             // TODO: test length of entityBookList.books!
             {
-              compositeActionType: "runTestCompositeActionAssertion",
-              compositeActionStepLabel: "checkNumberOfBooks",
+              actionType: "compositeRunTestAssertion",
+              actionLabel: "checkNumberOfBooks",
               nameGivenToResult: "checkNumberOfEntities",
               testAssertion: {
                 testType: "testAssertion",
@@ -590,44 +539,35 @@ const testActions: Record<string, TestActionParams> = {
             actionName: "sequence",
             definition: [
               {
-                compositeActionType: "domainAction",
-                compositeActionStepLabel: "refreshMiroirLocalCache",
-                domainAction: {
-                  actionName: "rollback",
-                  actionType: "modelAction",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-                },
+                actionName: "rollback",
+                actionType: "modelAction",
+                actionLabel: "refreshMiroirLocalCache",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
               },
               {
-                compositeActionType: "domainAction",
-                compositeActionStepLabel: "refreshLibraryLocalCache",
-                domainAction: {
-                  actionName: "rollback",
-                  actionType: "modelAction",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                },
+                actionName: "rollback",
+                actionType: "modelAction",
+                actionLabel: "refreshLibraryLocalCache",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
               },
               {
-                compositeActionType: "domainAction",
-                compositeActionStepLabel: "addEntityAuthor",
-                domainAction: {
-                  actionType: "modelAction",
-                  actionName: "createEntity",
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  entities: [
-                    {
-                      entity: entityAuthor as Entity,
-                      entityDefinition: entityDefinitionAuthor as EntityDefinition,
-                    },
-                  ],
-                },
+                actionType: "modelAction",
+                actionName: "createEntity",
+                actionLabel: "addEntityAuthor",
+                deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                entities: [
+                  {
+                    entity: entityAuthor as Entity,
+                    entityDefinition: entityDefinitionAuthor as EntityDefinition,
+                  },
+                ],
               },
               {
-                compositeActionType: "runBoxedExtractorOrQueryAction",
-                compositeActionStepLabel: "calculateNewEntityDefinionAndReportsFromLocalCache",
+                actionType: "compositeRunBoxedExtractorOrQueryAction",
+                actionLabel: "calculateNewEntityDefinionAndReportsFromLocalCache",
                 nameGivenToResult: "libraryEntityListFromLocalCache",
                 query: {
                   actionType: "runBoxedExtractorOrQueryAction",
@@ -660,8 +600,8 @@ const testActions: Record<string, TestActionParams> = {
                 },
               },
               {
-                compositeActionType: "runBoxedExtractorOrQueryAction",
-                compositeActionStepLabel: "calculateNewEntityDefinionAndReportsFromPersistentStore",
+                actionType: "compositeRunBoxedExtractorOrQueryAction",
+                actionLabel: "calculateNewEntityDefinionAndReportsFromPersistentStore",
                 nameGivenToResult: "libraryEntityListFromPersistentStore",
                 query: {
                   actionType: "runBoxedExtractorOrQueryAction",
@@ -698,8 +638,8 @@ const testActions: Record<string, TestActionParams> = {
           testCompositeActionAssertions: [
             // TODO: test length of entityBookList.books!
             {
-              compositeActionType: "runTestCompositeActionAssertion",
-              compositeActionStepLabel: "checkNumberOfBooks",
+              actionType: "compositeRunTestAssertion",
+              actionLabel: "checkNumberOfBooks",
               nameGivenToResult: "checkNumberOfEntitiesFromLocalCache",
               testAssertion: {
                 testType: "testAssertion",
@@ -720,8 +660,8 @@ const testActions: Record<string, TestActionParams> = {
               },
             },
             {
-              compositeActionType: "runTestCompositeActionAssertion",
-              compositeActionStepLabel: "checkEntityBooks",
+              actionType: "compositeRunTestAssertion",
+              actionLabel: "checkEntityBooks",
               nameGivenToResult: "checkEntityListFromLocalCache",
               testAssertion: {
                 testType: "testAssertion",
@@ -734,8 +674,8 @@ const testActions: Record<string, TestActionParams> = {
               },
             },
             {
-              compositeActionType: "runTestCompositeActionAssertion",
-              compositeActionStepLabel: "checkNumberOfBooks",
+              actionType: "compositeRunTestAssertion",
+              actionLabel: "checkNumberOfBooks",
               nameGivenToResult: "checkNumberOfEntitiesFromPersistentStore",
               testAssertion: {
                 testType: "testAssertion",
@@ -756,8 +696,8 @@ const testActions: Record<string, TestActionParams> = {
               },
             },
             {
-              compositeActionType: "runTestCompositeActionAssertion",
-              compositeActionStepLabel: "checkEntityBooks",
+              actionType: "compositeRunTestAssertion",
+              actionLabel: "checkEntityBooks",
               nameGivenToResult: "checkEntityListFromPersistentStore",
               testAssertion: {
                 testType: "testAssertion",
@@ -780,51 +720,39 @@ const testActions: Record<string, TestActionParams> = {
             actionName: "sequence",
             definition: [
               {
-                compositeActionType: "domainAction",
-                compositeActionStepLabel: "refreshMiroirLocalCache",
-                domainAction: {
-                  actionName: "rollback",
-                  actionType: "modelAction",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-                },
+                actionName: "rollback",
+                actionType: "modelAction",
+                actionLabel: "refreshMiroirLocalCache",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
               },
               {
-                compositeActionType: "domainAction",
-                compositeActionStepLabel: "refreshLibraryLocalCache",
-                domainAction: {
-                  actionName: "rollback",
-                  actionType: "modelAction",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                },
+                actionName: "rollback",
+                actionType: "modelAction",
+                actionLabel: "refreshLibraryLocalCache",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
               },
               {
-                compositeActionType: "domainAction",
-                compositeActionStepLabel: "dropEntityPublisher",
-                domainAction: {
-                  actionType: "modelAction",
-                  actionName: "dropEntity",
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  entityUuid: entityPublisher.uuid,
-                  entityDefinitionUuid: entityDefinitionPublisher.uuid,
-                },
+                actionType: "modelAction",
+                actionName: "dropEntity",
+                actionLabel: "dropEntityPublisher",
+                deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                entityUuid: entityPublisher.uuid,
+                entityDefinitionUuid: entityDefinitionPublisher.uuid,
               },
               {
-                compositeActionType: "domainAction",
-                compositeActionStepLabel: "commitLibraryLocalCache",
-                domainAction: {
-                  actionName: "commit",
-                  actionType: "modelAction",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                },
+                actionName: "commit",
+                actionType: "modelAction",
+                actionLabel: "commitLibraryLocalCache",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
               },
               {
                 // performs query on local cache for emulated server, and on server for remote server
-                compositeActionType: "runBoxedExtractorOrQueryAction",
-                compositeActionStepLabel: "calculateNewEntityDefinionAndReports",
+                actionType: "compositeRunBoxedExtractorOrQueryAction",
+                actionLabel: "calculateNewEntityDefinionAndReports",
                 nameGivenToResult: "libraryEntityList",
                 query: {
                   actionType: "runBoxedExtractorOrQueryAction",
@@ -861,8 +789,8 @@ const testActions: Record<string, TestActionParams> = {
           testCompositeActionAssertions: [
             // TODO: test length of entityBookList.books!
             {
-              compositeActionType: "runTestCompositeActionAssertion",
-              compositeActionStepLabel: "checkNumberOfEntities",
+              actionType: "compositeRunTestAssertion",
+              actionLabel: "checkNumberOfEntities",
               nameGivenToResult: "checkNumberOfEntities",
               testAssertion: {
                 testType: "testAssertion",
@@ -883,8 +811,8 @@ const testActions: Record<string, TestActionParams> = {
               },
             },
             // {
-            //   compositeActionType: "runTestCompositeActionAssertion",
-            //   compositeActionStepLabel: "checkEntityList",
+            //   actionType: "compositeRunTestAssertion",
+            //   actionLabel: "checkEntityList",
             //   nameGivenToResult: "checkEntityList",
             //   testAssertion: {
             //     testType: "testAssertion",
@@ -911,53 +839,41 @@ const testActions: Record<string, TestActionParams> = {
             actionName: "sequence",
             definition: [
               {
-                compositeActionType: "domainAction",
-                compositeActionStepLabel: "refreshMiroirLocalCache",
-                domainAction: {
-                  actionName: "rollback",
-                  actionType: "modelAction",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-                },
+                actionName: "rollback",
+                actionType: "modelAction",
+                actionLabel: "refreshMiroirLocalCache",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
               },
               {
-                compositeActionType: "domainAction",
-                compositeActionStepLabel: "refreshLibraryLocalCache",
-                domainAction: {
-                  actionName: "rollback",
-                  actionType: "modelAction",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                },
+                actionName: "rollback",
+                actionType: "modelAction",
+                actionLabel: "refreshLibraryLocalCache",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
               },
               {
-                compositeActionType: "domainAction",
-                compositeActionStepLabel: "dropEntityPublisher",
-                domainAction: {
-                  actionType: "modelAction",
-                  actionName: "renameEntity",
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  entityUuid: entityPublisher.uuid,
-                  entityDefinitionUuid: entityDefinitionPublisher.uuid,
-                  entityName: "Publisher",
-                  targetValue: "Publishers",
-                },
+                actionType: "modelAction",
+                actionName: "renameEntity",
+                actionLabel: "dropEntityPublisher",
+                deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                entityUuid: entityPublisher.uuid,
+                entityDefinitionUuid: entityDefinitionPublisher.uuid,
+                entityName: "Publisher",
+                targetValue: "Publishers",
               },
               {
-                compositeActionType: "domainAction",
-                compositeActionStepLabel: "commitLibraryLocalCache",
-                domainAction: {
-                  actionName: "commit",
-                  actionType: "modelAction",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                },
+                actionName: "commit",
+                actionType: "modelAction",
+                actionLabel: "commitLibraryLocalCache",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
               },
               {
                 // performs query on local cache for emulated server, and on server for remote server
-                compositeActionType: "runBoxedExtractorOrQueryAction",
-                compositeActionStepLabel: "calculateNewEntityDefinionAndReports",
+                actionType: "compositeRunBoxedExtractorOrQueryAction",
+                actionLabel: "calculateNewEntityDefinionAndReports",
                 nameGivenToResult: "libraryEntityList",
                 query: {
                   actionType: "runBoxedExtractorOrQueryAction",
@@ -994,8 +910,8 @@ const testActions: Record<string, TestActionParams> = {
           testCompositeActionAssertions: [
             // TODO: test length of entityBookList.books!
             {
-              compositeActionType: "runTestCompositeActionAssertion",
-              compositeActionStepLabel: "checkNumberOfBooks",
+              actionType: "compositeRunTestAssertion",
+              actionLabel: "checkNumberOfBooks",
               nameGivenToResult: "checkNumberOfEntities",
               testAssertion: {
                 testType: "testAssertion",
@@ -1016,8 +932,8 @@ const testActions: Record<string, TestActionParams> = {
               },
             },
             {
-              compositeActionType: "runTestCompositeActionAssertion",
-              compositeActionStepLabel: "checkEntityBooks",
+              actionType: "compositeRunTestAssertion",
+              actionLabel: "checkEntityBooks",
               nameGivenToResult: "checkEntityList",
               testAssertion: {
                 testType: "testAssertion",
@@ -1040,58 +956,46 @@ const testActions: Record<string, TestActionParams> = {
             actionName: "sequence",
             definition: [
               {
-                compositeActionType: "domainAction",
-                compositeActionStepLabel: "refreshMiroirLocalCache",
-                domainAction: {
-                  actionName: "rollback",
-                  actionType: "modelAction",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-                },
+                actionName: "rollback",
+                actionType: "modelAction",
+                actionLabel: "refreshMiroirLocalCache",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
               },
               {
-                compositeActionType: "domainAction",
-                compositeActionStepLabel: "refreshLibraryLocalCache",
-                domainAction: {
-                  actionName: "rollback",
-                  actionType: "modelAction",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                },
+                actionName: "rollback",
+                actionType: "modelAction",
+                actionLabel: "refreshLibraryLocalCache",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
               },
               {
-                compositeActionType: "domainAction",
-                compositeActionStepLabel: "alterEntityPublisher",
-                domainAction: {
-                  actionType: "modelAction",
-                  actionName: "alterEntityAttribute",
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  entityName: entityPublisher.name,
-                  entityUuid: entityPublisher.uuid,
-                  entityDefinitionUuid: entityDefinitionPublisher.uuid,
-                  addColumns: [
-                    {
-                      name: "aNewColumnForTest",
-                      definition: columnForTestDefinition,
-                    },
-                  ],
-                },
+                actionType: "modelAction",
+                actionName: "alterEntityAttribute",
+                actionLabel: "alterEntityPublisher",
+                deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                entityName: entityPublisher.name,
+                entityUuid: entityPublisher.uuid,
+                entityDefinitionUuid: entityDefinitionPublisher.uuid,
+                addColumns: [
+                  {
+                    name: "aNewColumnForTest",
+                    definition: columnForTestDefinition,
+                  },
+                ],
               },
               {
-                compositeActionType: "domainAction",
-                compositeActionStepLabel: "commitLibraryLocalCache",
-                domainAction: {
-                  actionName: "commit",
-                  actionType: "modelAction",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                },
+                actionName: "commit",
+                actionType: "modelAction",
+                actionLabel: "commitLibraryLocalCache",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
               },
               {
                 // performs query on local cache for emulated server, and on server for remote server
-                compositeActionType: "runBoxedExtractorOrQueryAction",
-                compositeActionStepLabel: "calculateNewEntityDefinionAndReports",
+                actionType: "compositeRunBoxedExtractorOrQueryAction",
+                actionLabel: "calculateNewEntityDefinionAndReports",
                 nameGivenToResult: "libraryEntityDefinitionListFromPersistentStore",
                 query: {
                   actionType: "runBoxedExtractorOrQueryAction",
@@ -1125,8 +1029,8 @@ const testActions: Record<string, TestActionParams> = {
               },
               {
                 // performs query on local cache for emulated server, and on server for remote server
-                compositeActionType: "runBoxedExtractorOrQueryAction",
-                compositeActionStepLabel: "calculateNewEntityDefinionAndReports",
+                actionType: "compositeRunBoxedExtractorOrQueryAction",
+                actionLabel: "calculateNewEntityDefinionAndReports",
                 nameGivenToResult: "libraryEntityDefinitionListFromLocalCache",
                 query: {
                   actionType: "runBoxedExtractorOrQueryAction",
@@ -1163,8 +1067,8 @@ const testActions: Record<string, TestActionParams> = {
           testCompositeActionAssertions: [
             // TODO: test length of entityBookList.books!
             {
-              compositeActionType: "runTestCompositeActionAssertion",
-              compositeActionStepLabel: "checkNumberOfBooks",
+              actionType: "compositeRunTestAssertion",
+              actionLabel: "checkNumberOfBooks",
               nameGivenToResult: "checkNumberOfEntitiesFromPersistentStore",
               testAssertion: {
                 testType: "testAssertion",
@@ -1185,8 +1089,8 @@ const testActions: Record<string, TestActionParams> = {
               },
             },
             {
-              compositeActionType: "runTestCompositeActionAssertion",
-              compositeActionStepLabel: "checkNumberOfBooks",
+              actionType: "compositeRunTestAssertion",
+              actionLabel: "checkNumberOfBooks",
               nameGivenToResult: "checkNumberOfEntitiesFromLocalCache",
               testAssertion: {
                 testType: "testAssertion",
@@ -1207,8 +1111,8 @@ const testActions: Record<string, TestActionParams> = {
               },
             },
             {
-              compositeActionType: "runTestCompositeActionAssertion",
-              compositeActionStepLabel: "checkEntityBooks",
+              actionType: "compositeRunTestAssertion",
+              actionLabel: "checkEntityBooks",
               nameGivenToResult: "checkEntityDefinitionFromLocalCache",
               testAssertion: {
                 testType: "testAssertion",
@@ -1232,8 +1136,8 @@ const testActions: Record<string, TestActionParams> = {
               },
             },
             {
-              compositeActionType: "runTestCompositeActionAssertion",
-              compositeActionStepLabel: "checkEntityBooks",
+              actionType: "compositeRunTestAssertion",
+              actionLabel: "checkEntityBooks",
               nameGivenToResult: "checkEntityDefinitionFromPersistentStore",
               testAssertion: {
                 testType: "testAssertion",
@@ -1263,19 +1167,18 @@ const testActions: Record<string, TestActionParams> = {
   },
 };
 
-
-describe.sequential("DomainController.integ.Model.CRUD",
+describe.sequential(
+  "DomainController.integ.Model.CRUD",
   () => {
-  it.each(Object.entries(testActions))("test %s", async (currentTestSuiteName, testAction: TestActionParams) => {
-    const testSuiteResults = await runTestOrTestSuite(
-      localCache,
-      domainController,
-      testAction
+    it.each(Object.entries(testActions))(
+      "test %s",
+      async (currentTestSuiteName, testAction: TestActionParams) => {
+        const testSuiteResults = await runTestOrTestSuite(localCache, domainController, testAction);
+        if (testSuiteResults.status !== "ok") {
+          expect(testSuiteResults.status, `${currentTestSuiteName} failed!`).toBe("ok");
+        }
+      },
+      globalTimeOut
     );
-    if (testSuiteResults.status !== "ok") {
-      expect(testSuiteResults.status, `${currentTestSuiteName} failed!`).toBe("ok");
-    }
-  }, globalTimeOut);
-
   } //  end describe('DomainController.Data.CRUD.React',
-)
+);

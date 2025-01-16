@@ -224,28 +224,22 @@ export function createDeploymentCompositeAction(
     actionName: "sequence",
     definition: [
       {
-        compositeActionType: "domainAction",
-        compositeActionStepLabel: "openStore",
-        domainAction: {
-          actionType: "storeManagementAction",
-          actionName: "openStore",
-          endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-          deploymentUuid: deploymentUuid,
-          configuration: {
-            [deploymentUuid]:deploymentConfiguration
-          }
-        }
+        actionType: "storeManagementAction",
+        actionName: "openStore",
+        actionLabel: "openStore",
+        endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+        deploymentUuid: deploymentUuid,
+        configuration: {
+          [deploymentUuid]: deploymentConfiguration,
+        },
       },
       {
-        compositeActionType: "domainAction",
-        compositeActionStepLabel: "createStore",
-        domainAction: {
-          actionType: "storeManagementAction",
-          actionName: "createStore",
-          endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-          deploymentUuid: deploymentUuid,
-          configuration: deploymentConfiguration,
-        },
+        actionType: "storeManagementAction",
+        actionName: "createStore",
+        actionLabel: "createStore",
+        endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+        deploymentUuid: deploymentUuid,
+        configuration: deploymentConfiguration,
       },
     ],
   };
@@ -269,75 +263,57 @@ export function resetAndinitializeDeploymentCompositeAction(
     actionName: "sequence",
     definition: [
       {
-        compositeActionType: "domainAction",
-        compositeActionStepLabel: "resetApplicationStore",
-        domainAction: {
-          actionType: "modelAction",
-          actionName: "resetModel",
-          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-          deploymentUuid: deploymentUuid,
-        },
+        actionType: "modelAction",
+        actionName: "resetModel",
+        actionLabel: "resetApplicationStore",
+        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+        deploymentUuid: deploymentUuid,
       },
       {
-        compositeActionType: "domainAction",
-        compositeActionStepLabel: "initStore",
-        domainAction: {
-          actionType: "modelAction",
-          actionName: "initModel",
-          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-          deploymentUuid: deploymentUuid,
-          params: initApplicationParameters,
-        },
+        actionType: "modelAction",
+        actionName: "initModel",
+        actionLabel: "initStore",
+        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+        deploymentUuid: deploymentUuid,
+        params: initApplicationParameters,
       },
       {
-        compositeActionType: "domainAction",
-        compositeActionStepLabel: "refreshLocalCacheForLibraryStore",
-        domainAction: {
-          actionType: "modelAction",
-          actionName: "rollback",
-          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-          deploymentUuid: deploymentUuid,
-        },
+        actionType: "modelAction",
+        actionName: "rollback",
+        actionLabel: "refreshLocalCacheForLibraryStore",
+        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+        deploymentUuid: deploymentUuid,
       },
       {
-        compositeActionType: "domainAction",
-        compositeActionStepLabel: "CreateLibraryStoreEntities",
-        domainAction: {
-          actionType: "modelAction",
-          actionName: "createEntity",
-          deploymentUuid: deploymentUuid,
-          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-          entities: appEntitesAndInstances,
-        },
+        actionType: "modelAction",
+        actionName: "createEntity",
+        actionLabel: "CreateLibraryStoreEntities",
+        deploymentUuid: deploymentUuid,
+        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+        entities: appEntitesAndInstances,
       },
       {
-        compositeActionType: "domainAction",
-        compositeActionStepLabel: "CommitLibraryStoreEntities",
-        domainAction: {
-          actionType: "modelAction",
-          actionName: "commit",
-          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-          deploymentUuid: deploymentUuid,
-        },
+        actionType: "modelAction",
+        actionName: "commit",
+        actionLabel: "CommitLibraryStoreEntities",
+        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+        deploymentUuid: deploymentUuid,
       },
       {
-        compositeActionType: "domainAction",
-        compositeActionStepLabel: "CreateLibraryStoreInstances",
-        domainAction: {
-          actionType: "instanceAction",
-          actionName: "createInstance",
-          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-          applicationSection: "data",
-          deploymentUuid: deploymentUuid,
-          objects: appEntitesAndInstances.map((e) => {
-            return {
-              parentName: e.entity.name,
-              parentUuid: e.entity.uuid,
-              applicationSection: "data",
-              instances: e.instances,
-            };
-          }),
-        },
+        actionType: "instanceAction",
+        actionName: "createInstance",
+        actionLabel: "CreateLibraryStoreInstances",
+        endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+        applicationSection: "data",
+        deploymentUuid: deploymentUuid,
+        objects: appEntitesAndInstances.map((e) => {
+          return {
+            parentName: e.entity.name,
+            parentUuid: e.entity.uuid,
+            applicationSection: "data",
+            instances: e.instances,
+          };
+        }),
       },
     ],
   };
@@ -904,20 +880,21 @@ export async function runTestOrTestSuite(
       return queryResult;
     }
     case "testCompositeActionTemplateSuite": {
-      const queryResult: ActionReturnType = await domainController.handleTestCompositeActionTemplateSuite(
-        testAction.testCompositeAction,
-        {},
-        localCache.currentModel(testAction.deploymentUuid)
-      );
-      log.info(
-        "received results for test testCompositeActionSuite",
-        fullTestName,
-        ": queryResult=",
-        JSON.stringify(queryResult, null, 2),
-        "TestContextResults",
-        JSON.stringify(TestSuiteContext.getTestAssertionsResults(), null, 2)
-      );
-      return queryResult;
+      throw new Error("testCompositeActionTemplateSuite not implemented yet!");
+      // const queryResult: ActionReturnType = await domainController.handleTestCompositeActionTemplateSuite(
+      //   testAction.testCompositeAction,
+      //   {},
+      //   localCache.currentModel(testAction.deploymentUuid)
+      // );
+      // log.info(
+      //   "received results for test testCompositeActionSuite",
+      //   fullTestName,
+      //   ": queryResult=",
+      //   JSON.stringify(queryResult, null, 2),
+      //   "TestContextResults",
+      //   JSON.stringify(TestSuiteContext.getTestAssertionsResults(), null, 2)
+      // );
+      // return queryResult;
     }
     case "testCompositeActionTemplate": {
       throw new Error("testCompositeActionTemplate not implemented yet!");

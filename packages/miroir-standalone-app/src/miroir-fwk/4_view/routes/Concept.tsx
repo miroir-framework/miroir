@@ -555,7 +555,7 @@ export const ConceptPage: React.FC<any> = (
           definition: [
             // createEntity
             {
-              compositeActionType: "domainAction",
+              actionType: "domainAction",
               compositeActionStepLabel: "createEntity",
               domainAction: {
                 actionType: "modelAction",
@@ -581,7 +581,7 @@ export const ConceptPage: React.FC<any> = (
             } as any,
             // createReports
             {
-              compositeActionType: "domainAction",
+              actionType: "domainAction",
               compositeActionStepLabel: "createReports",
               domainAction: {
                 actionType: "transactionalInstanceAction",
@@ -624,7 +624,7 @@ export const ConceptPage: React.FC<any> = (
             },
             // commit
             {
-              compositeActionType: "domainAction",
+              actionType: "domainAction",
               compositeActionStepLabel: "commit",
               domainAction: {
                 actionName: "commit",

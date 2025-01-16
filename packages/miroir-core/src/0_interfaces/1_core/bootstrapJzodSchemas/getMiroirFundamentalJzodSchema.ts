@@ -20,6 +20,7 @@ import { cleanLevel } from "../../../1_core/constants.js";
 import { MiroirLoggerFactory } from "../../../4_services/LoggerFactory.js";
 import { packageName } from "../../../constants.js";
 import { LoggerInterface } from "../../4-services/LoggerInterface.js";
+import { optional } from "zod";
 // import {
 //   extractorOrCombinerReturningObject,
 //   boxedQueryWithExtractorCombinerTransformer,
@@ -237,7 +238,7 @@ export function getMiroirFundamentalJzodSchema(
     (a: any) => a.actionParameters?.definition?.actionType?.definition == "compositeAction"
   )?.actionParameters.definition;
   const localRunTestCaseAction = localCompositeActionDefinition.definition.definition.definition.find(
-    (a: any) => a.definition?.compositeActionType?.definition == "runTestCompositeActionAssertion"
+    (a: any) => a.definition?.actionType?.definition == "compositeRunTestAssertion"
   );
   log.info("localCompositeActionDefinition", JSON.stringify(localCompositeActionDefinition, null, 2));
   log.info("localRunTestCaseAction", JSON.stringify(localRunTestCaseAction, null, 2));
@@ -2217,10 +2218,10 @@ export function getMiroirFundamentalJzodSchema(
         // extendedCompositeAction: domainEndpointVersionV1.definition.actions.find(
         //   (a: any) => a.actionParameters?.definition?.actionType?.definition == "extendedCompositeAction"
         // )?.actionParameters,
-        runTestCompositeActionAssertion: domainEndpointVersionV1.definition.actions.find(
+        compositeRunTestAssertion: domainEndpointVersionV1.definition.actions.find(
           (a: any) => a.actionParameters?.definition?.actionType?.definition == "compositeAction"
         )?.actionParameters.definition.definition.definition.definition.find(
-          (a: any) => a.definition?.compositeActionType?.definition == "runTestCompositeActionAssertion"
+          (a: any) => a.definition?.actionType?.definition == "compositeRunTestAssertion"
         ),
         domainAction: {
           type: "union",
@@ -2289,6 +2290,10 @@ export function getMiroirFundamentalJzodSchema(
                   type: "literal",
                   definition: "createBundle",
                 },
+                actionLabel: {
+                  type: "string",
+                  optional: true,
+                },
                 deploymentUuid: {
                   type: "uuid",
                   tag: { value: { id: 1, defaultLabel: "Uuid", editable: false } },
@@ -2305,6 +2310,10 @@ export function getMiroirFundamentalJzodSchema(
                 actionName: {
                   type: "literal",
                   definition: "deleteBundle",
+                },
+                actionLabel: {
+                  type: "string",
+                  optional: true,
                 },
                 deploymentUuid: {
                   type: "uuid",

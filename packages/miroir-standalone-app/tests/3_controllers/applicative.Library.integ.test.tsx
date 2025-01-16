@@ -364,8 +364,8 @@ const newEntityDefinition: EntityDefinition = {
 //       //   actionName: "sequence",
 //       //   definition: [
 //       //     {
-//       //       compositeActionType: "domainAction",
-//       //       compositeActionStepLabel: "resetLibraryStore",
+//       //       actionType: "domainAction",
+//       //       actionLabel: "resetLibraryStore",
 //       //       domainAction: {
 //       //         actionType: "modelAction",
 //       //         actionName: "resetModel",
@@ -381,8 +381,8 @@ const newEntityDefinition: EntityDefinition = {
 //       //   actionName: "sequence",
 //       //   definition: [
 //       //     {
-//       //       compositeActionType: "domainAction",
-//       //       compositeActionStepLabel: "resetLibraryStore",
+//       //       actionType: "domainAction",
+//       //       actionLabel: "resetLibraryStore",
 //       //       domainAction: {
 //       //         actionType: "storeManagementAction",
 //       //         actionName: "deleteStore",
@@ -403,8 +403,8 @@ const newEntityDefinition: EntityDefinition = {
 //         //     actionName: "sequence",
 //         //     definition: [
 //         //       {
-//         //         compositeActionType: "domainAction",
-//         //         compositeActionStepLabel: "selectEntityEntity_refresh",
+//         //         actionType: "domainAction",
+//         //         actionLabel: "selectEntityEntity_refresh",
 //         //         domainAction: {
 //         //           actionName: "rollback",
 //         //           actionType: "modelAction",
@@ -413,8 +413,8 @@ const newEntityDefinition: EntityDefinition = {
 //         //         },
 //         //       },
 //         //       {
-//         //         compositeActionType: "runBoxedExtractorOrQueryAction",
-//         //         compositeActionStepLabel: "calculateNewEntityDefinionAndReports",
+//         //         actionType: "runBoxedExtractorOrQueryAction",
+//         //         actionLabel: "calculateNewEntityDefinionAndReports",
 //         //         nameGivenToResult: "entityEntity",
 //         //         query: {
 //         //           actionType: "runBoxedExtractorOrQueryAction",
@@ -446,8 +446,8 @@ const newEntityDefinition: EntityDefinition = {
 //         //   },
 //         //   testCompositeActionAssertions: [
 //         //     {
-//         //       compositeActionType: "runTestCompositeActionAssertion",
-//         //       compositeActionStepLabel: "checkEntityEntity",
+//         //       actionType: "compositeRunTestAssertion",
+//         //       actionLabel: "checkEntityEntity",
 //         //       nameGivenToResult: "checkEntityEntity",
 //         //       testAssertion: {
 //         //         testType: "testAssertion",
@@ -501,8 +501,8 @@ const newEntityDefinition: EntityDefinition = {
 //             definition: [
 //               // createEntity
 //               {
-//                 compositeActionType: "domainAction",
-//                 compositeActionStepLabel: "createEntity",
+//                 actionType: "domainAction",
+//                 actionLabel: "createEntity",
 //                 domainAction: {
 //                   actionType: "modelAction",
 //                   actionName: "createEntity",
@@ -529,8 +529,8 @@ const newEntityDefinition: EntityDefinition = {
 //                 },
 //               },
 //               {
-//                 compositeActionType: "runBoxedExtractorOrQueryAction",
-//                 compositeActionStepLabel: "calculateNewEntityDefinionAndReports",
+//                 actionType: "runBoxedExtractorOrQueryAction",
+//                 actionLabel: "calculateNewEntityDefinionAndReports",
 //                 nameGivenToResult: "newApplicationEntityList",
 //                 query: {
 //                   actionType: "runBoxedExtractorOrQueryAction",
@@ -562,8 +562,8 @@ const newEntityDefinition: EntityDefinition = {
 //                 },
 //               },
 //               {
-//                 compositeActionType: "runBoxedExtractorOrQueryAction",
-//                 compositeActionStepLabel: "calculateNewEntityDefinionAndReports",
+//                 actionType: "runBoxedExtractorOrQueryAction",
+//                 actionLabel: "calculateNewEntityDefinionAndReports",
 //                 nameGivenToResult: "newApplicationEntityDefinitionList",
 //                 query: {
 //                   actionType: "runBoxedExtractorOrQueryAction",
@@ -598,8 +598,8 @@ const newEntityDefinition: EntityDefinition = {
 //           },
 //           testCompositeActionAssertions: [
 //             {
-//               compositeActionType: "runTestCompositeActionAssertion",
-//               compositeActionStepLabel: "checkEntities",
+//               actionType: "compositeRunTestAssertion",
+//               actionLabel: "checkEntities",
 //               nameGivenToResult: "checkEntityList",
 //               testAssertion: {
 //                 testType: "testAssertion",
@@ -614,8 +614,8 @@ const newEntityDefinition: EntityDefinition = {
 //               },
 //             },
 //             {
-//               compositeActionType: "runTestCompositeActionAssertion",
-//               compositeActionStepLabel: "checkEntityDefinitions",
+//               actionType: "compositeRunTestAssertion",
+//               actionLabel: "checkEntityDefinitions",
 //               nameGivenToResult: "checkEntityDefinitionList",
 //               testAssertion: {
 //                 testType: "testAssertion",
@@ -660,8 +660,8 @@ const testSuites: Record<string, TestActionParams> = {
       //   actionName: "sequence",
       //   definition: [
       //     {
-      //       compositeActionType: "domainAction",
-      //       compositeActionStepLabel: "resetLibraryStore",
+      //       actionType: "domainAction",
+      //       actionLabel: "resetLibraryStore",
       //       domainAction: {
       //         actionType: "modelAction",
       //         actionName: "resetModel",
@@ -677,8 +677,8 @@ const testSuites: Record<string, TestActionParams> = {
       //   actionName: "sequence",
       //   definition: [
       //     {
-      //       compositeActionType: "domainAction",
-      //       compositeActionStepLabel: "resetLibraryStore",
+      //       actionType: "domainAction",
+      //       actionLabel: "resetLibraryStore",
       //       domainAction: {
       //         actionType: "storeManagementAction",
       //         actionName: "deleteStore",
@@ -699,8 +699,8 @@ const testSuites: Record<string, TestActionParams> = {
         //     actionName: "sequence",
         //     definition: [
         //       {
-        //         compositeActionType: "domainAction",
-        //         compositeActionStepLabel: "selectEntityEntity_refresh",
+        //         actionType: "domainAction",
+        //         actionLabel: "selectEntityEntity_refresh",
         //         domainAction: {
         //           actionName: "rollback",
         //           actionType: "modelAction",
@@ -709,8 +709,8 @@ const testSuites: Record<string, TestActionParams> = {
         //         },
         //       },
         //       {
-        //         compositeActionType: "runBoxedExtractorOrQueryAction",
-        //         compositeActionStepLabel: "calculateNewEntityDefinionAndReports",
+        //         actionType: "runBoxedExtractorOrQueryAction",
+        //         actionLabel: "calculateNewEntityDefinionAndReports",
         //         nameGivenToResult: "entityEntity",
         //         query: {
         //           actionType: "runBoxedExtractorOrQueryAction",
@@ -742,8 +742,8 @@ const testSuites: Record<string, TestActionParams> = {
         //   },
         //   testCompositeActionAssertions: [
         //     {
-        //       compositeActionType: "runTestCompositeActionAssertion",
-        //       compositeActionStepLabel: "checkEntityEntity",
+        //       actionType: "compositeRunTestAssertion",
+        //       actionLabel: "checkEntityEntity",
         //       nameGivenToResult: "checkEntityEntity",
         //       testAssertion: {
         //         testType: "testAssertion",
@@ -793,40 +793,37 @@ const testSuites: Record<string, TestActionParams> = {
             //       referenceName: "jzodSchema",
             //     },
             //   },
-            // },      
+            // },
             definition: [
               // createEntity
               {
-                compositeActionType: "domainAction",
-                compositeActionStepLabel: "createEntity",
-                domainAction: {
-                  actionType: "modelAction",
-                  actionName: "createEntity",
-                  deploymentUuid: testAdminConfigurationDeploymentUuid,
-                  // deploymentUuid: {
-                  //   transformerType: "parameterReference",
-                  //   referenceName: "currentDeploymentUuid",
-                  // },
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  entities: [
-                    {
-                      entity: newEntity,
-                      // entity: {
-                      //   transformerType: "parameterReference",
-                      //   referenceName: "createEntity_newEntity",
-                      // },
-                      entityDefinition: newEntityDefinition,
-                      // entityDefinition: {
-                      //   transformerType: "parameterReference",
-                      //   referenceName: "newEntityDefinition",
-                      // },
-                    },
-                  ],
-                },
+                actionType: "modelAction",
+                actionName: "createEntity",
+                actionLabel: "createEntity",
+                deploymentUuid: testAdminConfigurationDeploymentUuid,
+                // deploymentUuid: {
+                //   transformerType: "parameterReference",
+                //   referenceName: "currentDeploymentUuid",
+                // },
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                entities: [
+                  {
+                    entity: newEntity,
+                    // entity: {
+                    //   transformerType: "parameterReference",
+                    //   referenceName: "createEntity_newEntity",
+                    // },
+                    entityDefinition: newEntityDefinition,
+                    // entityDefinition: {
+                    //   transformerType: "parameterReference",
+                    //   referenceName: "newEntityDefinition",
+                    // },
+                  },
+                ],
               },
               {
-                compositeActionType: "runBoxedExtractorOrQueryAction",
-                compositeActionStepLabel: "calculateNewEntityDefinionAndReports",
+                actionType: "compositeRunBoxedExtractorOrQueryAction",
+                actionLabel: "calculateNewEntityDefinionAndReports",
                 nameGivenToResult: "newApplicationEntityList",
                 query: {
                   actionType: "runBoxedExtractorOrQueryAction",
@@ -858,8 +855,8 @@ const testSuites: Record<string, TestActionParams> = {
                 },
               },
               {
-                compositeActionType: "runBoxedExtractorOrQueryAction",
-                compositeActionStepLabel: "calculateNewEntityDefinionAndReports",
+                actionType: "compositeRunBoxedExtractorOrQueryAction",
+                actionLabel: "calculateNewEntityDefinionAndReports",
                 nameGivenToResult: "newApplicationEntityDefinitionList",
                 query: {
                   actionType: "runBoxedExtractorOrQueryAction",
@@ -894,8 +891,8 @@ const testSuites: Record<string, TestActionParams> = {
           },
           testCompositeActionAssertions: [
             {
-              compositeActionType: "runTestCompositeActionAssertion",
-              compositeActionStepLabel: "checkEntities",
+              actionType: "compositeRunTestAssertion",
+              actionLabel: "checkEntities",
               nameGivenToResult: "checkEntityList",
               testAssertion: {
                 testType: "testAssertion",
@@ -903,15 +900,13 @@ const testSuites: Record<string, TestActionParams> = {
                 definition: {
                   resultAccessPath: ["newApplicationEntityList", "entities"],
                   ignoreAttributes: ["author"],
-                  expectedValue: [
-                    newEntity,
-                  ],
+                  expectedValue: [newEntity],
                 },
               },
             },
             {
-              compositeActionType: "runTestCompositeActionAssertion",
-              compositeActionStepLabel: "checkEntityDefinitions",
+              actionType: "compositeRunTestAssertion",
+              actionLabel: "checkEntityDefinitions",
               nameGivenToResult: "checkEntityDefinitionList",
               testAssertion: {
                 testType: "testAssertion",
@@ -920,9 +915,7 @@ const testSuites: Record<string, TestActionParams> = {
                 definition: {
                   resultAccessPath: ["newApplicationEntityDefinitionList", "entityDefinitions"],
                   ignoreAttributes: ["author"],
-                  expectedValue: [
-                    newEntityDefinition,
-                  ],
+                  expectedValue: [newEntityDefinition],
                 },
               },
             },

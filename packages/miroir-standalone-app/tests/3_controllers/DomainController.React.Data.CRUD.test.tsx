@@ -35,7 +35,6 @@ import {
   MiroirContextInterface,
   miroirCoreStartup,
   MiroirLoggerFactory,
-  PersistenceStoreControllerInterface,
   PersistenceStoreControllerManagerInterface,
   publisher1,
   publisher2,
@@ -44,7 +43,6 @@ import {
   selfApplicationDeploymentLibrary,
   selfApplicationMiroir,
   selfApplicationModelBranchMiroirMasterBranch,
-  selfApplicationStoreBasedConfigurationMiroir,
   selfApplicationVersionInitialMiroirVersion,
   StoreUnitConfiguration
 } from "miroir-core";
@@ -206,86 +204,66 @@ beforeEach(
       actionName: "sequence",
       definition: [
         {
-          compositeActionType: "domainAction",
-          compositeActionStepLabel: "resetLibraryStore",
-          domainAction: {
-            actionType: "modelAction",
-            actionName: "resetModel",
-            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+          actionType: "modelAction",
+          actionName: "resetModel",
+          actionLabel: "resetLibraryStore",
+          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+          deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+        },
+        {
+          actionType: "modelAction",
+          actionName: "initModel",
+          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+          actionLabel: "initLibraryStore",
+          deploymentUuid: selfApplicationDeploymentLibrary.uuid,
+          params: {
+            dataStoreType:
+              adminConfigurationDeploymentLibrary.uuid == adminConfigurationDeploymentMiroir.uuid ? "miroir" : "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
+            metaModel: defaultMiroirMetaModel,
+            selfApplication: selfApplicationMiroir,
+            // selfApplicationDeploymentConfiguration: selfApplicationDeploymentLibrary,
+            applicationModelBranch: selfApplicationModelBranchMiroirMasterBranch,
+            // applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationMiroir,
+            applicationVersion: selfApplicationVersionInitialMiroirVersion,
           },
         },
         {
-          compositeActionType: "domainAction",
-          compositeActionStepLabel: "initLibraryStore",
-          domainAction: {
-            actionType: "modelAction",
-            actionName: "initModel",
-            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-            deploymentUuid: selfApplicationDeploymentLibrary.uuid,
-            params: {
-              dataStoreType:
-                adminConfigurationDeploymentLibrary.uuid == adminConfigurationDeploymentMiroir.uuid
-                  ? "miroir"
-                  : "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
-              metaModel: defaultMiroirMetaModel,
-              selfApplication: selfApplicationMiroir,
-              // selfApplicationDeploymentConfiguration: selfApplicationDeploymentLibrary,
-              applicationModelBranch: selfApplicationModelBranchMiroirMasterBranch,
-              // applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationMiroir,
-              applicationVersion: selfApplicationVersionInitialMiroirVersion,
-            },
-          },
+          actionType: "modelAction",
+          actionName: "rollback",
+          actionLabel: "initLibraryStore",
+          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+          deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
         },
         {
-          compositeActionType: "domainAction",
-          compositeActionStepLabel: "initLibraryStore",
-          domainAction: {
-            actionType: "modelAction",
-            actionName: "rollback",
-            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-          },
+          actionType: "modelAction",
+          actionName: "createEntity",
+          actionLabel: "CreateLibraryStoreEntities",
+          deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+          entities: libraryEntitesAndInstances,
         },
         {
-          compositeActionType: "domainAction",
-          compositeActionStepLabel: "CreateLibraryStoreEntities",
-          domainAction: {
-            actionType: "modelAction",
-            actionName: "createEntity",
-            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-            entities: libraryEntitesAndInstances,
-          },
+          actionType: "modelAction",
+          actionName: "commit",
+          actionLabel: "CommitLibraryStoreEntities",
+          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+          deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
         },
         {
-          compositeActionType: "domainAction",
-          compositeActionStepLabel: "CommitLibraryStoreEntities",
-          domainAction: {
-            actionType: "modelAction",
-            actionName: "commit",
-            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-          },
-        },
-        {
-          compositeActionType: "domainAction",
-          compositeActionStepLabel: "CreateLibraryStoreInstances",
-          domainAction: {
-            actionType: "instanceAction",
-            actionName: "createInstance",
-            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-            applicationSection: "data",
-            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-            objects: libraryEntitesAndInstances.map((e) => {
-              return {
-                parentName: e.entity.name,
-                parentUuid: e.entity.uuid,
-                applicationSection: "data",
-                instances: e.instances,
-              };
-            }),
-          },
+          actionType: "instanceAction",
+          actionName: "createInstance",
+          actionLabel: "CreateLibraryStoreInstances",
+          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+          applicationSection: "data",
+          deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+          objects: libraryEntitesAndInstances.map((e) => {
+            return {
+              parentName: e.entity.name,
+              parentUuid: e.entity.uuid,
+              applicationSection: "data",
+              instances: e.instances,
+            };
+          }),
         },
       ],
     };
