@@ -14,6 +14,7 @@
           "definition": {
             "actionType": { "type": "literal", "definition": "runBoxedQueryTemplateOrBoxedExtractorTemplateAction" },
             "actionName": { "type": "literal", "definition": "runQuery" },
+            "actionLabel": { "type": "string", "optional": true },
             "endpoint": { "type": "literal", "definition": "9e404b3c-368c-40cb-be8b-e3c28550c25e" },
             "applicationSection": {
               "type": "schemaReference",
@@ -61,6 +62,7 @@
           "definition": {
             "actionType": { "type": "literal", "definition": "runBoxedExtractorOrQueryAction" },
             "actionName": { "type": "literal", "definition": "runQuery" },
+            "actionLabel": { "type": "string", "optional": true },
             "endpoint": { "type": "literal", "definition": "9e404b3c-368c-40cb-be8b-e3c28550c25e" },
             "applicationSection": {
               "type": "schemaReference",
@@ -113,6 +115,7 @@
           "definition": {
             "actionType": { "type": "literal", "definition": "runBoxedQueryTemplateAction" },
             "actionName": { "type": "literal", "definition": "runQuery" },
+            "actionLabel": { "type": "string", "optional": true },
             "endpoint": { "type": "literal", "definition": "9e404b3c-368c-40cb-be8b-e3c28550c25e" },
             "applicationSection": {
               "type": "schemaReference",
@@ -181,6 +184,7 @@
           "definition": {
             "actionType": { "type": "literal", "definition": "runBoxedQueryAction" },
             "actionName": { "type": "literal", "definition": "runQuery" },
+            "actionLabel": { "type": "string", "optional": true },
             "endpoint": { "type": "literal", "definition": "9e404b3c-368c-40cb-be8b-e3c28550c25e" },
             "applicationSection": {
               "type": "schemaReference",
@@ -215,6 +219,7 @@
           "definition": {
             "actionType": { "type": "literal", "definition": "runBoxedExtractorAction" },
             "actionName": { "type": "literal", "definition": "runQuery" },
+            "actionLabel": { "type": "string", "optional": true },
             "endpoint": { "type": "literal", "definition": "9e404b3c-368c-40cb-be8b-e3c28550c25e" },
             "applicationSection": {
               "type": "schemaReference",

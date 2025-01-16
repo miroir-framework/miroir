@@ -20,6 +20,7 @@
               "type": "literal",
               "definition": "createApplication"
             },
+            "actionLabel": { "type": "string", "optional": true },
             "endpoint": {
               "type": "literal",
               "definition": "ddd9c928-2ceb-4f67-971b-5898090412d6"
@@ -56,6 +57,7 @@
               "type": "literal",
               "definition": "deleteApplication"
             },
+            "actionLabel": { "type": "string", "optional": true },
             "endpoint": {
               "type": "literal",
               "definition": "ddd9c928-2ceb-4f67-971b-5898090412d6"

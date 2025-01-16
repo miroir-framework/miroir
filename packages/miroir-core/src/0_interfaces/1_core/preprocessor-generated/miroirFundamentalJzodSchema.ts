@@ -9663,6 +9663,10 @@ export const miroirFundamentalJzodSchema = {
                 "type": "literal",
                 "definition": "createInstance"
               },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
               "endpoint": {
                 "type": "literal",
                 "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
@@ -9714,6 +9718,10 @@ export const miroirFundamentalJzodSchema = {
               "actionName": {
                 "type": "literal",
                 "definition": "deleteInstance"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
               },
               "deploymentUuid": {
                 "type": "uuid",
@@ -9770,6 +9778,10 @@ export const miroirFundamentalJzodSchema = {
               "actionName": {
                 "type": "literal",
                 "definition": "updateInstance"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
               },
               "endpoint": {
                 "type": "literal",
@@ -9832,6 +9844,10 @@ export const miroirFundamentalJzodSchema = {
                 "type": "literal",
                 "definition": "createInstance"
               },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
               "endpoint": {
                 "type": "literal",
                 "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
@@ -9883,6 +9899,10 @@ export const miroirFundamentalJzodSchema = {
               "actionName": {
                 "type": "literal",
                 "definition": "deleteInstance"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
               },
               "deploymentUuid": {
                 "type": "uuid",
@@ -9940,6 +9960,10 @@ export const miroirFundamentalJzodSchema = {
                 "type": "literal",
                 "definition": "deleteInstanceWithCascade"
               },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
               "deploymentUuid": {
                 "type": "uuid",
                 "tag": {
@@ -9995,6 +10019,10 @@ export const miroirFundamentalJzodSchema = {
               "actionName": {
                 "type": "literal",
                 "definition": "updateInstance"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
               },
               "endpoint": {
                 "type": "literal",
@@ -10052,6 +10080,10 @@ export const miroirFundamentalJzodSchema = {
                 "type": "literal",
                 "definition": "loadNewInstancesInLocalCache"
               },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
               "endpoint": {
                 "type": "literal",
                 "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
@@ -10096,6 +10128,10 @@ export const miroirFundamentalJzodSchema = {
               "actionName": {
                 "type": "literal",
                 "definition": "getInstance"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
               },
               "endpoint": {
                 "type": "literal",
@@ -10150,6 +10186,10 @@ export const miroirFundamentalJzodSchema = {
               "actionName": {
                 "type": "literal",
                 "definition": "getInstances"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
               },
               "endpoint": {
                 "type": "literal",
@@ -10252,6 +10292,10 @@ export const miroirFundamentalJzodSchema = {
             "type": "literal",
             "definition": "transactionalInstanceAction"
           },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
           "deploymentUuid": {
             "type": "uuid",
             "optional": true,
@@ -10323,6 +10367,10 @@ export const miroirFundamentalJzodSchema = {
                 "type": "literal",
                 "definition": "createStore"
               },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
               "endpoint": {
                 "type": "literal",
                 "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f"
@@ -10356,6 +10404,10 @@ export const miroirFundamentalJzodSchema = {
                 "type": "literal",
                 "definition": "deleteStore"
               },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
               "endpoint": {
                 "type": "literal",
                 "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f"
@@ -10388,6 +10440,10 @@ export const miroirFundamentalJzodSchema = {
               "actionName": {
                 "type": "literal",
                 "definition": "resetAndInitApplicationDeployment"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
               },
               "endpoint": {
                 "type": "literal",
@@ -10425,6 +10481,10 @@ export const miroirFundamentalJzodSchema = {
                 "type": "literal",
                 "definition": "openStore"
               },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
               "endpoint": {
                 "type": "literal",
                 "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f"
@@ -10461,6 +10521,10 @@ export const miroirFundamentalJzodSchema = {
                 "type": "literal",
                 "definition": "closeStore"
               },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
               "endpoint": {
                 "type": "literal",
                 "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f"
@@ -10496,6 +10560,10 @@ export const miroirFundamentalJzodSchema = {
                   "update",
                   "delete"
                 ]
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
               },
               "endpoint": {
                 "type": "literal",
@@ -10590,6 +10658,10 @@ export const miroirFundamentalJzodSchema = {
                   "update",
                   "delete"
                 ]
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
               },
               "endpoint": {
                 "type": "literal",
@@ -10767,6 +10839,10 @@ export const miroirFundamentalJzodSchema = {
               "delete"
             ]
           },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
           "endpoint": {
             "type": "literal",
             "definition": "a93598b3-19b6-42e8-828c-f02042d212d4"
@@ -10861,6 +10937,10 @@ export const miroirFundamentalJzodSchema = {
               "delete"
             ]
           },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
           "endpoint": {
             "type": "literal",
             "definition": "a93598b3-19b6-42e8-828c-f02042d212d4"
@@ -10950,6 +11030,10 @@ export const miroirFundamentalJzodSchema = {
             "type": "literal",
             "definition": "runQuery"
           },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
           "endpoint": {
             "type": "literal",
             "definition": "9e404b3c-368c-40cb-be8b-e3c28550c25e"
@@ -11005,6 +11089,10 @@ export const miroirFundamentalJzodSchema = {
           "actionName": {
             "type": "literal",
             "definition": "runQuery"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
           },
           "endpoint": {
             "type": "literal",
@@ -11071,6 +11159,10 @@ export const miroirFundamentalJzodSchema = {
           "actionName": {
             "type": "literal",
             "definition": "runQuery"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
           },
           "endpoint": {
             "type": "literal",
@@ -11158,6 +11250,10 @@ export const miroirFundamentalJzodSchema = {
             "type": "literal",
             "definition": "runQuery"
           },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
           "endpoint": {
             "type": "literal",
             "definition": "9e404b3c-368c-40cb-be8b-e3c28550c25e"
@@ -11200,6 +11296,10 @@ export const miroirFundamentalJzodSchema = {
           "actionName": {
             "type": "literal",
             "definition": "runQuery"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
           },
           "endpoint": {
             "type": "literal",
@@ -11659,6 +11759,10 @@ export const miroirFundamentalJzodSchema = {
               "actionType": {
                 "type": "literal",
                 "definition": "transactionalInstanceAction"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
               },
               "deploymentUuid": {
                 "type": "uuid",
@@ -21777,6 +21881,22 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
+              "actionLabel": {
+                "type": "union",
+                "optional": true,
+                "definition": [
+                  {
+                    "type": "string",
+                    "optional": true
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
               "endpoint": {
                 "type": "union",
                 "definition": [
@@ -21889,6 +22009,22 @@ export const miroirFundamentalJzodSchema = {
                   {
                     "type": "literal",
                     "definition": "deleteInstance"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "actionLabel": {
+                "type": "union",
+                "optional": true,
+                "definition": [
+                  {
+                    "type": "string",
+                    "optional": true
                   },
                   {
                     "type": "schemaReference",
@@ -22026,6 +22162,22 @@ export const miroirFundamentalJzodSchema = {
                   {
                     "type": "literal",
                     "definition": "updateInstance"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "actionLabel": {
+                "type": "union",
+                "optional": true,
+                "definition": [
+                  {
+                    "type": "string",
+                    "optional": true
                   },
                   {
                     "type": "schemaReference",
@@ -23584,6 +23736,22 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
+              "actionLabel": {
+                "type": "union",
+                "optional": true,
+                "definition": [
+                  {
+                    "type": "string",
+                    "optional": true
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
               "endpoint": {
                 "type": "union",
                 "definition": [
@@ -23696,6 +23864,22 @@ export const miroirFundamentalJzodSchema = {
                   {
                     "type": "literal",
                     "definition": "deleteInstance"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "actionLabel": {
+                "type": "union",
+                "optional": true,
+                "definition": [
+                  {
+                    "type": "string",
+                    "optional": true
                   },
                   {
                     "type": "schemaReference",
@@ -23842,6 +24026,22 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
+              "actionLabel": {
+                "type": "union",
+                "optional": true,
+                "definition": [
+                  {
+                    "type": "string",
+                    "optional": true
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
               "deploymentUuid": {
                 "type": "union",
                 "tag": {
@@ -23970,6 +24170,22 @@ export const miroirFundamentalJzodSchema = {
                   {
                     "type": "literal",
                     "definition": "updateInstance"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "actionLabel": {
+                "type": "union",
+                "optional": true,
+                "definition": [
+                  {
+                    "type": "string",
+                    "optional": true
                   },
                   {
                     "type": "schemaReference",
@@ -24116,6 +24332,22 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
+              "actionLabel": {
+                "type": "union",
+                "optional": true,
+                "definition": [
+                  {
+                    "type": "string",
+                    "optional": true
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
               "endpoint": {
                 "type": "union",
                 "definition": [
@@ -24221,6 +24453,22 @@ export const miroirFundamentalJzodSchema = {
                   {
                     "type": "literal",
                     "definition": "getInstance"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "actionLabel": {
+                "type": "union",
+                "optional": true,
+                "definition": [
+                  {
+                    "type": "string",
+                    "optional": true
                   },
                   {
                     "type": "schemaReference",
@@ -24371,6 +24619,22 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
+              "actionLabel": {
+                "type": "union",
+                "optional": true,
+                "definition": [
+                  {
+                    "type": "string",
+                    "optional": true
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
               "endpoint": {
                 "type": "union",
                 "definition": [
@@ -24495,6 +24759,22 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
+              "actionLabel": {
+                "type": "union",
+                "optional": true,
+                "definition": [
+                  {
+                    "type": "string",
+                    "optional": true
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
               "endpoint": {
                 "type": "union",
                 "definition": [
@@ -24578,6 +24858,22 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
+              "actionLabel": {
+                "type": "union",
+                "optional": true,
+                "definition": [
+                  {
+                    "type": "string",
+                    "optional": true
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
               "endpoint": {
                 "type": "union",
                 "definition": [
@@ -24652,6 +24948,22 @@ export const miroirFundamentalJzodSchema = {
                   {
                     "type": "literal",
                     "definition": "resetAndInitApplicationDeployment"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "actionLabel": {
+                "type": "union",
+                "optional": true,
+                "definition": [
+                  {
+                    "type": "string",
+                    "optional": true
                   },
                   {
                     "type": "schemaReference",
@@ -24758,6 +25070,22 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
+              "actionLabel": {
+                "type": "union",
+                "optional": true,
+                "definition": [
+                  {
+                    "type": "string",
+                    "optional": true
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
               "endpoint": {
                 "type": "union",
                 "definition": [
@@ -24855,6 +25183,22 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
+              "actionLabel": {
+                "type": "union",
+                "optional": true,
+                "definition": [
+                  {
+                    "type": "string",
+                    "optional": true
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
               "endpoint": {
                 "type": "union",
                 "definition": [
@@ -24924,6 +25268,22 @@ export const miroirFundamentalJzodSchema = {
                   {
                     "type": "literal",
                     "definition": "transactionalInstanceAction"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "actionLabel": {
+                "type": "union",
+                "optional": true,
+                "definition": [
+                  {
+                    "type": "string",
+                    "optional": true
                   },
                   {
                     "type": "schemaReference",
@@ -25155,6 +25515,22 @@ export const miroirFundamentalJzodSchema = {
                   {
                     "type": "literal",
                     "definition": "transactionalInstanceAction"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "actionLabel": {
+                "type": "union",
+                "optional": true,
+                "definition": [
+                  {
+                    "type": "string",
+                    "optional": true
                   },
                   {
                     "type": "schemaReference",
@@ -28459,6 +28835,22 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
+              "actionLabel": {
+                "type": "union",
+                "optional": true,
+                "definition": [
+                  {
+                    "type": "string",
+                    "optional": true
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
               "endpoint": {
                 "type": "union",
                 "definition": [
@@ -28605,6 +28997,22 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
+              "actionLabel": {
+                "type": "union",
+                "optional": true,
+                "definition": [
+                  {
+                    "type": "string",
+                    "optional": true
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
               "endpoint": {
                 "type": "union",
                 "definition": [
@@ -28729,6 +29137,22 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
+              "actionLabel": {
+                "type": "union",
+                "optional": true,
+                "definition": [
+                  {
+                    "type": "string",
+                    "optional": true
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
               "endpoint": {
                 "type": "union",
                 "definition": [
@@ -28834,6 +29258,22 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
+              "actionLabel": {
+                "type": "union",
+                "optional": true,
+                "definition": [
+                  {
+                    "type": "string",
+                    "optional": true
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
               "endpoint": {
                 "type": "union",
                 "definition": [
@@ -28930,6 +29370,22 @@ export const miroirFundamentalJzodSchema = {
                   {
                     "type": "literal",
                     "definition": "runQuery"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "actionLabel": {
+                "type": "union",
+                "optional": true,
+                "definition": [
+                  {
+                    "type": "string",
+                    "optional": true
                   },
                   {
                     "type": "schemaReference",

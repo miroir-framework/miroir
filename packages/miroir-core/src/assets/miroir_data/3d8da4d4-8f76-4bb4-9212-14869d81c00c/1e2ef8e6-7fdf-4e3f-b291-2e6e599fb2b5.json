@@ -65,6 +65,7 @@
           "type": "object",
           "definition": {
             "actionType": { "type":"literal", "definition":"transactionalInstanceAction"},
+            "actionLabel": { "type": "string", "optional": true },
             "deploymentUuid": {
               "type": "uuid",
               "optional": true,
@@ -96,6 +97,13 @@
               "optional": true,
               "tag": { "value": { "defaultLabel": "Module Deployment Uuid", "editable": false } }
             },
+            "templates": {
+              "type": "record",
+              "optional": true,
+              "definition": {
+                "type": "any"
+              }
+            },
             "definition": {
               "type": "array",
               "definition": {
@@ -108,10 +116,10 @@
                       "compositeActionType": { "type": "literal", "definition": "domainAction" },
                       "compositeActionStepLabel": { "type": "string", "optional": true },
                       "domainAction": {
-                        "type": "schemaReference",
-                        "definition": {
-                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "domainAction"
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "domainAction"
                         }
                       }
                     }

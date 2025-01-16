@@ -22,7 +22,7 @@ import entityReport from '../../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9
 import { MetaEntity, Uuid } from "../../0_interfaces/1_core/EntityDefinition.js";
 import { resolveTestCompositeActionTemplate } from "../../2_domain/TestSuiteTemplate.js";
 import { defaultMiroirMetaModel } from "../../1_core/Model.js";
-import { act } from 'react';
+// import { act } from 'react';
 
 // import {
 //   entityEntity,
@@ -1065,7 +1065,7 @@ const adminConfigurationDeploymentParis = {
 // });
 
 describe('resolveTestCompositeActionTemplate', () => {
-  it("should resolve a simple TestCompositeActionTemplate, with templates and definition", () => {
+  it("should resolve a simple createEntity TestCompositeActionTemplate, with templates and definition", () => {
     const testCompositeActionTemplate: TestCompositeActionTemplate = {
       testLabel: "Test Label",
       testType: "testCompositeActionTemplate",

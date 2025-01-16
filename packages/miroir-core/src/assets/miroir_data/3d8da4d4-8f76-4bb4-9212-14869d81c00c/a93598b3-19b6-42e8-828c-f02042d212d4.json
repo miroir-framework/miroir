@@ -14,6 +14,7 @@
           "definition": {
             "actionType": {"type": "literal", "definition":"LocalPersistenceAction"},
             "actionName": {"type": "enum", "definition": ["create", "read", "update", "delete"]},
+            "actionLabel": { "type": "string", "optional": true },
             "endpoint": {"type": "literal", "definition":"a93598b3-19b6-42e8-828c-f02042d212d4"},
             "section": {
               "type": "schemaReference",
@@ -67,6 +68,7 @@
           "definition": {
             "actionType": {"type": "literal", "definition":"RestPersistenceAction"},
             "actionName": {"type": "enum", "definition": ["create", "read", "update", "delete"]},
+            "actionLabel": { "type": "string", "optional": true },
             "endpoint": {"type": "literal", "definition":"a93598b3-19b6-42e8-828c-f02042d212d4"},
             "section": {
               "type": "schemaReference",

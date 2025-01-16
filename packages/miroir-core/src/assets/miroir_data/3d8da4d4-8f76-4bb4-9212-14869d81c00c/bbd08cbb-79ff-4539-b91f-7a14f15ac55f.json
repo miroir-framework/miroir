@@ -19,6 +19,7 @@
               "type": "literal",
               "definition": "createStore"
             },
+            "actionLabel": { "type": "string", "optional": true },
             "endpoint": {
               "type": "literal",
               "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f"
@@ -61,6 +62,7 @@
               "type": "literal",
               "definition": "deleteStore"
             },
+            "actionLabel": { "type": "string", "optional": true },
             "endpoint": {
               "type": "literal",
               "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f"
@@ -100,6 +102,7 @@
               "type": "literal",
               "definition": "resetAndInitApplicationDeployment"
             },
+            "actionLabel": { "type": "string", "optional": true },
             "endpoint": {
               "type": "literal",
               "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f"
@@ -142,6 +145,7 @@
               "type": "literal",
               "definition": "openStore"
             },
+            "actionLabel": { "type": "string", "optional": true },
             "endpoint": {
               "type": "literal",
               "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f"
@@ -184,6 +188,7 @@
               "type": "literal",
               "definition": "closeStore"
             },
+            "actionLabel": { "type": "string", "optional": true },
             "endpoint": {
               "type": "literal",
               "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f"

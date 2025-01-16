@@ -20,6 +20,7 @@
               "type": "literal",
               "definition": "createInstance"
             },
+            "actionLabel": { "type": "string", "optional": true },
             "endpoint": {
               "type": "literal",
               "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
@@ -78,6 +79,7 @@
               "type": "literal",
               "definition": "deleteInstance"
             },
+            "actionLabel": { "type": "string", "optional": true },
             "deploymentUuid": {
               "type": "uuid",
               "tag": {
@@ -140,6 +142,7 @@
               "type": "literal",
               "definition": "deleteInstanceWithCascade"
             },
+            "actionLabel": { "type": "string", "optional": true },
             "deploymentUuid": {
               "type": "uuid",
               "tag": {
@@ -203,6 +206,7 @@
               "type": "literal",
               "definition": "updateInstance"
             },
+            "actionLabel": { "type": "string", "optional": true },
             "endpoint": {
               "type": "literal",
               "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
@@ -265,6 +269,7 @@
               "type": "literal",
               "definition": "loadNewInstancesInLocalCache"
             },
+            "actionLabel": { "type": "string", "optional": true },
             "endpoint": {
               "type": "literal",
               "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
@@ -316,6 +321,7 @@
               "type": "literal",
               "definition": "getInstance"
             },
+            "actionLabel": { "type": "string", "optional": true },
             "endpoint": {
               "type": "literal",
               "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
@@ -376,6 +382,7 @@
               "type": "literal",
               "definition": "getInstances"
             },
+            "actionLabel": { "type": "string", "optional": true },
             "endpoint": {
               "type": "literal",
               "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
