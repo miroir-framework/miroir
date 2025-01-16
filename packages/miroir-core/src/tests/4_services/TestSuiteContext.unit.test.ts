@@ -4,13 +4,14 @@ import { LoggerGlobalContext } from '../../4_services/LoggerContext.js';
 import { TestSuiteContext } from '../../4_services/TestSuiteContext.js';
 
 describe('TestSuiteContext', () => {
-  beforeEach(() => {
-    TestSuiteContext.resetContext();
-  });
+  // beforeEach(() => {
+  //   TestSuiteContext.resetContext();
+  // });
 
   describe('getTestResult', () => {
     beforeEach(() => {
       TestSuiteContext.resetContext();
+      TestSuiteContext.resetResults();
     });
 
     it('should return "ok" if all assertions pass', () => {
@@ -20,7 +21,7 @@ describe('TestSuiteContext', () => {
         assertionName: 'assertion1',
         assertionResult: 'ok',
       };
-      TestSuiteContext.prototype.setTestAssertionResult(testAssertionResult);
+      TestSuiteContext.setTestAssertionResult(testAssertionResult);
 
       const result = TestSuiteContext.getTestResult('TestSuite1', 'Test1');
       expect(result.testResult).toBe('ok');
@@ -37,8 +38,8 @@ describe('TestSuiteContext', () => {
         assertionName: 'assertion2',
         assertionResult: 'error',
       };
-      TestSuiteContext.prototype.setTestAssertionResult(testAssertionResult1);
-      TestSuiteContext.prototype.setTestAssertionResult(testAssertionResult2);
+      TestSuiteContext.setTestAssertionResult(testAssertionResult1);
+      TestSuiteContext.setTestAssertionResult(testAssertionResult2);
 
       const result = TestSuiteContext.getTestResult('TestSuite1', 'Test1');
       expect(result.testResult).toBe('error');
@@ -54,24 +55,25 @@ describe('TestSuiteContext', () => {
   describe('getTestSuiteResult', () => {
     beforeEach(() => {
       TestSuiteContext.resetContext();
+      TestSuiteContext.resetResults();
     });
 
     it('should return the correct test suite result when all tests pass', () => {
-      TestSuiteContext.resetContext();
+      // TestSuiteContext.resetContext();
       LoggerGlobalContext.setTestSuite('TestSuite1');
       LoggerGlobalContext.setTest('Test1');
       const testAssertionResult: TestAssertionResult = {
         assertionName: 'assertion1',
         assertionResult: 'ok',
       };
-      TestSuiteContext.prototype.setTestAssertionResult(testAssertionResult);
+      TestSuiteContext.setTestAssertionResult(testAssertionResult);
 
       LoggerGlobalContext.setTest('Test2');
       const testAssertionResult2: TestAssertionResult = {
         assertionName: 'assertion2',
         assertionResult: 'ok',
       };
-      TestSuiteContext.prototype.setTestAssertionResult(testAssertionResult2);
+      TestSuiteContext.setTestAssertionResult(testAssertionResult2);
 
       const result = TestSuiteContext.getTestSuiteResult('TestSuite1');
       expect(result).toEqual({
@@ -95,21 +97,21 @@ describe('TestSuiteContext', () => {
     });
 
     it('should return the correct test suite result when some tests fail', () => {
-      TestSuiteContext.resetContext();
+      // TestSuiteContext.resetContext();
       LoggerGlobalContext.setTestSuite('TestSuite1');
       LoggerGlobalContext.setTest('Test1');
       const testAssertionResult: TestAssertionResult = {
         assertionName: 'assertion1',
         assertionResult: 'ok',
       };
-      TestSuiteContext.prototype.setTestAssertionResult(testAssertionResult);
+      TestSuiteContext.setTestAssertionResult(testAssertionResult);
 
       LoggerGlobalContext.setTest('Test2');
       const testAssertionResult2: TestAssertionResult = {
         assertionName: 'assertion2',
         assertionResult: 'error',
       };
-      TestSuiteContext.prototype.setTestAssertionResult(testAssertionResult2);
+      TestSuiteContext.setTestAssertionResult(testAssertionResult2);
 
       const result = TestSuiteContext.getTestSuiteResult('TestSuite1');
       expect(result).toEqual({

@@ -555,85 +555,82 @@ export const ConceptPage: React.FC<any> = (
           definition: [
             // createEntity
             {
-              actionType: "domainAction",
-              compositeActionStepLabel: "createEntity",
-              domainAction: {
-                actionType: "modelAction",
-                actionName: "createEntity",
+              actionType: "modelAction",
+              actionName: "createEntity",
+              actionLabel: "createEntity",
+              deploymentUuid: {
+                transformerType: "parameterReference",
+                referenceName: "currentDeploymentUuid",
+              },
+              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+              entities: [
+                {
+                  entity: {
+                    transformerType: "parameterReference",
+                    referenceName: "createEntity_newEntity",
+                  },
+                  entityDefinition: {
+                    transformerType: "parameterReference",
+                    referenceName: "newEntityDefinition",
+                  },
+                },
+              ],
+            },
+            // createReports
+            {
+              actionType: "transactionalInstanceAction",
+              actionLabel: "createReports",
+              instanceAction: {
+                actionType: "instanceAction",
+                actionName: "createInstance",
+                // applicationSection: "model",
+                applicationSection: getApplicationSection(
+                  actionEffectiveParamsCreateEntity.currentDeploymentUuid,
+                  entityReport.uuid
+                ),
                 deploymentUuid: {
                   transformerType: "parameterReference",
                   referenceName: "currentDeploymentUuid",
                 },
-                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                entities: [
+                endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                objects: [
                   {
-                    entity: {
-                      transformerType: "parameterReference",
-                      referenceName: "createEntity_newEntity",
+                    parentName: {
+                      transformerType: "mustacheStringTemplate",
+                      definition: "{{newEntityListReport.parentName}}",
                     },
-                    entityDefinition: {
-                      transformerType: "parameterReference",
-                      referenceName: "newEntityDefinition",
+                    parentUuid: {
+                      transformerType: "mustacheStringTemplate",
+                      definition: "{{newEntityListReport.parentUuid}}",
                     },
+                    // applicationSection: "model",
+                    applicationSection: getApplicationSection(
+                      actionEffectiveParamsCreateEntity.currentDeploymentUuid,
+                      entityReport.uuid
+                    ),
+                    instances: [
+                      {
+                        transformerType: "parameterReference",
+                        referenceName: "newEntityListReport",
+                      },
+                      {
+                        transformerType: "parameterReference",
+                        referenceName: "newEntityDetailsReport",
+                      },
+                    ],
                   },
                 ],
-              },
-            } as any,
-            // createReports
-            {
-              actionType: "domainAction",
-              compositeActionStepLabel: "createReports",
-              domainAction: {
-                actionType: "transactionalInstanceAction",
-                instanceAction: {
-                  actionType: "instanceAction",
-                  actionName: "createInstance",
-                  // applicationSection: "model",
-                  applicationSection: getApplicationSection(actionEffectiveParamsCreateEntity.currentDeploymentUuid, entityReport.uuid),
-                  deploymentUuid: {
-                    transformerType: "parameterReference",
-                    referenceName: "currentDeploymentUuid",
-                  },
-                  endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-                  objects: [
-                    {
-                      parentName: {
-                        transformerType: "mustacheStringTemplate",
-                        definition: "{{newEntityListReport.parentName}}",
-                      },
-                      parentUuid: {
-                        transformerType: "mustacheStringTemplate",
-                        definition: "{{newEntityListReport.parentUuid}}",
-                      },
-                      // applicationSection: "model",
-                      applicationSection: getApplicationSection(actionEffectiveParamsCreateEntity.currentDeploymentUuid, entityReport.uuid),
-                      instances: [
-                        {
-                          transformerType: "parameterReference",
-                          referenceName: "newEntityListReport",
-                        },
-                        {
-                          transformerType: "parameterReference",
-                          referenceName: "newEntityDetailsReport",
-                        },
-                      ],
-                    },
-                  ],
-                },
               },
             },
             // commit
             {
-              actionType: "domainAction",
-              compositeActionStepLabel: "commit",
-              domainAction: {
-                actionName: "commit",
-                actionType: "modelAction",
-                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                deploymentUuid: {
-                  transformerType: "parameterReference",
-                  referenceName: "currentDeploymentUuid",
-                },
+              actionName: "commit",
+              actionType: "modelAction",
+              actionLabel: "commit",
+              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+              deploymentUuid: {
+                transformerType: "parameterReference",
+                referenceName: "currentDeploymentUuid",
               },
             },
           ],

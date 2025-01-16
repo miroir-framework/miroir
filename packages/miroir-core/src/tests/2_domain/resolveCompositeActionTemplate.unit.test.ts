@@ -1113,30 +1113,27 @@ describe('resolveTestCompositeActionTemplate', () => {
         definition: [
           // createEntity
           {
-            actionType: "domainAction",
-            compositeActionStepLabel: "createEntity",
-            domainAction: {
-              actionType: "modelAction",
-              actionName: "createEntity",
-              deploymentUuid: {
-                transformerType: "parameterReference",
-                referenceName: "currentDeploymentUuid",
-              },
-              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              entities: [
-                {
-                  entity: {
-                    transformerType: "parameterReference",
-                    referenceName: "createEntity_newEntity",
-                  },
-                  entityDefinition: {
-                    transformerType: "parameterReference",
-                    referenceName: "newEntityDefinition",
-                  },
-                },
-              ],
+            actionType: "modelAction",
+            actionName: "createEntity",
+            actionLabel: "createEntity",
+            deploymentUuid: {
+              transformerType: "parameterReference",
+              referenceName: "currentDeploymentUuid",
             },
-          } as any,
+            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+            entities: [
+              {
+                entity: {
+                  transformerType: "parameterReference",
+                  referenceName: "createEntity_newEntity",
+                },
+                entityDefinition: {
+                  transformerType: "parameterReference",
+                  referenceName: "newEntityDefinition",
+                },
+              },
+            ],
+          },
           // createReports
         ],
       },
@@ -1200,11 +1197,9 @@ describe('resolveTestCompositeActionTemplate', () => {
         // templates: (testCompositeActionTemplate.compositeActionTemplate as any).templates,
         definition: [
           {
-            // actionType: "domainAction",
-            // compositeActionStepLabel: "createEntity",
-            // domainAction: {
             actionType: "modelAction",
             actionName: "createEntity",
+            actionLabel: "createEntity",
             deploymentUuid: currentDeploymentUuid,
             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             entities: [
@@ -1235,7 +1230,6 @@ describe('resolveTestCompositeActionTemplate', () => {
                 },
               },
             ],
-          // },
           },
         ],
       },

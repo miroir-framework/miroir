@@ -75,14 +75,11 @@ export function testOnLibrary_resetLibraryDeployment(miroirConfig: MiroirConfigC
     actionName: "sequence",
     definition: [
       {
-        actionType: "domainAction",
-        compositeActionStepLabel: "resetLibraryStore",
-        domainAction: {
-          actionType: "modelAction",
-          actionName: "resetModel",
-          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-          deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-        },
+        actionType: "modelAction",
+        actionName: "resetModel",
+        actionLabel: "resetLibraryStore",
+        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       },
     ],
   };
@@ -94,17 +91,14 @@ export function testOnLibrary_deleteLibraryDeployment(miroirConfig: MiroirConfig
     actionName: "sequence",
     definition: [
       {
-        actionType: "domainAction",
-        compositeActionStepLabel: "deleteLibraryStore",
-        domainAction: {
-          actionType: "storeManagementAction",
-          actionName: "deleteStore",
-          endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-          deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-          configuration: miroirConfig.client.emulateServer
-            ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentLibrary.uuid]
-            : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentLibrary.uuid],
-        },
+        actionType: "storeManagementAction",
+        actionName: "deleteStore",
+        actionLabel: "deleteLibraryStore",
+        endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+        configuration: miroirConfig.client.emulateServer
+          ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentLibrary.uuid]
+          : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentLibrary.uuid],
       },
     ],
   };

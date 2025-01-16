@@ -1211,7 +1211,7 @@ export class DomainController implements DomainControllerInterface {
     // compositeAction: CompositeAction,
     compositeRunTestAssertion: {
       actionType: "compositeRunTestAssertion";
-      compositeActionStepLabel?: string | undefined;
+      actionLabel?: string | undefined;
       nameGivenToResult: string;
       testAssertion: TestAssertion;
     },

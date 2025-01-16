@@ -552,83 +552,74 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       definition: [
         // createEntity
         {
-          actionType: "domainAction",
-          compositeActionStepLabel: "createEntity",
-          domainAction: {
-            actionType: "modelAction",
-            actionName: "createEntity",
+          actionType: "modelAction",
+          actionName: "createEntity",
+          actionLabel: "createEntity",
+          deploymentUuid: {
+            transformerType: "parameterReference",
+            referenceName: "currentDeploymentUuid",
+          },
+          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+          entities: [
+            {
+              entity: {
+                transformerType: "parameterReference",
+                referenceName: "createEntity_newEntity",
+              },
+              entityDefinition: {
+                transformerType: "parameterReference",
+                referenceName: "newEntityDefinition",
+              },
+            },
+          ],
+        },
+        // createReports
+        {
+          actionType: "transactionalInstanceAction",
+          actionLabel: "createReports",
+          instanceAction: {
+            actionType: "instanceAction",
+            actionName: "createInstance",
+            applicationSection: "model",
             deploymentUuid: {
               transformerType: "parameterReference",
               referenceName: "currentDeploymentUuid",
             },
-            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-            entities: [
+            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+            objects: [
               {
-                entity: {
-                  transformerType: "parameterReference",
-                  referenceName: "createEntity_newEntity",
+                parentName: {
+                  transformerType: "mustacheStringTemplate",
+                  definition: "{{newEntityListReport.parentName}}",
                 },
-                entityDefinition: {
-                  transformerType: "parameterReference",
-                  referenceName: "newEntityDefinition",
+                parentUuid: {
+                  transformerType: "mustacheStringTemplate",
+                  definition: "{{newEntityListReport.parentUuid}}",
                 },
+                applicationSection: "model",
+                instances: [
+                  {
+                    transformerType: "parameterReference",
+                    referenceName: "newEntityListReport",
+                  },
+                  {
+                    transformerType: "parameterReference",
+                    referenceName: "newEntityDetailsReport",
+                  },
+                ],
               },
             ],
-          },
-        } as any,
-        // createReports
-        {
-          actionType: "domainAction",
-          compositeActionStepLabel: "createReports",
-          domainAction: {
-            actionType: "transactionalInstanceAction",
-            instanceAction: {
-              actionType: "instanceAction",
-              actionName: "createInstance",
-              applicationSection: "model",
-              deploymentUuid: {
-                transformerType: "parameterReference",
-                referenceName: "currentDeploymentUuid",
-              },
-              endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-              objects: [
-                {
-                  parentName: {
-                    transformerType: "mustacheStringTemplate",
-                    definition: "{{newEntityListReport.parentName}}",
-                  },
-                  parentUuid: {
-                    transformerType: "mustacheStringTemplate",
-                    definition: "{{newEntityListReport.parentUuid}}",
-                  },
-                  applicationSection: "model",
-                  instances: [
-                    {
-                      transformerType: "parameterReference",
-                      referenceName: "newEntityListReport",
-                    },
-                    {
-                      transformerType: "parameterReference",
-                      referenceName: "newEntityDetailsReport",
-                    },
-                  ],
-                },
-              ],
-            },
           },
         },
         // commit
         {
-          actionType: "domainAction",
-          compositeActionStepLabel: "commit",
-          domainAction: {
-            actionName: "commit",
-            actionType: "modelAction",
-            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-            deploymentUuid: {
-              transformerType: "parameterReference",
-              referenceName: "currentDeploymentUuid",
-            },
+          actionName: "commit",
+          actionType: "modelAction",
+          actionLabel: "commit",
+          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+          deploymentUuid: {
+            transformerType: "parameterReference",
+            referenceName: "currentDeploymentUuid",
           },
           // action: {
           //   transformerType: "parameterReference",
@@ -637,8 +628,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         },
         // instances for new Entity, put in "menuUpdateQueryResult"
         {
-          // actionType: "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
-          actionType: "runBoxedQueryTemplateAction",
+          actionType: "compositeRunBoxedQueryTemplateAction",
           nameGivenToResult: "menuUpdateQueryResult",
           queryTemplate: {
             // actionType: "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
@@ -648,7 +638,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
             applicationSection: "model",
             deploymentUuid: {
               transformerType: "parameterReference",
-              referenceName: "currentDeploymentUuid"
+              referenceName: "currentDeploymentUuid",
             },
             query: {
               queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
@@ -670,7 +660,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                     definition: {
                       transformerType: {
                         transformerType: "constantString",
-                        constantStringValue: "constantUuid"
+                        constantStringValue: "constantUuid",
                       },
                       constantUuidValue: {
                         transformerType: "mustacheStringTemplate",
@@ -690,7 +680,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                   transformerType: "listPickElement",
                   interpolation: "runtime",
                   referencedExtractor: "menuList",
-                  index: 1
+                  index: 1,
                 },
                 menuItem: {
                   transformerType: "freeObjectTemplate",
@@ -701,96 +691,44 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                     },
                     label: {
                       transformerType: "mustacheStringTemplate",
-                      definition: "List of {{createEntity_newEntityName}}"
+                      definition: "List of {{createEntity_newEntityName}}",
                     },
                     section: "data",
                     selfApplication: {
                       transformerType: "mustacheStringTemplate",
                       definition: "{{adminConfigurationDeploymentParis.uuid}}",
                     }, // TODO: replace with selfApplication uuid, this is a deployment at the moment
-                    icon: "local_drink"
-                  }
+                    icon: "local_drink",
+                  },
                 },
-                updatedMenu:{
+                updatedMenu: {
                   transformerType: "transformer_menu_addItem",
                   interpolation: "runtime",
                   transformerDefinition: {
                     menuItemReference: {
-                        transformerType: "contextReference",
-                        interpolation: "runtime",
-                        referenceName: "menuItem"
+                      transformerType: "contextReference",
+                      interpolation: "runtime",
+                      referenceName: "menuItem",
                     },
                     menuReference: {
                       transformerType: "contextReference",
                       interpolation: "runtime",
-                      referenceName: "menu"
+                      referenceName: "menu",
                     },
                     menuSectionItemInsertionIndex: -1,
-                  }
-                }
+                  },
+                },
               },
-            }
-          }
-        },
-        {
-          actionType: "domainAction",
-          compositeActionStepLabel: "updateMenu",
-          domainAction: {
-            actionType: "transactionalInstanceAction",
-            instanceAction: {
-              actionType: "instanceAction",
-              actionName: "updateInstance",
-              applicationSection: "model",
-              deploymentUuid: {
-                transformerType: "parameterReference",
-                referenceName: "currentDeploymentUuid",
-              },
-              endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-              objects: [
-                {
-                  parentName: entityMenu.name,
-                  parentUuid: entityMenu.uuid,
-                  applicationSection: "model",
-                  instances: [
-                    {
-                      transformerType: "objectDynamicAccess",
-                      interpolation: "runtime",
-                      objectAccessPath: [
-                        {
-                          transformerType: "contextReference",
-                          interpolation: "runtime",
-                          referenceName: "menuUpdateQueryResult",
-                        },
-                        "updatedMenu"
-                      ],
-                    },
-                  ]
-                }
-              ],
-            }
-          }
-        },
-        // commit
-        {
-          actionType: "domainAction",
-          compositeActionStepLabel: "commit",
-          domainAction: {
-            actionName: "commit",
-            actionType: "modelAction",
-            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-            deploymentUuid: {
-              transformerType: "parameterReference",
-              referenceName: "currentDeploymentUuid",
             },
           },
         },
-        // insert imported instances
         {
-          actionType: "domainAction",
-          domainAction: {
+          actionType: "transactionalInstanceAction",
+          actionLabel: "updateMenu",
+          instanceAction: {
             actionType: "instanceAction",
-            actionName: "createInstance",
-            applicationSection: "data",
+            actionName: "updateInstance",
+            applicationSection: "model",
             deploymentUuid: {
               transformerType: "parameterReference",
               referenceName: "currentDeploymentUuid",
@@ -798,32 +736,72 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             objects: [
               {
-                parentName: {
-                  transformerType: "mustacheStringTemplate",
-                  definition: "{{createEntity_newEntity.name}}",
-                },
-                parentUuid: {
-                  transformerType: "mustacheStringTemplate",
-                  definition: "{{createEntity_newEntity.uuid}}",
-                },
-                applicationSection: "data",
-                instances: instances,
+                parentName: entityMenu.name,
+                parentUuid: entityMenu.uuid,
+                applicationSection: "model",
+                instances: [
+                  {
+                    transformerType: "objectDynamicAccess",
+                    interpolation: "runtime",
+                    objectAccessPath: [
+                      {
+                        transformerType: "contextReference",
+                        interpolation: "runtime",
+                        referenceName: "menuUpdateQueryResult",
+                      },
+                      "updatedMenu",
+                    ],
+                  },
+                ],
               },
             ],
           },
         },
+        // commit
+        {
+          actionName: "commit",
+          actionType: "modelAction",
+          actionLabel: "commit",
+          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+          deploymentUuid: {
+            transformerType: "parameterReference",
+            referenceName: "currentDeploymentUuid",
+          },
+        },
+        // insert imported instances
+        {
+          actionType: "instanceAction",
+          actionName: "createInstance",
+          applicationSection: "data",
+          deploymentUuid: {
+            transformerType: "parameterReference",
+            referenceName: "currentDeploymentUuid",
+          },
+          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+          objects: [
+            {
+              parentName: {
+                transformerType: "mustacheStringTemplate",
+                definition: "{{createEntity_newEntity.name}}",
+              },
+              parentUuid: {
+                transformerType: "mustacheStringTemplate",
+                definition: "{{createEntity_newEntity.uuid}}",
+              },
+              applicationSection: "data",
+              instances: instances,
+            },
+          ],
+        },
         // rollback / refresh
         {
-          actionType: "domainAction",
-          compositeActionStepLabel: "rollback",
-          domainAction: {
-            actionName: "rollback",
-            actionType: "modelAction",
-            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-            deploymentUuid: {
-              transformerType: "parameterReference",
-              referenceName: "currentDeploymentUuid",
-            },
+          actionName: "rollback",
+          actionType: "modelAction",
+          actionLabel: "rollback",
+          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+          deploymentUuid: {
+            transformerType: "parameterReference",
+            referenceName: "currentDeploymentUuid",
           },
         },
       ],
@@ -1052,8 +1030,8 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                     constantStringValue: {
                       transformerType: "parameterReference",
                       referenceName: "splitEntity_newEntityUuid",
-                    }
-                  }
+                    },
+                  },
                 },
                 // parentUuid: {
                 //   transformerType: "parameterReference",
@@ -1067,8 +1045,8 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                     constantObjectValue: {
                       transformerType: "parameterReference",
                       referenceName: "instanceUuid",
-                    }
-                  }
+                    },
+                  },
                 },
               },
               fountainsOfMunicipality: {
@@ -1088,7 +1066,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                       interpolation: "runtime",
                       referenceName: "elementToDisplay",
                     },
-                  }
+                  },
                 },
                 AttributeOfListObjectToCompareToReferenceUuid: {
                   transformerType: "constantObject",
@@ -1096,7 +1074,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                     transformerType: "parameterReference",
                     interpolation: "runtime",
                     referenceName: "splitEntity_newEntityName",
-                  }
+                  },
                 },
                 // AttributeOfListObjectToCompareToReferenceUuid: newEntityName,
               },
@@ -1120,7 +1098,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                   definition: {
                     label: {
                       transformerType: "mustacheStringTemplate",
-                      definition:  "{{splitEntity_newEntityName}}'s (${elementToDisplay.name}) {{splittedEntityName}}s",
+                      definition: "{{splitEntity_newEntityName}}'s (${elementToDisplay.name}) {{splittedEntityName}}s",
                     },
                     parentName: {
                       transformerType: "parameterReference",
@@ -1142,161 +1120,143 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       definition: [
         // createEntity
         {
-          actionType: "domainAction",
-          compositeActionStepLabel: "splitEntity_createEntity",
-          domainAction: {
-            actionType: "modelAction",
-            actionName: "createEntity",
-            deploymentUuid: {
-              transformerType: "parameterReference",
-              referenceName: "currentDeploymentUuid",
-            },
-            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-            entities: [
-              {
-                entity: {
-                  transformerType: "parameterReference",
-                  referenceName: "splitEntity_newEntity",
-                },
-                entityDefinition: {
-                  transformerType: "parameterReference",
-                  referenceName: "splitEntity_newEntityDefinition",
-                },
-              },
-            ],
+          actionType: "modelAction",
+          actionName: "createEntity",
+          actionLabel: "splitEntity_createEntity",
+          deploymentUuid: {
+            transformerType: "parameterReference",
+            referenceName: "currentDeploymentUuid",
           },
+          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+          entities: [
+            {
+              entity: {
+                transformerType: "parameterReference",
+                referenceName: "splitEntity_newEntity",
+              },
+              entityDefinition: {
+                transformerType: "parameterReference",
+                referenceName: "splitEntity_newEntityDefinition",
+              },
+            },
+          ],
         },
         // updateSplittedEntityAction
         {
-          actionType: "domainAction",
-          compositeActionStepLabel: "splitEntity_updateSplittedEntityAction",
-          domainAction: {
-            actionType: "modelAction",
-            actionName: "alterEntityAttribute",
-            deploymentUuid: {
-              transformerType: "parameterReference",
-              referenceName: "currentDeploymentUuid",
-            },
-            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-            entityName: {
-              transformerType: "parameterReference",
-              referenceName: "splittedEntityName",
-            },
-            entityUuid: {
-              transformerType: "parameterReference",
-              referenceName: "splittedEntityUuid",
-            },
-            // entityUuid: splittedEntityUuid,
-            entityDefinitionUuid:  {
-              transformerType: "parameterReference",
-              referenceName: "splittedEntityDefinitionUuid",
-            },
-            // entityDefinitionUuid: splittedEntityDefinitionUuid,
-            addColumns: [
-              {
-                name: {
-                  transformerType: "parameterReference",
-                  referenceName: "splitEntity_newEntityName",
-                },
-                definition: {
-                  type: "string",
-                  validations: [{ type: "uuid" }],
-                  nullable: true, // TODO: make non-nullable and enforce FK after migration has been done!
-                  tag: {
-                    value: {
-                      defaultLabel: "Municipality",
-                      targetEntity: {
-                        transformerType: "contextReference",
-                        referenceName: "splitEntity_newEntityUuid",
-                      },
+          actionType: "modelAction",
+          actionName: "alterEntityAttribute",
+          actionLabel: "splitEntity_updateSplittedEntityAction",
+          deploymentUuid: {
+            transformerType: "parameterReference",
+            referenceName: "currentDeploymentUuid",
+          },
+          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+          entityName: {
+            transformerType: "parameterReference",
+            referenceName: "splittedEntityName",
+          },
+          entityUuid: {
+            transformerType: "parameterReference",
+            referenceName: "splittedEntityUuid",
+          },
+          // entityUuid: splittedEntityUuid,
+          entityDefinitionUuid: {
+            transformerType: "parameterReference",
+            referenceName: "splittedEntityDefinitionUuid",
+          },
+          // entityDefinitionUuid: splittedEntityDefinitionUuid,
+          addColumns: [
+            {
+              name: {
+                transformerType: "parameterReference",
+                referenceName: "splitEntity_newEntityName",
+              },
+              definition: {
+                type: "string",
+                validations: [{ type: "uuid" }],
+                nullable: true, // TODO: make non-nullable and enforce FK after migration has been done!
+                tag: {
+                  value: {
+                    defaultLabel: "Municipality",
+                    targetEntity: {
+                      transformerType: "contextReference",
+                      referenceName: "splitEntity_newEntityUuid",
                     },
                   },
                 },
               },
-            ],
-          },
+            },
+          ],
         },
         // commit
         {
-          actionType: "domainAction",
-          compositeActionStepLabel: "splitEntity_updateSplittedEntityAction_commit",
-          domainAction: {
-            actionName: "commit",
-            actionType: "modelAction",
-            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-            deploymentUuid: {
-              transformerType: "parameterReference",
-              referenceName: "currentDeploymentUuid",
-            },
+          actionName: "commit",
+          actionType: "modelAction",
+          actionLabel: "splitEntity_updateSplittedEntityAction_commit",
+          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+          deploymentUuid: {
+            transformerType: "parameterReference",
+            referenceName: "currentDeploymentUuid",
           },
         },
         // insert createEntity_newEntity "List" and "Details" Reports
         {
-          actionType: "domainAction",
-          compositeActionStepLabel: "splitEntity_createReports",
-          domainAction: {
-            actionType: "transactionalInstanceAction",
-            instanceAction: {
-              actionType: "instanceAction",
-              actionName: "createInstance",
-              applicationSection: "model",
-              deploymentUuid: {
-                transformerType: "parameterReference",
-                referenceName: "currentDeploymentUuid",
-              },
-              endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-              objects: [
-                {
-                  parentName: {
-                    transformerType: "mustacheStringTemplate",
-                    definition: "{{splitEntity_newEntityListReport.parentName}}",
-                  },
-                  parentUuid: {
-                    transformerType: "mustacheStringTemplate",
-                    definition: "{{splitEntity_newEntityListReport.parentUuid}}",
-                  },
-                  applicationSection: "model",
-                  instances: [
-                    {
-                      transformerType: "parameterReference",
-                      referenceName: "splitEntity_newEntityListReport",
-                    },
-                    {
-                      transformerType: "parameterReference",
-                      referenceName: "splitEntity_newEntityDetailsReport",
-                    },
-                  ],
-                },
-              ],
+          actionType: "transactionalInstanceAction",
+          actionLabel: "splitEntity_createReports",
+          instanceAction: {
+            actionType: "instanceAction",
+            actionName: "createInstance",
+            applicationSection: "model",
+            deploymentUuid: {
+              transformerType: "parameterReference",
+              referenceName: "currentDeploymentUuid",
             },
+            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+            objects: [
+              {
+                parentName: {
+                  transformerType: "mustacheStringTemplate",
+                  definition: "{{splitEntity_newEntityListReport.parentName}}",
+                },
+                parentUuid: {
+                  transformerType: "mustacheStringTemplate",
+                  definition: "{{splitEntity_newEntityListReport.parentUuid}}",
+                },
+                applicationSection: "model",
+                instances: [
+                  {
+                    transformerType: "parameterReference",
+                    referenceName: "splitEntity_newEntityListReport",
+                  },
+                  {
+                    transformerType: "parameterReference",
+                    referenceName: "splitEntity_newEntityDetailsReport",
+                  },
+                ],
+              },
+            ],
           },
         },
         // commit
         {
-          actionType: "domainAction",
-          compositeActionStepLabel: "splitEntity_createReports_commit",
-          domainAction: {
-            actionName: "commit",
-            actionType: "modelAction",
-            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-            deploymentUuid: {
-              transformerType: "parameterReference",
-              referenceName: "currentDeploymentUuid",
-            },
+          actionName: "commit",
+          actionType: "modelAction",
+          actionLabel: "splitEntity_createReports_commit",
+          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+          deploymentUuid: {
+            transformerType: "parameterReference",
+            referenceName: "currentDeploymentUuid",
           },
         },
         // refresh / rollback
         {
-          actionType: "domainAction",
-          compositeActionStepLabel: "splitEntity_refresh",
-          domainAction: {
-            actionName: "rollback",
-            actionType: "modelAction",
-            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-            deploymentUuid: {
-              transformerType: "parameterReference",
-              referenceName: "currentDeploymentUuid",
-            },
+          actionName: "rollback",
+          actionType: "modelAction",
+          actionLabel: "splitEntity_refresh",
+          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+          deploymentUuid: {
+            transformerType: "parameterReference",
+            referenceName: "currentDeploymentUuid",
           },
         },
       ],
@@ -1324,8 +1284,8 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         // find unique municipalities from fountains
         {
           // actionType: "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
-          actionType: "runBoxedQueryTemplateAction",
-          compositeActionStepLabel: "calculateNewEntityDefinionAndReports",
+          actionType: "compositeRunBoxedQueryTemplateAction",
+          actionLabel: "calculateNewEntityDefinionAndReports",
           nameGivenToResult: newEntityName,
           queryTemplate: {
             actionType: "runBoxedQueryTemplateAction",
@@ -1335,7 +1295,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
             applicationSection: "model", // TODO: give only selfApplication section in individual queries?
             deploymentUuid: {
               transformerType: "parameterReference",
-              referenceName: "currentDeploymentUuid"
+              referenceName: "currentDeploymentUuid",
             },
             query: {
               // queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
@@ -1345,8 +1305,8 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                 referenceName: "currentDeploymentUuid",
               },
               pageParams,
-              queryParams: { },
-              contextResults: { },
+              queryParams: {},
+              contextResults: {},
               extractorTemplates: {
                 menuUuidIndex: {
                   extractorTemplateType: "extractorTemplateForObjectListByEntity",
@@ -1357,13 +1317,13 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                     definition: {
                       transformerType: {
                         transformerType: "constantString",
-                        constantStringValue: "constantUuid"
+                        constantStringValue: "constantUuid",
                       },
                       constantUuidValue: {
                         transformerType: "mustacheStringTemplate",
                         definition: "{{entityMenu.uuid}}",
-                      }
-                    }
+                      },
+                    },
                   },
                   // parentUuid: {
                   //   transformerType: "mustacheStringTemplate",
@@ -1381,123 +1341,117 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                   transformerType: "listPickElement",
                   interpolation: "runtime",
                   referencedExtractor: "menuList",
-                  index: 1
+                  index: 1,
                 },
                 menuItem: {
                   transformerType: "freeObjectTemplate",
                   definition: {
-                    "label": {
+                    label: {
                       transformerType: "mustacheStringTemplate",
                       definition: "List of {{splitEntity_newEntityName}}s",
                     },
                     // "label": "List of " + newEntityName,
-                    "section": "data",
+                    section: "data",
                     selfApplication: {
                       // transformerType: "constantObject",
                       transformerType: "mustacheStringTemplate",
                       definition: "{{adminConfigurationDeploymentParis.uuid}}",
                     }, // TODO: replace with selfApplication uuid, this is a deployment at the moment
-                    "reportUuid": {
+                    reportUuid: {
                       transformerType: "parameterReference",
                       referenceName: "splitEntity_newEntityListReportUuid",
                     },
-                    "icon": "location_on"
-                  }
+                    icon: "location_on",
+                  },
                 },
-                updatedMenu:{
+                updatedMenu: {
                   transformerType: "transformer_menu_addItem",
                   interpolation: "runtime",
                   transformerDefinition: {
                     menuItemReference: {
-                        transformerType: "contextReference",
-                        interpolation: "runtime",
-                        referenceName: "menuItem"
+                      transformerType: "contextReference",
+                      interpolation: "runtime",
+                      referenceName: "menuItem",
                     },
                     menuReference: {
                       transformerType: "contextReference",
                       interpolation: "runtime",
-                      referenceName: "menu"
+                      referenceName: "menu",
                     },
                     menuSectionItemInsertionIndex: -1,
-                  }
-                }
+                  },
+                },
               },
-            }
-          }
+            },
+          },
         },
         // } as any, // TODO: why is type inferrence failing?
         // update Menu
         {
-          actionType: "domainAction",
-          compositeActionStepLabel: "updateMenu",
-          domainAction: {
-            actionType: "transactionalInstanceAction",
-            instanceAction: {
-              actionType: "instanceAction",
-              actionName: "updateInstance",
-              applicationSection: "model",
-              deploymentUuid: {
-                transformerType: "parameterReference",
-                referenceName: "currentDeploymentUuid",
-              },
-              endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-              objects: [
-                {
-                  parentName: {
-                    transformerType: "mustacheStringTemplate",
-                    definition: "{{entityMenu.name}}",
-                  },
-                  parentUuid: {
-                    transformerType: "mustacheStringTemplate",
-                    definition: "{{entityMenu.uuid}}",
-                  },
-                  // parentUuid: entityMenu.uuid,
-                  applicationSection: "model",
-                  instances: [
-                    {
-                      transformerType: "objectDynamicAccess",
-                      interpolation: "runtime",
-                      objectAccessPath: [
-                        {
-                          transformerType: "freeObjectTemplate", // TODO: allow transformer inside inner objectDynamicAccess in Query Templates!
-                          definition: {
-                            transformerType: "contextReference",
-                            interpolation: "runtime",
-                            // referenceName: newEntityName,
-                            referenceName: {
-                              transformerType: "parameterReference",
-                              referenceName: "splitEntity_newEntityName",
-                            },
-                          },
-                        } as any,
-                        "updatedMenu"
-                      ],
-                    },
-                  ]
-                }
-              ],
-            }
-          }
-        },
-        // commit
-        {
-          actionType: "domainAction",
-          compositeActionStepLabel: "insertMunicipalities_commitForUpdateMenu",
-          domainAction: {
-            actionName: "commit",
-            actionType: "modelAction",
-            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+          actionType: "transactionalInstanceAction",
+          actionLabel: "updateMenu",
+          instanceAction: {
+            actionType: "instanceAction",
+            actionName: "updateInstance",
+            applicationSection: "model",
             deploymentUuid: {
               transformerType: "parameterReference",
               referenceName: "currentDeploymentUuid",
             },
-          }
+            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+            objects: [
+              {
+                parentName: {
+                  transformerType: "mustacheStringTemplate",
+                  definition: "{{entityMenu.name}}",
+                },
+                parentUuid: {
+                  transformerType: "mustacheStringTemplate",
+                  definition: "{{entityMenu.uuid}}",
+                },
+                // parentUuid: entityMenu.uuid,
+                applicationSection: "model",
+                instances: [
+                  {
+                    transformerType: "objectDynamicAccess",
+                    interpolation: "runtime",
+                    objectAccessPath: [
+                      {
+                        transformerType: "freeObjectTemplate", // TODO: allow transformer inside inner objectDynamicAccess in Query Templates!
+                        definition: {
+                          transformerType: "contextReference",
+                          interpolation: "runtime",
+                          // referenceName: newEntityName,
+                          referenceName: {
+                            transformerType: "parameterReference",
+                            referenceName: "splitEntity_newEntityName",
+                          },
+                        },
+                      } as any,
+                      "updatedMenu",
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        },
+        // commit
+        {
+          actionName: "commit",
+          actionType: "modelAction",
+          actionLabel: "insertMunicipalities_commitForUpdateMenu",
+          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+          deploymentUuid: {
+            transformerType: "parameterReference",
+            referenceName: "currentDeploymentUuid",
+          },
         },
         // update splitted entity instances with foreign key of instances of new entity
         {
           // actionType: "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
-          actionType: "runBoxedQueryTemplateAction",
-          compositeActionStepLabel: "calculateEntityInstances",
+          actionType: "compositeRunBoxedQueryTemplateAction",
+          actionLabel: "calculateEntityInstances",
           nameGivenToResult: newEntityName,
           queryTemplate: {
             // actionType: "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
@@ -1508,7 +1462,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
             // applicationSection: "model", // TODO: give only selfApplication section in individual queries?
             deploymentUuid: {
               transformerType: "parameterReference",
-              referenceName: "currentDeploymentUuid"
+              referenceName: "currentDeploymentUuid",
             },
             query: {
               queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
@@ -1517,11 +1471,11 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                 referenceName: "currentDeploymentUuid",
               },
               pageParams,
-              queryParams: { },
-              contextResults: { },
+              queryParams: {},
+              contextResults: {},
               extractorTemplates: {
-                "splittedEntityUuidIndex": {
-                // [splittedEntityName + "UuidIndex"]: {
+                splittedEntityUuidIndex: {
+                  // [splittedEntityName + "UuidIndex"]: {
                   extractorTemplateType: "extractorTemplateForObjectListByEntity",
                   applicationSection: "data",
                   parentName: {
@@ -1552,7 +1506,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                       transformerType: "parameterReference",
                       referenceName: "splittedEntityAttribute",
                     }, // TODO: allow transformer inside freeObjectTemplate!
-                  }
+                  },
                 } as any as TransformerForRuntime,
                 splittedEntityInstances: {
                   transformerType: "objectValues",
@@ -1576,40 +1530,40 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                             attributeKey: {
                               interpolation: "runtime",
                               transformerType: "constantString",
-                              constantStringValue: "parentUuid"
+                              constantStringValue: "parentUuid",
                             },
                             attributeValue: {
                               transformerType: "parameterReference",
                               referenceName: "splitEntity_newEntityUuid",
-                            }
+                            },
                           },
                           {
                             attributeKey: {
                               interpolation: "runtime",
                               transformerType: "constantString",
-                              constantStringValue: "uuid"
+                              constantStringValue: "uuid",
                             },
                             attributeValue: {
                               interpolation: "runtime",
                               transformerType: "newUuid",
-                            }
+                            },
                           },
                           {
                             attributeKey: {
                               interpolation: "runtime",
                               transformerType: "constantString",
-                              constantStringValue: "name"
+                              constantStringValue: "name",
                             },
                             attributeValue: {
                               interpolation: "runtime",
                               transformerType: "mustacheStringTemplate",
-                              definition: "{{municipality.Commune}}" // TODO: correct attribute name!
-                            }
-                          }
-                        ]
-                      }
-                    }
-                  }
+                              definition: "{{municipality.Commune}}", // TODO: correct attribute name!
+                            },
+                          },
+                        ],
+                      },
+                    },
+                  },
                 },
                 municipalitiesIndexedByUuid: {
                   transformerType: "mapperListToObject",
@@ -1656,96 +1610,89 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                                 {
                                   transformerType: "parameterReference",
                                   referenceName: "splittedEntityAttribute",
-                                }
+                                },
                                 // splittedEntityAttribute,
                                 // "Commune",
                               ],
                             },
-                            "uuid"
+                            "uuid",
                           ],
                         },
-                      }
-                    }
-                  }
+                      },
+                    },
+                  },
                 },
               } as any,
-            }
-          }
+            },
+          },
         },
         // } as any, // TODO: why is type inferrence failing?
         // insert new Entity instance with new uuid for each
         {
-          actionType: "domainAction",
-          compositeActionStepLabel: "insertMunicipalities",
-          domainAction: {
-            actionType: "instanceAction",
-            actionName: "createInstance",
-            applicationSection: "data",
-            deploymentUuid: {
-              transformerType: "parameterReference",
-              referenceName: "currentDeploymentUuid",
-            },
-            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-            objects:[
-              {
-                parentName: {
-                  transformerType: "mustacheStringTemplate",
-                  definition: "{{splitEntity_newEntityName}}",
-                },
-                parentUuid: {
-                  transformerType: "mustacheStringTemplate",
-                  definition: "{{splitEntity_newEntityUuid}}",
-                },
-                applicationSection:'data',
-                instances: {
-                  transformerType: "contextReference",
-                  interpolation: "runtime",
-                  referencePath: ["Municipality", "municipalities"]
-                },
-              }
-            ]
+          actionType: "instanceAction",
+          actionName: "createInstance",
+          actionLabel: "insertMunicipalities",
+          applicationSection: "data",
+          deploymentUuid: {
+            transformerType: "parameterReference",
+            referenceName: "currentDeploymentUuid",
           },
+          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+          objects: [
+            {
+              parentName: {
+                transformerType: "mustacheStringTemplate",
+                definition: "{{splitEntity_newEntityName}}",
+              },
+              parentUuid: {
+                transformerType: "mustacheStringTemplate",
+                definition: "{{splitEntity_newEntityUuid}}",
+              },
+              applicationSection: "data",
+              instances: {
+                transformerType: "contextReference",
+                interpolation: "runtime",
+                referencePath: ["Municipality", "municipalities"],
+              },
+            },
+          ],
         },
         // update SplittedEntity with new FK attribute
         {
-          actionType: "domainAction",
-          compositeActionStepLabel: "updateFountains",
-          domainAction: {
-            actionType: 'instanceAction',
-            actionName: "updateInstance",
-            applicationSection: "data",
-            deploymentUuid: {
-              transformerType: "parameterReference",
-              referenceName: "currentDeploymentUuid",
+          actionType: "instanceAction",
+          actionName: "updateInstance",
+          actionLabel: "updateFountains",
+          applicationSection: "data",
+          deploymentUuid: {
+            transformerType: "parameterReference",
+            referenceName: "currentDeploymentUuid",
+          },
+          // deploymentUuid: currentDeploymentUuid,
+          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+          objects: [
+            {
+              parentName: {
+                transformerType: "parameterReference",
+                referenceName: "splittedEntityName",
+              },
+              // parentName: splittedEntityName,
+              parentUuid: {
+                transformerType: "parameterReference",
+                referenceName: "splittedEntityUuid",
+              },
+              // parentUuid: splittedEntityUuid,
+              // parentUuid:splittedEntityDefinition.entityUuid,
+              applicationSection: "data",
+              instances: {
+                transformerType: "contextReference",
+                interpolation: "runtime",
+                // referenceName: "municipalities"
+                referencePath: ["Municipality", "updatedSplittedEntityInstances"],
+              },
             },
-            // deploymentUuid: currentDeploymentUuid,
-            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-            objects: [
-              {
-                parentName: {
-                  transformerType: "parameterReference",
-                  referenceName: "splittedEntityName",
-                },
-                // parentName: splittedEntityName,
-                parentUuid: {
-                  transformerType: "parameterReference",
-                  referenceName: "splittedEntityUuid",
-                },
-                // parentUuid: splittedEntityUuid,
-                // parentUuid:splittedEntityDefinition.entityUuid,
-                applicationSection:'data',
-                instances: {
-                  transformerType: "contextReference",
-                  interpolation: "runtime",
-                  // referenceName: "municipalities"
-                  referencePath: ["Municipality", "updatedSplittedEntityInstances"]
-                }
-              }
-            ]
-          }
-        }
-
-      ]
+          ],
+        },
+      ],
     };
 
     log.info("#################################### splitEntity actionInsertMunicipalities", actionInsertMunicipalities);
@@ -1809,202 +1756,201 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
 
   log.info("resolvedJzodSchema", resolvedJzodSchema, context.miroirFundamentalJzodSchema.name, "rawSchema", rawSchema)
 
-  const createNewApplication:CompositeActionTemplate = useMemo(() => ({
-    actionType: "compositeAction",
-    actionName: "sequence",
-    templates: {
-      // business objects
-      newDeploymentStoreConfiguration: {
-        admin: {
-          emulatedServerType: "sql",
-          connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
-          schema: "miroirAdmin",
-        },
-        model: {
-          emulatedServerType: "sql",
-          connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
-          schema: {
-            transformerType: "mustacheStringTemplate",
-            definition: "{{newApplicationName}}Model",
+  const createNewApplication: CompositeActionTemplate = useMemo(
+    () => ({
+      actionType: "compositeAction",
+      actionName: "sequence",
+      templates: {
+        // business objects
+        newDeploymentStoreConfiguration: {
+          admin: {
+            emulatedServerType: "sql",
+            connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+            schema: "miroirAdmin",
           },
-        },
-        data: {
-          emulatedServerType: "sql",
-          connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
-          schema: {
-            transformerType: "mustacheStringTemplate",
-            definition: "{{newApplicationName}}Data",
-          },
-        },
-      },
-      newApplicationForAdmin: {
-        uuid: {
-          transformerType: "parameterReference",
-          referenceName: "newAdminAppApplicationUuid",
-        },
-        parentName: {
-          transformerType: "mustacheStringTemplate",
-          definition: "{{entityApplicationForAdmin.name}}",
-        },
-        parentUuid: {
-          transformerType: "mustacheStringTemplate",
-          definition: "{{entityApplicationForAdmin.uuid}}",
-        },
-        name: {
-          transformerType: "parameterReference",
-          referenceName: "newApplicationName",
-        },
-        defaultLabel: {
-          transformerType: "mustacheStringTemplate",
-          definition: "The {{newApplicationName}} selfApplication.",
-        },
-        description: {
-          transformerType: "mustacheStringTemplate",
-          definition: "This selfApplication contains the {{newApplicationName}} model and data",
-        },
-        selfApplication: {
-          transformerType: "parameterReference",
-          referenceName: "newSelfApplicationUuid",
-        },
-      },
-      newSelfApplication: {
-        uuid: {
-          transformerType: "parameterReference",
-          referenceName: "newSelfApplicationUuid",
-        },
-        parentName: "SelfApplication",
-        parentUuid: "a659d350-dd97-4da9-91de-524fa01745dc",
-        name: {
-          transformerType: "parameterReference",
-          referenceName: "newApplicationName",
-        },
-        defaultLabel: {
-          transformerType: "mustacheStringTemplate",
-          definition: "The {{newApplicationName}} selfApplication.",
-        },
-        description: {
-          transformerType: "mustacheStringTemplate",
-          definition: "This selfApplication contains the {{newApplicationName}} model and data",
-        },
-        selfApplication: {
-          transformerType: "parameterReference",
-          referenceName: "newSelfApplicationUuid",
-        },
-      },
-      DeploymentConfiguration: {
-        uuid: {
-          transformerType: "parameterReference",
-          referenceName: "newDeploymentUuid",
-        },
-        parentName: {
-          transformerType: "mustacheStringTemplate",
-          definition: "{{entityDeployment.name}}",
-        },
-        parentUuid: {
-          transformerType: "mustacheStringTemplate",
-          definition: "{{entityDeployment.uuid}}",
-        },
-        name: {
-          transformerType: "mustacheStringTemplate",
-          definition: "{{newApplicationName}}ApplicationSqlDeployment",
-        },
-        defaultLabel: {
-          transformerType: "mustacheStringTemplate",
-          definition: "{{newApplicationName}}ApplicationSqlDeployment",
-        },
-        selfApplication: {
-          transformerType: "mustacheStringTemplate",
-          definition: "{{newApplicationForAdmin.uuid}}",
-        },
-        description: {
-          transformerType: "mustacheStringTemplate",
-          definition: "The default Sql Deployment for SelfApplication {{newApplicationName}}",
-        },
-        configuration: {
-          transformerType: "parameterReference",
-          referenceName: "newDeploymentStoreConfiguration",
-        },
-      },
-      newApplicationMenu: {
-        uuid: "84c178cc-1b1b-497a-a035-9b3d756bb085",
-        parentName: "Menu",
-        parentUuid: "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
-        parentDefinitionVersionUuid: "0f421b2f-2fdc-47ee-8232-62121ea46350",
-        name: {
-          transformerType: "mustacheStringTemplate",
-          definition: "{{newApplicationName}}Menu",
-        },
-        defaultLabel: "Meta-Model",
-        description: {
-          transformerType: "mustacheStringTemplate",
-          definition: "This is the default menu allowing to explore the {{newApplicationName}} SelfApplication",
-        },
-        definition: {
-          menuType: "complexMenu",
-          definition: [
-            {
-              title: {
-                transformerType: "parameterReference",
-                referenceName: "newApplicationName",
-              },
-              label: {
-                transformerType: "parameterReference",
-                referenceName: "newApplicationName",
-              },
-              items: [
-                {
-                  label: {
-                    transformerType: "mustacheStringTemplate",
-                    definition: "{{newApplicationName}} Entities",
-                  },
-                  section: "model",
-                  selfApplication: {
-                    transformerType: "parameterReference",
-                    referenceName: "newDeploymentUuid",
-                  },
-                  reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9",
-                  icon: "category",
-                },
-                {
-                  label: {
-                    transformerType: "mustacheStringTemplate",
-                    definition: "{{newApplicationName}} Entity Definitions",
-                  },
-                  section: "model",
-                  selfApplication: {
-                    transformerType: "parameterReference",
-                    referenceName: "newDeploymentUuid",
-                  },
-                  reportUuid: "f9aff35d-8636-4519-8361-c7648e0ddc68",
-                  icon: "category",
-                },
-                {
-                  label: {
-                    transformerType: "mustacheStringTemplate",
-                    definition: "{{newApplicationName}} Reports",
-                  },
-                  section: "model",
-                  selfApplication: {
-                    transformerType: "parameterReference",
-                    referenceName: "newDeploymentUuid",
-                  },
-                  reportUuid: "1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855",
-                  icon: "list",
-                },
-              ],
+          model: {
+            emulatedServerType: "sql",
+            connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+            schema: {
+              transformerType: "mustacheStringTemplate",
+              definition: "{{newApplicationName}}Model",
             },
-          ],
+          },
+          data: {
+            emulatedServerType: "sql",
+            connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+            schema: {
+              transformerType: "mustacheStringTemplate",
+              definition: "{{newApplicationName}}Data",
+            },
+          },
+        },
+        newApplicationForAdmin: {
+          uuid: {
+            transformerType: "parameterReference",
+            referenceName: "newAdminAppApplicationUuid",
+          },
+          parentName: {
+            transformerType: "mustacheStringTemplate",
+            definition: "{{entityApplicationForAdmin.name}}",
+          },
+          parentUuid: {
+            transformerType: "mustacheStringTemplate",
+            definition: "{{entityApplicationForAdmin.uuid}}",
+          },
+          name: {
+            transformerType: "parameterReference",
+            referenceName: "newApplicationName",
+          },
+          defaultLabel: {
+            transformerType: "mustacheStringTemplate",
+            definition: "The {{newApplicationName}} selfApplication.",
+          },
+          description: {
+            transformerType: "mustacheStringTemplate",
+            definition: "This selfApplication contains the {{newApplicationName}} model and data",
+          },
+          selfApplication: {
+            transformerType: "parameterReference",
+            referenceName: "newSelfApplicationUuid",
+          },
+        },
+        newSelfApplication: {
+          uuid: {
+            transformerType: "parameterReference",
+            referenceName: "newSelfApplicationUuid",
+          },
+          parentName: "SelfApplication",
+          parentUuid: "a659d350-dd97-4da9-91de-524fa01745dc",
+          name: {
+            transformerType: "parameterReference",
+            referenceName: "newApplicationName",
+          },
+          defaultLabel: {
+            transformerType: "mustacheStringTemplate",
+            definition: "The {{newApplicationName}} selfApplication.",
+          },
+          description: {
+            transformerType: "mustacheStringTemplate",
+            definition: "This selfApplication contains the {{newApplicationName}} model and data",
+          },
+          selfApplication: {
+            transformerType: "parameterReference",
+            referenceName: "newSelfApplicationUuid",
+          },
+        },
+        DeploymentConfiguration: {
+          uuid: {
+            transformerType: "parameterReference",
+            referenceName: "newDeploymentUuid",
+          },
+          parentName: {
+            transformerType: "mustacheStringTemplate",
+            definition: "{{entityDeployment.name}}",
+          },
+          parentUuid: {
+            transformerType: "mustacheStringTemplate",
+            definition: "{{entityDeployment.uuid}}",
+          },
+          name: {
+            transformerType: "mustacheStringTemplate",
+            definition: "{{newApplicationName}}ApplicationSqlDeployment",
+          },
+          defaultLabel: {
+            transformerType: "mustacheStringTemplate",
+            definition: "{{newApplicationName}}ApplicationSqlDeployment",
+          },
+          selfApplication: {
+            transformerType: "mustacheStringTemplate",
+            definition: "{{newApplicationForAdmin.uuid}}",
+          },
+          description: {
+            transformerType: "mustacheStringTemplate",
+            definition: "The default Sql Deployment for SelfApplication {{newApplicationName}}",
+          },
+          configuration: {
+            transformerType: "parameterReference",
+            referenceName: "newDeploymentStoreConfiguration",
+          },
+        },
+        newApplicationMenu: {
+          uuid: "84c178cc-1b1b-497a-a035-9b3d756bb085",
+          parentName: "Menu",
+          parentUuid: "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
+          parentDefinitionVersionUuid: "0f421b2f-2fdc-47ee-8232-62121ea46350",
+          name: {
+            transformerType: "mustacheStringTemplate",
+            definition: "{{newApplicationName}}Menu",
+          },
+          defaultLabel: "Meta-Model",
+          description: {
+            transformerType: "mustacheStringTemplate",
+            definition: "This is the default menu allowing to explore the {{newApplicationName}} SelfApplication",
+          },
+          definition: {
+            menuType: "complexMenu",
+            definition: [
+              {
+                title: {
+                  transformerType: "parameterReference",
+                  referenceName: "newApplicationName",
+                },
+                label: {
+                  transformerType: "parameterReference",
+                  referenceName: "newApplicationName",
+                },
+                items: [
+                  {
+                    label: {
+                      transformerType: "mustacheStringTemplate",
+                      definition: "{{newApplicationName}} Entities",
+                    },
+                    section: "model",
+                    selfApplication: {
+                      transformerType: "parameterReference",
+                      referenceName: "newDeploymentUuid",
+                    },
+                    reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9",
+                    icon: "category",
+                  },
+                  {
+                    label: {
+                      transformerType: "mustacheStringTemplate",
+                      definition: "{{newApplicationName}} Entity Definitions",
+                    },
+                    section: "model",
+                    selfApplication: {
+                      transformerType: "parameterReference",
+                      referenceName: "newDeploymentUuid",
+                    },
+                    reportUuid: "f9aff35d-8636-4519-8361-c7648e0ddc68",
+                    icon: "category",
+                  },
+                  {
+                    label: {
+                      transformerType: "mustacheStringTemplate",
+                      definition: "{{newApplicationName}} Reports",
+                    },
+                    section: "model",
+                    selfApplication: {
+                      transformerType: "parameterReference",
+                      referenceName: "newDeploymentUuid",
+                    },
+                    reportUuid: "1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855",
+                    icon: "list",
+                  },
+                ],
+              },
+            ],
+          },
         },
       },
-    },
-    definition: [
-      // openStoreAction
-      {
-        actionType: "domainAction",
-        compositeActionStepLabel: "openStoreAction",
-        domainAction: {
+      definition: [
+        // openStoreAction
+        {
           actionType: "storeManagementAction",
           actionName: "openStore",
+          actionLabel: "openStoreAction",
           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
           configuration: {
             transformerType: "fullObjectTemplate",
@@ -2018,23 +1964,20 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                 attributeValue: {
                   transformerType: "parameterReference",
                   referenceName: "newDeploymentStoreConfiguration",
-                }
-              }
+                },
+              },
             ],
           },
           deploymentUuid: {
             transformerType: "parameterReference",
             referenceName: "newDeploymentUuid",
           },
-        }
-      },
-      // createStoreAction
-      {
-        actionType: "domainAction",
-        compositeActionStepLabel: "createStoreAction",
-        domainAction: {
+        },
+        // createStoreAction
+        {
           actionType: "storeManagementAction",
           actionName: "createStore",
+          actionLabel: "createStoreAction",
           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
           deploymentUuid: {
             transformerType: "parameterReference",
@@ -2044,19 +1987,16 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
             transformerType: "parameterReference",
             referenceName: "newDeploymentStoreConfiguration",
           },
-        }
-        // action: {
-        //   transformerType: "parameterReference",
-        //   referenceName: "createStoreAction",
-        // }
-      },
-      // resetAndInitAction
-      {
-        actionType: "domainAction",
-        compositeActionStepLabel: "resetAndInitAction",
-        domainAction: {
+          // action: {
+          //   transformerType: "parameterReference",
+          //   referenceName: "createStoreAction",
+          // }
+        },
+        // resetAndInitAction
+        {
           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
           actionType: "storeManagementAction",
+          actionLabel: "resetAndInitAction",
           actionName: "resetAndInitApplicationDeployment",
           deploymentUuid: "",
           deployments: [
@@ -2065,19 +2005,16 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
               referenceName: "DeploymentConfiguration",
             },
           ],
-        }
-        // action: {
-        //   transformerType: "parameterReference",
-        //   referenceName: "resetAndInitAction",
-        // }
-      },
-      // createSelfApplicationAction
-      {
-        actionType: "domainAction",
-        compositeActionStepLabel: "createSelfApplicationAction",
-        domainAction: {
+          // action: {
+          //   transformerType: "parameterReference",
+          //   referenceName: "resetAndInitAction",
+          // }
+        },
+        // createSelfApplicationAction
+        {
           actionType: "instanceAction",
           actionName: "createInstance",
+          actionLabel: "createSelfApplicationAction",
           applicationSection: "model",
           deploymentUuid: {
             transformerType: "parameterReference",
@@ -2103,15 +2040,12 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
               ],
             },
           ],
-        }
-      },
-      // createApplicationForAdminAction
-      {
-        actionType: "domainAction",
-        compositeActionStepLabel: "createApplicationForAdminAction",
-        domainAction: {
+        },
+        // createApplicationForAdminAction
+        {
           actionType: "instanceAction",
           actionName: "createInstance",
+          actionLabel: "createApplicationForAdminAction",
           applicationSection: "data",
           deploymentUuid: {
             transformerType: "mustacheStringTemplate",
@@ -2137,19 +2071,16 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
               ],
             },
           ],
-        }
-        // action: {
-        //   transformerType: "parameterReference",
-        //   referenceName: "createApplicationForAdminAction",
-        // }
-      },
-      // createAdminDeploymentAction
-      {
-        actionType: "domainAction",
-        compositeActionStepLabel: "createAdminDeploymentAction",
-        domainAction: {
+          // action: {
+          //   transformerType: "parameterReference",
+          //   referenceName: "createApplicationForAdminAction",
+          // }
+        },
+        // createAdminDeploymentAction
+        {
           actionType: "instanceAction",
           actionName: "createInstance",
+          actionLabel: "createAdminDeploymentAction",
           applicationSection: "data",
           deploymentUuid: {
             transformerType: "mustacheStringTemplate",
@@ -2175,19 +2106,16 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
               ],
             },
           ],
-        }
-        // action: {
-        //   transformerType: "parameterReference",
-        //   referenceName: "createAdminDeploymentAction",
-        // }
-      },
-      // createNewApplicationMenuAction
-      {
-        actionType: "domainAction",
-        compositeActionStepLabel: "createNewApplicationMenuAction",
-        domainAction: {
+          // action: {
+          //   transformerType: "parameterReference",
+          //   referenceName: "createAdminDeploymentAction",
+          // }
+        },
+        // createNewApplicationMenuAction
+        {
           actionType: "instanceAction",
           actionName: "createInstance",
+          actionLabel: "createNewApplicationMenuAction",
           applicationSection: "model",
           deploymentUuid: {
             transformerType: "parameterReference",
@@ -2213,32 +2141,30 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
               ],
             },
           ],
-        }
-        // action: {
-        //   transformerType: "parameterReference",
-        //   referenceName: "createNewApplicationMenuAction",
-        // }
-      },
-      // commitAction
-      {
-        actionType: "domainAction",
-        compositeActionStepLabel: "commitAction",
-        domainAction: {
+          // action: {
+          //   transformerType: "parameterReference",
+          //   referenceName: "createNewApplicationMenuAction",
+          // }
+        },
+        // commitAction
+        {
           actionName: "commit",
           actionType: "modelAction",
+          actionLabel: "commitAction",
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           deploymentUuid: {
             transformerType: "parameterReference",
             referenceName: "newDeploymentUuid",
           },
-        }
-        // action: {
-        //   transformerType: "parameterReference",
-        //   referenceName: "commitAction",
-        // }
-      },
-    ]
-  }), []);
+          // action: {
+          //   transformerType: "parameterReference",
+          //   referenceName: "commitAction",
+          // }
+        },
+      ],
+    }),
+    []
+  );
 
   const onSubmit = useCallback(
     async (actionCreateSchemaParamValues: any /* actually follows formJzodSchema */, formikFunctions:{ setSubmitting:any, setErrors:any }) => {
