@@ -74,6 +74,7 @@ import { cleanLevel } from "./constants.js";
 import { Endpoint } from "./Endpoint.js";
 import { CallUtils } from "./ErrorHandling/CallUtils.js";
 import { TestSuiteContext } from '../4_services/TestSuiteContext.js';
+import { resolveTestCompositeActionTemplateSuite } from '../2_domain/TestSuiteTemplate.js';
 
 
 
@@ -1000,211 +1001,227 @@ export class DomainController implements DomainControllerInterface {
     }
   }
 
-  // // ##############################################################################################
-  // async handleTestCompositeActionTemplateSuite(
-  //   testAction: TestCompositeActionTemplateSuite,
-  //   actionParamValues: Record<string, any>,
-  //   currentModel: MetaModel
-  // ): Promise<ActionVoidReturnType> {
-  //   const localActionParams = { ...actionParamValues };
-  //   let localContext: Record<string, any> = { ...actionParamValues };
+  // ##############################################################################################
+  async handleTestCompositeActionTemplateSuite(
+    testAction: TestCompositeActionTemplateSuite,
+    actionParamValues: Record<string, any>,
+    currentModel: MetaModel
+  ): Promise<ActionVoidReturnType> {
+    const localActionParams = { ...actionParamValues };
+    let localContext: Record<string, any> = { ...actionParamValues };
 
-  //   log.info(
-  //     "handleTestCompositeActionTemplateSuite testAction",
-  //     testAction,
-  //     "localActionParams",
-  //     Object.keys(localActionParams)
-  //   );
+    log.info(
+      "handleTestCompositeActionTemplateSuite testAction",
+      testAction,
+      "localActionParams",
+      Object.keys(localActionParams)
+    );
 
-  //   const resolved: {
-  //     resolvedCompositeActionDefinition: CompositeActionDefinition;
-  //     resolvedCompositeActionTemplates: Record<string, any>;
-  //   } = resolveCompositeActionTemplate(testAction, localActionParams, currentModel);
+    const resolvedAction: {
+      resolvedTestCompositeActionDefinition: TestCompositeActionSuite;
+      resolvedCompositeActionTemplates: Record<string, any>;
+    } = resolveTestCompositeActionTemplateSuite(testAction, localActionParams, currentModel);
 
+    const resolveErrors = Object.entries(resolvedAction.resolvedTestCompositeActionDefinition.testCompositeActions).filter(
+      (e: [string, TestCompositeAction]) => (e[1].compositeAction.definition as any).queryFailure != undefined
+    )
 
-  //   // const testSuiteResult: Record<string, TestResult> = {};
+    if (resolveErrors.length > 0) {
+      log.error("handleTestCompositeActionTemplateSuite resolveTestCompositeActionTemplateSuite errors", resolveErrors);
+      return Promise.resolve({
+        status: "error",
+        errorType: "FailedToResolveTemplate",
+        innerError: resolveErrors[0][1].compositeAction.definition as any,
+        errorMessage: "handleTestCompositeActionTemplateSuite resolveTestCompositeActionTemplateSuite errors for entries: " + JSON.stringify(resolveErrors.map(e=> e[0]), null, 2),
+      });
+      
+    }
+    log.info("handleTestCompositeActionTemplateSuite resolved testSuite template:", JSON.stringify(resolvedAction.resolvedTestCompositeActionDefinition));
 
-  //   // try {
-  //   //   TestSuiteContext.setTestSuite(testAction.testLabel);
+    const testSuiteResult: Record<string, TestResult> = {};
 
-  //   //   if (testAction.beforeAll) {
-  //   //     LoggerGlobalContext.setTest("beforeAll");
-  //   //     log.info("handleTestCompositeActionSuite beforeAll", testAction.beforeAll.actionLabel, testAction.beforeAll);
-  //   //     const beforeAllResult = await this.handleCompositeAction(testAction.beforeAll, localActionParams, currentModel);
-  //   //     if (beforeAllResult?.status != "ok") {
-  //   //       log.error("Error on beforeAll", JSON.stringify(beforeAllResult, null, 2));
-  //   //     }
-  //   //     LoggerGlobalContext.setTest(undefined);
-  //   //   } else {
-  //   //     log.info("handleTestCompositeActionSuite no beforeAll!");
-  //   //   }
+    return this.handleTestCompositeActionSuite(resolvedAction.resolvedTestCompositeActionDefinition, localActionParams, currentModel);
+    // try {
+    //   TestSuiteContext.setTestSuite(testAction.testLabel);
 
-  //   //   for (const testCompositeAction of Object.entries(testAction.testCompositeActions)) {
-  //   //     // expect.getState().currentTestName = testCompositeAction[0];
-  //   //     log.info("handleTestCompositeActionSuite test", testCompositeAction[0], "beforeEach");
+    //   if (testAction.beforeAll) {
+    //     LoggerGlobalContext.setTest("beforeAll");
+    //     log.info("handleTestCompositeActionSuite beforeAll", testAction.beforeAll.actionLabel, testAction.beforeAll);
+    //     const beforeAllResult = await this.handleCompositeAction(testAction.beforeAll, localActionParams, currentModel);
+    //     if (beforeAllResult?.status != "ok") {
+    //       log.error("Error on beforeAll", JSON.stringify(beforeAllResult, null, 2));
+    //     }
+    //     LoggerGlobalContext.setTest(undefined);
+    //   } else {
+    //     log.info("handleTestCompositeActionSuite no beforeAll!");
+    //   }
 
-  //   //     if (testAction.beforeEach) {
-  //   //       log.info(
-  //   //         "handleTestCompositeActionSuite beforeEach",
-  //   //         testAction.beforeEach.actionLabel,
-  //   //         testAction.beforeEach
-  //   //       );
-  //   //       LoggerGlobalContext.setTest(testCompositeAction[1].testLabel + ".beforeEach");
-  //   //       const beforeAllResult = await this.handleCompositeAction(
-  //   //         testAction.beforeEach,
-  //   //         localActionParams,
-  //   //         currentModel
-  //   //       );
-  //   //       if (beforeAllResult?.status != "ok") {
-  //   //         log.error(
-  //   //           "handleTestCompositeActionSuite",
-  //   //           testCompositeAction[0],
-  //   //           "Error on beforeEach",
-  //   //           JSON.stringify(beforeAllResult, null, 2)
-  //   //         );
-  //   //       }
-  //   //       LoggerGlobalContext.setTest(undefined);
-  //   //     } else {
-  //   //       log.info("handleTestCompositeActionSuite", testCompositeAction[0], "no beforeEach!");
-  //   //     }
+    //   for (const testCompositeAction of Object.entries(testAction.testCompositeActions)) {
+    //     // expect.getState().currentTestName = testCompositeAction[0];
+    //     log.info("handleTestCompositeActionSuite test", testCompositeAction[0], "beforeEach");
 
-  //   //     if (testCompositeAction[1].beforeTestSetupAction) {
-  //   //       TestSuiteContext.setTest(testCompositeAction[1].testLabel + ".beforeTestSetupAction");
-  //   //       log.info(
-  //   //         "handleTestCompositeActionSuite",
-  //   //         testCompositeAction[0],
-  //   //         "beforeTestSetupAction",
-  //   //         testCompositeAction[1].beforeTestSetupAction.actionLabel,
-  //   //         testCompositeAction[1].beforeTestSetupAction
-  //   //       );
-  //   //       const beforeTestResult = await this.handleCompositeAction(
-  //   //         testCompositeAction[1].beforeTestSetupAction,
-  //   //         localActionParams,
-  //   //         currentModel
-  //   //       );
-  //   //       if (beforeTestResult?.status != "ok") {
-  //   //         log.error(
-  //   //           "handleTestCompositeActionSuite",
-  //   //           testCompositeAction[0],
-  //   //           "Error on beforeTestSetupAction",
-  //   //           JSON.stringify(beforeTestResult, null, 2)
-  //   //         );
-  //   //       }
-  //   //       TestSuiteContext.setTest(undefined);
-  //   //     } else {
-  //   //       log.info("handleTestCompositeActionSuite", testCompositeAction[0], "no beforeTestSetupAction!");
-  //   //     }
+    //     if (testAction.beforeEach) {
+    //       log.info(
+    //         "handleTestCompositeActionSuite beforeEach",
+    //         testAction.beforeEach.actionLabel,
+    //         testAction.beforeEach
+    //       );
+    //       LoggerGlobalContext.setTest(testCompositeAction[1].testLabel + ".beforeEach");
+    //       const beforeAllResult = await this.handleCompositeAction(
+    //         testAction.beforeEach,
+    //         localActionParams,
+    //         currentModel
+    //       );
+    //       if (beforeAllResult?.status != "ok") {
+    //         log.error(
+    //           "handleTestCompositeActionSuite",
+    //           testCompositeAction[0],
+    //           "Error on beforeEach",
+    //           JSON.stringify(beforeAllResult, null, 2)
+    //         );
+    //       }
+    //       LoggerGlobalContext.setTest(undefined);
+    //     } else {
+    //       log.info("handleTestCompositeActionSuite", testCompositeAction[0], "no beforeEach!");
+    //     }
 
-  //   //     const localTestCompositeAction: CompositeAction = {
-  //   //       ...testCompositeAction[1].compositeAction,
-  //   //       definition: [
-  //   //         ...testCompositeAction[1].compositeAction.definition,
-  //   //         ...testCompositeAction[1].testCompositeActionAssertions,
-  //   //       ],
-  //   //     };
-  //   //     TestSuiteContext.setTest(testCompositeAction[1].testLabel);
-  //   //     const testResult = await this.handleCompositeAction(localTestCompositeAction, localActionParams, currentModel);
-  //   //     // const testResult = await this.handleTestCompositeAction(localTestCompositeAction, localActionParams, currentModel);
-  //   //     // if (testResult.status == "ok") {
-  //   //     //   testSuiteResult[testCompositeAction[1].testLabel] = {
-  //   //     //     testLabel: testCompositeAction[1].testLabel,
-  //   //     //     testResult: testResult.status,
-  //   //     //   };
-  //   //     // } else {
-  //   //     //   testSuiteResult[testCompositeAction[1].testLabel] = {
-  //   //     //     testLabel: testCompositeAction[1].testLabel,
-  //   //     //     testResult: testResult.status,
-  //   //     //     failedAssertionName: JSON.stringify(testResult, null, 2),
-  //   //     //     // testError: testResult.errorMessage,
-  //   //     //   };
-  //   //     // }
-  //   //     // if (testResult?.status != "ok") {
-  //   //     //   log.error("Error on test", JSON.stringify(testResult, null, 2));
-  //   //     // }
-  //   //     TestSuiteContext.setTest(undefined);
+    //     if (testCompositeAction[1].beforeTestSetupAction) {
+    //       TestSuiteContext.setTest(testCompositeAction[1].testLabel + ".beforeTestSetupAction");
+    //       log.info(
+    //         "handleTestCompositeActionSuite",
+    //         testCompositeAction[0],
+    //         "beforeTestSetupAction",
+    //         testCompositeAction[1].beforeTestSetupAction.actionLabel,
+    //         testCompositeAction[1].beforeTestSetupAction
+    //       );
+    //       const beforeTestResult = await this.handleCompositeAction(
+    //         testCompositeAction[1].beforeTestSetupAction,
+    //         localActionParams,
+    //         currentModel
+    //       );
+    //       if (beforeTestResult?.status != "ok") {
+    //         log.error(
+    //           "handleTestCompositeActionSuite",
+    //           testCompositeAction[0],
+    //           "Error on beforeTestSetupAction",
+    //           JSON.stringify(beforeTestResult, null, 2)
+    //         );
+    //       }
+    //       TestSuiteContext.setTest(undefined);
+    //     } else {
+    //       log.info("handleTestCompositeActionSuite", testCompositeAction[0], "no beforeTestSetupAction!");
+    //     }
 
-  //   //     if (testCompositeAction[1].afterTestCleanupAction) {
-  //   //       TestSuiteContext.setTest(testCompositeAction[1].testLabel + ".afterTestCleanupAction");
-  //   //       log.info(
-  //   //         "handleTestCompositeAction",
-  //   //         testCompositeAction[0],
-  //   //         "afterTestCleanupAction",
-  //   //         testCompositeAction[1].afterTestCleanupAction.actionLabel,
-  //   //         testCompositeAction[1].afterTestCleanupAction
-  //   //       );
-  //   //       const afterTestResult = await this.handleCompositeAction(
-  //   //         testCompositeAction[1].afterTestCleanupAction,
-  //   //         localActionParams,
-  //   //         currentModel
-  //   //       );
-  //   //       if (afterTestResult?.status != "ok") {
-  //   //         log.error(
-  //   //           "handleTestCompositeAction",
-  //   //           testCompositeAction[0],
-  //   //           "Error on beforeTestSetupAction",
-  //   //           JSON.stringify(afterTestResult, null, 2)
-  //   //         );
-  //   //       }
-  //   //       TestSuiteContext.setTest(undefined);
-  //   //     } else {
-  //   //       log.info("handleTestCompositeActionSuite", testCompositeAction[0], "no afterTestSetupAction!");
-  //   //     }
+    //     const localTestCompositeAction: CompositeAction = {
+    //       ...testCompositeAction[1].compositeAction,
+    //       definition: [
+    //         ...testCompositeAction[1].compositeAction.definition,
+    //         ...testCompositeAction[1].testCompositeActionAssertions,
+    //       ],
+    //     };
+    //     TestSuiteContext.setTest(testCompositeAction[1].testLabel);
+    //     const testResult = await this.handleCompositeAction(localTestCompositeAction, localActionParams, currentModel);
+    //     // const testResult = await this.handleTestCompositeAction(localTestCompositeAction, localActionParams, currentModel);
+    //     // if (testResult.status == "ok") {
+    //     //   testSuiteResult[testCompositeAction[1].testLabel] = {
+    //     //     testLabel: testCompositeAction[1].testLabel,
+    //     //     testResult: testResult.status,
+    //     //   };
+    //     // } else {
+    //     //   testSuiteResult[testCompositeAction[1].testLabel] = {
+    //     //     testLabel: testCompositeAction[1].testLabel,
+    //     //     testResult: testResult.status,
+    //     //     failedAssertionName: JSON.stringify(testResult, null, 2),
+    //     //     // testError: testResult.errorMessage,
+    //     //   };
+    //     // }
+    //     // if (testResult?.status != "ok") {
+    //     //   log.error("Error on test", JSON.stringify(testResult, null, 2));
+    //     // }
+    //     TestSuiteContext.setTest(undefined);
 
-  //   //     if (testAction.afterEach) {
-  //   //       TestSuiteContext.setTest(testCompositeAction[1].testLabel + ".afterEach");
-  //   //       log.info(
-  //   //         "handleTestCompositeActionSuite",
-  //   //         testCompositeAction[0],
-  //   //         "afterEach",
-  //   //         testAction.afterEach.actionLabel,
-  //   //         testAction.beforeAll
-  //   //       );
-  //   //       const beforeAllResult = await this.handleCompositeAction(
-  //   //         testAction.afterEach,
-  //   //         localActionParams,
-  //   //         currentModel
-  //   //       );
-  //   //       if (beforeAllResult?.status != "ok") {
-  //   //         log.error(
-  //   //           "handleTestCompositeActionSuite",
-  //   //           testCompositeAction[0],
-  //   //           "Error on afterEach",
-  //   //           JSON.stringify(beforeAllResult, null, 2)
-  //   //         );
-  //   //       }
-  //   //       TestSuiteContext.setTest(undefined);
-  //   //     } else {
-  //   //       log.info("handleTestCompositeActionSuite", testCompositeAction[0], "no afterEach!");
-  //   //     }
-  //   //   }
+    //     if (testCompositeAction[1].afterTestCleanupAction) {
+    //       TestSuiteContext.setTest(testCompositeAction[1].testLabel + ".afterTestCleanupAction");
+    //       log.info(
+    //         "handleTestCompositeAction",
+    //         testCompositeAction[0],
+    //         "afterTestCleanupAction",
+    //         testCompositeAction[1].afterTestCleanupAction.actionLabel,
+    //         testCompositeAction[1].afterTestCleanupAction
+    //       );
+    //       const afterTestResult = await this.handleCompositeAction(
+    //         testCompositeAction[1].afterTestCleanupAction,
+    //         localActionParams,
+    //         currentModel
+    //       );
+    //       if (afterTestResult?.status != "ok") {
+    //         log.error(
+    //           "handleTestCompositeAction",
+    //           testCompositeAction[0],
+    //           "Error on beforeTestSetupAction",
+    //           JSON.stringify(afterTestResult, null, 2)
+    //         );
+    //       }
+    //       TestSuiteContext.setTest(undefined);
+    //     } else {
+    //       log.info("handleTestCompositeActionSuite", testCompositeAction[0], "no afterTestSetupAction!");
+    //     }
 
-  //   //   if (testAction.afterAll) {
-  //   //     TestSuiteContext.setTest("afterAll");
-  //   //     log.info("handleTestCompositeActionSuite afterAll", testAction.afterAll.actionLabel, testAction.beforeAll);
-  //   //     const afterAllResult = await this.handleCompositeAction(testAction.afterAll, localActionParams, currentModel);
-  //   //     if (afterAllResult?.status != "ok") {
-  //   //       log.error("Error on afterAll", JSON.stringify(afterAllResult, null, 2));
-  //   //     }
-  //   //     TestSuiteContext.setTest(undefined);
-  //   //   } else {
-  //   //     log.info("handleTestCompositeActionSuite no afterAll!");
-  //   //   }
-  //   //   return Promise.resolve(ACTION_OK);
-  //   //   // return Promise.resolve({
-  //   //   //   status: "ok",
-  //   //   //   returnedDomainElement: { elementType: "any", elementValue: testSuiteResult },
-  //   //   // });
-  //   // } catch (error) {
-  //   //   log.error("handleTestCompositeActionSuite caught error", error);
-  //   //   return Promise.resolve({
-  //   //     status: "error",
-  //   //     errorType: "FailedToDeployModule",
-  //   //     errorMessage: "handleTestCompositeActionSuite caught error: " + JSON.stringify(error, null, 2),
-  //   //   });
-  //   // } finally {
-  //   //   TestSuiteContext.resetContext();
-  //   // }
-  // }
+    //     if (testAction.afterEach) {
+    //       TestSuiteContext.setTest(testCompositeAction[1].testLabel + ".afterEach");
+    //       log.info(
+    //         "handleTestCompositeActionSuite",
+    //         testCompositeAction[0],
+    //         "afterEach",
+    //         testAction.afterEach.actionLabel,
+    //         testAction.beforeAll
+    //       );
+    //       const beforeAllResult = await this.handleCompositeAction(
+    //         testAction.afterEach,
+    //         localActionParams,
+    //         currentModel
+    //       );
+    //       if (beforeAllResult?.status != "ok") {
+    //         log.error(
+    //           "handleTestCompositeActionSuite",
+    //           testCompositeAction[0],
+    //           "Error on afterEach",
+    //           JSON.stringify(beforeAllResult, null, 2)
+    //         );
+    //       }
+    //       TestSuiteContext.setTest(undefined);
+    //     } else {
+    //       log.info("handleTestCompositeActionSuite", testCompositeAction[0], "no afterEach!");
+    //     }
+    //   }
+
+    //   if (testAction.afterAll) {
+    //     TestSuiteContext.setTest("afterAll");
+    //     log.info("handleTestCompositeActionSuite afterAll", testAction.afterAll.actionLabel, testAction.beforeAll);
+    //     const afterAllResult = await this.handleCompositeAction(testAction.afterAll, localActionParams, currentModel);
+    //     if (afterAllResult?.status != "ok") {
+    //       log.error("Error on afterAll", JSON.stringify(afterAllResult, null, 2));
+    //     }
+    //     TestSuiteContext.setTest(undefined);
+    //   } else {
+    //     log.info("handleTestCompositeActionSuite no afterAll!");
+    //   }
+    //   return Promise.resolve(ACTION_OK);
+    //   // return Promise.resolve({
+    //   //   status: "ok",
+    //   //   returnedDomainElement: { elementType: "any", elementValue: testSuiteResult },
+    //   // });
+    // } catch (error) {
+    //   log.error("handleTestCompositeActionSuite caught error", error);
+    //   return Promise.resolve({
+    //     status: "error",
+    //     errorType: "FailedToDeployModule",
+    //     errorMessage: "handleTestCompositeActionSuite caught error: " + JSON.stringify(error, null, 2),
+    //   });
+    // } finally {
+    //   TestSuiteContext.resetContext();
+    // }
+  }
 
   // ################################################################################################
   async handleTestCompositeActionAssertionNOTUSED(

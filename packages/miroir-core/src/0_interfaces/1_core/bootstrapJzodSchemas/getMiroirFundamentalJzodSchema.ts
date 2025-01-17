@@ -2004,6 +2004,10 @@ export function getMiroirFundamentalJzodSchema(
                 ...(instanceEndpointVersionV1 as any).definition.actions
                   .filter((e: any) => !!e.actionErrors)
                   .map((e: any) => e.actionErrors),
+                  {
+                    type: "literal",
+                    definition: "FailedToResolveTemplate", // TODO: add a Template Endpoint
+                  }
               ],
             },
             errorMessage: { type: "string", optional: true },

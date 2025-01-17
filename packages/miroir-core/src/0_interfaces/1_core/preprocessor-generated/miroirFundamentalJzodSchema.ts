@@ -6373,6 +6373,22 @@ export const miroirFundamentalJzodSchema = {
             "type": "string",
             "optional": true
           },
+          "errorStack": {
+            "type": "array",
+            "optional": true,
+            "definition": {
+              "type": "string"
+            }
+          },
+          "innerError": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "queryFailed"
+            },
+            "context": {}
+          },
           "applicationSection": {
             "type": "schemaReference",
             "optional": true,
@@ -8524,6 +8540,10 @@ export const miroirFundamentalJzodSchema = {
               {
                 "type": "literal",
                 "definition": "FailedToGetInstances"
+              },
+              {
+                "type": "literal",
+                "definition": "FailedToResolveTemplate"
               }
             ]
           },
@@ -29853,6 +29873,44 @@ export const miroirFundamentalJzodSchema = {
                     }
                   }
                 ]
+              },
+              "errorStack": {
+                "type": "union",
+                "optional": true,
+                "definition": [
+                  {
+                    "type": "array",
+                    "optional": true,
+                    "definition": {
+                      "type": "union",
+                      "definition": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "carryOnObject"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "innerError": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryFailed"
+                },
+                "context": {}
               },
               "applicationSection": {
                 "type": "schemaReference",

@@ -16,6 +16,7 @@ import {
   RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
   TestCompositeAction,
   TestCompositeActionSuite,
+  TestCompositeActionTemplateSuite,
   TransactionalInstanceAction
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 import { LocalCacheInterface } from "../4-services/LocalCacheInterface.js";
@@ -121,6 +122,11 @@ export interface DomainControllerInterface {
     currentModel: MetaModel
   // ): Promise<ActionVoidReturnType>;
   ): Promise<ActionReturnType>;
+  handleTestCompositeActionTemplateSuite(
+    testAction: TestCompositeActionTemplateSuite,
+    actionParamValues: Record<string, any>,
+    currentModel: MetaModel
+  ): Promise<ActionVoidReturnType>;
 
   handleAction(action: DomainAction, currentModel?: MetaModel): Promise<ActionVoidReturnType>;
   /**

@@ -9,8 +9,10 @@ import {
   MetaModel,
   testCompositeAction,
   TestCompositeAction,
+  TestCompositeActionSuite,
   testCompositeActionTemplate,
-  TestCompositeActionTemplate
+  TestCompositeActionTemplate,
+  TestCompositeActionTemplateSuite
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { resolveCompositeActionTemplate } from "../../2_domain/ResolveCompositeActionTemplate.js";
 
@@ -20,8 +22,9 @@ import entityMenu from '../../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a987
 import entityReport from '../../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916.json' assert { type: "json" };
 
 import { MetaEntity, Uuid } from "../../0_interfaces/1_core/EntityDefinition.js";
-import { resolveTestCompositeActionTemplate } from "../../2_domain/TestSuiteTemplate.js";
+import { resolveTestCompositeActionTemplate, resolveTestCompositeActionTemplateSuite } from "../../2_domain/TestSuiteTemplate.js";
 import { defaultMiroirMetaModel } from "../../1_core/Model.js";
+import { EntityDefinitionEntityDefinition } from '../../0_interfaces/1_core/writtenByHandSchema.js';
 // import { act } from 'react';
 
 // import {
@@ -1260,52 +1263,184 @@ describe('resolveTestCompositeActionTemplate', () => {
 
 
 
-// describe('resolveTestCompositeActionTemplateSuite', () => {
-//   it('should resolve a simple TestCompositeActionTemplateSuite', () => {
-//     const compositeActionTemplateSuite: TestCompositeActionTemplateSuite = {
-//       testLabel: 'Test Suite Label',
-//       testCompositeActions: {
-//         action1: {
-//           testLabel: 'Action 1',
-//           compositeActionTemplate: { actionType: 'simpleAction1' },
-//           testCompositeActionAssertions: []
-//         }
-//       }
-//     };
-//     const actionParamValues = {};
-//     const currentModel: MetaModel = {};
+describe('resolveTestCompositeActionTemplateSuite', () => {
+  it('should resolve a simple TestCompositeActionTemplateSuite', () => {
+    const currentApplicationName = "Test";
+    const currentApplicationUuid = uuidv4();
+    const currentDeploymentUuid = uuidv4();
 
-//     const result = resolveTestCompositeActionTemplateSuite(compositeActionTemplateSuite, actionParamValues, currentModel);
+    const newEntityUuid = uuidv4();
 
-//     expect(result.resolvedTestCompositeActionDefinition.testType).toBe('testCompositeActionSuite');
-//     expect(result.resolvedTestCompositeActionDefinition.testLabel).toBe('Test Suite Label');
-//     expect(result.resolvedTestCompositeActionDefinition.testCompositeActions.action1.testLabel).toBe('Action 1');
-//     expect(result.resolvedTestCompositeActionDefinition.testCompositeActions.action1.compositeAction.actionType).toBe('simpleAction1');
-//   });
+    const newEntity: MetaEntity = {
+      uuid: uuidv4(),
+      parentUuid: entityEntity.uuid,
+      selfApplication: currentApplicationUuid,
+      description: "newEntityDescription",
+      name: "newEntityName",
+    };
 
-//   it('should resolve beforeAll, beforeEach, afterEach, and afterAll actions', () => {
-//     const compositeActionTemplateSuite: TestCompositeActionTemplateSuite = {
-//       testLabel: 'Test Suite Label',
-//       beforeAll: { actionType: 'beforeAllAction' },
-//       beforeEach: { actionType: 'beforeEachAction' },
-//       afterEach: { actionType: 'afterEachAction' },
-//       afterAll: { actionType: 'afterAllAction' },
-//       testCompositeActions: {
-//         action1: {
-//           testLabel: 'Action 1',
-//           compositeActionTemplate: { actionType: 'simpleAction1' },
-//           testCompositeActionAssertions: []
-//         }
-//       }
-//     };
-//     const actionParamValues = {};
-//     const currentModel: MetaModel = {};
+    const newEntityDefinition: EntityDefinitionEntityDefinition ={
+      name: "newEntityName",
+      uuid: uuidv4(),
+      parentName: "EntityDefinition",
+      parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+      entityUuid: newEntity.uuid,
+      conceptLevel: "Model",
+      defaultInstanceDetailsReportUuid: uuidv4(),
+      jzodSchema: {
+        type: "object",
+        definition: {
+          a: { type: "string" },
+          b: { type: "number" },
+        },
+      },
+    } as any;
 
-//     const result = resolveTestCompositeActionTemplateSuite(compositeActionTemplateSuite, actionParamValues, currentModel);
+    const compositeActionTemplateSuite: TestCompositeActionTemplateSuite = {
+      testType: "testCompositeActionTemplateSuite",
+      testLabel: 'Test Suite Label',
+      testCompositeActions: {
+        action1: {
+          testType: "testCompositeActionTemplate",
+          testLabel: 'Action 1',
+          compositeActionTemplate: { 
+            actionType: 'compositeAction',
+            actionName: "sequence",
+            actionLabel: "simpleAction1",
+            definition: [
+              {
+                actionType: "modelAction",
+                actionName: "createEntity",
+                actionLabel: "createEntity",
+                deploymentUuid: {
+                  transformerType: "parameterReference",
+                  referenceName: "currentDeploymentUuid",
+                },
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                entities: [
+                  {
+                    // entity: newEntity,
+                    entity: {
+                      transformerType: "parameterReference",
+                      referenceName: "createEntity_newEntity",
+                    },
+                    entityDefinition: newEntityDefinition as any,
+                    // entityDefinition: {
+                    //   transformerType: "parameterReference",
+                    //   referenceName: "newEntityDefinition",
+                    // },
+                  },
+                ],
+              },
 
-//     expect(result.resolvedTestCompositeActionDefinition.beforeAll.actionType).toBe('beforeAllAction');
-//     expect(result.resolvedTestCompositeActionDefinition.beforeEach.actionType).toBe('beforeEachAction');
-//     expect(result.resolvedTestCompositeActionDefinition.afterEach.actionType).toBe('afterEachAction');
-//     expect(result.resolvedTestCompositeActionDefinition.afterAll.actionType).toBe('afterAllAction');
-//   });
-// });
+            ]
+
+          },
+          testCompositeActionAssertions: []
+        }
+      }
+    };
+    const actionParamValues = {
+      currentDeploymentUuid,
+      createEntity_newEntity: newEntity
+    };
+
+    const result = resolveTestCompositeActionTemplateSuite(compositeActionTemplateSuite, actionParamValues, defaultMiroirMetaModel);
+
+    const expectedResult: TestCompositeActionSuite = {
+      testLabel: "Test Suite Label",
+      testType: "testCompositeActionSuite",
+      testCompositeActions: {
+        action1: {
+          testLabel: "Action 1",
+          testType: "testCompositeAction",
+          testCompositeActionAssertions: [],
+          compositeAction: {
+            actionType: "compositeAction",
+            actionName: "sequence",
+            actionLabel: "simpleAction1",
+            definition: [
+              {
+                actionType: "modelAction",
+                actionName: "createEntity",
+                actionLabel: "createEntity",
+                deploymentUuid: currentDeploymentUuid,
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                entities: [
+                  {
+                    entity: {
+                      uuid: newEntity.uuid,
+                      parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                      selfApplication: newEntity.selfApplication,
+                      description: "newEntityDescription",
+                      name: "newEntityName",
+                    },
+                    entityDefinition: {
+                      name: "newEntityName",
+                      uuid: newEntityDefinition.uuid,
+                      parentName: "EntityDefinition",
+                      parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+                      entityUuid: newEntity.uuid,
+                      conceptLevel: "Model",
+                      defaultInstanceDetailsReportUuid: (newEntityDefinition as any).defaultInstanceDetailsReportUuid,
+                      jzodSchema: {
+                        type: "object",
+                        definition: {
+                          a: {
+                            type: "string",
+                          },
+                          b: {
+                            type: "number",
+                          },
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+        },
+      },
+    };
+    console.log(
+      "################################",
+      expect.getState().currentTestName,
+      "result",
+      JSON.stringify(result, null, 2)
+    );
+    // expect(result, expect.getState().currentTestName).toEqual(expectedResult);
+    expect(result.resolvedTestCompositeActionDefinition).toEqual(expectedResult);
+
+    // expect(result.resolvedTestCompositeActionDefinition.testType).toBe('testCompositeActionSuite');
+    // expect(result.resolvedTestCompositeActionDefinition.testLabel).toBe('Test Suite Label');
+    // expect(result.resolvedTestCompositeActionDefinition.testCompositeActions.action1.testLabel).toBe('Action 1');
+    // expect(result.resolvedTestCompositeActionDefinition.testCompositeActions.action1.compositeAction.actionType).toBe('simpleAction1');
+  });
+
+  // it('should resolve beforeAll, beforeEach, afterEach, and afterAll actions', () => {
+  //   const compositeActionTemplateSuite: TestCompositeActionTemplateSuite = {
+  //     testLabel: 'Test Suite Label',
+  //     beforeAll: { actionType: 'beforeAllAction' },
+  //     beforeEach: { actionType: 'beforeEachAction' },
+  //     afterEach: { actionType: 'afterEachAction' },
+  //     afterAll: { actionType: 'afterAllAction' },
+  //     testCompositeActions: {
+  //       action1: {
+  //         testLabel: 'Action 1',
+  //         compositeActionTemplate: { actionType: 'simpleAction1' },
+  //         testCompositeActionAssertions: []
+  //       }
+  //     }
+  //   };
+  //   const actionParamValues = {};
+  //   const currentModel: MetaModel = {};
+
+  //   const result = resolveTestCompositeActionTemplateSuite(compositeActionTemplateSuite, actionParamValues, currentModel);
+
+  //   expect(result.resolvedTestCompositeActionDefinition.beforeAll.actionType).toBe('beforeAllAction');
+  //   expect(result.resolvedTestCompositeActionDefinition.beforeEach.actionType).toBe('beforeEachAction');
+  //   expect(result.resolvedTestCompositeActionDefinition.afterEach.actionType).toBe('afterEachAction');
+  //   expect(result.resolvedTestCompositeActionDefinition.afterAll.actionType).toBe('afterAllAction');
+  // });
+});

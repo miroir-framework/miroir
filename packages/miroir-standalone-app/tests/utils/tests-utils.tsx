@@ -837,7 +837,8 @@ export const chainVitestSteps = async (
 export async function runTestOrTestSuite(
   localCache: LocalCache,
   domainController: DomainControllerInterface,
-  testAction: TestActionParams
+  testAction: TestActionParams,
+  testActionParamValues?: {[k:string]: any},
 ) {
   const fullTestName = expect.getState().currentTestName ?? "no test name";
   log.info("STARTING test:", fullTestName);
@@ -880,21 +881,21 @@ export async function runTestOrTestSuite(
       return queryResult;
     }
     case "testCompositeActionTemplateSuite": {
-      throw new Error("testCompositeActionTemplateSuite not implemented yet!");
-      // const queryResult: ActionReturnType = await domainController.handleTestCompositeActionTemplateSuite(
-      //   testAction.testCompositeAction,
-      //   {},
-      //   localCache.currentModel(testAction.deploymentUuid)
-      // );
-      // log.info(
-      //   "received results for test testCompositeActionSuite",
-      //   fullTestName,
-      //   ": queryResult=",
-      //   JSON.stringify(queryResult, null, 2),
-      //   "TestContextResults",
-      //   JSON.stringify(TestSuiteContext.getTestAssertionsResults(), null, 2)
-      // );
-      // return queryResult;
+      // throw new Error("testCompositeActionTemplateSuite not implemented yet!");
+      const queryResult: ActionReturnType = await domainController.handleTestCompositeActionTemplateSuite(
+        testAction.testCompositeAction,
+        testActionParamValues??{},
+        localCache.currentModel(testAction.deploymentUuid)
+      );
+      log.info(
+        "received results for test testCompositeActionSuite",
+        fullTestName,
+        ": queryResult=",
+        JSON.stringify(queryResult, null, 2),
+        "TestContextResults",
+        JSON.stringify(TestSuiteContext.getTestAssertionsResults(), null, 2)
+      );
+      return queryResult;
     }
     case "testCompositeActionTemplate": {
       throw new Error("testCompositeActionTemplate not implemented yet!");
@@ -922,6 +923,29 @@ export function displayTestSuiteResults(currentTestSuiteName: string) {
       // console.log("testResult", JSON.stringify(testResult, null, 2));
       expect(testResult.testResult, `${currentTestSuiteName} > ${testResult.testLabel} failed!`).toBe("ok");
       console.log(testResult.testLabel, "ok");
+    }
+  }
+  TestSuiteContext.resetResults();
+  console.log("============ end of results of testSuite");
+}
+
+// ################################################################################################
+export function displayTestSuiteResultsDetails(currentTestSuiteName: string) {
+  console.log("============ detailed results of testSuite: ", currentTestSuiteName);
+  const globalTestSuiteResults = TestSuiteContext.getTestSuiteResult(currentTestSuiteName);
+  for (const testResult of Object.values(globalTestSuiteResults[currentTestSuiteName])) {
+    console.log(`Test: ${testResult.testLabel}`);
+    for (const [testAssertionLabel, testAssertionResult] of Object.entries(testResult.testAssertionsResults)) {
+      console.log(`  Assertion: ${testAssertionLabel} ${testAssertionResult.assertionResult}`);
+      // console.log(`    Expected: ${testAssertionResult.assertionExpectedValue}`);
+      // console.log(`    Actual: ${testAssertionResult.assertionActualValue}`);
+      // console.log(`    Result: ${testAssertionResult.assertionResult}`);
+      if (testAssertionResult.assertionResult !== "ok") {
+        expect(testAssertionResult.assertionActualValue, `${currentTestSuiteName} > ${testResult.testLabel} > ${testAssertionLabel} failed!`).toBe(testAssertionResult.assertionExpectedValue);
+      }
+    }
+    if (testResult.testResult !== "ok") {
+      expect(testResult.testResult, `${currentTestSuiteName} > ${testResult.testLabel} failed!`).toBe("ok");
     }
   }
   TestSuiteContext.resetResults();

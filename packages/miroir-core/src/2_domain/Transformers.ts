@@ -293,6 +293,7 @@ function transformer_fullObjectTemplate(
       elementValue: {
         queryFailure: "ReferenceNotFound",
         failureOrigin: ["transformer_fullObjectTemplate"],
+
         queryContext:
           "innerFullObjectTemplate error in " +
           objectName +
@@ -1219,7 +1220,9 @@ export function innerTransformer_plainObject_apply(
       elementValue: {
         queryFailure: "ReferenceNotFound",
         failureOrigin: ["innerTransformer_plainObject_apply"],
-        queryContext: "error in " + label + " in " + JSON.stringify(attributeEntries[failureIndex]),
+        innerError: attributeEntries[failureIndex][1].elementValue,
+        queryContext: "error in attribute: " + attributeEntries[failureIndex][0]
+        //  + " in " + JSON.stringify(attributeEntries[failureIndex]),
       },
     };
   }
@@ -1277,13 +1280,15 @@ export function innerTransformer_array_apply(
       elementValue: {
         queryFailure: "ReferenceNotFound",
         failureOrigin: ["innerTransformer_array_apply"],
+        innerError: subObject[failureIndex].elementValue,
         queryContext:
           "failed to transform object attribute for array index " +
           failureIndex +
-          " failure " +
-          JSON.stringify(subObject[failureIndex]) +
+          // " failure " +
+          // JSON.stringify(subObject[failureIndex]) +
           " in transformer " +
-          JSON.stringify(transformer[failureIndex]),
+          transformer[failureIndex]
+          // JSON.stringify(transformer[failureIndex]),
       },
     };
   }

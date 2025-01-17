@@ -131,6 +131,21 @@
                 "type": "string",
                 "optional": true
               },
+              "errorStack": {
+                "type": "array",
+                "optional": true,
+                "definition": {
+                  "type": "string"
+                }
+              },
+              "innerError": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "queryFailed"
+                }
+              },
               "applicationSection": {
                 "type": "schemaReference",
                 "optional": true,
