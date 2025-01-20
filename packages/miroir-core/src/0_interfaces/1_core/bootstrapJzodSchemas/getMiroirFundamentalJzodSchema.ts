@@ -2677,6 +2677,8 @@ export function getMiroirFundamentalJzodSchema(
         transformerForBuild_fullObjectTemplate: (miroirFundamentalJzodSchema as any).definition.context.transformerForBuild_fullObjectTemplate,
         transformerForBuild_freeObjectTemplate: (transformerJzodSchema as any).definition.context.transformerForBuild_freeObjectTemplate,
         transformerForBuild_inner_object_alter: (transformerJzodSchema as any).definition.context.transformerForBuild_inner_object_alter,
+        transformerForBuild_objectEntries: (transformerJzodSchema as any).definition.context.transformerForBuild_objectValues,
+        transformerForBuild_objectValues: (transformerJzodSchema as any).definition.context.transformerForBuild_objectValues,
         transformerForBuild_mapper_listToList: (miroirFundamentalJzodSchema as any).definition.context.transformerForBuild_mapper_listToList,
         transformerForBuild_mapper_listToObject: (miroirFundamentalJzodSchema as any).definition.context.transformerForBuild_mapper_listToObject,
         transformerForRuntime_Abstract: (miroirFundamentalJzodSchema as any).definition.context.transformerForRuntime_Abstract,
@@ -2699,6 +2701,7 @@ export function getMiroirFundamentalJzodSchema(
         transformerForRuntime_unique: (transformerJzodSchema as any).definition.context.transformerForRuntime_unique,
         transformerForRuntime_mapper_listToList: (transformerJzodSchema as any).definition.context.transformerForRuntime_mapper_listToList,
         transformerForRuntime_mapper_listToObject: (transformerJzodSchema as any).definition.context.transformerForRuntime_mapper_listToObject,
+        transformerForRuntime_objectEntries: (transformerJzodSchema as any).definition.context.transformerForRuntime_objectValues,
         transformerForRuntime_objectValues: (transformerJzodSchema as any).definition.context.transformerForRuntime_objectValues,
         transformerForRuntime_list_pickElement: (transformerJzodSchema as any).definition.context.transformerForRuntime_list_pickElement,
         transformerForRuntime_freeObjectTemplate: (transformerJzodSchema as any).definition.context.transformerForRuntime_freeObjectTemplate,
@@ -2806,7 +2809,6 @@ export function getMiroirFundamentalJzodSchema(
         .map((f) => [
           forgeCarryOnReferenceName(e[0], f[0], "extend"),
           // TODO: add inner references to environment!!!!
-          // applyCarryOnSchema(f[1] as any, carryOnSchema as any, undefined, resolveReferencesWithCarryOn).resultSchema,
           applyCarryOnSchemaOnLevel(
             f[1] as any,
             carryOnSchemaReference as any,
@@ -2828,7 +2830,6 @@ export function getMiroirFundamentalJzodSchema(
       Object.entries(e[1].context ?? {}).map((f) => [
         forgeCarryOnReferenceName(e[0], f[0]),
         // TODO: add inner references to environment!!!!
-        // applyCarryOnSchema(f[1] as any, carryOnSchema as any, undefined, resolveReferencesWithCarryOn).resultSchema,
         applyCarryOnSchema(f[1] as any, carryOnSchemaReference as any, undefined, resolveReferencesWithCarryOn)
           .resultSchema,
       ])

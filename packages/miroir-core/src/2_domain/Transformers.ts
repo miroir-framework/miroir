@@ -929,6 +929,32 @@ export function innerTransformer_apply(
       return defaultTransformers.transformer_objectAlter(step, label, transformer, queryParams, contextResults);
       break;
     }
+    case "objectEntries": {
+      const resolvedReference = defaultTransformers.transformer_InnerReference_resolve(
+        step,
+        { transformerType: "contextReference", referenceName: transformer.referencedExtractor }, // TODO: there's a bug, count can not be used at build time, although it should be usable at build time
+        queryParams,
+        contextResults
+      );
+
+      // log.info(
+      //   "transformer_apply extractorTransformer count referencedExtractor resolvedReference",
+      //   resolvedReference
+      // );
+
+      if (!(["instanceUuidIndex", "object"].includes(resolvedReference.elementType))) {
+        log.error(
+          "innerTransformer_apply extractorTransformer objectEntries referencedExtractor resolvedReference",
+          resolvedReference
+        );
+        return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } }; // TODO: improve error message / queryFailure
+      }
+      log.info(
+        "innerTransformer_apply extractorTransformer objectEntries resolvedReference",
+        resolvedReference
+      );
+      return { elementType: "any", elementValue: Object.entries(resolvedReference.elementValue) };
+    }
     case "objectValues": {
       const resolvedReference = defaultTransformers.transformer_InnerReference_resolve(
         step,
@@ -942,7 +968,7 @@ export function innerTransformer_apply(
       //   resolvedReference
       // );
 
-      if (resolvedReference.elementType in ["instanceUuidIndex", "object"]) {
+      if (!["instanceUuidIndex", "object"].includes(resolvedReference.elementType)) {
         log.error(
           "innerTransformer_apply extractorTransformer count referencedExtractor resolvedReference",
           resolvedReference

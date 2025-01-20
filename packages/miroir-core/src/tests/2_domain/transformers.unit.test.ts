@@ -630,7 +630,7 @@ describe("transformers.unit.test", () => {
 
   // ################################################################################################
   it("build freeObject with build transformer", async () => { // TODO: test failure cases!
-    console.log("build freeObject with runtime transformer START")
+    console.log(expect.getState().currentTestName, "START")
     const newApplicationName = "test";
     const newUuid = uuidv4();
 
@@ -674,7 +674,7 @@ describe("transformers.unit.test", () => {
 
   // ################################################################################################
   it("alter existing object with objectAlter runtime transformer", async () => { // TODO: test failure cases!
-    console.log("alter existing object with objectAlter runtime transformer START")
+    console.log(expect.getState().currentTestName, "START")
     const newApplicationName = "test";
     const newUuid = uuidv4();
 
@@ -727,7 +727,7 @@ describe("transformers.unit.test", () => {
 
   // ################################################################################################
   it("mapperListToList / objectAlter: alter existing object list with mapperListToList-objectAlter runtime transformer", async () => { // TODO: test failure cases!
-    console.log("alter existing object list with mapperListToList-objectAlter runtime transformer START")
+    console.log(expect.getState().currentTestName, "START")
     const newApplicationName = "test";
     const newUuid = uuidv4();
 
@@ -803,7 +803,7 @@ describe("transformers.unit.test", () => {
   // ################################################################################################
   it("objectDynamicAccess: object dynamic access runtime transformer", async () => {
     // TODO: test failure cases!
-    console.log("object dynamic access runtime transformer START");
+    console.log(expect.getState().currentTestName, "START")
     const newApplicationName = "test";
     const newUuid = uuidv4();
 
@@ -930,9 +930,7 @@ describe("transformers.unit.test", () => {
   // ################################################################################################
   it("mapperListToList / objectAlter: alter existing object list with mapperListToList-objectAlter with object dynamic access runtime transformer", async () => {
     // TODO: test failure cases!
-    console.log(
-      "alter existing object list with mapperListToList-objectAlter with object dynamic access runtime transformer START"
-    );
+    console.log(expect.getState().currentTestName, "START")
 
     const uniqueBuildTemplate: TransformerForRuntime = {
       transformerType: "mapperListToList",
@@ -1104,7 +1102,7 @@ describe("transformers.unit.test", () => {
 
   // ################################################################################################
   it("objectValues - extract object attribute values to list with runtime transformer", async () => { // TODO: test failure cases!
-    console.log("extract object attribute values to list with runtime transformer START")
+    console.log(expect.getState().currentTestName, "extract object attribute values to list with runtime transformer START")
     const newApplicationName = "test";
     const newUuid = uuidv4();
 
@@ -1212,10 +1210,10 @@ describe("transformers.unit.test", () => {
       } // context
     ).elementValue;
 
-    console.log("################################ alter existing object list with mapperListToList-objectAlter complex runtime transformer preTestResult", preTestResult)
+    console.log("################################", expect.getState().currentTestName, "preTestResult", preTestResult)
     // const testResult = ignorePostgresExtraAttributesOnList(preTestResult as any,["uuid"]); // uuid value is ignored
     const testResult = preTestResult; // uuid value is ignored
-    console.log("################################ alter existing object list with mapperListToList-objectAlter complex runtime transformer testResult", testResult)
+    console.log("################################", expect.getState().currentTestName, "testResult", testResult)
     expect(testResult).toEqual([
       {
         Voie: "BOULEVARD DE BELLEVILLE",
@@ -1302,10 +1300,211 @@ describe("transformers.unit.test", () => {
         updatedAt: "2024-10-03T17:11:24.401Z",
       },
     ]);
-    console.log("alter existing object list with mapperListToList-objectAlter complex runtime transformer END")
+    console.log(expect.getState().currentTestName, "END")
   }
   );
 
+    // ################################################################################################
+    it("objectEntries - extract object entries to list with runtime transformer", async () => { // TODO: test failure cases!
+      console.log(expect.getState().currentTestName,"START")
+      const newApplicationName = "test";
+      const newUuid = uuidv4();
+  
+      const uniqueRuntimeTemplate: TransformerForRuntime = {
+        transformerType: "objectEntries",
+        interpolation: "runtime",
+        referencedExtractor: "Fountain",
+      }
+  
+      const preTestResult: { [k: string]: { [l: string]: any } } = transformer_apply(
+        "runtime",
+        "ROOT",
+        uniqueRuntimeTemplate as any,
+        {
+          newUuid: newUuid,
+        }, // queryParams
+        {
+          Fountain: {
+            "a849eda6-6f80-4178-8ea1-4f2d6c0e8c08": {
+              Voie: "BOULEVARD DE BELLEVILLE",
+              uuid: "a849eda6-6f80-4178-8ea1-4f2d6c0e8c08",
+              Commune: "PARIS 20EME ARRONDISSEMENT",
+              Modèle: "GHM Ville de Paris",
+              geo_shape: '{"coordinates":[2.381807425006663,48.86840357208106],"type":"Point"}',
+              "Type Objet": "BORNE_FONTAINE",
+              parentName: "Fountain",
+              parentUuid: "56848f20-d585-4d76-ade6-155907f5edfc",
+              Identifiant: "450080676",
+              geo_point_2d: "48.86840357208106, 2.381807425006663",
+              "N° Voie Pair": "36",
+              Disponibilité: "OUI",
+              "N° Voie Impair": null,
+              "Fin Indisponibilité": null,
+              "Motif Indisponibilité": null,
+              "Début Indisponibilité": null,
+              Municipality: null,
+              createdAt: "2024-10-03T17:11:24.380Z",
+              updatedAt: "2024-10-03T17:11:24.380Z",
+            },
+            "6e6d55e3-ea68-4efe-ae28-a0ef28680deb": {
+              Voie: "PLACE FELIX EBOUE",
+              uuid: "6e6d55e3-ea68-4efe-ae28-a0ef28680deb",
+              Commune: "PARIS 12EME ARRONDISSEMENT",
+              Modèle: "Fontaine Arceau",
+              geo_shape: '{"coordinates":[2.394950933604463,48.840063263659],"type":"Point"}',
+              "Type Objet": "FONTAINE_ARCEAU",
+              parentName: "Fountain",
+              parentUuid: "56848f20-d585-4d76-ade6-155907f5edfc",
+              Identifiant: "450072983",
+              geo_point_2d: "48.840063263659, 2.394950933604463",
+              "N° Voie Pair": null,
+              Disponibilité: "OUI",
+              "N° Voie Impair": null,
+              "Fin Indisponibilité": null,
+              "Motif Indisponibilité": null,
+              "Début Indisponibilité": null,
+              Municipality: null,
+              createdAt: "2024-10-03T17:11:24.396Z",
+              updatedAt: "2024-10-03T17:11:24.396Z",
+            },
+            "5e012a4c-4bce-4e97-865e-a21613c02160": {
+              Voie: "RUE GASTON TESSIER",
+              uuid: "5e012a4c-4bce-4e97-865e-a21613c02160",
+              Commune: "PARIS 19EME ARRONDISSEMENT",
+              Modèle: "Fontaine Arceau",
+              geo_shape: '{"coordinates":[2.3739455668258342,48.8960092708196],"type":"Point"}',
+              "Type Objet": "FONTAINE_ARCEAU",
+              parentName: "Fountain",
+              parentUuid: "56848f20-d585-4d76-ade6-155907f5edfc",
+              Identifiant: "450073322",
+              geo_point_2d: "48.8960092708196, 2.3739455668258342",
+              "N° Voie Pair": null,
+              Disponibilité: "OUI",
+              "N° Voie Impair": "39",
+              "Fin Indisponibilité": null,
+              "Motif Indisponibilité": null,
+              "Début Indisponibilité": null,
+              Municipality: null,
+              createdAt: "2024-10-03T17:11:24.398Z",
+              updatedAt: "2024-10-03T17:11:24.398Z",
+            },
+            "7e8526c6-8376-4e0e-b91e-3c50b5499e65": {
+              Voie: "AVENUE DAUMESNIL",
+              uuid: "7e8526c6-8376-4e0e-b91e-3c50b5499e65",
+              Commune: "PARIS 12EME ARRONDISSEMENT",
+              Modèle: "Wallace Bois",
+              geo_shape: '{"coordinates":[2.4194189756068725,48.83471831212431],"type":"Point"}',
+              "Type Objet": "FONTAINE_BOIS",
+              parentName: "Fountain",
+              parentUuid: "56848f20-d585-4d76-ade6-155907f5edfc",
+              Identifiant: "450025381",
+              geo_point_2d: "48.83471831212431, 2.4194189756068725",
+              "N° Voie Pair": null,
+              Disponibilité: "OUI",
+              "N° Voie Impair": null,
+              "Fin Indisponibilité": null,
+              "Motif Indisponibilité": null,
+              "Début Indisponibilité": null,
+              Municipality: null,
+              createdAt: "2024-10-03T17:11:24.401Z",
+              updatedAt: "2024-10-03T17:11:24.401Z",
+            },
+          },
+        } // context
+      ).elementValue;
+  
+      console.log("################################ extract object entries to list with runtime transformer preTestResult", preTestResult)
+      const testResult = preTestResult; // uuid value is ignored
+      console.log("################################ extract object entries to list with runtime transformer testResult", testResult)
+      expect(testResult).toEqual([
+        ["a849eda6-6f80-4178-8ea1-4f2d6c0e8c08", {
+          Voie: "BOULEVARD DE BELLEVILLE",
+          uuid: "a849eda6-6f80-4178-8ea1-4f2d6c0e8c08",
+          Commune: "PARIS 20EME ARRONDISSEMENT",
+          Modèle: "GHM Ville de Paris",
+          geo_shape: '{"coordinates":[2.381807425006663,48.86840357208106],"type":"Point"}',
+          "Type Objet": "BORNE_FONTAINE",
+          parentName: "Fountain",
+          parentUuid: "56848f20-d585-4d76-ade6-155907f5edfc",
+          Identifiant: "450080676",
+          geo_point_2d: "48.86840357208106, 2.381807425006663",
+          "N° Voie Pair": "36",
+          Disponibilité: "OUI",
+          "N° Voie Impair": null,
+          "Fin Indisponibilité": null,
+          "Motif Indisponibilité": null,
+          "Début Indisponibilité": null,
+          Municipality: null,
+          createdAt: "2024-10-03T17:11:24.380Z",
+          updatedAt: "2024-10-03T17:11:24.380Z",
+        }],
+        ["6e6d55e3-ea68-4efe-ae28-a0ef28680deb", {
+          Voie: "PLACE FELIX EBOUE",
+          uuid: "6e6d55e3-ea68-4efe-ae28-a0ef28680deb",
+          Commune: "PARIS 12EME ARRONDISSEMENT",
+          Modèle: "Fontaine Arceau",
+          geo_shape: '{"coordinates":[2.394950933604463,48.840063263659],"type":"Point"}',
+          "Type Objet": "FONTAINE_ARCEAU",
+          parentName: "Fountain",
+          parentUuid: "56848f20-d585-4d76-ade6-155907f5edfc",
+          Identifiant: "450072983",
+          geo_point_2d: "48.840063263659, 2.394950933604463",
+          "N° Voie Pair": null,
+          Disponibilité: "OUI",
+          "N° Voie Impair": null,
+          "Fin Indisponibilité": null,
+          "Motif Indisponibilité": null,
+          "Début Indisponibilité": null,
+          Municipality: null,
+          createdAt: "2024-10-03T17:11:24.396Z",
+          updatedAt: "2024-10-03T17:11:24.396Z",
+        }],
+        ["5e012a4c-4bce-4e97-865e-a21613c02160", {
+          Voie: "RUE GASTON TESSIER",
+          uuid: "5e012a4c-4bce-4e97-865e-a21613c02160",
+          Commune: "PARIS 19EME ARRONDISSEMENT",
+          Modèle: "Fontaine Arceau",
+          geo_shape: '{"coordinates":[2.3739455668258342,48.8960092708196],"type":"Point"}',
+          "Type Objet": "FONTAINE_ARCEAU",
+          parentName: "Fountain",
+          parentUuid: "56848f20-d585-4d76-ade6-155907f5edfc",
+          Identifiant: "450073322",
+          geo_point_2d: "48.8960092708196, 2.3739455668258342",
+          "N° Voie Pair": null,
+          Disponibilité: "OUI",
+          "N° Voie Impair": "39",
+          "Fin Indisponibilité": null,
+          "Motif Indisponibilité": null,
+          "Début Indisponibilité": null,
+          Municipality: null,
+          createdAt: "2024-10-03T17:11:24.398Z",
+          updatedAt: "2024-10-03T17:11:24.398Z",
+        }],
+        ["7e8526c6-8376-4e0e-b91e-3c50b5499e65", {
+          Voie: "AVENUE DAUMESNIL",
+          uuid: "7e8526c6-8376-4e0e-b91e-3c50b5499e65",
+          Commune: "PARIS 12EME ARRONDISSEMENT",
+          Modèle: "Wallace Bois",
+          geo_shape: '{"coordinates":[2.4194189756068725,48.83471831212431],"type":"Point"}',
+          "Type Objet": "FONTAINE_BOIS",
+          parentName: "Fountain",
+          parentUuid: "56848f20-d585-4d76-ade6-155907f5edfc",
+          Identifiant: "450025381",
+          geo_point_2d: "48.83471831212431, 2.4194189756068725",
+          "N° Voie Pair": null,
+          Disponibilité: "OUI",
+          "N° Voie Impair": null,
+          "Fin Indisponibilité": null,
+          "Motif Indisponibilité": null,
+          "Début Indisponibilité": null,
+          Municipality: null,
+          createdAt: "2024-10-03T17:11:24.401Z",
+          updatedAt: "2024-10-03T17:11:24.401Z",
+        }],
+      ]);
+      console.log("extract object entries to list with runtime transformer END")
+    });
+  
   // ################################################################################################
   it("listPickElement - pick item with runtime transformer", async () => { // TODO: test failure cases!
     console.log("list - pick item with runtime transformer START")
@@ -1446,5 +1645,159 @@ describe("transformers.unit.test", () => {
     console.log("list - pick item with runtime transformer END")
   }
   );
+
+  // // ################################################################################################
+  // it("build an EntityDefinition from spreadsheet with transformers", async () => { // TODO: test failure cases!
+  //   console.log(expect.getState().currentTestName, "START")
+  //   const newApplicationName = "test";
+  //   const newUuid = uuidv4();
+
+  //   const extractColumnDefinitionRow:TransformerForRuntime = {
+  //     transformerType: "listPickElement",
+  //     interpolation: "runtime",
+  //     referencedExtractor: "fileData",
+  //     index: 0
+  //   }
+
+  //   const columnDefinitionRow = transformer_apply(
+  //     "runtime",
+  //     "ROOT",
+  //     extractColumnDefinitionRow,
+  //     {
+  //       newUuid: newUuid,
+  //     }, // queryParams
+  //     {
+  //       fileData: [
+  //         {a: "A", b: "B"},
+  //         {a: "1", b: "2"},
+  //         {a: "3", b: "4"},
+  //       ],
+  //     } // context
+  //   ).elementValue;
+
+  //   const uniqueRuntimeTemplate:TransformerForBuild = {
+  //     transformerType: "mapperListToList",
+  //     referencedExtractor: "columnDefinitionRow",
+  //     elementTransformer: {
+  //       transformerType: "objectEntries",
+
+  //       // transformerType: "objectAlter",
+  //       // referenceToOuterObject: "fountain",
+  //       // // definition: {
+  //       //   referenceToOuterObject: "columnDefinition",
+  //       //   transformerType: "innerFullObjectTemplate",
+  //       //   // definition: {
+  //       //     // name: "test",
+  //       //     definition: [
+  //       //       {
+  //       //         attributeKey: {
+  //       //           transformerType: "mustacheStringTemplate",
+  //       //           definition: "{{columnDefinition}}"
+  //       //         },
+  //       //         attributeValue: newDeploymentStoreConfigurationTemplate
+  //       //       }
+  //       //     ]
+  // // Municipality: {
+  // //             transformerType: "objectDynamicAccess",
+  // //             objectAccessPath: [
+  // //               {
+  // //                 transformerType: "contextReference",
+  // //                 referenceName: "municipalitiesIndexedByName",
+  // //               },
+  // //               {
+  // //                 transformerType: "objectDynamicAccess",
+  // //                 objectAccessPath: [
+  // //                   {
+  // //                     transformerType: "contextReference",
+  // //                     referenceName: "fountain",
+  // //                   },
+  // //                   "Commune",
+  // //                 ],
+  // //               },
+  // //               "uuid"
+  // //             ],
+  // //           },
+  //         // },
+  //       },
+  //     }
+  //   // }
+
+  //   const preTestResult: { [k: string]: { [l: string]: any } } = transformer_apply(
+  //     "runtime",
+  //     "ROOT",
+  //     uniqueRuntimeTemplate as any,
+  //     {
+  //       newUuid: newUuid,
+  //     }, // queryParams
+  //     {
+  //       columnDefinitionRow,
+  //     } // context
+  //   ).elementValue;
+
+  //   console.log("################################ list - pick item with runtime transformer preTestResult", preTestResult)
+  //   // const testResult = ignorePostgresExtraAttributesOnList(preTestResult as any,["uuid"]); // uuid value is ignored
+  //   const testResult = preTestResult; // uuid value is ignored
+  //   console.log("################################ list - pick item with runtime transformer testResult", testResult)
+  //   expect(testResult).toEqual({
+  //     type: "object",
+  //     definition: {
+  //       uuid: {
+  //         type: "string",
+  //         validations: [
+  //           {
+  //             type: "uuid",
+  //           },
+  //         ],
+  //         tag: {
+  //           id: 1,
+  //           defaultLabel: "Uuid",
+  //           editable: false,
+  //         },
+  //       },
+  //       parentName: {
+  //         type: "string",
+  //         optional: true,
+  //         tag: {
+  //           id: 1,
+  //           defaultLabel: "Uuid",
+  //           editable: false,
+  //         },
+  //       },
+  //       parentUuid: {
+  //         type: "string",
+  //         validations: [
+  //           {
+  //             type: "uuid",
+  //           },
+  //         ],
+  //         tag: {
+  //           id: 1,
+  //           defaultLabel: "parentUuid",
+  //           editable: false,
+  //         },
+  //       },
+  //       A: {
+  //         type: "string",
+  //         optional: true,
+  //         tag: {
+  //           id: 2,
+  //           defaultLabel: "A",
+  //           editable: true,
+  //         },
+  //       },
+  //       B: {
+  //         type: "string",
+  //         optional: true,
+  //         tag: {
+  //           id: 3,
+  //           defaultLabel: "B",
+  //           editable: true,
+  //         },
+  //       },
+  //     },
+  //   });
+  //   console.log(expect.getState().currentTestName, "END")
+  // }
+  // );
 
 });

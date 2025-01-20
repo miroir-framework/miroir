@@ -261,6 +261,21 @@
           }
         }
       },
+      "transformerForBuild_referencingTransformer": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "relativePath": "transformerForBuild_orderBy"
+          }
+        },
+        "definition": {
+          "referencedExtractor": {
+            "type": "string"
+          }
+        }
+      },
       "transformerForBuild_count": {
         "type": "object",
         "extend": {
@@ -526,6 +541,25 @@
           }
         }
       },
+      "transformerForBuild_objectEntries": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "relativePath": "transformerForBuild_orderBy"
+          }
+        },
+        "definition": {
+          "transformerType": {
+            "type": "literal",
+            "definition": "objectEntries"
+          },
+          "referencedExtractor": {
+            "type": "string"
+          }
+        }
+      },
       "transformerForBuild_objectValues": {
         "type": "object",
         "extend": {
@@ -535,7 +569,15 @@
             "relativePath": "transformerForBuild_orderBy"
           }
         },
-        "definition": {}
+        "definition": {
+          "transformerType": {
+            "type": "literal",
+            "definition": "objectValues"
+          },
+          "referencedExtractor": {
+            "type": "string"
+          }
+        }
       },
       "transformerForBuild": {
         "type": "union",
@@ -563,6 +605,18 @@
             "type": "schemaReference",
             "definition": {
               "relativePath": "transformerForBuild_inner_object_alter"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformerForBuild_objectEntries"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformerForBuild_objectValues"
             }
           },
           {
@@ -626,10 +680,6 @@
           }
         },
         "definition": {
-          "orderBy": {
-            "type": "string",
-            "optional": true
-          },
           "referencedExtractor": {
             "type": "string"
           }
@@ -929,6 +979,22 @@
           }
         }
       },
+      "transformerForRuntime_objectEntries": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "relativePath": "transformerForRuntime_referencingTransformer"
+          }
+        },
+        "definition": {
+          "transformerType": {
+            "type": "literal",
+            "definition": "objectEntries"
+          }
+        }
+      },
       "transformerForRuntime_objectValues": {
         "type": "object",
         "extend": {
@@ -1220,6 +1286,12 @@
             "type": "schemaReference",
             "definition": {
               "relativePath": "transformerForRuntime_objectValues"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformerForRuntime_objectEntries"
             }
           },
           {
