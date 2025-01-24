@@ -487,6 +487,7 @@ const testTemplateSuites: Record<string, TestActionParams> = {
                   referenceName: "newEntityName",
                 },
               },
+              fileData,
               createEntity_newEntityDefinition: {
                 name: {
                   transformerType: "parameterReference",
@@ -505,6 +506,30 @@ const testTemplateSuites: Record<string, TestActionParams> = {
                 conceptLevel: "Model",
                 defaultInstanceDetailsReportUuid: defaultInstanceDetailsReportUuid,
                 jzodSchema: newEntityJzodSchema
+                // jzodSchema: {
+                //   // {
+                //     transformerType: "listPickElement",
+                //     interpolation: "runtime",
+                //     referencedExtractor: "fileData",
+                //     index: 0
+                //   // }
+                //   // uuid: {
+                //   //   type: "string",
+                //   //   validations: [{ type: "uuid" }],
+                //   //   tag: { id: 1, defaultLabel: "Uuid", editable: false },
+                //   // },
+                //   // parentName: {
+                //   //   type: "string",
+                //   //   optional: true,
+                //   //   tag: { id: 1, defaultLabel: "Uuid", editable: false },
+                //   // },
+                //   // parentUuid: {
+                //   //   type: "string",
+                //   //   validations: [{ type: "uuid" }],
+                //   //   tag: { id: 1, defaultLabel: "parentUuid", editable: false },
+                //   // },
+                  
+                // },
               },
             },
             definition: [
@@ -636,7 +661,7 @@ const testTemplateSuites: Record<string, TestActionParams> = {
                       selfApplication: testSelfApplicationUuid,
                       description: createEntity_newEntityDescription,
                       name: newEntityName,
-                    }
+                    },
                   ],
                 },
               },
@@ -661,8 +686,8 @@ const testTemplateSuites: Record<string, TestActionParams> = {
                       entityUuid: newEntityUuid,
                       conceptLevel: "Model",
                       defaultInstanceDetailsReportUuid: defaultInstanceDetailsReportUuid,
-                      jzodSchema: newEntityJzodSchema
-                    }
+                      jzodSchema: newEntityJzodSchema,
+                    },
                     // {
                     //   transformerType: "parameterReference",
                     //   referenceName: "createEntity_newEntityDefinition",

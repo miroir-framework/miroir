@@ -125,7 +125,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   // #############################################################################################
   async handleBoxedQueryAction(action: RunBoxedQueryAction): Promise<ActionReturnType> {
     // TODO: fix applicationSection!!!
-    log.info(this.logHeader,'handleBoxedQueryAction','query',action);
+    log.info(this.logHeader,'handleBoxedQueryAction called with RunBoxedQueryAction',action);
     // log.info(this.logHeader,'this.dataStoreSection',this.dataStoreSection);
     // log.info(this.logHeader,'this.modelStoreSection',this.modelStoreSection);
     
@@ -135,7 +135,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
       action.applicationSection == "data" ? this.dataStoreSection : this.modelStoreSection;
     const result: ActionReturnType = await currentStore.handleBoxedQueryAction(action);
 
-    log.info(this.logHeader,'handleBoxedQueryAction','query',action, "result", JSON.stringify(result));
+    log.info(this.logHeader,'handleBoxedQueryAction done  for query',action, "result", JSON.stringify(result));
     return Promise.resolve(result);
   }
 

@@ -931,6 +931,7 @@ const testActions: Record<string, TestActionParams> = {
 describe.sequential(
   "DomainController.integ.Data.CRUD",
   () => {
+
     it.each(Object.entries(testActions))(
       "test %s",
       async (currentTestSuiteName, testAction: TestActionParams) => {
@@ -938,12 +939,6 @@ describe.sequential(
         if (testSuiteResults.status !== "ok") {
           expect(testSuiteResults.status, `${currentTestSuiteName} failed!`).toBe("ok");
         }
-        // globalTestSuiteResults = testSuiteResults.status == "ok"? testSuiteResults.returnedDomainElement.elementValue as any : globalTestSuiteResults;
-        // for (const [testLabel, testResult] of Object.entries(globalTestSuiteResults)) {
-        //   expect(testResult.testResult, `${testLabel} failed!`).toBe("ok");
-        // }
-        // console.log("testSuiteResults", testSuiteResults);
-        // displayTestSuiteResults(testSuiteResults, currentTestSuiteName);
       },
       globalTimeOut
     );

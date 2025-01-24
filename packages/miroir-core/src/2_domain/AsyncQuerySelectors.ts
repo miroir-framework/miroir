@@ -1,5 +1,6 @@
 // ################################################################################################
 
+import { DomainElementObjectOrFailed } from "../../dist/index.js";
 import { Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
 import {
   ApplicationSection,
@@ -371,7 +372,7 @@ export const asyncExtractWithExtractor: AsyncExtractWithBoxedExtractorOrCombiner
 
 export const asyncRunQuery = async (
   selectorParams: AsyncQueryRunnerParams,
-): Promise<DomainElementObject> => {
+): Promise<DomainElementObjectOrFailed> => {
 
   // log.info("########## asyncRunQuery begin, query", selectorParams);
 
@@ -409,6 +410,17 @@ export const asyncRunQuery = async (
     context[result[0]] = result[1]; // does side effect!
   }
 
+  const extractorFailure = Object.values(context).find((e) => e.elementType == "failure");
+
+  if (extractorFailure) {
+    return { elementType: "failure", 
+      elementValue: {
+        queryFailure: "FailedExtractor",
+        errorStack: extractorFailure
+      }
+      // elementValue: { queryFailure: "", failure: extractorFailure } 
+    };
+  }
   const combinerPromises = Object.entries(selectorParams.extractor.combiners ?? {})
   .map((query: [string, ExtractorOrCombiner]) => {
     return asyncInnerSelectElementFromQuery(

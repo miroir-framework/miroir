@@ -98,7 +98,7 @@ describe("extractorTransformerSql.unit.test", () => {
 
   //     const result: DomainElement = sqlStringForTransformer(
   //       {
-  //         transformerType: "fullObjectTemplate",
+  //         transformerType: "object_fullTemplate",
   //         interpolation: "runtime",
   //         referencedExtractor: "book",
   //         definition: [

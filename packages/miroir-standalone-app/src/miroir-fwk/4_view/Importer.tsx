@@ -1566,13 +1566,13 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                   },
                 },
                 municipalitiesIndexedByUuid: {
-                  transformerType: "mapperListToObject",
+                  transformerType: "listReducerToIndexObject",
                   interpolation: "runtime",
                   referencedExtractor: "municipalities",
                   indexAttribute: "uuid",
                 },
                 municipalitiesIndexedByName: {
-                  transformerType: "mapperListToObject",
+                  transformerType: "listReducerToIndexObject",
                   interpolation: "runtime",
                   referencedExtractor: "municipalities",
                   indexAttribute: "name",
@@ -1953,7 +1953,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
           actionLabel: "openStoreAction",
           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
           configuration: {
-            transformerType: "fullObjectTemplate",
+            transformerType: "object_fullTemplate",
             referencedExtractor: "NOT_RELEVANT",
             definition: [
               {

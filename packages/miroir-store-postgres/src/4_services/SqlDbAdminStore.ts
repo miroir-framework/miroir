@@ -37,7 +37,7 @@ export class SqlDbAdminStore extends SqlDbStore implements PersistenceStoreAdmin
     } catch (error) {
       return Promise.resolve({
         status: "error",
-        error: { errorType: "FailedToCreateStore", errorMessage: error as string },
+        errorType: "FailedToCreateStore", errorMessage: error as string ,
       });
     }
     return Promise.resolve(ACTION_OK);
@@ -53,7 +53,7 @@ export class SqlDbAdminStore extends SqlDbStore implements PersistenceStoreAdmin
     } catch (error) {
       return Promise.resolve({
         status: "error",
-        error: { errorType: "FailedToDeleteStore", errorMessage: error as string },
+        errorType: "FailedToDeleteStore", errorMessage: error as string ,
       });
     }
     return Promise.resolve(ACTION_OK);

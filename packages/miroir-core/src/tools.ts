@@ -59,7 +59,7 @@ export function resolvePathOnObject(valueObject:any, path: string[]) {
           curr[acc]
       );
     } else {
-      // console.info("resolvePathOnObject called with", valueObject, "path", path, "result", acc[curr])
+      console.info("resolvePathOnObject called with", valueObject, "path", path, "result", acc[curr])
       return acc[curr];
     }
   }, valueObject);

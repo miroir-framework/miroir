@@ -26,6 +26,7 @@ import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 import { SqlDbQueryRunner } from "./SqlDbQueryRunner";
 import { RecursiveStringRecords, SqlDbExtractTemplateRunner } from "./SqlDbQueryTemplateRunner";
+import { sqlStringForExtractor } from "../1_core/SqlGenerator";
 
 const consoleLog: any = console.log.bind(console, packageName, cleanLevel, "SqlDbInstanceStoreSectionMixin");
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -76,33 +77,6 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
       return Promise.resolve(result);
     }
 
-    // ##############################################################################################
-    sqlForExtractor(extractor: ExtractorOrCombiner): RecursiveStringRecords {
-      switch (extractor.extractorOrCombinerType) {
-        case "extractorForObjectByDirectReference": {
-          return `SELECT * FROM "${this.schema}"."${extractor.parentName}" WHERE "uuid" = '${extractor.instanceUuid}'`;
-          break;
-        }
-        case "combinerForObjectByRelation": {
-          throw new Error("sqlForExtractor combinerForObjectByRelation not implemented");
-          break;
-        }
-        case "extractorWrapperReturningObject":
-        case "extractorWrapperReturningList":
-        case "combinerByRelationReturningObjectList":
-        case "combinerByManyToManyRelationReturningObjectList":
-        case "extractorByEntityReturningObjectList": {
-          throw new Error(
-            "sqlForExtractor not implemented for extractorOrCombinerType: " + extractor.extractorOrCombinerType
-          );
-          break;
-        }
-        default: {
-          throw new Error("sqlForExtractor not implemented for extractorOrCombinerType of extractor: " + extractor);
-          break;
-        }
-      }
-    }
     // ##############################################################################################
     sqlForQuery(
       query: BoxedExtractorOrCombinerReturningObjectOrObjectList | BoxedQueryWithExtractorCombinerTransformer
@@ -157,7 +131,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
         }
         case "boxedQueryWithExtractorCombinerTransformer": {
           return Object.fromEntries(
-            Object.entries(query.extractors ?? {}).map((e) => [e[0], this.sqlForExtractor(e[1])])
+            Object.entries(query.extractors ?? {}).map((e) => [e[0], sqlStringForExtractor(e[1], this.schema)])
           );
           break;
         }
@@ -246,11 +220,11 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
 
     // #############################################################################################
     async handleBoxedQueryAction(query: RunBoxedQueryAction): Promise<ActionReturnType> {
-      log.info(this.logHeader, "handleBoxedQueryAction", "query", query);
+      log.info(this.logHeader, "handleBoxedQueryAction called for query", query);
 
       const result: ActionReturnType = await this.extractorRunner.handleBoxedQueryAction(query);
 
-      log.info(this.logHeader, "handleBoxedQueryAction", "query", query, "result", result);
+      log.info(this.logHeader, "handleBoxedQueryAction done for query", query, "result", result);
       return result;
     }
 
@@ -268,17 +242,15 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
         } else {
           // TODO: indicate exact reason!
           console.warn(this.logHeader, "getInstance", "could not find entityUuid", parentUuid);
-          return Promise.resolve({ status: "error", error: { errorType: "FailedToGetInstance" } });
+          return Promise.resolve({ status: "error", errorType: "FailedToGetInstance" } );
         }
       } catch (error) {
         // TODO: indicate exact reason!
         log.warn(this.logHeader, "getInstance", "could not fetch instance from db: parentId", parentUuid, "uuid", uuid);
         return Promise.resolve({
           status: "error",
-          error: {
-            errorType: "FailedToGetInstance",
-            errorMessage: "could not fetch instance from db: parentId " + parentUuid + ", uuid=" + uuid + ": " + error,
-          },
+          errorType: "FailedToGetInstance",
+          errorMessage: "could not fetch instance from db: parentId " + parentUuid + ", uuid=" + uuid + ": " + error,
         });
       }
     }
@@ -315,7 +287,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           );
           return {
             status: "error",
-            error: { errorType: "FailedToGetInstances", errorMessage: `could not find entity ${parentUuid}` },
+            errorType: "FailedToGetInstances", errorMessage: `could not find entity ${parentUuid}` ,
           };
         }
         // TODO: CORRECT APPLICATION SECTION
@@ -330,10 +302,8 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
         log.warn(this.logHeader, "getInstancesWithFilter", "failed to fetch instances of entityUuid", parentUuid);
         return {
           status: "error",
-          error: {
-            errorType: "FailedToGetInstances",
-            errorMessage: `could not get instances for entity ${parentUuid}`,
-          },
+          errorType: "FailedToGetInstances",
+          errorMessage: `could not get instances for entity ${parentUuid}`,
         };
       }
     }
@@ -375,10 +345,8 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           );
           return {
             status: "error",
-            error: {
-              errorType: "FailedToGetInstances",
-              errorMessage: `getOrderedInstancesWithFilter could not find entity ${parentUuid}`,
-            },
+            errorType: "FailedToGetInstances",
+            errorMessage: `getOrderedInstancesWithFilter could not find entity ${parentUuid}`,
           };
         }
         // TODO: CORRECT APPLICATION SECTION
@@ -398,10 +366,8 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
         );
         return {
           status: "error",
-          error: {
-            errorType: "FailedToGetInstances",
-            errorMessage: `could not get instances for entity ${parentUuid}`,
-          },
+          errorType: "FailedToGetInstances",
+          errorMessage: `could not get instances for entity ${parentUuid}`,
         };
       }
     }
@@ -425,7 +391,8 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           log.warn(this.logHeader, "getInstances", "could not find entity in database: entityUuid", parentUuid);
           return {
             status: "error",
-            error: { errorType: "FailedToGetInstances", errorMessage: `could not find entity ${parentUuid}` },
+            errorType: "FailedToGetInstances",
+            errorMessage: `could not find entity ${parentUuid}`,
           };
         }
         // TODO: CORRECT APPLICATION SECTION
@@ -440,10 +407,8 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
         log.warn(this.logHeader, "getInstances", "failed to fetch instances of entityUuid", parentUuid);
         return {
           status: "error",
-          error: {
-            errorType: "FailedToGetInstances",
-            errorMessage: `could not get instances for entity ${parentUuid}`,
-          },
+          errorType: "FailedToGetInstances",
+          errorMessage: `could not get instances for entity ${parentUuid}`,
         };
       }
     }
@@ -474,7 +439,9 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
         );
         return Promise.resolve({
           status: "error",
-          error: { errorType: "FailedToUpdateInstance", errorMessage: `failed to upsert instance ${instance.uuid} of entity ${instance.parentUuid}`, errorStack: error },
+          errorType: "FailedToUpdateInstance",
+          errorMessage: `failed to upsert instance ${instance.uuid} of entity ${instance.parentUuid}`,
+          errorStack: error,
         });
       }
       return Promise.resolve(ACTION_OK);
@@ -499,11 +466,9 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           );
           return Promise.resolve({
             status: "error",
-            error: {
-              errorType: "FailedToDeleteInstance",
-              errorMessage:
-                "could not delete instance: parentId " + parentUuid + ", uuid=" + instance.uuid + ": " + error,
-            },
+            errorType: "FailedToDeleteInstance",
+            errorMessage:
+              "could not delete instance: parentId " + parentUuid + ", uuid=" + instance.uuid + ": " + error,
           });
         }
       }
@@ -517,7 +482,8 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
         log.warn(this.logHeader, "deleteInstance", "could not find entity in database: entityUuid", parentUuid);
         return Promise.resolve({
           status: "error",
-          error: { errorType: "FailedToDeleteInstance", errorMessage: `could not find entity ${parentUuid}` },
+          errorType: "FailedToDeleteInstance",
+          errorMessage: `could not find entity ${parentUuid}`,
         });
       }
       try {
@@ -535,11 +501,8 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
         );
         return Promise.resolve({
           status: "error",
-          error: {
-            errorType: "FailedToDeleteInstance",
-            errorMessage:
-              "could not delete instance: parentId " + parentUuid + ", uuid=" + instance.uuid + ": " + error,
-          },
+          errorType: "FailedToDeleteInstance",
+          errorMessage: "could not delete instance: parentId " + parentUuid + ", uuid=" + instance.uuid + ": " + error,
         });
       }
     }

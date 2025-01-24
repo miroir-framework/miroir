@@ -14,7 +14,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 export function transformer_menu_AddItem(
   transformers: any,
   step: Step,
-  objectName: string,
+  objectName: string | undefined,
   transformer: Transformer_menu_addItem,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,

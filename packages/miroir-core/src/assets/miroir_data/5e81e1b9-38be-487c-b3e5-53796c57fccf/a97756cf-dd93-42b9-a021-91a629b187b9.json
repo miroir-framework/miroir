@@ -7,6 +7,12 @@
   "definition": {
     "type": "schemaReference",
     "context": {
+      "transformer_label": {
+        "type": "object",
+        "definition": {
+          "label": { "type": "string", "optional": true }
+        }
+      },
       "recordOfTransformers": {
         "type": "object",
         "definition": {
@@ -204,6 +210,36 @@
           }
         }
       },
+      "transformer_constants": {
+        "type": "union",
+        "discriminator": "transformerType",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformer_constantUuid"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformer_constantObject"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformer_constantString"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformer_newUuid"
+            }
+          }
+        ]
+      },
       "transformer_InnerReference": {
         "type": "union",
         "discriminator": "transformerType",
@@ -252,12 +288,38 @@
           }
         ]
       },
-      "transformerForBuild_orderBy": {
+      "transformer_orderBy": {
         "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "relativePath": "transformer_label"
+          }
+        },
         "definition": {
           "orderBy": {
             "type": "string",
             "optional": true
+          }
+        }
+      },
+      "transformerForBuild_referencedExtractor": {
+        "type": "object",
+        "definition": {
+          "referencedExtractor": {
+            "type": "union",
+            "definition": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "transformerForBuild"
+                }
+              }
+            ]
           }
         }
       },
@@ -267,12 +329,38 @@
           "type": "schemaReference",
           "definition": {
             "eager": true,
-            "relativePath": "transformerForBuild_orderBy"
+            "relativePath": "transformer_orderBy"
           }
         },
         "definition": {
           "referencedExtractor": {
             "type": "string"
+          }
+        }
+      },
+      "transformerForBuild_referencingOrRecursiveTransformer": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "relativePath": "transformer_orderBy"
+          }
+        },
+        "definition": {
+          "referencedExtractor": {
+            "type": "union",
+            "definition": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "transformerForBuild"
+                }
+              }
+            ]
           }
         }
       },
@@ -282,7 +370,7 @@
           "type": "schemaReference",
           "definition": {
             "eager": true,
-            "relativePath": "transformerForBuild_orderBy"
+            "relativePath": "transformer_orderBy"
           }
         },
         "definition": {
@@ -302,7 +390,7 @@
           "type": "schemaReference",
           "definition": {
             "eager": true,
-            "relativePath": "transformerForBuild_orderBy"
+            "relativePath": "transformer_orderBy"
           }
         },
         "definition": {
@@ -311,6 +399,9 @@
             "definition": "unique"
           },
           "attribute": {
+            "type": "string"
+          },
+          "referencedExtractor": {
             "type": "string"
           }
         }
@@ -321,7 +412,7 @@
           "type": "schemaReference",
           "definition": {
             "eager": true,
-            "relativePath": "transformerForBuild_orderBy"
+            "relativePath": "transformer_orderBy"
           }
         },
         "definition": {
@@ -354,19 +445,19 @@
           }
         }
       },
-      "transformerForBuild_fullObjectTemplate": {
+      "transformerForBuild_object_fullTemplate": {
         "type": "object",
         "extend": {
           "type": "schemaReference",
           "definition": {
             "eager": true,
-            "relativePath": "transformerForBuild_orderBy"
+            "relativePath": "transformer_orderBy"
           }
         },
         "definition": {
           "transformerType": {
             "type": "literal",
-            "definition": "fullObjectTemplate"
+            "definition": "object_fullTemplate"
           },
           "referencedExtractor": {
             "type": "string"
@@ -425,6 +516,9 @@
                 },
                 {
                   "type": "number"
+                },
+                {
+                  "type": "boolean"
                 }
               ]
             }
@@ -461,13 +555,13 @@
           }
         }
       },
-      "transformerForBuild_mapper_listToList": {
+      "transformerForBuild_list_listMapperToList": {
         "type": "object",
         "extend": {
           "type": "schemaReference",
           "definition": {
             "eager": true,
-            "relativePath": "transformerForBuild_orderBy"
+            "relativePath": "transformer_orderBy"
           }
         },
         "definition": {
@@ -476,56 +570,90 @@
             "definition": "mapperListToList"
           },
           "referencedExtractor": {
-            "type": "string"
-          },
-          "elementTransformer": {
             "type": "union",
             "definition": [
               {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "transformerForBuild_inner_object_alter"
-                }
+                "type": "string"
               },
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "transformerForBuild_innerFullObjectTemplate"
+                  "relativePath": "transformerForBuild"
                 }
               }
             ]
+          },
+          "referenceToOuterObject": {
+            "type": "string"
+          },
+          "elementTransformer": {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformerForBuild"
+            }
           }
         }
       },
-      "transformerForBuild_mapper_listToObject": {
+      "transformerForBuild_object_listReducerToIndexObject": {
         "type": "object",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "relativePath": "transformerForBuild_orderBy"
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformerForBuild_referencedExtractor"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformer_orderBy"
+            }
           }
-        },
+        ],
         "definition": {
           "transformerType": {
             "type": "literal",
-            "definition": "mapperListToObject"
-          },
-          "referencedExtractor": {
-            "type": "string"
+            "definition": "listReducerToIndexObject"
           },
           "indexAttribute": {
             "type": "string"
           }
         }
       },
-      "transformerForBuild_list_pickElement": {
+      "transformerForBuild_object_listReducerToSpreadObject": {
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformerForBuild_referencedExtractor"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformer_label"
+            }
+          }
+        ],
+        "definition": {
+          "transformerType": {
+            "type": "literal",
+            "definition": "listReducerToSpreadObject"
+          }
+        }
+      },
+      "transformerForBuild_object_pickListElement": {
         "type": "object",
         "extend": {
           "type": "schemaReference",
           "definition": {
             "eager": true,
-            "relativePath": "transformerForBuild_orderBy"
+            "relativePath": "transformer_orderBy"
           }
         },
         "definition": {
@@ -543,20 +671,26 @@
       },
       "transformerForBuild_objectEntries": {
         "type": "object",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "relativePath": "transformerForBuild_orderBy"
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformerForBuild_referencingOrRecursiveTransformer"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformer_orderBy"
+            }
           }
-        },
+        ],
         "definition": {
           "transformerType": {
             "type": "literal",
             "definition": "objectEntries"
-          },
-          "referencedExtractor": {
-            "type": "string"
           }
         }
       },
@@ -566,7 +700,7 @@
           "type": "schemaReference",
           "definition": {
             "eager": true,
-            "relativePath": "transformerForBuild_orderBy"
+            "relativePath": "transformer_orderBy"
           }
         },
         "definition": {
@@ -579,20 +713,44 @@
           }
         }
       },
-      "transformerForBuild": {
+      "transformerForBuild_list": {
         "type": "union",
         "discriminator": "transformerType",
         "definition": [
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformer_InnerReference"
+              "relativePath": "transformerForBuild_objectEntries"
             }
           },
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformerForBuild_fullObjectTemplate"
+              "relativePath": "transformerForBuild_objectValues"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformerForBuild_list_listMapperToList"
+            }
+          }
+        ]
+      },
+      "transformerForBuild_string": {
+        "type": "schemaReference",
+        "definition": {
+          "relativePath": "transformerForBuild_mustacheStringTemplate"
+        }
+      },
+      "transformerForBuild_object": {
+        "type": "union",
+        "discriminator": "transformerType",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformerForBuild_object_fullTemplate"
             }
           },
           {
@@ -610,6 +768,78 @@
           {
             "type": "schemaReference",
             "definition": {
+              "relativePath": "transformerForBuild_object_pickListElement"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformerForBuild_object_listReducerToIndexObject"
+            }
+          }
+        ]
+      },
+      "transformerForBuild_dataflowObject": {
+        "type": "object",
+        "definition": {
+          "transformerType": {
+            "type": "literal",
+            "definition": "dataflowObject"
+          },
+          "definition": {
+            "type": "record",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "relativePath": "transformerForBuild"
+              }
+            }
+          }
+        }
+      },
+      "transformerForBuild": {
+        "type": "union",
+        "discriminator": "transformerType",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformer_constants"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformer_InnerReference"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformerForBuild_dataflowObject"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformerForBuild_freeObjectTemplate"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformerForBuild_inner_object_alter"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformerForBuild_object_fullTemplate"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
               "relativePath": "transformerForBuild_objectEntries"
             }
           },
@@ -622,19 +852,25 @@
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformerForBuild_list_pickElement"
+              "relativePath": "transformerForBuild_object_pickListElement"
             }
           },
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformerForBuild_mapper_listToList"
+              "relativePath": "transformerForBuild_object_listReducerToIndexObject"
             }
           },
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformerForBuild_mapper_listToObject"
+              "relativePath": "transformerForBuild_object_listReducerToSpreadObject"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformerForBuild_list_listMapperToList"
             }
           },
           {
@@ -656,13 +892,14 @@
       },
       "transformerForRuntime_orderedTransformer": {
         "type": "object",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "relativePath": "transformerForRuntime_Abstract"
-          }
-        },
+        "extend":
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformerForRuntime_Abstract"
+            }
+          },
         "definition": {
           "orderBy": {
             "type": "string",
@@ -687,121 +924,123 @@
       },
       "transformerForRuntime_constantUuid": {
         "type": "object",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "relativePath": "transformer_constantUuid"
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformerForRuntime_Abstract"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformer_constantUuid"
+            }
           }
-        },
-        "definition": {
-          "interpolation": {
-            "type": "literal",
-            "definition": "runtime"
-          }
-        }
+        ],
+        "definition": {}
       },
       "transformerForRuntime_constantObject":{
         "type": "object",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "relativePath": "transformer_constantObject"
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformerForRuntime_Abstract"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformer_constantObject"
+            }
           }
-        },
-        "definition": {
-          "interpolation": {
-            "type": "literal",
-            "definition": "runtime"
-          }
-        }
+        ],
+        "definition": {}
       },
       "transformerForRuntime_constantString":{
         "type": "object",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "relativePath": "transformer_constantString"
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformerForRuntime_Abstract"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformer_constantString"
+            }
           }
-        },
-        "definition": {
-          "interpolation": {
-            "type": "literal",
-            "definition": "runtime"
-          }
-        }
+        ],
+        "definition": {}
       },
       "transformerForRuntime_newUuid": {
         "type": "object",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "relativePath": "transformer_newUuid"
-          }
-        },
-        "definition": {
-          "interpolation": {
-            "type": "literal",
-            "definition": "runtime"
-          }
-        }
-      },
-      "transformerForRuntime_contextReference":{
-        "type": "object",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "relativePath": "transformerForRuntime_Abstract"
-          }
-        },
-        "definition": {
-          "transformerType": {
-            "type": "literal",
-            "definition": "contextReference"
-          },
-          "referenceName": {
-            "optional": true,
-            "type": "string"
-          },
-          "referencePath": {
-            "optional": true,
-            "type": "array",
+        "extend": [
+          {
+            "type": "schemaReference",
             "definition": {
-              "type": "string"
+              "eager": true,
+              "relativePath": "transformerForRuntime_Abstract"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformer_newUuid"
             }
           }
-        }
+        ],
+        "definition": {}
+      },
+      "transformerForRuntime_contextReference": {
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformerForRuntime_Abstract"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformer_contextReference"
+            }
+          }
+        ],
+        "definition": {}
       },
       "transformerForRuntime_parameterReference":{
         "type": "object",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "relativePath": "transformerForRuntime_Abstract"
-          }
-        },
-        "definition": {
-          "transformerType": {
-            "type": "literal",
-            "definition": "parameterReference"
-          },
-          "referenceName": {
-            "optional": true,
-            "type": "string"
-          },
-          "referencePath": {
-            "optional": true,
-            "type": "array",
+        "extend": [
+          {
+            "type": "schemaReference",
             "definition": {
-              "type": "string"
+              "eager": true,
+              "relativePath": "transformerForRuntime_Abstract"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformer_parameterReference"
             }
           }
-        }
+        ],
+        "definition": {}
       },
       "transformerForRuntime_contextOrParameterReference": {
         "type": "union",
@@ -866,16 +1105,10 @@
           }
         }
       },
-      "transformerForRuntime_InnerReference": {
+      "transformerForRuntime_constants": {
         "type": "union",
         "discriminator": "transformerType",
         "definition": [
-          {
-            "type": "schemaReference",
-            "definition": {
-              "relativePath": "transformerForRuntime_mustacheStringTemplate"
-            }
-          },
           {
             "type": "schemaReference",
             "definition": {
@@ -899,6 +1132,18 @@
             "definition": {
               "relativePath": "transformerForRuntime_newUuid"
             }
+          }
+        ]
+      },
+      "transformerForRuntime_InnerReference": {
+        "type": "union",
+        "discriminator": "transformerType",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformerForRuntime_mustacheStringTemplate"
+            }
           },
           {
             "type": "schemaReference",
@@ -916,34 +1161,43 @@
       },
       "transformerForRuntime_mustacheStringTemplate": {
         "type": "object",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "relativePath": "transformer_mustacheStringTemplate"
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformerForRuntime_Abstract"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformer_mustacheStringTemplate"
+            }
           }
-        },
-        "definition": {
-          "interpolation": {
-            "type": "literal",
-            "definition": "runtime"
-          }
-        }
+        ],
+        "definition": {}
       },
       "transformerForRuntime_count":{
         "type": "object",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "relativePath": "transformerForBuild_count"
-          }
-        },
-        "definition": {
-          "interpolation": {
-            "type": "literal",
-            "definition": "runtime"
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformerForRuntime_Abstract"
+            }
           },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformerForBuild_count"
+            }
+          }
+        ],
+        "definition": {
           "referencedExtractor": {
             "type": "union",
             "definition": [
@@ -962,54 +1216,77 @@
       },
       "transformerForRuntime_unique": {
         "type": "object",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "relativePath": "transformerForBuild_unique"
-          }
-        },
-        "definition": {
-          "interpolation": {
-            "type": "literal",
-            "definition": "runtime"
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformerForRuntime_Abstract"
+            }
           },
-          "referencedExtractor": {
-            "type": "string"
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformerForBuild_unique"
+            }
           }
-        }
+        ],
+        "definition": {}
       },
       "transformerForRuntime_objectEntries": {
         "type": "object",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "relativePath": "transformerForRuntime_referencingTransformer"
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformerForRuntime_referencingTransformer"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformerForBuild_objectEntries"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformerForRuntime_Abstract"
+            }
           }
-        },
-        "definition": {
-          "transformerType": {
-            "type": "literal",
-            "definition": "objectEntries"
-          }
-        }
+        ],
+        "definition": {}
       },
       "transformerForRuntime_objectValues": {
         "type": "object",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "relativePath": "transformerForRuntime_referencingTransformer"
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformerForRuntime_referencingTransformer"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformerForBuild_objectValues"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformerForRuntime_Abstract"
+            }
           }
-        },
-        "definition": {
-          "transformerType": {
-            "type": "literal",
-            "definition": "objectValues"
-          }
-        }
+        ],
+        "definition": {}
       },
       "transformerForRuntime_freeObjectTemplate": {
         "type": "object",
@@ -1095,7 +1372,7 @@
           }
         }
       },
-      "transformerForRuntime_fullObjectTemplate": {
+      "transformerForRuntime_object_fullTemplate": {
         "type": "object",
         "extend": {
           "type": "schemaReference",
@@ -1107,7 +1384,7 @@
         "definition": {
           "transformerType": {
             "type": "literal",
-            "definition": "fullObjectTemplate"
+            "definition": "object_fullTemplate"
           },
           "definition": {
             "type": "array",
@@ -1170,64 +1447,67 @@
             "type": "literal",
             "definition": "mapperListToList"
           },
+          "referenceToOuterObject": {
+            "type": "string"
+          },
           "elementTransformer": {
-            "type": "union",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "transformerForRuntime_object_alter"
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "transformerForRuntime_innerFullObjectTemplate"
-                }
-              }
-            ]
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformerForRuntime"
+            }
           }
         }
       },
       "transformerForRuntime_mapper_listToObject": {
         "type": "object",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "relativePath": "transformerForRuntime_referencingTransformer"
-          }
-        },
-        "definition": {
-          "transformerType": {
-            "type": "literal",
-            "definition": "mapperListToObject"
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformerForBuild_object_listReducerToIndexObject"
+            }
           },
-          "indexAttribute": {
-            "type": "string"
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformerForRuntime_Abstract"
+            }
           }
-        }
+        ],
+        "definition": {}
       },
-      "transformerForRuntime_list_pickElement": {
+      "transformerForRuntime_object_pickListElement": {
         "type": "object",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "relativePath": "transformerForBuild_list_pickElement"
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformerForBuild_object_pickListElement"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformerForRuntime_Abstract"
+            }
           }
-        },
-        "definition": {
-          "interpolation": {
-            "type": "literal",
-            "definition": "runtime"
-          }
-        }
+        ],
+        "definition": {}
       },
       "transformerForRuntime": {
       "type": "union",
         "discriminator": "transformerType",
         "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformerForRuntime_constants"
+            }
+          },
           {
             "type": "schemaReference",
             "definition": {
@@ -1237,7 +1517,7 @@
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformerForRuntime_fullObjectTemplate"
+              "relativePath": "transformerForRuntime_object_fullTemplate"
             }
           },
           {
@@ -1261,7 +1541,7 @@
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformerForRuntime_list_pickElement"
+              "relativePath": "transformerForRuntime_object_pickListElement"
             }
           },
           {

@@ -878,7 +878,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
   });
   
   // ################################################################################################
-  it("build custom object with actionRuntimeTransformer using fullObjectTemplate", async () => {
+  it("build custom object with actionRuntimeTransformer using object_fullTemplate", async () => {
     await chainVitestSteps(
       "ExtractorPersistenceStoreRunner_selectUniqueEntityApplication",
       {},
@@ -907,7 +907,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
             },
             runtimeTransformers: {
               newBook: {
-                transformerType: "fullObjectTemplate",
+                transformerType: "object_fullTemplate",
                 interpolation: "runtime",
                 referencedExtractor: "book",
                 definition: [

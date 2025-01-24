@@ -297,51 +297,51 @@ async function startWebApp(root:Root) {
     // ################################################
     if (currentMiroirConfig.client.emulateServer) {
       throw new Error("emulateServer must be re-implemented using RestClientStub");
-      const persistenceStoreControllerManagerForEmulatedServer = new PersistenceStoreControllerManager(
-        ConfigurationService.adminStoreFactoryRegister,
-        ConfigurationService.StoreSectionFactoryRegister,
-      );
-      const domainControllerForEmulatedServer = await setupMiroirDomainController(
-        miroirContext, 
-        {
-          persistenceStoreAccessMode: "local",
-          localPersistenceStoreControllerManager: persistenceStoreControllerManagerForEmulatedServer,
-          // remotePersistenceStoreRestClient: persistenceClientAndRestClient,
-        }
-      ); // even when emulating server, we use remote persistence store, since MSW makes it appear as if we are using a remote server.
+      // const persistenceStoreControllerManagerForEmulatedServer = new PersistenceStoreControllerManager(
+      //   ConfigurationService.adminStoreFactoryRegister,
+      //   ConfigurationService.StoreSectionFactoryRegister,
+      // );
+      // const domainControllerForEmulatedServer = await setupMiroirDomainController(
+      //   miroirContext, 
+      //   {
+      //     persistenceStoreAccessMode: "local",
+      //     localPersistenceStoreControllerManager: persistenceStoreControllerManagerForEmulatedServer,
+      //     // remotePersistenceStoreRestClient: persistenceClientAndRestClient,
+      //   }
+      // ); // even when emulating server, we use remote persistence store, since MSW makes it appear as if we are using a remote server.
   
-      const {
-        localDataStoreWorker, // browser
-        localDataStoreServer, // nodejs
-      } = await createMswRestServer(
-        currentMiroirConfig,
-        'browser',
-        restServerDefaultHandlers,
-        persistenceStoreControllerManagerForEmulatedServer,
-        domainControllerForEmulatedServer,
-        setupWorker
-      );
+      // const {
+      //   localDataStoreWorker, // browser
+      //   localDataStoreServer, // nodejs
+      // } = await createMswRestServer(
+      //   currentMiroirConfig,
+      //   'browser',
+      //   restServerDefaultHandlers,
+      //   persistenceStoreControllerManagerForEmulatedServer,
+      //   domainControllerForEmulatedServer,
+      //   setupWorker
+      // );
   
-      if (localDataStoreWorker) {
-        log.warn("index.tsx localDataStoreWorkers listHandlers", localDataStoreWorker.listHandlers().map(h=>h.info.header));
-        await localDataStoreWorker?.start();
-      } else {
-        throw new Error("index.tsx localDataStoreWorker not found.");
+      // if (localDataStoreWorker) {
+      //   log.warn("index.tsx localDataStoreWorkers listHandlers", localDataStoreWorker.listHandlers().map(h=>h.info.header));
+      //   await localDataStoreWorker?.start();
+      // } else {
+      //   throw new Error("index.tsx localDataStoreWorker not found.");
         
-      }
+      // }
 
-      for (const c of Object.entries(currentMiroirConfig.client.deploymentStorageConfig)) {
-        const openStoreAction: StoreOrBundleAction = {
-          actionType: "storeManagementAction",
-          actionName: "openStore",
-          endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-          configuration: {
-            [c[0]]: c[1] as StoreUnitConfiguration,
-          },
-          deploymentUuid: c[0],
-        };
-        await domainController.handleAction(openStoreAction)
-      }
+      // for (const c of Object.entries(currentMiroirConfig.client.deploymentStorageConfig)) {
+      //   const openStoreAction: StoreOrBundleAction = {
+      //     actionType: "storeManagementAction",
+      //     actionName: "openStore",
+      //     endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+      //     configuration: {
+      //       [c[0]]: c[1] as StoreUnitConfiguration,
+      //     },
+      //     deploymentUuid: c[0],
+      //   };
+      //   await domainController.handleAction(openStoreAction)
+      // }
     }
 
     const theme = createTheme(themeParams);
