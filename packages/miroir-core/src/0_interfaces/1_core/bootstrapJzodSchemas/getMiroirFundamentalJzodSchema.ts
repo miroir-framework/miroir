@@ -21,6 +21,7 @@ import { MiroirLoggerFactory } from "../../../4_services/LoggerFactory.js";
 import { packageName } from "../../../constants.js";
 import { LoggerInterface } from "../../4-services/LoggerInterface.js";
 import { optional } from "zod";
+import { domainElement } from "../preprocessor-generated/miroirFundamentalType.js";
 // import {
 //   extractorOrCombinerReturningObject,
 //   boxedQueryWithExtractorCombinerTransformer,
@@ -600,14 +601,17 @@ export function getMiroirFundamentalJzodSchema(
         testCompositeActionTemplate: (entityDefinitionTest.jzodSchema as any).definition.definition.definition.find(
           (e: any) => e.definition.testType.definition == "testCompositeActionTemplate"
         ),
-        testCompositeActionTemplateSuite: (entityDefinitionTest.jzodSchema as any).definition.definition.definition.find(
+        testCompositeActionTemplateSuite: (
+          entityDefinitionTest.jzodSchema as any
+        ).definition.definition.definition.find(
           (e: any) => e.definition.testType.definition == "testCompositeActionTemplateSuite"
         ),
         testAssertion: (entityDefinitionTest.jzodSchema as any).definition.definition.definition.find(
           (e: any) => e.definition.testType.definition == "testAssertion"
         ),
         test: entityDefinitionTest.jzodSchema as any,
-        selfApplicationDeploymentConfiguration: entityDefinitionSelfApplicationDeploymentConfiguration.jzodSchema as any,
+        selfApplicationDeploymentConfiguration:
+          entityDefinitionSelfApplicationDeploymentConfiguration.jzodSchema as any,
         // selfApplication: entityDefinitionSelfApplicationV1.jzodSchema as JzodObject,
         // applicationVersion: entityDefinitionSelfApplicationVersionV1.jzodSchema as JzodObject,
         // bundle: entityDefinitionBundleV1.jzodSchema as JzodObject,
@@ -1073,6 +1077,48 @@ export function getMiroirFundamentalJzodSchema(
             },
           },
         },
+        domainElementArray: {
+          type: "object",
+          definition: {
+            elementType: {
+              type: "literal",
+              definition: "array",
+            },
+            elementValue: {
+              type: "array",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  relativePath: "domainElement",
+                },
+              },
+            },
+          },
+        },
+        domainElementString: {
+          type: "object",
+          definition: {
+            elementType: {
+              type: "literal",
+              definition: "string",
+            },
+            elementValue: {
+              type: "string",
+            },
+          },
+        },
+        domainElementNumber: {
+          type: "object",
+          definition: {
+            elementType: {
+              type: "literal",
+              definition: "number",
+            },
+            elementValue: {
+              type: "number",
+            },
+          },
+        },
         domainElementObjectOrFailed: {
           type: "union",
           definition: [
@@ -1235,6 +1281,22 @@ export function getMiroirFundamentalJzodSchema(
             },
           ],
         },
+        domainElementInstanceUuid: {
+          type: "object",
+          definition: {
+            elementType: {
+              type: "literal",
+              definition: "instanceUuid",
+            },
+            elementValue: {
+              type: "schemaReference",
+              definition: {
+                absolutePath: miroirFundamentalJzodSchemaUuid,
+                relativePath: "entityInstanceUuid",
+              },
+            },
+          },
+        },
         domainElementType: {
           type: "enum",
           definition: [
@@ -1246,10 +1308,10 @@ export function getMiroirFundamentalJzodSchema(
             "instance",
             "instanceUuid",
             "instanceUuidIndexUuidIndex",
-            "void"
+            "void",
           ],
         },
-        domainElement: {
+        domainElementSuccess: {
           type: "union",
           definition: [
             {
@@ -1270,118 +1332,197 @@ export function getMiroirFundamentalJzodSchema(
               type: "schemaReference",
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
+                relativePath: "domainElementObject",
+              },
+            },
+            {
+              type: "schemaReference",
+              definition: {
+                absolutePath: miroirFundamentalJzodSchemaUuid,
+                relativePath: "domainElementInstanceUuidIndex",
+              },
+            },
+            {
+              type: "schemaReference",
+              definition: {
+                absolutePath: miroirFundamentalJzodSchemaUuid,
+                relativePath: "domainElementEntityInstanceCollection",
+              },
+            },
+            {
+              type: "schemaReference",
+              definition: {
+                absolutePath: miroirFundamentalJzodSchemaUuid,
+                relativePath: "domainElementInstanceArray",
+              },
+            },
+            {
+              type: "schemaReference",
+              definition: {
+                absolutePath: miroirFundamentalJzodSchemaUuid,
+                relativePath: "domainElementEntityInstance",
+              },
+            },
+            {
+              type: "schemaReference",
+              definition: {
+                absolutePath: miroirFundamentalJzodSchemaUuid,
+                relativePath: "domainElementInstanceUuid",
+              },
+            },
+            // {
+            //   type: "object",
+            //   definition: {
+            //     elementType: {
+            //       type: "literal",
+            //       definition: "instanceUuidIndexUuidIndex",
+            //     },
+            //     elementValue: {
+            //       type: "schemaReference",
+            //       definition: {
+            //         absolutePath: miroirFundamentalJzodSchemaUuid,
+            //         relativePath: "entityInstancesUuidIndex",
+            //       },
+            //     },
+            //   },
+            // },
+            {
+              type: "schemaReference",
+              definition: {
+                relativePath: "domainElementString",
+              },
+            },
+            {
+              type: "schemaReference",
+              definition: {
+                relativePath: "domainElementNumber",
+              },
+            },
+            {
+              type: "schemaReference",
+              definition: {
+                relativePath: "domainElementArray",
+              },
+            },
+          ],
+        },
+        domainElement: {
+          type: "union",
+          definition: [
+            {
+              type: "schemaReference",
+              definition: {
+                absolutePath: miroirFundamentalJzodSchemaUuid,
+                relativePath: "domainElementSuccess",
+              },
+            },
+            {
+              type: "schemaReference",
+              definition: {
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "domainElementFailed",
               },
             },
-            {
-              type: "schemaReference",
-              definition: {
-                absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "domainElementObjectOrFailed",
-              },
-            },
-            {
-              type: "schemaReference",
-              definition: {
-                absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "domainElementInstanceUuidIndexOrFailed",
-              },
-            },
-            {
-              type: "schemaReference",
-              definition: {
-                absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "domainElementEntityInstanceCollectionOrFailed",
-              },
-            },
-            {
-              type: "schemaReference",
-              definition: {
-                absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "domainElementInstanceArrayOrFailed",
-              },
-            },
-            {
-              type: "schemaReference",
-              definition: {
-                absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "domainElementEntityInstanceOrFailed",
-              },
-            },
-            {
-              type: "object",
-              definition: {
-                elementType: {
-                  type: "literal",
-                  definition: "instanceUuid",
-                },
-                elementValue: {
-                  type: "schemaReference",
-                  definition: {
-                    absolutePath: miroirFundamentalJzodSchemaUuid,
-                    relativePath: "entityInstanceUuid",
-                  },
-                },
-              },
-            },
-            {
-              type: "object",
-              definition: {
-                elementType: {
-                  type: "literal",
-                  definition: "instanceUuidIndexUuidIndex",
-                },
-                elementValue: {
-                  type: "schemaReference",
-                  definition: {
-                    absolutePath: miroirFundamentalJzodSchemaUuid,
-                    relativePath: "entityInstancesUuidIndex",
-                  },
-                },
-              },
-            },
-            {
-              type: "object",
-              definition: {
-                elementType: {
-                  type: "literal",
-                  definition: "string",
-                },
-                elementValue: {
-                  type: "string",
-                },
-              },
-            },
-            {
-              type: "object",
-              definition: {
-                elementType: {
-                  type: "literal",
-                  definition: "number",
-                },
-                elementValue: {
-                  type: "number",
-                },
-              },
-            },
-            {
-              type: "object",
-              definition: {
-                elementType: {
-                  type: "literal",
-                  definition: "array",
-                },
-                elementValue: {
-                  type: "array",
-                  definition: {
-                    type: "schemaReference",
-                    definition: {
-                      relativePath: "domainElement",
-                    },
-                  },
-                },
-              },
-            },
+            // },
+            // {
+            //   type: "schemaReference",
+            //   definition: {
+            //     absolutePath: miroirFundamentalJzodSchemaUuid,
+            //     relativePath: "domainElementVoid",
+            //   },
+            // },
+            // {
+            //   type: "schemaReference",
+            //   definition: {
+            //     absolutePath: miroirFundamentalJzodSchemaUuid,
+            //     relativePath: "domainElementAny",
+            //   },
+            // },
+            // {
+            //   type: "schemaReference",
+            //   definition: {
+            //     absolutePath: miroirFundamentalJzodSchemaUuid,
+            //     relativePath: "domainElementObjectOrFailed",
+            //   },
+            // },
+            // {
+            //   type: "schemaReference",
+            //   definition: {
+            //     absolutePath: miroirFundamentalJzodSchemaUuid,
+            //     relativePath: "domainElementInstanceUuidIndexOrFailed",
+            //   },
+            // },
+            // {
+            //   type: "schemaReference",
+            //   definition: {
+            //     absolutePath: miroirFundamentalJzodSchemaUuid,
+            //     relativePath: "domainElementEntityInstanceCollectionOrFailed",
+            //   },
+            // },
+            // {
+            //   type: "schemaReference",
+            //   definition: {
+            //     absolutePath: miroirFundamentalJzodSchemaUuid,
+            //     relativePath: "domainElementInstanceArrayOrFailed",
+            //   },
+            // },
+            // {
+            //   type: "schemaReference",
+            //   definition: {
+            //     absolutePath: miroirFundamentalJzodSchemaUuid,
+            //     relativePath: "domainElementEntityInstanceOrFailed",
+            //   },
+            // },
+            // {
+            //   type: "object",
+            //   definition: {
+            //     elementType: {
+            //       type: "literal",
+            //       definition: "instanceUuid",
+            //     },
+            //     elementValue: {
+            //       type: "schemaReference",
+            //       definition: {
+            //         absolutePath: miroirFundamentalJzodSchemaUuid,
+            //         relativePath: "entityInstanceUuid",
+            //       },
+            //     },
+            //   },
+            // },
+            // {
+            //   type: "object",
+            //   definition: {
+            //     elementType: {
+            //       type: "literal",
+            //       definition: "instanceUuidIndexUuidIndex",
+            //     },
+            //     elementValue: {
+            //       type: "schemaReference",
+            //       definition: {
+            //         absolutePath: miroirFundamentalJzodSchemaUuid,
+            //         relativePath: "entityInstancesUuidIndex",
+            //       },
+            //     },
+            //   },
+            // },
+            // {
+            //   type: "schemaReference",
+            //   definition: {
+            //     relativePath: "domainElementString",
+            //   },
+            // },
+            // {
+            //   type: "schemaReference",
+            //   definition: {
+            //     relativePath: "domainElementNumber",
+            //   },
+            // },
+            // {
+            //   type: "schemaReference",
+            //   definition: {
+            //     relativePath: "domainElementArray",
+            //   },
+            // },
           ],
         },
         // ########################################################################################
@@ -2004,10 +2145,10 @@ export function getMiroirFundamentalJzodSchema(
                 ...(instanceEndpointVersionV1 as any).definition.actions
                   .filter((e: any) => !!e.actionErrors)
                   .map((e: any) => e.actionErrors),
-                  {
-                    type: "literal",
-                    definition: "FailedToResolveTemplate", // TODO: add a Template Endpoint
-                  },
+                {
+                  type: "literal",
+                  definition: "FailedToResolveTemplate", // TODO: add a Template Endpoint
+                },
               ],
             },
             errorMessage: { type: "string", optional: true },
@@ -2022,7 +2163,7 @@ export function getMiroirFundamentalJzodSchema(
               definition: { absolutePath: miroirFundamentalJzodSchemaUuid, relativePath: "actionError" },
             },
           },
-            // },
+          // },
           // },
         },
         actionVoidSuccess: {
@@ -2222,11 +2363,11 @@ export function getMiroirFundamentalJzodSchema(
         // extendedCompositeAction: domainEndpointVersionV1.definition.actions.find(
         //   (a: any) => a.actionParameters?.definition?.actionType?.definition == "extendedCompositeAction"
         // )?.actionParameters,
-        compositeRunTestAssertion: domainEndpointVersionV1.definition.actions.find(
-          (a: any) => a.actionParameters?.definition?.actionType?.definition == "compositeAction"
-        )?.actionParameters.definition.definition.definition.definition.find(
-          (a: any) => a.definition?.actionType?.definition == "compositeRunTestAssertion"
-        ),
+        compositeRunTestAssertion: domainEndpointVersionV1.definition.actions
+          .find((a: any) => a.actionParameters?.definition?.actionType?.definition == "compositeAction")
+          ?.actionParameters.definition.definition.definition.definition.find(
+            (a: any) => a.definition?.actionType?.definition == "compositeRunTestAssertion"
+          ),
         domainAction: {
           type: "union",
           definition: domainEndpointVersionV1.definition.actions.map((e: any) => e.actionParameters),
@@ -2380,7 +2521,7 @@ export function getMiroirFundamentalJzodSchema(
                 },
                 connectionString: {
                   type: "string",
-                }
+                },
               },
             },
             {
@@ -2392,7 +2533,7 @@ export function getMiroirFundamentalJzodSchema(
                 },
                 rootIndexDbName: {
                   type: "string",
-                }
+                },
               },
             },
             {
@@ -2404,11 +2545,11 @@ export function getMiroirFundamentalJzodSchema(
                 },
                 rootDirectory: {
                   type: "string",
-                }
+                },
               },
             },
           ],
-        }
+        },
       },
       definition: {
         absolutePath: miroirFundamentalJzodSchemaUuid,
@@ -2530,8 +2671,13 @@ export function getMiroirFundamentalJzodSchema(
         //     },
         //   },
         // ],
+        domainElementSuccess: (miroirFundamentalJzodSchema as any).definition.context.domainElementSuccess,
         domainElementVoid: (miroirFundamentalJzodSchema as any).definition.context.domainElementVoid,
         domainElementAny: (miroirFundamentalJzodSchema as any).definition.context.domainElementAny,
+        domainElementArray: (miroirFundamentalJzodSchema as any).definition.context.domainElementArray,
+        domainElementInstanceUuid: (miroirFundamentalJzodSchema as any).definition.context.domainElementInstanceUuid,
+        domainElementNumber: (miroirFundamentalJzodSchema as any).definition.context.domainElementNumber,
+        domainElementString: (miroirFundamentalJzodSchema as any).definition.context.domainElementString,
         domainElementFailed: (miroirFundamentalJzodSchema as any).definition.context.domainElementFailed,
         domainElementObject: (miroirFundamentalJzodSchema as any).definition.context.domainElementObject,
         domainElementObjectOrFailed: (miroirFundamentalJzodSchema as any).definition.context
@@ -2661,6 +2807,7 @@ export function getMiroirFundamentalJzodSchema(
         transformer_constantUuid: (transformerJzodSchema as any).definition.context.transformer_constantUuid,
         transformer_constantObject: (transformerJzodSchema as any).definition.context.transformer_constantObject,
         transformer_constantString: (transformerJzodSchema as any).definition.context.transformer_constantString,
+        transformer_constants: (transformerJzodSchema as any).definition.context.transformer_constants,
         transformer_newUuid: (transformerJzodSchema as any).definition.context.transformer_newUuid,
         transformer_parameterReference: (transformerJzodSchema as any).definition.context.transformer_parameterReference,
         transformer_contextReference: (transformerJzodSchema as any).definition.context.transformer_contextReference,
@@ -2694,6 +2841,7 @@ export function getMiroirFundamentalJzodSchema(
         transformerForRuntime_constantObject: (transformerJzodSchema as any).definition.context.transformer_constantObject,
         transformerForRuntime_constantString: (transformerJzodSchema as any).definition.context.transformer_constantString,
         transformerForRuntime_contextReference: (transformerJzodSchema as any).definition.context.transformer_contextReference,
+        transformerForRuntime_constants: (transformerJzodSchema as any).definition.context.transformer_constants,
         transformerForRuntime_contextOrParameterReference: (transformerJzodSchema as any).definition.context.transformer_contextOrParameterReference,
         transformerForRuntime_freeObjectTemplate: (transformerJzodSchema as any).definition.context.transformerForRuntime_freeObjectTemplate,
         transformerForRuntime_innerFullObjectTemplate: (transformerJzodSchema as any).definition.context.transformerForRuntime_innerFullObjectTemplate,

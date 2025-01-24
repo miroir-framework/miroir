@@ -1,46 +1,36 @@
-import { v4 as uuidv4 } from "uuid";
 import { describe, expect } from 'vitest';
 
 import {
-  CompositeAction,
-  DomainAction,
-  DomainElement,
+  SqlDbAdminStore,
+  SqlDbDataStoreSection,
+  SqlDbModelStoreSection,
+} from "miroir-store-postgres";
+import { PersistenceStoreAdminSectionInterface } from "../../../dist/index.js";
+import {
   EntityDefinition,
   EntityInstance,
   ExtractorOrCombinerRecord,
   StoreUnitConfiguration,
-  TransformerForBuild,
-  TransformerForBuild_dataflowObject,
   TransformerForRuntime
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { applyTransformer, transformer_apply } from "../../2_domain/Transformers.js";
 import {
   author1,
   author2,
   author3,
-  author4,
   book1,
   book2,
-  book3,
   book4,
   book5,
   book6,
-  Country1,
-  Country2,
-  Country3,
-  Country4,
   defaultMiroirMetaModel,
   entityAuthor,
   entityBook,
   entityDefinitionAuthor,
   entityDefinitionBook,
   entityDefinitionPublisher,
-  entityJzodSchema,
   entityPublisher,
   getBasicApplicationConfiguration,
   getBasicStoreUnitConfiguration,
-  ignorePostgresExtraAttributesOnList,
-  ignorePostgresExtraAttributesOnObject,
   InitApplicationParameters,
   MetaEntity,
   PersistenceStoreController,
@@ -49,13 +39,7 @@ import {
   publisher3,
   Uuid
 } from "../../index.js";
-import {
-  SqlDbAdminStore,
-  SqlDbDataStoreSection,
-  SqlDbModelStoreSection,
-} from "miroir-store-postgres";
-import { PersistenceStoreAdminSectionInterface, StoreSectionConfiguration } from "../../../dist/index.js";
-import { runTransformerTestSuite, TransformerTest, transformerTests, TransformerTestSuite } from "../2_domain/transformersTests.data.js";
+import { runTransformerTestSuite, TransformerTest, transformerTests } from "../2_domain/transformersTests.data.js";
 // const env:any = (import.meta as any).env
 // console.log("@@@@@@@@@@@@@@@@@@ env", env);
 
@@ -447,7 +431,7 @@ describe("transformers.integ.test", async () => {
   //   // it("resolve basic transformer constantUuid", async () => {
   //   //   console.log("resolve basic transformer constantUuid START");
 
-  //   //   const result: DomainElement = transformer_apply(
+  //   //   const result: DomainQueryReturnType<DomainElementSuccess> = transformer_apply(
   //   //     "build",
   //   //     "ROOT",
   //   //     {
@@ -458,7 +442,7 @@ describe("transformers.integ.test", async () => {
   //   //     undefined
   //   //   );
 
-  //   //   const expectedResult: DomainElement = {
+  //   //   const expectedResult: DomainQueryReturnType<DomainElementSuccess> = {
   //   //     elementType: "instanceUuid",
   //   //     // elementType: "string",
   //   //     elementValue: "test",
@@ -476,7 +460,7 @@ describe("transformers.integ.test", async () => {
   // it("resolve basic transformer path reference for string", async () => { // TODO: test failure cases!
   //     console.log("resolve basic transformer path reference for string START")
 
-  //     const result: DomainElement = transformer_apply(
+  //     const result: DomainQueryReturnType<DomainElementSuccess> = transformer_apply(
   //       "runtime",
   //       "ROOT",
   //       {
@@ -492,7 +476,7 @@ describe("transformers.integ.test", async () => {
   //       },
   //     );
 
-  //     const expectedResult: DomainElement = {
+  //     const expectedResult: DomainQueryReturnType<DomainElementSuccess> = {
   //       elementType: "string",
   //       elementValue: "test",
   //     };
@@ -509,7 +493,7 @@ describe("transformers.integ.test", async () => {
   // it("resolve basic transformer path reference for number", async () => { // TODO: test failure cases!
   //     console.log("resolve basic transformer path reference for string START")
 
-  //     const result: DomainElement = transformer_apply(
+  //     const result: DomainQueryReturnType<DomainElementSuccess> = transformer_apply(
   //       "runtime",
   //       "ROOT",
   //       {
@@ -525,7 +509,7 @@ describe("transformers.integ.test", async () => {
   //       },
   //     );
 
-  //     const expectedResult: DomainElement = {
+  //     const expectedResult: DomainQueryReturnType<DomainElementSuccess> = {
   //       elementType: "number",
   //       elementValue: 1,
   //     };
@@ -542,7 +526,7 @@ describe("transformers.integ.test", async () => {
   // it("resolve basic transformer path reference for object", async () => { // TODO: test failure cases!
   //     console.log("resolve basic transformer path reference for object START")
 
-  //     const result: DomainElement = transformer_apply(
+  //     const result: DomainQueryReturnType<DomainElementSuccess> = transformer_apply(
   //       "runtime",
   //       "ROOT",
   //       {
@@ -562,12 +546,12 @@ describe("transformers.integ.test", async () => {
   //       },
   //     );
 
-  //     const expectedResult: DomainElement = {
+  //     const expectedResult: DomainQueryReturnType<DomainElementSuccess> = {
   //       elementType: "object",
   //       elementValue: {
   //         "1": {
   //           name: "test",
-  //         } as any, // TODO: redefine "object" DomainElement, so as to be non-recursive
+  //         } as any, // TODO: redefine "object" DomainQueryReturnType<DomainElementSuccess>, so as to be non-recursive
   //       }
   //     };
 
@@ -2330,7 +2314,7 @@ describe("transformers.integ.test", async () => {
   //     const queryParams = {};
   //     const contextResults = {};
 
-  //     const result: DomainElement = transformer_apply("build", undefined, transformer, queryParams, contextResults);
+  //     const result: DomainQueryReturnType<DomainElementSuccess> = transformer_apply("build", undefined, transformer, queryParams, contextResults);
 
   //     expect(result.elementType).toBe("object");
   //     expect(result.elementValue.name).toBe("testName");

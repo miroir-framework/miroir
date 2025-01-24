@@ -7,7 +7,7 @@ import {
   BoxedQueryWithExtractorCombinerTransformer,
   DeploymentEntityState,
   DomainElementObject,
-  DomainElementObjectOrFailed,
+  DomainQueryReturnType,
   ExtractorRunnerParamsForJzodSchema,
   getQueryRunnerParamsForDeploymentEntityState,
   LoggerInterface,
@@ -25,11 +25,10 @@ import {
 
 
 import { useDeploymentEntityStateJzodSchemaSelector, useDeploymentEntityStateQuerySelector } from '../ReduxHooks.js';
-import { ReportUrlParamKeys } from '../routes/ReportPage.js';
 import { ReportSectionView } from './ReportSectionView.js';
 
 import { getMemoizedDeploymentEntityStateJzodSchemaSelectorMap, getMemoizedDeploymentEntityStateSelectorMap } from 'miroir-localcache-redux';
-import { packageName } from '../../../constants.js';
+import { packageName, ReportUrlParamKeys } from '../../../constants.js';
 import { cleanLevel } from '../constants.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -176,7 +175,7 @@ export const ReportView = (props: ReportViewProps) => {
 
   log.info("################################################################ Fecth NON-Template report data", usedQuery);
 
-  const deploymentEntityStateQueryResults: DomainElementObjectOrFailed = useDeploymentEntityStateQuerySelector(
+  const deploymentEntityStateQueryResults: DomainQueryReturnType<DomainElementObject> = useDeploymentEntityStateQuerySelector(
     deploymentEntityStateSelectorMap.runQuery,
     deploymentEntityStateFetchQueryParams
   );

@@ -13,13 +13,13 @@ import {
   asyncRunQuery,
   BoxedExtractorOrCombinerReturningObject,
   BoxedExtractorOrCombinerReturningObjectList,
-  DomainElement,
   DomainElementEntityInstanceOrFailed,
   DomainElementInstanceArrayOrFailed,
-  DomainElementInstanceUuidIndexOrFailed,
-  DomainElementObjectOrFailed,
+  DomainElementInstanceUuidIndex,
+  DomainElementObject,
+  DomainElementSuccess,
+  DomainQueryReturnType,
   DomainState,
-  ExtractorOrCombiner,
   ExtractorOrCombinerReturningObject,
   LoggerInterface,
   MiroirLoggerFactory,
@@ -31,22 +31,16 @@ import {
   selectFetchQueryJzodSchemaFromDomainStateNew,
   selectJzodSchemaByDomainModelQueryFromDomainStateNew,
   selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
-  transformer_InnerReference_resolve,
-  TransformerForRuntime,
-  TransformerForRuntime_innerFullObjectTemplate
+  transformer_InnerReference_resolve
 } from "miroir-core";
+import {
+  sqlStringForQuery
+} from "../1_core/SqlGenerator";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 import { SqlDbDataStoreSection } from "./SqlDbDataStoreSection";
 import { SqlDbModelStoreSection } from "./SqlDbModelStoreSection";
 import { SqlDbExtractTemplateRunner } from "./SqlDbQueryTemplateRunner";
-import {
-  sqlStringForCombiner,
-  sqlStringForExtractor,
-  sqlStringForQuery,
-  sqlStringForTransformer,
-  tokenSeparatorForWith,
-} from "../1_core/SqlGenerator";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -135,7 +129,7 @@ export class SqlDbQueryRunner {
    */
   asyncExtractWithQuery = async (
     selectorParams: AsyncQueryRunnerParams,
-  ): Promise<DomainElementObjectOrFailed> => {
+  ): Promise<DomainQueryReturnType<DomainElementObject>> => {
     // log.info("########## asyncRunQuery begin, query", selectorParams);
   
     const { query, transformerRawQueriesObject, endResultName, combinerRawQueriesObject } = sqlStringForQuery(
@@ -184,7 +178,7 @@ export class SqlDbQueryRunner {
     //       : resolvePathOnObject(rawResult.returnedDomainElement.elementValue, endResultPath)
     //     : rawResult.returnedDomainElement.elementValue;
     log.info("applyExtractorTransformerSql sqlResult", JSON.stringify(sqlResult));
-    const result: DomainElement = { elementType: "object", elementValue: {[endResultName]:sqlResult} }
+    const result: DomainQueryReturnType<DomainElementSuccess> = { elementType: "object", elementValue: {[endResultName]:sqlResult} }
     log.info("applyExtractorTransformerSql returning result", JSON.stringify(result));
     return Promise.resolve(result);
   };
@@ -202,7 +196,7 @@ export class SqlDbQueryRunner {
     // (
     //   state: any,
     //   selectorParams: AsyncExtractorOrQueryTemplateRunnerParams<BoxedExtractorTemplateReturningObjectList, any>
-    // ): Promise<DomainElementInstanceUuidIndexOrFailed> {
+    // ): Promise<DomainQueryReturnType<DomainElementInstanceUuidIndex>> {
     let result: Promise<DomainElementInstanceArrayOrFailed>;
     switch (selectorParams.extractor.select.extractorOrCombinerType) {
       case "extractorByEntityReturningObjectList": {
@@ -257,12 +251,12 @@ export class SqlDbQueryRunner {
    */
   public asyncSqlDbExtractEntityInstanceUuidIndexWithObjectListExtractor = (
     selectorParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>
-  ): Promise<DomainElementInstanceUuidIndexOrFailed> => {
+  ): Promise<DomainQueryReturnType<DomainElementInstanceUuidIndex>> => {
     // (
     //   state: any,
     //   selectorParams: AsyncExtractorOrQueryTemplateRunnerParams<BoxedExtractorTemplateReturningObjectList, any>
-    // ): Promise<DomainElementInstanceUuidIndexOrFailed> {
-    let result: Promise<DomainElementInstanceUuidIndexOrFailed>;
+    // ): Promise<DomainQueryReturnType<DomainElementInstanceUuidIndex>> {
+    let result: Promise<DomainQueryReturnType<DomainElementInstanceUuidIndex>>;
     switch (selectorParams.extractor.select.extractorOrCombinerType) {
       case "extractorByEntityReturningObjectList": {
         return this.extractEntityInstanceUuidIndexWithFilter(selectorParams);
@@ -310,7 +304,7 @@ export class SqlDbQueryRunner {
 // ##############################################################################################
   async handleBoxedExtractorAction(runBoxedExtractorAction: RunBoxedExtractorAction): Promise<ActionReturnType> {
     log.info(this.logHeader, "handleBoxedExtractorAction", "runBoxedExtractorAction", JSON.stringify(runBoxedExtractorAction, null, 2));
-    let queryResult: DomainElement;
+    let queryResult: DomainQueryReturnType<DomainElementSuccess>;
     queryResult = await this.inMemoryImplementationExtractorRunnerMap.extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList({
       extractor: runBoxedExtractorAction.query,
       extractorRunnerMap: this.inMemoryImplementationExtractorRunnerMap,
@@ -338,8 +332,12 @@ export class SqlDbQueryRunner {
 
   // ##############################################################################################
   async handleBoxedQueryAction(runBoxedQueryAction: RunBoxedQueryAction): Promise<ActionReturnType> {
-    log.info(this.logHeader, "handleBoxedQueryAction called with runBoxedQueryAction", JSON.stringify(runBoxedQueryAction, null, 2));
-    let queryResult: DomainElement;
+    log.info(
+      this.logHeader,
+      "handleBoxedQueryAction called with runBoxedQueryAction",
+      JSON.stringify(runBoxedQueryAction, null, 2)
+    );
+    let queryResult: DomainQueryReturnType<DomainElementSuccess>;
     if (runBoxedQueryAction.query.runAsSql) {
       queryResult = await this.dbImplementationExtractorRunnerMap.runQuery({
         extractor: runBoxedQueryAction.query,
@@ -377,7 +375,8 @@ export class SqlDbQueryRunner {
     DomainElementEntityInstanceOrFailed
   > = async (
     selectorParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObject>
-  ): Promise<DomainElementEntityInstanceOrFailed> => {
+  // ): Promise<DomainElementEntityInstanceOrFailed> => {
+  ): Promise<DomainQueryReturnType<DomainElementEntityInstanceOrFailed>> => {
     const querySelectorParams: ExtractorOrCombinerReturningObject = selectorParams.extractor.select as ExtractorOrCombinerReturningObject;
     const deploymentUuid = selectorParams.extractor.deploymentUuid;
     const applicationSection: ApplicationSection =
@@ -515,10 +514,10 @@ export class SqlDbQueryRunner {
   // ##############################################################################################
   public extractEntityInstanceUuidIndex: AsyncBoxedExtractorRunner<
     BoxedExtractorOrCombinerReturningObjectList,
-    DomainElementInstanceUuidIndexOrFailed
+    DomainQueryReturnType<DomainElementInstanceUuidIndex>
   > = async (
     extractorRunnerParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>
-  ): Promise<DomainElementInstanceUuidIndexOrFailed> => {
+  ): Promise<DomainQueryReturnType<DomainElementInstanceUuidIndex>> => {
     return this.extractEntityInstanceList(extractorRunnerParams).then((result) => {
       if (result.elementType == "failure") {
         return result;
@@ -572,10 +571,10 @@ export class SqlDbQueryRunner {
   // ##############################################################################################
   public extractEntityInstanceUuidIndexWithFilter: AsyncBoxedExtractorRunner<
     BoxedExtractorOrCombinerReturningObjectList,
-    DomainElementInstanceUuidIndexOrFailed
+    DomainQueryReturnType<DomainElementInstanceUuidIndex>
   > = async (
     extractorRunnerParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>
-  ): Promise<DomainElementInstanceUuidIndexOrFailed> => {
+  ): Promise<DomainQueryReturnType<DomainElementInstanceUuidIndex>> => {
     return this.extractEntityInstanceListWithFilter(extractorRunnerParams).then((result) => {
       if (result.elementType == "failure") {
         return result;

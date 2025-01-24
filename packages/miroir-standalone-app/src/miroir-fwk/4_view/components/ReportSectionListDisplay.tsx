@@ -8,14 +8,13 @@ import { z } from "zod";
 
 import {
   adminConfigurationDeploymentMiroir,
-  SelfApplicationDeploymentConfiguration,
-  selfApplicationDeploymentConfiguration,
   ApplicationSection,
   applicationSection,
   DeploymentEntityState,
   DomainControllerInterface,
-  DomainElement,
   domainElementObject,
+  DomainElementSuccess,
+  DomainQueryReturnType,
   Entity,
   EntityDefinition,
   EntityInstancesUuidIndex,
@@ -29,9 +28,11 @@ import {
   MetaModel,
   MiroirLoggerFactory,
   objectListReportSection,
+  SelfApplicationDeploymentConfiguration,
+  selfApplicationDeploymentConfiguration,
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunner,
-  SyncQueryRunnerParams,
+  SyncQueryRunnerParams
 } from "miroir-core";
 
 import { Button } from "@mui/material";
@@ -40,7 +41,7 @@ import { Button } from "@mui/material";
 import { getMemoizedDeploymentEntityStateSelectorForTemplateMap } from "miroir-localcache-redux";
 
 import { AddBox } from "@mui/icons-material";
-import { deployments, packageName } from "../../../constants.js";
+import { packageName } from "../../../constants.js";
 import {
   useDomainControllerService,
   useMiroirContextInnerFormOutput,
@@ -384,7 +385,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   useDeploymentEntityStateQuerySelectorForCleanedResult(
     deploymentEntityStateSelectorMap.runQuery as SyncQueryRunner<
       DeploymentEntityState,
-      DomainElement
+      DomainQueryReturnType<DomainElementSuccess>
     >,
     foreignKeyObjectsFetchQueryParams
   );

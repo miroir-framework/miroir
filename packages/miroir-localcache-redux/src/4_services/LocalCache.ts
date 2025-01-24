@@ -10,7 +10,8 @@ import {
 import {
   ACTION_OK,
   ActionReturnType,
-  DomainElement,
+  DomainElementSuccess,
+  DomainQueryReturnType,
   DomainState,
   extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList,
   getDomainStateExtractorRunnerMap,
@@ -200,7 +201,7 @@ export class LocalCache implements LocalCacheInterface {
      const extractorRunnerMapOnDomainState = getDomainStateExtractorRunnerMap();
      log.info("LocalCache action=", JSON.stringify(action, undefined, 2))
      // log.info("RestServer queryActionHandler domainState=", JSON.stringify(domainState, undefined, 2))
-     let queryResult: DomainElement = undefined as any as DomainElement;
+     let queryResult: DomainQueryReturnType<DomainElementSuccess> = undefined as any as DomainQueryReturnType<DomainElementSuccess>;
      switch (action.query.queryType) {
        case "boxedExtractorOrCombinerReturningObject":
        case "boxedExtractorOrCombinerReturningObjectList": {

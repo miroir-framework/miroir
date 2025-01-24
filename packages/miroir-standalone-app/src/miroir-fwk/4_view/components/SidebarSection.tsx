@@ -16,7 +16,8 @@ import { Icon } from '@mui/material';
 import {
   adminConfigurationDeploymentMiroir,
   DeploymentEntityState,
-  DomainElementObjectOrFailed,
+  DomainQueryReturnType,
+  DomainElementObject,
   entityMenu,
   getApplicationSection,
   getQueryRunnerParamsForDeploymentEntityState,
@@ -167,7 +168,7 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
   );
 
   log.info("fetchDeploymentMenusQueryParams",fetchDeploymentMenusQueryParams)
-  const miroirMenusDomainElementObject: DomainElementObjectOrFailed = useDeploymentEntityStateQuerySelector(
+  const miroirMenusDomainElementObject: DomainQueryReturnType<DomainElementObject> = useDeploymentEntityStateQuerySelector(
     deploymentEntityStateSelectorMap.runQuery,
     fetchDeploymentMenusQueryParams
   );

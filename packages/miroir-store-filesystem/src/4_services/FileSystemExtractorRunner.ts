@@ -12,10 +12,11 @@ import {
   asyncRunQuery,
   BoxedExtractorOrCombinerReturningObject,
   BoxedExtractorOrCombinerReturningObjectList,
-  DomainElement,
   DomainElementEntityInstanceOrFailed,
   DomainElementInstanceArrayOrFailed,
-  DomainElementInstanceUuidIndexOrFailed,
+  DomainElementInstanceUuidIndex,
+  DomainElementSuccess,
+  DomainQueryReturnType,
   DomainState,
   ExtractorOrCombinerReturningObject,
   ExtractorOrQueryPersistenceStoreRunner,
@@ -64,7 +65,7 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
   // ################################################################################################
   async handleBoxedExtractorAction(runBoxedExtractorAction: RunBoxedExtractorAction): Promise<ActionReturnType> {
     log.info(this.logHeader, "handleBoxedExtractorAction", "runBoxedExtractorAction", JSON.stringify(runBoxedExtractorAction, null, 2));
-    let queryResult: DomainElement;
+    let queryResult: DomainQueryReturnType<DomainElementSuccess>;
     queryResult = await this.selectorMap.extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList(
       {
         extractor: runBoxedExtractorAction.query,
@@ -86,7 +87,7 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
   // ################################################################################################
   async handleBoxedQueryAction(runBoxedQueryAction: RunBoxedQueryAction): Promise<ActionReturnType> {
     log.info(this.logHeader, "handleBoxedQueryAction", "runBoxedQueryAction", JSON.stringify(runBoxedQueryAction, null, 2));
-    let queryResult: DomainElement;
+    let queryResult: DomainQueryReturnType<DomainElementSuccess>;
     queryResult = await this.selectorMap.runQuery(
       {
         extractor: runBoxedQueryAction.query,
@@ -249,10 +250,10 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
   // ##############################################################################################
   public extractEntityInstanceUuidIndex: AsyncBoxedExtractorRunner<
     BoxedExtractorOrCombinerReturningObjectList,
-    DomainElementInstanceUuidIndexOrFailed
+    DomainQueryReturnType<DomainElementInstanceUuidIndex>
   > = async (
     extractorRunnerParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>
-  ): Promise<DomainElementInstanceUuidIndexOrFailed> => {
+  ): Promise<DomainQueryReturnType<DomainElementInstanceUuidIndex>> => {
     return this.extractEntityInstanceList(extractorRunnerParams).then((result) => {
       if (result.elementType == "failure") {
         return result;

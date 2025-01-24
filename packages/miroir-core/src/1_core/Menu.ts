@@ -1,4 +1,11 @@
-import { ComplexMenu, DomainElement, Menu, MiroirMenuItem, Transformer_menu_addItem } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { DomainElementSuccess, DomainQueryReturnType } from "../../dist/index.js";
+import {
+  ComplexMenu,
+  DomainElement,
+  Menu,
+  MiroirMenuItem,
+  Transformer_menu_addItem,
+} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { Step } from "../2_domain/Transformers.js";
 import { MiroirLoggerFactory } from "../4_services/LoggerFactory.js";
@@ -18,7 +25,7 @@ export function transformer_menu_AddItem(
   transformer: Transformer_menu_addItem,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
-): DomainElement {
+): DomainQueryReturnType<DomainElementSuccess> {
   const menu = typeof transformer.transformerDefinition.menuReference == "string"?transformers.transformer_InnerReference_resolve(
     step,
     { transformerType: "contextReference", referenceName:transformer.transformerDefinition.menuReference },

@@ -1,39 +1,40 @@
 import Mustache from "mustache";
 import { v4 as uuidv4 } from 'uuid';
 import {
-  DomainElement,
-  DomainElementObjectOrFailed,
+  DomainElementFailed,
+  DomainElementInstanceArray,
+  DomainElementObject,
+  DomainElementString,
+  DomainElementSuccess,
   ExtendedTransformerForRuntime,
   Transformer,
   Transformer_InnerReference,
   Transformer_objectDynamicAccess,
   TransformerForBuild,
-  TransformerForBuild_object_fullTemplate,
   TransformerForBuild_inner_object_alter,
   TransformerForBuild_innerFullObjectTemplate,
   TransformerForBuild_list_listMapperToList,
-  TransformerForBuild_object_listReducerToIndexObject,
   TransformerForBuild_mustacheStringTemplate,
+  TransformerForBuild_object_fullTemplate,
+  TransformerForBuild_object_listReducerToIndexObject,
+  TransformerForBuild_object_listReducerToSpreadObject,
   TransformerForRuntime,
-  TransformerForRuntime_object_fullTemplate,
   TransformerForRuntime_innerFullObjectTemplate,
   TransformerForRuntime_InnerReference,
   TransformerForRuntime_mapper_listToList,
   TransformerForRuntime_mapper_listToObject,
   TransformerForRuntime_mustacheStringTemplate,
   TransformerForRuntime_object_alter,
-  TransformerForRuntime_objectDynamicAccess,
-  QueryFailed,
-  DomainElementFailed,
-  TransformerForBuild_object_listReducerToSpreadObject
+  TransformerForRuntime_object_fullTemplate,
+  TransformerForRuntime_objectDynamicAccess
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { DomainQueryReturnType } from "../0_interfaces/2_domain/DomainElement.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { transformer_menu_AddItem } from "../1_core/Menu.js";
 import { MiroirLoggerFactory } from "../4_services/LoggerFactory.js";
 import { packageName } from "../constants.js";
 import { resolvePathOnObject } from "../tools.js";
 import { cleanLevel } from "./constants.js";
-import { J } from "vitest/dist/chunks/reporters.D7Jzd9GS.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -66,7 +67,7 @@ function transformerForBuild_list_listMapperToList_apply(
   transformer: TransformerForRuntime_mapper_listToList | TransformerForBuild_list_listMapperToList,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
-): DomainElement {
+): DomainQueryReturnType<DomainElementSuccess> {
   const resolvedReference =
     typeof transformer.referencedExtractor == "string"
       ? defaultTransformers.transformer_InnerReference_resolve(
@@ -89,7 +90,7 @@ function transformerForBuild_list_listMapperToList_apply(
     resolvedReference
   );
 
-  const resultArray:DomainElement[] = [];
+  const resultArray:DomainQueryReturnType<DomainElementSuccess>[] = [];
   if (resolvedReference.elementValue instanceof Array) {
     for (const element of resolvedReference.elementValue) {
       resultArray.push(
@@ -156,7 +157,7 @@ function transformer_object_listReducerToSpreadObject_apply(
   transformer: TransformerForBuild_object_listReducerToSpreadObject,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
-): DomainElementObjectOrFailed {
+): DomainQueryReturnType<DomainElementObject> {
   log.info(
     "transformer_object_listReducerToSpreadObject_apply called for transformer",
     transformer,
@@ -202,7 +203,8 @@ function transformer_object_listReducerToIndexObject_apply(
   transformer: TransformerForRuntime_mapper_listToObject | TransformerForBuild_object_listReducerToIndexObject,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
-): DomainElementObjectOrFailed {
+// ): DomainQueryReturnType<DomainElementObject> {
+): DomainQueryReturnType<DomainElementObject> {
   log.info(
     "transformer_object_listReducerToIndexObject_apply called for transformer",
     transformer,
@@ -260,7 +262,7 @@ function transformer_object_fullTemplate(
     | TransformerForRuntime_innerFullObjectTemplate,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>
-): DomainElement {
+): DomainQueryReturnType<DomainElementString | DomainElementInstanceArray> {
   // log.info(
   //   "transformer_apply innerFullObjectTemplate objectName=",
   //   objectName,
@@ -272,21 +274,24 @@ function transformer_object_fullTemplate(
   // );
   const attributeEntries = transformerForBuild.definition.map(
     (innerEntry: {
-      attributeKey: Transformer_InnerReference | TransformerForRuntime_InnerReference;
+      // attributeKey: Transformer_InnerReference | TransformerForRuntime_InnerReference;
+      attributeKey: TransformerForBuild | TransformerForRuntime;
       attributeValue: TransformerForBuild | TransformerForRuntime;
     }): [
-      { rawLeftValue: DomainElement; finalLeftValue: DomainElement },
-      { renderedRightValue: DomainElement; finalRightValue: DomainElement }
+      { rawLeftValue: DomainQueryReturnType<DomainElementSuccess>; finalLeftValue: DomainQueryReturnType<DomainElementSuccess> },
+      { renderedRightValue: DomainQueryReturnType<DomainElementSuccess>; finalRightValue: DomainQueryReturnType<DomainElementSuccess> }
     ] => {
-      const rawLeftValue: DomainElement = innerEntry.attributeKey.transformerType
-        ? defaultTransformers.transformer_InnerReference_resolve(
+      const rawLeftValue: DomainQueryReturnType<DomainElementSuccess> = innerEntry.attributeKey.transformerType
+        // ? defaultTransformers.transformer_InnerReference_resolve(
+        ? defaultTransformers.transformer_extended_apply(
             step,
+            objectName, // is this correct? or should it be undefined?
             innerEntry.attributeKey,
             queryParams,
             contextResults
           )
         : { elementType: "string", elementValue: innerEntry.attributeKey };
-      const leftValue: { rawLeftValue: DomainElement; finalLeftValue: DomainElement } = {
+      const leftValue: { rawLeftValue: DomainQueryReturnType<DomainElementSuccess>; finalLeftValue: DomainQueryReturnType<DomainElementSuccess> } = {
         rawLeftValue,
         finalLeftValue:
           rawLeftValue.elementType != "failure" &&
@@ -305,8 +310,7 @@ function transformer_object_fullTemplate(
       //   leftValue
       // );
 
-      // const renderedRightValue: DomainElement = transformer_apply( // TODO: use actionRuntimeTransformer_apply or merge the two functions
-      const renderedRightValue: DomainElement = defaultTransformers.transformer_apply(
+      const renderedRightValue: DomainQueryReturnType<DomainElementSuccess> = defaultTransformers.transformer_apply(
         // TODO: use actionRuntimeTransformer_apply or merge the two functions
         step,
         leftValue.finalLeftValue.elementValue as string,
@@ -314,7 +318,7 @@ function transformer_object_fullTemplate(
         queryParams,
         contextResults
       ); // TODO: check for failure!
-      const rightValue: { renderedRightValue: DomainElement; finalRightValue: DomainElement } = {
+      const rightValue: { renderedRightValue: DomainQueryReturnType<DomainElementSuccess>; finalRightValue: DomainQueryReturnType<DomainElementSuccess> } = {
         renderedRightValue,
         finalRightValue:
           renderedRightValue.elementType != "failure" && (innerEntry.attributeValue as any).applyFunction
@@ -381,9 +385,7 @@ function transformer_objectAlter(
   transformer: TransformerForBuild_inner_object_alter | TransformerForRuntime_object_alter,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
-  // queryParams: DomainElementObject,
-  // contextResults?: DomainElementObject,
-): DomainElement {
+): DomainQueryReturnType<DomainElementObject> {
   const resolvedReference = defaultTransformers.transformer_InnerReference_resolve(
     step,
     { transformerType: "contextReference", referenceName:transformer.referenceToOuterObject },
@@ -432,7 +434,7 @@ export function transformer_InnerReference_resolve  (
   transformerInnerReference: Transformer_InnerReference | TransformerForRuntime_InnerReference,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
-): DomainElement {
+): DomainQueryReturnType<DomainElementSuccess> {
   // TODO: copy / paste (almost?) from query parameter lookup!
   // log.info(
   //   "transformer_InnerReference_resolve called for transformerInnerReference=",
@@ -593,7 +595,7 @@ export function transformer_InnerReference_resolve  (
     };
   }
 
-  const reference: DomainElement =
+  const reference: DomainQueryReturnType<DomainElementSuccess> =
     transformerInnerReference.transformerType == "contextReference"
       ? transformerInnerReference.referenceName
         ? localContextResults[transformerInnerReference.referenceName]
@@ -770,7 +772,7 @@ function mustacheStringTemplate_apply(
   transformer: TransformerForBuild_mustacheStringTemplate | TransformerForRuntime_mustacheStringTemplate,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
-): DomainElement {
+): DomainQueryReturnType<DomainElementSuccess> {
   const result = Mustache.render(transformer.definition, {...queryParams, ...contextResults});
   // log.info(
   //   "mustacheStringTemplate_apply for",
@@ -792,7 +794,7 @@ export function transformer_dynamicObjectAccess_apply(
   transformer: TransformerForRuntime_objectDynamicAccess | Transformer_objectDynamicAccess,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
-): DomainElement {
+): DomainQueryReturnType<DomainElementSuccess> {
   const result = (transformer.objectAccessPath.reduce as any)( // triggers "error TS2349: This expression is not callable" in tsc. Not in eslint, though!
     ((acc: any, currentPathElement: any): any => {
       switch (typeof currentPathElement) {
@@ -898,7 +900,7 @@ export function innerTransformer_apply(
     | TransformerForRuntime_innerFullObjectTemplate,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>
-): DomainElement {
+): DomainQueryReturnType<DomainElementSuccess> {
   // log.info(
   //   "innerTransformer_apply called for object named",
   //   objectName,
@@ -1172,7 +1174,7 @@ export function innerTransformer_apply(
       for (const entry of Object.entries(resolvedReference.elementValue)) {
         result.add((entry[1] as any)[transformer.attribute]);
       }
-      const resultDomainElement: DomainElement = {
+      const resultDomainElement: DomainQueryReturnType<DomainElementSuccess> = {
         elementType: "instanceArray",
         elementValue: sortByAttribute([...result].map((e) => ({ [transformer.attribute]: e }))),
       }
@@ -1256,7 +1258,7 @@ export function innerTransformer_apply(
         queryParams,
         contextResults
       );
-      const returnedValue: DomainElement =
+      const returnedValue: DomainQueryReturnType<DomainElementSuccess> =
         typeof transformer == "object" && (transformer as any).applyFunction
           ? { elementType: "any", elementValue: (transformer as any).applyFunction(rawValue.elementValue) }
           : rawValue;
@@ -1275,11 +1277,10 @@ export function innerTransformer_apply(
 export function innerTransformer_plainObject_apply(
   step: Step,
   label: string | undefined,
-  // transformer: TransformerForBuild | TransformerForRuntime,
   transformer: Record<string, any>,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
-): DomainElement {
+): DomainQueryReturnType<DomainElementSuccess> {
   // log.info(
   //   "innerTransformer_plainObject_apply called for object named",
   //   objectName,
@@ -1296,7 +1297,7 @@ export function innerTransformer_plainObject_apply(
   //   "contextResults elements",
   //   JSON.stringify(Object.keys(contextResults??{}), null, 2)
   // );
-  const attributeEntries: [string, DomainElement][] = Object.entries(transformer).map(
+  const attributeEntries: [string, DomainQueryReturnType<DomainElementSuccess>][] = Object.entries(transformer).map(
     (objectTemplateEntry: [string, any]) => {
       // log.info("transformer_apply converting attribute",JSON.stringify(objectTemplateEntry, null, 2));
       return [
@@ -1373,9 +1374,7 @@ export function innerTransformer_array_apply(
   transformer: any[],
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
-  // queryParams: DomainElementObject,
-  // contextResults?: DomainElementObject,
-): DomainElement {
+): DomainQueryReturnType<DomainElementSuccess> {
   // log.info(
   //   "innerTransformer_array_apply called for object named",
   //   objectName,
@@ -1439,7 +1438,7 @@ export function transformer_apply(
   transformer: TransformerForBuild | TransformerForRuntime,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
-): DomainElement {
+): DomainQueryReturnType<DomainElementSuccess> {
   // log.info(
   //   "transformer_apply called for object named",
   //   objectName,
@@ -1486,7 +1485,7 @@ export function transformer_extended_apply(
   transformer: TransformerForBuild | TransformerForRuntime | ExtendedTransformerForRuntime,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
-): DomainElement {
+): DomainQueryReturnType<DomainElementSuccess> {
   // log.info(
   //   "transformer_extended_apply called for",
   //   label,
@@ -1505,7 +1504,7 @@ export function transformer_extended_apply(
   //   // Object.keys(contextResults??{})
   //   // // JSON.stringify(Object.keys(contextResults??{}), null, 2)
   // );
-  let result: DomainElement = undefined as any;
+  let result: DomainQueryReturnType<DomainElementSuccess> = undefined as any;
 
   if (typeof transformer == "object") {
     if (transformer instanceof Array) {

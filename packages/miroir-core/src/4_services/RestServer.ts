@@ -2,7 +2,7 @@ import { HttpMethod } from "../0_interfaces/1_core/Http.js";
 import {
   ActionReturnType,
   ApplicationSection,
-  DomainElement,
+  DomainElementSuccess,
   EntityInstance,
   InstanceAction,
   ModelAction,
@@ -28,6 +28,7 @@ import { generateRestServiceResponse } from "./RestTools.js";
 import { cleanLevel } from "./constants.js";
 
 import { DomainControllerInterface, DomainState } from "../0_interfaces/2_domain/DomainControllerInterface.js";
+import { DomainQueryReturnType } from "../0_interfaces/2_domain/DomainElement.js";
 import { defaultMiroirMetaModel } from "../1_core/Model.js";
 import {
   getExtractorTemplateRunnerParamsForDomainState,
@@ -400,7 +401,7 @@ export async function queryTemplateActionHandler(
       JSON.stringify(runBoxedQueryTemplateOrBoxedExtractorTemplateAction, undefined, 2)
     );
     log.info("RestServer queryTemplateActionHandler domainState=", JSON.stringify(domainState, undefined, 2));
-    let queryResult: DomainElement = undefined as any as DomainElement;
+    let queryResult: DomainQueryReturnType<DomainElementSuccess> = undefined as any as DomainQueryReturnType<DomainElementSuccess>;
 
     switch (runBoxedQueryTemplateOrBoxedExtractorTemplateAction.query.queryType) {
       case "boxedExtractorTemplateReturningObject":

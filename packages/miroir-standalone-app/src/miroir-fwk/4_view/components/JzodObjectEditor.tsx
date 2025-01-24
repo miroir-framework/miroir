@@ -12,7 +12,8 @@ import { Button, Checkbox, Icon, IconButton, MenuItem, Select } from "@mui/mater
 import {
   ApplicationSection,
   DeploymentEntityState,
-  DomainElement,
+  DomainElementSuccess,
+  DomainQueryReturnType,
   EntityAttribute,
   EntityInstance,
   EntityInstanceWithName,
@@ -483,7 +484,7 @@ export const JzodObjectEditor = (
   useDeploymentEntityStateQuerySelectorForCleanedResult(
     deploymentEntityStateSelectorMap.runQuery as SyncQueryRunner<
       DeploymentEntityState,
-      DomainElement
+      DomainQueryReturnType<DomainElementSuccess>
     >,
     foreignKeyObjectsFetchQueryParams
   );

@@ -11,7 +11,7 @@ import {
   DomainElement,
   DomainElementEntityInstanceOrFailed,
   DomainElementInstanceArrayOrFailed,
-  DomainElementInstanceUuidIndexOrFailed,
+  DomainElementInstanceUuidIndex,
   DomainElementObject,
   EntityDefinition,
   ExtractorOrCombinerReturningObject,
@@ -45,6 +45,7 @@ import {
   runQuery,
 } from "./QuerySelectors.js";
 import { transformer_InnerReference_resolve } from "./Transformers.js";
+import { DomainQueryReturnType } from "../0_interfaces/2_domain/DomainElement.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -99,11 +100,11 @@ export const dummyDomainModelGetFetchParamJzodSchemaQueryParams: QueryByTemplate
 export const selectEntityInstanceUuidIndexFromDomainState: SyncBoxedExtractorRunner<
   BoxedExtractorOrCombinerReturningObjectList,
   DomainState,
-  DomainElementInstanceUuidIndexOrFailed
+  DomainQueryReturnType<DomainElementInstanceUuidIndex>
 > = (
   domainState: DomainState,
   selectorParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList, DomainState>
-): DomainElementInstanceUuidIndexOrFailed => {
+): DomainQueryReturnType<DomainElementInstanceUuidIndex> => {
   const deploymentUuid = selectorParams.extractor.deploymentUuid;
   const applicationSection = selectorParams.extractor.select.applicationSection ?? "data";
 
@@ -434,7 +435,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
 export const extractEntityInstanceUuidIndexFromListQueryAndDomainState: SyncBoxedExtractorRunner<
   BoxedExtractorOrCombinerReturningObjectList,
   DomainState,
-  DomainElementInstanceUuidIndexOrFailed
+  DomainQueryReturnType<DomainElementInstanceUuidIndex>
 > = extractEntityInstanceUuidIndexWithObjectListExtractorInMemory<DomainState>;
 
 // ################################################################################################

@@ -6,8 +6,8 @@ import {
   BoxedExtractorTemplateReturningObjectOrObjectList,
   BoxedQueryTemplateWithExtractorCombinerTransformer,
   BoxedQueryWithExtractorCombinerTransformer,
-  DomainElement,
   DomainElementObject,
+  DomainElementSuccess,
   DomainModelQueryTemplateJzodSchemaParams,
   ExtractorOrCombinerTemplate,
   JzodElement,
@@ -20,6 +20,7 @@ import {
   RunBoxedQueryTemplateAction,
   RunBoxedQueryTemplateOrBoxedExtractorTemplateAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { DomainQueryReturnType } from "../0_interfaces/2_domain/DomainElement.js";
 import {
   AsyncBoxedExtractorOrQueryRunnerMap,
   ExtractorTemplateRunnerParamsForJzodSchema,
@@ -213,7 +214,7 @@ export const extractWithBoxedExtractorTemplate /**: SyncBoxedExtractorTemplateRu
     BoxedExtractorTemplateReturningObjectOrObjectList,
     StateType
   >
-): DomainElement => {
+): DomainQueryReturnType<DomainElementSuccess> => {
   // log.info("########## extractExtractor begin, query", selectorParams);
   if (!selectorParams.extractorRunnerMap) {
     throw new Error("extractWithBoxedExtractorTemplate requires extractorRunnerMap");

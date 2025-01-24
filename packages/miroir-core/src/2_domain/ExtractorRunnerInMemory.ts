@@ -6,12 +6,13 @@ import {
   BoxedExtractorOrCombinerReturningObjectList,
   DomainElementEntityInstanceOrFailed,
   DomainElementInstanceArrayOrFailed,
-  DomainElementInstanceUuidIndexOrFailed,
+  DomainElementInstanceUuidIndex,
   ExtractorOrCombinerReturningObject,
   RunBoxedExtractorAction,
   RunBoxedQueryAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface.js";
+import { DomainQueryReturnType } from "../0_interfaces/2_domain/DomainElement.js";
 import {
   AsyncBoxedExtractorOrQueryRunnerMap,
   AsyncBoxedExtractorRunner,
@@ -220,10 +221,10 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
   // ##############################################################################################
   public extractEntityInstanceUuidIndex: AsyncBoxedExtractorRunner<
     BoxedExtractorOrCombinerReturningObjectList,
-    DomainElementInstanceUuidIndexOrFailed
+    DomainQueryReturnType<DomainElementInstanceUuidIndex>
   > = async (
     extractorRunnerParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>
-  ): Promise<DomainElementInstanceUuidIndexOrFailed> => {
+  ): Promise<DomainQueryReturnType<DomainElementInstanceUuidIndex>> => {
     return this.extractEntityInstanceList(extractorRunnerParams).then((result) => {
       if (result.elementType == "failure") {
         return result;

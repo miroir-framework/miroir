@@ -3,8 +3,8 @@
 import {
   BoxedExtractorTemplateReturningObjectOrObjectList,
   BoxedQueryTemplateWithExtractorCombinerTransformer,
-  DomainElement,
   DomainElementObject,
+  DomainElementSuccess,
   EntityDefinition,
   JzodObject,
   QueryByEntityUuidGetEntityDefinition
@@ -21,7 +21,7 @@ import {
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { MiroirLoggerFactory } from "../4_services/LoggerFactory.js";
 import { packageName } from "../constants.js";
-import { entityEntityDefinition } from "../index.js";
+import { DomainQueryReturnType, entityEntityDefinition } from "../index.js";
 import { cleanLevel } from "./constants.js";
 import {
   extractEntityInstanceListFromListQueryAndDomainState,
@@ -52,7 +52,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 export type ExtractorTemplateRunnerForDomainState = SyncBoxedExtractorTemplateRunner<
   BoxedExtractorTemplateReturningObjectOrObjectList,
   DomainState,
-  DomainElement
+  DomainQueryReturnType<DomainElementSuccess>
 >;
 
 export const extractorTemplateRunnerForDomainState: ExtractorTemplateRunnerForDomainState =
@@ -60,7 +60,7 @@ export const extractorTemplateRunnerForDomainState: ExtractorTemplateRunnerForDo
 
 export type QueryTemplateRunnerForDomainState = SyncQueryTemplateRunner<
   DomainState,
-  DomainElement
+  DomainQueryReturnType<DomainElementSuccess>
 >;
 
 export const queryTemplateRunnerForDomainState: QueryTemplateRunnerForDomainState =

@@ -1,5 +1,6 @@
-import { DomainElement } from "miroir-core";
-import { sqlStringForTransformer } from "../src/4_services/SqlDbQueryRunner";
+import { DomainElement, DomainElementSuccess, DomainQueryReturnType } from "miroir-core";
+import { sqlStringForTransformer } from "../src/1_core/SqlGenerator";
+// import { sqlStringForTransformer } from "../src/4_services/SqlDbQueryRunner";
 
 // console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 
@@ -21,7 +22,7 @@ describe("extractorTransformerSql.unit.test", () => {
   it("apply basic transformer for simple string", async () => { // TODO: test failure cases!
       console.log(expect.getState().currentTestName, "START")
 
-      const result: DomainElement = sqlStringForTransformer(
+      const result: DomainQueryReturnType<DomainElementSuccess> = sqlStringForTransformer(
         {
           transformerType: "constantString",
           interpolation: "runtime",
@@ -32,7 +33,7 @@ describe("extractorTransformerSql.unit.test", () => {
         // {}, // extractors
       );
 
-      const expectedResult: DomainElement = {
+      const expectedResult: DomainQueryReturnType<DomainElementSuccess> = {
         "elementType": "any",
         "elementValue": {
           "sqlStringOrObject": "test"
@@ -51,7 +52,7 @@ describe("extractorTransformerSql.unit.test", () => {
   it("apply transformer mustacheStringTemplate", async () => { // TODO: test failure cases!
       console.log(expect.getState().currentTestName, "START")
 
-      const result: DomainElement = sqlStringForTransformer(
+      const result: DomainQueryReturnType<DomainElementSuccess> = sqlStringForTransformer(
         {
           transformerType: "mustacheStringTemplate",
           interpolation: "runtime",
@@ -77,7 +78,7 @@ describe("extractorTransformerSql.unit.test", () => {
         // }, // extractors
       );
 
-      const expectedResult: DomainElement = {
+      const expectedResult: DomainQueryReturnType<DomainElementSuccess> = {
         elementType: "any",
         elementValue: {
           sqlStringOrObject: '"book"."name"',
@@ -96,7 +97,7 @@ describe("extractorTransformerSql.unit.test", () => {
   // it("apply transformer innerFullObjectTemplate", async () => { // TODO: test failure cases!
   //     console.log(expect.getState().currentTestName, "START")
 
-  //     const result: DomainElement = sqlStringForTransformer(
+  //     const result: DomainQueryReturnType<DomainElementSuccess> = sqlStringForTransformer(
   //       {
   //         transformerType: "object_fullTemplate",
   //         interpolation: "runtime",
@@ -147,7 +148,7 @@ describe("extractorTransformerSql.unit.test", () => {
   //       // }, // extractors
   //     );
 
-  //     const expectedResult: DomainElement = {
+  //     const expectedResult: DomainQueryReturnType<DomainElementSuccess> = {
   //       elementType: "string",
   //       elementValue: `SELECT row_to_json(t) AS "innerFullObjectTemplate" 
   //       FROM ( 

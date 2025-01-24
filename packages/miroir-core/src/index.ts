@@ -256,20 +256,22 @@ export {
   reportSection,
   Test,
   test,
-  DomainElementObject,
-  domainElementObject,
-  DomainElementObjectOrFailed,
-  domainElementObjectOrFailed,
-  DomainElementInstanceUuidIndexOrFailed,
   domainElementInstanceUuidIndexOrFailed,
+  DomainElementEntityInstance,
+  domainElementEntityInstance,
   DomainElementEntityInstanceCollectionOrFailed,
   domainElementEntityInstanceCollectionOrFailed,
   DomainElementEntityInstanceOrFailed,
   domainElementEntityInstanceOrFailed, 
-  DomainElementInstanceArrayOrFailed,
-  domainElementInstanceArrayOrFailed,
   DomainElementFailed,
   domainElementFailed,
+  DomainElementInstanceArrayOrFailed,
+  domainElementInstanceArrayOrFailed,
+  DomainElementObject,
+  domainElementObject,
+  domainElementObjectOrFailed,
+  DomainElementSuccess,
+  domainElementSuccess,
   DomainElementVoid,
   domainElementVoid,
   DomainElement,
@@ -329,8 +331,8 @@ export {
   testCompositeActionTemplateSuite,
   TestCompositeActionTemplate,
   testCompositeActionTemplate,
-}
-from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js"
+  DomainElementInstanceUuidIndex,
+} from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js"
 
 export {
   InstanceDictionaryNum,
@@ -340,6 +342,9 @@ export {
   UuidSchema,
   Uuid,
 } from './0_interfaces/1_core/EntityDefinition.js';
+export {
+  DomainQueryReturnType,
+} from './0_interfaces/2_domain/DomainElement.js';
 export {
   ApplicationSectionOpposite,
   EntityInstanceWithNameSchema,

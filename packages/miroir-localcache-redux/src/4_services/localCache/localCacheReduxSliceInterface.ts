@@ -1,18 +1,17 @@
-import { z } from "zod";
 import { PayloadAction, Store } from "@reduxjs/toolkit";
 import { Patch } from "immer";
 import {
   Commit,
   DeploymentEntityState,
-  DomainElement,
+  DomainElementSuccess,
+  DomainQueryReturnType,
   InstanceAction,
   LocalCacheAction,
   ModelAction,
   ModelActionReplayableAction,
   RestPersistenceAction,
   TransactionalInstanceAction,
-  UndoRedoAction,
-  entityInstance
+  UndoRedoAction
 } from "miroir-core";
 
 
@@ -63,7 +62,7 @@ export interface ReduxStateChanges {
   inverseChanges: Patch[];
 }
 
-export type QueriesResultsCache = {[k: string]: DomainElement};
+export type QueriesResultsCache = {[k: string]: DomainQueryReturnType<DomainElementSuccess>};
 
 /**
  * In the case of a remote deployment, the whole state goes into the indexedDb of the browser, playing the role of a cache.

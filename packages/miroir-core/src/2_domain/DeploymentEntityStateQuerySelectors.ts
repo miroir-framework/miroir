@@ -6,7 +6,7 @@ import {
   BoxedQueryWithExtractorCombinerTransformer,
   DomainElementEntityInstanceOrFailed,
   DomainElementInstanceArrayOrFailed,
-  DomainElementInstanceUuidIndexOrFailed,
+  DomainElementInstanceUuidIndex,
   DomainElementObject,
   // QueryByEntityUuidGetEntityDefinition,
   EntityDefinition,
@@ -15,6 +15,7 @@ import {
   QueryByEntityUuidGetEntityDefinition
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { DeploymentEntityState } from "../0_interfaces/2_domain/DeploymentStateInterface.js";
+import { DomainQueryReturnType } from "../0_interfaces/2_domain/DomainElement.js";
 import {
   ExtractorRunnerParamsForJzodSchema,
   QueryRunnerMapForJzodSchema,
@@ -255,11 +256,11 @@ export const selectEntityInstanceFromDeploymentEntityState: SyncBoxedExtractorRu
 export const selectEntityInstanceUuidIndexFromDeploymentEntityState: SyncBoxedExtractorRunner<
   BoxedExtractorOrCombinerReturningObjectList,
   DeploymentEntityState,
-  DomainElementInstanceUuidIndexOrFailed
+  DomainQueryReturnType<DomainElementInstanceUuidIndex>
 > = (
   deploymentEntityState: DeploymentEntityState,
   selectorParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList, DeploymentEntityState>
-): DomainElementInstanceUuidIndexOrFailed => {
+): DomainQueryReturnType<DomainElementInstanceUuidIndex> => {
   const deploymentUuid = selectorParams.extractor.deploymentUuid;
   const applicationSection = selectorParams.extractor.select.applicationSection ?? "data";
 

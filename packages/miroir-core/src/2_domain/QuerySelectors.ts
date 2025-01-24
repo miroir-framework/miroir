@@ -14,8 +14,8 @@ import {
   DomainElementInstanceArray,
   DomainElementInstanceArrayOrFailed,
   DomainElementInstanceUuidIndex,
-  DomainElementInstanceUuidIndexOrFailed,
   DomainElementObject,
+  DomainElementSuccess,
   EntityInstance,
   ExtendedTransformerForRuntime,
   ExtractorByEntityReturningObjectList,
@@ -31,6 +31,7 @@ import {
   RunBoxedExtractorAction,
   RunBoxedQueryAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { DomainQueryReturnType } from "../0_interfaces/2_domain/DomainElement.js";
 import {
   AsyncBoxedExtractorOrQueryRunnerMap,
   ExtractorRunnerParamsForJzodSchema,
@@ -179,7 +180,7 @@ export function plainObjectToDomainElement(r:any): DomainElement {
 export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = (
   selectedInstancesList: DomainElementInstanceArrayOrFailed,
   query: BoxedExtractorOrCombinerReturningObjectList,
-): DomainElementInstanceArrayOrFailed => {
+): DomainQueryReturnType<DomainElementInstanceArray> => {
   if (selectedInstancesList.elementType == "failure") {
     return selectedInstancesList;
     // throw new Error("applyExtractorForSingleObjectListToSelectedInstancesListInMemory selectedInstancesList.elementValue is undefined")
@@ -285,7 +286,6 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
           // Object.fromEntries(
           selectedInstancesList.elementValue.filter(
             (selectedInstance: EntityInstance) => {
-              // const localOtherList: DomainElement = otherList as DomainElement;
               const otherListAttribute = relationQuery.objectListReferenceAttribute ?? "uuid";
               const rootListAttribute = relationQuery.AttributeOfRootListObjectToCompareToListReferenceUuid ?? "uuid";
   
@@ -346,9 +346,9 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
 
 // ################################################################################################
 export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory = (
-  selectedInstancesUuidIndex: DomainElementInstanceUuidIndexOrFailed,
+  selectedInstancesUuidIndex: DomainQueryReturnType<DomainElementInstanceUuidIndex>,
   query: BoxedExtractorOrCombinerReturningObjectList,
-) => {
+): DomainQueryReturnType<DomainElementInstanceUuidIndex> => {
   switch (query.select.extractorOrCombinerType) {
     case "extractorByEntityReturningObjectList": {
       const localQuery: ExtractorByEntityReturningObjectList = query.select;
@@ -366,7 +366,7 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
           JSON.stringify(query, undefined, 2)
         )
       }
-      const result:DomainElementInstanceUuidIndexOrFailed = localQuery.filter
+      const result:DomainQueryReturnType<DomainElementInstanceUuidIndex> = localQuery.filter
         ? {
             elementType: "instanceUuidIndex",
             elementValue: Object.fromEntries(
@@ -448,7 +448,6 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
         return { "elementType": "instanceUuidIndex", "elementValue": Object.fromEntries(
           Object.entries(selectedInstancesUuidIndex.elementValue ?? {}).filter(
             (selectedInstancesEntry: [string, EntityInstance]) => {
-              // const localOtherList: DomainElement = otherList as DomainElement;
               const otherListAttribute = relationQuery.objectListReferenceAttribute ?? "uuid";
               const rootListAttribute = relationQuery.AttributeOfRootListObjectToCompareToListReferenceUuid ?? "uuid";
   
@@ -515,8 +514,8 @@ export const extractEntityInstanceUuidIndexWithObjectListExtractorInMemory
   BoxedExtractorOrCombinerReturningObjectList, 
     StateType
   >
-): DomainElementInstanceUuidIndexOrFailed => {
-  const selectedInstancesUuidIndex: DomainElementInstanceUuidIndexOrFailed =
+): DomainQueryReturnType<DomainElementInstanceUuidIndex> => {
+  const selectedInstancesUuidIndex: DomainQueryReturnType<DomainElementInstanceUuidIndex> =
     (selectorParams?.extractorRunnerMap ?? emptySelectorMap).extractEntityInstanceUuidIndex(deploymentEntityState, selectorParams);
 
   // log.info(
@@ -560,7 +559,7 @@ export const applyExtractorTransformerInMemory = (
   actionRuntimeTransformer: ExtendedTransformerForRuntime,
   queryParams: Record<string, any>,
   newFetchedData: Record<string, any>
-): DomainElement => {
+): DomainQueryReturnType<DomainElementSuccess> => {
   log.info("applyExtractorTransformerInMemory  query", JSON.stringify(actionRuntimeTransformer, null, 2));
   return transformer_extended_apply("runtime", "ROOT"/**WHAT?? */, actionRuntimeTransformer, queryParams, newFetchedData);
 };
@@ -578,7 +577,7 @@ export async function handleBoxedExtractorAction(
     "runBoxedExtractorAction",
     JSON.stringify(runBoxedExtractorAction, null, 2)
   );
-  let queryResult: DomainElement;
+  let queryResult: DomainQueryReturnType<DomainElementSuccess>;
   const extractor = runBoxedExtractorAction.query;
   queryResult = await selectorMap.extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList(
     {
@@ -612,7 +611,7 @@ export async function handleBoxedQueryAction(
     "runBoxedQueryAction",
     JSON.stringify(runBoxedQueryAction, null, 2)
   );
-  let queryResult: DomainElement;
+  let queryResult: DomainQueryReturnType<DomainElementSuccess>;
   queryResult = await selectorMap.runQuery(
     {
       extractor: runBoxedQueryAction.query,
@@ -641,7 +640,7 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
   extractorRunnerMap:SyncBoxedExtractorOrQueryRunnerMap<StateType>,
   deploymentUuid: Uuid,
   extractorOrCombiner: ExtractorOrCombiner
-): DomainElement | DomainElementFailed {
+): DomainQueryReturnType<DomainElementSuccess> {
   switch (extractorOrCombiner.extractorOrCombinerType) {
     case "literal": {
       return { elementType: "string", elementValue: extractorOrCombiner.definition };
@@ -850,7 +849,7 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
 export type ExtractWithExtractorType<StateType> = SyncBoxedExtractorRunner<
   BoxedExtractorOrCombinerReturningObjectOrObjectList,
   StateType,
-  DomainElement
+  DomainQueryReturnType<DomainElementSuccess>
 >;
 export const extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList /*: ExtractWithExtractorType*/ = <StateType>(
   state: StateType,
@@ -858,7 +857,7 @@ export const extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList /*: 
     BoxedExtractorOrCombinerReturningObjectOrObjectList,
     StateType
   >
-): DomainElement => {
+): DomainQueryReturnType<DomainElementSuccess> => {
   // log.info("########## extractExtractor begin, query", selectorParams);
   const localSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<StateType> = selectorParams?.extractorRunnerMap ?? emptySelectorMap;
 

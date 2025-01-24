@@ -1,8 +1,10 @@
 // import { describe, expect } from 'vitest';
 
 import {
-  DomainElement
+  DomainElement,
+  DomainElementSuccess
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { DomainQueryReturnType } from "../../0_interfaces/2_domain/DomainElement.js";
 import { transformer_menu_AddItem } from "../../1_core/Menu.js";
 import { defaultTransformers } from "../../2_domain/Transformers.js";
 // const env:any = (import.meta as any).env
@@ -16,7 +18,7 @@ describe("menu.unit.test", () => {
   it("transformer_menu_addItem", async () => { // TODO: test failure cases!
       console.log("transformer_menu_addItem START")
 
-      const result: DomainElement = transformer_menu_AddItem(
+      const result: DomainQueryReturnType<DomainElementSuccess> = transformer_menu_AddItem(
         defaultTransformers,
         "runtime",
         "ROOT",
@@ -103,7 +105,7 @@ describe("menu.unit.test", () => {
         }
       );
 
-      const expectedResult: DomainElement = {
+      const expectedResult: DomainQueryReturnType<DomainElementSuccess> = {
         // TODO: actually a non-recursive object element, should be a freeObject
         elementType: "object",
         elementValue: {
