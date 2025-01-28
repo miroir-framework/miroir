@@ -7,16 +7,16 @@ import {
   BoxedExtractorOrCombinerReturningObjectList,
   BoxedExtractorOrCombinerReturningObjectOrObjectList,
   BoxedQueryWithExtractorCombinerTransformer,
-  DomainElementInstanceArrayOrFailed,
   DomainElementInstanceUuidIndex,
   DomainElementObject,
   DomainElementSuccess,
   EntityInstance,
+  EntityInstancesUuidIndex,
   ExtendedTransformerForRuntime,
   ExtractorOrCombiner,
   QueryFailed
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { DomainQueryReturnType } from "../0_interfaces/2_domain/DomainElement.js";
+import { Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement.js";
 import {
   AsyncBoxedExtractorOrQueryRunnerMap,
   AsyncBoxedExtractorRunnerParams,
@@ -65,10 +65,10 @@ const emptyAsyncSelectorMap:AsyncBoxedExtractorOrQueryRunnerMap = {
 export const asyncExtractEntityInstanceUuidIndexWithObjectListExtractor
 = (
   selectorParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>
-): Promise<DomainQueryReturnType<DomainElementInstanceUuidIndex>> => {
-  const result: Promise<DomainQueryReturnType<DomainElementInstanceUuidIndex>> =
+): Promise<Domain2QueryReturnType<EntityInstancesUuidIndex>> => {
+  const result: Promise<Domain2QueryReturnType<EntityInstancesUuidIndex>> =
     (selectorParams?.extractorRunnerMap ?? emptyAsyncSelectorMap).extractEntityInstanceUuidIndex(selectorParams)
-    .then((selectedInstancesUuidIndex: DomainQueryReturnType<DomainElementInstanceUuidIndex>) => {
+    .then((selectedInstancesUuidIndex: Domain2QueryReturnType<EntityInstancesUuidIndex>) => {
       log.info(
         "asyncExtractEntityInstanceUuidIndexWithObjectListExtractor found selectedInstances",
         selectedInstancesUuidIndex
@@ -93,10 +93,10 @@ export const asyncExtractEntityInstanceUuidIndexWithObjectListExtractor
 export const asyncExtractEntityInstanceListWithObjectListExtractor
 = (
   selectorParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>
-): Promise<DomainElementInstanceArrayOrFailed> => {
-  const result: Promise<DomainElementInstanceArrayOrFailed> =
+): Promise<Domain2QueryReturnType<EntityInstance[]>> => {
+  const result: Promise<Domain2QueryReturnType<EntityInstance[]>> =
     (selectorParams?.extractorRunnerMap ?? emptyAsyncSelectorMap).extractEntityInstanceList(selectorParams)
-    .then((selectedInstancesUuidIndex: DomainElementInstanceArrayOrFailed) => {
+    .then((selectedInstancesUuidIndex: Domain2QueryReturnType<EntityInstance[]>) => {
       log.info(
         "asyncExtractEntityInstanceUuidIndexWithObjectListExtractor found selectedInstances",
         selectedInstancesUuidIndex
@@ -123,7 +123,7 @@ export async function asyncApplyExtractorTransformerInMemory(
     | BoxedExtractorOrCombinerReturningObject
     | BoxedQueryWithExtractorCombinerTransformer
   >
-): Promise<DomainQueryReturnType<DomainElementSuccess>> {
+): Promise<Domain2QueryReturnType<DomainElementSuccess>> {
   return Promise.resolve(applyExtractorTransformerInMemory(actionRuntimeTransformer, queryParams, newFetchedData));
 }
 
@@ -136,7 +136,8 @@ export function asyncInnerSelectElementFromQuery/*BoxedExtractorTemplateRunner*/
   deploymentUuid: Uuid,
   extractors: Record<string, BoxedExtractorOrCombinerReturningObjectList | BoxedExtractorOrCombinerReturningObject | BoxedQueryWithExtractorCombinerTransformer>,
   extractorOrCombiner: ExtractorOrCombiner
-): Promise<DomainQueryReturnType<DomainElementSuccess>> {
+// ): Promise<Domain2QueryReturnType<DomainElementSuccess>> {
+): Promise<Domain2QueryReturnType<any>> {
   switch (extractorOrCombiner.extractorOrCombinerType) {
     case "literal": {
       return Promise.resolve({ elementType: "string", elementValue: extractorOrCombiner.definition });
@@ -161,7 +162,6 @@ export function asyncInnerSelectElementFromQuery/*BoxedExtractorTemplateRunner*/
           : {
               ...extractorOrCombiner,
               applicationSection: pageParams.applicationSection as ApplicationSection,
-              // applicationSection: pageParams.elementValue.applicationSection.elementValue as ApplicationSection,
             },
         },
       });
@@ -181,7 +181,7 @@ export function asyncInnerSelectElementFromQuery/*BoxedExtractorTemplateRunner*/
           ? extractorOrCombiner
           : {
               ...extractorOrCombiner,
-              applicationSection: pageParams?.elementValue?.applicationSection?.elementValue as ApplicationSection,
+              applicationSection: pageParams?.applicationSection as ApplicationSection,
             },
         }
       });
@@ -256,11 +256,12 @@ export function asyncInnerSelectElementFromQuery/*BoxedExtractorTemplateRunner*/
               extractorOrCombiner.rootExtractorOrReference
             );
       return rootQueryResults.then((rootQueryResults) => {
-        if (rootQueryResults.elementType == "instanceUuidIndex") {
-          const entries = Object.entries(rootQueryResults.elementValue);
+        // if (rootQueryResults.elementType == "instanceUuidIndex") {
+        if (typeof rootQueryResults == "object") {
+          const entries = Object.entries(rootQueryResults as Record<string, EntityInstance>);
           const promises = entries.map((entry: [string, EntityInstance]) => {
-            const innerQueryParams =                 {
-              ...queryParams.elementValue,
+            const innerQueryParams = {
+              ...queryParams,
               ...Object.fromEntries(
                 Object.entries(applyTransformer(extractorOrCombiner.subQueryTemplate.rootQueryObjectTransformer, entry[1]))
               ),
@@ -330,7 +331,7 @@ export const asyncExtractWithExtractor: AsyncExtractWithBoxedExtractorOrCombiner
   selectorParams: AsyncBoxedExtractorRunnerParams<
     BoxedExtractorOrCombinerReturningObjectOrObjectList
   >
-): Promise<DomainQueryReturnType<DomainElementSuccess>> => {
+): Promise<Domain2QueryReturnType<DomainElementSuccess>> => {
   // log.info("########## extractExtractor begin, query", selectorParams);
   const localSelectorMap: AsyncBoxedExtractorOrQueryRunnerMap = selectorParams?.extractorRunnerMap ?? emptyAsyncSelectorMap;
 
@@ -372,13 +373,13 @@ export const asyncExtractWithExtractor: AsyncExtractWithBoxedExtractorOrCombiner
 
 export const asyncRunQuery = async (
   selectorParams: AsyncQueryRunnerParams,
-): Promise<DomainQueryReturnType<DomainElementObject>> => {
+): Promise<Domain2QueryReturnType<any>> => {
 
   // log.info("########## asyncRunQuery begin, query", selectorParams);
 
 
   const context: Record<string, any> = {
-    ...selectorParams.extractor.contextResults.elementValue ,
+    ...selectorParams.extractor.contextResults ,
   };
   // log.info("########## DomainSelector asyncRunQuery will use context", context);
   const localSelectorMap: AsyncBoxedExtractorOrQueryRunnerMap =
@@ -397,8 +398,8 @@ export const asyncRunQuery = async (
         selectorParams.extractor.deploymentUuid,
         selectorParams.extractor.extractors ?? ({} as any),
         query[1]
-      ).then((result): [string, DomainQueryReturnType<DomainElementSuccess>] => {
-        return [query[0], result.elementValue]; // TODO: check for failure!
+      ).then((result): [string, Domain2QueryReturnType<DomainElementSuccess>] => {
+        return [query[0], result]; // TODO: check for failure!
       });
     }
   );
@@ -434,9 +435,8 @@ export const asyncRunQuery = async (
       selectorParams.extractor.deploymentUuid,
       selectorParams.extractor.extractors ?? ({} as any),
       query[1]
-    ).then((result): [string, DomainQueryReturnType<DomainElementSuccess>] => {
-      // log.info("asyncRunQuery for combiner", query[0], "context", JSON.stringify(result.elementValue));
-      return [query[0], result.elementValue];
+    ).then((result): [string, Domain2QueryReturnType<DomainElementSuccess>] => {
+      return [query[0], result];
     });
   });
 
@@ -452,11 +452,11 @@ export const asyncRunQuery = async (
     const result = await localSelectorMap.applyExtractorTransformer(transformer[1], {
       elementType: "object",
       elementValue: {
-        ...selectorParams.extractor.pageParams.elementValue,
-        ...selectorParams.extractor.queryParams.elementValue,
+        ...selectorParams.extractor.pageParams,
+        ...selectorParams.extractor.queryParams,
       },
-    }, context, selectorParams.extractor.extractors ?? ({} as any)).then((result): [string, DomainQueryReturnType<DomainElementSuccess>] => {
-      return [transformer[0], result.elementValue]; // TODO: check for failure!
+    }, context, selectorParams.extractor.extractors ?? ({} as any)).then((result): [string, Domain2QueryReturnType<DomainElementSuccess>] => {
+      return [transformer[0], result]; // TODO: check for failure!
     });
     context[result[0]] = result[1]; // does side effect!
     log.info(

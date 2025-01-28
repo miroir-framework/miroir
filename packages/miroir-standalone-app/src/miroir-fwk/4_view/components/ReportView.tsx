@@ -7,7 +7,7 @@ import {
   BoxedQueryWithExtractorCombinerTransformer,
   DeploymentEntityState,
   DomainElementObject,
-  DomainQueryReturnType,
+  Domain2QueryReturnType,
   ExtractorRunnerParamsForJzodSchema,
   getQueryRunnerParamsForDeploymentEntityState,
   LoggerInterface,
@@ -175,7 +175,7 @@ export const ReportView = (props: ReportViewProps) => {
 
   log.info("################################################################ Fecth NON-Template report data", usedQuery);
 
-  const deploymentEntityStateQueryResults: DomainQueryReturnType<DomainElementObject> = useDeploymentEntityStateQuerySelector(
+  const deploymentEntityStateQueryResults: Domain2QueryReturnType<DomainElementObject> = useDeploymentEntityStateQuerySelector(
     deploymentEntityStateSelectorMap.runQuery,
     deploymentEntityStateFetchQueryParams
   );

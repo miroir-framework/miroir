@@ -21,7 +21,7 @@ import {
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { MiroirLoggerFactory } from "../4_services/LoggerFactory.js";
 import { packageName } from "../constants.js";
-import { DomainQueryReturnType, entityEntityDefinition } from "../index.js";
+import { Domain2QueryReturnType, entityEntityDefinition } from "../index.js";
 import { cleanLevel } from "./constants.js";
 import {
   extractEntityInstanceListFromListQueryAndDomainState,
@@ -52,7 +52,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 export type ExtractorTemplateRunnerForDomainState = SyncBoxedExtractorTemplateRunner<
   BoxedExtractorTemplateReturningObjectOrObjectList,
   DomainState,
-  DomainQueryReturnType<DomainElementSuccess>
+  Domain2QueryReturnType<DomainElementSuccess>
 >;
 
 export const extractorTemplateRunnerForDomainState: ExtractorTemplateRunnerForDomainState =
@@ -60,7 +60,7 @@ export const extractorTemplateRunnerForDomainState: ExtractorTemplateRunnerForDo
 
 export type QueryTemplateRunnerForDomainState = SyncQueryTemplateRunner<
   DomainState,
-  DomainQueryReturnType<DomainElementSuccess>
+  Domain2QueryReturnType<DomainElementSuccess>
 >;
 
 export const queryTemplateRunnerForDomainState: QueryTemplateRunnerForDomainState =

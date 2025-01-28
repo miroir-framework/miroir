@@ -3,10 +3,9 @@ import * as path from "path";
 
 import {
   ACTION_OK,
-  ActionEntityInstanceCollectionReturnType,
-  ActionEntityInstanceReturnType,
-  ActionReturnType,
-  ActionVoidReturnType,
+  Action2EntityInstanceCollectionOrFailure,
+  Action2ReturnType,
+  Action2VoidReturnType,
   EntityInstance,
   EntityInstanceCollection,
   ExtractorRunnerInMemory,
@@ -18,7 +17,8 @@ import {
   RunBoxedExtractorTemplateAction,
   RunBoxedQueryAction,
   RunBoxedQueryTemplateAction,
-  RunBoxedQueryTemplateOrBoxedExtractorTemplateAction
+  RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
+  Action2EntityInstanceReturnType
 } from "miroir-core";
 
 import { packageName } from "../constants.js";
@@ -63,57 +63,57 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
     }
 
     // #############################################################################################
-    async handleBoxedExtractorAction(query: RunBoxedExtractorAction): Promise<ActionReturnType> {
+    async handleBoxedExtractorAction(query: RunBoxedExtractorAction): Promise<Action2ReturnType> {
       log.info(this.logHeader,'handleBoxedExtractorAction', 'query',query);
       
-      const result: ActionReturnType = await this.extractorRunner.handleBoxedExtractorAction(query);
+      const result: Action2ReturnType = await this.extractorRunner.handleBoxedExtractorAction(query);
 
       log.info(this.logHeader,'handleBoxedExtractorAction DONE','query',query, "result", result);
       return result;
     }
     
     // #############################################################################################
-    async handleBoxedQueryAction(query: RunBoxedQueryAction): Promise<ActionReturnType> {
+    async handleBoxedQueryAction(query: RunBoxedQueryAction): Promise<Action2ReturnType> {
       log.info(this.logHeader,'handleBoxedQueryAction', 'query',query);
       
-      const result: ActionReturnType = await this.extractorRunner.handleBoxedQueryAction(query);
+      const result: Action2ReturnType = await this.extractorRunner.handleBoxedQueryAction(query);
 
       log.info(this.logHeader,'handleBoxedQueryAction DONE','query',query, "result", result);
       return result;
     }
     
     // #############################################################################################
-    async handleQueryTemplateActionForServerONLY(query: RunBoxedQueryTemplateAction): Promise<ActionReturnType> {
+    async handleQueryTemplateActionForServerONLY(query: RunBoxedQueryTemplateAction): Promise<Action2ReturnType> {
       log.info(this.logHeader,'handleQueryTemplateActionForServerONLY', 'query',query);
       
-      const result: ActionReturnType = await this.extractorTemplateRunner.handleQueryTemplateActionForServerONLY(query);
+      const result: Action2ReturnType = await this.extractorTemplateRunner.handleQueryTemplateActionForServerONLY(query);
 
       log.info(this.logHeader,'handleQueryTemplateActionForServerONLY','query',query, "result", result);
       return result;
     }
     
     // #############################################################################################
-    async handleBoxedExtractorTemplateActionForServerONLY(query: RunBoxedExtractorTemplateAction): Promise<ActionReturnType> {
+    async handleBoxedExtractorTemplateActionForServerONLY(query: RunBoxedExtractorTemplateAction): Promise<Action2ReturnType> {
       log.info(this.logHeader,'handleBoxedExtractorTemplateActionForServerONLY', 'query',query);
       
-      const result: ActionReturnType = await this.extractorTemplateRunner.handleBoxedExtractorTemplateActionForServerONLY(query);
+      const result: Action2ReturnType = await this.extractorTemplateRunner.handleBoxedExtractorTemplateActionForServerONLY(query);
 
       log.info(this.logHeader,'handleBoxedExtractorTemplateActionForServerONLY','query',query, "result", result);
       return result;
     }
     
     // #############################################################################################
-    async handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(query: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction): Promise<ActionReturnType> {
+    async handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(query: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction): Promise<Action2ReturnType> {
       log.info(this.logHeader,'handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY', 'query',query);
       
-      const result: ActionReturnType = await this.extractorTemplateRunner.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(query);
+      const result: Action2ReturnType = await this.extractorTemplateRunner.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(query);
 
       log.info(this.logHeader,'handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY','query',query, "result", result);
       return result;
     }
     
     // #############################################################################################
-    getInstance(entityUuid: string, uuid: string): Promise<ActionEntityInstanceReturnType> {
+    getInstance(entityUuid: string, uuid: string): Promise<Action2EntityInstanceReturnType> {
       const entityInstancePath = path.join(this.directory, entityUuid, fullName(uuid));
       try {
         const fileContents = fs.readFileSync(entityInstancePath, { encoding: "utf-8"}).toString();
@@ -131,7 +131,7 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
     }
 
     // #########################################################################################
-    async getInstances(entityUuid: string): Promise<ActionEntityInstanceCollectionReturnType> {
+    async getInstances(entityUuid: string): Promise<Action2EntityInstanceCollectionOrFailure> {
       log.info(
         this.logHeader,
         "FileSystemInstanceStore getInstances",
@@ -197,10 +197,7 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
         );
         return Promise.resolve({
           status: "ok",
-          returnedDomainElement: {
-            elementType: "entityInstanceCollection",
-            elementValue: entityInstances
-          }
+          returnedDomainElement: entityInstances
         });
       } catch (error) {
         return Promise.resolve({
@@ -211,7 +208,7 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
       }
     }
     // #########################################################################################
-    upsertInstance(entityUuid: string, instance: EntityInstance): Promise<ActionVoidReturnType> {
+    upsertInstance(entityUuid: string, instance: EntityInstance): Promise<Action2VoidReturnType> {
       try {
         const filePath = path.join(this.directory, entityUuid, fullName(instance.uuid));
         fs.writeFileSync(filePath, JSON.stringify(instance, undefined, 2), { encoding: "utf-8" });
@@ -228,7 +225,7 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
     }
 
     // #############################################################################################
-    async deleteInstances(parentUuid: string, instances: EntityInstance[]): Promise<ActionVoidReturnType> {
+    async deleteInstances(parentUuid: string, instances: EntityInstance[]): Promise<Action2VoidReturnType> {
       log.info(this.logHeader, "deleteInstances", parentUuid, instances);
       // TODO: delete in parallel, not sequentially
       for (const o of instances) {
@@ -242,7 +239,7 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
     }
 
     // #############################################################################################
-    deleteInstance(entityUuid: string, instance: EntityInstance): Promise<ActionVoidReturnType> {
+    deleteInstance(entityUuid: string, instance: EntityInstance): Promise<Action2VoidReturnType> {
       const filePath = path.join(this.directory, entityUuid, fullName(instance.uuid));
       try {
         if (fs.existsSync(filePath)) {

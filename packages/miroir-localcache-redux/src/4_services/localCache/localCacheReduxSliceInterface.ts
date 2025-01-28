@@ -4,7 +4,7 @@ import {
   Commit,
   DeploymentEntityState,
   DomainElementSuccess,
-  DomainQueryReturnType,
+  Domain2QueryReturnType,
   InstanceAction,
   LocalCacheAction,
   ModelAction,
@@ -62,7 +62,7 @@ export interface ReduxStateChanges {
   inverseChanges: Patch[];
 }
 
-export type QueriesResultsCache = {[k: string]: DomainQueryReturnType<DomainElementSuccess>};
+export type QueriesResultsCache = {[k: string]: Domain2QueryReturnType<DomainElementSuccess>};
 
 /**
  * In the case of a remote deployment, the whole state goes into the indexedDb of the browser, playing the role of a cache.

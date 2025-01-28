@@ -1,11 +1,6 @@
 import { Uuid } from "../1_core/EntityDefinition.js";
 
 import {
-  ActionEntityInstanceCollectionReturnType,
-  ActionEntityInstanceReturnType,
-  ActionReturnType,
-  ActionVoidReturnType,
-  AdminApplication,
   ApplicationSection,
   DataStoreType,
   Entity,
@@ -18,17 +13,19 @@ import {
   ModelActionAlterEntityAttribute,
   ModelActionRenameEntity,
   RunBoxedExtractorAction,
-  RunBoxedExtractorOrQueryAction,
   RunBoxedExtractorTemplateAction,
   RunBoxedQueryAction,
   RunBoxedQueryTemplateAction,
   RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
   SelfApplication,
-  SelfApplicationDeploymentConfiguration,
-  StoreManagementAction,
   StoreSectionConfiguration
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
-import { AdminApplicationDeploymentConfiguration } from "../1_core/StorageConfiguration.js";
+import {
+  Action2EntityInstanceCollectionOrFailure,
+  Action2EntityInstanceReturnType,
+  Action2ReturnType,
+  Action2VoidReturnType
+} from "../2_domain/DomainElement.js";
 import { DataStoreApplicationType } from "../3_controllers/ApplicationControllerInterface.js";
 
 export type PersistenceStoreControllerAction =
@@ -41,15 +38,15 @@ export type PersistenceStoreControllerAction =
 // Abstract store interfaces
 export interface PersistenceStoreAbstractInterface {
   getStoreName(): string;
-  open():Promise<ActionVoidReturnType>;
-  close():Promise<ActionVoidReturnType>;
+  open():Promise<Action2VoidReturnType>;
+  close():Promise<Action2VoidReturnType>;
 }
 
 // ###########################################################################################
 // Abstract store interfaces
 export interface PersistenceStoreAdminSectionInterface extends PersistenceStoreAbstractInterface {
-  createStore(config: StoreSectionConfiguration): Promise<ActionVoidReturnType>;
-  deleteStore(config: StoreSectionConfiguration): Promise<ActionVoidReturnType>;
+  createStore(config: StoreSectionConfiguration): Promise<Action2VoidReturnType>;
+  deleteStore(config: StoreSectionConfiguration): Promise<Action2VoidReturnType>;
 }
 
 // ###########################################################################################
@@ -58,9 +55,9 @@ export interface PersistenceStoreAbstractSectionInterface extends PersistenceSto
   bootFromPersistedState(
     entities : Entity[],
     entityDefinitions : EntityDefinition[],
-  ):Promise<ActionVoidReturnType>;
+  ):Promise<Action2VoidReturnType>;
   getEntityUuids():string[];
-  clear():Promise<ActionVoidReturnType>;
+  clear():Promise<Action2VoidReturnType>;
 }
 
 
@@ -68,33 +65,33 @@ export interface PersistenceStoreAbstractSectionInterface extends PersistenceSto
 export interface StorageSpaceHandlerInterface {
   dropStorageSpaceForInstancesOfEntity(
     entityUuid:Uuid,
-  ): Promise<ActionVoidReturnType>;
+  ): Promise<Action2VoidReturnType>;
 
   createStorageSpaceForInstancesOfEntity(
     entity:Entity,
     entityDefinition: EntityDefinition,
-  ): Promise<ActionVoidReturnType>;
+  ): Promise<Action2VoidReturnType>;
 
   renameStorageSpaceForInstancesOfEntity(
     oldName: string,
     newName: string,
     entity: Entity,
     entityDefinition: EntityDefinition,
-  ): Promise<ActionVoidReturnType>;
+  ): Promise<Action2VoidReturnType>;
 }
 
 // ###########################################################################################
 export interface PersistenceStoreInstanceSectionAbstractInterface extends PersistenceStoreAbstractSectionInterface{
-  getInstance(parentUuid: string, uuid: string): Promise<ActionEntityInstanceReturnType>;
-  getInstances(parentUuid: string): Promise<ActionEntityInstanceCollectionReturnType>;
-  handleBoxedExtractorTemplateActionForServerONLY(query: RunBoxedExtractorTemplateAction): Promise<ActionReturnType>; // TODO: polymorphize function with return type depending on query type?
-  handleQueryTemplateActionForServerONLY(query: RunBoxedQueryTemplateAction): Promise<ActionReturnType>; // TODO: polymorphize function with return type depending on query type?
-  handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(query: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction): Promise<ActionReturnType>; // TODO: polymorphize function with return type depending on query type?
-  handleBoxedQueryAction(query: RunBoxedQueryAction): Promise<ActionReturnType>; // TODO: polymorphize function with return type depending on query type?
-  handleBoxedExtractorAction(query: RunBoxedExtractorAction): Promise<ActionReturnType>; // TODO: polymorphize function with return type depending on query type?
-  upsertInstance(parentUuid:string, instance:EntityInstance):Promise<ActionVoidReturnType>;
-  deleteInstances(parentUuid:string, instances:EntityInstance[]):Promise<ActionVoidReturnType>;
-  deleteInstance(parentUuid:string, instance:EntityInstance):Promise<ActionVoidReturnType>;
+  getInstance(parentUuid: string, uuid: string): Promise<Action2EntityInstanceReturnType>;
+  getInstances(parentUuid: string): Promise<Action2EntityInstanceCollectionOrFailure>;
+  handleBoxedExtractorTemplateActionForServerONLY(query: RunBoxedExtractorTemplateAction): Promise<Action2ReturnType>; // TODO: polymorphize function with return type depending on query type?
+  handleQueryTemplateActionForServerONLY(query: RunBoxedQueryTemplateAction): Promise<Action2ReturnType>; // TODO: polymorphize function with return type depending on query type?
+  handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(query: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction): Promise<Action2ReturnType>; // TODO: polymorphize function with return type depending on query type?
+  handleBoxedQueryAction(query: RunBoxedQueryAction): Promise<Action2ReturnType>; // TODO: polymorphize function with return type depending on query type?
+  handleBoxedExtractorAction(query: RunBoxedExtractorAction): Promise<Action2ReturnType>; // TODO: polymorphize function with return type depending on query type?
+  upsertInstance(parentUuid:string, instance:EntityInstance):Promise<Action2VoidReturnType>;
+  deleteInstances(parentUuid:string, instances:EntityInstance[]):Promise<Action2VoidReturnType>;
+  deleteInstance(parentUuid:string, instance:EntityInstance):Promise<Action2VoidReturnType>;
 }
 
 // ###########################################################################################
@@ -104,17 +101,17 @@ export interface PersistenceStoreEntitySectionAbstractInterface  extends Persist
   createEntity(
     entity:Entity,
     entityDefinition: EntityDefinition,
-  ): Promise<ActionVoidReturnType>;
+  ): Promise<Action2VoidReturnType>;
   createEntities(
     entities: {
       entity:Entity,
       entityDefinition: EntityDefinition,
     }[]
-  ): Promise<ActionVoidReturnType>;
-  renameEntityClean(update: ModelActionRenameEntity): Promise<ActionVoidReturnType>;
-  alterEntityAttribute(update: ModelActionAlterEntityAttribute): Promise<ActionVoidReturnType>;
-  dropEntity(parentUuid:string): Promise<ActionVoidReturnType>;
-  dropEntities(parentUuid:string[]): Promise<ActionVoidReturnType>;
+  ): Promise<Action2VoidReturnType>;
+  renameEntityClean(update: ModelActionRenameEntity): Promise<Action2VoidReturnType>;
+  alterEntityAttribute(update: ModelActionAlterEntityAttribute): Promise<Action2VoidReturnType>;
+  dropEntity(parentUuid:string): Promise<Action2VoidReturnType>;
+  dropEntities(parentUuid:string[]): Promise<Action2VoidReturnType>;
 }
 
 // ###############################################################################################################
@@ -172,40 +169,41 @@ export interface InitApplicationParameters {
 // TODO: remove PersistenceStoreAdminSectionInterface?
 export interface PersistenceStoreControllerInterface
   extends PersistenceStoreAbstractSectionInterface,
-  PersistenceStoreAdminSectionInterface,
-  PersistenceStoreEntitySectionAbstractInterface /**, PersistenceStoreInstanceSectionAbstractInterface */
-{
-
+    PersistenceStoreAdminSectionInterface,
+    PersistenceStoreEntitySectionAbstractInterface {
+  /**, PersistenceStoreInstanceSectionAbstractInterface */
   //  TODO: remove anything but handleAction from interface!
   initApplication(
     metaModel: MetaModel,
     dataStoreType: DataStoreApplicationType,
     selfApplication: SelfApplication,
     applicationModelBranch: EntityInstance,
-    applicationVersion: EntityInstance,
+    applicationVersion: EntityInstance
     // applicationStoreBasedConfiguration: EntityInstance
-  ): Promise<ActionReturnType>;
+  ): Promise<Action2ReturnType>;
 
   createModelStorageSpaceForInstancesOfEntity(
     entity: Entity,
     entityDefinition: EntityDefinition
-  ): Promise<ActionVoidReturnType>;
+  ): Promise<Action2VoidReturnType>;
 
   getModelState(): Promise<{ [uuid: string]: EntityInstanceCollection }>; // used only for testing purposes!
   getDataState(): Promise<{ [uuid: string]: EntityInstanceCollection }>; // used only for testing purposes!
 
   // same interface as in PersistenceStoreInstanceSectionAbstractInterface; it implies that RunBoxedQueryTemplateOrBoxedExtractorTemplateAction includes applicationSection
-  handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(query: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction): Promise<ActionReturnType>;
-  handleQueryTemplateActionForServerONLY(query: RunBoxedQueryTemplateAction): Promise<ActionReturnType>;
-  handleBoxedExtractorTemplateActionForServerONLY(query: RunBoxedExtractorTemplateAction): Promise<ActionReturnType>;
-  handleBoxedExtractorAction(query: RunBoxedExtractorAction): Promise<ActionReturnType>;
-  handleBoxedQueryAction(query: RunBoxedQueryAction): Promise<ActionReturnType>;
-  
-  getInstance(section: ApplicationSection, parentUuid: string, uuid: Uuid): Promise<ActionEntityInstanceReturnType>;
-  getInstances(section: ApplicationSection, parentUuid: string): Promise<ActionEntityInstanceCollectionReturnType>;
-  upsertInstance(section: ApplicationSection, instance: EntityInstance): Promise<ActionVoidReturnType>;
-  deleteInstance(section: ApplicationSection, instance: EntityInstance): Promise<ActionVoidReturnType>;
-  deleteInstances(section: ApplicationSection, instance: EntityInstance[]): Promise<ActionVoidReturnType>;
+  handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
+    query: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction
+  ): Promise<Action2ReturnType>;
+  handleQueryTemplateActionForServerONLY(query: RunBoxedQueryTemplateAction): Promise<Action2ReturnType>;
+  handleBoxedExtractorTemplateActionForServerONLY(query: RunBoxedExtractorTemplateAction): Promise<Action2ReturnType>;
+  handleBoxedExtractorAction(query: RunBoxedExtractorAction): Promise<Action2ReturnType>;
+  handleBoxedQueryAction(query: RunBoxedQueryAction): Promise<Action2ReturnType>;
+
+  getInstance(section: ApplicationSection, parentUuid: string, uuid: Uuid): Promise<Action2EntityInstanceReturnType>;
+  getInstances(section: ApplicationSection, parentUuid: string): Promise<Action2EntityInstanceCollectionOrFailure>;
+  upsertInstance(section: ApplicationSection, instance: EntityInstance): Promise<Action2VoidReturnType>;
+  deleteInstance(section: ApplicationSection, instance: EntityInstance): Promise<Action2VoidReturnType>;
+  deleteInstances(section: ApplicationSection, instance: EntityInstance[]): Promise<Action2VoidReturnType>;
 
   handleAction(storeManagementAction: PersistenceStoreControllerAction): Promise<any>;
 }

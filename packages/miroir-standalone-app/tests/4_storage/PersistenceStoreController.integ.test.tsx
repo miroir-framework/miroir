@@ -4,8 +4,8 @@ import { describe, expect } from 'vitest';
 import {
   ACTION_OK,
   ActionError,
-  ActionReturnType,
-  ActionVoidReturnType,
+  Action2ReturnType,
+  Action2VoidReturnType,
   ConfigurationService,
   DomainControllerInterface,
   DomainElementType,
@@ -207,8 +207,8 @@ afterAll(
 const chainVitestSteps = async (
   stepName: string,
   context: {[k:string]: any},
-  functionCallingActionToTest: () => Promise<ActionReturnType>,
-  resultTransformation?: (a:ActionReturnType,p:{[k:string]: any}) => any,
+  functionCallingActionToTest: () => Promise<Action2ReturnType>,
+  resultTransformation?: (a:Action2ReturnType,p:{[k:string]: any}) => any,
   addResultToContextAsName?: string,
   expectedDomainElementType?: DomainElementType,
   expectedValue?: any,
@@ -271,17 +271,17 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
   // it("Create miroir2 store", async () => { // TODO: test failure cases!
   //     if (miroirConfig.client.emulateServer) {
   //       console.log("Create miroir2 store START")
-  //       const testResult: ActionReturnType = await localMiroirPersistenceStoreController.createStore(
+  //       const testResult: Action2ReturnType = await localMiroirPersistenceStoreController.createStore(
   //         miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid].model
   //       );
-  //       const testResult2: ActionReturnType = await localMiroirPersistenceStoreController.createStore(
+  //       const testResult2: Action2ReturnType = await localMiroirPersistenceStoreController.createStore(
   //         miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid].data
   //       );
   //       //cleanup
-  //       const testResult3: ActionReturnType = await localMiroirPersistenceStoreController.deleteStore(
+  //       const testResult3: Action2ReturnType = await localMiroirPersistenceStoreController.deleteStore(
   //         miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid].model
   //       );
-  //       const testResult4: ActionReturnType = await localMiroirPersistenceStoreController.deleteStore(
+  //       const testResult4: Action2ReturnType = await localMiroirPersistenceStoreController.deleteStore(
   //         miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid].data
   //       );
   //       // test
@@ -819,7 +819,7 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
     expect(instanceAdded, "failed to setup test case").toEqual(ACTION_OK)
 
     // test
-    const instanceDeleted: ActionVoidReturnType = await localAppPersistenceStoreController?.deleteInstances('data', [author1]);
+    const instanceDeleted: Action2VoidReturnType = await localAppPersistenceStoreController?.deleteInstances('data', [author1]);
     // // expect(instanceDeleted, "failed to setup test case").toEqual(ACTION_OK)
     // const rawResult = await localAppPersistenceStoreController.getInstances("data",entityAuthor.uuid);
     // const testResult = ignorePostgresExtraAttributes(rawResult?.instances??[])
@@ -838,7 +838,7 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
   // ################################################################################################
   it("delete Author Instance fails", async () => {
     // test
-    const instanceDeleted: ActionVoidReturnType = await localAppPersistenceStoreController?.deleteInstances("data", [
+    const instanceDeleted: Action2VoidReturnType = await localAppPersistenceStoreController?.deleteInstances("data", [
       author1,
     ]);
     expect(instanceDeleted.status, "failed to delete Author instances").toEqual("error");

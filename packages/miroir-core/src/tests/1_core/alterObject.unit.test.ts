@@ -103,7 +103,7 @@ import entityDefinitionReportV1 from "../../assets/miroir_model/54b9c72f-d4f3-4d
 import entityDefinitionDeployment from "../../assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/c50240e7-c451-46c2-b60a-07b3172a5ef9.json" assert { type: "json" };
 
 export const defaultMiroirMetaModel: MetaModel = {
-  configuration: [instanceConfigurationReference],
+  // configuration: [instanceConfigurationReference],
   entities: [
     entitySelfApplication as Entity,
     entitySelfApplicationDeploymentConfiguration as Entity,
@@ -181,13 +181,8 @@ function testResolve(
     path,
     value
   )
-  // if (testResult.status == "ok") {
     console.log("test", testId, "has result", JSON.stringify(testResult, null, 2));
     expect(testResult).toEqual(expectedResult);
-  // } else {
-  //   console.log("test", testId, "has result", JSON.stringify(testResult, null, 2));
-  //   expect(testResult.status).toEqual("ok");
-  // }
 }
 
 interface testFormat {

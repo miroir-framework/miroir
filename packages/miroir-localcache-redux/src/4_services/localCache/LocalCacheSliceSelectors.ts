@@ -14,7 +14,7 @@ import {
   DomainElementSuccess,
   domainElementToPlainObject,
   DomainModelQueryTemplateJzodSchemaParams,
-  DomainQueryReturnType,
+  Domain2QueryReturnType,
   DomainState,
   EntityInstancesUuidIndex,
   ExtractorRunnerParamsForJzodSchema,
@@ -213,7 +213,8 @@ export function applyDeploymentEntityStateQuerySelector<
 // ################################################################################################
 // export function applyDeploymentEntityStateQueryTemplateSelectorForCleanedResult<QueryType extends MiroirQueryTemplate>( // TODO: memoize?
 export function applyDeploymentEntityStateQueryTemplateSelectorForCleanedResult<QueryType extends BoxedQueryTemplateWithExtractorCombinerTransformer>( // TODO: memoize?
-  deploymentEntityStateQuerySelector: SyncQueryTemplateRunner<DeploymentEntityState, DomainQueryReturnType<DomainElementSuccess>>
+  // deploymentEntityStateQuerySelector: SyncQueryTemplateRunner<DeploymentEntityState, Domain2QueryReturnType<DomainElementSuccess>>
+  deploymentEntityStateQuerySelector: SyncQueryTemplateRunner<DeploymentEntityState, Domain2QueryReturnType<any>>
 ): (
   reduxState: ReduxStateWithUndoRedo,
   params: SyncQueryTemplateRunnerParams<DeploymentEntityState>
@@ -221,8 +222,8 @@ export function applyDeploymentEntityStateQueryTemplateSelectorForCleanedResult<
   const cleanupFunction = (
     deploymentEntityState: DeploymentEntityState,
     params: SyncQueryTemplateRunnerParams<DeploymentEntityState>
-  ): DomainQueryReturnType<DomainElementSuccess> => {
-    const partial: DomainQueryReturnType<DomainElementSuccess> = deploymentEntityStateQuerySelector(deploymentEntityState, params);
+  ): Domain2QueryReturnType<DomainElementSuccess> => {
+    const partial: Domain2QueryReturnType<any> = deploymentEntityStateQuerySelector(deploymentEntityState, params);
     const result: any = domainElementToPlainObject(partial);
     return result;
   };
@@ -241,7 +242,7 @@ export function applyDeploymentEntityStateQueryTemplateSelectorForCleanedResult<
 
 // ################################################################################################
 export function applyDeploymentEntityStateQuerySelectorForCleanedResult<QueryType extends BoxedQueryWithExtractorCombinerTransformer>( // TODO: memoize?
-  deploymentEntityStateQuerySelector: SyncQueryRunner<DeploymentEntityState, DomainQueryReturnType<DomainElementSuccess>>
+  deploymentEntityStateQuerySelector: SyncQueryRunner<DeploymentEntityState, Domain2QueryReturnType<DomainElementSuccess>>
 ): (
   reduxState: ReduxStateWithUndoRedo,
   params: SyncQueryRunnerParams<DeploymentEntityState>
@@ -249,9 +250,10 @@ export function applyDeploymentEntityStateQuerySelectorForCleanedResult<QueryTyp
   const cleanupFunction = (
     deploymentEntityState: DeploymentEntityState,
     params: SyncQueryRunnerParams<DeploymentEntityState>
-  ): DomainQueryReturnType<DomainElementSuccess> => {
-    const partial: DomainQueryReturnType<DomainElementSuccess> = deploymentEntityStateQuerySelector(deploymentEntityState, params);
-    const result: any = domainElementToPlainObject(partial);
+  ): Domain2QueryReturnType<DomainElementSuccess> => {
+    const partial: Domain2QueryReturnType<DomainElementSuccess> = deploymentEntityStateQuerySelector(deploymentEntityState, params);
+    // const result: any = domainElementToPlainObject(partial);
+    const result: any = partial;
     return result;
   };
 
@@ -335,15 +337,15 @@ export function applyDeploymentEntityStateJzodSchemaSelector<QueryType extends Q
 // ################################################################################################
 // export function applyDomainStateQuerySelectorForCleanedResult<QueryType extends MiroirQueryTemplate>( // TODO: memoize?
 export function applyDomainStateQuerySelectorForCleanedResult<QueryType extends BoxedQueryTemplateWithExtractorCombinerTransformer>( // TODO: memoize?
-  domainStateSelector: SyncQueryTemplateRunner<DomainState, DomainQueryReturnType<DomainElementSuccess>>
+  domainStateSelector: SyncQueryTemplateRunner<DomainState, Domain2QueryReturnType<DomainElementSuccess>>
 ): (
   reduxState: ReduxStateWithUndoRedo,
-  // params: SyncExtractorOrQueryTemplateRunnerParams<QueryType, DomainState>
   params: SyncQueryTemplateRunnerParams<DomainState>
 ) => any { 
-  const cleanupFunction = (domainState: DomainState, params: SyncQueryTemplateRunnerParams<DomainState>):DomainQueryReturnType<DomainElementSuccess> => {
-    const partial:DomainQueryReturnType<DomainElementSuccess> = domainStateSelector(domainState, params);
-    const result:any = domainElementToPlainObject(partial)
+  const cleanupFunction = (domainState: DomainState, params: SyncQueryTemplateRunnerParams<DomainState>):Domain2QueryReturnType<DomainElementSuccess> => {
+    const partial:Domain2QueryReturnType<DomainElementSuccess> = domainStateSelector(domainState, params);
+    // const result:any = domainElementToPlainObject(partial)
+    const result:any = partial
     return result;
   }
 

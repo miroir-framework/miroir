@@ -1,15 +1,14 @@
 // import { sql } from '@sequelize/postgres';
 
 import {
+  Action2EntityInstanceCollectionOrFailure,
+  Action2EntityInstanceReturnType,
+  Action2ReturnType,
+  Action2VoidReturnType,
   ACTION_OK,
-  ActionEntityInstanceCollectionReturnType,
-  ActionEntityInstanceReturnType,
-  ActionReturnType,
-  ActionVoidReturnType,
   BoxedExtractorOrCombinerReturningObjectOrObjectList,
   BoxedQueryWithExtractorCombinerTransformer,
   EntityInstance,
-  ExtractorOrCombiner,
   LoggerInterface,
   MiroirLoggerFactory,
   PersistenceStoreInstanceSectionAbstractInterface,
@@ -22,11 +21,11 @@ import {
 import { MixableSqlDbStoreSection, SqlDbStoreSection } from "./SqlDbStoreSection";
 
 import { Op } from "sequelize";
+import { sqlStringForExtractor } from "../1_core/SqlGenerator";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 import { SqlDbQueryRunner } from "./SqlDbQueryRunner";
 import { RecursiveStringRecords, SqlDbExtractTemplateRunner } from "./SqlDbQueryTemplateRunner";
-import { sqlStringForExtractor } from "../1_core/SqlGenerator";
 
 const consoleLog: any = console.log.bind(console, packageName, cleanLevel, "SqlDbInstanceStoreSectionMixin");
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -65,10 +64,10 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
       );
     }
 
-    async executeRawQuery(query: string): Promise<ActionReturnType> {
+    async executeRawQuery(query: string): Promise<Action2ReturnType> {
       const rawResult = await this.sequelize.query(query);
       log.info(this.logHeader, "executeRawQuery", "query", query, "rawResult", rawResult);
-      const result: ActionReturnType = {
+      const result: Action2ReturnType = {
         status: "ok",
         // returnedDomainElement: { elementType: "any", elementValue: Number((rawResult[0] as any).count) },
         returnedDomainElement: { elementType: "any", elementValue: rawResult[0] },
@@ -166,10 +165,10 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     }
 
     // #############################################################################################
-    async handleQueryTemplateActionForServerONLY(query: RunBoxedQueryTemplateAction): Promise<ActionReturnType> {
+    async handleQueryTemplateActionForServerONLY(query: RunBoxedQueryTemplateAction): Promise<Action2ReturnType> {
       log.info(this.logHeader, "handleQueryTemplateActionForServerONLY", "query", query);
 
-      const result: ActionReturnType = await this.extractorTemplateRunner.handleQueryTemplateActionForServerONLY(query);
+      const result: Action2ReturnType = await this.extractorTemplateRunner.handleQueryTemplateActionForServerONLY(query);
 
       log.info(this.logHeader, "handleQueryTemplateActionForServerONLY", "query", query, "result", result);
       return result;
@@ -178,10 +177,10 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     // #############################################################################################
     async handleBoxedExtractorTemplateActionForServerONLY(
       query: RunBoxedExtractorTemplateAction
-    ): Promise<ActionReturnType> {
+    ): Promise<Action2ReturnType> {
       log.info(this.logHeader, "handleBoxedExtractorTemplateActionForServerONLY", "query", query);
 
-      const result: ActionReturnType =
+      const result: Action2ReturnType =
         await this.extractorTemplateRunner.handleBoxedExtractorTemplateActionForServerONLY(query);
 
       log.info(this.logHeader, "handleBoxedExtractorTemplateActionForServerONLY", "query", query, "result", result);
@@ -191,10 +190,10 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     // #############################################################################################
     async handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
       query: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction
-    ): Promise<ActionReturnType> {
+    ): Promise<Action2ReturnType> {
       log.info(this.logHeader, "handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY", "query", query);
 
-      const result: ActionReturnType =
+      const result: Action2ReturnType =
         await this.extractorTemplateRunner.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(query);
 
       log.info(
@@ -209,27 +208,27 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     }
 
     // #############################################################################################
-    async handleBoxedExtractorAction(query: RunBoxedExtractorAction): Promise<ActionReturnType> {
+    async handleBoxedExtractorAction(query: RunBoxedExtractorAction): Promise<Action2ReturnType> {
       log.info(this.logHeader, "handleBoxedExtractorAction", "query", query);
 
-      const result: ActionReturnType = await this.extractorRunner.handleBoxedExtractorAction(query);
+      const result: Action2ReturnType = await this.extractorRunner.handleBoxedExtractorAction(query);
 
       log.info(this.logHeader, "handleBoxedExtractorAction", "query", query, "result", result);
       return result;
     }
 
     // #############################################################################################
-    async handleBoxedQueryAction(query: RunBoxedQueryAction): Promise<ActionReturnType> {
+    async handleBoxedQueryAction(query: RunBoxedQueryAction): Promise<Action2ReturnType> {
       log.info(this.logHeader, "handleBoxedQueryAction called for query", query);
 
-      const result: ActionReturnType = await this.extractorRunner.handleBoxedQueryAction(query);
+      const result: Action2ReturnType = await this.extractorRunner.handleBoxedQueryAction(query);
 
       log.info(this.logHeader, "handleBoxedQueryAction done for query", query, "result", result);
       return result;
     }
 
     // ##############################################################################################
-    async getInstance(parentUuid: string, uuid: string): Promise<ActionEntityInstanceReturnType> {
+    async getInstance(parentUuid: string, uuid: string): Promise<Action2EntityInstanceReturnType> {
       try {
         if (this.sqlSchemaTableAccess && this.sqlSchemaTableAccess[parentUuid]) {
           const result: EntityInstance = (await this.sqlSchemaTableAccess[parentUuid].sequelizeModel.findByPk(uuid))
@@ -237,7 +236,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           log.info(this.logHeader, "getInstance", "result", result);
           return Promise.resolve({
             status: "ok",
-            returnedDomainElement: { elementType: "instance", elementValue: result },
+            returnedDomainElement: result,
           });
         } else {
           // TODO: indicate exact reason!
@@ -262,7 +261,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
         attribute: string;
         value: string;
       }
-    ): Promise<ActionEntityInstanceCollectionReturnType> {
+    ): Promise<Action2EntityInstanceCollectionOrFailure> {
       let rawResult: any[] = [];
       let cleanResult: EntityInstance[] = [];
       try {
@@ -294,8 +293,9 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
         return Promise.resolve({
           status: "ok",
           returnedDomainElement: {
-            elementType: "entityInstanceCollection",
-            elementValue: { parentUuid, applicationSection: this.applicationSection, instances: cleanResult },
+            parentUuid,
+            applicationSection: this.applicationSection,
+            instances: cleanResult,
           },
         });
       } catch (e) {
@@ -319,7 +319,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
         attributeName: string;
         direction: "ASC" | "DESC";
       }
-    ): Promise<ActionEntityInstanceCollectionReturnType> {
+    ): Promise<Action2EntityInstanceCollectionOrFailure> {
       let rawResult: any[] = [];
       let cleanResult: EntityInstance[] = [];
       try {
@@ -353,8 +353,9 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
         return Promise.resolve({
           status: "ok",
           returnedDomainElement: {
-            elementType: "entityInstanceCollection",
-            elementValue: { parentUuid, applicationSection: this.applicationSection, instances: cleanResult },
+            parentUuid,
+            applicationSection: this.applicationSection,
+            instances: cleanResult,
           },
         });
       } catch (e) {
@@ -373,7 +374,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     }
 
     // ##############################################################################################
-    async getInstances(parentUuid: string): Promise<ActionEntityInstanceCollectionReturnType> {
+    async getInstances(parentUuid: string): Promise<Action2EntityInstanceCollectionOrFailure> {
       let rawResult: any[] = [];
       let cleanResult: EntityInstance[] = [];
       try {
@@ -399,8 +400,9 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
         return Promise.resolve({
           status: "ok",
           returnedDomainElement: {
-            elementType: "entityInstanceCollection",
-            elementValue: { parentUuid, applicationSection: this.applicationSection, instances: cleanResult },
+            parentUuid,
+            applicationSection: this.applicationSection,
+            instances: cleanResult,
           },
         });
       } catch (e) {
@@ -414,7 +416,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     }
 
     // ##############################################################################################
-    async upsertInstance(parentUuid: string, instance: EntityInstance): Promise<ActionVoidReturnType> {
+    async upsertInstance(parentUuid: string, instance: EntityInstance): Promise<Action2VoidReturnType> {
       console.log(
         "######################################################### upsertInstance #####################################################"
       );
@@ -448,7 +450,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     }
 
     // ##############################################################################################
-    async deleteInstances(parentUuid: string, instances: EntityInstance[]): Promise<ActionVoidReturnType> {
+    async deleteInstances(parentUuid: string, instances: EntityInstance[]): Promise<Action2VoidReturnType> {
       for (const instance of instances) {
         try {
           const tmpResult = await this.deleteInstance(parentUuid, instance);
@@ -476,7 +478,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     }
 
     // ##############################################################################################
-    async deleteInstance(parentUuid: string, instance: EntityInstance): Promise<ActionVoidReturnType> {
+    async deleteInstance(parentUuid: string, instance: EntityInstance): Promise<Action2VoidReturnType> {
       log.info(this.logHeader, "deleteInstance", parentUuid, instance);
       if (!this.sqlSchemaTableAccess[parentUuid]) {
         log.warn(this.logHeader, "deleteInstance", "could not find entity in database: entityUuid", parentUuid);

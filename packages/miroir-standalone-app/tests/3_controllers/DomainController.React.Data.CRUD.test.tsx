@@ -5,7 +5,7 @@ import { describe, expect } from 'vitest';
 // import process from "process";
 
 import {
-  ActionReturnType,
+  Action2ReturnType,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
   author1,
@@ -267,7 +267,7 @@ beforeEach(
         },
       ],
     };
-    const queryResult:ActionReturnType = await domainController.handleCompositeAction(
+    const queryResult:Action2ReturnType = await domainController.handleCompositeAction(
       beforeEachCompositeAction,
       {},
       defaultMiroirMetaModel

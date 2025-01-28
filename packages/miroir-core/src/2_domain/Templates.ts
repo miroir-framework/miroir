@@ -246,6 +246,7 @@ export function resolveQueryTemplateWithExtractorCombinerTransformer(
   );
   // log.info("resolveQueryTemplateWithExtractorCombinerTransformer converted extractorTemplates, result:", queries);
   
+  // const failedQueries = Object.values(queries).filter((e) => (e as any).queryFailure);
   const failedQueries = Object.values(queries).filter((e) => (e as any).queryFailure);
   if (failedQueries.length > 0) {
     throw new Error("resolveQueryTemplateWithExtractorCombinerTransformer QueryNotExecutable failedQueries: " + JSON.stringify(failedQueries));

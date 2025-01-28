@@ -1,4 +1,3 @@
-import { DomainElementSuccess, DomainQueryReturnType } from "../../dist/index.js";
 import {
   ComplexMenu,
   DomainElement,
@@ -6,6 +5,7 @@ import {
   MiroirMenuItem,
   Transformer_menu_addItem,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { Step } from "../2_domain/Transformers.js";
 import { MiroirLoggerFactory } from "../4_services/LoggerFactory.js";
@@ -25,20 +25,21 @@ export function transformer_menu_AddItem(
   transformer: Transformer_menu_addItem,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
-): DomainQueryReturnType<DomainElementSuccess> {
+): Domain2QueryReturnType<Menu> {
+// ): Domain2QueryReturnType<DomainElementSuccess> {
   const menu = typeof transformer.transformerDefinition.menuReference == "string"?transformers.transformer_InnerReference_resolve(
     step,
     { transformerType: "contextReference", referenceName:transformer.transformerDefinition.menuReference },
     queryParams,
     contextResults
-  ).elementValue as Menu
+  ) as Menu
   :
   transformers.transformer_InnerReference_resolve(
     step,
     transformer.transformerDefinition.menuReference,
     queryParams,
     contextResults
-  ).elementValue as Menu
+  ) as Menu
   ;
 
   log.debug("transformer_menu_AddItem resolved menu", JSON.stringify(menu, null, 2));
@@ -48,14 +49,14 @@ export function transformer_menu_AddItem(
     { transformerType: "contextReference", referenceName:transformer.transformerDefinition.menuItemReference },
     queryParams,
     contextResults
-  ).elementValue as MiroirMenuItem
+  ) as MiroirMenuItem
   :
   transformers.transformer_InnerReference_resolve(
     step,
     transformer.transformerDefinition.menuItemReference,
     queryParams,
     contextResults
-  ).elementValue as MiroirMenuItem
+  ) as MiroirMenuItem
   ;
 
   log.debug("transformer_menu_AddItem resolved menuItem", JSON.stringify(menuItem, null, 2));
@@ -78,8 +79,5 @@ export function transformer_menu_AddItem(
 
   // log.debug("transformer_menu_AddItem modified menu", JSON.stringify(menu, null, 2));
   // log.debug("transformer_menu_AddItem modified menu", JSON.stringify(updatedMenu, null, 2));
-  return {
-    elementType: "object",
-    elementValue: updatedMenu // this is a free object, not a recursive DomainElement object
-  } as any;
+  return updatedMenu; // this is a free object, not a recursive DomainElement object
 }

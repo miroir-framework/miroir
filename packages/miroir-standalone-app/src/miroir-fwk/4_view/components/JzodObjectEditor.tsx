@@ -13,7 +13,7 @@ import {
   ApplicationSection,
   DeploymentEntityState,
   DomainElementSuccess,
-  DomainQueryReturnType,
+  Domain2QueryReturnType,
   EntityAttribute,
   EntityInstance,
   EntityInstanceWithName,
@@ -484,7 +484,7 @@ export const JzodObjectEditor = (
   useDeploymentEntityStateQuerySelectorForCleanedResult(
     deploymentEntityStateSelectorMap.runQuery as SyncQueryRunner<
       DeploymentEntityState,
-      DomainQueryReturnType<DomainElementSuccess>
+      Domain2QueryReturnType<DomainElementSuccess>
     >,
     foreignKeyObjectsFetchQueryParams
   );

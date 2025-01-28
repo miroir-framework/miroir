@@ -1,5 +1,5 @@
 import { Level } from 'level';
-import { ACTION_OK, ActionVoidReturnType, ApplicationSection, LoggerInterface, MiroirLoggerFactory, entityDefinitionEntityDefinition } from "miroir-core";
+import { ACTION_OK, Action2VoidReturnType, ApplicationSection, LoggerInterface, MiroirLoggerFactory, entityDefinitionEntityDefinition } from "miroir-core";
 
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
@@ -184,7 +184,7 @@ export class IndexedDb {
     return Promise.resolve(result);
   }
   // #############################################################################################
-  public async putValue(parentUuid: string, value: any):Promise<ActionVoidReturnType> {
+  public async putValue(parentUuid: string, value: any):Promise<Action2VoidReturnType> {
     const store = this.subLevels.get(parentUuid);
     log.debug('IndexedDb in store',store,'hasSubLevel(',parentUuid,')', this.hasSubLevel(parentUuid),'PutValue of entity', parentUuid, 'value',value);
     const result1 = store?await store.put(value.uuid, value, {valueEncoding: 'json'}):[];
@@ -205,7 +205,7 @@ export class IndexedDb {
   }
 
   // #############################################################################################
-  public async deleteEntityInstance(tableUuid: string, uuid: string):Promise<ActionVoidReturnType> {
+  public async deleteEntityInstance(tableUuid: string, uuid: string):Promise<Action2VoidReturnType> {
     // const tx = this.db.transaction(tableName, 'readwrite');
     log.info(this.logHeader, 'deleteValue called for entity', tableUuid, "instance", uuid);
     if (this.getSubLevels().includes(tableUuid)) {

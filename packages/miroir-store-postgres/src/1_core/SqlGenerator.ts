@@ -1,7 +1,7 @@
 import {
   AsyncQueryRunnerParams,
   DomainElementSuccess,
-  DomainQueryReturnType,
+  Domain2QueryReturnType,
   ExtractorOrCombiner,
   LoggerInterface,
   MiroirLoggerFactory,
@@ -29,7 +29,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 export function sqlStringForCombiner /*BoxedExtractorTemplateRunner*/(
   query: ExtractorOrCombiner,
   schema: string
-): DomainQueryReturnType<DomainElementSuccess> {
+): Domain2QueryReturnType<DomainElementSuccess> {
   // TODO: fetch parentName from parentUuid in query!
   switch (query.extractorOrCombinerType) {
     case "extractorByEntityReturningObjectList":
@@ -128,7 +128,7 @@ export type sqlStringForTransformerElementValue = {
 export function sqlStringForTransformer(
   actionRuntimeTransformer: TransformerForRuntime | TransformerForRuntime_innerFullObjectTemplate,
   topLevelTransformer: boolean = true
-): DomainQueryReturnType<DomainElementSuccess> {
+): Domain2QueryReturnType<DomainElementSuccess> {
   // TODO: DomainElement should be dependent type, the real type is hidden here
   // log.info("SqlDbQueryRunner applyExtractorTransformerSql extractors", extractors);
   log.info(

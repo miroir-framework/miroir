@@ -2,7 +2,6 @@
 
 import { Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
 import {
-  ActionReturnType,
   ApplicationSection,
   BoxedExtractorOrCombinerReturningObjectList,
   BoxedExtractorOrCombinerReturningObjectOrObjectList,
@@ -12,11 +11,11 @@ import {
   DomainElement,
   DomainElementFailed,
   DomainElementInstanceArray,
-  DomainElementInstanceArrayOrFailed,
   DomainElementInstanceUuidIndex,
   DomainElementObject,
   DomainElementSuccess,
   EntityInstance,
+  EntityInstancesUuidIndex,
   ExtendedTransformerForRuntime,
   ExtractorByEntityReturningObjectList,
   ExtractorOrCombiner,
@@ -31,7 +30,7 @@ import {
   RunBoxedExtractorAction,
   RunBoxedQueryAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { DomainQueryReturnType } from "../0_interfaces/2_domain/DomainElement.js";
+import { Action2ReturnType, Domain2ElementFailed, Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement.js";
 import {
   AsyncBoxedExtractorOrQueryRunnerMap,
   ExtractorRunnerParamsForJzodSchema,
@@ -178,10 +177,12 @@ export function plainObjectToDomainElement(r:any): DomainElement {
 // ################################################################################################
 // ################################################################################################
 export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = (
-  selectedInstancesList: DomainElementInstanceArrayOrFailed,
+  selectedInstancesList: Domain2QueryReturnType<EntityInstance[]>,
   query: BoxedExtractorOrCombinerReturningObjectList,
-): DomainQueryReturnType<DomainElementInstanceArray> => {
-  if (selectedInstancesList.elementType == "failure") {
+// ): Domain2QueryReturnType<DomainElementInstanceArray> => {
+): Domain2QueryReturnType<EntityInstance[]> => {
+  // if (selectedInstancesList.elementType == "failure") {
+  if (selectedInstancesList instanceof Domain2ElementFailed) {
     return selectedInstancesList;
     // throw new Error("applyExtractorForSingleObjectListToSelectedInstancesListInMemory selectedInstancesList.elementValue is undefined")
   }
@@ -203,35 +204,27 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
       //   "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory filter",
       //   JSON.stringify(localQuery.filter)
       // );
-      const filteredResult:DomainElementInstanceArrayOrFailed = localQuery.filter
-        ? {
-            elementType: "instanceArray",
-            elementValue: 
-            // Object.fromEntries(
-              selectedInstancesList.elementValue.filter((i: EntityInstance) => {
-                const matchResult = filterTest?.test(
-                  (i as any)[localQuery.filter?.attributeName??""]
-                )
-                // log.info(
-                //   "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory filter",
-                //   JSON.stringify(i[1]),
-                //   "matchResult",
-                //   matchResult
-                // );
-                return matchResult
-              }
-              // )
-            )
-          }
+      const filteredResult: Domain2QueryReturnType<EntityInstance[]> = localQuery.filter
+        ? selectedInstancesList.filter((i: EntityInstance) => {
+            const matchResult = filterTest?.test((i as any)[localQuery.filter?.attributeName ?? ""]);
+            // log.info(
+            //   "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory filter",
+            //   JSON.stringify(i[1]),
+            //   "matchResult",
+            //   matchResult
+            // );
+            return matchResult;
+          })
         : selectedInstancesList;
       ;
-      const orderResult = sortFunction?filteredResult.elementValue.sort(sortFunction):filteredResult.elementValue;
+      const orderResult = sortFunction?filteredResult.sort(sortFunction):filteredResult;
 
       // log.info(
       //   "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory  result",
       //   JSON.stringify(result, undefined, 2)
       // );
-      return {elementType: "instanceArray", elementValue: orderResult};
+      return orderResult;
+      // return {elementType: "instanceArray", elementValue: orderResult};
       break;
     }
     case "combinerByRelationReturningObjectList": {
@@ -256,19 +249,26 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
 
       // log.info("applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerByRelationReturningObjectList", JSON.stringify(selectedInstances))
       // log.info("applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerByRelationReturningObjectList", selectedInstances)
-      return {
-        elementType: "instanceArray",
-        elementValue: 
-        // Object.fromEntries(
-          selectedInstancesList.elementValue.filter((i: EntityInstance) => {
+      return selectedInstancesList.filter((i: EntityInstance) => {
             const localIndex = relationQuery.AttributeOfListObjectToCompareToReferenceUuid ?? "dummy";
 
             // TODO: allow for runtime reference, with runtime trnasformer reference
             return (i as any)[localIndex] === otherIndex;
           }
-        )
-        // ),
-      } as DomainElementInstanceArray;
+        ) as EntityInstance[];
+      // return {
+      //   elementType: "instanceArray",
+      //   elementValue: 
+      //   // Object.fromEntries(
+      //     selectedInstancesList.elementValue.filter((i: EntityInstance) => {
+      //       const localIndex = relationQuery.AttributeOfListObjectToCompareToReferenceUuid ?? "dummy";
+
+      //       // TODO: allow for runtime reference, with runtime trnasformer reference
+      //       return (i as any)[localIndex] === otherIndex;
+      //     }
+      //   )
+      //   // ),
+      // } as DomainElementInstanceArray;
     }
     case "combinerByManyToManyRelationReturningObjectList": {
       const relationQuery: CombinerByManyToManyRelationReturningObjectList = query.select;
@@ -280,11 +280,7 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
         relationQuery.objectListReference
       ]) ?? {});
       if (otherList) {
-        return { 
-          // "elementType": "instanceUuidIndex", "elementValue": 
-          "elementType": "instanceArray", "elementValue": 
-          // Object.fromEntries(
-          selectedInstancesList.elementValue.filter(
+        return selectedInstancesList.filter(
             (selectedInstance: EntityInstance) => {
               const otherListAttribute = relationQuery.objectListReferenceAttribute ?? "uuid";
               const rootListAttribute = relationQuery.AttributeOfRootListObjectToCompareToListReferenceUuid ?? "uuid";
@@ -316,7 +312,7 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
               } else {
                 throw new Error(
                   "applyExtractorForSingleObjectListToSelectedInstancesListInMemory combinerByManyToManyRelationReturningObjectList can not use objectListReference, selectedInstances elementType=" +
-                    selectedInstancesList.elementType +
+                    selectedInstancesList +
                     " typeof otherList=" +
                     typeof otherList +
                     " other list=" +
@@ -324,13 +320,58 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
                 );
               }
             }
-          )
-        // )
-        } as DomainElementInstanceArray;
+          ) as EntityInstance[];
+        // return { 
+        //   // "elementType": "instanceUuidIndex", "elementValue": 
+        //   "elementType": "instanceArray", "elementValue": 
+        //   // Object.fromEntries(
+        //   selectedInstancesList.elementValue.filter(
+        //     (selectedInstance: EntityInstance) => {
+        //       const otherListAttribute = relationQuery.objectListReferenceAttribute ?? "uuid";
+        //       const rootListAttribute = relationQuery.AttributeOfRootListObjectToCompareToListReferenceUuid ?? "uuid";
+  
+        //       if (typeof otherList == "object") {
+        //         // log.info(
+        //         //   "applyExtractorForSingleObjectListToSelectedInstancesListInMemory combinerByManyToManyRelationReturningObjectList search otherList for attribute",
+        //         //   otherListAttribute,
+        //         //   "on object",
+        //         //   selectedInstancesEntry[1],
+        //         //   "uuidToFind",
+        //         //   (selectedInstancesEntry[1] as any)[rootListAttribute],
+        //         //   "otherList",
+        //         //   otherList
+        //         // );
+        //         if (!Array.isArray(otherList)) {
+        //           const result =
+        //             Object.values(otherList).findIndex(
+        //               (v: any) => v[otherListAttribute] == (selectedInstance as any)[rootListAttribute]
+        //             ) >= 0;
+        //           return result;
+        //         } else {
+        //           const result =
+        //             otherList.findIndex(
+        //               (v: any) => v[otherListAttribute] == (selectedInstance as any)[rootListAttribute]
+        //             ) >= 0;
+        //           return result;
+        //         }
+        //       } else {
+        //         throw new Error(
+        //           "applyExtractorForSingleObjectListToSelectedInstancesListInMemory combinerByManyToManyRelationReturningObjectList can not use objectListReference, selectedInstances elementType=" +
+        //             selectedInstancesList.elementType +
+        //             " typeof otherList=" +
+        //             typeof otherList +
+        //             " other list=" +
+        //             JSON.stringify(otherList, undefined, 2)
+        //         );
+        //       }
+        //     }
+        //   )
+        // // )
+        // } as DomainElementInstanceArray;
       } else {
         throw new Error(
           "applyExtractorForSingleObjectListToSelectedInstancesListInMemory combinerByManyToManyRelationReturningObjectList could not find list for objectListReference, selectedInstances elementType=" +
-            selectedInstancesList.elementType
+            selectedInstancesList
         );
       }
     }
@@ -346,9 +387,9 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
 
 // ################################################################################################
 export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory = (
-  selectedInstancesUuidIndex: DomainQueryReturnType<DomainElementInstanceUuidIndex>,
+  selectedInstancesUuidIndex: Domain2QueryReturnType<EntityInstancesUuidIndex>,
   query: BoxedExtractorOrCombinerReturningObjectList,
-): DomainQueryReturnType<DomainElementInstanceUuidIndex> => {
+): Domain2QueryReturnType<EntityInstancesUuidIndex> => {
   switch (query.select.extractorOrCombinerType) {
     case "extractorByEntityReturningObjectList": {
       const localQuery: ExtractorByEntityReturningObjectList = query.select;
@@ -366,25 +407,19 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
           JSON.stringify(query, undefined, 2)
         )
       }
-      const result:DomainQueryReturnType<DomainElementInstanceUuidIndex> = localQuery.filter
-        ? {
-            elementType: "instanceUuidIndex",
-            elementValue: Object.fromEntries(
-              Object.entries(selectedInstancesUuidIndex.elementValue).filter((i: [string, EntityInstance]) => {
-                const matchResult = filterTest?.test(
-                  (i as any)[1][localQuery.filter?.attributeName??""]
-                )
-                // log.info(
-                //   "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory filter",
-                //   JSON.stringify(i[1]),
-                //   "matchResult",
-                //   matchResult
-                // );
-                return matchResult
-              }
-              )
-            )
-          }
+      const result: Domain2QueryReturnType<EntityInstancesUuidIndex> = localQuery.filter
+        ? Object.fromEntries(
+            Object.entries(selectedInstancesUuidIndex).filter((i: [string, EntityInstance]) => {
+              const matchResult = filterTest?.test((i as any)[1][localQuery.filter?.attributeName ?? ""]);
+              // log.info(
+              //   "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory filter",
+              //   JSON.stringify(i[1]),
+              //   "matchResult",
+              //   matchResult
+              // );
+              return matchResult;
+            })
+          )
         : selectedInstancesUuidIndex;
       ;
       // log.info(
@@ -423,8 +458,8 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
           JSON.stringify(query, undefined, 2)
         )
       }
-      return { "elementType": "instanceUuidIndex", "elementValue": Object.fromEntries(
-        Object.entries(selectedInstancesUuidIndex.elementValue ?? {}).filter(
+      return Object.fromEntries(
+        Object.entries(selectedInstancesUuidIndex ?? {}).filter(
           (i: [string, EntityInstance]) => {
             const localIndex = relationQuery.AttributeOfListObjectToCompareToReferenceUuid ?? "dummy";
 
@@ -433,7 +468,20 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
             return (i[1] as any)[localIndex] === otherIndex
           }
         )
-      )} as DomainElementInstanceUuidIndex;
+      );
+    // } as DomainElementInstanceUuidIndex;
+
+      // return { "elementType": "instanceUuidIndex", "elementValue": Object.fromEntries(
+      //   Object.entries(selectedInstancesUuidIndex.elementValue ?? {}).filter(
+      //     (i: [string, EntityInstance]) => {
+      //       const localIndex = relationQuery.AttributeOfListObjectToCompareToReferenceUuid ?? "dummy";
+
+
+      //       // TODO: allow for runtime reference, with runtime trnasformer reference
+      //       return (i[1] as any)[localIndex] === otherIndex
+      //     }
+      //   )
+      // )} as DomainElementInstanceUuidIndex;
     }
     case "combinerByManyToManyRelationReturningObjectList": {
       const relationQuery: CombinerByManyToManyRelationReturningObjectList = query.select;
@@ -445,8 +493,8 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
         relationQuery.objectListReference
       ]) ?? {});
       if (otherList) {
-        return { "elementType": "instanceUuidIndex", "elementValue": Object.fromEntries(
-          Object.entries(selectedInstancesUuidIndex.elementValue ?? {}).filter(
+        return Object.fromEntries(
+          Object.entries(selectedInstancesUuidIndex ?? {}).filter(
             (selectedInstancesEntry: [string, EntityInstance]) => {
               const otherListAttribute = relationQuery.objectListReferenceAttribute ?? "uuid";
               const rootListAttribute = relationQuery.AttributeOfRootListObjectToCompareToListReferenceUuid ?? "uuid";
@@ -482,7 +530,46 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
               }
             }
           )
-        )} as DomainElementInstanceUuidIndex;
+        )
+        // as DomainElementInstanceUuidIndex;
+        // return { "elementType": "instanceUuidIndex", "elementValue": Object.fromEntries(
+        //   Object.entries(selectedInstancesUuidIndex.elementValue ?? {}).filter(
+        //     (selectedInstancesEntry: [string, EntityInstance]) => {
+        //       const otherListAttribute = relationQuery.objectListReferenceAttribute ?? "uuid";
+        //       const rootListAttribute = relationQuery.AttributeOfRootListObjectToCompareToListReferenceUuid ?? "uuid";
+  
+        //       if (typeof otherList == "object" && !Array.isArray(otherList)) {
+        //         // log.info(
+        //         //   "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerByManyToManyRelationReturningObjectList search otherList for attribute",
+        //         //   otherListAttribute,
+        //         //   "on object",
+        //         //   selectedInstancesEntry[1],
+        //         //   "uuidToFind",
+        //         //   (selectedInstancesEntry[1] as any)[rootListAttribute],
+        //         //   "otherList",
+        //         //   otherList
+        //         // );
+        //         const result =
+        //         Object.values(otherList).findIndex(
+        //           (v: any) => v[otherListAttribute] == (selectedInstancesEntry[1] as any)[rootListAttribute]
+        //         ) >= 0;
+        //         // CAN NOT APPLY FILTER HERE, AS WE ARE WORKING ON AN INDEX
+        //         return result;
+        //       } else {
+        //         throw new Error(
+        //           "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerByManyToManyRelationReturningObjectList can not use objectListReference, selectedInstances elementType=" +
+        //             selectedInstancesUuidIndex.elementType +
+        //             " typeof otherList=" +
+        //             typeof otherList +
+        //             " otherList is array " +
+        //             Array.isArray(otherList) +
+        //             " other list=" +
+        //             JSON.stringify(otherList, undefined, 2)
+        //         );
+        //       }
+        //     }
+        //   )
+        // )} as DomainElementInstanceUuidIndex;
       } else {
         throw new Error(
           "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerByManyToManyRelationReturningObjectList could not find list for objectListReference, selectedInstances elementType=" +
@@ -514,8 +601,8 @@ export const extractEntityInstanceUuidIndexWithObjectListExtractorInMemory
   BoxedExtractorOrCombinerReturningObjectList, 
     StateType
   >
-): DomainQueryReturnType<DomainElementInstanceUuidIndex> => {
-  const selectedInstancesUuidIndex: DomainQueryReturnType<DomainElementInstanceUuidIndex> =
+): Domain2QueryReturnType<EntityInstancesUuidIndex> => {
+  const selectedInstancesUuidIndex: Domain2QueryReturnType<EntityInstancesUuidIndex> =
     (selectorParams?.extractorRunnerMap ?? emptySelectorMap).extractEntityInstanceUuidIndex(deploymentEntityState, selectorParams);
 
   // log.info(
@@ -539,8 +626,8 @@ export const extractEntityInstanceListWithObjectListExtractorInMemory
 = <StateType>(
   deploymentEntityState: StateType,
   selectorParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList, StateType>
-): DomainElementInstanceArrayOrFailed => {
-  const selectedInstancesUuidIndex: DomainElementInstanceArrayOrFailed =
+): Domain2QueryReturnType<EntityInstance[]> => {
+  const selectedInstancesUuidIndex: Domain2QueryReturnType<EntityInstance[]> =
     (selectorParams?.extractorRunnerMap ?? emptySelectorMap).extractEntityInstanceList(deploymentEntityState, selectorParams);
 
   // log.info(
@@ -559,7 +646,8 @@ export const applyExtractorTransformerInMemory = (
   actionRuntimeTransformer: ExtendedTransformerForRuntime,
   queryParams: Record<string, any>,
   newFetchedData: Record<string, any>
-): DomainQueryReturnType<DomainElementSuccess> => {
+// ): Domain2QueryReturnType<DomainElementSuccess> => {
+): Domain2QueryReturnType<any> => {
   log.info("applyExtractorTransformerInMemory  query", JSON.stringify(actionRuntimeTransformer, null, 2));
   return transformer_extended_apply("runtime", "ROOT"/**WHAT?? */, actionRuntimeTransformer, queryParams, newFetchedData);
 };
@@ -569,7 +657,7 @@ export async function handleBoxedExtractorAction(
   origin: string,
   runBoxedExtractorAction: RunBoxedExtractorAction,
   selectorMap: AsyncBoxedExtractorOrQueryRunnerMap
-): Promise<ActionReturnType> {
+): Promise<Action2ReturnType> {
   log.info(
     "handleBoxedExtractorAction for",
     origin,
@@ -577,7 +665,7 @@ export async function handleBoxedExtractorAction(
     "runBoxedExtractorAction",
     JSON.stringify(runBoxedExtractorAction, null, 2)
   );
-  let queryResult: DomainQueryReturnType<DomainElementSuccess>;
+  let queryResult: Domain2QueryReturnType<DomainElementSuccess>;
   const extractor = runBoxedExtractorAction.query;
   queryResult = await selectorMap.extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList(
     {
@@ -585,14 +673,15 @@ export async function handleBoxedExtractorAction(
       extractor,
     }
   );
-  if (queryResult.elementType == "failure") {
+  if (queryResult instanceof Domain2ElementFailed) {
     return {
       status: "error",
       errorType: "FailedToGetInstances",
       errorMessage: JSON.stringify(queryResult),
-    } as ActionReturnType;
+    } as Action2ReturnType;
   } else {
-    const result: ActionReturnType = { status: "ok", returnedDomainElement: queryResult };
+    // const result: Action2ReturnType = { status: "ok", returnedDomainElement: queryResult };
+    const result: Action2ReturnType = { status: "ok", returnedDomainElement: queryResult };
     log.info("handleBoxedExtractorAction for", origin, "runBoxedExtractorAction", runBoxedExtractorAction, "result", JSON.stringify(result, null, 2));
     return result;
   }
@@ -603,7 +692,7 @@ export async function handleBoxedQueryAction(
   origin: string,
   runBoxedQueryAction: RunBoxedQueryAction,
   selectorMap: AsyncBoxedExtractorOrQueryRunnerMap
-): Promise<ActionReturnType> {
+): Promise<Action2ReturnType> {
   log.info(
     "handleBoxedQueryAction for",
     origin,
@@ -611,22 +700,29 @@ export async function handleBoxedQueryAction(
     "runBoxedQueryAction",
     JSON.stringify(runBoxedQueryAction, null, 2)
   );
-  let queryResult: DomainQueryReturnType<DomainElementSuccess>;
+  let queryResult: Domain2QueryReturnType<DomainElementSuccess>;
   queryResult = await selectorMap.runQuery(
     {
       extractor: runBoxedQueryAction.query,
       extractorRunnerMap: selectorMap,
     }
   );
-  if (queryResult.elementType == "failure") {
+  if (queryResult instanceof Domain2ElementFailed) {
     return {
       status: "error",
       errorType: "FailedToGetInstances",
       errorMessage: JSON.stringify(queryResult),
-    } as ActionReturnType;
+    } as Action2ReturnType;
   } else {
-    const result: ActionReturnType = { status: "ok", returnedDomainElement: queryResult };
-    log.info("handleBoxedQueryAction for", origin, "runBoxedExtractorOrQueryAction", runBoxedQueryAction, "result", JSON.stringify(result, null, 2));
+    const result: Action2ReturnType = { status: "ok", returnedDomainElement: queryResult };
+    log.info(
+      "handleBoxedQueryAction for",
+      origin,
+      "runBoxedExtractorOrQueryAction",
+      runBoxedQueryAction,
+      "result",
+      JSON.stringify(result, null, 2)
+    );
     return result;
   }
 }
@@ -640,7 +736,8 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
   extractorRunnerMap:SyncBoxedExtractorOrQueryRunnerMap<StateType>,
   deploymentUuid: Uuid,
   extractorOrCombiner: ExtractorOrCombiner
-): DomainQueryReturnType<DomainElementSuccess> {
+// ): Domain2QueryReturnType<DomainElementSuccess> {
+): Domain2QueryReturnType<any> {
   switch (extractorOrCombiner.extractorOrCombinerType) {
     case "literal": {
       return { elementType: "string", elementValue: extractorOrCombiner.definition };
@@ -849,7 +946,8 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
 export type ExtractWithExtractorType<StateType> = SyncBoxedExtractorRunner<
   BoxedExtractorOrCombinerReturningObjectOrObjectList,
   StateType,
-  DomainQueryReturnType<DomainElementSuccess>
+  // Domain2QueryReturnType<DomainElementSuccess>
+  Domain2QueryReturnType<any>
 >;
 export const extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList /*: ExtractWithExtractorType*/ = <StateType>(
   state: StateType,
@@ -857,7 +955,7 @@ export const extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList /*: 
     BoxedExtractorOrCombinerReturningObjectOrObjectList,
     StateType
   >
-): DomainQueryReturnType<DomainElementSuccess> => {
+): Domain2QueryReturnType<DomainElementSuccess> => {
   // log.info("########## extractExtractor begin, query", selectorParams);
   const localSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<StateType> = selectorParams?.extractorRunnerMap ?? emptySelectorMap;
 

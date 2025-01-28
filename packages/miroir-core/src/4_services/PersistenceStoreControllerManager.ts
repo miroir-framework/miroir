@@ -11,7 +11,6 @@ import { PersistenceStoreControllerManagerInterface } from "../0_interfaces/4-se
 import { PersistenceStoreController, storeSectionFactory } from "./PersistenceStoreController.js";
 
 import {
-  ActionVoidReturnType,
   StoreUnitConfiguration
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { DomainControllerInterface } from "../0_interfaces/2_domain/DomainControllerInterface.js";
@@ -23,6 +22,7 @@ import { DomainController } from "../3_controllers/DomainController.js";
 import { packageName } from "../constants.js";
 import { MiroirLoggerFactory } from "./LoggerFactory.js";
 import { cleanLevel } from "./constants.js";
+import { Action2VoidReturnType } from "../0_interfaces/2_domain/DomainElement.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -158,7 +158,7 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
     newDeploymentUuid: Uuid,
     storeUnitConfiguration: StoreUnitConfiguration,
     initApplicationParameters: InitApplicationParameters,
-  ): Promise<ActionVoidReturnType> {
+  ): Promise<Action2VoidReturnType> {
     await this.addPersistenceStoreController(
       newDeploymentUuid,
       storeUnitConfiguration

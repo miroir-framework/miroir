@@ -1,6 +1,7 @@
 import {
-  ActionEntityInstanceCollectionReturnType,
-  ActionReturnType,
+  Action2EntityInstanceCollectionOrFailure,
+  Action2Error,
+  Action2ReturnType,
   ApplicationSection,
   asyncApplyExtractorTransformerInMemory,
   AsyncBoxedExtractorOrQueryRunnerMap,
@@ -12,12 +13,12 @@ import {
   asyncRunQuery,
   BoxedExtractorOrCombinerReturningObject,
   BoxedExtractorOrCombinerReturningObjectList,
-  DomainElementEntityInstanceOrFailed,
-  DomainElementInstanceArrayOrFailed,
-  DomainElementInstanceUuidIndex,
+  Domain2ElementFailed,
+  Domain2QueryReturnType,
   DomainElementSuccess,
-  DomainQueryReturnType,
   DomainState,
+  EntityInstance,
+  EntityInstancesUuidIndex,
   ExtractorOrCombinerReturningObject,
   ExtractorOrQueryPersistenceStoreRunner,
   LoggerInterface,
@@ -63,44 +64,44 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
   }
 
   // ################################################################################################
-  async handleBoxedExtractorAction(runBoxedExtractorAction: RunBoxedExtractorAction): Promise<ActionReturnType> {
+  async handleBoxedExtractorAction(runBoxedExtractorAction: RunBoxedExtractorAction): Promise<Action2ReturnType> {
     log.info(this.logHeader, "handleBoxedExtractorAction", "runBoxedExtractorAction", JSON.stringify(runBoxedExtractorAction, null, 2));
-    let queryResult: DomainQueryReturnType<DomainElementSuccess>;
+    let queryResult: Domain2QueryReturnType<DomainElementSuccess>;
     queryResult = await this.selectorMap.extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList(
       {
         extractor: runBoxedExtractorAction.query,
         extractorRunnerMap: this.selectorMap,
       }
     );
-    if (queryResult.elementType == "failure") {
+    if (queryResult instanceof Domain2ElementFailed) {
       return {
         status: "error",
         errorType: "FailedToGetInstances", errorMessage: JSON.stringify(queryResult),
-      } as ActionReturnType;
+      } as Action2ReturnType;
     } else {
-      const result: ActionReturnType = { status: "ok", returnedDomainElement: queryResult };
+      const result: Action2ReturnType = { status: "ok", returnedDomainElement: queryResult };
       log.info(this.logHeader, "handleBoxedExtractorAction", "runBoxedExtractorAction", runBoxedExtractorAction, "result", JSON.stringify(result, null, 2));
       return result;
     }
   }
 
   // ################################################################################################
-  async handleBoxedQueryAction(runBoxedQueryAction: RunBoxedQueryAction): Promise<ActionReturnType> {
+  async handleBoxedQueryAction(runBoxedQueryAction: RunBoxedQueryAction): Promise<Action2ReturnType> {
     log.info(this.logHeader, "handleBoxedQueryAction", "runBoxedQueryAction", JSON.stringify(runBoxedQueryAction, null, 2));
-    let queryResult: DomainQueryReturnType<DomainElementSuccess>;
+    let queryResult: Domain2QueryReturnType<DomainElementSuccess>;
     queryResult = await this.selectorMap.runQuery(
       {
         extractor: runBoxedQueryAction.query,
         extractorRunnerMap: this.selectorMap,
       }
     );
-    if (queryResult.elementType == "failure") {
+    if (queryResult instanceof Domain2ElementFailed) {
       return {
         status: "error",
         errorType: "FailedToGetInstances", errorMessage: JSON.stringify(queryResult),
-      } as ActionReturnType;
+      } as Action2ReturnType;
     } else {
-      const result: ActionReturnType = { status: "ok", returnedDomainElement: queryResult };
+      const result: Action2ReturnType = { status: "ok", returnedDomainElement: queryResult };
       log.info(this.logHeader, "handleBoxedQueryAction", "runBoxedQueryAction", runBoxedQueryAction, "result", JSON.stringify(result, null, 2));
       return result;
     }
@@ -109,10 +110,10 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
   // ################################################################################################
   public extractEntityInstance: AsyncBoxedExtractorRunner<
     BoxedExtractorOrCombinerReturningObject,
-    DomainElementEntityInstanceOrFailed
+    Domain2QueryReturnType<EntityInstance>
   > = async (
     selectorParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObject>
-  ): Promise<DomainElementEntityInstanceOrFailed> => {
+  ): Promise<Domain2QueryReturnType<EntityInstance>> => {
     const querySelectorParams: ExtractorOrCombinerReturningObject = selectorParams.extractor.select as ExtractorOrCombinerReturningObject;
     const deploymentUuid = selectorParams.extractor.deploymentUuid;
     const applicationSection: ApplicationSection =
@@ -143,7 +144,7 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
         if (
           !querySelectorParams.AttributeOfObjectToCompareToReferenceUuid
           ||
-          referenceObject.elementType == "failure"
+          referenceObject instanceof Domain2ElementFailed
         ) {
           return {
             elementType: "failure",
@@ -162,7 +163,7 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
           (referenceObject.elementValue as any)[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
         );
 
-        if (result.status == "error") {
+        if (result instanceof Action2Error || result.returnedDomainElement instanceof Domain2ElementFailed) {
           return {
             elementType: "failure",
             elementValue: {
@@ -185,10 +186,7 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
         //   "######### contextResults",
         //   JSON.stringify(selectorParams.query.contextResults, undefined, 2)
         // );
-        return {
-          elementType: "instance",
-          elementValue: result.returnedDomainElement.elementValue,
-        };
+        return result.returnedDomainElement;
         break;
       }
       case "extractorForObjectByDirectReference": {
@@ -206,7 +204,7 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
           instanceDomainElement
         );
 
-        if (result.status == "error") {
+        if (result instanceof Action2Error || result.returnedDomainElement instanceof Domain2ElementFailed) {
           return {
             elementType: "failure",
             elementValue: {
@@ -230,11 +228,7 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
           "######### contextResults",
           JSON.stringify(selectorParams.extractor.contextResults, undefined, 2),
         );
-        return {
-          elementType: "instance",
-          elementValue: result.returnedDomainElement.elementValue,
-          // deploymentEntityState[index].entities[instanceDomainElement.elementValue],
-        };
+        return result.returnedDomainElement;
         break;
       }
       default: {
@@ -250,28 +244,28 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
   // ##############################################################################################
   public extractEntityInstanceUuidIndex: AsyncBoxedExtractorRunner<
     BoxedExtractorOrCombinerReturningObjectList,
-    DomainQueryReturnType<DomainElementInstanceUuidIndex>
+    Domain2QueryReturnType<EntityInstancesUuidIndex>
   > = async (
     extractorRunnerParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>
-  ): Promise<DomainQueryReturnType<DomainElementInstanceUuidIndex>> => {
+  ): Promise<Domain2QueryReturnType<EntityInstancesUuidIndex>> => {
     return this.extractEntityInstanceList(extractorRunnerParams).then((result) => {
-      if (result.elementType == "failure") {
+      if (result instanceof Domain2ElementFailed) {
         return result;
       }
       const entityInstanceUuidIndex = Object.fromEntries(
-        result.elementValue.map((i: any) => [i.uuid, i])
+        result.map((i: any) => [i.uuid, i])
       );
-      return { elementType: "instanceUuidIndex", elementValue: entityInstanceUuidIndex };
+      return entityInstanceUuidIndex;
     });
   }
 
   // ##############################################################################################
   public extractEntityInstanceList: AsyncBoxedExtractorRunner<
     BoxedExtractorOrCombinerReturningObjectList,
-    DomainElementInstanceArrayOrFailed
+    Domain2QueryReturnType<EntityInstance[]>
   > = async (
     extractorRunnerParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>
-  ): Promise<DomainElementInstanceArrayOrFailed> => {
+  ): Promise<Domain2QueryReturnType<EntityInstance[]>> => {
     const deploymentUuid = extractorRunnerParams.extractor.deploymentUuid;
     const applicationSection = extractorRunnerParams.extractor.select.applicationSection ?? "data";
     const entityUuid = extractorRunnerParams.extractor.select.parentUuid
@@ -291,10 +285,10 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
       // resolving by fetchDataReference, fetchDataReferenceAttribute
     }
   
-    const entityInstanceCollection: ActionEntityInstanceCollectionReturnType =
+    const entityInstanceCollection: Action2EntityInstanceCollectionOrFailure =
       await this.persistenceStoreController.getInstances(/*applicationSection, */ entityUuid);
   
-    if (entityInstanceCollection.status == "error") {
+    if (entityInstanceCollection instanceof Action2Error || entityInstanceCollection.returnedDomainElement instanceof Domain2ElementFailed) {
       // return data;
       return {
         elementType: "failure",
@@ -309,7 +303,7 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
     // const entityInstanceUuidIndex = Object.fromEntries(
     //   entityInstanceCollection.returnedDomainElement.elementValue.instances.map((i:any) => [i.uuid, i])
     // );
-    return { elementType: "instanceArray", elementValue: entityInstanceCollection.returnedDomainElement.elementValue.instances };
+    return entityInstanceCollection.returnedDomainElement.instances;
   };
 
   // ##############################################################################################

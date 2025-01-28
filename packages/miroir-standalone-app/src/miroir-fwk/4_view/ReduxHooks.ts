@@ -7,7 +7,7 @@ import {
   DeploymentEntityState,
   DomainElementSuccess,
   DomainModelQueryTemplateJzodSchemaParams,
-  DomainQueryReturnType,
+  Domain2QueryReturnType,
   DomainState,
   EntityInstance,
   EntityInstancesUuidIndex,
@@ -64,7 +64,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 // ACCESS TO DeploymentEntityState
 // ################################################################################################
 // ################################################################################################
-export function useDeploymentEntityStateQueryTemplateSelector<ResultType extends DomainQueryReturnType<DomainElementSuccess>
+export function useDeploymentEntityStateQueryTemplateSelector<ResultType extends Domain2QueryReturnType<DomainElementSuccess>
 >(
   deploymentEntityStateQuerySelector: SyncQueryTemplateRunner<DeploymentEntityState, ResultType>,
   selectorParams: SyncQueryTemplateRunnerParams<DeploymentEntityState>,
@@ -79,7 +79,7 @@ export function useDeploymentEntityStateQueryTemplateSelector<ResultType extends
 }
 
 // ################################################################################################
-export function useDeploymentEntityStateQuerySelector<ResultType extends DomainQueryReturnType<DomainElementSuccess>>(
+export function useDeploymentEntityStateQuerySelector<ResultType extends Domain2QueryReturnType<DomainElementSuccess>>(
   deploymentEntityStateQuerySelector: SyncQueryRunner<DeploymentEntityState, ResultType>,
   selectorParams: SyncQueryRunnerParams<DeploymentEntityState>,
   customQueryInterpreter?: { [k: string]: (query: MiroirQuery) => ResultType }
@@ -95,10 +95,10 @@ export function useDeploymentEntityStateQuerySelector<ResultType extends DomainQ
 export function useDeploymentEntityStateQueryTemplateSelectorForCleanedResult(
   deploymentEntityStateQueryTemplateSelector: SyncQueryTemplateRunner<
     DeploymentEntityState,
-    DomainQueryReturnType<DomainElementSuccess>
+    Domain2QueryReturnType<DomainElementSuccess>
   >,
   selectorParams: SyncQueryTemplateRunnerParams<DeploymentEntityState>,
-  customQueryInterpreter?: { [k: string]: (query: MiroirQueryTemplate) => DomainQueryReturnType<DomainElementSuccess> }
+  customQueryInterpreter?: { [k: string]: (query: MiroirQueryTemplate) => Domain2QueryReturnType<DomainElementSuccess> }
 ): any {
   const innerSelector = useMemo(() => {
     return applyDeploymentEntityStateQueryTemplateSelectorForCleanedResult(deploymentEntityStateQueryTemplateSelector);
@@ -109,9 +109,9 @@ export function useDeploymentEntityStateQueryTemplateSelectorForCleanedResult(
 
 // ################################################################################################
 export function useDeploymentEntityStateQuerySelectorForCleanedResult(
-  deploymentEntityStateQuerySelector: SyncQueryRunner<DeploymentEntityState, DomainQueryReturnType<DomainElementSuccess>>,
+  deploymentEntityStateQuerySelector: SyncQueryRunner<DeploymentEntityState, Domain2QueryReturnType<DomainElementSuccess>>,
   selectorParams: SyncQueryRunnerParams<DeploymentEntityState>,
-  customQueryInterpreter?: { [k: string]: (query: MiroirQuery) => DomainQueryReturnType<DomainElementSuccess> }
+  customQueryInterpreter?: { [k: string]: (query: MiroirQuery) => Domain2QueryReturnType<DomainElementSuccess> }
 ): any {
   const innerSelector = useMemo(() => {
     return applyDeploymentEntityStateQuerySelectorForCleanedResult(deploymentEntityStateQuerySelector);
@@ -145,7 +145,7 @@ export function useDomainStateQueryTemplateSelector< ResultType >(
 // ################################################################################################
 // export function useDomainStateQueryTemplateSelectorForCleanedResult<QueryType extends MiroirQueryTemplate, ResultType >(
 export function useDomainStateQueryTemplateSelectorForCleanedResult< ResultType >(
-  domainStateSelector:SyncQueryTemplateRunner<DomainState, DomainQueryReturnType<DomainElementSuccess>>,
+  domainStateSelector:SyncQueryTemplateRunner<DomainState, Domain2QueryReturnType<DomainElementSuccess>>,
   selectorParams:SyncQueryTemplateRunnerParams<DomainState>,
   customQueryInterpreter?: { [k: string]: (query:MiroirQueryTemplate) => ResultType }
 ): ResultType {

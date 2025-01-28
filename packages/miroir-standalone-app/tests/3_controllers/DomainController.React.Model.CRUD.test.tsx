@@ -5,7 +5,7 @@ import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 // import { SetupServerApi } from "msw/lib/node";
 
 import {
-  ActionReturnType,
+  Action2ReturnType,
   CompositeAction,
   ConfigurationService,
   DomainAction,
@@ -900,7 +900,7 @@ describe.sequential(
               },
             ],
           };
-          const queryResult:ActionReturnType = await domainController.handleCompositeAction(
+          const queryResult:Action2ReturnType = await domainController.handleCompositeAction(
             beforeEachCompositeAction,
             {},
             defaultMiroirMetaModel
@@ -1141,7 +1141,7 @@ describe.sequential(
               },
             ],
           };
-          const queryResult:ActionReturnType = await domainController.handleCompositeAction(
+          const queryResult:Action2ReturnType = await domainController.handleCompositeAction(
             beforeEachCompositeAction,
             {},
             defaultMiroirMetaModel

@@ -1,6 +1,5 @@
 import { HttpMethod } from "../0_interfaces/1_core/Http.js";
 import {
-  ActionReturnType,
   ApplicationSection,
   DomainElementSuccess,
   EntityInstance,
@@ -28,7 +27,7 @@ import { generateRestServiceResponse } from "./RestTools.js";
 import { cleanLevel } from "./constants.js";
 
 import { DomainControllerInterface, DomainState } from "../0_interfaces/2_domain/DomainControllerInterface.js";
-import { DomainQueryReturnType } from "../0_interfaces/2_domain/DomainElement.js";
+import { Action2Error, Action2ReturnType, Domain2ElementFailed, Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement.js";
 import { defaultMiroirMetaModel } from "../1_core/Model.js";
 import {
   getExtractorTemplateRunnerParamsForDomainState,
@@ -117,8 +116,8 @@ export async function restMethodGetHandler
       [],
       async (section: ApplicationSection, parentUuid: string): Promise<HttpResponseBodyFormat> => {
         const getInstancesFunction = targetPersistenceStoreController.getInstances.bind(targetPersistenceStoreController);
-        const results: ActionReturnType = await getInstancesFunction(section, parentUuid)
-        if (results.status != "ok") {
+        const results: Action2ReturnType = await getInstancesFunction(section, parentUuid)
+        if (results instanceof Action2Error) {
           throw new Error(
             "restMethodGetHandler could not get instances for parentUuid: " +
               parentUuid +
@@ -126,17 +125,28 @@ export async function restMethodGetHandler
               JSON.stringify(results)
           );
         }
-        if (results.returnedDomainElement?.elementType != "entityInstanceCollection") {
+        // if (results.returnedDomainElement.elementType != "entityInstanceCollection") {
+        if (results.returnedDomainElement instanceof Domain2ElementFailed) {
           throw new Error(
             "restMethodGetHandler wrong returnType for instances of parentUuid: " +
               parentUuid +
               "returned" +
-              results.returnedDomainElement
+              results
           );
         }
         
+        // TODO: assumption that the returnedDomainElement is an EntityInstanceCollection is wrong!
+        if (typeof results.returnedDomainElement !== "object" || Array.isArray(results.returnedDomainElement)) {
+          throw new Error(
+            "restMethodGetHandler wrong returnType for instances of parentUuid: " +
+              parentUuid +
+              "returned" +
+              results
+          );
+          
+        }
         // log.info("restMethodGetHandler found results", results.returnedDomainElement.elementValue.instances)
-        return wrapResults(results.returnedDomainElement.elementValue.instances);
+        return wrapResults(results.returnedDomainElement.instances);
       },
       continuationFunction(responseHandler)
     );
@@ -401,7 +411,7 @@ export async function queryTemplateActionHandler(
       JSON.stringify(runBoxedQueryTemplateOrBoxedExtractorTemplateAction, undefined, 2)
     );
     log.info("RestServer queryTemplateActionHandler domainState=", JSON.stringify(domainState, undefined, 2));
-    let queryResult: DomainQueryReturnType<DomainElementSuccess> = undefined as any as DomainQueryReturnType<DomainElementSuccess>;
+    let queryResult: Domain2QueryReturnType<DomainElementSuccess> = undefined as any as Domain2QueryReturnType<DomainElementSuccess>;
 
     switch (runBoxedQueryTemplateOrBoxedExtractorTemplateAction.query.queryType) {
       case "boxedExtractorTemplateReturningObject":
@@ -429,7 +439,7 @@ export async function queryTemplateActionHandler(
       default:
         break;
     }
-    const result: ActionReturnType = {
+    const result: Action2ReturnType = {
       status: "ok",
       returnedDomainElement: queryResult,
     };

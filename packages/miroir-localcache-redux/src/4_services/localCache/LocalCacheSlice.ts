@@ -10,7 +10,8 @@ import equal from "fast-deep-equal";
 
 import {
   ACTION_OK,
-  ActionReturnType,
+  Action2Error,
+  Action2ReturnType,
   ApplicationSection,
   ApplicationVersion,
   DeploymentEntityState,
@@ -335,7 +336,7 @@ function loadNewEntityInstancesInLocalCache(
 function handleInstanceAction(
   state: LocalCacheSliceState,
   instanceAction: InstanceAction
-): ActionReturnType {
+): Action2ReturnType {
   // log.info(
   //   "localCacheSliceObject handleInstanceAction deploymentUuid",
   //   instanceAction.deploymentUuid,
@@ -501,7 +502,7 @@ function handleModelAction(
   state: LocalCacheSliceState,
   deploymentUuid: Uuid,
   action: ModelAction
-): ActionReturnType {
+): Action2ReturnType {
   log.info(
     "localCacheSliceObject handleModelAction called",
     action.actionName,
@@ -571,7 +572,7 @@ function handleModelAction(
 // function handleEndpointAction(
 //   state: LocalCacheSliceState,
 //   action: InstanceAction
-// ): ActionReturnType {
+// ): Action2ReturnType {
 //   // log.info(
 //   //   "localCacheSliceObject handleEndpointAction called",
 //   //   action.actionName,
@@ -597,7 +598,7 @@ function handleModelAction(
 function handleAction(
   state: LocalCacheSliceState,
   action: LocalCacheAction
-): ActionReturnType {
+): Action2ReturnType {
   log.info(
     "localCacheSliceObject handleAction called",
     action.actionType,
@@ -636,8 +637,8 @@ function handleAction(
   return ACTION_OK;
 }
 
-function actionReturnTypeToException(a:ActionReturnType) {
-  if (a.status == "error") {
+function actionReturnTypeToException(a:Action2ReturnType) {
+  if (a instanceof Action2Error) {
     throw new Error("caught error on return value " + JSON.stringify(a, undefined, 2));
   }
 }

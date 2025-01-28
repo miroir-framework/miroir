@@ -12,7 +12,7 @@ import { Provider } from 'react-redux';
 
 // As a basic setup, import your same slice reducers
 import {
-  ActionReturnType,
+  Action2ReturnType,
   CompositeAction,
   ConfigurationService,
   DeploymentConfiguration,
@@ -753,8 +753,8 @@ export async function loadTestConfigFiles(env:any) {
 export const chainVitestSteps = async (
   stepName: string,
   context: {[k:string]: any},
-  functionCallingActionToTest: () => Promise<ActionReturnType>,
-  resultTransformation?: (a:ActionReturnType,p:{[k:string]: any}) => any,
+  functionCallingActionToTest: () => Promise<Action2ReturnType>,
+  resultTransformation?: (a:Action2ReturnType,p:{[k:string]: any}) => any,
   addResultToContextAsName?: string,
   expectedDomainElementType?: DomainElementType,
   expectedValue?: any,
@@ -846,7 +846,7 @@ export async function runTestOrTestSuite(
 
   switch (testAction.testActionType) {
     case "testCompositeActionSuite": {
-      const queryResult: ActionReturnType = await domainController.handleTestCompositeActionSuite(
+      const queryResult: Action2ReturnType = await domainController.handleTestCompositeActionSuite(
         testAction.testCompositeAction,
         {},
         localCache.currentModel(testAction.deploymentUuid)
@@ -868,7 +868,7 @@ export async function runTestOrTestSuite(
       return queryResult;
     }
     case "testCompositeAction": {
-      const queryResult: ActionReturnType = await domainController.handleTestCompositeAction(
+      const queryResult: Action2ReturnType = await domainController.handleTestCompositeAction(
         testAction.testCompositeAction,
         {},
         localCache.currentModel(testAction.deploymentUuid)
@@ -883,7 +883,7 @@ export async function runTestOrTestSuite(
     }
     case "testCompositeActionTemplateSuite": {
       // throw new Error("testCompositeActionTemplateSuite not implemented yet!");
-      const queryResult: ActionReturnType = await domainController.handleTestCompositeActionTemplateSuite(
+      const queryResult: Action2ReturnType = await domainController.handleTestCompositeActionTemplateSuite(
         testAction.testCompositeAction,
         testActionParamValues??{},
         localCache.currentModel(testAction.deploymentUuid)

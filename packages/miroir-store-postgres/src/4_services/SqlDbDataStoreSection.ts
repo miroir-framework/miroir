@@ -1,6 +1,8 @@
 import {
-  ActionEntityInstanceCollectionReturnType,
+  Action2EntityInstanceCollectionOrFailure,
+  Action2Error,
   ApplicationSection,
+  Domain2ElementFailed,
   EntityInstanceCollection,
   LoggerInterface,
   MiroirLoggerFactory,
@@ -41,15 +43,17 @@ export class SqlDbDataStoreSection extends MixedSqlDbInstanceStoreSection implem
     
     for (const parentUuid of this.getEntityUuids()) {
       log.debug(this.logHeader,'getState getting instances for',parentUuid);
-      const instances: ActionEntityInstanceCollectionReturnType = await this.getInstances(parentUuid);
+      const instances: Action2EntityInstanceCollectionOrFailure = await this.getInstances(parentUuid);
       // const instances:EntityInstanceCollection = {parentUuid:parentUuid, applicationSection:'data',instances: dbInstances};
       // log.info(this.logHeader,'getState found instances',parentUuid,instances);
-      if (instances.status != "ok") {
+      if (instances instanceof Action2Error || instances.returnedDomainElement instanceof Domain2ElementFailed) {
+        log.error(this.logHeader,'getState error getting instances for',parentUuid,instances);
         Object.assign(result,{[parentUuid]:{parentUuid, instances: []}});
-      } else if (instances.returnedDomainElement?.elementType != "entityInstanceCollection") {
+      } else if (typeof instances.returnedDomainElement !== 'object' || Array.isArray(instances.returnedDomainElement)) {
+        log.error(this.logHeader,'getState error, instances have wrong object type for',parentUuid,instances);
         Object.assign(result,{[parentUuid]:{parentUuid, instances: []}});
       } else {
-        Object.assign(result,{[parentUuid]:instances.returnedDomainElement.elementValue});
+        Object.assign(result,{[parentUuid]:instances.returnedDomainElement});
       }
 
     }

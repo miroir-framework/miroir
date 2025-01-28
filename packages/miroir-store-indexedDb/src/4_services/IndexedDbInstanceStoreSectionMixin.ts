@@ -1,9 +1,9 @@
 import {
+  Action2EntityInstanceCollectionOrFailure,
+  Action2EntityInstanceReturnType,
+  Action2ReturnType,
+  Action2VoidReturnType,
   ACTION_OK,
-  ActionEntityInstanceCollectionReturnType,
-  ActionEntityInstanceReturnType,
-  ActionReturnType,
-  ActionVoidReturnType,
   EntityInstance,
   ExtractorRunnerInMemory,
   ExtractorTemplateRunnerInMemory,
@@ -46,62 +46,62 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
     }
 
     // #############################################################################################
-    async handleBoxedExtractorAction(query: RunBoxedExtractorAction): Promise<ActionReturnType> {
+    async handleBoxedExtractorAction(query: RunBoxedExtractorAction): Promise<Action2ReturnType> {
       log.info(this.logHeader,'handleBoxedExtractorAction', 'query',query);
       
-      const result: ActionReturnType = await this.extractorRunner.handleBoxedExtractorAction(query);
+      const result: Action2ReturnType = await this.extractorRunner.handleBoxedExtractorAction(query);
 
       log.info(this.logHeader,'handleBoxedExtractorAction','query',query, "result", result);
       return result;
     }
     
     // #############################################################################################
-    async handleBoxedQueryAction(query: RunBoxedQueryAction): Promise<ActionReturnType> {
+    async handleBoxedQueryAction(query: RunBoxedQueryAction): Promise<Action2ReturnType> {
       log.info(this.logHeader,'handleBoxedQueryAction', 'query',query);
       
-      const result: ActionReturnType = await this.extractorRunner.handleBoxedQueryAction(query);
+      const result: Action2ReturnType = await this.extractorRunner.handleBoxedQueryAction(query);
 
       log.info(this.logHeader,'handleBoxedQueryAction','query',query, "result", result);
       return result;
     }
     
     // #############################################################################################
-    async handleQueryTemplateActionForServerONLY(query: RunBoxedQueryTemplateAction): Promise<ActionReturnType> {
+    async handleQueryTemplateActionForServerONLY(query: RunBoxedQueryTemplateAction): Promise<Action2ReturnType> {
       log.info(this.logHeader,'handleQueryTemplateActionForServerONLY', 'query',query);
       
-      const result: ActionReturnType = await this.extractorTemplateRunner.handleQueryTemplateActionForServerONLY(query);
+      const result: Action2ReturnType = await this.extractorTemplateRunner.handleQueryTemplateActionForServerONLY(query);
 
       log.info(this.logHeader,'handleQueryTemplateActionForServerONLY','query',query, "result", result);
       return result;
     }
 
     // #############################################################################################
-    async handleBoxedExtractorTemplateActionForServerONLY(query: RunBoxedExtractorTemplateAction): Promise<ActionReturnType> {
+    async handleBoxedExtractorTemplateActionForServerONLY(query: RunBoxedExtractorTemplateAction): Promise<Action2ReturnType> {
       log.info(this.logHeader,'handleQueryTemplateActionForServerONLY', 'query',query);
       
-      const result: ActionReturnType = await this.extractorTemplateRunner.handleBoxedExtractorTemplateActionForServerONLY(query);
+      const result: Action2ReturnType = await this.extractorTemplateRunner.handleBoxedExtractorTemplateActionForServerONLY(query);
 
       log.info(this.logHeader,'handleBoxedExtractorTemplateActionForServerONLY','query',query, "result", result);
       return result;
     }
 
     // #############################################################################################
-    async handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(query: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction): Promise<ActionReturnType> {
+    async handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(query: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction): Promise<Action2ReturnType> {
       log.info(this.logHeader,'handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY', 'query',query);
       
-      const result: ActionReturnType = await this.extractorTemplateRunner.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(query);
+      const result: Action2ReturnType = await this.extractorTemplateRunner.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(query);
 
       log.info(this.logHeader,'handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY','query',query, "result", result);
       return result;
     }
 
     // #############################################################################################
-    async getInstance(parentUuid: string, uuid: string): Promise<ActionEntityInstanceReturnType> {
+    async getInstance(parentUuid: string, uuid: string): Promise<Action2EntityInstanceReturnType> {
       try {
         const result = await this.localUuidIndexedDb.resolvePathOnObject(parentUuid, uuid);
         return Promise.resolve({
           status: "ok",
-          returnedDomainElement: { elementType: "instance", elementValue: result },
+          returnedDomainElement: result,
         });
       } catch (error) {
         return Promise.resolve({
@@ -113,15 +113,12 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
     }
 
     // #############################################################################################
-    async getInstances(parentUuid: string): Promise<ActionEntityInstanceCollectionReturnType> {
+    async getInstances(parentUuid: string): Promise<Action2EntityInstanceCollectionOrFailure> {
       try {
         const result: EntityInstance[] = await this.localUuidIndexedDb.getAllValue(parentUuid);
         return Promise.resolve({
           status: "ok",
-          returnedDomainElement: {
-            elementType: "entityInstanceCollection",
-            elementValue: { parentUuid, applicationSection: this.localUuidIndexedDb.applicationSection, instances: result },
-          },
+          returnedDomainElement: { parentUuid, applicationSection: this.localUuidIndexedDb.applicationSection, instances: result },
         });
       } catch (error) {
         return {
@@ -133,7 +130,7 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
     }
 
     // #############################################################################################
-    async upsertInstance(parentUuid: string, instance: EntityInstance): Promise<ActionVoidReturnType> {
+    async upsertInstance(parentUuid: string, instance: EntityInstance): Promise<Action2VoidReturnType> {
       log.info(this.logHeader, "upsertInstance called", instance.parentUuid, instance);
 
       try {
@@ -152,7 +149,7 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
             errorMessage: `failed to upsert instance ${instance.uuid} of entity ${parentUuid}`,
           });
         }
-        return Promise.resolve( { status: "ok", returnedDomainElement: { elementType: "void", elementValue: undefined } } );
+        // return Promise.resolve( { status: "ok", returnedDomainElement: { elementType: "void", elementValue: undefined } } );
       } catch (error) {
         log.error(this.logHeader, "upsertInstance", instance.parentUuid, "could not upsert instance", instance, error);
         return Promise.resolve({
@@ -165,7 +162,7 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
     }
 
     // #############################################################################################
-    async deleteInstances(parentUuid: string, instances: EntityInstance[]): Promise<ActionVoidReturnType> {
+    async deleteInstances(parentUuid: string, instances: EntityInstance[]): Promise<Action2VoidReturnType> {
       log.info(this.logHeader, "deleteInstances", parentUuid, instances);
       for (const o of instances) {
         try {
@@ -183,7 +180,7 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
     }
 
     // #############################################################################################
-    async deleteInstance(parentUuid: string, instance: EntityInstance): Promise<ActionVoidReturnType> {
+    async deleteInstance(parentUuid: string, instance: EntityInstance): Promise<Action2VoidReturnType> {
       log.debug(this.logHeader, "deleteInstance started.", "entity", parentUuid, "instance", instance);
       try {
         // const deleteResult = await this.localUuidIndexedDb.deleteEntityInstance(parentUuid, instance.uuid);

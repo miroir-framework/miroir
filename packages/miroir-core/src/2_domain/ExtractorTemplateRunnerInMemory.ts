@@ -1,10 +1,10 @@
 import {
-  ActionReturnType,
   RunBoxedExtractorTemplateAction,
   RunBoxedQueryTemplateAction,
   RunBoxedQueryTemplateOrBoxedExtractorTemplateAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface.js";
+import { Action2ReturnType } from "../0_interfaces/2_domain/DomainElement.js";
 import {
   AsyncBoxedExtractorOrQueryRunnerMap,
   ExtractorTemplatePersistenceStoreRunner,
@@ -65,7 +65,7 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
   // ################################################################################################
   async handleQueryTemplateActionForServerONLY(
     runBoxedQueryTemplateAction: RunBoxedQueryTemplateAction
-  ): Promise<ActionReturnType> {
+  ): Promise<Action2ReturnType> {
     log.info(
       this.logHeader,
       "handleQueryTemplateActionForServerONLY",
@@ -82,7 +82,7 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
   // ################################################################################################
   async handleBoxedExtractorTemplateActionForServerONLY(
     runBoxedExtractorTemplateAction: RunBoxedExtractorTemplateAction
-  ): Promise<ActionReturnType> {
+  ): Promise<Action2ReturnType> {
     log.info(
       this.logHeader,
       "handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY",
@@ -99,7 +99,7 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
   // ################################################################################################
   async handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
     runBoxedQueryTemplateOrBoxedExtractorTemplateAction: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction
-  ): Promise<ActionReturnType> {
+  ): Promise<Action2ReturnType> {
     log.info(
       this.logHeader,
       "handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY",

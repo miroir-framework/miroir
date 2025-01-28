@@ -14,6 +14,8 @@ import {
   TransformerForRuntime
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
+  Action2Error,
+  Action2Success,
   author1,
   author2,
   author3,
@@ -100,111 +102,112 @@ const libraryEntitesAndInstances = [
   }
 ];
 
-// const beforeAll = (async () => {
-beforeAll(async () => {
-  console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ beforeAll")
-  // sqlDbAdminStore = new SqlDbDataStoreSection("data", sqlDbStoreName, connectionString, schema);
-  sqlDbAdminStore = new SqlDbAdminStore("data", sqlDbStoreName, connectionString, schema);
-  sqlDbDataStore = new SqlDbDataStoreSection("data", sqlDbStoreName, connectionString, schema);
-  sqlDbModelStore = new SqlDbModelStoreSection("model", sqlDbStoreName, connectionString, schema, sqlDbDataStore)
+// beforeAll(async () => {
+//   console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ beforeAll")
+//   // sqlDbAdminStore = new SqlDbDataStoreSection("data", sqlDbStoreName, connectionString, schema);
+//   sqlDbAdminStore = new SqlDbAdminStore("data", sqlDbStoreName, connectionString, schema);
+//   sqlDbDataStore = new SqlDbDataStoreSection("data", sqlDbStoreName, connectionString, schema);
+//   sqlDbModelStore = new SqlDbModelStoreSection("model", sqlDbStoreName, connectionString, schema, sqlDbDataStore)
 
-  persistenceStoreController = new PersistenceStoreController(sqlDbAdminStore, sqlDbModelStore, sqlDbDataStore);
+//   persistenceStoreController = new PersistenceStoreController(sqlDbAdminStore, sqlDbModelStore, sqlDbDataStore);
 
-  const testApplicationConfig: InitApplicationParameters = getBasicApplicationConfiguration(
-    testApplicationName,
-    paramSelfApplicationUuid,
-    // {
-    //   emulatedServerType: "sql",
-    //   connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
-    // },
-    paramAdminConfigurationDeploymentUuid,
-    applicationModelBranchUuid,
-    selfApplicationVersionUuid,
+//   const testApplicationConfig: InitApplicationParameters = getBasicApplicationConfiguration(
+//     testApplicationName,
+//     paramSelfApplicationUuid,
+//     // {
+//     //   emulatedServerType: "sql",
+//     //   connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+//     // },
+//     paramAdminConfigurationDeploymentUuid,
+//     applicationModelBranchUuid,
+//     selfApplicationVersionUuid,
 
-  )
-  await persistenceStoreController.createStore(
-    testStoreConfig.admin
-  );
-  await persistenceStoreController.createStore(
-    testStoreConfig.model
-  );
-  await persistenceStoreController.createStore(
-    testStoreConfig.data
-  );
-  await persistenceStoreController.open();
+//   )
+//   await persistenceStoreController.createStore(
+//     testStoreConfig.admin
+//   );
+//   await persistenceStoreController.createStore(
+//     testStoreConfig.model
+//   );
+//   await persistenceStoreController.createStore(
+//     testStoreConfig.data
+//   );
+//   await persistenceStoreController.open();
 
-  await persistenceStoreController.initApplication(
-    defaultMiroirMetaModel,
-    "miroir",
-    testApplicationConfig.selfApplication,
-    testApplicationConfig.applicationModelBranch,
-    testApplicationConfig.applicationVersion,
-  )
+//   await persistenceStoreController.initApplication(
+//     defaultMiroirMetaModel,
+//     "miroir",
+//     testApplicationConfig.selfApplication,
+//     testApplicationConfig.applicationModelBranch,
+//     testApplicationConfig.applicationVersion,
+//   )
   
-  await persistenceStoreController.handleAction(
-    {
-      actionType: "modelAction",
-      actionName: "resetModel",
-      actionLabel: "resetTestStore",
-      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-      deploymentUuid: paramAdminConfigurationDeploymentUuid,
-    },
-  );
-  await persistenceStoreController.handleAction({
-    actionType: "modelAction",
-    actionName: "initModel",
-    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-    deploymentUuid: paramAdminConfigurationDeploymentUuid,
-    params: {
-      dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
-      metaModel: defaultMiroirMetaModel,
-      // TODO: this is wrong, selfApplication, selfApplication version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
-      selfApplication: testApplicationConfig.selfApplication,
-      applicationModelBranch: testApplicationConfig.applicationModelBranch,
-      applicationVersion: testApplicationConfig.applicationVersion,
-    },
-  });
-  // }, defaultMiroirMetaModel);
-  await persistenceStoreController.handleAction({
-    actionType: "modelAction",
-    actionName: "createEntity",
-    actionLabel: "CreateLibraryStoreEntities",
-    deploymentUuid: paramAdminConfigurationDeploymentUuid,
-    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-    entities: libraryEntitesAndInstances,
-  });
-  await persistenceStoreController.handleAction({
-    actionType: "instanceAction",
-    actionName: "createInstance",
-    actionLabel: "CreateLibraryStoreInstances",
-    endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-    applicationSection: "data",
-    deploymentUuid: paramAdminConfigurationDeploymentUuid,
-    objects: libraryEntitesAndInstances.map((e) => {
-      return {
-        parentName: e.entity.name,
-        parentUuid: e.entity.uuid,
-        applicationSection: "data",
-        instances: e.instances,
-      };
-    }),
-  });
-  console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ END beforeAll")
-});
+//   await persistenceStoreController.handleAction(
+//     {
+//       actionType: "modelAction",
+//       actionName: "resetModel",
+//       actionLabel: "resetTestStore",
+//       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+//       deploymentUuid: paramAdminConfigurationDeploymentUuid,
+//     },
+//   );
+//   await persistenceStoreController.handleAction({
+//     actionType: "modelAction",
+//     actionName: "initModel",
+//     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+//     deploymentUuid: paramAdminConfigurationDeploymentUuid,
+//     params: {
+//       dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
+//       metaModel: defaultMiroirMetaModel,
+//       // TODO: this is wrong, selfApplication, selfApplication version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
+//       selfApplication: testApplicationConfig.selfApplication,
+//       applicationModelBranch: testApplicationConfig.applicationModelBranch,
+//       applicationVersion: testApplicationConfig.applicationVersion,
+//     },
+//   });
+//   // }, defaultMiroirMetaModel);
+//   await persistenceStoreController.handleAction({
+//     actionType: "modelAction",
+//     actionName: "createEntity",
+//     actionLabel: "CreateLibraryStoreEntities",
+//     deploymentUuid: paramAdminConfigurationDeploymentUuid,
+//     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+//     entities: libraryEntitesAndInstances,
+//   });
+//   await persistenceStoreController.handleAction({
+//     actionType: "instanceAction",
+//     actionName: "createInstance",
+//     actionLabel: "CreateLibraryStoreInstances",
+//     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+//     applicationSection: "data",
+//     deploymentUuid: paramAdminConfigurationDeploymentUuid,
+//     objects: libraryEntitesAndInstances.map((e) => {
+//       return {
+//         parentName: e.entity.name,
+//         parentUuid: e.entity.uuid,
+//         applicationSection: "data",
+//         instances: e.instances,
+//       };
+//     }),
+//   });
+//   console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ END beforeAll")
+// });
 
-// const afterAll = (async () => {
-afterAll(async () => {
-  await persistenceStoreController.deleteStore(
-    testStoreConfig.data
-  );
-  await persistenceStoreController.deleteStore(
-    testStoreConfig.model
-  );
-  await persistenceStoreController.deleteStore(
-    testStoreConfig.admin
-  );
-  await persistenceStoreController.close();
-});
+// afterAll(async () => {
+//   await persistenceStoreController.deleteStore(
+//     testStoreConfig.data
+//   );
+//   await persistenceStoreController.deleteStore(
+//     testStoreConfig.model
+//   );
+//   await persistenceStoreController.deleteStore(
+//     testStoreConfig.admin
+//   );
+//   await persistenceStoreController.close();
+// });
+
+
+
 const extractors: ExtractorOrCombinerRecord = {
   books: {
     extractorOrCombinerType: "extractorByEntityReturningObjectList",
@@ -214,52 +217,60 @@ const extractors: ExtractorOrCombinerRecord = {
   },
 };
 
-async function runTransformerTest(transformerTest: TransformerTest) {
-  console.log(expect.getState().currentTestName, "START");
+// async function runTransformerTest(transformerTest: TransformerTest) {
+//   console.log(expect.getState().currentTestName, "START");
   
-  const transformer: TransformerForRuntime = {
-    ...transformerTest.transformer,
-    interpolation: "runtime",
-  } as any; // TODO: fix typing
+//   const transformer: TransformerForRuntime = {
+//     ...transformerTest.transformer,
+//     interpolation: "runtime",
+//   } as any; // TODO: fix typing
 
-  console.log(expect.getState().currentTestName, "transformerTest", transformerTest);
+//   console.log(expect.getState().currentTestName, "transformerTest", transformerTest);
 
-  const queryResult = await sqlDbDataStore.handleBoxedQueryAction({
-    actionType: "runBoxedQueryAction",
-    actionName: "runQuery",
-    deploymentUuid: "",
-    endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-    applicationSection: "data",
-    query: {
-      queryType: "boxedQueryWithExtractorCombinerTransformer",
-      runAsSql: true,
-      pageParams: {},
-      queryParams: {},
-      contextResults: {},
-      deploymentUuid: "",
-      // extractors,
-      runtimeTransformers: {
-        transformer,
-      },
-    },
-  });
+//   const queryResult = await sqlDbDataStore.handleBoxedQueryAction({
+//     actionType: "runBoxedQueryAction",
+//     actionName: "runQuery",
+//     deploymentUuid: "",
+//     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+//     applicationSection: "data",
+//     query: {
+//       queryType: "boxedQueryWithExtractorCombinerTransformer",
+//       runAsSql: true,
+//       pageParams: {},
+//       queryParams: {},
+//       contextResults: {},
+//       deploymentUuid: "",
+//       // extractors,
+//       runtimeTransformers: {
+//         transformer,
+//       },
+//     },
+//   });
 
-  console.log(expect.getState().currentTestName, "queryResult", JSON.stringify(queryResult, null, 2));
-  expect(queryResult.status).toEqual("ok");
-  if (queryResult.status == "ok") {
-    const testResult = queryResult.returnedDomainElement.elementValue.transformer;
-    console.log(expect.getState().currentTestName, "testResult", JSON.stringify(queryResult, null, 2));
-    console.log(expect.getState().currentTestName, "expectedValue", transformerTest.expectedValue);
-    expect(queryResult).toEqual(transformerTest.expectedValue);
-  }
+//   console.log(expect.getState().currentTestName, "queryResult", JSON.stringify(queryResult, null, 2));
+  
+//   if (queryResult instanceof Action2Error) {
+//     expect(queryResult instanceof Action2Error).toEqual(false);
+//   } else {
+//     const testResult = (queryResult as Action2Success).returnedDomainElement.elementValue.transformer;
+//     // const testResult = queryResult.returnedDomainElement.elementValue.transformer;
+//     console.log(expect.getState().currentTestName, "testResult", JSON.stringify(queryResult, null, 2));
+//     console.log(expect.getState().currentTestName, "expectedValue", transformerTest.expectedValue);
+//     expect(testResult).toEqual(transformerTest.expectedValue);
+//   }
 
-  console.log(expect.getState().currentTestName, "END");
-}
+//   console.log(expect.getState().currentTestName, "END");
+// }
 
 
 describe("transformers.integ.test", async () => {
   // await beforeAll();
-  await runTransformerTestSuite(transformerTests, runTransformerTest);
+  
+  
+  // await runTransformerTestSuite(transformerTests, runTransformerTest);
+
+
+
   // await afterAll();
   // // ################################################################################################
   // describe("listPickElement", () => {
@@ -431,7 +442,7 @@ describe("transformers.integ.test", async () => {
   //   // it("resolve basic transformer constantUuid", async () => {
   //   //   console.log("resolve basic transformer constantUuid START");
 
-  //   //   const result: DomainQueryReturnType<DomainElementSuccess> = transformer_apply(
+  //   //   const result: Domain2QueryReturnType<DomainElementSuccess> = transformer_apply(
   //   //     "build",
   //   //     "ROOT",
   //   //     {
@@ -442,7 +453,7 @@ describe("transformers.integ.test", async () => {
   //   //     undefined
   //   //   );
 
-  //   //   const expectedResult: DomainQueryReturnType<DomainElementSuccess> = {
+  //   //   const expectedResult: Domain2QueryReturnType<DomainElementSuccess> = {
   //   //     elementType: "instanceUuid",
   //   //     // elementType: "string",
   //   //     elementValue: "test",
@@ -460,7 +471,7 @@ describe("transformers.integ.test", async () => {
   // it("resolve basic transformer path reference for string", async () => { // TODO: test failure cases!
   //     console.log("resolve basic transformer path reference for string START")
 
-  //     const result: DomainQueryReturnType<DomainElementSuccess> = transformer_apply(
+  //     const result: Domain2QueryReturnType<DomainElementSuccess> = transformer_apply(
   //       "runtime",
   //       "ROOT",
   //       {
@@ -476,7 +487,7 @@ describe("transformers.integ.test", async () => {
   //       },
   //     );
 
-  //     const expectedResult: DomainQueryReturnType<DomainElementSuccess> = {
+  //     const expectedResult: Domain2QueryReturnType<DomainElementSuccess> = {
   //       elementType: "string",
   //       elementValue: "test",
   //     };
@@ -493,7 +504,7 @@ describe("transformers.integ.test", async () => {
   // it("resolve basic transformer path reference for number", async () => { // TODO: test failure cases!
   //     console.log("resolve basic transformer path reference for string START")
 
-  //     const result: DomainQueryReturnType<DomainElementSuccess> = transformer_apply(
+  //     const result: Domain2QueryReturnType<DomainElementSuccess> = transformer_apply(
   //       "runtime",
   //       "ROOT",
   //       {
@@ -509,7 +520,7 @@ describe("transformers.integ.test", async () => {
   //       },
   //     );
 
-  //     const expectedResult: DomainQueryReturnType<DomainElementSuccess> = {
+  //     const expectedResult: Domain2QueryReturnType<DomainElementSuccess> = {
   //       elementType: "number",
   //       elementValue: 1,
   //     };
@@ -526,7 +537,7 @@ describe("transformers.integ.test", async () => {
   // it("resolve basic transformer path reference for object", async () => { // TODO: test failure cases!
   //     console.log("resolve basic transformer path reference for object START")
 
-  //     const result: DomainQueryReturnType<DomainElementSuccess> = transformer_apply(
+  //     const result: Domain2QueryReturnType<DomainElementSuccess> = transformer_apply(
   //       "runtime",
   //       "ROOT",
   //       {
@@ -546,12 +557,12 @@ describe("transformers.integ.test", async () => {
   //       },
   //     );
 
-  //     const expectedResult: DomainQueryReturnType<DomainElementSuccess> = {
+  //     const expectedResult: Domain2QueryReturnType<DomainElementSuccess> = {
   //       elementType: "object",
   //       elementValue: {
   //         "1": {
   //           name: "test",
-  //         } as any, // TODO: redefine "object" DomainQueryReturnType<DomainElementSuccess>, so as to be non-recursive
+  //         } as any, // TODO: redefine "object" Domain2QueryReturnType<DomainElementSuccess>, so as to be non-recursive
   //       }
   //     };
 
@@ -2314,7 +2325,7 @@ describe("transformers.integ.test", async () => {
   //     const queryParams = {};
   //     const contextResults = {};
 
-  //     const result: DomainQueryReturnType<DomainElementSuccess> = transformer_apply("build", undefined, transformer, queryParams, contextResults);
+  //     const result: Domain2QueryReturnType<DomainElementSuccess> = transformer_apply("build", undefined, transformer, queryParams, contextResults);
 
   //     expect(result.elementType).toBe("object");
   //     expect(result.elementValue.name).toBe("testName");

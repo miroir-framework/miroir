@@ -38,10 +38,11 @@ export const transformerTests: TransformerTestSuite = {
         constantUuidValue: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
       },
       transformerParams: {},
-      expectedValue: {
-        elementType: "instanceUuid",
-        elementValue: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-      },
+      expectedValue: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+      // expectedValue: {
+      //   elementType: "instanceUuid",
+      //   elementValue: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+      // },
     },
 //     "resolve basic transformer constantString": {
 //       transformerTestType: "transformerTest",
@@ -78,8 +79,4 @@ export async function runTransformerTestSuite(
       globalTimeOut
     );
   }
-  // const testSuiteResults = await runTestOrTestSuite(localCache, domainController, testAction);
-  // if (testSuiteResults.status !== "ok") {
-  //   expect(testSuiteResults.status, `${currentTestSuiteName} failed!`).toBe("ok");
-  // }
 }

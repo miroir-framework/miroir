@@ -1,6 +1,6 @@
 import {
   ACTION_OK,
-  ActionVoidReturnType,
+  Action2VoidReturnType,
   LoggerInterface,
   MiroirLoggerFactory,
   PersistenceStoreAdminSectionInterface,
@@ -26,13 +26,13 @@ export class IndexedDbAdminStore extends IndexedDbStore implements PersistenceSt
   }
 
   // ##############################################################################################
-  async createStore(config: StoreSectionConfiguration): Promise<ActionVoidReturnType> {
+  async createStore(config: StoreSectionConfiguration): Promise<Action2VoidReturnType> {
     // does not need to do anything, new IndexedDb() is done in the storeSectionFactory, thus called by PersistenceStoreControllerManager.addPersistenceStoreController, where storeSectionFactory is called
     return Promise.resolve(ACTION_OK);
   }
 
   // ##############################################################################################
-  async deleteStore(config: StoreSectionConfiguration): Promise<ActionVoidReturnType> {
+  async deleteStore(config: StoreSectionConfiguration): Promise<Action2VoidReturnType> {
     // await this.sequelize.dropSchema(this.schema,{});
     // TODO: remove directory when on server?
     // return clear ()

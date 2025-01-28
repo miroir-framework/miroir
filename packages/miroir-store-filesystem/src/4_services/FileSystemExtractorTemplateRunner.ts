@@ -1,5 +1,5 @@
 import {
-  ActionReturnType,
+  Action2ReturnType,
   asyncApplyExtractorTransformerInMemory,
   AsyncBoxedExtractorOrQueryRunnerMap,
   asyncExtractEntityInstanceListWithObjectListExtractor,
@@ -60,7 +60,7 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
   // ################################################################################################
   async handleQueryTemplateActionForServerONLY(
     runBoxedQueryTemplateAction: RunBoxedQueryTemplateAction
-  ): Promise<ActionReturnType> {
+  ): Promise<Action2ReturnType> {
     log.info(
       this.logHeader,
       "handleQueryTemplateActionForServerONLY",
@@ -73,7 +73,7 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
   // ################################################################################################
   async handleBoxedExtractorTemplateActionForServerONLY(
     runBoxedExtractorTemplateAction: RunBoxedExtractorTemplateAction
-  ): Promise<ActionReturnType> {
+  ): Promise<Action2ReturnType> {
     log.info(
       this.logHeader,
       "handleBoxedExtractorTemplateActionForServerONLY",
@@ -90,7 +90,7 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
   // ################################################################################################
   async handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
     runBoxedQueryTemplateOrBoxedExtractorTemplateAction: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction
-  ): Promise<ActionReturnType> {
+  ): Promise<Action2ReturnType> {
     log.info(
       this.logHeader,
       "handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY",

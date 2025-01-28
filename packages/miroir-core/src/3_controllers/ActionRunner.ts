@@ -1,5 +1,4 @@
 import {
-  ActionReturnType,
   ModelAction,
   ModelActionInitModel,
   ModelActionInitModelParams,
@@ -16,6 +15,7 @@ import adminConfigurationDeploymentMiroir from "../assets/admin_data/7959d814-40
 
 import { defaultMiroirMetaModel } from "../1_core/Model.js";
 import { ACTION_OK } from "../1_core/constants.js";
+import { Action2Error, Action2ReturnType } from "../0_interfaces/2_domain/DomainElement.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -38,7 +38,7 @@ export async function modelActionStoreRunnerNotUsed(
   deploymentUuid: string,
   actionName: string,
   body: any
-): Promise<ActionReturnType> {
+): Promise<Action2ReturnType> {
   log.info(
     "###################################### modelActionStoreRunnerNotUsed started deploymentUuid",
     deploymentUuid,
@@ -102,7 +102,7 @@ export async function storeActionOrBundleActionStoreRunner(
   actionName: string,
   action: StoreOrBundleAction,
   persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface
-): Promise<ActionReturnType> {
+): Promise<Action2ReturnType> {
   log.info("###################################### storeActionOrBundleActionStoreRunner started ", "actionName", actionName);
   // log.debug('storeActionOrBundleActionStoreRunner getEntityUuids()', miroirDataStoreProxy.getEntityUuids());
   // const update: StoreManagementAction = action;
@@ -128,17 +128,17 @@ export async function storeActionOrBundleActionStoreRunner(
       }
 
       // await persistenceStoreControllerManager.addPersistenceStoreController(action.deploymentUuid, action.configuration)
-      const appModelStoreCreated: ActionReturnType = await localAppPersistenceStoreController.createStore(action.configuration.model)
-      const appDataStoreCreated: ActionReturnType = await localAppPersistenceStoreController.createStore(action.configuration.data)
+      const appModelStoreCreated: Action2ReturnType = await localAppPersistenceStoreController.createStore(action.configuration.model)
+      const appDataStoreCreated: Action2ReturnType = await localAppPersistenceStoreController.createStore(action.configuration.data)
 
-      if (appModelStoreCreated.status != "ok" || appDataStoreCreated.status != "ok") {
+      if (appModelStoreCreated instanceof Action2Error || appDataStoreCreated instanceof Action2Error) {
         return {
           status: "error",
           errorType: "FailedToCreateStore",
           errorMessage:
-            (appModelStoreCreated.status != "ok" ? appModelStoreCreated.errorMessage : "model store created OK") +
+            (appModelStoreCreated instanceof Action2Error ? appModelStoreCreated.errorMessage : "model store created OK") +
             " --- " +
-            (appDataStoreCreated.status != "ok" ? appDataStoreCreated.errorMessage : "data store created OK"),
+            (appDataStoreCreated instanceof Action2Error ? appDataStoreCreated.errorMessage : "data store created OK"),
         };
       }
       log.info(
@@ -165,17 +165,17 @@ export async function storeActionOrBundleActionStoreRunner(
       }
 
       // await persistenceStoreControllerManager.addPersistenceStoreController(action.deploymentUuid, action.configuration)
-      const appModelStoreDeleted: ActionReturnType = await localAppPersistenceStoreController.deleteStore(action.configuration.model)
-      const appDataStoreDeleted: ActionReturnType = await localAppPersistenceStoreController.deleteStore(action.configuration.data)
+      const appModelStoreDeleted: Action2ReturnType = await localAppPersistenceStoreController.deleteStore(action.configuration.model)
+      const appDataStoreDeleted: Action2ReturnType = await localAppPersistenceStoreController.deleteStore(action.configuration.data)
 
-      if (appModelStoreDeleted.status != "ok" || appDataStoreDeleted.status != "ok") {
+      if (appModelStoreDeleted instanceof Action2Error || appDataStoreDeleted instanceof Action2Error) {
         return {
           status: "error",
           errorType: "FailedToDeleteStore",
           errorMessage:
-            (appModelStoreDeleted.status != "ok" ? appModelStoreDeleted.errorMessage : "model store deleted OK") +
+            (appModelStoreDeleted instanceof Action2Error ? appModelStoreDeleted.errorMessage : "model store deleted OK") +
             " --- " +
-            (appDataStoreDeleted.status != "ok" ? appDataStoreDeleted.errorMessage : "data store deleted OK"),
+            (appDataStoreDeleted instanceof Action2Error ? appDataStoreDeleted.errorMessage : "data store deleted OK"),
         };
       }
       break;

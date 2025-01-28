@@ -1,14 +1,9 @@
-import { DomainElementSuccess } from "../../../dist/index.js";
+import { DomainElementSuccess, EntityInstance } from "../../../dist/index.js";
 import {
-  ActionReturnType,
   BoxedExtractorOrCombinerReturningObject,
   BoxedExtractorOrCombinerReturningObjectList,
   BoxedExtractorOrCombinerReturningObjectOrObjectList,
   BoxedExtractorTemplateReturningObjectOrObjectList,
-  DomainElement,
-  DomainElementEntityInstanceOrFailed,
-  DomainElementInstanceArrayOrFailed,
-  DomainElementObject,
   DomainModelQueryTemplateJzodSchemaParams,
   ExtendedTransformerForRuntime,
   JzodElement,
@@ -26,9 +21,10 @@ import {
   RunBoxedQueryAction,
   RunBoxedQueryTemplateAction,
   RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
-  DomainElementInstanceUuidIndex
+  DomainElementInstanceUuidIndex,
+  EntityInstancesUuidIndex
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
-import { DomainQueryReturnType } from "./DomainElement.js";
+import { Action2ReturnType, Domain2QueryReturnType } from "./DomainElement.js";
 
 // ################################################################################################
 export type RecordOfJzodElement = Record<string, JzodElement | undefined>;
@@ -36,13 +32,13 @@ export type RecordOfJzodObject = Record<string, JzodObject | undefined>;
 
 // ################################################################################################
 export interface ExtractorTemplatePersistenceStoreRunner {
-  handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(query: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction): Promise<ActionReturnType>;
+  handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(query: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction): Promise<Action2ReturnType>;
 }
 
 // ################################################################################################
 export interface ExtractorOrQueryPersistenceStoreRunner {
-  handleBoxedExtractorAction(query: RunBoxedExtractorAction): Promise<ActionReturnType>;
-  handleBoxedQueryAction(query: RunBoxedQueryAction): Promise<ActionReturnType>;
+  handleBoxedExtractorAction(query: RunBoxedExtractorAction): Promise<Action2ReturnType>;
+  handleBoxedQueryAction(query: RunBoxedQueryAction): Promise<Action2ReturnType>;
 }
 
 // ################################################################################################
@@ -83,9 +79,9 @@ export type BoxedExtractorTemplateRunner<QueryType extends BoxedExtractorTemplat
 
 // ################################################################################################
 export interface ExtractorTemplatePersistenceStoreRunner {
-  handleQueryTemplateActionForServerONLY(query: RunBoxedQueryTemplateAction): Promise<ActionReturnType>;
-  handleBoxedExtractorTemplateActionForServerONLY(query: RunBoxedExtractorTemplateAction): Promise<ActionReturnType>;
-  handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(query: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction): Promise<ActionReturnType>;
+  handleQueryTemplateActionForServerONLY(query: RunBoxedQueryTemplateAction): Promise<Action2ReturnType>;
+  handleBoxedExtractorTemplateActionForServerONLY(query: RunBoxedExtractorTemplateAction): Promise<Action2ReturnType>;
+  handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(query: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction): Promise<Action2ReturnType>;
 }
 
 
@@ -113,14 +109,14 @@ export type AsyncBoxedExtractorRunner<ExtractorType extends BoxedExtractorOrComb
 
 export type AsyncExtractWithBoxedExtractorOrCombinerReturningObjectOrObjectList = AsyncBoxedExtractorRunner<
   BoxedExtractorOrCombinerReturningObjectOrObjectList,
-  DomainQueryReturnType<DomainElementSuccess>
+  Domain2QueryReturnType<DomainElementSuccess>
 >;
 
 // ################################################################################################
 export type SyncExtractWithBoxedExtractorOrCombinerReturningObjectOrObjectList<StateType> = SyncBoxedExtractorRunner<
   BoxedExtractorOrCombinerReturningObjectOrObjectList,
   StateType,
-  DomainQueryReturnType<DomainElementSuccess>
+  Domain2QueryReturnType<DomainElementSuccess>
 >;
 
 
@@ -190,26 +186,26 @@ export type ExtractorOrQueryRunnerMap<StateType> = AsyncBoxedExtractorOrQueryRun
 export type AsyncBoxedExtractorOrQueryRunnerMap = {
   extractorType: "async";
   extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList: AsyncExtractWithBoxedExtractorOrCombinerReturningObjectOrObjectList;
-  runQuery: AsyncQueryRunner<DomainQueryReturnType<DomainElementObject>>;
+  runQuery: AsyncQueryRunner<Domain2QueryReturnType<any>>;
   extractEntityInstance: AsyncBoxedExtractorRunner<
     BoxedExtractorOrCombinerReturningObject,
-    DomainElementEntityInstanceOrFailed
+    Domain2QueryReturnType<EntityInstance>
   >;
   extractEntityInstanceUuidIndex: AsyncBoxedExtractorRunner<
     BoxedExtractorOrCombinerReturningObjectList,
-    DomainQueryReturnType<DomainElementInstanceUuidIndex>
+    Domain2QueryReturnType<EntityInstancesUuidIndex>
   >;
   extractEntityInstanceList: AsyncBoxedExtractorRunner<
     BoxedExtractorOrCombinerReturningObjectList,
-    DomainElementInstanceArrayOrFailed
+    Domain2QueryReturnType<EntityInstance[]>
   >;
   extractEntityInstanceUuidIndexWithObjectListExtractor: AsyncBoxedExtractorRunner<
     BoxedExtractorOrCombinerReturningObjectList,
-    DomainQueryReturnType<DomainElementInstanceUuidIndex>
+    Domain2QueryReturnType<EntityInstancesUuidIndex>
   >;
   extractEntityInstanceListWithObjectListExtractor: AsyncBoxedExtractorRunner<
     BoxedExtractorOrCombinerReturningObjectList,
-    DomainElementInstanceArrayOrFailed
+    Domain2QueryReturnType<EntityInstance[]>
   >;
   //
   // TODO: called in AsyncQuerySelector
@@ -223,10 +219,10 @@ export type AsyncBoxedExtractorOrQueryRunnerMap = {
       | BoxedExtractorOrCombinerReturningObject
       | BoxedQueryWithExtractorCombinerTransformer
     >
-  ): Promise<DomainQueryReturnType<DomainElementSuccess>>;
+  ): Promise<Domain2QueryReturnType<DomainElementSuccess>>;
   // ################################################################################################
   runQueryTemplateWithExtractorCombinerTransformer: AsyncQueryTemplateRunner<
-    DomainQueryReturnType<DomainElementObject>
+    Domain2QueryReturnType<any>
   >;
 };
 
@@ -234,37 +230,37 @@ export type AsyncBoxedExtractorOrQueryRunnerMap = {
 export type SyncBoxedExtractorOrQueryRunnerMap<StateType> = {
   extractorType: "sync";
   extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList: SyncExtractWithBoxedExtractorOrCombinerReturningObjectOrObjectList<StateType>;
-  runQuery: SyncQueryRunner<StateType, DomainQueryReturnType<DomainElementObject>>;
+  runQuery: SyncQueryRunner<StateType, Domain2QueryReturnType<any>>;
   extractEntityInstance: SyncBoxedExtractorRunner<
     BoxedExtractorOrCombinerReturningObject,
     StateType,
-    DomainElementEntityInstanceOrFailed
+    Domain2QueryReturnType<EntityInstance>
   >;
   extractEntityInstanceUuidIndex: SyncBoxedExtractorRunner<
     BoxedExtractorOrCombinerReturningObjectList,
     StateType,
-    DomainQueryReturnType<DomainElementInstanceUuidIndex>
+    Domain2QueryReturnType<EntityInstancesUuidIndex>
   >;
   extractEntityInstanceUuidIndexWithObjectListExtractor: SyncBoxedExtractorRunner<
     BoxedExtractorOrCombinerReturningObjectList,
     StateType,
-    DomainQueryReturnType<DomainElementInstanceUuidIndex>
+    Domain2QueryReturnType<EntityInstancesUuidIndex>
   >;
   extractEntityInstanceList: SyncBoxedExtractorRunner<
     BoxedExtractorOrCombinerReturningObjectList,
     StateType,
-    DomainElementInstanceArrayOrFailed
+    Domain2QueryReturnType<EntityInstance[]>
   >;
   extractEntityInstanceListWithObjectListExtractor: SyncBoxedExtractorRunner<
     BoxedExtractorOrCombinerReturningObjectList,
     StateType,
-    DomainElementInstanceArrayOrFailed
+    Domain2QueryReturnType<EntityInstance[]>
   >;
   // ################################################################################################
   // TODO: has direct call in ReportView, ReportSectionListDisplay, JzodObjectEditor
   runQueryTemplateWithExtractorCombinerTransformer: SyncQueryTemplateRunner<
     StateType,
-    DomainQueryReturnType<DomainElementObject>
+    Domain2QueryReturnType<any>
   >;
 };
 

@@ -2,7 +2,7 @@ import { describe } from 'vitest';
 
 // import { miroirFileSystemStoreSectionStartup } from "../dist/bundle";
 import {
-  ActionReturnType,
+  Action2ReturnType,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
   ApplicationSection,
@@ -234,7 +234,7 @@ beforeAll(
 beforeEach(
   async  () => {
     await resetAndInitApplicationDeployment(domainController, selfApplicationDeploymentConfigurations);
-    const initResult:ActionReturnType = await domainController.handleCompositeAction(
+    const initResult:Action2ReturnType = await domainController.handleCompositeAction(
       resetAndinitializeDeploymentCompositeAction(
         adminConfigurationDeploymentLibrary.uuid,
         {
@@ -309,7 +309,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
         console.log("#######################################################################################################");
         const applicationSection:ApplicationSection = "model";
 
-        const queryResult:ActionReturnType = await localMiroirPersistenceStoreController.handleBoxedExtractorAction(
+        const queryResult:Action2ReturnType = await localMiroirPersistenceStoreController.handleBoxedExtractorAction(
           {
             actionType: "runBoxedExtractorAction",
             actionName: "runQuery",
@@ -359,7 +359,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
       {},
       async () => {
         const applicationSection: ApplicationSection = "model";
-        const queryResult: ActionReturnType = await localMiroirPersistenceStoreController.handleBoxedQueryAction({
+        const queryResult: Action2ReturnType = await localMiroirPersistenceStoreController.handleBoxedQueryAction({
           actionType: "runBoxedQueryAction",
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
@@ -513,7 +513,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
       {},
       async () => {
         const applicationSection: ApplicationSection = "model";
-        const queryResult: ActionReturnType = await localAppPersistenceStoreController.handleBoxedQueryAction({
+        const queryResult: Action2ReturnType = await localAppPersistenceStoreController.handleBoxedQueryAction({
           actionType: "runBoxedQueryAction",
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
@@ -558,7 +558,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
       {},
       async () => {
         const applicationSection: ApplicationSection = "model";
-        const queryResult: ActionReturnType = await localAppPersistenceStoreController.handleBoxedQueryAction({
+        const queryResult: Action2ReturnType = await localAppPersistenceStoreController.handleBoxedQueryAction({
           actionType: "runBoxedQueryAction",
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,

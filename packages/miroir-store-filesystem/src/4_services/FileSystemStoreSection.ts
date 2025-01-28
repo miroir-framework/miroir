@@ -3,7 +3,7 @@ import * as path from "path";
 
 import {
   ACTION_OK,
-  ActionVoidReturnType,
+  Action2VoidReturnType,
   EntityDefinition,
   LoggerInterface,
   MetaEntity,
@@ -49,7 +49,7 @@ export class FileSystemStoreSection
   }
 
   // #############################################################################################
-  bootFromPersistedState(entities: MetaEntity[], entityDefinitions: EntityDefinition[]): Promise<ActionVoidReturnType> {
+  bootFromPersistedState(entities: MetaEntity[], entityDefinitions: EntityDefinition[]): Promise<Action2VoidReturnType> {
     log.info(this.logHeader, "bootFromPersistedState does nothing!");
     return Promise.resolve(ACTION_OK);
   }
@@ -61,7 +61,7 @@ export class FileSystemStoreSection
   }
 
   // #############################################################################################
-  async clear(): Promise<ActionVoidReturnType> {
+  async clear(): Promise<Action2VoidReturnType> {
     log.info(this.logHeader, "clear this.getEntityUuids()", this.getEntityUuids());
 
     for (const parentUuid of this.getEntityUuids()) {
@@ -75,7 +75,7 @@ export class FileSystemStoreSection
   createStorageSpaceForInstancesOfEntity(
     entity: MetaEntity,
     entityDefinition: EntityDefinition
-  ): Promise<ActionVoidReturnType> {
+  ): Promise<Action2VoidReturnType> {
     log.info(this.logHeader, "createStorageSpaceForInstancesOfEntity", entity);
     const entityInstancesPath = path.join(this.directory, entity.uuid);
     if (!fs.existsSync(entityInstancesPath)) {
@@ -87,7 +87,7 @@ export class FileSystemStoreSection
   }
 
   // #############################################################################################
-  dropStorageSpaceForInstancesOfEntity(entityUuid: string): Promise<ActionVoidReturnType> {
+  dropStorageSpaceForInstancesOfEntity(entityUuid: string): Promise<Action2VoidReturnType> {
     const entityInstancesPath = path.join(this.directory, entityUuid);
     try {
       if (fs.existsSync(entityInstancesPath)) {
@@ -117,7 +117,7 @@ export class FileSystemStoreSection
     newName: string,
     entity: MetaEntity,
     entityDefinition: EntityDefinition
-  ): Promise<ActionVoidReturnType> {
+  ): Promise<Action2VoidReturnType> {
     log.info(this.logHeader, "renameStorageSpaceForInstancesOfEntity does nothing!");
     return Promise.resolve(ACTION_OK);
   }

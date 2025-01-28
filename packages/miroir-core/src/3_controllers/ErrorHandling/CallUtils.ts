@@ -1,9 +1,9 @@
 import {
-  ActionReturnType,
   DomainElementType,
   LocalCacheAction,
   PersistenceAction,
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { Action2ReturnType } from "../../0_interfaces/2_domain/DomainElement.js";
 import { ErrorLogServiceInterface, MError } from "../../0_interfaces/3_controllers/ErrorLogServiceInterface.js";
 import { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface.js";
 import { PersistenceStoreLocalOrRemoteInterface } from "../../0_interfaces/4-services/PersistenceInterface.js";
@@ -31,7 +31,7 @@ export class CallUtils {
   callLocalCacheAction(
     context: { [k: string]: any },
     continuation: {
-      resultTransformation?: (action: ActionReturnType, context: { [k: string]: any }) => any;
+      resultTransformation?: (action: Action2ReturnType, context: { [k: string]: any }) => any;
       addResultToContextAsName?: string;
       expectedDomainElementType?: DomainElementType;
       expectedValue?: any;
@@ -39,7 +39,7 @@ export class CallUtils {
     action: LocalCacheAction
   ): Promise<Record<string, any>> {
     // asynchronous although it is not necessary, only to keep the same signature as callRemotePersistenceAction
-    const result: ActionReturnType = this.persistenceStoreLocalOrRemote.handleLocalCacheAction(action);
+    const result: Action2ReturnType = this.persistenceStoreLocalOrRemote.handleLocalCacheAction(action);
     
     log.info("callLocalCacheAction received result", result);
     if (result && result["status"] == "error") {
@@ -69,7 +69,7 @@ export class CallUtils {
   async callRemotePersistenceAction(
     context: { [k: string]: any },
     continuation: {
-      resultTransformation?: (action: ActionReturnType, context: { [k: string]: any }) => any;
+      resultTransformation?: (action: Action2ReturnType, context: { [k: string]: any }) => any;
       addResultToContextAsName?: string;
       expectedDomainElementType?: DomainElementType;
       expectedValue?: any;
@@ -89,7 +89,7 @@ export class CallUtils {
     //     action.actionName
     //   );
     // }
-    const result: ActionReturnType = await this.persistenceStoreLocalOrRemote.handlePersistenceAction(action);
+    const result: Action2ReturnType = await this.persistenceStoreLocalOrRemote.handlePersistenceAction(action);
     log.info("CallUtils callPersistenceAction received result", result);
     if (result["status"] == "error") {
       //ensure the proper persistence of errors in the local storage, for it to be accessible by view components.

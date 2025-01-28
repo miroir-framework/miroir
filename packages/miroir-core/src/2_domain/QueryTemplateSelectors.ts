@@ -1,7 +1,6 @@
 // ################################################################################################
 
 import {
-  ActionReturnType,
   BoxedExtractorOrCombinerReturningObjectOrObjectList,
   BoxedExtractorTemplateReturningObjectOrObjectList,
   BoxedQueryTemplateWithExtractorCombinerTransformer,
@@ -20,7 +19,7 @@ import {
   RunBoxedQueryTemplateAction,
   RunBoxedQueryTemplateOrBoxedExtractorTemplateAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { DomainQueryReturnType } from "../0_interfaces/2_domain/DomainElement.js";
+import { Action2ReturnType, Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement.js";
 import {
   AsyncBoxedExtractorOrQueryRunnerMap,
   ExtractorTemplateRunnerParamsForJzodSchema,
@@ -56,7 +55,7 @@ export async function handleQueryTemplateAction(
   origin: string,
   queryTemplateAction: RunBoxedQueryTemplateAction, 
   selectorMap: AsyncBoxedExtractorOrQueryRunnerMap
-): Promise<ActionReturnType> {
+): Promise<Action2ReturnType> {
   // log.info(
   //   "handleQueryTemplateAction for ",
   //   origin,
@@ -94,7 +93,7 @@ export async function handleBoxedExtractorTemplateAction(
   origin: string,
   boxedExtractorTemplateAction: RunBoxedExtractorTemplateAction,
   selectorMap: AsyncBoxedExtractorOrQueryRunnerMap,
-): Promise<ActionReturnType> {
+): Promise<Action2ReturnType> {
   log.info(
     "handleBoxedExtractorTemplateAction for ",
     origin,
@@ -138,7 +137,7 @@ export async function handleBoxedExtractorTemplateOrQueryTemplateAction(
   origin: string,
   queryTemplateOrExtractorTemplateAction: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction, 
   selectorMap: AsyncBoxedExtractorOrQueryRunnerMap
-): Promise<ActionReturnType> {
+): Promise<Action2ReturnType> {
   log.info(
     "handleBoxedExtractorTemplateOrQueryTemplateAction for ",
     origin,
@@ -214,7 +213,7 @@ export const extractWithBoxedExtractorTemplate /**: SyncBoxedExtractorTemplateRu
     BoxedExtractorTemplateReturningObjectOrObjectList,
     StateType
   >
-): DomainQueryReturnType<DomainElementSuccess> => {
+): Domain2QueryReturnType<DomainElementSuccess> => {
   // log.info("########## extractExtractor begin, query", selectorParams);
   if (!selectorParams.extractorRunnerMap) {
     throw new Error("extractWithBoxedExtractorTemplate requires extractorRunnerMap");

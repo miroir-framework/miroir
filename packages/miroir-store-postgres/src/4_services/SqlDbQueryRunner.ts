@@ -1,6 +1,6 @@
 import {
-  ActionEntityInstanceCollectionReturnType,
-  ActionReturnType,
+  Action2EntityInstanceCollectionOrFailure,
+  Action2ReturnType,
   ApplicationSection,
   asyncApplyExtractorTransformerInMemory,
   AsyncBoxedExtractorOrQueryRunnerMap,
@@ -13,13 +13,12 @@ import {
   asyncRunQuery,
   BoxedExtractorOrCombinerReturningObject,
   BoxedExtractorOrCombinerReturningObjectList,
-  DomainElementEntityInstanceOrFailed,
-  DomainElementInstanceArrayOrFailed,
   DomainElementInstanceUuidIndex,
   DomainElementObject,
   DomainElementSuccess,
-  DomainQueryReturnType,
+  Domain2QueryReturnType,
   DomainState,
+  EntityInstance,
   ExtractorOrCombinerReturningObject,
   LoggerInterface,
   MiroirLoggerFactory,
@@ -31,7 +30,10 @@ import {
   selectFetchQueryJzodSchemaFromDomainStateNew,
   selectJzodSchemaByDomainModelQueryFromDomainStateNew,
   selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
-  transformer_InnerReference_resolve
+  transformer_InnerReference_resolve,
+  EntityInstancesUuidIndex,
+  Domain2ElementFailed,
+  Action2Error
 } from "miroir-core";
 import {
   sqlStringForQuery
@@ -129,7 +131,7 @@ export class SqlDbQueryRunner {
    */
   asyncExtractWithQuery = async (
     selectorParams: AsyncQueryRunnerParams,
-  ): Promise<DomainQueryReturnType<DomainElementObject>> => {
+  ): Promise<Domain2QueryReturnType<Record<string, any>>> => {
     // log.info("########## asyncRunQuery begin, query", selectorParams);
   
     const { query, transformerRawQueriesObject, endResultName, combinerRawQueriesObject } = sqlStringForQuery(
@@ -140,7 +142,7 @@ export class SqlDbQueryRunner {
     const rawResult = await this.persistenceStoreController.executeRawQuery(query);
     log.info("applyExtractorTransformerSql innerFullObjectTemplate #####RAWRESULT", JSON.stringify(rawResult));
 
-    if (rawResult.status == "error") {
+    if (rawResult instanceof Action2Error || rawResult.returnedDomainElement instanceof Domain2ElementFailed) {
       log.error("applyExtractorTransformerSql rawResult", JSON.stringify(rawResult));
       return Promise.resolve({ elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } });
     }
@@ -168,17 +170,12 @@ export class SqlDbQueryRunner {
     const sqlResult =
       endResultPath !== undefined
         ? encloseEndResultInArray
-          ? [resolvePathOnObject(rawResult.returnedDomainElement.elementValue, endResultPath)] // TODO: HACK! HACK!
-          : resolvePathOnObject(rawResult.returnedDomainElement.elementValue, endResultPath)
-        : rawResult.returnedDomainElement.elementValue;
-    // const sqlResult =
-    //   endResultPath !== undefined
-    //     ? selectorParams.extractor.runtimeTransformers
-    //       ? [resolvePathOnObject(rawResult.returnedDomainElement.elementValue, endResultPath)] // TODO: HACK! HACK!
-    //       : resolvePathOnObject(rawResult.returnedDomainElement.elementValue, endResultPath)
-    //     : rawResult.returnedDomainElement.elementValue;
+          ? [resolvePathOnObject(rawResult.returnedDomainElement, endResultPath)] // TODO: HACK! HACK!
+          : resolvePathOnObject(rawResult.returnedDomainElement, endResultPath)
+        : rawResult.returnedDomainElement;
     log.info("applyExtractorTransformerSql sqlResult", JSON.stringify(sqlResult));
-    const result: DomainQueryReturnType<DomainElementSuccess> = { elementType: "object", elementValue: {[endResultName]:sqlResult} }
+    // const result: Domain2QueryReturnType<DomainElementSuccess> = { elementType: "object", elementValue: {[endResultName]:sqlResult} }
+    const result: Domain2QueryReturnType<any> = {[endResultName]:sqlResult}
     log.info("applyExtractorTransformerSql returning result", JSON.stringify(result));
     return Promise.resolve(result);
   };
@@ -192,12 +189,12 @@ export class SqlDbQueryRunner {
    */
   public asyncSqlDbExtractEntityInstanceListWithObjectListExtractor = (
     selectorParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>
-  ): Promise<DomainElementInstanceArrayOrFailed> => {
+  ): Promise<Domain2QueryReturnType<EntityInstance[]>> => {
     // (
     //   state: any,
     //   selectorParams: AsyncExtractorOrQueryTemplateRunnerParams<BoxedExtractorTemplateReturningObjectList, any>
-    // ): Promise<DomainQueryReturnType<DomainElementInstanceUuidIndex>> {
-    let result: Promise<DomainElementInstanceArrayOrFailed>;
+    // ): Promise<Domain2QueryReturnType<EntityInstancesUuidIndex>> {
+    let result: Promise<Domain2QueryReturnType<EntityInstance[]>>;
     switch (selectorParams.extractor.select.extractorOrCombinerType) {
       case "extractorByEntityReturningObjectList": {
         return this.extractEntityInstanceListWithFilter(selectorParams);
@@ -251,12 +248,12 @@ export class SqlDbQueryRunner {
    */
   public asyncSqlDbExtractEntityInstanceUuidIndexWithObjectListExtractor = (
     selectorParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>
-  ): Promise<DomainQueryReturnType<DomainElementInstanceUuidIndex>> => {
+  ): Promise<Domain2QueryReturnType<EntityInstancesUuidIndex>> => {
     // (
     //   state: any,
     //   selectorParams: AsyncExtractorOrQueryTemplateRunnerParams<BoxedExtractorTemplateReturningObjectList, any>
-    // ): Promise<DomainQueryReturnType<DomainElementInstanceUuidIndex>> {
-    let result: Promise<DomainQueryReturnType<DomainElementInstanceUuidIndex>>;
+    // ): Promise<Domain2QueryReturnType<EntityInstancesUuidIndex>> {
+    let result: Promise<Domain2QueryReturnType<EntityInstancesUuidIndex>>;
     switch (selectorParams.extractor.select.extractorOrCombinerType) {
       case "extractorByEntityReturningObjectList": {
         return this.extractEntityInstanceUuidIndexWithFilter(selectorParams);
@@ -302,22 +299,22 @@ export class SqlDbQueryRunner {
   };
 
 // ##############################################################################################
-  async handleBoxedExtractorAction(runBoxedExtractorAction: RunBoxedExtractorAction): Promise<ActionReturnType> {
+  async handleBoxedExtractorAction(runBoxedExtractorAction: RunBoxedExtractorAction): Promise<Action2ReturnType> {
     log.info(this.logHeader, "handleBoxedExtractorAction", "runBoxedExtractorAction", JSON.stringify(runBoxedExtractorAction, null, 2));
-    let queryResult: DomainQueryReturnType<DomainElementSuccess>;
+    let queryResult: Domain2QueryReturnType<DomainElementSuccess>;
     queryResult = await this.inMemoryImplementationExtractorRunnerMap.extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList({
       extractor: runBoxedExtractorAction.query,
       extractorRunnerMap: this.inMemoryImplementationExtractorRunnerMap,
     });
-    if (queryResult.elementType == "failure") {
+    if (queryResult instanceof Domain2ElementFailed) {
       return {
         status: "error",
         // error: { errorType: "FailedToGetInstances", errorMessage: JSON.stringify(queryResult) },
         errorType: "FailedToGetInstances", 
         errorMessage: JSON.stringify(queryResult),
-      } as ActionReturnType;
+      } as Action2ReturnType;
     } else {
-      const result: ActionReturnType = { status: "ok", returnedDomainElement: queryResult };
+      const result: Action2ReturnType = { status: "ok", returnedDomainElement: queryResult };
       log.info(
         this.logHeader,
         "handleBoxedExtractorAction",
@@ -331,13 +328,13 @@ export class SqlDbQueryRunner {
   }
 
   // ##############################################################################################
-  async handleBoxedQueryAction(runBoxedQueryAction: RunBoxedQueryAction): Promise<ActionReturnType> {
+  async handleBoxedQueryAction(runBoxedQueryAction: RunBoxedQueryAction): Promise<Action2ReturnType> {
     log.info(
       this.logHeader,
       "handleBoxedQueryAction called with runBoxedQueryAction",
       JSON.stringify(runBoxedQueryAction, null, 2)
     );
-    let queryResult: DomainQueryReturnType<DomainElementSuccess>;
+    let queryResult: Domain2QueryReturnType<DomainElementSuccess>;
     if (runBoxedQueryAction.query.runAsSql) {
       queryResult = await this.dbImplementationExtractorRunnerMap.runQuery({
         extractor: runBoxedQueryAction.query,
@@ -349,14 +346,14 @@ export class SqlDbQueryRunner {
         extractorRunnerMap: this.inMemoryImplementationExtractorRunnerMap,
       });
     }
-    if (queryResult.elementType == "failure") {
+    if (queryResult instanceof Domain2ElementFailed) {
       return {
         status: "error",
         // error: { errorType: "FailedToGetInstances", errorMessage: JSON.stringify(queryResult) },
         errorType: "FailedToGetInstances", errorMessage: JSON.stringify(queryResult),
-      } as ActionReturnType;
+      } as Action2ReturnType;
     } else {
-      const result: ActionReturnType = { status: "ok", returnedDomainElement: queryResult };
+      const result: Action2ReturnType = { status: "ok", returnedDomainElement: queryResult };
       log.info(
         this.logHeader,
         "handleBoxedQueryAction",
@@ -372,16 +369,17 @@ export class SqlDbQueryRunner {
   // ##############################################################################################
   public extractEntityInstance: AsyncBoxedExtractorRunner<
     BoxedExtractorOrCombinerReturningObject,
-    DomainElementEntityInstanceOrFailed
+    Domain2QueryReturnType<EntityInstance>
   > = async (
     selectorParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObject>
-  // ): Promise<DomainElementEntityInstanceOrFailed> => {
-  ): Promise<DomainQueryReturnType<DomainElementEntityInstanceOrFailed>> => {
+  // ): Promise<Domain2QueryReturnType<EntityInstance>> => {
+  ): Promise<Domain2QueryReturnType<Domain2QueryReturnType<EntityInstance>>> => {
     const querySelectorParams: ExtractorOrCombinerReturningObject = selectorParams.extractor.select as ExtractorOrCombinerReturningObject;
     const deploymentUuid = selectorParams.extractor.deploymentUuid;
     const applicationSection: ApplicationSection =
       selectorParams.extractor.select.applicationSection ??
-      ((selectorParams.extractor.pageParams?.elementValue?.applicationSection?.elementValue ??
+      // ((selectorParams.extractor.pageParams?.elementValue?.applicationSection?.elementValue ??
+      ((selectorParams.extractor.pageParams?.applicationSection ??
         "data") as ApplicationSection);
 
     const entityUuidReference = querySelectorParams.parentUuid
@@ -427,7 +425,7 @@ export class SqlDbQueryRunner {
           (referenceObject.elementValue as any)[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
         );
 
-        if (result.status == "error") {
+        if (result instanceof Action2Error || result.returnedDomainElement instanceof Domain2ElementFailed) {
           return {
             elementType: "failure",
             elementValue: {
@@ -450,10 +448,7 @@ export class SqlDbQueryRunner {
         //   "######### contextResults",
         //   JSON.stringify(selectorParams.extractor.contextResults, undefined, 2)
         // );
-        return {
-          elementType: "instance",
-          elementValue: result.returnedDomainElement.elementValue,
-        };
+        return result.returnedDomainElement;
         break;
       }
       case "extractorForObjectByDirectReference": {
@@ -471,7 +466,7 @@ export class SqlDbQueryRunner {
           instanceDomainElement
         );
 
-        if (result.status == "error") {
+        if (result instanceof Action2Error || result.returnedDomainElement instanceof Domain2ElementFailed) {
           return {
             elementType: "failure",
             elementValue: {
@@ -495,10 +490,7 @@ export class SqlDbQueryRunner {
           "######### contextResults",
           JSON.stringify(selectorParams.extractor.contextResults, undefined, 2),
         );
-        return {
-          elementType: "instance",
-          elementValue: result.returnedDomainElement.elementValue,
-        };
+        return result.returnedDomainElement;
         break;
       }
       default: {
@@ -514,28 +506,28 @@ export class SqlDbQueryRunner {
   // ##############################################################################################
   public extractEntityInstanceUuidIndex: AsyncBoxedExtractorRunner<
     BoxedExtractorOrCombinerReturningObjectList,
-    DomainQueryReturnType<DomainElementInstanceUuidIndex>
+    Domain2QueryReturnType<EntityInstancesUuidIndex>
   > = async (
     extractorRunnerParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>
-  ): Promise<DomainQueryReturnType<DomainElementInstanceUuidIndex>> => {
+  ): Promise<Domain2QueryReturnType<EntityInstancesUuidIndex>> => {
     return this.extractEntityInstanceList(extractorRunnerParams).then((result) => {
-      if (result.elementType == "failure") {
+      if (result instanceof Domain2ElementFailed) {
         return result;
       }
       const entityInstanceUuidIndex = Object.fromEntries(
-        result.elementValue.map((i) => [i.uuid, i])
+        result.map((i) => [i.uuid, i])
       );
-      return { elementType: "instanceUuidIndex", elementValue: entityInstanceUuidIndex };
+      return entityInstanceUuidIndex;
     });
   };
 
   // ##############################################################################################
   public extractEntityInstanceList: AsyncBoxedExtractorRunner<
     BoxedExtractorOrCombinerReturningObjectList,
-    DomainElementInstanceArrayOrFailed
+    Domain2QueryReturnType<EntityInstance[]>
   > = async (
     extractorRunnerParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>
-  ): Promise<DomainElementInstanceArrayOrFailed> => {
+  ): Promise<Domain2QueryReturnType<EntityInstance[]>> => {
     const deploymentUuid = extractorRunnerParams.extractor.deploymentUuid;
     const applicationSection = extractorRunnerParams.extractor.select.applicationSection ?? "data";
 
@@ -544,14 +536,26 @@ export class SqlDbQueryRunner {
     // log.info("extractEntityInstanceUuidIndex params", selectorParams, deploymentUuid, applicationSection, entityUuid);
     // log.info("extractEntityInstanceUuidIndex domainState", domainState);
 
-    const entityInstanceCollection: ActionEntityInstanceCollectionReturnType =
+    const entityInstanceCollection: Action2EntityInstanceCollectionOrFailure =
       await this.persistenceStoreController.getInstances(
         entityUuid
       );
 
-    if (entityInstanceCollection.status == "error") {
+    if (entityInstanceCollection instanceof Action2Error) {
       log.error("sqlDbQueryRunner extractEntityInstanceList failed with EntityNotFound for extractor", JSON.stringify(extractorRunnerParams.extractor, null, 2));
 
+      return {
+        elementType: "failure",
+        elementValue: {
+          queryFailure: "EntityNotFound", // TODO: find corresponding queryFailure from data.status
+          deploymentUuid,
+          applicationSection,
+          entityUuid: entityUuid,
+        },
+      };
+    }
+    if (entityInstanceCollection.returnedDomainElement instanceof Domain2ElementFailed) {
+      log.error("sqlDbQueryRunner extractEntityInstanceList failed for extractor", JSON.stringify(extractorRunnerParams.extractor, null, 2));
       return {
         elementType: "failure",
         elementValue: {
@@ -565,34 +569,34 @@ export class SqlDbQueryRunner {
     // const entityInstanceUuidIndex = Object.fromEntries(
     //   entityInstanceCollection.returnedDomainElement.elementValue.instances.map((i) => [i.uuid, i])
     // );
-    return { elementType: "instanceArray", elementValue: entityInstanceCollection.returnedDomainElement.elementValue.instances };
+    return entityInstanceCollection.returnedDomainElement.instances;
   };
 
   // ##############################################################################################
   public extractEntityInstanceUuidIndexWithFilter: AsyncBoxedExtractorRunner<
     BoxedExtractorOrCombinerReturningObjectList,
-    DomainQueryReturnType<DomainElementInstanceUuidIndex>
+    Domain2QueryReturnType<EntityInstancesUuidIndex>
   > = async (
     extractorRunnerParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>
-  ): Promise<DomainQueryReturnType<DomainElementInstanceUuidIndex>> => {
+  ): Promise<Domain2QueryReturnType<EntityInstancesUuidIndex>> => {
     return this.extractEntityInstanceListWithFilter(extractorRunnerParams).then((result) => {
-      if (result.elementType == "failure") {
+      if (result instanceof Domain2ElementFailed) {
         return result;
       }
       const entityInstanceUuidIndex = Object.fromEntries(
-        result.elementValue.map((i) => [i.uuid, i])
+        result.map((i) => [i.uuid, i])
       );
-      return { elementType: "instanceUuidIndex", elementValue: entityInstanceUuidIndex };
+      return entityInstanceUuidIndex;
     });
   };
 
   // ##############################################################################################
   public extractEntityInstanceListWithFilter: AsyncBoxedExtractorRunner<
     BoxedExtractorOrCombinerReturningObjectList,
-    DomainElementInstanceArrayOrFailed
+    Domain2QueryReturnType<EntityInstance[]>
   > = async (
     extractorRunnerParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>
-  ): Promise<DomainElementInstanceArrayOrFailed> => {
+  ): Promise<Domain2QueryReturnType<EntityInstance[]>> => {
     const deploymentUuid = extractorRunnerParams.extractor.deploymentUuid;
     const applicationSection = extractorRunnerParams.extractor.select.applicationSection ?? "data";
 
@@ -613,7 +617,7 @@ export class SqlDbQueryRunner {
       // resolving by fetchDataReference, fetchDataReferenceAttribute
     }
 
-    let entityInstanceCollection: ActionEntityInstanceCollectionReturnType;
+    let entityInstanceCollection: Action2EntityInstanceCollectionOrFailure;
     if (
       extractorRunnerParams.extractor.select.extractorOrCombinerType == "extractorByEntityReturningObjectList" &&
       extractorRunnerParams.extractor.select.filter
@@ -631,8 +635,14 @@ export class SqlDbQueryRunner {
       );
     }
 
-    if (entityInstanceCollection.status == "error") {
-      log.error("sqlDbQueryRunner extractEntityInstanceListWithFilter failed with EntityNotFound for extractor", JSON.stringify(extractorRunnerParams.extractor, null, 2));
+    if (
+      entityInstanceCollection instanceof Action2Error ||
+      entityInstanceCollection.returnedDomainElement instanceof Domain2ElementFailed
+    ) {
+      log.error(
+        "sqlDbQueryRunner extractEntityInstanceListWithFilter failed with EntityNotFound for extractor",
+        JSON.stringify(extractorRunnerParams.extractor, null, 2)
+      );
       return {
         elementType: "failure",
         elementValue: {
@@ -646,7 +656,7 @@ export class SqlDbQueryRunner {
     // const entityInstanceUuidIndex = Object.fromEntries(
     //   entityInstanceCollection.returnedDomainElement.elementValue.instances.map((i) => [i.uuid, i])
     // );
-    return { elementType: "instanceArray", elementValue: entityInstanceCollection.returnedDomainElement.elementValue.instances };
+    return entityInstanceCollection.returnedDomainElement.instances;
   };
 
   // ##############################################################################################

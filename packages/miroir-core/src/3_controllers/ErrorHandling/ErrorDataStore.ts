@@ -1,20 +1,20 @@
 import { MetaEntity } from "../../0_interfaces/1_core/EntityDefinition.js";
 import {
-  EntityInstanceCollection,
-  EntityInstance,
   EntityDefinition,
-  ActionReturnType,
-  ActionEntityInstanceCollectionReturnType,
-  ActionEntityInstanceReturnType,
-  ActionVoidReturnType,
-  ApplicationSection,
-  RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
-  RunBoxedExtractorOrQueryAction,
+  EntityInstance,
+  EntityInstanceCollection,
   RunBoxedExtractorAction,
+  RunBoxedExtractorTemplateAction,
   RunBoxedQueryAction,
   RunBoxedQueryTemplateAction,
-  RunBoxedExtractorTemplateAction,
+  RunBoxedQueryTemplateOrBoxedExtractorTemplateAction
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import {
+  Action2EntityInstanceCollection,
+  Action2EntityInstanceSuccess,
+  Action2ReturnType,
+  Action2VoidReturnType,
+} from "../../0_interfaces/2_domain/DomainElement.js";
 import { PersistenceStoreDataSectionInterface } from "../../0_interfaces/4-services/PersistenceStoreControllerInterface.js";
 
 export class ErrorDataStore implements PersistenceStoreDataSectionInterface {
@@ -22,28 +22,28 @@ export class ErrorDataStore implements PersistenceStoreDataSectionInterface {
   getStoreName(): string {
     throw new Error("Method not implemented.");
   }
-  open(): Promise<ActionVoidReturnType> {
+  open(): Promise<Action2VoidReturnType> {
     throw new Error("Method not implemented.");
   }
-  connect(): Promise<ActionReturnType> {
+  connect(): Promise<Action2ReturnType> {
     throw new Error("Method not implemented.");
   }
-  close(): Promise<ActionVoidReturnType> {
+  close(): Promise<Action2VoidReturnType> {
     throw new Error("Method not implemented.");
   }
-  bootFromPersistedState(entities: MetaEntity[], entityDefinitions: EntityDefinition[]): Promise<ActionVoidReturnType> {
+  bootFromPersistedState(entities: MetaEntity[], entityDefinitions: EntityDefinition[]): Promise<Action2VoidReturnType> {
     throw new Error("Method not implemented.");
   }
-  clear(): Promise<ActionVoidReturnType> {
+  clear(): Promise<Action2VoidReturnType> {
     throw new Error("Method not implemented.");
   }
   createStorageSpaceForInstancesOfEntity(
     entity: MetaEntity,
     entityDefinition: EntityDefinition
-  ): Promise<ActionVoidReturnType> {
+  ): Promise<Action2VoidReturnType> {
     throw new Error("Method not implemented.");
   }
-  dropStorageSpaceForInstancesOfEntity(entityUuid: string): Promise<ActionVoidReturnType> {
+  dropStorageSpaceForInstancesOfEntity(entityUuid: string): Promise<Action2VoidReturnType> {
     throw new Error("Method not implemented.");
   }
   renameStorageSpaceForInstancesOfEntity(
@@ -51,7 +51,7 @@ export class ErrorDataStore implements PersistenceStoreDataSectionInterface {
     newName: string,
     entity: MetaEntity,
     entityDefinition: EntityDefinition
-  ): Promise<ActionVoidReturnType> {
+  ): Promise<Action2VoidReturnType> {
     throw new Error("Method not implemented.");
   }
   getEntityUuids(): string[] {
@@ -60,34 +60,34 @@ export class ErrorDataStore implements PersistenceStoreDataSectionInterface {
   getState(): Promise<{ [uuid: string]: EntityInstanceCollection }> {
     throw new Error("Method not implemented.");
   }
-  getInstance(parentUuid: string, uuid: string): Promise<ActionEntityInstanceReturnType> {
+  getInstance(parentUuid: string, uuid: string): Promise<Action2EntityInstanceSuccess> {
     throw new Error("Method not implemented.");
   }
-  getInstances(parentUuid: string): Promise<ActionEntityInstanceCollectionReturnType> {
+  getInstances(parentUuid: string): Promise<Action2EntityInstanceCollection> {
     throw new Error("Method not implemented.");
   }
-  handleQueryTemplateActionForServerONLY(query: RunBoxedQueryTemplateAction): Promise<ActionReturnType> {
+  handleQueryTemplateActionForServerONLY(query: RunBoxedQueryTemplateAction): Promise<Action2ReturnType> {
     throw new Error("Method not implemented.");
   }
-  handleBoxedExtractorTemplateActionForServerONLY(query: RunBoxedExtractorTemplateAction): Promise<ActionReturnType> {
+  handleBoxedExtractorTemplateActionForServerONLY(query: RunBoxedExtractorTemplateAction): Promise<Action2ReturnType> {
     throw new Error("Method not implemented.");
   }
-  handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(query: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction): Promise<ActionReturnType> {
+  handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(query: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction): Promise<Action2ReturnType> {
     throw new Error("Method not implemented.");
   }
-  handleBoxedExtractorAction(query: RunBoxedExtractorAction): Promise<ActionReturnType> {
+  handleBoxedExtractorAction(query: RunBoxedExtractorAction): Promise<Action2ReturnType> {
     throw new Error("Method not implemented.");
   }
-  handleBoxedQueryAction(query: RunBoxedQueryAction): Promise<ActionReturnType> {
+  handleBoxedQueryAction(query: RunBoxedQueryAction): Promise<Action2ReturnType> {
     throw new Error("Method not implemented.");
   }
-  upsertInstance(parentUuid: string, instance: EntityInstance): Promise<ActionVoidReturnType> {
+  upsertInstance(parentUuid: string, instance: EntityInstance): Promise<Action2VoidReturnType> {
     throw new Error("Method not implemented.");
   }
-  deleteInstances(parentUuid: string, instances: EntityInstance[]): Promise<ActionVoidReturnType> {
+  deleteInstances(parentUuid: string, instances: EntityInstance[]): Promise<Action2VoidReturnType> {
     throw new Error("Method not implemented.");
   }
-  deleteInstance(parentUuid: string, instance: EntityInstance): Promise<ActionVoidReturnType> {
+  deleteInstance(parentUuid: string, instance: EntityInstance): Promise<Action2VoidReturnType> {
     throw new Error("Method not implemented.");
   }
 }

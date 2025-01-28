@@ -2,7 +2,7 @@ import { describe } from 'vitest';
 
 // import { miroirFileSystemStoreSectionStartup } from "../dist/bundle";
 import {
-  ActionReturnType,
+  Action2ReturnType,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
   ApplicationSection,
@@ -272,7 +272,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
       {},
       async () => {
         const applicationSection:ApplicationSection = "model";
-        const queryResult: ActionReturnType =
+        const queryResult: Action2ReturnType =
           await localMiroirPersistenceStoreController.handleBoxedExtractorTemplateActionForServerONLY({
             actionType: "runBoxedExtractorTemplateAction",
             actionName: "runQuery",
@@ -330,7 +330,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
       {},
       async () => {
         const applicationSection: ApplicationSection = "model";
-        const queryResult: ActionReturnType =
+        const queryResult: Action2ReturnType =
           await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY({
             actionType: "runBoxedQueryTemplateAction",
             actionName: "runQuery",

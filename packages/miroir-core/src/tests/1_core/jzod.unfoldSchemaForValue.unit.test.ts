@@ -106,7 +106,7 @@ import entityDefinitionDeployment from "../../assets/admin_model/54b9c72f-d4f3-4
 import { entityDefinitionTest, transformerMenuV1 } from "../../index.js";
 
 export const defaultMiroirMetaModel: MetaModel = {
-  configuration: [instanceConfigurationReference],
+  // configuration: [instanceConfigurationReference],
   entities: [
     entitySelfApplication as Entity,
     entitySelfApplicationDeploymentConfiguration as Entity,

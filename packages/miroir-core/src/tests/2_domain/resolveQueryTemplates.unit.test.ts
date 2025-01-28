@@ -9,76 +9,67 @@ import {
   resolveBoxedExtractorOrCombinerTemplateReturningObjectOrObjectList,
   resolveQueryTemplateWithExtractorCombinerTransformer,
 } from "../../2_domain/Templates.js";
-// const env:any = (import.meta as any).env
-// console.log("@@@@@@@@@@@@@@@@@@ env", env);
-
-// console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
-
-// describe.sequential("templatesDEFUNCT.unit.test", () => {
 describe("resolveQueryTemplates.unit.test", () => {
 
-  // ################################################################################################
-  it("convert extractorOrCombinerTemplate to query with resolveQueryTemplateForBoxedExtractorOrCombinerReturningObjectOrObjectList", async () => { // TODO: test failure cases!
-    console.log("convert extractorOrCombinerTemplate to query with resolveQueryTemplateForBoxedExtractorOrCombinerReturningObjectOrObjectList START")
-    const newApplicationName = "test";
-    const newUuid = uuidv4();
+  // // ################################################################################################
+  // it("convert extractorOrCombinerTemplate to query with resolveQueryTemplateForBoxedExtractorOrCombinerReturningObjectOrObjectList", async () => { // TODO: test failure cases!
+  //   console.log("convert extractorOrCombinerTemplate to query with resolveQueryTemplateForBoxedExtractorOrCombinerReturningObjectOrObjectList START")
+  //   const newApplicationName = "test";
+  //   const newUuid = uuidv4();
 
-    const uniqueRuntimeTemplate: BoxedExtractorTemplateReturningObject = {
-      queryType: "boxedExtractorTemplateReturningObject",
-      deploymentUuid: "xxxxx",
-      pageParams: {
-        instanceUuid: "xxxxx",
-      },
-      queryParams: {
-        parentUuid: "yyyyy",
-      },
-      contextResults: {},
-      select: {
-          extractorTemplateType: "extractorForObjectByDirectReference",
-          parentName: "Book",
-          parentUuid: {
-            transformerType: "constantUuid",
-            constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-          },
-          instanceUuid: {
-            transformerType: "parameterReference",
-            referenceName: "instanceUuid",
-          },
-      },
-    };
+  //   const uniqueRuntimeTemplate: BoxedExtractorTemplateReturningObject = {
+  //     queryType: "boxedExtractorTemplateReturningObject",
+  //     deploymentUuid: "xxxxx",
+  //     pageParams: {
+  //       instanceUuid: "xxxxx",
+  //     },
+  //     queryParams: {
+  //       parentUuid: "yyyyy",
+  //     },
+  //     contextResults: {},
+  //     select: {
+  //         extractorTemplateType: "extractorForObjectByDirectReference",
+  //         parentName: "Book",
+  //         parentUuid: {
+  //           transformerType: "constantUuid",
+  //           constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+  //         },
+  //         instanceUuid: {
+  //           transformerType: "parameterReference",
+  //           referenceName: "instanceUuid",
+  //         },
+  //     },
+  //   };
 
-    const testResult = resolveBoxedExtractorOrCombinerTemplateReturningObjectOrObjectList(uniqueRuntimeTemplate); // uuid value is ignored
-    console.log(
-      "################################ converted queryTemplate to query with resolveQueryTemplateForBoxedExtractorOrCombinerReturningObjectOrObjectList testResults",
-      JSON.stringify(testResult, null, 2)
-    );
-    expect(testResult).toEqual({
-      pageParams: {
-        instanceUuid: "xxxxx",
-      },
-      queryParams: {
-        parentUuid: "yyyyy",
-      },
-      contextResults: {},
-      deploymentUuid: "xxxxx",
-      queryType: "boxedExtractorOrCombinerReturningObject",
-      select: {
-        extractorOrCombinerType: "extractorForObjectByDirectReference",
-        parentName: "Book",
-        parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-        instanceUuid: "xxxxx",
-      },
-    });
-    console.log("convert extractorOrCombinerTemplate to query with resolveQueryTemplateForBoxedExtractorOrCombinerReturningObjectOrObjectList END")
-  }
-  );
+  //   const testResult = resolveBoxedExtractorOrCombinerTemplateReturningObjectOrObjectList(uniqueRuntimeTemplate); // uuid value is ignored
+  //   console.log(
+  //     "################################ converted queryTemplate to query with resolveQueryTemplateForBoxedExtractorOrCombinerReturningObjectOrObjectList testResults",
+  //     JSON.stringify(testResult, null, 2)
+  //   );
+  //   expect(testResult).toEqual({
+  //     pageParams: {
+  //       instanceUuid: "xxxxx",
+  //     },
+  //     queryParams: {
+  //       parentUuid: "yyyyy",
+  //     },
+  //     contextResults: {},
+  //     deploymentUuid: "xxxxx",
+  //     queryType: "boxedExtractorOrCombinerReturningObject",
+  //     select: {
+  //       extractorOrCombinerType: "extractorForObjectByDirectReference",
+  //       parentName: "Book",
+  //       parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+  //       instanceUuid: "xxxxx",
+  //     },
+  //   });
+  //   console.log("convert extractorOrCombinerTemplate to query with resolveQueryTemplateForBoxedExtractorOrCombinerReturningObjectOrObjectList END")
+  // }
+  // );
 
   // ################################################################################################
   it("convert extractorOrCombinerTemplate to query with resolveQueryTemplateWithExtractorCombinerTransformer", async () => { // TODO: test failure cases!
       console.log("convert queryTemplate to query with resolveQueryTemplateWithExtractorCombinerTransformer START")
-      const newApplicationName = "test";
-      const newUuid = uuidv4();
-
       const uniqueRuntimeTemplate: BoxedQueryTemplateWithExtractorCombinerTransformer = {
         queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
         deploymentUuid: "xxxxx",

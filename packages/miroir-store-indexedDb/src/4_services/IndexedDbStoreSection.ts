@@ -1,6 +1,6 @@
 import {
   ACTION_OK,
-  ActionVoidReturnType,
+  Action2VoidReturnType,
   EntityDefinition,
   LoggerInterface,
   MetaEntity,
@@ -37,13 +37,13 @@ export class IndexedDbStoreSection
   }
 
   // ##################################################################################################
-  bootFromPersistedState(entities: MetaEntity[], entityDefinitions: EntityDefinition[]): Promise<ActionVoidReturnType> {
+  bootFromPersistedState(entities: MetaEntity[], entityDefinitions: EntityDefinition[]): Promise<Action2VoidReturnType> {
     log.info(this.logHeader, "bootFromPersistedState does nothing!");
     return Promise.resolve(ACTION_OK);
   }
 
   // ##############################################################################################
-  async clear(): Promise<ActionVoidReturnType> {
+  async clear(): Promise<Action2VoidReturnType> {
     await this.localUuidIndexedDb.removeSubLevels(this.getEntityUuids());
     return Promise.resolve(ACTION_OK);
   }
@@ -57,7 +57,7 @@ export class IndexedDbStoreSection
   async createStorageSpaceForInstancesOfEntity(
     entity: MetaEntity,
     entityDefinition: EntityDefinition
-  ): Promise<ActionVoidReturnType> {
+  ): Promise<Action2VoidReturnType> {
     log.info(
       this.logHeader,
       "createStorageSpaceForInstancesOfEntity",
@@ -96,7 +96,7 @@ export class IndexedDbStoreSection
   }
 
   // ##############################################################################################
-  async dropStorageSpaceForInstancesOfEntity(entityUuid: string): Promise<ActionVoidReturnType> {
+  async dropStorageSpaceForInstancesOfEntity(entityUuid: string): Promise<Action2VoidReturnType> {
     if (this.localUuidIndexedDb.hasSubLevel(entityUuid)) {
       await this.localUuidIndexedDb.removeSubLevels([entityUuid]);
       log.warn(
@@ -126,7 +126,7 @@ export class IndexedDbStoreSection
     newName: string,
     entity: MetaEntity,
     entityDefinition: EntityDefinition
-  ): Promise<ActionVoidReturnType> {
+  ): Promise<Action2VoidReturnType> {
     log.warn(
       this.logHeader,
       "renameStorageSpaceForInstancesOfEntity does nothing for entity",

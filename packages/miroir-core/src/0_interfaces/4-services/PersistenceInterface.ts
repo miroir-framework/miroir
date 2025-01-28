@@ -1,6 +1,5 @@
 import { HttpMethod } from "../1_core/Http.js";
 import {
-  ActionReturnType,
   BoxedQueryTemplateWithExtractorCombinerTransformer,
   EntityInstance,
   EntityInstanceCollection,
@@ -10,6 +9,7 @@ import {
   LocalCacheAction
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 import { DomainControllerInterface } from "../2_domain/DomainControllerInterface.js";
+import { Action2ReturnType } from "../2_domain/DomainElement.js";
 import { MError } from "../3_controllers/ErrorLogServiceInterface.js";
 import { LocalCacheInterface } from "./LocalCacheInterface.js";
 import { PersistenceStoreControllerManagerInterface } from "./PersistenceStoreControllerManagerInterface.js";
@@ -95,14 +95,14 @@ export default {};
 export declare interface PersistenceStoreLocalOrRemoteInterface {
   handlePersistenceAction(
     action: PersistenceAction
-  ): Promise<ActionReturnType>;
+  ): Promise<Action2ReturnType>;
   handleStoreOrBundleActionForLocalStore(
     action: StoreOrBundleAction
-  ): Promise<ActionReturnType>;
-  handlePersistenceActionForLocalCache(action: PersistenceAction): Promise<ActionReturnType>;
-  handlePersistenceActionForLocalPersistenceStore(action: PersistenceAction): Promise<ActionReturnType>;
-  handlePersistenceActionForRemoteStore(action: PersistenceAction): Promise<ActionReturnType>;
-  handleLocalCacheAction(action: LocalCacheAction): ActionReturnType;
+  ): Promise<Action2ReturnType>;
+  handlePersistenceActionForLocalCache(action: PersistenceAction): Promise<Action2ReturnType>;
+  handlePersistenceActionForLocalPersistenceStore(action: PersistenceAction): Promise<Action2ReturnType>;
+  handlePersistenceActionForRemoteStore(action: PersistenceAction): Promise<Action2ReturnType>;
+  handleLocalCacheAction(action: LocalCacheAction): Action2ReturnType;
 }
 
 export interface StoreInterface extends LocalCacheInterface, PersistenceStoreLocalOrRemoteInterface {};

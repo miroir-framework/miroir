@@ -1,6 +1,6 @@
 import {
   ACTION_OK,
-  ActionVoidReturnType,
+  Action2VoidReturnType,
   EntityDefinition,
   LoggerInterface,
   MetaEntity,
@@ -50,7 +50,7 @@ export class SqlDbStoreSection
   }
 
   // ######################################################################################
-  async clear(): Promise<ActionVoidReturnType> {
+  async clear(): Promise<Action2VoidReturnType> {
     log.info(this.logHeader, "clear start, entities", this.getEntityUuids());
     await this.sequelize.drop();
     this.sqlSchemaTableAccess = {};
@@ -63,7 +63,7 @@ export class SqlDbStoreSection
   async bootFromPersistedState(
     entities: MetaEntity[],
     entityDefinitions: EntityDefinition[]
-  ): Promise<ActionVoidReturnType> {
+  ): Promise<Action2VoidReturnType> {
     log.info(
       this.logHeader,
       "bootFromPersistedState called!",
@@ -113,7 +113,7 @@ export class SqlDbStoreSection
   async createStorageSpaceForInstancesOfEntity(
     entity: MetaEntity,
     entityDefinition: EntityDefinition
-  ): Promise<ActionVoidReturnType> {
+  ): Promise<Action2VoidReturnType> {
     this.sqlSchemaTableAccess = Object.assign(
       {},
       this.sqlSchemaTableAccess,
@@ -132,7 +132,7 @@ export class SqlDbStoreSection
     newName: string,
     entity: MetaEntity,
     entityDefinition: EntityDefinition
-  ): Promise<ActionVoidReturnType> {
+  ): Promise<Action2VoidReturnType> {
     const queryInterface = this.sequelize.getQueryInterface();
     await queryInterface.renameTable({ tableName: oldName, schema: this.schema }, newName);
     // log.info(this.logHeader, 'renameStorageSpaceForInstancesOfEntity renameTable done.');
@@ -154,7 +154,7 @@ export class SqlDbStoreSection
   // async alterStorageSpaceForInstancesOfEntity(
   //   entity: MetaEntity,
   //   entityDefinition: EntityDefinition
-  // ): Promise<ActionVoidReturnType> {
+  // ): Promise<Action2VoidReturnType> {
   //   const queryInterface = this.sequelize.getQueryInterface();
   //   await queryInterface.renameTable({ tableName: oldName, schema: this.schema }, newName);
   //   // log.info(this.logHeader, 'alterStorageSpaceForInstancesOfEntity renameTable done.');
@@ -173,7 +173,7 @@ export class SqlDbStoreSection
   // }
 
   // ##############################################################################################
-  async dropStorageSpaceForInstancesOfEntity(entityUuid: Uuid): Promise<ActionVoidReturnType> {
+  async dropStorageSpaceForInstancesOfEntity(entityUuid: Uuid): Promise<Action2VoidReturnType> {
     if (this.sqlSchemaTableAccess && this.sqlSchemaTableAccess[entityUuid]) {
       const model = this.sqlSchemaTableAccess[entityUuid];
       log.debug(

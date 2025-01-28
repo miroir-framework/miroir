@@ -1,8 +1,10 @@
 import {
   ACTION_OK,
-  ActionEntityInstanceCollectionReturnType,
-  ActionEntityInstanceReturnType,
-  ActionVoidReturnType,
+  Action2EntityInstanceCollectionOrFailure,
+  Action2EntityInstanceReturnType,
+  Action2Error,
+  Action2VoidReturnType,
+  Domain2ElementFailed,
   Entity,
   EntityDefinition,
   EntityInstance,
@@ -75,7 +77,7 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
     }
 
     // ##############################################################################################
-    async createEntity(entity: Entity, entityDefinition: EntityDefinition): Promise<ActionVoidReturnType> {
+    async createEntity(entity: Entity, entityDefinition: EntityDefinition): Promise<Action2VoidReturnType> {
       log.info(
         this.logHeader,
         "createEntity",
@@ -130,7 +132,7 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
         entity:Entity,
         entityDefinition: EntityDefinition,
       }[]
-    ): Promise<ActionVoidReturnType> {
+    ): Promise<Action2VoidReturnType> {
       for (const e of entities) {
         await this.createEntity(e.entity, e.entityDefinition);
       }
@@ -138,7 +140,7 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
     }
 
     // ##############################################################################################
-    async dropEntity(entityUuid: string): Promise<ActionVoidReturnType> {
+    async dropEntity(entityUuid: string): Promise<Action2VoidReturnType> {
       log.info("dropEntity entityUuid", entityUuid);
       if ([entityEntity.uuid, entityEntityDefinition.uuid].includes(entityUuid)) {
         // TODO: UGLY!!!!!!! DOES IT EVEN WORK????
@@ -154,14 +156,21 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
         if (this.dataStore.getEntityUuids().includes(entityUuid)) {
           await this.dataStore.dropStorageSpaceForInstancesOfEntity(entityUuid);
           //remove all entity definitions for the dropped entity
-          const entityDefinitions: ActionEntityInstanceCollectionReturnType = await this.getInstances(entityEntityDefinition.uuid);
+          const entityDefinitions: Action2EntityInstanceCollectionOrFailure = await this.getInstances(entityEntityDefinition.uuid);
 
           log.trace("dropEntity entityUuid", entityUuid, "found Entity Definitions:", entityDefinitions);
-          if (entityDefinitions.status != "ok") {
+          if (entityDefinitions instanceof Action2Error) {
             return Promise.resolve({
               status: "error",
               errorType: "FailedToDeleteStore", // TODO: correct errorType
               errorMessage: `dropEntity failed for section: data, entityUuid ${entityUuid}, error: ${entityDefinitions.errorType}, ${entityDefinitions.errorMessage}`,
+            });
+          }
+          if (entityDefinitions.returnedDomainElement instanceof Domain2ElementFailed) {
+            return Promise.resolve({
+              status: "error",
+              errorType: "FailedToDeleteStore", // TODO: correct errorType
+              errorMessage: `dropEntity failed for section: data, entityUuid ${entityUuid}, error: ${entityDefinitions.returnedDomainElement.elementValue.queryFailure}, ${entityDefinitions.returnedDomainElement.elementValue.failureMessage}`,
             });
           }
           // if (entityDefinitions.returnedDomainElement?.elementType != "entityInstanceCollection") {
@@ -174,7 +183,7 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
           //   });
           // }
   
-          for (const entityDefinition of entityDefinitions.returnedDomainElement.elementValue.instances.filter(
+          for (const entityDefinition of entityDefinitions.returnedDomainElement.instances.filter(
             (i: EntityInstance) => (i as EntityDefinition).entityUuid == entityUuid
           )) {
             await this.deleteInstance(entityEntityDefinition.uuid, entityDefinition);
@@ -188,7 +197,7 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
       return Promise.resolve(ACTION_OK);
     }
     // ##############################################################################################
-    async dropEntities(entityUuids: string[]): Promise<ActionVoidReturnType> {
+    async dropEntities(entityUuids: string[]): Promise<Action2VoidReturnType> {
       log.info(this.logHeader, "dropEntities parentUuid", entityUuids);
       for (const e of entityUuids) {
         await this.dropEntity(e);
@@ -197,36 +206,48 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
     }
 
     // #########################################################################################
-    async renameEntityClean(update: ModelActionRenameEntity): Promise<ActionVoidReturnType> {
+    async renameEntityClean(update: ModelActionRenameEntity): Promise<Action2VoidReturnType> {
       // TODO: identical to IndexedDbModelStoreSection implementation!
       log.info(this.logHeader, "renameEntityClean", update);
       // const currentValue = await this.localUuidIndexedDb.resolvePathOnObject(cudUpdate.objects[0].instances[0].parentUuid,cudUpdate.objects[0].instances[0].uuid);
-      const currentEntity: ActionEntityInstanceReturnType = await this.getInstance(
+      const currentEntity: Action2EntityInstanceReturnType = await this.getInstance(
         entityEntity.uuid,
         update.entityUuid
       );
-      if (currentEntity.status != "ok") {
+      if (currentEntity instanceof Action2Error) {
         return currentEntity
       }
-      const currentEntityDefinition: ActionEntityInstanceReturnType = await this.getInstance(
+      if (currentEntity.returnedDomainElement instanceof Domain2ElementFailed) {
+        return {
+          status: "error",
+          errorType: "FailedToDeployModule", // TODO: put the right errorType
+          errorMessage: currentEntity.returnedDomainElement.elementValue.failureMessage,
+        }
+      }
+
+      const currentEntityDefinition: Action2EntityInstanceReturnType = await this.getInstance(
         entityEntityDefinition.uuid,
         update.entityDefinitionUuid
       );
 
-      if (currentEntity.status != "ok") {
-        return currentEntity
-      }
-      if (currentEntityDefinition.status != "ok") {
+      if (currentEntityDefinition instanceof Action2Error) {
         return currentEntityDefinition
       }
-      const modifiedEntity:EntityInstanceWithName = Object.assign({},currentEntity.returnedDomainElement.elementValue,{name:update.targetValue});
-      const modifiedEntityDefinition:EntityDefinition = Object.assign({},currentEntityDefinition.returnedDomainElement.elementValue as EntityDefinition,{name:update.targetValue});
+      if (currentEntityDefinition.returnedDomainElement instanceof Domain2ElementFailed) {
+        return {
+          status: "error",
+          errorType: "FailedToDeployModule", // TODO: put the right errorType
+          errorMessage: currentEntityDefinition.returnedDomainElement.elementValue.failureMessage,
+        }
+      }
+      const modifiedEntity:EntityInstanceWithName = Object.assign({},currentEntity.returnedDomainElement,{name:update.targetValue});
+      const modifiedEntityDefinition:EntityDefinition = Object.assign({},currentEntityDefinition.returnedDomainElement as EntityDefinition,{name:update.targetValue});
 
       await this.upsertInstance(entityEntity.uuid, modifiedEntity);
       await this.upsertInstance(entityEntityDefinition.uuid, modifiedEntityDefinition);
 
       await this.dataStore.renameStorageSpaceForInstancesOfEntity(
-        (currentEntity.returnedDomainElement.elementValue as EntityInstanceWithName).name,
+        (currentEntity.returnedDomainElement as EntityInstanceWithName).name,
         update.targetValue,
         modifiedEntity,
         modifiedEntityDefinition
@@ -235,26 +256,39 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
     }
     
     // ############################################################################################
-    async alterEntityAttribute(update: ModelActionAlterEntityAttribute): Promise<ActionVoidReturnType> {
+    async alterEntityAttribute(update: ModelActionAlterEntityAttribute): Promise<Action2VoidReturnType> {
       log.info(this.logHeader, "alterEntityAttribute", update);
-      const currentEntity: ActionEntityInstanceReturnType = await this.getInstance(
+      const currentEntity: Action2EntityInstanceReturnType = await this.getInstance(
         entityEntity.uuid,
         update.entityUuid
       );
-      if (currentEntity.status != "ok") {
+      if (currentEntity instanceof Action2Error) {
         // todo: THROW???
         return currentEntity;
       }
-      const currentEntityDefinition: ActionEntityInstanceReturnType = await this.getInstance(
+      if (currentEntity.returnedDomainElement instanceof Domain2ElementFailed) {
+        return {
+          status: "error",
+          errorType: "FailedToDeployModule", // TODO: put the right errorType
+          errorMessage: currentEntity.returnedDomainElement.elementValue.failureMessage,
+        }
+      }
+      const currentEntityDefinition: Action2EntityInstanceReturnType = await this.getInstance(
         entityEntityDefinition.uuid,
         update.entityDefinitionUuid
       );
-      if (currentEntityDefinition.status != "ok") {
+      if (currentEntityDefinition instanceof Action2Error) {
         // todo: THROW???
         return currentEntityDefinition;
       }
-      const localEntityDefinition: EntityDefinition = currentEntityDefinition.returnedDomainElement
-        .elementValue as EntityDefinition;
+      if (currentEntityDefinition.returnedDomainElement instanceof Domain2ElementFailed) {
+        return {
+          status: "error",
+          errorType: "FailedToDeployModule", // TODO: put the right errorType
+          errorMessage: currentEntityDefinition.returnedDomainElement.elementValue.failureMessage,
+        }
+      }
+      const localEntityDefinition: EntityDefinition = currentEntityDefinition.returnedDomainElement as EntityDefinition;
       const localEntityJzodSchemaDefinition =
         update.removeColumns != undefined && Array.isArray(update.removeColumns)
           ? Object.fromEntries(
@@ -299,14 +333,14 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
       (this.dataStore as any as SqlDbStoreSection).sqlSchemaTableAccess = {
         ...(this.dataStore as any as SqlDbStoreSection).sqlSchemaTableAccess,
         ...(this.dataStore as any as SqlDbStoreSection).getAccessToDataSectionEntity(
-          currentEntity.returnedDomainElement.elementValue as MetaEntity,
+          currentEntity.returnedDomainElement as MetaEntity,
           modifiedEntityDefinition
         ),
       };
       log.info("alterEntityAttribute added columns", update.addColumns, this.sequelize.json);
 
       await(this.dataStore as any as SqlDbStoreSection).sqlSchemaTableAccess[
-        currentEntity.returnedDomainElement.elementValue.uuid
+        currentEntity.returnedDomainElement.uuid
       ].sequelizeModel.sync({ alter: true }); // TODO: replace sync!
 
       // } else {

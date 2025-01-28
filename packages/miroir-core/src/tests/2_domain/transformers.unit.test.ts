@@ -26,7 +26,7 @@ import {
   Country2,
   Country3,
   Country4,
-  DomainQueryReturnType,
+  Domain2QueryReturnType,
   ignorePostgresExtraAttributesOnObject
 } from "../../index.js";
 import { runTransformerTestSuite, TransformerTest, transformerTests } from "./transformersTests.data.js";
@@ -92,94 +92,6 @@ import { runTransformerTestSuite, TransformerTest, transformerTests } from "./tr
 //   }
 // ];
 
-// beforeAll(async () => {
-//   // console.log("beforeAll")
-//   // sqlDbAdminStore = new SqlDbDataStoreSection("data", sqlDbStoreName, connectionString, schema);
-//   sqlDbAdminStore = new SqlDbAdminStore("data", sqlDbStoreName, connectionString, schema);
-//   sqlDbDataStore = new SqlDbDataStoreSection("data", sqlDbStoreName, connectionString, schema);
-//   sqlDbModelStore = new SqlDbModelStoreSection("model", sqlDbStoreName, connectionString, schema, sqlDbDataStore)
-
-//   persistenceStoreController = new PersistenceStoreController(sqlDbAdminStore, sqlDbModelStore, sqlDbDataStore);
-
-//   const testApplicationConfig: InitApplicationParameters = getBasicApplicationConfiguration(
-//     testApplicationName,
-//     paramSelfApplicationUuid,
-//     // {
-//     //   emulatedServerType: "sql",
-//     //   connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
-//     // },
-//     paramAdminConfigurationDeploymentUuid,
-//     applicationModelBranchUuid,
-//     selfApplicationVersionUuid,
-
-//   )
-//   await persistenceStoreController.createStore(
-//     testStoreConfig.admin
-//   );
-//   await persistenceStoreController.createStore(
-//     testStoreConfig.model
-//   );
-//   await persistenceStoreController.createStore(
-//     testStoreConfig.data
-//   );
-//   await persistenceStoreController.open();
-
-//   await persistenceStoreController.initApplication(
-//     defaultMiroirMetaModel,
-//     "miroir",
-//     testApplicationConfig.selfApplication,
-//     testApplicationConfig.applicationModelBranch,
-//     testApplicationConfig.applicationVersion,
-//   )
-  
-//   await persistenceStoreController.handleAction(
-//     {
-//       actionType: "modelAction",
-//       actionName: "resetModel",
-//       actionLabel: "resetLibraryStore",
-//       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-//       deploymentUuid: paramAdminConfigurationDeploymentUuid,
-//     },
-//   );
-//   await persistenceStoreController.handleAction({
-//     actionType: "modelAction",
-//     actionName: "createEntity",
-//     actionLabel: "CreateLibraryStoreEntities",
-//     deploymentUuid: paramAdminConfigurationDeploymentUuid,
-//     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-//     entities: libraryEntitesAndInstances,
-//   });
-//   await persistenceStoreController.handleAction({
-//     actionType: "instanceAction",
-//     actionName: "createInstance",
-//     actionLabel: "CreateLibraryStoreInstances",
-//     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-//     applicationSection: "data",
-//     deploymentUuid: paramAdminConfigurationDeploymentUuid,
-//     objects: libraryEntitesAndInstances.map((e) => {
-//       return {
-//         parentName: e.entity.name,
-//         parentUuid: e.entity.uuid,
-//         applicationSection: "data",
-//         instances: e.instances,
-//       };
-//     }),
-//   });
-// });
-
-// afterAll(async () => {
-//   await persistenceStoreController.deleteStore(
-//     testStoreConfig.data
-//   );
-//   await persistenceStoreController.deleteStore(
-//     testStoreConfig.model
-//   );
-//   await persistenceStoreController.deleteStore(
-//     testStoreConfig.admin
-//   );
-//   await persistenceStoreController.close();
-// });
-
 async function runTransformerTest(transformerTest: TransformerTest) {
   console.log(expect.getState().currentTestName, "START");
   
@@ -205,7 +117,7 @@ async function runTransformerTest(transformerTest: TransformerTest) {
   );
   const transformer: TransformerForBuild = transformerTest.transformer;
 
-  const result: DomainQueryReturnType<DomainElementSuccess> = transformer_apply(
+  const result: Domain2QueryReturnType<any> = transformer_apply(
     "build",
     undefined,
     transformer,
@@ -217,7 +129,7 @@ async function runTransformerTest(transformerTest: TransformerTest) {
     undefined
   );
 
-  // const expectedResult: DomainQueryReturnType<DomainElementSuccess> = {
+  // const expectedResult: Domain2QueryReturnType<any> = {
   //   elementType: "instanceUuid",
   //   elementValue: "test",
   // };
@@ -353,7 +265,7 @@ describe("transformers.unit.test", async () => {
             },
           },
         } // context
-      ).elementValue;
+      );
 
       console.log("################################", expect.getState().currentTestName, "preTestResult", preTestResult)
       const testResult = preTestResult; // uuid value is ignored
@@ -571,7 +483,7 @@ describe("transformers.unit.test", async () => {
         }, // queryParams
         {
         } // context
-      ).elementValue;
+      );
 
       console.log("################################", expect.getState().currentTestName, "preTestResult", preTestResult)
       const testResult = preTestResult; // uuid value is ignored
@@ -686,7 +598,7 @@ describe("transformers.unit.test", async () => {
   it("resolve basic transformer path reference for string", async () => { // TODO: test failure cases!
       console.log("resolve basic transformer path reference for string START")
 
-      const result: DomainQueryReturnType<DomainElementSuccess> = transformer_apply(
+      const result: Domain2QueryReturnType<any> = transformer_apply(
         "runtime",
         "ROOT",
         {
@@ -702,10 +614,7 @@ describe("transformers.unit.test", async () => {
         },
       );
 
-      const expectedResult: DomainQueryReturnType<DomainElementSuccess> = {
-        elementType: "string",
-        elementValue: "test",
-      };
+      const expectedResult: Domain2QueryReturnType<any> = "test";
 
       console.log("################################ result", JSON.stringify(result,null,2))
       console.log("################################ expectedResult", JSON.stringify(expectedResult,null,2))
@@ -719,7 +628,7 @@ describe("transformers.unit.test", async () => {
   it("resolve basic transformer path reference for number", async () => { // TODO: test failure cases!
       console.log("resolve basic transformer path reference for string START")
 
-      const result: DomainQueryReturnType<DomainElementSuccess> = transformer_apply(
+      const result: Domain2QueryReturnType<any> = transformer_apply(
         "runtime",
         "ROOT",
         {
@@ -735,10 +644,7 @@ describe("transformers.unit.test", async () => {
         },
       );
 
-      const expectedResult: DomainQueryReturnType<DomainElementSuccess> = {
-        elementType: "number",
-        elementValue: 1,
-      };
+      const expectedResult: Domain2QueryReturnType<any> = 1;
 
       console.log("################################ result", JSON.stringify(result,null,2))
       console.log("################################ expectedResult", JSON.stringify(expectedResult,null,2))
@@ -752,7 +658,7 @@ describe("transformers.unit.test", async () => {
   it("resolve basic transformer path reference for object", async () => { // TODO: test failure cases!
       console.log("resolve basic transformer path reference for object START")
 
-      const result: DomainQueryReturnType<DomainElementSuccess> = transformer_apply(
+      const result: Domain2QueryReturnType<any> = transformer_apply(
         "runtime",
         "ROOT",
         {
@@ -772,14 +678,19 @@ describe("transformers.unit.test", async () => {
         },
       );
 
-      const expectedResult: DomainQueryReturnType<DomainElementSuccess> = {
-        elementType: "object",
-        elementValue: {
-          "1": {
-            name: "test",
-          } as any, // TODO: redefine "object" DomainQueryReturnType<DomainElementSuccess>, so as to be non-recursive
+      const expectedResult: Domain2QueryReturnType<any> = {
+        "1": {
+          name: "test",
         }
       };
+      // const expectedResult: Domain2QueryReturnType<any> = {
+      //   elementType: "object",
+      //   elementValue: {
+      //     "1": {
+      //       name: "test",
+      //     } as any, // TODO: redefine "object" Domain2QueryReturnType<any>, so as to be non-recursive
+      //   }
+      // };
 
       console.log("################################ result", JSON.stringify(result,null,2))
       console.log("################################ expectedResult", JSON.stringify(expectedResult,null,2))
@@ -830,7 +741,8 @@ describe("transformers.unit.test", async () => {
         newDeploymentStoreConfigurationTemplate as any,
         { newApplicationName },
         undefined
-      ).elementValue as StoreUnitConfiguration;
+      ) as StoreUnitConfiguration;
+      // ).elementValue as StoreUnitConfiguration;
 
       const actionParams: Record<string, any> = {
         newApplicationName,
@@ -866,7 +778,7 @@ describe("transformers.unit.test", async () => {
         testAction as any,
         actionParams,
         undefined
-      ).elementValue as DomainAction;
+      ) as DomainAction;
 
       const expectedAction: DomainAction = {
         "actionType": "storeManagementAction",
@@ -905,7 +817,7 @@ describe("transformers.unit.test", async () => {
         mustacheTemplate,
         { newApplicationName },
         undefined
-      ).elementValue as string;
+      );
 
       console.log("################################ converted transformer", testResult)
       expect(testResult).toEqual("testSelfApplication");
@@ -946,7 +858,7 @@ describe("transformers.unit.test", async () => {
             })
           ),
         }, // context
-      ).elementValue as string;
+      );
 
       console.log("################################ converted template", testResult)
       expect(testResult).toEqual(
@@ -991,7 +903,7 @@ describe("transformers.unit.test", async () => {
             book6 as EntityInstance,
           ]
         } // context
-      ).elementValue as string;
+      );
 
       console.log("################################ count books by author runtime transformer", testResult)
       expect(testResult).toEqual(
@@ -1036,7 +948,7 @@ describe("transformers.unit.test", async () => {
           ],
         } // context
         // undefined
-      ).elementValue as string;
+      );
 
       console.log("################################ count books by author runtime transformer", testResult)
       expect(testResult).toEqual(
@@ -1104,7 +1016,7 @@ describe("transformers.unit.test", async () => {
         {
           country: Country1 as EntityInstance,
         } // context
-      ).elementValue as string;
+      );
 
       console.log("################################ count books by author runtime transformer", testResult)
       expect(testResult).toEqual(
@@ -1173,7 +1085,7 @@ describe("transformers.unit.test", async () => {
   //             Country4 as EntityInstance,
   //         ],
   //       } // context
-  //     ).elementValue;
+  //     );
 
   // console.log("################################", expect.getState().currentTestName, "preTestResult", preTestResult)
   //         { name: 'DE' },
@@ -1215,7 +1127,7 @@ describe("transformers.unit.test", async () => {
               Country4 as EntityInstance,
           ],
         } // context
-      ).elementValue;
+      );
 
       console.log("################################", expect.getState().currentTestName, "preTestResult", preTestResult)
       const testResult = ignorePostgresExtraAttributesOnObject(preTestResult as any,["uuid"]); // uuid value is ignored
@@ -1266,7 +1178,7 @@ describe("transformers.unit.test", async () => {
             Country4 as EntityInstance,
         ],
       } // context
-    ).elementValue;
+    );
 
   console.log("################################", expect.getState().currentTestName, "preTestResult", preTestResult)
     // const testResult = ignorePostgresExtraAttributesOnList(preTestResult as any,["uuid"]); // uuid value is ignored
@@ -1318,7 +1230,7 @@ describe("transformers.unit.test", async () => {
         //     Country4 as EntityInstance,
         // ],
       } // context
-    ).elementValue;
+    );
 
     const testResult = ignorePostgresExtraAttributesOnObject(preTestResult as any); // uuid value is ignored
     const expectedResult = {
@@ -1377,7 +1289,7 @@ describe("transformers.unit.test", async () => {
   //           Country4 as EntityInstance,
   //       ],
   //     } // context
-  //   ).elementValue;
+  //   );
 
   // console.log("################################", expect.getState().currentTestName, "preTestResult", preTestResult)
   //   // const testResult = ignorePostgresExtraAttributesOnList(preTestResult as any,["uuid"]); // uuid value is ignored
@@ -1516,7 +1428,7 @@ describe("transformers.unit.test", async () => {
           updatedAt: "2024-10-01T20:28:59.705Z",
         },
       } // context
-    ).elementValue;
+    );
 
     console.log(
       "################################ object dynamic access runtime transformer preTestResult",
@@ -1645,7 +1557,7 @@ describe("transformers.unit.test", async () => {
   //         },
   //       ],
   //     } // context
-  //   ).elementValue;
+  //   );
 
   // console.log("################################", expect.getState().currentTestName, "preTestResult", preTestResult)
   // const testResult = preTestResult; // uuid value is ignored
@@ -1810,7 +1722,7 @@ describe("transformers.unit.test", async () => {
           },
         },
       } // context
-    ).elementValue;
+    );
 
     console.log("################################", expect.getState().currentTestName, "preTestResult", preTestResult)
     // const testResult = ignorePostgresExtraAttributesOnList(preTestResult as any,["uuid"]); // uuid value is ignored
@@ -1907,17 +1819,18 @@ describe("transformers.unit.test", async () => {
   );
 
   // ################################################################################################
-  it("listPickElement - pick item with runtime transformer", async () => { // TODO: test failure cases!
-    console.log("list - pick item with runtime transformer START")
+  it("listPickElement - pick item with runtime transformer", async () => {
+    // TODO: test failure cases!
+    console.log("list - pick item with runtime transformer START");
     const newApplicationName = "test";
     const newUuid = uuidv4();
 
-    const uniqueRuntimeTemplate:TransformerForRuntime = {
+    const uniqueRuntimeTemplate: TransformerForRuntime = {
       transformerType: "listPickElement",
       interpolation: "runtime",
       referencedExtractor: "Fountains",
-      index: 0
-    }
+      index: 0,
+    };
 
     // const preTestResult: {[k: string]: {[l:string]: any}} = transformer_apply(
     const preTestResult: { [k: string]: { [l: string]: any } } = transformer_apply(
@@ -2015,12 +1928,12 @@ describe("transformers.unit.test", async () => {
           },
         ],
       } // context
-    ).elementValue;
+    );
 
-  console.log("################################", expect.getState().currentTestName, "preTestResult", preTestResult)
+    console.log("################################", expect.getState().currentTestName, "preTestResult", preTestResult);
     // const testResult = ignorePostgresExtraAttributesOnList(preTestResult as any,["uuid"]); // uuid value is ignored
     const testResult = preTestResult; // uuid value is ignored
-    console.log("################################ list - pick item with runtime transformer testResult", testResult)
+    console.log("################################ list - pick item with runtime transformer testResult", testResult);
     expect(testResult).toEqual({
       Voie: "BOULEVARD DE BELLEVILLE",
       uuid: "a849eda6-6f80-4178-8ea1-4f2d6c0e8c08",
@@ -2042,11 +1955,11 @@ describe("transformers.unit.test", async () => {
       createdAt: "2024-10-03T17:11:24.380Z",
       updatedAt: "2024-10-03T17:11:24.380Z",
     });
-    console.log(expect.getState().currentTestName, "END")
-  }
-  );
+    console.log(expect.getState().currentTestName, "END");
+  });
 
 
+  // ################################################################################################
   describe("dataflowObject transformer", () => {
     it("should apply dataflowObject transformer correctly", () => {
       const transformer: TransformerForBuild_dataflowObject = {
@@ -2082,19 +1995,44 @@ describe("transformers.unit.test", async () => {
       const queryParams = {};
       const contextResults = {};
 
-      const result: DomainQueryReturnType<DomainElementSuccess> = transformer_apply("build", undefined, transformer, queryParams, contextResults);
+      const result: Domain2QueryReturnType<any> = transformer_apply(
+        "build",
+        undefined,
+        transformer,
+        queryParams,
+        contextResults
+      );
 
-      expect(result.elementType).toBe("object");
-      expect(result.elementValue.name).toBe("testName");
-      expect(result.elementValue.uuid).toMatch(
+      // expect(result.elementType).toBe("object");
+      expect(result.name).toBe("testName");
+      expect(result.uuid).toMatch(
         /^[0-9a-f]{8}-[0-9a-f]{4}-[4][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
       );
-      expect(result.elementValue.doubleName).toBe("testName-testName");
-      expect(result.elementValue.object.reDoubleName).toEqual("testName-testName");
-      expect(result.elementValue.object.reReDoubleName).toEqual("testName-testName");
+      expect(result.doubleName).toBe("testName-testName");
+      expect(result.object.reDoubleName).toEqual("testName-testName");
+      expect(result.object.reReDoubleName).toEqual("testName-testName");
+      // expect(result.elementValue.name).toBe("testName");
+      // expect(result.elementValue.uuid).toMatch(
+      //   /^[0-9a-f]{8}-[0-9a-f]{4}-[4][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+      // );
+      // expect(result.elementValue.doubleName).toBe("testName-testName");
+      // expect(result.elementValue.object.reDoubleName).toEqual("testName-testName");
+      // expect(result.elementValue.object.reReDoubleName).toEqual("testName-testName");
     });
   });
     
+
+
+
+
+
+
+
+
+  // // ################################################################################################
+  // // ################################################################################################
+  // // ################################################################################################
+  // // ################################################################################################
   // // ################################################################################################
   // it("build an EntityDefinition from spreadsheet with transformers", async () => { // TODO: test failure cases!
   //   console.log(expect.getState().currentTestName, "START")

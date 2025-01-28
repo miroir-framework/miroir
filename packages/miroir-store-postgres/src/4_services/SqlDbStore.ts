@@ -1,6 +1,6 @@
 import {
   ACTION_OK,
-  ActionVoidReturnType,
+  Action2VoidReturnType,
   ApplicationSection,
   LoggerInterface,
   MiroirLoggerFactory,
@@ -35,7 +35,7 @@ export class SqlDbStore implements PersistenceStoreAbstractInterface {
   }
 
   // ##############################################################################################
-  async close(): Promise<ActionVoidReturnType> {
+  async close(): Promise<Action2VoidReturnType> {
     await this.sequelize.close();
     return Promise.resolve(ACTION_OK);
     // disconnect from DB?
@@ -47,7 +47,7 @@ export class SqlDbStore implements PersistenceStoreAbstractInterface {
   }
 
   // ##############################################################################################
-  public async open(): Promise<ActionVoidReturnType> {
+  public async open(): Promise<Action2VoidReturnType> {
     try {
       await this.sequelize.authenticate();
       log.info(

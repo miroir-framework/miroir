@@ -1,6 +1,6 @@
 import {
   ACTION_OK,
-  ActionVoidReturnType,
+  Action2VoidReturnType,
   LoggerInterface,
   MiroirLoggerFactory,
   PersistenceStoreAbstractInterface
@@ -28,7 +28,7 @@ export class IndexedDbStore implements PersistenceStoreAbstractInterface {
   }
 
   // ##################################################################################################
-  async open(): Promise<ActionVoidReturnType> {
+  async open(): Promise<Action2VoidReturnType> {
     log.info("open()", this.indexedDbStoreName, ": opening...");
     await this.localUuidIndexedDb.openObjectStore();
     log.info("open()", this.indexedDbStoreName, ": opened");
@@ -36,7 +36,7 @@ export class IndexedDbStore implements PersistenceStoreAbstractInterface {
   }
 
   // ##############################################################################################
-  async close(): Promise<ActionVoidReturnType> {
+  async close(): Promise<Action2VoidReturnType> {
     log.info("close()", this.indexedDbStoreName, ": closing...");
     await this.localUuidIndexedDb.closeObjectStore();
     log.info("close()", this.indexedDbStoreName, ": closed");

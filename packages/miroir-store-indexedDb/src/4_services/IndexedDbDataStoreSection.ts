@@ -1,5 +1,7 @@
 import {
-  ActionEntityInstanceCollectionReturnType,
+  Action2EntityInstanceCollectionOrFailure,
+  Action2Error,
+  Domain2ElementFailed,
   EntityInstanceCollection,
   LoggerInterface,
   MiroirLoggerFactory,
@@ -38,15 +40,15 @@ export class IndexedDbDataStoreSection extends MixedIndexedDbInstanceStoreSectio
 
     for (const parentUuid of this.getEntityUuids()) {
       log.debug(this.logHeader, "getState getting instances for", parentUuid);
-      const instances: ActionEntityInstanceCollectionReturnType = await this.getInstances(parentUuid);
+      const instances: Action2EntityInstanceCollectionOrFailure = await this.getInstances(parentUuid);
       // log.info(this.logHeader, "getState found instances", parentUuid, instances);
       // TODO: proper treatment of errors!
-      if (instances.status != "ok") {
-        Object.assign(result,{[parentUuid]:{parentUuid, instances: []}});
-      } else if (instances.returnedDomainElement?.elementType != "entityInstanceCollection") {
-        Object.assign(result,{[parentUuid]:{parentUuid, instances: []}});
+      if (instances instanceof Action2Error || instances.returnedDomainElement instanceof Domain2ElementFailed) {
+        log.error(this.logHeader, "getState error getting instances for", parentUuid, instances);
+        // TODO: return error!!
+        Object.assign(result, { [parentUuid]: { parentUuid, instances: [] } });
       } else {
-        Object.assign(result,{[parentUuid]:instances.returnedDomainElement.elementValue});
+        Object.assign(result, { [parentUuid]: instances.returnedDomainElement });
       }
     }
     return Promise.resolve(result);

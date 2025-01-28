@@ -1,5 +1,5 @@
 import {
-  ActionReturnType,
+  Action2ReturnType,
   ApplicationSection,
   BoxedQueryTemplateWithExtractorCombinerTransformer,
   DomainControllerInterface,
@@ -129,7 +129,7 @@ export const deleteCascade = async (p: {
       ) as any,
     };
   
-    const foreignKeyUnfilteredObjects: ActionReturnType = 
+    const foreignKeyUnfilteredObjects: Action2ReturnType = 
       await p.domainController.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
         {
           actionType: "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",

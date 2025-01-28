@@ -9,9 +9,9 @@ import {
 
 import {
   ACTION_OK,
-  ActionReturnType,
+  Action2ReturnType,
   DomainElementSuccess,
-  DomainQueryReturnType,
+  Domain2QueryReturnType,
   DomainState,
   extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList,
   getDomainStateExtractorRunnerMap,
@@ -25,7 +25,8 @@ import {
   MiroirLoggerFactory,
   ModelActionReplayableAction,
   RunBoxedExtractorOrQueryAction,
-  TransactionalInstanceAction
+  TransactionalInstanceAction,
+  Domain2ElementFailed
 } from "miroir-core";
 import { packageName } from '../constants.js';
 import { cleanLevel } from './constants.js';
@@ -87,7 +88,7 @@ function roughSizeOfObject( object: any ) {
 }
 
 // ###############################################################################
-function exceptionToActionReturnType(f:()=>void): ActionReturnType {
+function exceptionToActionReturnType(f:()=>void): Action2ReturnType {
   try {
     f()
   } catch (e: any) {
@@ -179,10 +180,10 @@ export class LocalCache implements LocalCacheInterface {
   }
 
   // ###############################################################################
-  handleLocalCacheAction(action: LocalCacheAction): ActionReturnType {
+  handleLocalCacheAction(action: LocalCacheAction): Action2ReturnType {
     log.info("LocalCache handleAction", action);
 
-    const result:ActionReturnType = exceptionToActionReturnType(() =>
+    const result:Action2ReturnType = exceptionToActionReturnType(() =>
       this.innerReduxStore.dispatch(
         LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleAction](
           action
@@ -194,14 +195,14 @@ export class LocalCache implements LocalCacheInterface {
   }
 
   // ###############################################################################
-  runBoxedExtractorOrQueryAction(action:RunBoxedExtractorOrQueryAction):ActionReturnType {
+  runBoxedExtractorOrQueryAction(action:RunBoxedExtractorOrQueryAction):Action2ReturnType {
     // const domainState: DomainState = domainController.getDomainState();
     const domainState: DomainState = this.getDomainState();
 
      const extractorRunnerMapOnDomainState = getDomainStateExtractorRunnerMap();
      log.info("LocalCache action=", JSON.stringify(action, undefined, 2))
      // log.info("RestServer queryActionHandler domainState=", JSON.stringify(domainState, undefined, 2))
-     let queryResult: DomainQueryReturnType<DomainElementSuccess> = undefined as any as DomainQueryReturnType<DomainElementSuccess>;
+     let queryResult: Domain2QueryReturnType<DomainElementSuccess> = undefined as any as Domain2QueryReturnType<DomainElementSuccess>;
      switch (action.query.queryType) {
        case "boxedExtractorOrCombinerReturningObject":
        case "boxedExtractorOrCombinerReturningObjectList": {
@@ -221,13 +222,22 @@ export class LocalCache implements LocalCacheInterface {
        default:
          break;
      }
-     const result:ActionReturnType = {
-       status: "ok",
-       returnedDomainElement: queryResult
+     if (queryResult instanceof Domain2ElementFailed) {
+      return {
+        status: "error",
+        errorType: "FailedToDeployModule", // TODO: correct errorType
+        errorMessage: queryResult.elementValue.failureMessage,
+        errorStack: queryResult.elementValue.errorStack
+      }
+     } else {
+       const result:Action2ReturnType = {
+         status: "ok",
+         returnedDomainElement: queryResult
+       }
+       log.info("RestServer queryActionHandler used local cache result=", JSON.stringify(result, undefined,2))
+    
+       return result;
      }
-     log.info("RestServer queryActionHandler used local cache result=", JSON.stringify(result, undefined,2))
-  
-     return result;
     //  return continuationFunction(response)(result);
      
   }
@@ -237,7 +247,7 @@ export class LocalCache implements LocalCacheInterface {
   // used only by PersistenceReduxSaga.handlePersistenceAction
   async dispatchToReduxStore(
     dispatchParam: any // TODO: give exact type!
-  ): Promise<ActionReturnType> {
+  ): Promise<Action2ReturnType> {
     return this.innerReduxStore.dispatch(dispatchParam);
   }
 

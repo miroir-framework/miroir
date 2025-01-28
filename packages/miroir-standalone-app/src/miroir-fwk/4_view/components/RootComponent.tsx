@@ -17,12 +17,14 @@ import { v4 as uuidv4 } from 'uuid';
 
 
 import {
-  ActionReturnType,
+  Action2Error,
+  Action2ReturnType,
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
   BoxedQueryTemplateWithExtractorCombinerTransformer,
   defaultMiroirMetaModel,
+  Domain2ElementFailed,
   DomainControllerInterface,
   DomainElementObject,
   domainEndpointVersionV1,
@@ -360,7 +362,7 @@ export const RootComponent = (props: RootComponentProps) => {
                           },
                         },
                       };
-                      const adminDeployments: ActionReturnType = 
+                      const adminDeployments: Action2ReturnType = 
                         await domainController.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
                           {
                             actionType: "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
@@ -373,15 +375,18 @@ export const RootComponent = (props: RootComponentProps) => {
                         )
                       ;
                       
-                      if (adminDeployments.status != "ok") {
+                      if (adminDeployments instanceof Action2Error) {
                         throw new Error("found adminDeployments with error " + adminDeployments);
                       }
-                  
-                      if (adminDeployments.returnedDomainElement.elementType != "object" ) {
+                      
+                      if (adminDeployments.returnedDomainElement instanceof Domain2ElementFailed) {
+                        throw new Error("found adminDeployments failed " + adminDeployments.returnedDomainElement);
+                      }
+                      if (typeof adminDeployments.returnedDomainElement != "object" ) {
                         throw new Error("found adminDeployments query result not an object as expected " + adminDeployments.returnedDomainElement);
                       }
 
-                      if ( !adminDeployments.returnedDomainElement.elementValue[subQueryName] ) {
+                      if ( !adminDeployments.returnedDomainElement[subQueryName] ) {
                         throw new Error("found adminDeployments query result object does not have attribute " + subQueryName + " as expected " + adminDeployments.returnedDomainElement);
                       }
                      
@@ -389,20 +394,20 @@ export const RootComponent = (props: RootComponentProps) => {
                       //   throw new Error("found adminDeployments query result object attribute " + subQueryName + " is not an instanceUuidIndex as expected " + adminDeployments.returnedDomainElement);
                       // }
                      
-                      const foundDeployments = adminDeployments.returnedDomainElement.elementValue[subQueryName];
+                      const foundDeployments = adminDeployments.returnedDomainElement[subQueryName];
 
                       log.info("found adminDeployments", JSON.stringify(adminDeployments));
                   
                       // open and refresh found deployments
-                      for (const c of Object.values(foundDeployments)) {
+                      for (const c of Object.values(foundDeployments)) { // TODO: correct type of c
                         const openStoreAction: StoreOrBundleAction = {
                           actionType: "storeManagementAction",
                           actionName: "openStore",
                           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
                           configuration: {
-                            [c.uuid]: (c as any /** Deployment */).configuration as StoreUnitConfiguration,
+                            [(c as any).uuid]: (c as any /** Deployment */).configuration as StoreUnitConfiguration,
                           },
-                          deploymentUuid: c.uuid,
+                          deploymentUuid: (c as any).uuid,
                         };
                         await domainController.handleAction(openStoreAction)
 
@@ -410,7 +415,7 @@ export const RootComponent = (props: RootComponentProps) => {
                           actionType: "modelAction",
                           actionName: "rollback",
                           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                          deploymentUuid: c.uuid,
+                          deploymentUuid: (c as any).uuid,
                         }, defaultMiroirMetaModel);
                       }
                     }}

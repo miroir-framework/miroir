@@ -4,18 +4,18 @@ import {
   BoxedExtractorOrCombinerReturningObjectList,
   BoxedExtractorOrCombinerReturningObjectOrObjectList,
   BoxedQueryWithExtractorCombinerTransformer,
-  DomainElementEntityInstanceOrFailed,
-  DomainElementInstanceArrayOrFailed,
   DomainElementInstanceUuidIndex,
   DomainElementObject,
   // QueryByEntityUuidGetEntityDefinition,
   EntityDefinition,
+  EntityInstance,
+  EntityInstancesUuidIndex,
   ExtractorOrCombinerReturningObject,
   JzodObject,
   QueryByEntityUuidGetEntityDefinition
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { DeploymentEntityState } from "../0_interfaces/2_domain/DeploymentStateInterface.js";
-import { DomainQueryReturnType } from "../0_interfaces/2_domain/DomainElement.js";
+import { Domain2ElementFailed, Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement.js";
 import {
   ExtractorRunnerParamsForJzodSchema,
   QueryRunnerMapForJzodSchema,
@@ -68,16 +68,16 @@ export const runQueryFromDeploymentEntityState: SyncQueryRunner<
 export const selectEntityInstanceFromDeploymentEntityState: SyncBoxedExtractorRunner<
   BoxedExtractorOrCombinerReturningObject,
   DeploymentEntityState,
-  DomainElementEntityInstanceOrFailed
+  Domain2QueryReturnType<EntityInstance>
 > = (
   deploymentEntityState: DeploymentEntityState,
   selectorParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObject, DeploymentEntityState>
-): DomainElementEntityInstanceOrFailed => {
+): Domain2QueryReturnType<EntityInstance> => {
   const querySelectorParams = selectorParams.extractor.select as ExtractorOrCombinerReturningObject;
   const deploymentUuid = selectorParams.extractor.deploymentUuid;
   const applicationSection: ApplicationSection =
     selectorParams.extractor.select.applicationSection ??
-    ((selectorParams.extractor.pageParams?.elementValue?.applicationSection?.elementValue ??
+    ((selectorParams.extractor.pageParams?.applicationSection ??
       "data") as ApplicationSection);
 
   const entityUuidReference = querySelectorParams.parentUuid
@@ -175,13 +175,16 @@ export const selectEntityInstanceFromDeploymentEntityState: SyncBoxedExtractorRu
       //   "######### contextResults",
       //   JSON.stringify(selectorParams.query.contextResults, undefined, 2)
       // );
-      return {
-        elementType: "instance",
-        elementValue:
-          deploymentEntityState[index].entities[
-            (referenceObject.elementValue as any)[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
-          ],
-      };
+      return deploymentEntityState[index].entities[
+        referenceObject[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
+      ];
+      // return {
+      //   elementType: "instance",
+      //   elementValue:
+      //     deploymentEntityState[index].entities[
+      //       referenceObject[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
+      //     ],
+      // };
       break;
     }
     case "extractorForObjectByDirectReference": {
@@ -234,10 +237,7 @@ export const selectEntityInstanceFromDeploymentEntityState: SyncBoxedExtractorRu
         "domainState",
         deploymentEntityState
       );
-      return {
-        elementType: "instance",
-        elementValue: deploymentEntityState[index].entities[instanceDomainElement],
-      };
+      return deploymentEntityState[index].entities[instanceDomainElement];
       break;
     }
     default: {
@@ -256,11 +256,11 @@ export const selectEntityInstanceFromDeploymentEntityState: SyncBoxedExtractorRu
 export const selectEntityInstanceUuidIndexFromDeploymentEntityState: SyncBoxedExtractorRunner<
   BoxedExtractorOrCombinerReturningObjectList,
   DeploymentEntityState,
-  DomainQueryReturnType<DomainElementInstanceUuidIndex>
+  Domain2QueryReturnType<EntityInstancesUuidIndex>
 > = (
   deploymentEntityState: DeploymentEntityState,
   selectorParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList, DeploymentEntityState>
-): DomainQueryReturnType<DomainElementInstanceUuidIndex> => {
+): Domain2QueryReturnType<EntityInstancesUuidIndex> => {
   const deploymentUuid = selectorParams.extractor.deploymentUuid;
   const applicationSection = selectorParams.extractor.select.applicationSection ?? "data";
 
@@ -304,10 +304,7 @@ export const selectEntityInstanceUuidIndexFromDeploymentEntityState: SyncBoxedEx
     "result",
     deploymentEntityState[deploymentEntityStateIndex].entities
   );
-  return {
-    elementType: "instanceUuidIndex",
-    elementValue: deploymentEntityState[deploymentEntityStateIndex].entities,
-  };
+  return deploymentEntityState[deploymentEntityStateIndex].entities;
 };
 
 // ################################################################################################
@@ -315,20 +312,17 @@ export const selectEntityInstanceUuidIndexFromDeploymentEntityState: SyncBoxedEx
 export const selectEntityInstanceListFromDeploymentEntityState: SyncBoxedExtractorRunner<
   BoxedExtractorOrCombinerReturningObjectList,
   DeploymentEntityState,
-  DomainElementInstanceArrayOrFailed
+  Domain2QueryReturnType<EntityInstance[]>
 > = (
   deploymentEntityState: DeploymentEntityState,
   selectorParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList, DeploymentEntityState>
-): DomainElementInstanceArrayOrFailed => {
+): Domain2QueryReturnType<EntityInstance[]> => {
   const result = selectEntityInstanceUuidIndexFromDeploymentEntityState(deploymentEntityState, selectorParams);
 
-  if (result.elementType == "failure") {
+  if (result instanceof Domain2ElementFailed) {
     return result;
   }
-  return {
-    elementType: "instanceArray",
-    elementValue: Object.values(result.elementValue),
-  };
+  return Object.values(result);
 };
 
 // ################################################################################################

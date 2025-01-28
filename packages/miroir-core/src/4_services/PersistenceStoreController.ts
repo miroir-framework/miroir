@@ -1,11 +1,6 @@
 
 import { Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
 import {
-  ActionEntityInstanceCollectionReturnType,
-  ActionEntityInstanceReturnType,
-  ActionReturnType,
-  ActionVoidReturnType,
-  SelfApplication,
   ApplicationSection,
   Entity,
   EntityDefinition,
@@ -21,7 +16,7 @@ import {
   RunBoxedQueryAction,
   RunBoxedQueryTemplateAction,
   RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
-  SelfApplicationDeploymentConfiguration,
+  SelfApplication,
   StoreSectionConfiguration
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { DataStoreApplicationType } from "../0_interfaces/3_controllers/ApplicationControllerInterface.js";
@@ -40,6 +35,15 @@ import { packageName } from "../constants.js";
 import { MiroirLoggerFactory } from "./LoggerFactory.js";
 import { cleanLevel } from "./constants.js";
 
+import { EntityInstanceWithName } from "../0_interfaces/1_core/Instance.js";
+import {
+  Action2EntityInstanceCollectionOrFailure,
+  Action2EntityInstanceReturnType,
+  Action2Error,
+  Action2ReturnType,
+  Action2VoidReturnType,
+  Domain2ElementFailed
+} from "../0_interfaces/2_domain/DomainElement.js";
 import { ACTION_OK } from "../1_core/constants.js";
 import entityEntity from "../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json" assert { type: "json" };
 import entityEntityDefinition from "../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json" assert { type: "json" };
@@ -106,7 +110,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   }
 
   // #############################################################################################
-  async handleBoxedExtractorAction(action: RunBoxedExtractorAction): Promise<ActionReturnType> {
+  async handleBoxedExtractorAction(action: RunBoxedExtractorAction): Promise<Action2ReturnType> {
     // TODO: fix applicationSection!!!
     log.info(this.logHeader,'handleBoxedExtractorAction','query',action);
     // log.info(this.logHeader,'this.dataStoreSection',this.dataStoreSection);
@@ -116,14 +120,14 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     // RIGHT NOW RESTRICT ALL SUBQUERIES OF A QUERY TO THE SAME SECTION !!!!
     const currentStore: PersistenceStoreDataSectionInterface | PersistenceStoreModelSectionInterface =
       action.applicationSection == "data" ? this.dataStoreSection : this.modelStoreSection;
-    const result: ActionReturnType = await currentStore.handleBoxedExtractorAction(action);
+    const result: Action2ReturnType = await currentStore.handleBoxedExtractorAction(action);
 
     log.info(this.logHeader,'handleBoxedExtractorAction','query',action, "result", JSON.stringify(result));
     return Promise.resolve(result);
   }
 
   // #############################################################################################
-  async handleBoxedQueryAction(action: RunBoxedQueryAction): Promise<ActionReturnType> {
+  async handleBoxedQueryAction(action: RunBoxedQueryAction): Promise<Action2ReturnType> {
     // TODO: fix applicationSection!!!
     log.info(this.logHeader,'handleBoxedQueryAction called with RunBoxedQueryAction',action);
     // log.info(this.logHeader,'this.dataStoreSection',this.dataStoreSection);
@@ -133,14 +137,14 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     // RIGHT NOW RESTRICT ALL SUBQUERIES OF A QUERY TO THE SAME SECTION !!!!
     const currentStore: PersistenceStoreDataSectionInterface | PersistenceStoreModelSectionInterface =
       action.applicationSection == "data" ? this.dataStoreSection : this.modelStoreSection;
-    const result: ActionReturnType = await currentStore.handleBoxedQueryAction(action);
+    const result: Action2ReturnType = await currentStore.handleBoxedQueryAction(action);
 
     log.info(this.logHeader,'handleBoxedQueryAction done  for query',action, "result", JSON.stringify(result));
     return Promise.resolve(result);
   }
 
   // #############################################################################################
-  async handleBoxedExtractorTemplateActionForServerONLY(action: RunBoxedExtractorTemplateAction): Promise<ActionReturnType> {
+  async handleBoxedExtractorTemplateActionForServerONLY(action: RunBoxedExtractorTemplateAction): Promise<Action2ReturnType> {
     // TODO: fix applicationSection!!!
     log.info(this.logHeader,'handleBoxedExtractorTemplateActionForServerONLY','query',action);
     // log.info(this.logHeader,'this.dataStoreSection',this.dataStoreSection);
@@ -151,14 +155,14 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     const currentStore: PersistenceStoreDataSectionInterface | PersistenceStoreModelSectionInterface =
       action.applicationSection == "data" ? this.dataStoreSection : this.modelStoreSection;
       
-    const result: ActionReturnType = await currentStore.handleBoxedExtractorTemplateActionForServerONLY(action);
+    const result: Action2ReturnType = await currentStore.handleBoxedExtractorTemplateActionForServerONLY(action);
 
     log.info(this.logHeader,'handleBoxedExtractorTemplateActionForServerONLY','query',action, "result", JSON.stringify(result));
     return Promise.resolve(result);
   }
 
   // #############################################################################################
-  async handleQueryTemplateActionForServerONLY(action: RunBoxedQueryTemplateAction): Promise<ActionReturnType> {
+  async handleQueryTemplateActionForServerONLY(action: RunBoxedQueryTemplateAction): Promise<Action2ReturnType> {
     // TODO: fix applicationSection!!!
     log.info(this.logHeader,'handleQueryTemplateActionForServerONLY','query',action);
     // log.info(this.logHeader,'this.dataStoreSection',this.dataStoreSection);
@@ -169,14 +173,14 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     const currentStore: PersistenceStoreDataSectionInterface | PersistenceStoreModelSectionInterface =
       action.applicationSection == "data" ? this.dataStoreSection : this.modelStoreSection;
       
-    const result: ActionReturnType = await currentStore.handleQueryTemplateActionForServerONLY(action);
+    const result: Action2ReturnType = await currentStore.handleQueryTemplateActionForServerONLY(action);
 
     log.info(this.logHeader,'handleQueryTemplateActionForServerONLY','query',action, "result", JSON.stringify(result));
     return Promise.resolve(result);
   }
 
   // #############################################################################################
-  async handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(action: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction): Promise<ActionReturnType> {
+  async handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(action: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction): Promise<Action2ReturnType> {
     // TODO: fix applicationSection!!!
     log.info(this.logHeader,'handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY','query',action);
     // log.info(this.logHeader,'this.dataStoreSection',this.dataStoreSection);
@@ -187,14 +191,14 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     const currentStore: PersistenceStoreDataSectionInterface | PersistenceStoreModelSectionInterface =
       action.applicationSection == "data" ? this.dataStoreSection : this.modelStoreSection;
       
-    const result: ActionReturnType = await currentStore.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(action);
+    const result: Action2ReturnType = await currentStore.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(action);
 
     log.info(this.logHeader,'handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY','query',action, "result", JSON.stringify(result));
     return Promise.resolve(result);
   }
 
   // #############################################################################################
-  async handleAction(persistenceStoreControllerAction: PersistenceStoreControllerAction): Promise<ActionReturnType> {
+  async handleAction(persistenceStoreControllerAction: PersistenceStoreControllerAction): Promise<Action2ReturnType> {
     switch (persistenceStoreControllerAction.actionType) {
       case "modelAction": {
         // const storeManagementAction: ModelAction = body;
@@ -279,11 +283,18 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
             break;
           }
           case "getInstance": {
-            return this.getInstance(persistenceStoreControllerAction.applicationSection,persistenceStoreControllerAction.parentUuid, persistenceStoreControllerAction.uuid)
+            return this.getInstance(
+              persistenceStoreControllerAction.applicationSection,
+              persistenceStoreControllerAction.parentUuid,
+              persistenceStoreControllerAction.uuid
+            );
             break;
           }
           case "getInstances": {
-            return this.getInstances(persistenceStoreControllerAction.applicationSection,persistenceStoreControllerAction.parentUuid)
+            return this.getInstances(
+              persistenceStoreControllerAction.applicationSection,
+              persistenceStoreControllerAction.parentUuid
+            );
             break;
           }
           default:
@@ -349,7 +360,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     selfApplicationModelBranch: EntityInstance,
     selfApplicationVersion: EntityInstance,
     // selfApplicationStoreBasedConfiguration: EntityInstance,
-  ):Promise<ActionReturnType>{
+  ):Promise<Action2ReturnType>{
     await modelInitialize(
       metaModel,
       this,
@@ -368,38 +379,44 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   async bootFromPersistedState(
     metaModelEntities : Entity[],
     metaModelEntityDefinitions : EntityDefinition[],
-  ):Promise<ActionVoidReturnType> {
-    const modelBootFromPersistedState: ActionReturnType = await this.modelStoreSection.bootFromPersistedState(metaModelEntities, metaModelEntityDefinitions);
-    if (modelBootFromPersistedState.status != "ok") {
+  ):Promise<Action2VoidReturnType> {
+    const modelBootFromPersistedState: Action2ReturnType = await this.modelStoreSection.bootFromPersistedState(
+      metaModelEntities,
+      metaModelEntityDefinitions
+    );
+    if (modelBootFromPersistedState instanceof Action2Error) {
       return Promise.resolve({
         status: "error",
         errorType: "FailedToGetInstances",
         errorMessage: `bootFromPersistedState failed for section model: ${modelBootFromPersistedState.errorMessage}`,
       });
     }
-    const dataEntities:ActionEntityInstanceCollectionReturnType = await this.modelStoreSection.getInstances(entityEntity.uuid);
-    const dataEntityDefinitions:ActionEntityInstanceCollectionReturnType = await this.modelStoreSection.getInstances(entityEntityDefinition.uuid);
-    if (dataEntities.status != "ok" || dataEntityDefinitions.status != "ok") {
+    const dataEntities:Action2EntityInstanceCollectionOrFailure = await this.modelStoreSection.getInstances(entityEntity.uuid);
+    const dataEntityDefinitions:Action2EntityInstanceCollectionOrFailure = await this.modelStoreSection.getInstances(entityEntityDefinition.uuid);
+    if (dataEntities instanceof Action2Error 
+      || dataEntityDefinitions instanceof Action2Error) {
       return Promise.resolve({
         status: "error",
         errorType: "FailedToGetInstances",
         errorMessage: `bootFromPersistedState for entities getInstances(${entityEntity.uuid}) status: ${
           dataEntities.status
         }, getInstances(${entityEntityDefinition.uuid}) status: ${dataEntities.status}. Message: ${
-          dataEntities.status == "ok" ? "" : dataEntities.errorMessage
-        }, ${dataEntityDefinitions.status == "ok" ? "" : dataEntityDefinitions.errorMessage}`,
+          dataEntities instanceof Action2Error ? dataEntities?.errorMessage: ""
+        }, ${dataEntityDefinitions instanceof Action2Error? dataEntityDefinitions.errorMessage: ""}`,
       });
     }
 
     const dataBootFromPersistedState = await this.dataStoreSection.bootFromPersistedState(
-      (dataEntities.returnedDomainElement?.elementValue.instances as Entity[]).filter((e) => ["Entity", "EntityDefinition"].indexOf(e.name) == -1), // for Miroir selfApplication only, which has the Meta-Entities Entity and EntityDefinition defined in its Entity table
-      dataEntityDefinitions.returnedDomainElement?.elementValue.instances as EntityDefinition[]
+      ((dataEntities as any).returnedDomainElement?.instances as Entity[]).filter(
+        (e) => ["Entity", "EntityDefinition"].indexOf(e.name) == -1
+      ), // for Miroir selfApplication only, which has the Meta-Entities Entity and EntityDefinition defined in its Entity table
+      (dataEntityDefinitions as any).returnedDomainElement?.instances as EntityDefinition[]
     );
-    if (dataBootFromPersistedState.status != "ok") {
+    if (dataBootFromPersistedState instanceof Action2Error || dataBootFromPersistedState.returnedDomainElement instanceof Domain2ElementFailed) {
       return Promise.resolve({
         status: "error",
         errorType: "FailedToGetInstances",
-        errorMessage: `bootFromPersistedState failed for section data: ${dataBootFromPersistedState.errorMessage}`,
+        errorMessage: `bootFromPersistedState failed for section data: ${dataBootFromPersistedState}`,
       });
     }
     
@@ -407,7 +424,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   }
 
   // #############################################################################################
-  async open():Promise<ActionVoidReturnType> {
+  async open():Promise<Action2VoidReturnType> {
     await this.adminStore.open();
     await this.dataStoreSection.open();
     await this.modelStoreSection.open();
@@ -415,7 +432,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   }
   
   // ##############################################################################################
-  async close():Promise<ActionVoidReturnType> {
+  async close():Promise<Action2VoidReturnType> {
     await this.adminStore.close();
     await this.modelStoreSection.close();
     await this.dataStoreSection.close();
@@ -423,17 +440,17 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   }
 
   // ##############################################################################################
-  async createStore(config: StoreSectionConfiguration): Promise<ActionVoidReturnType> {
+  async createStore(config: StoreSectionConfiguration): Promise<Action2VoidReturnType> {
     return this.adminStore.createStore(config);
   }
   
   // ##############################################################################################
-  async deleteStore(config: StoreSectionConfiguration): Promise<ActionVoidReturnType> {
+  async deleteStore(config: StoreSectionConfiguration): Promise<Action2VoidReturnType> {
     return this.adminStore.deleteStore(config);
   }
 
   // ##############################################################################################
-  async clear():Promise<ActionVoidReturnType> {
+  async clear():Promise<Action2VoidReturnType> {
     log.info(this.logHeader,'clear',this.getEntityUuids());
     await this.dataStoreSection.clear();
     await this.modelStoreSection.clear();
@@ -441,16 +458,25 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   }
 
   // ##############################################################################################
-  async clearDataInstances():Promise<ActionVoidReturnType> {
+  async clearDataInstances():Promise<Action2VoidReturnType> {
     log.debug(this.logHeader, "clearDataInstances", this.getEntityUuids());
     // const dataSectionEntities: EntityInstanceCollection = await this.getInstances("model", entityEntity.uuid);
-    const dataSectionEntities: ActionEntityInstanceCollectionReturnType = await this.getInstances("model", entityEntity.uuid);
-    if (dataSectionEntities.status != "ok") {
+    const dataSectionEntities: Action2EntityInstanceCollectionOrFailure = await this.getInstances("model", entityEntity.uuid);
+    if (dataSectionEntities instanceof Action2Error) {
+    // if (dataSectionEntities.status != "ok") {
       return Promise.resolve({
         status: "error",
         errorType: "FailedToGetInstances",
         errorMessage: `clearDataInstances failed for dataSectionEntities section: model, entityUuid ${entityEntity.uuid}, error: ${dataSectionEntities.errorType}, ${dataSectionEntities.errorMessage}`,
       });
+    }
+    if (dataSectionEntities.returnedDomainElement instanceof Domain2ElementFailed) {
+      return Promise.resolve({
+        status: "error",
+        errorType: "FailedToGetInstances",
+        errorMessage: `clearDataInstances failed for dataSectionEntities section: model, entityUuid ${entityEntity.uuid}, error: ${dataSectionEntities}`,
+      });
+      
     }
     // if (dataSectionEntities.returnedDomainElement?.elementType != "entityInstanceCollection") {
     //   return Promise.resolve({
@@ -461,15 +487,16 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     //     },
     //   });
     // }
-    const dataSectionEntityDefinitions: ActionEntityInstanceCollectionReturnType = await this.getInstances(
+    const dataSectionEntityDefinitions: Action2EntityInstanceCollectionOrFailure = await this.getInstances(
       "model",
       entityEntityDefinition.uuid
     );
-    if (dataSectionEntityDefinitions.status != "ok") {
+    if (dataSectionEntityDefinitions instanceof Action2Error) {
+    // if (dataSectionEntityDefinitions.status != "ok") {
       return Promise.resolve({
         status: "error",
         errorType: "FailedToGetInstances",
-        errorMessage: `clearDataInstances failed for dataSectionEntityDefinitions section: model, entityUuid ${entityEntityDefinition.uuid}, error: ${dataSectionEntityDefinitions.errorType}, ${dataSectionEntityDefinitions.errorMessage}`,
+        errorMessage: `clearDataInstances failed for dataSectionEntityDefinitions section: model, entityUuid ${entityEntityDefinition.uuid}, error: ${dataSectionEntityDefinitions} `,
       });
     }
     // if (dataSectionEntityDefinitions.returnedDomainElement?.elementType != "entityInstanceCollection") {
@@ -481,16 +508,33 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     //     },
     //   });
     // }
-    const dataSectionFilteredEntities: Entity[] = (dataSectionEntities.returnedDomainElement.elementValue.instances as Entity[]).filter(
-      (e: Entity) => ["Entity", "EntityDefinition"].indexOf(e.name) == -1
-    ); // for Miroir selfApplication only, which has the Meta-Entities Entity and EntityDefinition defined in its Entity table
+    if (dataSectionEntities instanceof Action2Error) {
+      return Promise.resolve({
+        status: "error",
+        errorType: "FailedToGetInstances",
+        errorMessage: `clearDataInstances failed for dataSectionEntityDefinitions section: model, entityUuid ${entityEntityDefinition.uuid} wrong element type, expected "entityInstanceCollection", got element: ${dataSectionEntityDefinitions}`,
+      });
+    }
+
+    if (dataSectionEntityDefinitions.returnedDomainElement instanceof Domain2ElementFailed) {
+      return Promise.resolve({
+        status: "error",
+        errorType: "FailedToGetInstances",
+        errorMessage: `clearDataInstances failed for dataSectionEntityDefinitions section: model, entityUuid ${entityEntityDefinition.uuid} wrong element type, expected "entityInstanceCollection", got element: ${dataSectionEntityDefinitions}`,
+      });
+    }
+
+    const dataSectionFilteredEntities: Entity[] = (
+      dataSectionEntities.returnedDomainElement.instances as Entity[]
+    ).filter((e: EntityInstanceWithName) => ["Entity", "EntityDefinition"].indexOf(e.name) == -1); // for Miroir selfApplication only, which has the Meta-Entities Entity and EntityDefinition defined in its Entity table
     log.trace(this.logHeader, "clearDataInstances found entities to clear:", dataSectionFilteredEntities);
     await this.dataStoreSection.clear();
 
     for (const entity of dataSectionFilteredEntities) {
-      const entityDefinition: EntityDefinition | undefined = dataSectionEntityDefinitions.returnedDomainElement.elementValue.instances.find(
-        (d: EntityInstance) => (d as EntityDefinition).entityUuid == entity.uuid
-      ) as EntityDefinition;
+      const entityDefinition: EntityDefinition | undefined =
+        dataSectionEntityDefinitions.returnedDomainElement.instances.find(
+          (d: EntityInstance) => (d as EntityDefinition).entityUuid == entity.uuid
+        ) as EntityDefinition;
       if (entityDefinition) {
         await this.createDataStorageSpaceForInstancesOfEntity(entity, entityDefinition);
       } else {
@@ -519,7 +563,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   async createModelStorageSpaceForInstancesOfEntity(
     entity:Entity,
     entityDefinition: EntityDefinition,
-  ):Promise<ActionVoidReturnType> {
+  ):Promise<Action2VoidReturnType> {
     return this.modelStoreSection.createStorageSpaceForInstancesOfEntity(entity,entityDefinition);
   }
 
@@ -527,7 +571,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   async createDataStorageSpaceForInstancesOfEntity(
     entity:Entity,
     entityDefinition: EntityDefinition,
-  ):Promise<ActionVoidReturnType> {
+  ):Promise<Action2VoidReturnType> {
     return this.dataStoreSection.createStorageSpaceForInstancesOfEntity(entity,entityDefinition);
   }
 
@@ -535,7 +579,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   async createEntity(
     entity:Entity,
     entityDefinition: EntityDefinition,
-  ): Promise<ActionVoidReturnType> {
+  ): Promise<Action2VoidReturnType> {
     const result = await this.modelStoreSection.createEntity(entity,entityDefinition);
     return Promise.resolve(result);
   }
@@ -546,28 +590,28 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
       entity:Entity,
       entityDefinition: EntityDefinition,
     }[]
-  ): Promise<ActionVoidReturnType> {
+  ): Promise<Action2VoidReturnType> {
     const result = await this.modelStoreSection.createEntities(entities);
     return Promise.resolve(result);
   }
 
   // ##############################################################################################
-  async renameEntityClean(update: ModelActionRenameEntity): Promise<ActionVoidReturnType> {
+  async renameEntityClean(update: ModelActionRenameEntity): Promise<Action2VoidReturnType> {
     return this.modelStoreSection.renameEntityClean(update);
   }
 
   // ##############################################################################################
-  async alterEntityAttribute(update: ModelActionAlterEntityAttribute): Promise<ActionVoidReturnType> {
+  async alterEntityAttribute(update: ModelActionAlterEntityAttribute): Promise<Action2VoidReturnType> {
     return this.modelStoreSection.alterEntityAttribute(update);
   }
 
   // ##############################################################################################
-  async dropEntity(entityUuid: string): Promise<ActionVoidReturnType> {
+  async dropEntity(entityUuid: string): Promise<Action2VoidReturnType> {
     return this.modelStoreSection.dropEntity(entityUuid);
   }
 
   // ##############################################################################################
-  async dropEntities(entityUuids: string[]): Promise<ActionVoidReturnType> {
+  async dropEntities(entityUuids: string[]): Promise<Action2VoidReturnType> {
     return this.modelStoreSection.dropEntities(entityUuids);
   }
 
@@ -590,11 +634,11 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   }
   
   // #############################################################################################
-  async getInstance(section: ApplicationSection, entityUuid: string, uuid: Uuid): Promise<ActionEntityInstanceReturnType> {
+  async getInstance(section: ApplicationSection, entityUuid: string, uuid: Uuid): Promise<Action2EntityInstanceReturnType> {
     log.info(this.logHeader,'getInstance','section',section,'entity',entityUuid, "uuid", uuid);
     
     // let result: EntityInstance | undefined;
-    let result: ActionEntityInstanceReturnType;
+    let result: Action2EntityInstanceReturnType;
     if (section == 'data') {
       result = await this.dataStoreSection.getInstance(entityUuid,uuid);
     } else {
@@ -605,18 +649,18 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   }
   
   // #############################################################################################
-  async getInstances(section: ApplicationSection, entityUuid: string): Promise<ActionEntityInstanceCollectionReturnType> {
+  async getInstances(section: ApplicationSection, entityUuid: string): Promise<Action2EntityInstanceCollectionOrFailure> {
     // TODO: fix applicationSection!!!
     log.info(this.logHeader,'getInstances','section',section,'entity',entityUuid);
     
     const currentStore = section == 'data'?this.dataStoreSection:this.modelStoreSection;
-    const instances: ActionEntityInstanceCollectionReturnType = await currentStore.getInstances(entityUuid);
+    const instances: Action2EntityInstanceCollectionOrFailure = await currentStore.getInstances(entityUuid);
 
-    if (instances.status != "ok") {
+    if (instances instanceof Action2Error) {
       return Promise.resolve({
         status: "error",
-          errorType: "FailedToGetInstances",
-          errorMessage: `getInstances failed for section: ${section}, entityUuid ${entityEntity.uuid}, error: ${instances.errorType}, ${instances.errorMessage}`,
+        errorType: "FailedToGetInstances",
+        errorMessage: `getInstances failed for section: ${section}, entityUuid ${entityEntity.uuid}, error: ${instances.errorType}, ${instances.errorMessage}`,
       });
     }
     // if (instances.returnedDomainElement?.elementType != "entityInstanceCollection") {
@@ -628,20 +672,22 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     //     },
     //   });
     // }
-    const result:ActionEntityInstanceCollectionReturnType = {
-      status: "ok",
-      returnedDomainElement: {
-        elementType: "entityInstanceCollection",
-        elementValue: instances.returnedDomainElement.elementValue
-      }
-    }
+    // const result:Action2EntityInstanceCollectionOrFailure = {
+    //   status: "ok",
+    //   returnedDomainElement: instances.returnedDomainElement
+    //   // }
+    //   // returnedDomainElement: {
+    //   //   elementType: "entityInstanceCollection",
+    //   //   elementValue: instances.returnedDomainElement.elementValue
+    //   // }
+    // }
 
-    log.info(this.logHeader,'getInstances','section',section,'entity',entityUuid, "result", result);
-    return result;
+    log.info(this.logHeader,'getInstances','section',section,'entity',entityUuid, "result", instances);
+    return instances;
   }
   
   // ##############################################################################################
-  async upsertInstance(section: ApplicationSection, instance:EntityInstance):Promise<ActionVoidReturnType>{
+  async upsertInstance(section: ApplicationSection, instance:EntityInstance):Promise<Action2VoidReturnType>{
     log.info(
       this.logHeader,
       "upsertInstance",
@@ -660,18 +706,10 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     } else {
       return this.modelStoreSection.upsertInstance(instance.parentUuid,instance);
     }
-
-    // try {
-    //   const foundInstance:ActionEntityInstanceReturnType = await this.getInstance(section, instance.parentUuid, instance.uuid)
-    //   log.info(this.logHeader,'upsertInstance succeeded!','section',section,'instance',instance,"found", foundInstance);
-    // } catch (e){
-    //   throw new Error("UpsertInstance insert failed" + e);
-    // }
-    // return Promise.resolve({ status: "ok", returnedDomainElement: { elementType: "void", elementValue: undefined } } );
   }
 
   // ##############################################################################################
-  async deleteInstance(section: ApplicationSection, instance:EntityInstance):Promise<ActionVoidReturnType>{
+  async deleteInstance(section: ApplicationSection, instance:EntityInstance):Promise<Action2VoidReturnType>{
     if (section == 'data') {
       return this.dataStoreSection.deleteInstance(instance.parentUuid,instance);
     } else {
@@ -681,7 +719,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   }
 
   // ##############################################################################################
-  async deleteInstances(section: ApplicationSection, instances:EntityInstance[]):Promise<ActionVoidReturnType>{
+  async deleteInstances(section: ApplicationSection, instances:EntityInstance[]):Promise<Action2VoidReturnType>{
     for (const instance of instances) {
       if (section == 'data') {
         return this.dataStoreSection.deleteInstance(instance.parentUuid,instance);

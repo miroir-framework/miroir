@@ -14,7 +14,6 @@ export {
   actionEntityInstanceCollectionReturnType,
   ActionEntityInstanceCollectionSuccess,
   actionEntityInstanceCollectionSuccess,
-  ActionVoidReturnType,
   actionVoidReturnType,
   ActionVoidSuccess,
   actionVoidSuccess,
@@ -343,9 +342,6 @@ export {
   Uuid,
 } from './0_interfaces/1_core/EntityDefinition.js';
 export {
-  DomainQueryReturnType,
-} from './0_interfaces/2_domain/DomainElement.js';
-export {
   ApplicationSectionOpposite,
   EntityInstanceWithNameSchema,
   EntityInstanceWithName,
@@ -416,6 +412,20 @@ export {
   CUDActionName,
   CUDActionNamesArray,
 } from './0_interfaces/2_domain/DomainControllerInterface.js';
+export {
+  Action2EntityInstanceCollection,
+  Action2EntityInstanceCollectionOrFailure,
+  Action2EntityInstanceReturnType,
+  Action2EntityInstanceSuccess,
+  Action2Success,
+  Action2VoidReturnType,
+  Action2VoidSuccess,
+  Action2Error,
+  Action2ReturnType,
+  Domain2Element,
+  Domain2QueryReturnType,
+  Domain2ElementFailed,
+} from './0_interfaces/2_domain/DomainElement.js';
 export {
   RecordOfJzodElement,
   RecordOfJzodObject,

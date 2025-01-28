@@ -1,6 +1,6 @@
 import {
   ACTION_OK,
-  ActionVoidReturnType,
+  Action2VoidReturnType,
   LoggerInterface,
   MiroirLoggerFactory,
   PersistenceStoreAdminSectionInterface,
@@ -26,7 +26,7 @@ export class SqlDbAdminStore extends SqlDbStore implements PersistenceStoreAdmin
   }
 
   // ##############################################################################################
-  async createStore(config: StoreSectionConfiguration): Promise<ActionVoidReturnType> {
+  async createStore(config: StoreSectionConfiguration): Promise<Action2VoidReturnType> {
     try {
       log.info("createStore", JSON.stringify(config));
       if (config.emulatedServerType !== "sql") {
@@ -44,7 +44,7 @@ export class SqlDbAdminStore extends SqlDbStore implements PersistenceStoreAdmin
   }
 
   // ##############################################################################################
-  async deleteStore(config: StoreSectionConfiguration): Promise<ActionVoidReturnType> {
+  async deleteStore(config: StoreSectionConfiguration): Promise<Action2VoidReturnType> {
     try {
       if (config.emulatedServerType !== "sql") {
         throw new Error("SqlDbAdminStore deleteStore failed for serverType " + config.emulatedServerType);

@@ -109,7 +109,7 @@ import entityDefinitionDeployment from "../../assets/admin_model/54b9c72f-d4f3-4
 import { entityDefinitionTest, transformerMenuV1 } from "../../index.js";
 
 export const defaultMiroirMetaModel: MetaModel = {
-  configuration: [instanceConfigurationReference],
+  // configuration: [instanceConfigurationReference],
   entities: [
     entitySelfApplication as Entity,
     entitySelfApplicationDeploymentConfiguration as Entity,
@@ -191,14 +191,7 @@ function testLocalizeReferenceContext(
     defaultMiroirMetaModel,
     testSchema.context
   )
-  // if (testResult.status == "ok") {
-    // expect(testResult.status).toEqual("ok");
-    // console.log("test", testId, "has result", JSON.stringify(testResult, null, 2));
     expect(testResult).toEqual(expectedResult);
-  // } else {
-  //   console.log("test", testId, "has result", JSON.stringify(testResult, null, 2));
-  //   expect(testResult.status).toEqual("ok");
-  // }
 }
 
 interface testFormat {

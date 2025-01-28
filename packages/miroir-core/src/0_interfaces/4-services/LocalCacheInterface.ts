@@ -4,13 +4,13 @@ import {
 } from "../2_domain/DomainControllerInterface.js";
 
 import {
-  ActionReturnType,
   LocalCacheAction,
   MetaModel,
   ModelActionReplayableAction,
   RunBoxedExtractorOrQueryAction,
   TransactionalInstanceAction
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
+import { Action2ReturnType } from "../2_domain/DomainElement.js";
 
 // ################################################################################################
 /**
@@ -31,6 +31,6 @@ export declare interface LocalCacheInterface
   getDomainState():DomainState;
 
   // ##############################################################################################
-  handleLocalCacheAction(action:LocalCacheAction):ActionReturnType;
-  runBoxedExtractorOrQueryAction(action:RunBoxedExtractorOrQueryAction):ActionReturnType;
+  handleLocalCacheAction(action:LocalCacheAction):Action2ReturnType;
+  runBoxedExtractorOrQueryAction(action:RunBoxedExtractorOrQueryAction):Action2ReturnType;
 }

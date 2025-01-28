@@ -180,14 +180,7 @@ function testResolve(
     // miroirFundamentalJzodSchema,
     testSchema,
   )
-  // if (testResult.status == "ok") {
-    // expect(testResult.status).toEqual("ok");
-    // console.log("test", testId, "has result", JSON.stringify(testResult, null, 2));
     expect(testResult).toEqual(expectedResult);
-  // } else {
-  //   console.log("test", testId, "has result", JSON.stringify(testResult, null, 2));
-  //   expect(testResult.status).toEqual("ok");
-  // }
 }
 
 interface testFormat {

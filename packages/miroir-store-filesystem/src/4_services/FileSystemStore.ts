@@ -1,6 +1,6 @@
 import * as fs from "fs";
 
-import { ACTION_OK, ActionVoidReturnType, ApplicationSection, LoggerInterface, MiroirLoggerFactory, PersistenceStoreAbstractInterface } from "miroir-core";
+import { ACTION_OK, Action2VoidReturnType, ApplicationSection, LoggerInterface, MiroirLoggerFactory, PersistenceStoreAbstractInterface } from "miroir-core";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
 
@@ -24,7 +24,7 @@ export class FileSystemStore implements PersistenceStoreAbstractInterface {
   }
 
   // #########################################################################################
-  open(): Promise<ActionVoidReturnType> {
+  open(): Promise<Action2VoidReturnType> {
     // const entityDirectories = fs.readdirSync(this.directory);
     if (fs.existsSync(this.directory)) {
       log.debug(this.logHeader, "open checked that directory exist:", this.directory);
@@ -36,7 +36,7 @@ export class FileSystemStore implements PersistenceStoreAbstractInterface {
   }
 
   // #############################################################################################
-  close(): Promise<ActionVoidReturnType> {
+  close(): Promise<Action2VoidReturnType> {
     log.info(this.logHeader, "close does nothing!");
     return Promise.resolve(ACTION_OK);
   }

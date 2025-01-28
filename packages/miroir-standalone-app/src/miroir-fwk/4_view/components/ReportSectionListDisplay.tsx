@@ -14,7 +14,7 @@ import {
   DomainControllerInterface,
   domainElementObject,
   DomainElementSuccess,
-  DomainQueryReturnType,
+  Domain2QueryReturnType,
   Entity,
   EntityDefinition,
   EntityInstancesUuidIndex,
@@ -385,7 +385,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   useDeploymentEntityStateQuerySelectorForCleanedResult(
     deploymentEntityStateSelectorMap.runQuery as SyncQueryRunner<
       DeploymentEntityState,
-      DomainQueryReturnType<DomainElementSuccess>
+      Domain2QueryReturnType<DomainElementSuccess>
     >,
     foreignKeyObjectsFetchQueryParams
   );
