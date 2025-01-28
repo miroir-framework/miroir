@@ -6,7 +6,6 @@ import {
   BoxedQueryTemplateWithExtractorCombinerTransformer,
   BoxedQueryWithExtractorCombinerTransformer,
   DeploymentEntityState,
-  DomainElementObject,
   Domain2QueryReturnType,
   ExtractorRunnerParamsForJzodSchema,
   getQueryRunnerParamsForDeploymentEntityState,
@@ -56,7 +55,7 @@ let count = 0
 export const ReportView = (props: ReportViewProps) => {
   count++;
 
-  const paramsAsdomainElements: DomainElementObject = useMemo(
+  const paramsAsdomainElements: Domain2QueryReturnType<Record<string,any>> = useMemo(
     () => ({
       elementType: "object",
       elementValue: Object.fromEntries(
@@ -175,7 +174,7 @@ export const ReportView = (props: ReportViewProps) => {
 
   log.info("################################################################ Fecth NON-Template report data", usedQuery);
 
-  const deploymentEntityStateQueryResults: Domain2QueryReturnType<DomainElementObject> = useDeploymentEntityStateQuerySelector(
+  const deploymentEntityStateQueryResults: Domain2QueryReturnType<Domain2QueryReturnType<Record<string,any>>> = useDeploymentEntityStateQuerySelector(
     deploymentEntityStateSelectorMap.runQuery,
     deploymentEntityStateFetchQueryParams
   );

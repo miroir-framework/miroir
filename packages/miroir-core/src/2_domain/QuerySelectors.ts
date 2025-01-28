@@ -12,7 +12,6 @@ import {
   DomainElementFailed,
   DomainElementInstanceArray,
   DomainElementInstanceUuidIndex,
-  DomainElementObject,
   DomainElementSuccess,
   EntityInstance,
   EntityInstancesUuidIndex,
@@ -82,7 +81,7 @@ const emptyAsyncSelectorMap:AsyncBoxedExtractorOrQueryRunnerMap = {
 }
 
 // ################################################################################################
-export function domainElementToPlainObject(r:DomainElement): any {
+export function domainElementToPlainObjectDEFUNCT(r:DomainElement): any {
   if (r) {
     switch (typeof r) {
       case "string":
@@ -103,10 +102,10 @@ export function domainElementToPlainObject(r:DomainElement): any {
               return r.elementValue
             }
             case "object": {
-              return Object.fromEntries(Object.entries(r.elementValue).map(e => [e[0], domainElementToPlainObject(e[1])]))
+              return Object.fromEntries(Object.entries(r.elementValue).map(e => [e[0], domainElementToPlainObjectDEFUNCT(e[1])]))
             }
             case "array": {
-              return r.elementValue.map(e => domainElementToPlainObject(e))
+              return r.elementValue.map(e => domainElementToPlainObjectDEFUNCT(e))
             }
             case "failure": {
               return undefined
@@ -118,7 +117,7 @@ export function domainElementToPlainObject(r:DomainElement): any {
             }
           }
         } else {
-          return Object.fromEntries(Object.entries(r).map(e => [e[0], domainElementToPlainObject(e[1] as any)]))
+          return Object.fromEntries(Object.entries(r).map(e => [e[0], domainElementToPlainObjectDEFUNCT(e[1] as any)]))
         }
       }
       case "symbol":
@@ -134,8 +133,7 @@ export function domainElementToPlainObject(r:DomainElement): any {
 }
 
 // ################################################################################################
-// export function plainObjectToDomainElement(r:{[k:string]: any}): DomainElementObject {
-export function plainObjectToDomainElement(r:any): DomainElement {
+export function plainObjectToDomainElementDEFUNCT(r:any): DomainElement {
   switch (typeof r) {
     case "string": {
       return {elementType: "string", elementValue: r}
@@ -147,25 +145,25 @@ export function plainObjectToDomainElement(r:any): DomainElement {
         return {elementType: "string", elementValue: r.toString()}
       }
     case "symbol": {
-      throw new Error("plainObjectToDomainElement could not convert symbol: " + JSON.stringify(r,undefined,2));
+      throw new Error("plainObjectToDomainElementDEFUNCT could not convert symbol: " + JSON.stringify(r,undefined,2));
     }
     case "undefined": {
       return {elementType: "void", elementValue: undefined}
-      // throw new Error("plainObjectToDomainElement could not convert undefined: " + JSON.stringify(r,undefined,2));
+      // throw new Error("plainObjectToDomainElementDEFUNCT could not convert undefined: " + JSON.stringify(r,undefined,2));
     }
     case "function": {
-      throw new Error("plainObjectToDomainElement could not convert function: " + JSON.stringify(r,undefined,2));
+      throw new Error("plainObjectToDomainElementDEFUNCT could not convert function: " + JSON.stringify(r,undefined,2));
       // return {elementType: "string", elementValue: r}
     }
     case "object": {
       if (Array.isArray(r)) {
-        return {elementType: "array", elementValue: r.map(e => plainObjectToDomainElement(e))}
+        return {elementType: "array", elementValue: r.map(e => plainObjectToDomainElementDEFUNCT(e))}
       } else {
-        return {elementType: "object", elementValue: Object.fromEntries(Object.entries(r).map(e => [e[0], plainObjectToDomainElement(e[1])]))}
+        return {elementType: "object", elementValue: Object.fromEntries(Object.entries(r).map(e => [e[0], plainObjectToDomainElementDEFUNCT(e[1])]))}
       }
     }
     default: {
-      throw new Error("plainObjectToDomainElement could not convert object: " + JSON.stringify(r,undefined,2));
+      throw new Error("plainObjectToDomainElementDEFUNCT could not convert object: " + JSON.stringify(r,undefined,2));
       break;
     }
   }
@@ -184,7 +182,6 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
   // if (selectedInstancesList.elementType == "failure") {
   if (selectedInstancesList instanceof Domain2ElementFailed) {
     return selectedInstancesList;
-    // throw new Error("applyExtractorForSingleObjectListToSelectedInstancesListInMemory selectedInstancesList.elementValue is undefined")
   }
   switch (query.select.extractorOrCombinerType) {
     case "extractorByEntityReturningObjectList": {
@@ -218,13 +215,7 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
         : selectedInstancesList;
       ;
       const orderResult = sortFunction?filteredResult.sort(sortFunction):filteredResult;
-
-      // log.info(
-      //   "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory  result",
-      //   JSON.stringify(result, undefined, 2)
-      // );
       return orderResult;
-      // return {elementType: "instanceArray", elementValue: orderResult};
       break;
     }
     case "combinerByRelationReturningObjectList": {
@@ -237,7 +228,6 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
         otherIndex = ((query.contextResults[
           relationQuery.objectReference
         ] as any) ?? {})[relationQuery.objectReferenceAttribute ?? "uuid"];
-      // } else if (relationQuery.objectReference?.queryTemplateType == "constantUuid") {
       } else {
         log.error(
           "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerByRelationReturningObjectList could not find objectReference in contextResults, objectReference=",
@@ -247,28 +237,12 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
         );
       }
 
-      // log.info("applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerByRelationReturningObjectList", JSON.stringify(selectedInstances))
-      // log.info("applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerByRelationReturningObjectList", selectedInstances)
       return selectedInstancesList.filter((i: EntityInstance) => {
             const localIndex = relationQuery.AttributeOfListObjectToCompareToReferenceUuid ?? "dummy";
-
             // TODO: allow for runtime reference, with runtime trnasformer reference
             return (i as any)[localIndex] === otherIndex;
           }
         ) as EntityInstance[];
-      // return {
-      //   elementType: "instanceArray",
-      //   elementValue: 
-      //   // Object.fromEntries(
-      //     selectedInstancesList.elementValue.filter((i: EntityInstance) => {
-      //       const localIndex = relationQuery.AttributeOfListObjectToCompareToReferenceUuid ?? "dummy";
-
-      //       // TODO: allow for runtime reference, with runtime trnasformer reference
-      //       return (i as any)[localIndex] === otherIndex;
-      //     }
-      //   )
-      //   // ),
-      // } as DomainElementInstanceArray;
     }
     case "combinerByManyToManyRelationReturningObjectList": {
       const relationQuery: CombinerByManyToManyRelationReturningObjectList = query.select;
@@ -286,16 +260,6 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
               const rootListAttribute = relationQuery.AttributeOfRootListObjectToCompareToListReferenceUuid ?? "uuid";
   
               if (typeof otherList == "object") {
-                // log.info(
-                //   "applyExtractorForSingleObjectListToSelectedInstancesListInMemory combinerByManyToManyRelationReturningObjectList search otherList for attribute",
-                //   otherListAttribute,
-                //   "on object",
-                //   selectedInstancesEntry[1],
-                //   "uuidToFind",
-                //   (selectedInstancesEntry[1] as any)[rootListAttribute],
-                //   "otherList",
-                //   otherList
-                // );
                 if (!Array.isArray(otherList)) {
                   const result =
                     Object.values(otherList).findIndex(
@@ -321,53 +285,6 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
               }
             }
           ) as EntityInstance[];
-        // return { 
-        //   // "elementType": "instanceUuidIndex", "elementValue": 
-        //   "elementType": "instanceArray", "elementValue": 
-        //   // Object.fromEntries(
-        //   selectedInstancesList.elementValue.filter(
-        //     (selectedInstance: EntityInstance) => {
-        //       const otherListAttribute = relationQuery.objectListReferenceAttribute ?? "uuid";
-        //       const rootListAttribute = relationQuery.AttributeOfRootListObjectToCompareToListReferenceUuid ?? "uuid";
-  
-        //       if (typeof otherList == "object") {
-        //         // log.info(
-        //         //   "applyExtractorForSingleObjectListToSelectedInstancesListInMemory combinerByManyToManyRelationReturningObjectList search otherList for attribute",
-        //         //   otherListAttribute,
-        //         //   "on object",
-        //         //   selectedInstancesEntry[1],
-        //         //   "uuidToFind",
-        //         //   (selectedInstancesEntry[1] as any)[rootListAttribute],
-        //         //   "otherList",
-        //         //   otherList
-        //         // );
-        //         if (!Array.isArray(otherList)) {
-        //           const result =
-        //             Object.values(otherList).findIndex(
-        //               (v: any) => v[otherListAttribute] == (selectedInstance as any)[rootListAttribute]
-        //             ) >= 0;
-        //           return result;
-        //         } else {
-        //           const result =
-        //             otherList.findIndex(
-        //               (v: any) => v[otherListAttribute] == (selectedInstance as any)[rootListAttribute]
-        //             ) >= 0;
-        //           return result;
-        //         }
-        //       } else {
-        //         throw new Error(
-        //           "applyExtractorForSingleObjectListToSelectedInstancesListInMemory combinerByManyToManyRelationReturningObjectList can not use objectListReference, selectedInstances elementType=" +
-        //             selectedInstancesList.elementType +
-        //             " typeof otherList=" +
-        //             typeof otherList +
-        //             " other list=" +
-        //             JSON.stringify(otherList, undefined, 2)
-        //         );
-        //       }
-        //     }
-        //   )
-        // // )
-        // } as DomainElementInstanceArray;
       } else {
         throw new Error(
           "applyExtractorForSingleObjectListToSelectedInstancesListInMemory combinerByManyToManyRelationReturningObjectList could not find list for objectListReference, selectedInstances elementType=" +
@@ -471,17 +388,6 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
       );
     // } as DomainElementInstanceUuidIndex;
 
-      // return { "elementType": "instanceUuidIndex", "elementValue": Object.fromEntries(
-      //   Object.entries(selectedInstancesUuidIndex.elementValue ?? {}).filter(
-      //     (i: [string, EntityInstance]) => {
-      //       const localIndex = relationQuery.AttributeOfListObjectToCompareToReferenceUuid ?? "dummy";
-
-
-      //       // TODO: allow for runtime reference, with runtime trnasformer reference
-      //       return (i[1] as any)[localIndex] === otherIndex
-      //     }
-      //   )
-      // )} as DomainElementInstanceUuidIndex;
     }
     case "combinerByManyToManyRelationReturningObjectList": {
       const relationQuery: CombinerByManyToManyRelationReturningObjectList = query.select;
@@ -531,45 +437,6 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
             }
           )
         )
-        // as DomainElementInstanceUuidIndex;
-        // return { "elementType": "instanceUuidIndex", "elementValue": Object.fromEntries(
-        //   Object.entries(selectedInstancesUuidIndex.elementValue ?? {}).filter(
-        //     (selectedInstancesEntry: [string, EntityInstance]) => {
-        //       const otherListAttribute = relationQuery.objectListReferenceAttribute ?? "uuid";
-        //       const rootListAttribute = relationQuery.AttributeOfRootListObjectToCompareToListReferenceUuid ?? "uuid";
-  
-        //       if (typeof otherList == "object" && !Array.isArray(otherList)) {
-        //         // log.info(
-        //         //   "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerByManyToManyRelationReturningObjectList search otherList for attribute",
-        //         //   otherListAttribute,
-        //         //   "on object",
-        //         //   selectedInstancesEntry[1],
-        //         //   "uuidToFind",
-        //         //   (selectedInstancesEntry[1] as any)[rootListAttribute],
-        //         //   "otherList",
-        //         //   otherList
-        //         // );
-        //         const result =
-        //         Object.values(otherList).findIndex(
-        //           (v: any) => v[otherListAttribute] == (selectedInstancesEntry[1] as any)[rootListAttribute]
-        //         ) >= 0;
-        //         // CAN NOT APPLY FILTER HERE, AS WE ARE WORKING ON AN INDEX
-        //         return result;
-        //       } else {
-        //         throw new Error(
-        //           "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerByManyToManyRelationReturningObjectList can not use objectListReference, selectedInstances elementType=" +
-        //             selectedInstancesUuidIndex.elementType +
-        //             " typeof otherList=" +
-        //             typeof otherList +
-        //             " otherList is array " +
-        //             Array.isArray(otherList) +
-        //             " other list=" +
-        //             JSON.stringify(otherList, undefined, 2)
-        //         );
-        //       }
-        //     }
-        //   )
-        // )} as DomainElementInstanceUuidIndex;
       } else {
         throw new Error(
           "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerByManyToManyRelationReturningObjectList could not find list for objectListReference, selectedInstances elementType=" +
@@ -740,7 +607,7 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
 ): Domain2QueryReturnType<any> {
   switch (extractorOrCombiner.extractorOrCombinerType) {
     case "literal": {
-      return { elementType: "string", elementValue: extractorOrCombiner.definition };
+      return extractorOrCombiner.definition;
       break;
     }
     // ############################################################################################
@@ -762,7 +629,6 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
           : {
               ...extractorOrCombiner,
               applicationSection: pageParams.applicationSection as ApplicationSection,
-              // applicationSection: pageParams.elementValue.applicationSection.elementValue as ApplicationSection,
             },
         },
       });
@@ -782,7 +648,7 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
           ? extractorOrCombiner
           : {
               ...extractorOrCombiner,
-              applicationSection: pageParams?.elementValue?.applicationSection?.elementValue as ApplicationSection,
+              applicationSection: pageParams?.applicationSection as ApplicationSection,
             },
         }
       });
@@ -790,32 +656,29 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
     }
     // ############################################################################################
     case "extractorWrapperReturningObject": {
-      return {
-        elementType: "object",
-        elementValue: Object.fromEntries(
-          Object.entries(extractorOrCombiner.definition).map((e: [string, ExtractorOrCombinerContextReference | ExtractorOrCombiner]) => [
+      return Object.fromEntries(
+        Object.entries(extractorOrCombiner.definition).map(
+          (e: [string, ExtractorOrCombinerContextReference | ExtractorOrCombiner]) => [
             e[0],
-            e[1].extractorOrCombinerType == "extractorOrCombinerContextReference"?
-              context[e[1].extractorOrCombinerContextReference]??{}
-            :
-            innerSelectDomainElementFromExtractorOrCombiner( // recursive call
-              state,
-              context,
-              pageParams ?? {},
-              queryParams ?? {},
-              extractorRunnerMap,
-              deploymentUuid,
-              e[1]
-            ).elementValue, // TODO: check for error!
-          ])
-        ),
-      };
+            e[1].extractorOrCombinerType == "extractorOrCombinerContextReference"
+              ? context[e[1].extractorOrCombinerContextReference] ?? {}
+              : innerSelectDomainElementFromExtractorOrCombiner(
+                  // recursive call
+                  state,
+                  context,
+                  pageParams ?? {},
+                  queryParams ?? {},
+                  extractorRunnerMap,
+                  deploymentUuid,
+                  e[1]
+                ), // TODO: check for error!
+          ]
+        )
+      );
       break;
     }
     case "extractorWrapperReturningList": {
-      return {
-        elementType: "array",
-        elementValue: extractorOrCombiner.definition.map((e) =>
+      return extractorOrCombiner.definition.map((e) =>
           innerSelectDomainElementFromExtractorOrCombiner( // recursive call
             state,
             context,
@@ -824,13 +687,12 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
             extractorRunnerMap,
             deploymentUuid,
             e
-          ).elementValue // TODO: check for error!
-        ),
-      };
+          )// TODO: check for error!
+        );
       break;
     }
     case "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList": { // join
-      const rootQueryResults =
+      const rootQueryResults: Domain2QueryReturnType<any> =
         typeof extractorOrCombiner.rootExtractorOrReference == "string"
           ? innerSelectDomainElementFromExtractorOrCombiner(state, context, pageParams, queryParams, extractorRunnerMap, deploymentUuid, {
               extractorOrCombinerType: "extractorOrCombinerContextReference",
@@ -845,48 +707,52 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
               deploymentUuid,
               extractorOrCombiner.rootExtractorOrReference
             );
-      if (["instanceUuidIndex", "object", "any"].includes(rootQueryResults.elementType)) {
-        const result: DomainElementObject = {
-          elementType: "object",
-          elementValue: Object.fromEntries(
-            Object.entries(rootQueryResults.elementValue).map((entry) => {
-
-              const innerQueryParams = {
-                ...queryParams.elementValue,
-                ...Object.fromEntries(
-                  Object.entries(applyTransformer(extractorOrCombiner.subQueryTemplate.rootQueryObjectTransformer, entry[1]))
-                ),
-              };
-
-              // TODO: faking context results here! Should we send empty contextResults instead?
-              const resolvedQuery: ExtractorOrCombiner | QueryFailed = resolveExtractorTemplate(
-                extractorOrCombiner.subQueryTemplate.query,
-                innerQueryParams,
-                innerQueryParams
-              ); 
-        
-              if ("QueryFailure" in resolvedQuery) {
-                return [
-                  (entry[1] as any).uuid??"no uuid found for entry " + entry[0],
-                  resolvedQuery
-                ];
-              }
-              const innerResult = innerSelectDomainElementFromExtractorOrCombiner( // recursive call
-                state,
-                context,
-                pageParams,
-                innerQueryParams,
-                extractorRunnerMap,
-                deploymentUuid,
-                resolvedQuery as ExtractorOrCombiner,
-              ).elementValue; // TODO: check for error!
-              return [
-                (entry[1] as any).uuid??"no uuid found for entry " + entry[0],
-                innerResult
-              ];
-            })
-          ),
+      // if (["instanceUuidIndex", "object", "any"].includes(rootQueryResults.elementType)) {
+      if (rootQueryResults instanceof Domain2ElementFailed) {
+        return {
+          elementType: "failure",
+          elementValue: {
+            queryFailure: "IncorrectParameters",
+            query: JSON.stringify(extractorOrCombiner.rootExtractorOrReference),
+            queryContext: "innerSelectDomainElementFromExtractorOrCombiner for extractorCombinerByHeteronomousManyToManyReturningListOfObjectList, rootExtractorOrReference could not be resolved, rootExtractorOrReference=" + JSON.stringify(rootQueryResults,null,2),
+          },
         };
+      }
+      if (typeof rootQueryResults == "object") {
+        const result: Domain2QueryReturnType<Record<string, any>> = Object.fromEntries(
+          Object.entries(rootQueryResults).map((entry) => {
+            const innerQueryParams = {
+              ...queryParams,
+              ...Object.fromEntries(
+                Object.entries(
+                  applyTransformer(extractorOrCombiner.subQueryTemplate.rootQueryObjectTransformer, entry[1])
+                )
+              ),
+            };
+
+            // TODO: faking context results here! Should we send empty contextResults instead?
+            const resolvedQuery: ExtractorOrCombiner | QueryFailed = resolveExtractorTemplate(
+              extractorOrCombiner.subQueryTemplate.query,
+              innerQueryParams,
+              innerQueryParams
+            );
+
+            if ("QueryFailure" in resolvedQuery) {
+              return [(entry[1] as any).uuid ?? "no uuid found for entry " + entry[0], resolvedQuery];
+            }
+            const innerResult = innerSelectDomainElementFromExtractorOrCombiner(
+              // recursive call
+              state,
+              context,
+              pageParams,
+              innerQueryParams,
+              extractorRunnerMap,
+              deploymentUuid,
+              resolvedQuery as ExtractorOrCombiner
+            ); // TODO: check for error!
+            return [(entry[1] as any).uuid ?? "no uuid found for entry " + entry[0], innerResult];
+          })
+        );
         return result;
       } else {
         return {
@@ -894,7 +760,7 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
           elementValue: {
             queryFailure: "IncorrectParameters",
             query: JSON.stringify(extractorOrCombiner.rootExtractorOrReference),
-            queryContext: "innerSelectDomainElementFromExtractorOrCombiner for extractorCombinerByHeteronomousManyToManyReturningListOfObjectList, rootExtractorOrReference is not instanceUuidIndex, rootExtractorOrReference=" + JSON.stringify(rootQueryResults,null,2),
+            queryContext: "innerSelectDomainElementFromExtractorOrCombiner for extractorCombinerByHeteronomousManyToManyReturningListOfObjectList, rootExtractorOrReference is not an object, rootExtractorOrReference=" + JSON.stringify(rootQueryResults,null,2),
           },
         };
       }
@@ -912,7 +778,7 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
       return context &&
         // newFetchedData.elementType == "object" &&
         context[extractorOrCombiner.extractorOrCombinerContextReference]
-        ? { elementType: "any", elementValue: context[extractorOrCombiner.extractorOrCombinerContextReference] }
+        ? context[extractorOrCombiner.extractorOrCombinerContextReference]
         : {
             elementType: "failure",
             elementValue: {
@@ -993,16 +859,12 @@ export const extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList /*: 
 export const runQuery = <StateType>(
   state: StateType,
   selectorParams: SyncQueryRunnerParams<StateType>,
-): DomainElementObject => { 
+): Domain2QueryReturnType<Record<string,any>> => { 
 
   // log.info("########## runQuery begin, query", selectorParams);
   const context: Record<string, any> = {
     ...selectorParams.extractor.contextResults
   };
-  // const context: DomainElementObject = {
-  //   elementType: "object",
-  //   elementValue: { ...selectorParams.extractor.contextResults.elementValue },
-  // };
   // log.info("########## DomainSelector runQuery will use context", context);
   const localSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<StateType> =
     selectorParams?.extractorRunnerMap ?? emptySelectorMap;
@@ -1023,13 +885,22 @@ export const runQuery = <StateType>(
       extractor[1]
     );
     // TODO: test for error!
-    if (result.elementType == "failure") {
+    if (result instanceof Domain2ElementFailed) {
       log.error("extractWithManyExtractor failed for extractor", extractor[0], "query", extractor[1], "result=", result);
-      context[extractor[0]] = result    
+      context[extractor[0]] = result
     } else {
-      context[extractor[0]] = result.elementValue; // does side effect!
+      context[extractor[0]] = result; // does side effect!
     }
-    log.info("extractWithManyExtractor done for extractors", extractor[0], "query", extractor[1], "result=", result, "context keys=", Object.keys(context));
+    log.info(
+      "extractWithManyExtractor done for extractors",
+      extractor[0],
+      "query",
+      extractor[1],
+      "result=",
+      result,
+      "context keys=",
+      Object.keys(context)
+    );
   }
   for (const combiner of Object.entries(
     selectorParams.extractor.combiners ?? {}
@@ -1046,7 +917,7 @@ export const runQuery = <StateType>(
       selectorParams.extractor.deploymentUuid,
       combiner[1]
     );
-    context[combiner[0]] = result.elementValue; // does side effect!
+    context[combiner[0]] = result; // does side effect!
     // log.info("runQuery done for entry", entry[0], "query", entry[1], "result=", result);
   }
 
@@ -1067,10 +938,10 @@ export const runQuery = <StateType>(
         "result=",
         result
       );
-      return { elementType: "object", elementValue: {}}
+      return ({})
       
     }
-    context[transformerForRuntime[0]] = result.elementValue; // does side effect!
+    context[transformerForRuntime[0]] = result; // does side effect!
     // context.elementValue[transformerForRuntime[0]] = result; // does side effect!
     log.info(
       "runQuery done for transformerForRuntime",
@@ -1092,7 +963,7 @@ export const runQuery = <StateType>(
   //   context
   // );
   // return { elementType: "object", elementValue: context};
-  return { elementType: "object", elementValue: context};
+  return context;
 };
 
 // ################################################################################################
@@ -1133,7 +1004,7 @@ export const extractzodSchemaForSingleSelectQuery = <StateType>(
     extractorRunnerMap: extractorParams.extractorRunnerMap,
     query: {
       queryType: "getEntityDefinition",
-      contextResults: { elementType: "object", elementValue: {} },
+      contextResults: {},
       pageParams: extractorParams.query.pageParams,
       queryParams: extractorParams.query.queryParams,
       deploymentUuid: extractorParams.query.deploymentUuid ?? "",

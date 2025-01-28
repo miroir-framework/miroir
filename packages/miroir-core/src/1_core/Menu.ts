@@ -63,10 +63,11 @@ export function transformer_menu_AddItem(
 
   if (menu.definition.menuType === "simpleMenu") {
     log.error("transformer_menu_AddItem not implemented for simpleMenu yet");
-    return {
-      elementType: "object",
-      elementValue: menu // this is a free object, not a recursive DomainElement object
-    } as any;
+    return menu; // this is a free object, not a recursive DomainElement object
+    // return {
+    //   elementType: "object",
+    //   elementValue: menu // this is a free object, not a recursive DomainElement object
+    // } as any;
     
   }
   const sectionIndex = transformer.transformerDefinition.menuSectionInsertionIndex??0;

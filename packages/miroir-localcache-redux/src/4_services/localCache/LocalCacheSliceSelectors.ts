@@ -12,7 +12,7 @@ import {
   BoxedQueryWithExtractorCombinerTransformer,
   DeploymentEntityState,
   DomainElementSuccess,
-  domainElementToPlainObject,
+  domainElementToPlainObjectDEFUNCT,
   DomainModelQueryTemplateJzodSchemaParams,
   Domain2QueryReturnType,
   DomainState,
@@ -224,7 +224,7 @@ export function applyDeploymentEntityStateQueryTemplateSelectorForCleanedResult<
     params: SyncQueryTemplateRunnerParams<DeploymentEntityState>
   ): Domain2QueryReturnType<DomainElementSuccess> => {
     const partial: Domain2QueryReturnType<any> = deploymentEntityStateQuerySelector(deploymentEntityState, params);
-    const result: any = domainElementToPlainObject(partial);
+    const result: any = partial;
     return result;
   };
 
@@ -252,7 +252,6 @@ export function applyDeploymentEntityStateQuerySelectorForCleanedResult<QueryTyp
     params: SyncQueryRunnerParams<DeploymentEntityState>
   ): Domain2QueryReturnType<DomainElementSuccess> => {
     const partial: Domain2QueryReturnType<DomainElementSuccess> = deploymentEntityStateQuerySelector(deploymentEntityState, params);
-    // const result: any = domainElementToPlainObject(partial);
     const result: any = partial;
     return result;
   };
@@ -344,7 +343,6 @@ export function applyDomainStateQuerySelectorForCleanedResult<QueryType extends 
 ) => any { 
   const cleanupFunction = (domainState: DomainState, params: SyncQueryTemplateRunnerParams<DomainState>):Domain2QueryReturnType<DomainElementSuccess> => {
     const partial:Domain2QueryReturnType<DomainElementSuccess> = domainStateSelector(domainState, params);
-    // const result:any = domainElementToPlainObject(partial)
     const result:any = partial
     return result;
   }

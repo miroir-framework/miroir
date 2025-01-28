@@ -71,7 +71,8 @@ export const ReportSectionDisplayCorePropsSchema = z.object({
   defaultlabel: z.string().optional(),
   displayedDeploymentDefinition: selfApplicationDeploymentConfiguration.optional(),
   section: objectListReportSection, // ugly, this is due to the need of calling hooks in the same order, irrelevant of tableComponentReportType. Should be in ReportSectionDisplayEntityInstancePropsSchema.
-  domainElementObject: domainElementObject, // ugly, this is due to the need of calling hooks in the same order, irrelevant of tableComponentReportType. Should be in ReportSectionDisplayEntityInstancePropsSchema.
+  // domainElementObject: domainElementObject, // ugly, this is due to the need of calling hooks in the same order, irrelevant of tableComponentReportType. Should be in ReportSectionDisplayEntityInstancePropsSchema.
+  domainElementObject: domain2ElementObjectZodSchema, // ugly, this is due to the need of calling hooks in the same order, irrelevant of tableComponentReportType. Should be in ReportSectionDisplayEntityInstancePropsSchema.
   fetchedDataJzodSchema: z.record(jzodObject.optional()).optional(), // ugly, this is due to the need of calling hooks in the same order, irrelevant of tableComponentReportType. Should be in ReportSectionDisplayEntityInstancePropsSchema.
   chosenApplicationSection: applicationSection.optional(), // ugly, this is due to the need of calling hooks in the same order, irrelevant of tableComponentReportType. Should be in ReportSectionDisplayEntityInstancePropsSchema.
   paramsAsdomainElements: domainElementObject,
@@ -621,9 +622,6 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     props.domainElementObject.elementType == "object" &&
     props.section.definition.fetchedDataReference &&
     props.domainElementObject.elementValue[props.section.definition.fetchedDataReference]
-    // props.domainElementObject.elementValue[props.section.definition.fetchedDataReference].elementType == "instanceUuidIndex" &&
-    // props.domainElementObject.elementValue[props.section.definition.fetchedDataReference].elementValue
-      // ? props.domainElementObject.elementValue[props.section.definition.fetchedDataReference].elementValue as EntityInstancesUuidIndex
       ? props.domainElementObject.elementValue[props.section.definition.fetchedDataReference] as any as EntityInstancesUuidIndex
       : {}
     ,[props.domainElementObject,]

@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 import {
   ActionError,
   EntityInstance,
@@ -75,6 +77,12 @@ export type Domain2QueryReturnType<T> =
 
   // export type Domain2Element = DomainElementSuccess | Domain2ElementFailed;
   export type Domain2Element = Domain2QueryReturnType<any>;
+
+  export const domain2ElementObjectZodSchema = z.object({
+    elementType: z.string(),
+    elementValue: z.record(z.any()),
+  })
+  
 
   export type Action2EntityInstanceSuccess = {
       status: "ok";

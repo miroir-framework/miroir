@@ -92,7 +92,7 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
     const deploymentUuid = selectorParams.extractor.deploymentUuid;
     const applicationSection: ApplicationSection =
       selectorParams.extractor.select.applicationSection ??
-      ((selectorParams.extractor.pageParams?.elementValue?.applicationSection?.elementValue ??
+      ((selectorParams.extractor.pageParams?.applicationSection ??
         "data") as ApplicationSection);
 
     const entityUuidReference = querySelectorParams.parentUuid // TODO: we assume this ia a constant here
@@ -172,15 +172,6 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
         //   JSON.stringify(selectorParams.query.contextResults, undefined, 2)
         // );
         return result.returnedDomainElement;
-        // return {
-        //   elementType: "instance",
-        //   elementValue: result.returnedDomainElement.elementValue,
-        //   // deploymentEntityState[index].entities[
-        //   //   (referenceObject.elementValue as any)[
-        //   //     querySelectorParams.AttributeOfObjectToCompareToReferenceUuid
-        //   //   ]
-        //   // ],
-        // };
         break;
       }
       case "extractorForObjectByDirectReference": {
@@ -236,11 +227,6 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
           JSON.stringify(selectorParams.extractor.contextResults, undefined, 2),
         );
         return result.returnedDomainElement;
-        // return {
-        //   elementType: "instance",
-        //   elementValue: result.returnedDomainElement.elementValue,
-        //   // deploymentEntityState[index].entities[instanceDomainElement.elementValue],
-        // };
         break;
       }
       default: {
@@ -268,7 +254,8 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
       const entityInstanceUuidIndex = Object.fromEntries(
         result.map((i: any) => [i.uuid, i])
         );
-      return { elementType: "instanceUuidIndex", elementValue: entityInstanceUuidIndex };
+      // return { elementType: "instanceUuidIndex", elementValue: entityInstanceUuidIndex };
+      return entityInstanceUuidIndex;
     });
 
   };
@@ -332,15 +319,11 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
         },
       };
     }
-    // const entityInstanceUuidIndex = Object.fromEntries(
-    //   entityInstanceCollection.returnedDomainElement.elementValue.instances.map((i:any) => [i.uuid, i])
-    // );
     if (entityInstanceCollection.returnedDomainElement instanceof Domain2ElementFailed) {
       return entityInstanceCollection.returnedDomainElement;
     }
     
     return entityInstanceCollection.returnedDomainElement.instances;
-    // return { elementType: "instanceArray", elementValue: entityInstanceCollection.returnedDomainElement.elementValue.instances };
   };
 
   // ##############################################################################################

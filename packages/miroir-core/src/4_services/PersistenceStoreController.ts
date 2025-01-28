@@ -663,6 +663,13 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
         errorMessage: `getInstances failed for section: ${section}, entityUuid ${entityEntity.uuid}, error: ${instances.errorType}, ${instances.errorMessage}`,
       });
     }
+    if (instances.returnedDomainElement instanceof Domain2ElementFailed) {
+      return Promise.resolve({
+        status: "error",
+        errorType: "FailedToGetInstances",
+        errorMessage: `getInstances failed for section: ${section}, entityUuid ${entityEntity.uuid}, error: ${instances}`,
+      });
+    }
     // if (instances.returnedDomainElement?.elementType != "entityInstanceCollection") {
     //   return Promise.resolve({
     //     status: "error",

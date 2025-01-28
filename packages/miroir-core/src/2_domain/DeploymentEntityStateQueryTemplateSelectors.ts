@@ -1,12 +1,12 @@
 import {
   BoxedExtractorTemplateReturningObjectOrObjectList,
   BoxedQueryTemplateWithExtractorCombinerTransformer,
-  DomainElementObject,
   EntityDefinition,
   JzodObject,
   QueryByEntityUuidGetEntityDefinition
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { DeploymentEntityState } from "../0_interfaces/2_domain/DeploymentStateInterface.js";
+import { Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement.js";
 import {
   ExtractorTemplateRunnerParamsForJzodSchema,
   QueryTemplateRunnerMapForJzodSchema,
@@ -47,7 +47,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 // ################################################################################################
 export const runQueryTemplateFromDeploymentEntityState: SyncQueryTemplateRunner<
   DeploymentEntityState,
-  DomainElementObject
+  Domain2QueryReturnType<Record<string, any>>
 > = runQueryTemplateWithExtractorCombinerTransformer<DeploymentEntityState>;
 
 // ################################################################################################

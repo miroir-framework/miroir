@@ -8,9 +8,6 @@ import {
   BoxedExtractorOrCombinerReturningObjectOrObjectList,
   BoxedQueryTemplateWithExtractorCombinerTransformer,
   BoxedQueryWithExtractorCombinerTransformer,
-  DomainElement,
-  DomainElementInstanceUuidIndex,
-  DomainElementObject,
   EntityDefinition,
   EntityInstance,
   EntityInstancesUuidIndex,
@@ -19,6 +16,11 @@ import {
   QueryByEntityUuidGetEntityDefinition,
   QueryByTemplateGetParamJzodSchema
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import {
+  Domain2Element,
+  Domain2ElementFailed,
+  Domain2QueryReturnType,
+} from "../0_interfaces/2_domain/DomainElement.js";
 import {
   ExtractorRunnerParamsForJzodSchema,
   QueryRunnerMapForJzodSchema,
@@ -45,14 +47,14 @@ import {
   runQuery,
 } from "./QuerySelectors.js";
 import { transformer_InnerReference_resolve } from "./Transformers.js";
-import { Domain2Element, Domain2ElementFailed, Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "DomainStateQuerySelector")
 ).then((logger: LoggerInterface) => {log = logger});
 
-const emptyDomainObject: DomainElementObject = { elementType: "object", elementValue: {} };
+// const emptyDomainObject: Domain2QueryReturnType<Record<string, any>> = { };
+const emptyDomainObject: Record<string, any> = { };
 
 export const dummyDomainManyQueryWithDeploymentUuid: BoxedQueryWithExtractorCombinerTransformer = {
   queryType: "boxedQueryWithExtractorCombinerTransformer",
@@ -78,9 +80,9 @@ export const dummyDomainModelGetFetchParamJzodSchemaQueryParams: QueryByTemplate
   pageParams: {
     elementType: "object",
     elementValue: {
-      applicationSection: { elementType: "string", elementValue: "data" },
-      deploymentUuid: { elementType: "string", elementValue: "" },
-      instanceUuid: { elementType: "string", elementValue: "" },
+      applicationSection: "data" ,
+      deploymentUuid: "" ,
+      instanceUuid: "" ,
     },
   },
   queryParams: {},
@@ -218,19 +220,6 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
   const entityUuidReference: Uuid = querySelectorParams.parentUuid;
   log.info("selectEntityInstanceFromObjectQueryAndDomainState entityUuidReference", entityUuidReference);
 
-  // if (entityUuidReference.elementType != "string" && entityUuidReference.elementType != "instanceUuid") {
-  //   return {
-  //     elementType: "failure",
-  //     elementValue: {
-  //       queryFailure: "IncorrectParameters",
-  //       queryContext:
-  //         "selectEntityInstanceFromObjectQueryAndDomainState wrong entityUuidReference=" +
-  //         JSON.stringify(entityUuidReference),
-  //       queryReference: JSON.stringify(querySelectorParams.parentUuid),
-  //     },
-  //   };
-  // }
-
   switch (querySelectorParams?.extractorOrCombinerType) {
     case "combinerForObjectByRelation": {
       const referenceObject = transformer_InnerReference_resolve(
@@ -303,7 +292,8 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
       //   JSON.stringify(selectorParams.query.contextResults, undefined, 2)
       // );
       return domainState[deploymentUuid][applicationSection][entityUuidReference][
-            (referenceObject.elementValue as any)[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
+            // (referenceObject.elementValue as any)[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
+            referenceObject[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
           ];
       break;
     }
@@ -315,24 +305,6 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
         JSON.stringify(instanceUuidDomainElement)
       );
 
-      // if (instanceUuidDomainElement == "instance") {
-      //   return instanceUuidDomainElement; /* QueryResults, elementType == "failure" */
-      // }
-      // if (
-      //   instanceUuidDomainElement != "string" &&
-      //   instanceUuidDomainElement != "instanceUuid"
-      // ) {
-      //   return {
-      //     elementType: "failure",
-      //     elementValue: {
-      //       queryFailure: "EntityNotFound",
-      //       deploymentUuid,
-      //       applicationSection,
-      //       entityUuid: entityUuidReference.elementValue,
-      //       instanceUuid: instanceUuidDomainElement.elementValue,
-      //     },
-      //   };
-      // }
       // log.info("selectEntityInstanceFromObjectQueryAndDomainState resolved instanceUuid =", instanceUuid);
       if (!domainState) {
         return { elementType: "failure", elementValue: { queryFailure: "DomainStateNotLoaded" } };
@@ -441,7 +413,7 @@ export const innerSelectElementFromQueryAndDomainState = innerSelectDomainElemen
 // ################################################################################################
 export const runQueryFromDomainState: SyncQueryRunner<
   DomainState,
-  DomainElementObject
+  Domain2QueryReturnType<Record<string, any>>
 > = runQuery<DomainState>;
 
 // ################################################################################################

@@ -143,7 +143,6 @@ export class ModelEntityActionTransformer{
         //   currentEntityDefinition
         // );
         if (currentEntity && currentEntityDefinition) {
-          // const localEntityDefinition: EntityDefinition = currentEntityDefinition.returnedDomainElement.elementValue as EntityDefinition;
           const localEntityJzodSchemaDefinition =
             modelAction.removeColumns != undefined && Array.isArray(modelAction.removeColumns)
               ? Object.fromEntries(

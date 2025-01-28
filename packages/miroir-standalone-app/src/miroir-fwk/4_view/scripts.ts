@@ -3,7 +3,6 @@ import {
   ApplicationSection,
   BoxedQueryTemplateWithExtractorCombinerTransformer,
   DomainControllerInterface,
-  DomainElementObject,
   EntityDefinition,
   EntityInstance,
   InstanceAction,
@@ -97,7 +96,7 @@ export const deleteCascade = async (p: {
   log.info("deleteInstanceWithCascade deleteCascade deleting current instances DONE");
   
   if (Object.keys(foreignKeysPointingToEntity).length > 0) {
-    const pageParams: DomainElementObject = {
+    const pageParams: Domain2QueryReturnType<Record<string,any>> = {
       elementType: "object",
       elementValue: {
         deploymentUuid: { elementType: "string", elementValue: p.deploymentUuid },
@@ -150,7 +149,7 @@ export const deleteCascade = async (p: {
     }
     log.info("deleteInstanceWithCascade deleteCascade found foreignKeyUnfilteredObjects", JSON.stringify(foreignKeyUnfilteredObjects));
   
-    const foreignKeyObjects: EntityInstance[] = foreignKeyUnfilteredObjects.returnedDomainElement.elementValue.instances.filter(
+    const foreignKeyObjects: EntityInstance[] = foreignKeyUnfilteredObjects.returnedDomainElement.instances.filter(
       (entityInstance: any) =>
         p.entityInstances.find((e) => e.uuid == (entityInstance as any)[foreignKeysPointingToEntity[entityInstance.parentUuid]]) !=
         undefined

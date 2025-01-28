@@ -275,11 +275,11 @@ export class DomainController implements DomainControllerInterface {
             deploymentUuid == adminConfigurationDeploymentMiroir.uuid ? miroirModelEntities : metaModelEntities;
           const dataEntitiesToFetch: MetaEntity[] =
             deploymentUuid == adminConfigurationDeploymentMiroir.uuid
-              ? (context.dataEntitiesFromModelSection.returnedDomainElement?.elementValue.instances ?? []).filter(
+              ? (context.dataEntitiesFromModelSection.returnedDomainElement?.instances ?? []).filter(
                   (dataEntity: EntityInstance) =>
                     modelEntitiesToFetch.filter((modelEntity) => dataEntity.uuid == modelEntity.uuid).length == 0
                 )
-              : context.dataEntitiesFromModelSection.returnedDomainElement?.elementValue.instances ?? []; // hack, hack, hack
+              : context.dataEntitiesFromModelSection.returnedDomainElement?.instances ?? []; // hack, hack, hack
           log.debug(
             "DomainController loadConfigurationFromPersistenceStore for deployment",
             deploymentUuid,
@@ -338,8 +338,8 @@ export class DomainController implements DomainControllerInterface {
                   "entity",
                   e.entity.name
                 );
-                instances.push(context["entityInstanceCollection"].returnedDomainElement.elementValue);
-                latestInstances = context["entityInstanceCollection"].returnedDomainElement.elementValue;
+                instances.push(context["entityInstanceCollection"].returnedDomainElement);
+                latestInstances = context["entityInstanceCollection"].returnedDomainElement;
                 return context;
               })
               .then((context: Record<string, any>) => {
@@ -967,10 +967,6 @@ export class DomainController implements DomainControllerInterface {
         log.info("handleTestCompositeActionSuite no afterAll!");
       }
       return Promise.resolve(ACTION_OK);
-      // return Promise.resolve({
-      //   status: "ok",
-      //   returnedDomainElement: { elementType: "any", elementValue: testSuiteResult },
-      // });
     } catch (error) {
       log.error("handleTestCompositeActionSuite caught error", error);
       return Promise.resolve({
@@ -1052,7 +1048,7 @@ export class DomainController implements DomainControllerInterface {
       const prePreValueToTest = compositeRunTestAssertion.testAssertion.definition.resultTransformer
         ? transformer_extended_apply(
             "runtime",
-            "ROOT" /**WHAT?? */,
+            undefined /**WHAT?? */,
             compositeRunTestAssertion.testAssertion.definition.resultTransformer,
             {},
             localContext
@@ -1245,7 +1241,7 @@ export class DomainController implements DomainControllerInterface {
                   "value",
                   actionResult
                 );
-                localContext[currentAction.nameGivenToResult] = actionResult.returnedDomainElement.elementValue;
+                localContext[currentAction.nameGivenToResult] = actionResult.returnedDomainElement;
               }
             }
             break;
@@ -1281,7 +1277,7 @@ export class DomainController implements DomainControllerInterface {
                   "value",
                   actionResult
                 );
-                localContext[currentAction.nameGivenToResult] = actionResult.returnedDomainElement.elementValue;
+                localContext[currentAction.nameGivenToResult] = actionResult.returnedDomainElement;
               }
             }
             break;
@@ -1321,7 +1317,7 @@ export class DomainController implements DomainControllerInterface {
                   "value",
                   JSON.stringify(actionResult, null, 2)
                 );
-                localContext[currentAction.nameGivenToResult] = actionResult.returnedDomainElement.elementValue;
+                localContext[currentAction.nameGivenToResult] = actionResult.returnedDomainElement;
               }
             }
             break;
@@ -1346,7 +1342,7 @@ export class DomainController implements DomainControllerInterface {
               const prePreValueToTest = currentAction.testAssertion.definition.resultTransformer
                 ? transformer_extended_apply(
                     "runtime",
-                    "ROOT" /**WHAT?? */,
+                    undefined /**WHAT?? */,
                     currentAction.testAssertion.definition.resultTransformer,
                     {},
                     localContext
@@ -1433,7 +1429,7 @@ export class DomainController implements DomainControllerInterface {
             //   const prePreValueToTest = currentAction.testAssertion.definition.resultTransformer
             //     ? transformer_extended_apply(
             //         "runtime",
-            //         "ROOT" /**WHAT?? */,
+            //         undefined /**WHAT?? */,
             //         currentAction.testAssertion.definition.resultTransformer,
             //         {},
             //         localContext
@@ -1591,7 +1587,7 @@ export class DomainController implements DomainControllerInterface {
             // resolved.actionParamsAndTemplates,
             localActionParams,
             localContext
-          ).elementValue as InstanceAction;
+          ) as InstanceAction;
           log.info(
             "handleCompositeActionTemplate compositeInstanceAction",
             currentAction.actionLabel ?? "without step name",
@@ -1652,7 +1648,7 @@ export class DomainController implements DomainControllerInterface {
                 "value",
                 actionResult
               );
-              localContext[currentAction.nameGivenToResult] = actionResult.returnedDomainElement.elementValue;
+              localContext[currentAction.nameGivenToResult] = actionResult.returnedDomainElement;
             }
           }
           break;
@@ -1692,7 +1688,7 @@ export class DomainController implements DomainControllerInterface {
                 "value",
                 actionResult
               );
-              localContext[currentAction.nameGivenToResult] = actionResult.returnedDomainElement.elementValue;
+              localContext[currentAction.nameGivenToResult] = actionResult.returnedDomainElement;
             }
           }
           break;

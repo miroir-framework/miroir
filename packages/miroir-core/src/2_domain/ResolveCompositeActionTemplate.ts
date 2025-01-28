@@ -79,7 +79,7 @@ export function resolveCompositeActionTemplate(
       if (resolvedTemplate.elementType == "failure") {
         log.error("resolveCompositeActionTemplate resolved template error", resolvedTemplate);
       } else {
-        resolvedCompositeActionTemplates[t[0]] = resolvedTemplate.elementValue;
+        resolvedCompositeActionTemplates[t[0]] = resolvedTemplate;
       }
     }
   }
@@ -92,7 +92,7 @@ export function resolveCompositeActionTemplate(
     (compositeActionTemplate as any).definition as any as TransformerForBuild,
     actionParamsAndTemplates,
     localContext
-  ).elementValue;
+  );
   log.info(
     "resolveCompositeActionTemplate", compositeActionLabel, "resolvedCompositeActionDefinition",
     // resolvedCompositeActionDefinition

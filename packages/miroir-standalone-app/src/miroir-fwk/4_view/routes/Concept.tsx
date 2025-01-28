@@ -327,7 +327,6 @@ export const ConceptPage: React.FC<any> = (
           // actionCreateEntityParamValues.newAdminAppApplicationUuid,
         );
 
-        // const paramsAsDomainElementObject:DomainElementObject = plainObjectToDomainElement(actionCreateEntityParamValues) as DomainElementObject;
 
         const newEntity: MetaEntity = {
           uuid: newEntityUuid,

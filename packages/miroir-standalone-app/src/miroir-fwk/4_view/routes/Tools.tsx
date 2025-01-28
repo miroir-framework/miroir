@@ -781,15 +781,6 @@ export const ToolsPage: React.FC<any> = (
           actionCreateSchemaParamValues.newAdminAppApplicationUuid,
         );
 
-        // const paramsAsDomainElementObject:DomainElementObject = plainObjectToDomainElement(actionCreateSchemaParamValues) as DomainElementObject;
-
-        // const paramsWithTemplates: DomainElementObject = {
-        //   elementType: "object",
-        //   elementValue: {
-        //     ...paramsAsDomainElementObject.elementValue,
-        //     ...Object.fromEntries(Object.entries(actionHandlerCreateApplication.implementation.templates as any).map((e => [e[0],{elementType: "object", elementValue: e[1]}] )) as any),
-        //   }
-        // }
         const paramsForTemplates = { 
           ...actionCreateSchemaParamValues,
           entityApplicationForAdmin,

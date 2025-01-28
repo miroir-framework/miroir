@@ -25,8 +25,8 @@ import {
   BoxedQueryTemplateWithExtractorCombinerTransformer,
   defaultMiroirMetaModel,
   Domain2ElementFailed,
+  Domain2QueryReturnType,
   DomainControllerInterface,
-  DomainElementObject,
   domainEndpointVersionV1,
   EntityDefinition,
   entityDefinitionAdminApplication,
@@ -80,7 +80,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 const MuiBox: any = Box;
 
-export const emptyDomainElementObject: DomainElementObject = { elementType: "object", elementValue: {} }
+export const emptyDomainElementObject: Domain2QueryReturnType<Record<string,any>> = {}
 
 export interface RootComponentProps {
   // store:any;

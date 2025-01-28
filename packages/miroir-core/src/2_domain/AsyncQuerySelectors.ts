@@ -7,8 +7,6 @@ import {
   BoxedExtractorOrCombinerReturningObjectList,
   BoxedExtractorOrCombinerReturningObjectOrObjectList,
   BoxedQueryWithExtractorCombinerTransformer,
-  DomainElementInstanceUuidIndex,
-  DomainElementObject,
   DomainElementSuccess,
   EntityInstance,
   EntityInstancesUuidIndex,
@@ -140,7 +138,7 @@ export function asyncInnerSelectElementFromQuery/*BoxedExtractorTemplateRunner*/
 ): Promise<Domain2QueryReturnType<any>> {
   switch (extractorOrCombiner.extractorOrCombinerType) {
     case "literal": {
-      return Promise.resolve({ elementType: "string", elementValue: extractorOrCombiner.definition });
+      return Promise.resolve(extractorOrCombiner.definition);
       break;
     }
     // ############################################################################################
@@ -204,10 +202,7 @@ export function asyncInnerSelectElementFromQuery/*BoxedExtractorTemplateRunner*/
         });
       });
       return Promise.all(promises).then((results) => {
-        return Promise.resolve({
-          elementType: "object",
-          elementValue: Object.fromEntries(results),
-        });
+        return Promise.resolve(Object.fromEntries(results));
       });
       break;
     }
@@ -224,10 +219,7 @@ export function asyncInnerSelectElementFromQuery/*BoxedExtractorTemplateRunner*/
         );
       })
       return Promise.all(promises).then((results) => {
-        return Promise.resolve({
-          elementType: "array",
-          elementValue: results,
-        });
+        return Promise.resolve(results);
       });
       break;
     }
@@ -290,13 +282,16 @@ export function asyncInnerSelectElementFromQuery/*BoxedExtractorTemplateRunner*/
           });
 
           return Promise.all(promises).then((results) => {
-            return {
-              elementType: "object",
-              elementValue: Object.fromEntries(results),
-            };
+            return Object.fromEntries(results);
           });
         } else {
-          return { elementType: "failure", elementValue: { queryFailure: "IncorrectParameters", query: JSON.stringify(extractorOrCombiner.rootExtractorOrReference) } }
+          return {
+            elementType: "failure",
+            elementValue: {
+              queryFailure: "IncorrectParameters",
+              query: JSON.stringify(extractorOrCombiner.rootExtractorOrReference),
+            },
+          };
         }
       });
 
@@ -419,7 +414,6 @@ export const asyncRunQuery = async (
         queryFailure: "FailedExtractor",
         errorStack: extractorFailure
       }
-      // elementValue: { queryFailure: "", failure: extractorFailure } 
     };
   }
   const combinerPromises = Object.entries(selectorParams.extractor.combiners ?? {})
@@ -448,16 +442,19 @@ export const asyncRunQuery = async (
 
 
   for (const transformer of Object.entries(selectorParams.extractor.runtimeTransformers ?? {})) {
-    // const result = await promise;
-    const result = await localSelectorMap.applyExtractorTransformer(transformer[1], {
-      elementType: "object",
-      elementValue: {
-        ...selectorParams.extractor.pageParams,
-        ...selectorParams.extractor.queryParams,
-      },
-    }, context, selectorParams.extractor.extractors ?? ({} as any)).then((result): [string, Domain2QueryReturnType<DomainElementSuccess>] => {
-      return [transformer[0], result]; // TODO: check for failure!
-    });
+    const result = await localSelectorMap
+      .applyExtractorTransformer(
+        transformer[1],
+        {
+          ...selectorParams.extractor.pageParams,
+          ...selectorParams.extractor.queryParams,
+        },
+        context,
+        selectorParams.extractor.extractors ?? ({} as any)
+      )
+      .then((result): [string, Domain2QueryReturnType<DomainElementSuccess>] => {
+        return [transformer[0], result]; // TODO: check for failure!
+      });
     context[result[0]] = result[1]; // does side effect!
     log.info(
       "asyncRunQuery for runtimeTransformer",
@@ -477,5 +474,5 @@ export const asyncRunQuery = async (
   //   "newFetchedData",
   //   context
   // );
-  return { elementType: "object", elementValue: context};
+  return context;
 };

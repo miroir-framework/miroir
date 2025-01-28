@@ -9,6 +9,7 @@ import {
   ExtendedTransformerForRuntime,
   Menu,
   Transformer,
+  Transformer_contextOrParameterReference,
   Transformer_InnerReference,
   Transformer_objectDynamicAccess,
   TransformerForBuild,
@@ -36,6 +37,7 @@ import { MiroirLoggerFactory } from "../4_services/LoggerFactory.js";
 import { packageName } from "../constants.js";
 import { resolvePathOnObject } from "../tools.js";
 import { cleanLevel } from "./constants.js";
+import { b } from "vitest/dist/chunks/suite.B2jumIFP.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -92,9 +94,7 @@ function transformerForBuild_list_listMapperToList_apply(
   );
 
   const resultArray:any[] = [];
-  // if (resolvedReference.elementValue instanceof Array) {
   if (resolvedReference instanceof Array) {
-    // for (const element of resolvedReference.elementValue) {
     for (const element of resolvedReference) {
       resultArray.push(
         defaultTransformers.transformer_apply(
@@ -107,21 +107,16 @@ function transformerForBuild_list_listMapperToList_apply(
             [transformer.referenceToOuterObject]: element,
           } // inefficient!
         )
-        // ).elementValue
       ); // TODO: constrain type of transformer
     }
   } else {
-    // if (typeof resolvedReference.elementValue == "object") {
     if (typeof resolvedReference == "object") {
-      // for (const element of Object.entries(resolvedReference.elementValue)) {
       for (const element of Object.entries(resolvedReference)) {
-        // resultObject[element[0]] = transformer_apply(step, element[0], transformer.elementTransformer as any, queryParams, {
         resultArray.push(
           defaultTransformers.transformer_apply(step, element[0], transformer.elementTransformer as any, queryParams, {
               ...contextResults,
               [transformer.referenceToOuterObject]: element[1],
           })
-          // }).elementValue
         ); // TODO: constrain type of transformer
       }
     } else {
@@ -147,14 +142,7 @@ function transformerForBuild_list_listMapperToList_apply(
   : (a: any[]) => a;
 
   const sortedResultArray = sortByAttribute(resultArray);
-  // log.info(
-  //   "transformerForBuild_list_listMapperToList_apply sorted resultArray with orderBy",
-  //   transformer.orderBy,
-  //   "sortedResultArray",
-  //   sortedResultArray
-  // );
   return sortedResultArray;
-  // return { elementType: "array", elementValue: sortedResultArray };
 }
 
 // ################################################################################################
@@ -190,18 +178,12 @@ function transformer_object_listReducerToSpreadObject_apply(
 
   // TODO: test if resolvedReference is a list
   const result = Object.fromEntries(
-    // resolvedReference.elementValue.flatMap((entry: Record<string, any>) => {
     resolvedReference.flatMap((entry: Record<string, any>) => {
       return Object.entries(entry);
-      // return [
-      //   entry[transformer.indexAttribute],
-      //   entry
-      // ];
     })
   );
 
   return result;
-  // return { elementType: "object", elementValue: result };
 }
 // ################################################################################################
 function transformer_object_listReducerToIndexObject_apply(
@@ -237,7 +219,6 @@ function transformer_object_listReducerToIndexObject_apply(
   // TODO: test if resolvedReference is a list
   const result = Object.fromEntries(
     resolvedReference.map((entry: Record<string, any>) => {
-    // resolvedReference.elementValue.map((entry: Record<string, any>) => {
       return [
         entry[transformer.indexAttribute],
         entry
@@ -246,7 +227,6 @@ function transformer_object_listReducerToIndexObject_apply(
   );
 
   return result;
-  // return { elementType: "object", elementValue: result };
 }
 
 /**
@@ -295,7 +275,6 @@ function transformer_object_fullTemplate(
             queryParams,
             contextResults
           )
-        // : { elementType: "string", elementValue: innerEntry.attributeKey };
         : innerEntry.attributeKey;
       const leftValue: { rawLeftValue: Domain2QueryReturnType<any>; finalLeftValue: Domain2QueryReturnType<any> } = {
       // const leftValue: { rawLeftValue: Domain2QueryReturnType<DomainElementSuccess>; finalLeftValue: Domain2QueryReturnType<DomainElementSuccess> } = {
@@ -305,10 +284,6 @@ function transformer_object_fullTemplate(
           typeof innerEntry.attributeKey == "object" &&
           (innerEntry.attributeKey as any).applyFunction
             ? (innerEntry.attributeKey as any).applyFunction(rawLeftValue)
-            // ? {
-            //     elementType: "string",
-            //     elementValue: (innerEntry.attributeKey as any).applyFunction(rawLeftValue.elementValue),
-            //   }
             : rawLeftValue,
       };
       // log.info(
@@ -321,7 +296,6 @@ function transformer_object_fullTemplate(
       const renderedRightValue: Domain2QueryReturnType<DomainElementSuccess> = defaultTransformers.transformer_apply(
         // TODO: use actionRuntimeTransformer_apply or merge the two functions
         step,
-        // leftValue.finalLeftValue.elementValue as string,
         leftValue.finalLeftValue as any as string,
         innerEntry.attributeValue as any, // TODO: wrong type in the case of runtime transformer
         queryParams,
@@ -332,10 +306,6 @@ function transformer_object_fullTemplate(
         finalRightValue:
           renderedRightValue.elementType != "failure" && (innerEntry.attributeValue as any).applyFunction
             ? (innerEntry.attributeValue as any).applyFunction(renderedRightValue)
-            // ? {
-            //     elementType: "any",
-            //     elementValue: (innerEntry.attributeValue as any).applyFunction(renderedRightValue.elementValue),
-            //   }
             : renderedRightValue,
       };
       log.info(
@@ -355,24 +325,11 @@ function transformer_object_fullTemplate(
     (e) => e[0].finalLeftValue.elementType == "failure" || e[1].finalRightValue.elementType == "failure"
   );
   if (failureIndex == -1) {
-    // no failure found
-    // log.info(
-    //   "transformer_apply innerFullObjectTemplate for",
-    //   transformerForBuild,
-    //   "attributeEntries",
-    //   JSON.stringify(attributeEntries, null, 2)
-    // );
     const fullObjectResult = Object.fromEntries(
       attributeEntries.map((e) => [e[0].finalLeftValue, e[1].finalRightValue])
-      // attributeEntries.map((e) => [e[0].finalLeftValue.elementValue, e[1].finalRightValue.elementValue])
     );
     // log.info("transformer_apply innerFullObjectTemplate for", transformerForBuild, "fullObjectResult", fullObjectResult);
     return transformerForBuild.transformerType == "innerFullObjectTemplate" ? fullObjectResult : [fullObjectResult];
-    // return {
-    //   elementType: "instanceArray",
-    //   elementValue:
-    //     transformerForBuild.transformerType == "innerFullObjectTemplate" ? fullObjectResult : [fullObjectResult],
-    // };
   } else {
     return {
       elementType: "failure",
@@ -424,14 +381,6 @@ function transformer_objectAlter(
     ...resolvedReference,
     ...overrideObject,
   };
-  // return {
-  //   elementType: "object",
-  //   // elementValue: fullObjectResult,
-  //   elementValue: {
-  //     ...resolvedReference.elementValue,
-  //     ...overrideObject.elementValue,
-  //   },
-  // };
 }
 
 /**
@@ -439,6 +388,136 @@ function transformer_objectAlter(
  * be a class somehow.
  */
 // ################################################################################################
+function resolveReference(
+  step: Step,
+  transformerInnerReference: Transformer_contextOrParameterReference,
+  paramOrContext: "param" | "context",
+  // bank: Record<string, any>,
+  queryParams: Record<string, any>,
+  contextResults?: Record<string, any>,
+) {
+  // ReferenceNotFound
+  const bank: Record<string, any> = paramOrContext == "param" ? queryParams??{} : contextResults??{};
+  if (!bank) {
+    log.error(
+      "transformer_InnerReference_resolve failed, no contextResults for step",
+      step,
+      "transformerInnerReference=",
+      transformerInnerReference
+    );
+    return {
+      elementType: "failure",
+      elementValue: {
+        queryFailure: "ReferenceNotFound",
+        failureOrigin: ["transformer_InnerReference_resolve"],
+        queryReference: transformerInnerReference.referenceName,
+        failureMessage: "no contextResults",
+        queryContext: "no contextResults",
+      },
+    };
+  }
+    
+  // ReferenceNotFound
+  if (transformerInnerReference.referenceName) {
+    // ReferenceNotFound
+    if (
+      // transformerInnerReference.referenceName &&
+      !Object.hasOwn(bank, transformerInnerReference.referenceName)
+      // !localContextResults[transformerInnerReference.referenceName]
+    ) {
+      log.error(
+        "transformer_InnerReference_resolve failed, reference not found for step",
+        step,
+        "transformerInnerReference=",
+        transformerInnerReference,
+        "could not find",
+        transformerInnerReference.referenceName,
+        "in",
+        bank
+      );
+      return {
+        elementType: "failure",
+        elementValue: {
+          queryFailure: "ReferenceNotFound",
+          failureOrigin: ["transformer_InnerReference_resolve"],
+          queryReference: transformerInnerReference.referenceName,
+          failureMessage: "no referenceName " + transformerInnerReference.referenceName,
+          queryContext: JSON.stringify(Object.keys(bank)),
+        },
+      };
+    }
+
+    if (
+    // transformerInnerReference.referenceName &&
+      Object.hasOwn(bank, transformerInnerReference.referenceName) &&
+      !bank[transformerInnerReference.referenceName]
+    ) {
+      return {
+        elementType: "failure",
+        elementValue: {
+          queryFailure: "ReferenceFoundButUndefined",
+          queryContext: JSON.stringify(Object.keys(bank)),
+          failureMessage:
+            "found but undefined: referenceName " + transformerInnerReference.referenceName,
+        },
+      };
+    }
+    return bank[transformerInnerReference.referenceName];
+  }
+    
+  // ReferenceFoundButUndefined
+  if (transformerInnerReference.referencePath) {
+    try {
+      const pathResult = resolvePathOnObject(bank, transformerInnerReference.referencePath);
+      if (!pathResult) {
+        log.error(
+          "transformer_InnerReference_resolve failed, reference not found for step",
+          step,
+          "transformerInnerReference=",
+          transformerInnerReference,
+          "could not find",
+          transformerInnerReference.referencePath,
+          "in",
+          bank
+        );
+        return {
+          elementType: "failure",
+          elementValue: {
+            queryFailure: "ReferenceFoundButUndefined",
+            failureOrigin: ["transformer_InnerReference_resolve"],
+            queryReference: transformerInnerReference.referencePath,
+            failureMessage: "no referencePath " + transformerInnerReference.referencePath,
+            queryContext: JSON.stringify(Object.keys(bank)),
+          },
+        };
+      }
+      return pathResult;
+    } catch (error) {
+      log.error(
+        "transformer_InnerReference_resolve failed, reference not found for step",
+        step,
+        "transformerInnerReference=",
+        transformerInnerReference,
+        "could not find",
+        transformerInnerReference.referencePath,
+        "in",
+        bank
+      );
+      return {
+        elementType: "failure",
+        elementValue: {
+          queryFailure: "ReferenceNotFound",
+          failureOrigin: ["transformer_InnerReference_resolve"],
+          queryReference: transformerInnerReference.referencePath,
+          failureMessage: "no referencePath " + transformerInnerReference.referencePath,
+          queryContext: JSON.stringify(Object.keys(bank)),
+        },
+      };
+    }
+  }
+}
+
+
 // almost duplicate from QuerySelectors.ts
 // type defined in function of the types of queryParams and contextResults
 // contextReference<A> -> A
@@ -456,9 +535,9 @@ export function transformer_InnerReference_resolve  (
   //   "transformer_InnerReference_resolve called for transformerInnerReference=",
   //   transformerInnerReference,
   //   "queryParams=",
-  //   Object.keys(queryParams.elementValue),
+  //   Object.keys(queryParams),
   //   "contextResults=",
-  //   Object.keys(contextResults?.elementValue ?? {})
+  //   Object.keys(contextResults ?? {})
   // );
   const localQueryParams = queryParams??{};
   const localContextResults = contextResults??{};
@@ -470,293 +549,56 @@ export function transformer_InnerReference_resolve  (
     return transformerInnerReference
   }
 
-  if (transformerInnerReference.transformerType == "mustacheStringTemplate") {
-    return defaultTransformers.mustacheStringTemplate_apply(
-      step,
-      transformerInnerReference,
-      localQueryParams,
-      localContextResults
-    );
-  }
-  if (transformerInnerReference.transformerType == "objectDynamicAccess") {
-    return defaultTransformers.transformer_dynamicObjectAccess_apply(
-      step,
-      "none",
-      transformerInnerReference,
-      localQueryParams,
-      localContextResults
-    );
-  }
-  if (
-    (transformerInnerReference.transformerType == "contextReference" &&
-      (!localContextResults ||
-        (!transformerInnerReference.referenceName && !transformerInnerReference.referencePath) ||
-        (transformerInnerReference.referenceName && transformerInnerReference.referencePath) ||
-        (transformerInnerReference.referenceName &&
-          !localContextResults[transformerInnerReference.referenceName]
-        ) ||
-        (transformerInnerReference.referencePath &&
-          (transformerInnerReference.referencePath.length == 0 ||
-            !localContextResults[transformerInnerReference.referencePath[0]]
-          )
-        )
-      )
-    ) ||
-    (
-      transformerInnerReference.transformerType == "parameterReference" &&
-      (
-        (!transformerInnerReference.referenceName && !transformerInnerReference.referencePath) ||
-        (transformerInnerReference.referenceName && transformerInnerReference.referencePath) ||
-        (transformerInnerReference.referenceName && !Object.keys(localQueryParams).includes(transformerInnerReference.referenceName)) ||
-        (transformerInnerReference.referencePath &&
-          (transformerInnerReference.referencePath.length == 0 ||
-            !localQueryParams[transformerInnerReference.referencePath[0]]
-          )
-        )
-      )
-    )
-      // )
-  ) {
-    // checking that given reference does exist
-    log.error(
-      "transformer_InnerReference_resolve failed, reference not found for step",
-      step,
-      "reference=",
-      JSON.stringify(transformerInnerReference, null, 2),
-      "could not find",
-      transformerInnerReference.transformerType,
-      "with referenceName",
-      transformerInnerReference.referenceName,
-      "and referencePath",
-      transformerInnerReference.referencePath,
-      "in",
-      transformerInnerReference.transformerType == "contextReference"
-        ? (localContextResults)
-        : Object.keys(localQueryParams)
-    );
-    return {
-      elementType: "failure",
-      elementValue: {
-        queryFailure: "ReferenceNotFound",
-        failureOrigin: ["transformer_InnerReference_resolve"],
-        queryReference: transformerInnerReference.referenceName,
-        failureMessage:
-          "no referenceName " +
-            transformerInnerReference.referenceName +
-            " or referencePath " +
-            transformerInnerReference.referencePath +
-            " from " +
-            transformerInnerReference.transformerType,
-        queryContext: transformerInnerReference.transformerType ==
-          "contextReference"
-            ? JSON.stringify(Object.keys(localContextResults))
-            : JSON.stringify(Object.keys(localQueryParams)),
-      },
-    };
+  switch (transformerInnerReference.transformerType) {
+    case "constantUuid": {
+      return transformerInnerReference.constantUuidValue // new object
+      break;
+    }
+    case "constantObject": {
+      return transformerInnerReference.constantObjectValue
+      break;
+    }
+    case "constantString": {
+      return transformerInnerReference.constantStringValue;
+      break;
+    }
+    case "newUuid": {
+      return uuidv4();
+      break;
+    }
+    case "mustacheStringTemplate": {
+      return defaultTransformers.mustacheStringTemplate_apply(
+        step,
+        transformerInnerReference,
+        localQueryParams,
+        localContextResults
+      );
+      break;
+    }
+    case "contextReference": {
+      return resolveReference(step, transformerInnerReference, "context", localQueryParams, localContextResults);
+      break;
+    }
+    case "parameterReference": {
+      return resolveReference(step, transformerInnerReference, "param", localQueryParams, localContextResults);
+      break;
+    }
+    case "objectDynamicAccess": {
+      return defaultTransformers.transformer_dynamicObjectAccess_apply(
+        step,
+        "none",
+        transformerInnerReference,
+        localQueryParams,
+        localContextResults
+      );
+      break;
+    }
+    default: {
+      throw new Error("transformer_InnerReference_resolve failed, unknown transformerType for transformer=" + transformerInnerReference);
+      break;
+    }
   }
 
-  if (
-    (transformerInnerReference.transformerType == "contextReference" &&
-      (!contextResults ||
-        (transformerInnerReference.referenceName && !contextResults[transformerInnerReference.referenceName]) ||
-        (transformerInnerReference.referencePath &&
-          (transformerInnerReference.referencePath.length == 0 ||
-            !contextResults[transformerInnerReference.referencePath[0]])))) || // TODO: what about the DomainElementObject structure, attributes hould be DomainElements themselves
-    (transformerInnerReference.transformerType == "parameterReference" &&
-      ((transformerInnerReference.referenceName &&
-        !Object.keys(localQueryParams).includes(transformerInnerReference.referenceName)) ||
-        (transformerInnerReference.referencePath &&
-          (transformerInnerReference.referencePath.length == 0 ||
-            !localQueryParams[transformerInnerReference.referencePath[0]])))) // TODO: what about the DomainElementObject structure, attributes hould be DomainElements themselves
-  ) {
-    // checking that given reference does exist
-    log.warn(
-      "transformer_InnerReference_resolve step",
-      step,
-      "found undefined reference",
-      transformerInnerReference.transformerType,
-      "with referenceName",
-      transformerInnerReference.referenceName,
-      "and referencePath",
-      transformerInnerReference.referencePath,
-      "in",
-      transformerInnerReference.transformerType == "contextReference" ? localContextResults : localQueryParams
-    );
-
-    return {
-      elementType: "failure",
-      elementValue: {
-        queryFailure: "ReferenceFoundButUndefined",
-        queryContext: transformerInnerReference.transformerType ==
-          "contextReference"
-            ? JSON.stringify(Object.keys(localContextResults))
-            : JSON.stringify(Object.keys(localQueryParams)),
-        failureMessage:
-        "found but undefined: referenceName " +
-          transformerInnerReference.referenceName +
-          " or referencePath " +
-          transformerInnerReference.referencePath +
-          " from " +
-          transformerInnerReference.transformerType,
-      },
-    };
-  }
-
-  const reference: Domain2QueryReturnType<DomainElementSuccess> =
-    transformerInnerReference.transformerType == "contextReference"
-      ? transformerInnerReference.referenceName
-        ? localContextResults[transformerInnerReference.referenceName]
-          ? localContextResults[transformerInnerReference.referenceName]
-          : {
-              elementType: "failure",
-              elementValue: {
-                queryFailure: "ReferenceFoundButUndefined",
-                queryContext:
-                  transformerInnerReference.transformerType == "contextReference"
-                    ? JSON.stringify(Object.keys(localContextResults))
-                    : JSON.stringify(Object.keys(localQueryParams)),
-                failureMessage:
-                  "found but undefined 1: referenceName " +
-                  transformerInnerReference.referenceName +
-                  " or referencePath " +
-                  transformerInnerReference.referencePath +
-                  " from " +
-                  transformerInnerReference.transformerType,
-              },
-            }
-        : transformerInnerReference.referencePath
-        ? resolvePathOnObject(localContextResults, transformerInnerReference.referencePath)
-          ? resolvePathOnObject(localContextResults, transformerInnerReference.referencePath)
-          : {
-              elementType: "failure",
-              elementValue: {
-                queryFailure: "ReferenceFoundButUndefined",
-                queryContext:
-                  transformerInnerReference.transformerType == "contextReference"
-                    ? JSON.stringify(Object.keys(localContextResults))
-                    : JSON.stringify(Object.keys(localQueryParams)),
-                failureMessage:
-                  "found but undefined: referenceName " +
-                  transformerInnerReference.referenceName +
-                  " or referencePath " +
-                  transformerInnerReference.referencePath +
-                  " from " +
-                  transformerInnerReference.transformerType,
-              },
-            }
-        : {
-            elementType: "failure",
-            elementValue: {
-              queryFailure: "ReferenceFoundButUndefined",
-              queryContext:
-                transformerInnerReference.transformerType == "contextReference"
-                  ? JSON.stringify(Object.keys(localContextResults))
-                  : JSON.stringify(Object.keys(localQueryParams)),
-              failureMessage:
-                "found but undefined 2: referenceName " +
-                transformerInnerReference.referenceName +
-                " or referencePath " +
-                transformerInnerReference.referencePath +
-                " from " +
-                transformerInnerReference.transformerType,
-            },
-          }
-      : transformerInnerReference.transformerType == "parameterReference"
-      ? transformerInnerReference.referenceName
-        ? localQueryParams[transformerInnerReference.referenceName]
-          ? localQueryParams[transformerInnerReference.referenceName]
-          : {
-              elementType: "failure",
-              elementValue: {
-                queryFailure: "ReferenceFoundButUndefined",
-                queryContext:
-                  transformerInnerReference.transformerType == "parameterReference"
-                    ? JSON.stringify(Object.keys(localContextResults))
-                    : JSON.stringify(Object.keys(localQueryParams)),
-                failureMessage:
-                  "found but undefined 3: referenceName " +
-                  transformerInnerReference.referenceName +
-                  " or referencePath " +
-                  transformerInnerReference.referencePath +
-                  " from " +
-                  transformerInnerReference.transformerType,
-              },
-            }
-        : transformerInnerReference.referencePath
-        ? resolvePathOnObject(localQueryParams, transformerInnerReference.referencePath)
-          ? resolvePathOnObject(localQueryParams, transformerInnerReference.referencePath)
-          // ? {
-          //     // TODO: optimize calls to resolvePathOnObject
-          //     elementType: typeof resolvePathOnObject(localQueryParams, transformerInnerReference.referencePath),
-          //     elementValue: resolvePathOnObject(localQueryParams, transformerInnerReference.referencePath),
-          //   }
-          : {
-              elementType: "failure",
-              elementValue: {
-                queryFailure: "ReferenceFoundButUndefined",
-                queryContext:
-                  transformerInnerReference.transformerType == "parameterReference"
-                    ? JSON.stringify(Object.keys(localContextResults))
-                    : JSON.stringify(Object.keys(localQueryParams)),
-                failureMessage:
-                  "found but undefined 4: referenceName " +
-                  transformerInnerReference.referenceName +
-                  " or referencePath " +
-                  transformerInnerReference.referencePath +
-                  " from " +
-                  transformerInnerReference.transformerType,
-              },
-            }
-        : {
-            elementType: "failure",
-            elementValue: {
-              queryFailure: "ReferenceFoundButUndefined",
-              queryContext:
-                transformerInnerReference.transformerType == "parameterReference"
-                  ? JSON.stringify(Object.keys(localContextResults))
-                  : JSON.stringify(Object.keys(localQueryParams)),
-              failureMessage:
-                "found but undefined 5: referenceName " +
-                transformerInnerReference.referenceName +
-                " or referencePath " +
-                transformerInnerReference.referencePath +
-                " from " +
-                transformerInnerReference.transformerType,
-            },
-          }
-      : transformerInnerReference.transformerType == "constantUuid"
-      ? transformerInnerReference.constantUuidValue // new object
-      : transformerInnerReference.transformerType == "newUuid"
-      ? uuidv4() // new object
-      : transformerInnerReference.transformerType == "constantString"
-      ? transformerInnerReference.constantStringValue
-      : transformerInnerReference.transformerType == "constantObject"
-      ? transformerInnerReference.constantObjectValue
-      : {
-          elementType: "failure",
-          elementValue: {
-            queryFailure: "QueryNotExecutable",
-            failureOrigin: ["transformer_InnerReference_resolve"],
-            queryContext: "unhandled transformerType for reference " + JSON.stringify(transformerInnerReference),
-            query: transformerInnerReference,
-          },
-        }; /* this should not happen. Provide "error" value instead?*/
-
-  log.info(
-    "transformer_InnerReference_resolve returning for transformerInnerReference=",
-    transformerInnerReference,
-    "resolved as",
-    reference,
-    // "from",
-    // (
-    //   transformerInnerReference.transformerType ==
-    //   "contextReference"
-    //     ? JSON.stringify(localContextResults)
-    //     : JSON.stringify(Object.keys(localQueryParams))
-    // )
-  );
-
-  return reference;
 };
 
 // ################################################################################################
@@ -844,12 +686,10 @@ export function transformer_dynamicObjectAccess_apply(
                 failureOrigin: ["transformer_apply"],
                 query: currentPathElement,
                 queryContext: "error in transformer_dynamicObjectAccess_apply, could not find key: " + JSON.stringify(key, null, 2),
-                // queryContext: "error in transformer_dynamicObjectAccess_apply, could not find key: " + JSON.stringify(key.elementValue, null, 2),
               },
             };
           }
           const innerResult = acc?acc[key]:key;
-          // const innerResult = acc?acc[key.elementValue]:key.elementValue;
           log.info(
             "innerTransformer_apply transformer_dynamicObjectAccess_apply (object) for",
             transformer,
@@ -862,7 +702,6 @@ export function transformer_dynamicObjectAccess_apply(
             "result",
             innerResult
           );
-          // return { elementType: "any", elementValue: acc?acc[key.elementValue]:key.elementValue};
           return innerResult;
         }
         case "number":
@@ -940,10 +779,6 @@ export function innerTransformer_apply(
         );
         return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } }; // TODO: improve error message / queryFailure
       }
-      // const elementValueArray =
-      //   resolvedReference.elementValue instanceof Array
-      //     ? resolvedReference.elementValue
-      //     : Object.entries(resolvedReference.elementValue);
       log.info("innerTransformer_apply extractorTransformer count resolvedReference", resolvedReference.length);
       const sortByAttribute = transformer.orderBy
         ? (a: any[]) =>
@@ -956,7 +791,6 @@ export function innerTransformer_apply(
 
       if (transformer.groupBy) {
         const result = new Map<string, number>();
-        // for (const entry of Object.entries(resolvedReference.elementValue)) {
         for (const entry of resolvedReference) {
           const key = (entry as any)[transformer.groupBy];
           if (result.has(key)) {
@@ -968,19 +802,9 @@ export function innerTransformer_apply(
         return sortByAttribute(
           [...result.entries()].map((e) => ({ [transformer.groupBy as any]: e[0], count: e[1] }))
         );
-        // return {
-        //   elementType: "any",
-        //   elementValue: sortByAttribute(
-        //     [...result.entries()].map((e) => ({ [transformer.groupBy as any]: e[0], count: e[1] }))
-        //   ),
-        // };
       } else {
         log.info("innerTransformer_apply extractorTransformer count without groupBy resolvedReference", resolvedReference.length);
         return [{ count: resolvedReference.length }]
-        // return {
-        //   elementType: "any" /* TODO: number? */,
-        //   elementValue: [{ count: resolvedReference.elementValue.length }],
-        // };
       }
       break;
     }
@@ -1045,7 +869,6 @@ export function innerTransformer_apply(
         resolvedReference
       );
       return Object.entries(resolvedReference);
-      // return { elementType: "any", elementValue: Object.entries(resolvedReference.elementValue) };
     }
     case "objectValues": {
       const resolvedReference = defaultTransformers.transformer_InnerReference_resolve(
@@ -1055,12 +878,6 @@ export function innerTransformer_apply(
         contextResults
       );
 
-      // log.info(
-      //   "transformer_apply extractorTransformer count referencedExtractor resolvedReference",
-      //   resolvedReference
-      // );
-
-      // if (!["instanceUuidIndex", "object"].includes(resolvedReference.elementType)) {
       if (typeof resolvedReference != "object" || Array.isArray(resolvedReference)) {
         log.error(
           "innerTransformer_apply extractorTransformer count referencedExtractor resolvedReference",
@@ -1073,7 +890,6 @@ export function innerTransformer_apply(
         resolvedReference
       );
       return Object.values(resolvedReference);
-      // return { elementType: "instanceArray", elementValue: Object.values(resolvedReference.elementValue) };
     }
     case "mapperListToList": {
       return defaultTransformers.transformerForBuild_list_listMapperToList_apply(step, transformer, queryParams, contextResults);
@@ -1115,32 +931,18 @@ export function innerTransformer_apply(
       : (a: any[]) => a;
 
       const sortedResultArray = sortByAttribute(resolvedReference);
-      // const sortedResultArray = sortByAttribute(resolvedReference.elementValue);
       const result = sortedResultArray[transformer.index];
       log.info(
         "innerTransformer_apply extractorTransformer listPickElement sorted resolvedReference",
         sortedResultArray,
-        // "innerTransformer_apply extractorTransformer listPickElement resolvedReference",
-        // resolvedReference,
         "index",
         transformer.index,
         "result",
         result
       );
       return result;
-      // return { elementType: "any", elementValue: result };
       break;
     }
-    // case "li": {
-    //   return defaultTransformers.transformer_object_listReducerToIndexObject_apply(
-    //     step,
-    //     transformer,
-    //     queryParams,
-    //     contextResults,
-    //   );
-    //   break;
-    // }
-    // case ""
     case "objectDynamicAccess": {
       return defaultTransformers.transformer_dynamicObjectAccess_apply(
         step,
@@ -1167,8 +969,7 @@ export function innerTransformer_apply(
         resolvedReference
       );
 
-      // if (!["instanceUuidIndex", "object"].includes(resolvedReference.elementType)) {
-      if (typeof resolvedReference != "object" || Array.isArray(resolvedReference)) {
+      if (typeof resolvedReference != "object" || !Array.isArray(resolvedReference)) {
         log.error(
           "innerTransformer_apply extractorTransformer unique referencedExtractor can not apply to resolvedReference",
           resolvedReference
@@ -1185,18 +986,12 @@ export function innerTransformer_apply(
             )
         : (a: any[]) => a;
       const result = new Set<string>();
-      // for (const entry of Object.entries(resolvedReference.elementValue)) {
       for (const entry of Object.entries(resolvedReference)) {
         result.add((entry[1] as any)[transformer.attribute]);
       }
       const resultDomainElement: Domain2QueryReturnType<any> = sortByAttribute(
         [...result].map((e) => ({ [transformer.attribute]: e }))
       );
-      // const resultDomainElement: Domain2QueryReturnType<DomainElementSuccess> = {
-      //   elementType: "instanceArray",
-      
-      //   elementValue: sortByAttribute([...result].map((e) => ({ [transformer.attribute]: e }))),
-      // }
       log.info(
         "innerTransformer_apply extractorTransformer unique", label, "result",
         resultDomainElement
@@ -1217,7 +1012,6 @@ export function innerTransformer_apply(
               queryParams,
               contextResults
             ),
-            // ).elementValue,
           ];
         })
       );
@@ -1268,7 +1062,6 @@ export function innerTransformer_apply(
           queryParams,
           currentContext
         );
-        // ).elementValue;
       }
       return resultObject
       // return { elementType: "object", elementValue: resultObject };
@@ -1288,12 +1081,6 @@ export function innerTransformer_apply(
         typeof transformer == "object" && (transformer as any).applyFunction
           ? (transformer as any).applyFunction(rawValue)
           : rawValue;
-      // const returnedValue: Domain2QueryReturnType<DomainElementSuccess> =
-      //   typeof transformer == "object" && (transformer as any).applyFunction
-      //     ? { elementType: "any", elementValue: (transformer as any).applyFunction(rawValue.elementValue) }
-      //     : rawValue;
-      // log.info("transformer_apply default case for", transformerForBuild, "rawvalue", rawValue, "value", value);
-      // return { elementType: "any", elementValue: value};
       return returnedValue;
       break;
     }
@@ -1355,7 +1142,6 @@ export function innerTransformer_plainObject_apply(
   if (failureIndex == -1) {
     const result = Object.fromEntries(
       attributeEntries.map((e) => [e[0], e[1]])
-      // attributeEntries.map((e) => [e[0], e[1].elementValue])
     )
     // log.info(
     //   "innerTransformer_plainObject_apply on",
@@ -1388,9 +1174,8 @@ export function innerTransformer_plainObject_apply(
       elementValue: {
         queryFailure: "ReferenceNotFound",
         failureOrigin: ["innerTransformer_plainObject_apply"],
-        innerError: attributeEntries[failureIndex][1].elementValue,
+        innerError: attributeEntries[failureIndex][1],
         queryContext: "error in attribute: " + attributeEntries[failureIndex][0]
-        //  + " in " + JSON.stringify(attributeEntries[failureIndex]),
       },
     };
   }
@@ -1430,10 +1215,6 @@ export function innerTransformer_array_apply(
   const failureIndex = subObject.findIndex((e) => e.elementType == "failure");
   if (failureIndex == -1) {
     return subObject;
-    // return {
-    //   elementType: "array",
-    //   elementValue: subObject.map((e) => e.elementValue), // TODO: clean result instead? (deep!)
-    // }
   } else {
     log.error(
       "innerTransformer_array_apply failed converting array",
@@ -1448,7 +1229,7 @@ export function innerTransformer_array_apply(
       elementValue: {
         queryFailure: "ReferenceNotFound",
         failureOrigin: ["innerTransformer_array_apply"],
-        innerError: subObject[failureIndex].elementValue,
+        innerError: subObject[failureIndex],
         queryContext:
           "failed to transform object attribute for array index " +
           failureIndex +

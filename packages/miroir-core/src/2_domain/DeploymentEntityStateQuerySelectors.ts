@@ -4,9 +4,6 @@ import {
   BoxedExtractorOrCombinerReturningObjectList,
   BoxedExtractorOrCombinerReturningObjectOrObjectList,
   BoxedQueryWithExtractorCombinerTransformer,
-  DomainElementInstanceUuidIndex,
-  DomainElementObject,
-  // QueryByEntityUuidGetEntityDefinition,
   EntityDefinition,
   EntityInstance,
   EntityInstancesUuidIndex,
@@ -54,7 +51,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 // ################################################################################################
 export const runQueryFromDeploymentEntityState: SyncQueryRunner<
   DeploymentEntityState,
-  DomainElementObject
+  Domain2QueryReturnType<Record<string, any>>
 > = runQuery<DeploymentEntityState>;
 
 // ################################################################################################
@@ -89,19 +86,6 @@ export const selectEntityInstanceFromDeploymentEntityState: SyncBoxedExtractorRu
     applicationSection,
     entityUuidReference
   );
-
-  // if (entityUuidReference.elementType != "string" && entityUuidReference.elementType != "instanceUuid") {
-  //   return {
-  //     elementType: "failure",
-  //     elementValue: {
-  //       queryFailure: "IncorrectParameters",
-  //       queryContext:
-  //         "selectEntityInstanceFromDeploymentEntityState could not resolve entityUuidReference " +
-  //         JSON.stringify(entityUuidReference),
-  //       queryReference: JSON.stringify(querySelectorParams.parentUuid),
-  //     },
-  //   };
-  // }
 
   const index = getDeploymentEntityStateIndex(deploymentUuid, applicationSection, entityUuidReference);
 
@@ -178,13 +162,6 @@ export const selectEntityInstanceFromDeploymentEntityState: SyncBoxedExtractorRu
       return deploymentEntityState[index].entities[
         referenceObject[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
       ];
-      // return {
-      //   elementType: "instance",
-      //   elementValue:
-      //     deploymentEntityState[index].entities[
-      //       referenceObject[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
-      //     ],
-      // };
       break;
     }
     case "extractorForObjectByDirectReference": {

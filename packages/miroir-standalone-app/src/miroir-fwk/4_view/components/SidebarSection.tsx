@@ -17,7 +17,6 @@ import {
   adminConfigurationDeploymentMiroir,
   DeploymentEntityState,
   Domain2QueryReturnType,
-  DomainElementObject,
   entityMenu,
   getApplicationSection,
   getQueryRunnerParamsForDeploymentEntityState,
@@ -168,7 +167,7 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
   );
 
   log.info("fetchDeploymentMenusQueryParams",fetchDeploymentMenusQueryParams)
-  const miroirMenusDomainElementObject: Domain2QueryReturnType<DomainElementObject> = useDeploymentEntityStateQuerySelector(
+  const miroirMenusDomainElementObject: Domain2QueryReturnType<Domain2QueryReturnType<Record<string,any>>> = useDeploymentEntityStateQuerySelector(
     deploymentEntityStateSelectorMap.runQuery,
     fetchDeploymentMenusQueryParams
   );

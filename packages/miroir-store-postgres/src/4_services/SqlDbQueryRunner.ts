@@ -1,5 +1,6 @@
 import {
   Action2EntityInstanceCollectionOrFailure,
+  Action2Error,
   Action2ReturnType,
   ApplicationSection,
   asyncApplyExtractorTransformerInMemory,
@@ -13,12 +14,12 @@ import {
   asyncRunQuery,
   BoxedExtractorOrCombinerReturningObject,
   BoxedExtractorOrCombinerReturningObjectList,
-  DomainElementInstanceUuidIndex,
-  DomainElementObject,
-  DomainElementSuccess,
+  Domain2ElementFailed,
   Domain2QueryReturnType,
+  DomainElementSuccess,
   DomainState,
   EntityInstance,
+  EntityInstancesUuidIndex,
   ExtractorOrCombinerReturningObject,
   LoggerInterface,
   MiroirLoggerFactory,
@@ -30,10 +31,7 @@ import {
   selectFetchQueryJzodSchemaFromDomainStateNew,
   selectJzodSchemaByDomainModelQueryFromDomainStateNew,
   selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
-  transformer_InnerReference_resolve,
-  EntityInstancesUuidIndex,
-  Domain2ElementFailed,
-  Action2Error
+  transformer_InnerReference_resolve
 } from "miroir-core";
 import {
   sqlStringForQuery

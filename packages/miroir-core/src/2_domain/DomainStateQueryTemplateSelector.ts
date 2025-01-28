@@ -3,7 +3,6 @@
 import {
   BoxedExtractorTemplateReturningObjectOrObjectList,
   BoxedQueryTemplateWithExtractorCombinerTransformer,
-  DomainElementObject,
   DomainElementSuccess,
   EntityDefinition,
   JzodObject,
@@ -60,7 +59,8 @@ export const extractorTemplateRunnerForDomainState: ExtractorTemplateRunnerForDo
 
 export type QueryTemplateRunnerForDomainState = SyncQueryTemplateRunner<
   DomainState,
-  Domain2QueryReturnType<DomainElementSuccess>
+  // Domain2QueryReturnType<DomainElementSuccess>
+  Domain2QueryReturnType<any>
 >;
 
 export const queryTemplateRunnerForDomainState: QueryTemplateRunnerForDomainState =
@@ -71,7 +71,7 @@ export const queryTemplateRunnerForDomainState: QueryTemplateRunnerForDomainStat
 //  provide a better interface?
 export const runQueryTemplateFromDomainState: SyncQueryTemplateRunner<
   DomainState,
-  DomainElementObject
+  Domain2QueryReturnType<Record<string,any>>
 > = runQueryTemplateWithExtractorCombinerTransformer<DomainState>;
 
 // ################################################################################################

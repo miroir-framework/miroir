@@ -425,6 +425,7 @@ export {
   Domain2Element,
   Domain2QueryReturnType,
   Domain2ElementFailed,
+  domain2ElementObjectZodSchema
 } from './0_interfaces/2_domain/DomainElement.js';
 export {
   RecordOfJzodElement,
@@ -639,8 +640,8 @@ export {
   extractJzodSchemaForDomainModelQueryTemplate,
 } from './2_domain/QueryTemplateSelectors.js';
 export {
-  domainElementToPlainObject,
-  plainObjectToDomainElement,
+  domainElementToPlainObjectDEFUNCT,
+  plainObjectToDomainElementDEFUNCT,
   extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
   extractEntityInstanceListWithObjectListExtractorInMemory,
   extractFetchQueryJzodSchema,

@@ -6,7 +6,7 @@
     "esModuleInterop": true,
     "allowJs": true,
     "allowSyntheticDefaultImports":true,
-    "lib": ["es6", "dom"],
+    "lib": ["es2022", "dom"],
     "strict": true,
     "noImplicitAny": true,
     "noImplicitThis": true,

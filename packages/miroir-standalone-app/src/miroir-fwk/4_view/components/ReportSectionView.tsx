@@ -3,7 +3,6 @@ import { useMemo } from 'react';
 import {
   SelfApplicationDeploymentConfiguration,
   ApplicationSection,
-  DomainElementObject,
   Entity,
   EntityDefinition,
   LoggerInterface,
@@ -11,7 +10,8 @@ import {
   RecordOfJzodObject,
   ReportSection,
   RootReport,
-  Uuid
+  Uuid,
+  Domain2QueryReturnType
 } from "miroir-core";
 
 
@@ -31,9 +31,9 @@ MiroirLoggerFactory.registerLoggerToStart(
 export interface ReportSectionViewProps {
   applicationSection: ApplicationSection,
   deploymentUuid: Uuid,
-  queryResults: DomainElementObject,
+  queryResults: Domain2QueryReturnType<Record<string,any>>,
   fetchedDataJzodSchema: RecordOfJzodObject | undefined,
-  paramsAsdomainElements: DomainElementObject,
+  paramsAsdomainElements: Domain2QueryReturnType<Record<string,any>>,
   reportSection: ReportSection,
   rootReport: RootReport,
 }
@@ -41,7 +41,7 @@ export interface ReportSectionViewProps {
 // ###############################################################################################################
 const evaluateExpression = (
   expression: string | undefined,
-  domainElementObject: DomainElementObject
+  domainElementObject: Domain2QueryReturnType<Record<string,any>>
   ) => {
   const parts = expression?.split(".");
   const object =
@@ -56,7 +56,7 @@ const evaluateExpression = (
 
 const interpolateExpression = (
   stringToInterpolate: string | undefined, 
-  domainElementObject: DomainElementObject,
+  domainElementObject: Domain2QueryReturnType<Record<string,any>>,
   label?: string,
 ) => {
   const reg = /\$\{([^}]*)\}/g;

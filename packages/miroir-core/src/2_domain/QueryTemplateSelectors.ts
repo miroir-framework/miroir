@@ -5,7 +5,6 @@ import {
   BoxedExtractorTemplateReturningObjectOrObjectList,
   BoxedQueryTemplateWithExtractorCombinerTransformer,
   BoxedQueryWithExtractorCombinerTransformer,
-  DomainElementObject,
   DomainElementSuccess,
   DomainModelQueryTemplateJzodSchemaParams,
   ExtractorOrCombinerTemplate,
@@ -242,7 +241,7 @@ export const extractWithBoxedExtractorTemplate /**: SyncBoxedExtractorTemplateRu
 export const runQueryTemplateWithExtractorCombinerTransformer = <StateType>(
   state: StateType,
   selectorParams: SyncQueryTemplateRunnerParams<StateType>,
-): DomainElementObject => { 
+): Domain2QueryReturnType<Record<string,any>> => { 
 
   const resolvedExtractor: BoxedQueryWithExtractorCombinerTransformer =
     resolveQueryTemplateWithExtractorCombinerTransformer(selectorParams.extractorOrCombinerTemplate); 
@@ -299,11 +298,11 @@ export const extractzodSchemaForSingleSelectQueryTemplate = <StateType>(
     extractorRunnerMap: selectorParams.extractorRunnerMap,
     query: {
       queryType: "getEntityDefinition",
-      contextResults: { elementType: "object", elementValue: {} },
+      contextResults: {},
       pageParams: selectorParams.query.pageParams,
       queryParams: selectorParams.query.queryParams,
       deploymentUuid: selectorParams.query.deploymentUuid ?? "",
-      entityUuid: entityUuidDomainElement.elementValue,
+      entityUuid: entityUuidDomainElement,
     },
   } as ExtractorTemplateRunnerParamsForJzodSchema<QueryByEntityUuidGetEntityDefinition,StateType>) as JzodObject | undefined
 

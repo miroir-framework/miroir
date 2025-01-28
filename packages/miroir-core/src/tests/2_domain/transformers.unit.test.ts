@@ -146,15 +146,125 @@ async function runTransformerTest(transformerTest: TransformerTest) {
 }
 
 describe("transformers.unit.test", async () => {
-  // await beforeAll();
   await runTransformerTestSuite(transformerTests, runTransformerTest);
-  // await afterAll();
   
   // TODO: test failure cases!
   // describe.sequential(
   //   "DomainController.integ.Data.CRUD",
   //   () => {
   
+
+  describe("contextReference failure cases", () => {
+    it("should fail when context reference is not found", async () => {
+      const transformer: TransformerForBuild = {
+        transformerType: "contextReference",
+        referenceName: "nonExistentReference"
+      };
+
+      const result = transformer_apply(
+        "build",
+        undefined,
+        transformer,
+        {},
+        {}
+      );
+
+      expect(result.elementType).toEqual("failure");
+      expect(result.elementValue.queryFailure).toEqual("ReferenceNotFound");
+    });
+
+    it("should fail when context reference is undefined", async () => {
+      const transformer: TransformerForBuild = {
+        transformerType: "contextReference",
+        referenceName: "undefinedReference"
+      };
+
+      const result = transformer_apply(
+        "build",
+        undefined,
+        transformer,
+        {},
+        { undefinedReference: undefined }
+      );
+
+      expect(result.elementType).toEqual("failure");
+      expect(result.elementValue.queryFailure).toEqual("ReferenceFoundButUndefined");
+    });
+
+    it("should fail when context reference path is invalid", async () => {
+      const transformer: TransformerForBuild = {
+        transformerType: "contextReference",
+        referencePath: ["invalid", "path"]
+      };
+
+      const result = transformer_apply(
+        "build",
+        undefined,
+        transformer,
+        {},
+        { valid: { path: "value" } }
+      );
+
+      expect(result.elementType).toEqual("failure");
+      expect(result.elementValue.queryFailure).toEqual("ReferenceNotFound");
+    });
+  });
+
+  describe("paramReference failure cases", () => {
+    it("should fail when parrameter reference is not found", async () => {
+      const transformer: TransformerForBuild = {
+        transformerType: "parameterReference",
+        referenceName: "nonExistentReference"
+      };
+
+      const result = transformer_apply(
+        "build",
+        undefined,
+        transformer,
+        {},
+        {}
+      );
+
+      expect(result.elementType).toEqual("failure");
+      expect(result.elementValue.queryFailure).toEqual("ReferenceNotFound");
+    });
+
+    it("should fail when parameter reference is undefined", async () => {
+      const transformer: TransformerForBuild = {
+        transformerType: "parameterReference",
+        referenceName: "undefinedReference"
+      };
+
+      const result = transformer_apply(
+        "build",
+        undefined,
+        transformer,
+        { undefinedReference: undefined },
+        {},
+      );
+
+      expect(result.elementType).toEqual("failure");
+      expect(result.elementValue.queryFailure).toEqual("ReferenceFoundButUndefined");
+    });
+
+    it("should fail when parameter reference path is invalid", async () => {
+      const transformer: TransformerForBuild = {
+        transformerType: "parameterReference",
+        referencePath: ["invalid", "path"]
+      };
+
+      const result = transformer_apply(
+        "build",
+        undefined,
+        transformer,
+        { valid: { path: "value" } },
+        {},
+      );
+
+      expect(result.elementType).toEqual("failure");
+      expect(result.elementValue.queryFailure).toEqual("ReferenceNotFound");
+    });
+  });
 
   describe("objectEntries", () => {
     // ################################################################################################
@@ -172,7 +282,7 @@ describe("transformers.unit.test", async () => {
 
       const preTestResult: { [k: string]: { [l: string]: any } } = transformer_apply(
         "runtime",
-        "ROOT",
+        undefined,
         uniqueRuntimeTemplate as any,
         {
           newUuid: newUuid,
@@ -476,7 +586,7 @@ describe("transformers.unit.test", async () => {
 
       const preTestResult: { [k: string]: { [l: string]: any } } = transformer_apply(
         "build",
-        "ROOT",
+        undefined,
         uniqueRuntimeTemplate as any,
         {
           newUuid: newUuid,
@@ -600,7 +710,7 @@ describe("transformers.unit.test", async () => {
 
       const result: Domain2QueryReturnType<any> = transformer_apply(
         "runtime",
-        "ROOT",
+        undefined,
         {
           transformerType: "contextReference",
           interpolation: "runtime",
@@ -630,7 +740,7 @@ describe("transformers.unit.test", async () => {
 
       const result: Domain2QueryReturnType<any> = transformer_apply(
         "runtime",
-        "ROOT",
+        undefined,
         {
           transformerType: "contextReference",
           interpolation: "runtime",
@@ -660,7 +770,7 @@ describe("transformers.unit.test", async () => {
 
       const result: Domain2QueryReturnType<any> = transformer_apply(
         "runtime",
-        "ROOT",
+        undefined,
         {
           transformerType: "contextReference",
           interpolation: "runtime",
@@ -737,12 +847,11 @@ describe("transformers.unit.test", async () => {
 
       const newDeploymentStoreConfiguration: StoreUnitConfiguration = transformer_apply(
         "build",
-        "ROOT",
+        undefined,
         newDeploymentStoreConfigurationTemplate as any,
         { newApplicationName },
         undefined
       ) as StoreUnitConfiguration;
-      // ).elementValue as StoreUnitConfiguration;
 
       const actionParams: Record<string, any> = {
         newApplicationName,
@@ -774,7 +883,7 @@ describe("transformers.unit.test", async () => {
       }
       const convertedAction: DomainAction = transformer_apply(
         "build",
-        "ROOT",
+        undefined,
         testAction as any,
         actionParams,
         undefined
@@ -813,7 +922,7 @@ describe("transformers.unit.test", async () => {
 
       const testResult: string = transformer_apply(
         "build",
-        "ROOT",
+        undefined,
         mustacheTemplate,
         { newApplicationName },
         undefined
@@ -831,32 +940,38 @@ describe("transformers.unit.test", async () => {
       console.log(expect.getState().currentTestName, "START")
       const newApplicationName = "test";
 
-      const uniqueRuntimeTemplate:TransformerForRuntime = {
-        transformerType: "unique",
-        interpolation: "runtime",
-        referencedExtractor: "books",
-        attribute: "author",
-        orderBy: "author",
-      }
-
       const testResult: string = transformer_apply(
         "runtime",
-        "ROOT",
-        uniqueRuntimeTemplate,
+        undefined,
+        {
+          transformerType: "unique",
+          interpolation: "runtime",
+          referencedExtractor: "books",
+          attribute: "author",
+          orderBy: "author",
+        },
         { }, // queryParams
         {
-          books: Object.fromEntries(
-            [
+          books: [
               book1 as EntityInstance,
               book2 as EntityInstance,
               book3 as EntityInstance,
               book4 as EntityInstance,
               book5 as EntityInstance,
               book6 as EntityInstance,
-            ].map((book: EntityInstance) => {
-              return [book.uuid, book];
-            })
-          ),
+          ], // expected value
+          // books: Object.fromEntries(
+          //   [
+          //     book1 as EntityInstance,
+          //     book2 as EntityInstance,
+          //     book3 as EntityInstance,
+          //     book4 as EntityInstance,
+          //     book5 as EntityInstance,
+          //     book6 as EntityInstance,
+          //   ].map((book: EntityInstance) => {
+          //     return [book.uuid, book];
+          //   })
+          // ), // expected value
         }, // context
       );
 
@@ -890,7 +1005,7 @@ describe("transformers.unit.test", async () => {
 
       const testResult: string = transformer_apply(
         "runtime",
-        "ROOT",
+        undefined,
         uniqueRuntimeTemplate,
         { }, // queryParams
         {
@@ -934,7 +1049,7 @@ describe("transformers.unit.test", async () => {
 
       const testResult: string = transformer_apply(
         "runtime",
-        "ROOT",
+        undefined,
         uniqueRuntimeTemplate,
         { }, // queryParams
         {
@@ -1010,7 +1125,7 @@ describe("transformers.unit.test", async () => {
 
       const testResult: string = transformer_apply(
         "runtime",
-        "ROOT",
+        undefined,
         uniqueRuntimeTemplate,
         { newUuid },
         {
@@ -1071,7 +1186,7 @@ describe("transformers.unit.test", async () => {
   //     // const preTestResult: {[k: string]: {[l:string]: any}} = transformer_apply(
   //     const preTestResult: {[k: string]: {[l:string]: any}} = transformer_apply(
   //       "runtime",
-  //       "ROOT",
+  //       undefined,
   //       // uniqueRuntimeTemplate,
   //       uniqueRuntimeTemplate as any,
   //       {
@@ -1113,7 +1228,7 @@ describe("transformers.unit.test", async () => {
       // const preTestResult: {[k: string]: {[l:string]: any}} = transformer_apply(
       const preTestResult: {[k: string]: {[l:string]: any}} = transformer_apply(
         "runtime",
-        "ROOT",
+        undefined,
         // uniqueRuntimeTemplate,
         uniqueRuntimeTemplate as any,
         {
@@ -1164,7 +1279,7 @@ describe("transformers.unit.test", async () => {
 
     const preTestResult: {[k: string]: {[l:string]: any}} = transformer_apply(
       "build",
-      "ROOT",
+      undefined,
       uniqueRuntimeTemplate as any,
       {
         newUuid: newUuid ,
@@ -1275,7 +1390,7 @@ describe("transformers.unit.test", async () => {
 
   //   const preTestResult: {[k: string]: {[l:string]: any}} = transformer_apply(
   //     "runtime",
-  //     "ROOT",
+  //     undefined,
   //     uniqueRuntimeTemplate as any,
   //     {
   //       newUuid: newUuid ,
@@ -1348,7 +1463,7 @@ describe("transformers.unit.test", async () => {
 
     const preTestResult: { [k: string]: { [l: string]: any } } = transformer_apply(
       "build",
-      "ROOT",
+      undefined,
       uniqueBuildTemplate as any,
       {
         // newUuid: newUuid,
@@ -1494,7 +1609,7 @@ describe("transformers.unit.test", async () => {
   //   };
   //   const preTestResult: { [k: string]: { [l: string]: any } } = transformer_apply(
   //     "runtime",
-  //       "ROOT",
+  //       undefined,
   //     uniqueBuildTemplate as any,
   //     {
   //       // newUuid: newUuid,
@@ -1629,7 +1744,7 @@ describe("transformers.unit.test", async () => {
     // const preTestResult: {[k: string]: {[l:string]: any}} = transformer_apply(
     const preTestResult: { [k: string]: { [l: string]: any } } = transformer_apply(
       "runtime",
-      "ROOT",
+      undefined,
       uniqueRuntimeTemplate as any,
       {
         newUuid: newUuid,
@@ -1835,7 +1950,7 @@ describe("transformers.unit.test", async () => {
     // const preTestResult: {[k: string]: {[l:string]: any}} = transformer_apply(
     const preTestResult: { [k: string]: { [l: string]: any } } = transformer_apply(
       "runtime",
-      "ROOT",
+      undefined,
       uniqueRuntimeTemplate as any,
       {
         newUuid: newUuid,
@@ -2011,13 +2126,6 @@ describe("transformers.unit.test", async () => {
       expect(result.doubleName).toBe("testName-testName");
       expect(result.object.reDoubleName).toEqual("testName-testName");
       expect(result.object.reReDoubleName).toEqual("testName-testName");
-      // expect(result.elementValue.name).toBe("testName");
-      // expect(result.elementValue.uuid).toMatch(
-      //   /^[0-9a-f]{8}-[0-9a-f]{4}-[4][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
-      // );
-      // expect(result.elementValue.doubleName).toBe("testName-testName");
-      // expect(result.elementValue.object.reDoubleName).toEqual("testName-testName");
-      // expect(result.elementValue.object.reReDoubleName).toEqual("testName-testName");
     });
   });
     
@@ -2029,11 +2137,11 @@ describe("transformers.unit.test", async () => {
 
 
 
-  // // ################################################################################################
-  // // ################################################################################################
-  // // ################################################################################################
-  // // ################################################################################################
-  // // ################################################################################################
+  // ################################################################################################
+  // ################################################################################################
+  // ################################################################################################
+  // ################################################################################################
+  // ################################################################################################
   // it("build an EntityDefinition from spreadsheet with transformers", async () => { // TODO: test failure cases!
   //   console.log(expect.getState().currentTestName, "START")
   //   const newApplicationName = "test";
@@ -2053,7 +2161,7 @@ describe("transformers.unit.test", async () => {
 
   //   // const columnDefinitionRow = transformer_apply(
   //   //   "runtime",
-  //   //   "ROOT",
+  //   //   undefined,
   //   //   // extractColumnDefinitionRow,
   //   //   {
   //   //     transformerType: "listPickElement",

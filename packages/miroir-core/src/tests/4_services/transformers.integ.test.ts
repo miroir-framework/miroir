@@ -252,8 +252,8 @@ const extractors: ExtractorOrCombinerRecord = {
 //   if (queryResult instanceof Action2Error) {
 //     expect(queryResult instanceof Action2Error).toEqual(false);
 //   } else {
-//     const testResult = (queryResult as Action2Success).returnedDomainElement.elementValue.transformer;
-//     // const testResult = queryResult.returnedDomainElement.elementValue.transformer;
+//     const testResult = (queryResult as Action2Success).returnedDomainElement.transformer;
+//     // const testResult = queryResult.returnedDomainElement.transformer;
 //     console.log(expect.getState().currentTestName, "testResult", JSON.stringify(queryResult, null, 2));
 //     console.log(expect.getState().currentTestName, "expectedValue", transformerTest.expectedValue);
 //     expect(testResult).toEqual(transformerTest.expectedValue);
@@ -315,7 +315,7 @@ describe("transformers.integ.test", async () => {
   //     console.log(expect.getState().currentTestName, "expectedBooks", expectedBooks);
   //     expect(testResult.status).toEqual("ok");
   //     if (testResult.status === "ok") {
-  //       expect(ignorePostgresExtraAttributesOnObject(testResult.returnedDomainElement.elementValue.firstBook)).toEqual(
+  //       expect(ignorePostgresExtraAttributesOnObject(testResult.returnedDomainElement.firstBook)).toEqual(
   //         expectedBooks ? expectedBooks[0] : undefined
   //       );
   //     }
@@ -433,7 +433,7 @@ describe("transformers.integ.test", async () => {
   //     // console.log(expect.getState().currentTestName, "expectedBooks", expectedBooks);
   //     expect(testResult.status).toEqual("ok");
   //     // if (testResult.status === "ok") {
-  //     //   expect(ignorePostgresExtraAttributesOnObject(testResult.returnedDomainElement.elementValue.firstBook)).toEqual(
+  //     //   expect(ignorePostgresExtraAttributesOnObject(testResult.returnedDomainElement.firstBook)).toEqual(
   //     //     expectedBooks ? expectedBooks[0] : undefined
   //     //   );
   //     // }
@@ -444,7 +444,7 @@ describe("transformers.integ.test", async () => {
 
   //   //   const result: Domain2QueryReturnType<DomainElementSuccess> = transformer_apply(
   //   //     "build",
-  //   //     "ROOT",
+  //   //     undefined,
   //   //     {
   //   //       transformerType: "constantUuid",
   //   //       constantUuidValue: "test",
@@ -473,7 +473,7 @@ describe("transformers.integ.test", async () => {
 
   //     const result: Domain2QueryReturnType<DomainElementSuccess> = transformer_apply(
   //       "runtime",
-  //       "ROOT",
+  //       undefined,
   //       {
   //         transformerType: "contextReference",
   //         interpolation: "runtime",
@@ -506,7 +506,7 @@ describe("transformers.integ.test", async () => {
 
   //     const result: Domain2QueryReturnType<DomainElementSuccess> = transformer_apply(
   //       "runtime",
-  //       "ROOT",
+  //       undefined,
   //       {
   //         transformerType: "contextReference",
   //         interpolation: "runtime",
@@ -539,7 +539,7 @@ describe("transformers.integ.test", async () => {
 
   //     const result: Domain2QueryReturnType<DomainElementSuccess> = transformer_apply(
   //       "runtime",
-  //       "ROOT",
+  //       undefined,
   //       {
   //         transformerType: "contextReference",
   //         interpolation: "runtime",
@@ -611,11 +611,11 @@ describe("transformers.integ.test", async () => {
 
   //     const newDeploymentStoreConfiguration: StoreUnitConfiguration = transformer_apply(
   //       "build",
-  //       "ROOT",
+  //       undefined,
   //       newDeploymentStoreConfigurationTemplate as any,
   //       { newApplicationName },
   //       undefined
-  //     ).elementValue as StoreUnitConfiguration;
+  //     ) as StoreUnitConfiguration;
 
   //     const actionParams: Record<string, any> = {
   //       newApplicationName,
@@ -647,11 +647,11 @@ describe("transformers.integ.test", async () => {
   //     }
   //     const convertedAction: DomainAction = transformer_apply(
   //       "build",
-  //       "ROOT",
+  //       undefined,
   //       testAction as any,
   //       actionParams,
   //       undefined
-  //     ).elementValue as DomainAction;
+  //     ) as DomainAction;
 
   //     const expectedAction: DomainAction = {
   //       "actionType": "storeManagementAction",
@@ -686,11 +686,11 @@ describe("transformers.integ.test", async () => {
 
   //     const testResult: string = transformer_apply(
   //       "build",
-  //       "ROOT",
+  //       undefined,
   //       mustacheTemplate,
   //       { newApplicationName },
   //       undefined
-  //     ).elementValue as string;
+  //     ) as string;
 
   //     console.log("################################ converted transformer", testResult)
   //     expect(testResult).toEqual("testSelfApplication");
@@ -714,7 +714,7 @@ describe("transformers.integ.test", async () => {
 
   //     const testResult: string = transformer_apply(
   //       "runtime",
-  //       "ROOT",
+  //       undefined,
   //       uniqueRuntimeTemplate,
   //       { }, // queryParams
   //       {
@@ -731,7 +731,7 @@ describe("transformers.integ.test", async () => {
   //           })
   //         ),
   //       }, // context
-  //     ).elementValue as string;
+  //     ) as string;
 
   //     console.log("################################ converted template", testResult)
   //     expect(testResult).toEqual(
@@ -763,7 +763,7 @@ describe("transformers.integ.test", async () => {
 
   //     const testResult: string = transformer_apply(
   //       "runtime",
-  //       "ROOT",
+  //       undefined,
   //       uniqueRuntimeTemplate,
   //       { }, // queryParams
   //       {
@@ -776,7 +776,7 @@ describe("transformers.integ.test", async () => {
   //           book6 as EntityInstance,
   //         ]
   //       } // context
-  //     ).elementValue as string;
+  //     ) as string;
 
   //     console.log("################################ count books by author runtime transformer", testResult)
   //     expect(testResult).toEqual(
@@ -807,7 +807,7 @@ describe("transformers.integ.test", async () => {
 
   //     const testResult: string = transformer_apply(
   //       "runtime",
-  //       "ROOT",
+  //       undefined,
   //       uniqueRuntimeTemplate,
   //       { }, // queryParams
   //       {
@@ -821,7 +821,7 @@ describe("transformers.integ.test", async () => {
   //         ],
   //       } // context
   //       // undefined
-  //     ).elementValue as string;
+  //     ) as string;
 
   //     console.log("################################ count books by author runtime transformer", testResult)
   //     expect(testResult).toEqual(
@@ -883,13 +883,13 @@ describe("transformers.integ.test", async () => {
 
   //     const testResult: string = transformer_apply(
   //       "runtime",
-  //       "ROOT",
+  //       undefined,
   //       uniqueRuntimeTemplate,
   //       { newUuid },
   //       {
   //         country: Country1 as EntityInstance,
   //       } // context
-  //     ).elementValue as string;
+  //     ) as string;
 
   //     console.log("################################ count books by author runtime transformer", testResult)
   //     expect(testResult).toEqual(
@@ -944,7 +944,7 @@ describe("transformers.integ.test", async () => {
   //     // const preTestResult: {[k: string]: {[l:string]: any}} = transformer_apply(
   //     const preTestResult: {[k: string]: {[l:string]: any}} = transformer_apply(
   //       "runtime",
-  //       "ROOT",
+  //       undefined,
   //       // uniqueRuntimeTemplate,
   //       uniqueRuntimeTemplate as any,
   //       {
@@ -958,7 +958,7 @@ describe("transformers.integ.test", async () => {
   //             Country4 as EntityInstance,
   //         ],
   //       } // context
-  //     ).elementValue;
+  //     );
 
   // console.log("################################", expect.getState().currentTestName, "preTestResult", preTestResult)
   //         { name: 'DE' },
@@ -986,7 +986,7 @@ describe("transformers.integ.test", async () => {
   //     // const preTestResult: {[k: string]: {[l:string]: any}} = transformer_apply(
   //     const preTestResult: {[k: string]: {[l:string]: any}} = transformer_apply(
   //       "runtime",
-  //       "ROOT",
+  //       undefined,
   //       // uniqueRuntimeTemplate,
   //       uniqueRuntimeTemplate as any,
   //       {
@@ -1000,7 +1000,7 @@ describe("transformers.integ.test", async () => {
   //             Country4 as EntityInstance,
   //         ],
   //       } // context
-  //     ).elementValue;
+  //     );
 
   // console.log("################################", expect.getState().currentTestName, "preTestResult", preTestResult)
       // expect(testResult).toEqual(
@@ -1036,7 +1036,7 @@ describe("transformers.integ.test", async () => {
 
   //   const preTestResult: {[k: string]: {[l:string]: any}} = transformer_apply(
   //     "build",
-  //     "ROOT",
+  //     undefined,
   //     uniqueRuntimeTemplate as any,
   //     {
   //       newUuid: newUuid ,
@@ -1050,7 +1050,7 @@ describe("transformers.integ.test", async () => {
   //           Country4 as EntityInstance,
   //       ],
   //     } // context
-  //   ).elementValue;
+  //   );
 
   // console.log("################################", expect.getState().currentTestName, "preTestResult", preTestResult)
   //   // const testResult = ignorePostgresExtraAttributesOnList(preTestResult as any,["uuid"]); // uuid value is ignored
@@ -1087,7 +1087,7 @@ describe("transformers.integ.test", async () => {
   //   // const preTestResult: {[k: string]: {[l:string]: any}} = transformer_apply(
   //   const preTestResult: {[k: string]: {[l:string]: any}} = transformer_apply(
   //     "runtime",
-  //     "ROOT",
+  //     undefined,
   //     // uniqueRuntimeTemplate,
   //     uniqueRuntimeTemplate as any,
   //     {
@@ -1102,7 +1102,7 @@ describe("transformers.integ.test", async () => {
   //           Country4 as EntityInstance,
   //       ],
   //     } // context
-  //   ).elementValue;
+  //   );
 
   // console.log("################################", expect.getState().currentTestName, "preTestResult", preTestResult)
   //   expect(testResult).toEqual(
@@ -1146,7 +1146,7 @@ describe("transformers.integ.test", async () => {
 
   //   const preTestResult: {[k: string]: {[l:string]: any}} = transformer_apply(
   //     "runtime",
-  //     "ROOT",
+  //     undefined,
   //     uniqueRuntimeTemplate as any,
   //     {
   //       newUuid: newUuid ,
@@ -1160,7 +1160,7 @@ describe("transformers.integ.test", async () => {
   //           Country4 as EntityInstance,
   //       ],
   //     } // context
-  //   ).elementValue;
+  //   );
 
   // console.log("################################", expect.getState().currentTestName, "preTestResult", preTestResult)
   //   // const testResult = ignorePostgresExtraAttributesOnList(preTestResult as any,["uuid"]); // uuid value is ignored
@@ -1219,7 +1219,7 @@ describe("transformers.integ.test", async () => {
 
   //   const preTestResult: { [k: string]: { [l: string]: any } } = transformer_apply(
   //     "build",
-  //     "ROOT",
+  //     undefined,
   //     uniqueBuildTemplate as any,
   //     {
   //       // newUuid: newUuid,
@@ -1299,11 +1299,11 @@ describe("transformers.integ.test", async () => {
   //         updatedAt: "2024-10-01T20:28:59.705Z",
   //       },
   //     } // context
-  //   ).elementValue;
+  //   );
 
   //   console.log(
     // console.log("################################", expect.getState().currentTestName, "preTestResult", preTestResult)
-    //     "ROOT",
+    //     undefined,
   //     uniqueBuildTemplate as any,
   //     {
   //       // newUuid: newUuid,
@@ -1366,7 +1366,7 @@ describe("transformers.integ.test", async () => {
   //         },
   //       ],
   //     } // context
-  //   ).elementValue;
+  //   );
 
   // console.log("################################", expect.getState().currentTestName, "preTestResult", preTestResult)
   //     "################################ alter existing object list with mapperListToList-objectAlter with object dynamic access runtime transformer testResult",
@@ -1436,7 +1436,7 @@ describe("transformers.integ.test", async () => {
   //   // const preTestResult: {[k: string]: {[l:string]: any}} = transformer_apply(
   //   const preTestResult: { [k: string]: { [l: string]: any } } = transformer_apply(
   //     "runtime",
-  //     "ROOT",
+  //     undefined,
   //     uniqueRuntimeTemplate as any,
   //     {
   //       newUuid: newUuid,
@@ -1529,7 +1529,7 @@ describe("transformers.integ.test", async () => {
   //         },
   //       },
   //     } // context
-  //   ).elementValue;
+  //   );
 
   //   console.log("################################", expect.getState().currentTestName, "preTestResult", preTestResult)
   //   // const testResult = ignorePostgresExtraAttributesOnList(preTestResult as any,["uuid"]); // uuid value is ignored
@@ -1641,7 +1641,7 @@ describe("transformers.integ.test", async () => {
 
   //     const preTestResult: { [k: string]: { [l: string]: any } } = transformer_apply(
   //       "runtime",
-  //       "ROOT",
+  //       undefined,
   //       uniqueRuntimeTemplate as any,
   //       {
   //         newUuid: newUuid,
@@ -1734,7 +1734,7 @@ describe("transformers.integ.test", async () => {
   //           },
   //         },
   //       } // context
-  //     ).elementValue;
+  //     );
 
   //     console.log("################################", expect.getState().currentTestName, "preTestResult", preTestResult)
   //     const testResult = preTestResult; // uuid value is ignored
@@ -1944,7 +1944,7 @@ describe("transformers.integ.test", async () => {
 
   //     const preTestResult: { [k: string]: { [l: string]: any } } = transformer_apply(
   //       "build",
-  //       "ROOT",
+  //       undefined,
   //       uniqueRuntimeTemplate as any,
   //       {
   //         newUuid: newUuid,
@@ -2037,7 +2037,7 @@ describe("transformers.integ.test", async () => {
   //         //   },
   //         // },
   //       } // context
-  //     ).elementValue;
+  //     );
 
   //     console.log("################################", expect.getState().currentTestName, "preTestResult", preTestResult)
   //     const testResult = preTestResult; // uuid value is ignored
@@ -2165,7 +2165,7 @@ describe("transformers.integ.test", async () => {
   //   // const preTestResult: {[k: string]: {[l:string]: any}} = transformer_apply(
   //   const preTestResult: { [k: string]: { [l: string]: any } } = transformer_apply(
   //     "runtime",
-  //     "ROOT",
+  //     undefined,
   //     uniqueRuntimeTemplate as any,
   //     {
   //       newUuid: newUuid,
@@ -2258,7 +2258,7 @@ describe("transformers.integ.test", async () => {
   //         },
   //       ],
   //     } // context
-  //   ).elementValue;
+  //   );
 
   // console.log("################################", expect.getState().currentTestName, "preTestResult", preTestResult)
   //   // const testResult = ignorePostgresExtraAttributesOnList(preTestResult as any,["uuid"]); // uuid value is ignored
@@ -2328,13 +2328,13 @@ describe("transformers.integ.test", async () => {
   //     const result: Domain2QueryReturnType<DomainElementSuccess> = transformer_apply("build", undefined, transformer, queryParams, contextResults);
 
   //     expect(result.elementType).toBe("object");
-  //     expect(result.elementValue.name).toBe("testName");
-  //     expect(result.elementValue.uuid).toMatch(
+  //     expect(result.name).toBe("testName");
+  //     expect(result.uuid).toMatch(
   //       /^[0-9a-f]{8}-[0-9a-f]{4}-[4][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
   //     );
-  //     expect(result.elementValue.doubleName).toBe("testName-testName");
-  //     expect(result.elementValue.object.reDoubleName).toEqual("testName-testName");
-  //     expect(result.elementValue.object.reReDoubleName).toEqual("testName-testName");
+  //     expect(result.doubleName).toBe("testName-testName");
+  //     expect(result.object.reDoubleName).toEqual("testName-testName");
+  //     expect(result.object.reReDoubleName).toEqual("testName-testName");
   //   });
   // });
     
@@ -2395,7 +2395,7 @@ describe("transformers.integ.test", async () => {
 
   //   // const columnDefinitionRow = transformer_apply(
   //   //   "runtime",
-  //   //   "ROOT",
+  //   //   undefined,
   //   //   // extractColumnDefinitionRow,
   //   //   {
   //   //     transformerType: "listPickElement",
@@ -2413,7 +2413,7 @@ describe("transformers.integ.test", async () => {
   //   //       {a: "3", b: "4"},
   //   //     ],
   //   //   } // context
-  //   // ).elementValue;
+  //   // );
 
   //   const uniqueRuntimeTemplate: TransformerForBuild = {
   //     transformerType: "dataflowObject",
@@ -2639,7 +2639,7 @@ describe("transformers.integ.test", async () => {
   //     {
   //       // columnDefinitionRow,
   //     } // context
-  //   ).elementValue;
+  //   );
 
   //   console.log("################################", expect.getState().currentTestName, "preTestResult", JSON.stringify(preTestResult, null, 2))
   //   // const testResult = ignorePostgresExtraAttributesOnList(preTestResult as any,["uuid"]); // uuid value is ignored

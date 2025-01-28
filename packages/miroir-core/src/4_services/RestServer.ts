@@ -411,7 +411,7 @@ export async function queryTemplateActionHandler(
       JSON.stringify(runBoxedQueryTemplateOrBoxedExtractorTemplateAction, undefined, 2)
     );
     log.info("RestServer queryTemplateActionHandler domainState=", JSON.stringify(domainState, undefined, 2));
-    let queryResult: Domain2QueryReturnType<DomainElementSuccess> = undefined as any as Domain2QueryReturnType<DomainElementSuccess>;
+    let queryResult: Domain2QueryReturnType<any> = undefined as any as Domain2QueryReturnType<any>;
 
     switch (runBoxedQueryTemplateOrBoxedExtractorTemplateAction.query.queryType) {
       case "boxedExtractorTemplateReturningObject":
