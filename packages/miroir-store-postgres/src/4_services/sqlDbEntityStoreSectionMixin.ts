@@ -160,28 +160,17 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
 
           log.trace("dropEntity entityUuid", entityUuid, "found Entity Definitions:", entityDefinitions);
           if (entityDefinitions instanceof Action2Error) {
-            return Promise.resolve({
-              status: "error",
-              errorType: "FailedToDeleteStore", // TODO: correct errorType
-              errorMessage: `dropEntity failed for section: data, entityUuid ${entityUuid}, error: ${entityDefinitions.errorType}, ${entityDefinitions.errorMessage}`,
-            });
+            return Promise.resolve(new Action2Error(
+              "FailedToDeleteStore",
+              `dropEntity failed for section: data, entityUuid ${entityUuid}, error: ${entityDefinitions.errorMessage}`
+            ));
           }
           if (entityDefinitions.returnedDomainElement instanceof Domain2ElementFailed) {
-            return Promise.resolve({
-              status: "error",
-              errorType: "FailedToDeleteStore", // TODO: correct errorType
-              errorMessage: `dropEntity failed for section: data, entityUuid ${entityUuid}, error: ${entityDefinitions.returnedDomainElement.elementValue.queryFailure}, ${entityDefinitions.returnedDomainElement.elementValue.failureMessage}`,
-            });
+            return Promise.resolve(new Action2Error(
+              "FailedToDeleteStore",
+              `dropEntity failed for section: data, entityUuid ${entityUuid}, error: ${entityDefinitions.returnedDomainElement.elementValue.queryFailure}, ${entityDefinitions.returnedDomainElement.elementValue.failureMessage}`
+            ));
           }
-          // if (entityDefinitions.returnedDomainElement?.elementType != "entityInstanceCollection") {
-          //   return Promise.resolve({
-          //     status: "error",
-          //     error: {
-          //       errorType: "FailedToGetInstances", // TODO: correct errorType
-          //       errorMessage: `getInstances failed for section: data, entityUuid ${entityUuid} wrong element type, expected "entityInstanceCollection", got elementType: ${entityDefinitions.returnedDomainElement?.elementType}`,
-          //     },
-          //   });
-          // }
   
           for (const entityDefinition of entityDefinitions.returnedDomainElement.instances.filter(
             (i: EntityInstance) => (i as EntityDefinition).entityUuid == entityUuid
@@ -218,11 +207,10 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
         return currentEntity
       }
       if (currentEntity.returnedDomainElement instanceof Domain2ElementFailed) {
-        return {
-          status: "error",
-          errorType: "FailedToDeployModule", // TODO: put the right errorType
-          errorMessage: currentEntity.returnedDomainElement.elementValue.failureMessage,
-        }
+        return Promise.resolve(new Action2Error(
+          "FailedToDeployModule",
+          currentEntity.returnedDomainElement.elementValue.failureMessage
+        ));
       }
 
       const currentEntityDefinition: Action2EntityInstanceReturnType = await this.getInstance(
@@ -234,11 +222,10 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
         return currentEntityDefinition
       }
       if (currentEntityDefinition.returnedDomainElement instanceof Domain2ElementFailed) {
-        return {
-          status: "error",
-          errorType: "FailedToDeployModule", // TODO: put the right errorType
-          errorMessage: currentEntityDefinition.returnedDomainElement.elementValue.failureMessage,
-        }
+        return Promise.resolve(new Action2Error(
+          "FailedToDeployModule",
+          currentEntityDefinition.returnedDomainElement.elementValue.failureMessage
+        ));
       }
       const modifiedEntity:EntityInstanceWithName = Object.assign({},currentEntity.returnedDomainElement,{name:update.targetValue});
       const modifiedEntityDefinition:EntityDefinition = Object.assign({},currentEntityDefinition.returnedDomainElement as EntityDefinition,{name:update.targetValue});
@@ -267,11 +254,10 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
         return currentEntity;
       }
       if (currentEntity.returnedDomainElement instanceof Domain2ElementFailed) {
-        return {
-          status: "error",
-          errorType: "FailedToDeployModule", // TODO: put the right errorType
-          errorMessage: currentEntity.returnedDomainElement.elementValue.failureMessage,
-        }
+        return Promise.resolve(new Action2Error(
+          "FailedToDeployModule",
+          currentEntity.returnedDomainElement.elementValue.failureMessage
+        ));
       }
       const currentEntityDefinition: Action2EntityInstanceReturnType = await this.getInstance(
         entityEntityDefinition.uuid,
@@ -282,11 +268,10 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
         return currentEntityDefinition;
       }
       if (currentEntityDefinition.returnedDomainElement instanceof Domain2ElementFailed) {
-        return {
-          status: "error",
-          errorType: "FailedToDeployModule", // TODO: put the right errorType
-          errorMessage: currentEntityDefinition.returnedDomainElement.elementValue.failureMessage,
-        }
+        return Promise.resolve(new Action2Error(
+          "FailedToDeployModule",
+          currentEntityDefinition.returnedDomainElement.elementValue.failureMessage
+        ));
       }
       const localEntityDefinition: EntityDefinition = currentEntityDefinition.returnedDomainElement as EntityDefinition;
       const localEntityJzodSchemaDefinition =
@@ -310,12 +295,6 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
       log.info("alterEntityAttribute modifiedEntityDefinition", JSON.stringify(modifiedEntityDefinition, undefined, 2));
 
       await this.upsertInstance(entityEntityDefinition.uuid, modifiedEntityDefinition);
-      // TODO: HACK HACK HACK UGLY!!!! add applicationSection to update action?
-      // const queryInterface =
-      //   update.deploymentUuid == adminConfigurationDeploymentMiroir.uuid
-      //     ? this.sequelize.getQueryInterface()
-      //     : (this.dataStore as any).sequelize.getQueryInterface()
-      // ;
 
       log.info(
         "alterEntityAttribute table",
@@ -323,11 +302,6 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
         "addColumns",
         JSON.stringify(update.addColumns, null, 2)
       );
-      // for (const c of update.addColumns ?? []) {
-      //   const columnOptions = fromMiroirAttributeDefinitionToSequelizeModelAttributeColumnOptions(c.definition);
-      //   log.info("alterEntityAttribute adding column", c.name, "options", JSON.stringify(columnOptions, null, 2));
-      //   await queryInterface.addColumn(update.entityName, c.name, columnOptions.options);
-      // }
 
       // TODO: relies on implementation, IT SHOULD NOT! does side effect, to worsen the insult
       (this.dataStore as any as SqlDbStoreSection).sqlSchemaTableAccess = {
@@ -343,29 +317,6 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
         currentEntity.returnedDomainElement.uuid
       ].sequelizeModel.sync({ alter: true }); // TODO: replace sync!
 
-      // } else {
-      //   // throw new Error("");
-      //   return Promise.resolve({
-      //     status: "error",
-      //     error: {
-      //       errorType: "FailedToCreateStore", // TODO: put the right errorType
-      //       errorMessage: "alterEntityAttribute could not handle wanted attribute modification: " + JSON.stringify(update.update)
-      //     }
-      //   });
-
-      // }
-      // if (update.entityAttributeRename) {
-      //   await queryInterface.renameColumn(update.entityName, update.entityAttributeName, update.entityAttributeRename)
-
-      // }
-
-      // }
-      // await this.dataStore.createStorageSpaceForInstancesOfEntity(
-      //   // (currentEntity.returnedDomainElement.elementValue as EntityInstanceWithName).name,
-      //   // update.targetValue,
-      //   currentEntity.returnedDomainElement as any as MetaEntity,
-      //   modifiedEntityDefinition
-      // );
       return Promise.resolve(ACTION_OK);
     }
     

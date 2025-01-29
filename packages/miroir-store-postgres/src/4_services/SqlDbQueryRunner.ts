@@ -216,9 +216,7 @@ export class SqlDbQueryRunner {
               ? selectorParams.extractor.select
               : {
                   ...selectorParams.extractor.select,
-                  applicationSection: selectorParams.extractor.pageParams.applicationSection
-                  // applicationSection: selectorParams.extractor.pageParams.elementValue.applicationSection
-                    .elementValue as ApplicationSection,
+                  applicationSection: selectorParams.extractor.pageParams.applicationSection as ApplicationSection,
                 },
           },
         });
@@ -275,9 +273,7 @@ export class SqlDbQueryRunner {
               ? selectorParams.extractor.select
               : {
                   ...selectorParams.extractor.select,
-                  applicationSection: selectorParams.extractor.pageParams.applicationSection
-                  // applicationSection: selectorParams.extractor.pageParams.elementValue.applicationSection
-                    .elementValue as ApplicationSection,
+                  applicationSection: selectorParams.extractor.pageParams.applicationSection as ApplicationSection,
                 },
           },
         });
@@ -305,12 +301,10 @@ export class SqlDbQueryRunner {
       extractorRunnerMap: this.inMemoryImplementationExtractorRunnerMap,
     });
     if (queryResult instanceof Domain2ElementFailed) {
-      return {
-        status: "error",
-        // error: { errorType: "FailedToGetInstances", errorMessage: JSON.stringify(queryResult) },
-        errorType: "FailedToGetInstances", 
-        errorMessage: JSON.stringify(queryResult),
-      } as Action2ReturnType;
+      return Promise.resolve(new Action2Error(
+        "FailedToGetInstances",
+        JSON.stringify(queryResult)
+      ));
     } else {
       const result: Action2ReturnType = { status: "ok", returnedDomainElement: queryResult };
       log.info(
@@ -345,11 +339,10 @@ export class SqlDbQueryRunner {
       });
     }
     if (queryResult instanceof Domain2ElementFailed) {
-      return {
-        status: "error",
-        // error: { errorType: "FailedToGetInstances", errorMessage: JSON.stringify(queryResult) },
-        errorType: "FailedToGetInstances", errorMessage: JSON.stringify(queryResult),
-      } as Action2ReturnType;
+      return Promise.resolve(new Action2Error(
+        "FailedToGetInstances",
+        JSON.stringify(queryResult)
+      ));
     } else {
       const result: Action2ReturnType = { status: "ok", returnedDomainElement: queryResult };
       log.info(
@@ -370,13 +363,11 @@ export class SqlDbQueryRunner {
     Domain2QueryReturnType<EntityInstance>
   > = async (
     selectorParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObject>
-  // ): Promise<Domain2QueryReturnType<EntityInstance>> => {
   ): Promise<Domain2QueryReturnType<Domain2QueryReturnType<EntityInstance>>> => {
     const querySelectorParams: ExtractorOrCombinerReturningObject = selectorParams.extractor.select as ExtractorOrCombinerReturningObject;
     const deploymentUuid = selectorParams.extractor.deploymentUuid;
     const applicationSection: ApplicationSection =
       selectorParams.extractor.select.applicationSection ??
-      // ((selectorParams.extractor.pageParams?.elementValue?.applicationSection?.elementValue ??
       ((selectorParams.extractor.pageParams?.applicationSection ??
         "data") as ApplicationSection);
 
@@ -402,7 +393,7 @@ export class SqlDbQueryRunner {
         if (
           !querySelectorParams.AttributeOfObjectToCompareToReferenceUuid
           ||
-          referenceObject.elementType == "failure"
+          referenceObject instanceof Domain2ElementFailed
         ) {
           return {
             elementType: "failure",
@@ -420,7 +411,7 @@ export class SqlDbQueryRunner {
 
         const result = await this.persistenceStoreController.getInstance(
           entityUuidReference,
-          (referenceObject.elementValue as any)[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
+          referenceObject[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
         );
 
         if (result instanceof Action2Error || result.returnedDomainElement instanceof Domain2ElementFailed) {
@@ -564,9 +555,6 @@ export class SqlDbQueryRunner {
         },
       };
     }
-    // const entityInstanceUuidIndex = Object.fromEntries(
-    //   entityInstanceCollection.returnedDomainElement.elementValue.instances.map((i) => [i.uuid, i])
-    // );
     return entityInstanceCollection.returnedDomainElement.instances;
   };
 
@@ -651,9 +639,6 @@ export class SqlDbQueryRunner {
         },
       };
     }
-    // const entityInstanceUuidIndex = Object.fromEntries(
-    //   entityInstanceCollection.returnedDomainElement.elementValue.instances.map((i) => [i.uuid, i])
-    // );
     return entityInstanceCollection.returnedDomainElement.instances;
   };
 

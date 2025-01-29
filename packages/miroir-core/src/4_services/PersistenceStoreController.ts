@@ -1,4 +1,3 @@
-
 import { Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
 import {
   ApplicationSection,
@@ -385,27 +384,23 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
       metaModelEntityDefinitions
     );
     if (modelBootFromPersistedState instanceof Action2Error) {
-      return Promise.resolve({
-        status: "error",
-        errorType: "FailedToGetInstances",
-        errorMessage: `bootFromPersistedState failed for section model: ${modelBootFromPersistedState.errorMessage}`,
-      });
+      return new Action2Error("FailedToGetInstances", `bootFromPersistedState failed for section model: ${modelBootFromPersistedState.errorMessage}`);
     }
     const dataEntities:Action2EntityInstanceCollectionOrFailure = await this.modelStoreSection.getInstances(entityEntity.uuid);
     const dataEntityDefinitions:Action2EntityInstanceCollectionOrFailure = await this.modelStoreSection.getInstances(entityEntityDefinition.uuid);
-    if (dataEntities instanceof Action2Error 
-      || dataEntityDefinitions instanceof Action2Error) {
-      return Promise.resolve({
-        status: "error",
-        errorType: "FailedToGetInstances",
-        errorMessage: `bootFromPersistedState for entities getInstances(${entityEntity.uuid}) status: ${
-          dataEntities.status
-        }, getInstances(${entityEntityDefinition.uuid}) status: ${dataEntities.status}. Message: ${
-          dataEntities instanceof Action2Error ? dataEntities?.errorMessage: ""
-        }, ${dataEntityDefinitions instanceof Action2Error? dataEntityDefinitions.errorMessage: ""}`,
-      });
+
+    if (dataEntities instanceof Action2Error || dataEntities.returnedDomainElement instanceof Domain2ElementFailed) {
+      return new Action2Error("FailedToGetInstances", `bootFromPersistedState for entities getInstances(${entityEntity.uuid}) status: ${
+        dataEntities.status
+      }. Message: ${dataEntities instanceof Action2Error ? dataEntities?.errorMessage: ""}`);
+    }
+    if (dataEntityDefinitions instanceof Action2Error || dataEntityDefinitions.returnedDomainElement instanceof Domain2ElementFailed) {
+      return new Action2Error("FailedToGetInstances", `bootFromPersistedState for entityDefinitions getInstances(${entityEntityDefinition.uuid}) status: ${
+        dataEntityDefinitions.status
+      }. Message: ${dataEntityDefinitions instanceof Action2Error ? dataEntityDefinitions?.errorMessage: ""}`);
     }
 
+    log.info(this.logHeader,'bootFromPersistedState for data section with dataEntities',dataEntities);
     const dataBootFromPersistedState = await this.dataStoreSection.bootFromPersistedState(
       ((dataEntities as any).returnedDomainElement?.instances as Entity[]).filter(
         (e) => ["Entity", "EntityDefinition"].indexOf(e.name) == -1
@@ -413,11 +408,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
       (dataEntityDefinitions as any).returnedDomainElement?.instances as EntityDefinition[]
     );
     if (dataBootFromPersistedState instanceof Action2Error || dataBootFromPersistedState.returnedDomainElement instanceof Domain2ElementFailed) {
-      return Promise.resolve({
-        status: "error",
-        errorType: "FailedToGetInstances",
-        errorMessage: `bootFromPersistedState failed for section data: ${dataBootFromPersistedState}`,
-      });
+      return new Action2Error("FailedToGetInstances", `bootFromPersistedState failed for section data: ${dataBootFromPersistedState}`);
     }
     
     return Promise.resolve(ACTION_OK);
@@ -460,70 +451,20 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   // ##############################################################################################
   async clearDataInstances():Promise<Action2VoidReturnType> {
     log.debug(this.logHeader, "clearDataInstances", this.getEntityUuids());
-    // const dataSectionEntities: EntityInstanceCollection = await this.getInstances("model", entityEntity.uuid);
     const dataSectionEntities: Action2EntityInstanceCollectionOrFailure = await this.getInstances("model", entityEntity.uuid);
     if (dataSectionEntities instanceof Action2Error) {
-    // if (dataSectionEntities.status != "ok") {
-      return Promise.resolve({
-        status: "error",
-        errorType: "FailedToGetInstances",
-        errorMessage: `clearDataInstances failed for dataSectionEntities section: model, entityUuid ${entityEntity.uuid}, error: ${dataSectionEntities.errorType}, ${dataSectionEntities.errorMessage}`,
-      });
+      return new Action2Error("FailedToGetInstances", `clearDataInstances failed for dataSectionEntities section: model, entityUuid ${entityEntity.uuid}, error: ${dataSectionEntities.errorType}, ${dataSectionEntities.errorMessage}`);
     }
     if (dataSectionEntities.returnedDomainElement instanceof Domain2ElementFailed) {
-      return Promise.resolve({
-        status: "error",
-        errorType: "FailedToGetInstances",
-        errorMessage: `clearDataInstances failed for dataSectionEntities section: model, entityUuid ${entityEntity.uuid}, error: ${dataSectionEntities}`,
-      });
-      
+      return new Action2Error("FailedToGetInstances", `clearDataInstances failed for dataSectionEntities section: model, entityUuid ${entityEntity.uuid}, error: ${dataSectionEntities}`);
     }
-    // if (dataSectionEntities.returnedDomainElement?.elementType != "entityInstanceCollection") {
-    //   return Promise.resolve({
-    //     status: "error",
-    //     error: {
-    //       errorType: "FailedToGetInstances",
-    //       errorMessage: `clearDataInstances failed for dataSectionEntities section: model, entityUuid ${entityEntity.uuid} wrong element type, expected "entityInstanceCollection", got elementType: ${dataSectionEntities.returnedDomainElement?.elementType}`,
-    //     },
-    //   });
-    // }
-    const dataSectionEntityDefinitions: Action2EntityInstanceCollectionOrFailure = await this.getInstances(
-      "model",
-      entityEntityDefinition.uuid
-    );
+    const dataSectionEntityDefinitions: Action2EntityInstanceCollectionOrFailure = await this.getInstances("model", entityEntityDefinition.uuid);
     if (dataSectionEntityDefinitions instanceof Action2Error) {
-    // if (dataSectionEntityDefinitions.status != "ok") {
-      return Promise.resolve({
-        status: "error",
-        errorType: "FailedToGetInstances",
-        errorMessage: `clearDataInstances failed for dataSectionEntityDefinitions section: model, entityUuid ${entityEntityDefinition.uuid}, error: ${dataSectionEntityDefinitions} `,
-      });
+      return new Action2Error("FailedToGetInstances", `clearDataInstances failed for dataSectionEntityDefinitions section: model, entityUuid ${entityEntityDefinition.uuid}, error: ${dataSectionEntityDefinitions}`);
     }
-    // if (dataSectionEntityDefinitions.returnedDomainElement?.elementType != "entityInstanceCollection") {
-    //   return Promise.resolve({
-    //     status: "error",
-    //     error: {
-    //       errorType: "FailedToGetInstances",
-    //       errorMessage: `clearDataInstances failed for dataSectionEntityDefinitions section: model, entityUuid ${entityEntityDefinition.uuid} wrong element type, expected "entityInstanceCollection", got elementType: ${dataSectionEntityDefinitions.returnedDomainElement?.elementType}`,
-    //     },
-    //   });
-    // }
-    if (dataSectionEntities instanceof Action2Error) {
-      return Promise.resolve({
-        status: "error",
-        errorType: "FailedToGetInstances",
-        errorMessage: `clearDataInstances failed for dataSectionEntityDefinitions section: model, entityUuid ${entityEntityDefinition.uuid} wrong element type, expected "entityInstanceCollection", got element: ${dataSectionEntityDefinitions}`,
-      });
-    }
-
     if (dataSectionEntityDefinitions.returnedDomainElement instanceof Domain2ElementFailed) {
-      return Promise.resolve({
-        status: "error",
-        errorType: "FailedToGetInstances",
-        errorMessage: `clearDataInstances failed for dataSectionEntityDefinitions section: model, entityUuid ${entityEntityDefinition.uuid} wrong element type, expected "entityInstanceCollection", got element: ${dataSectionEntityDefinitions}`,
-      });
+      return new Action2Error("FailedToGetInstances", `clearDataInstances failed for dataSectionEntityDefinitions section: model, entityUuid ${entityEntityDefinition.uuid}, error: ${dataSectionEntityDefinitions}`);
     }
-
     const dataSectionFilteredEntities: Entity[] = (
       dataSectionEntities.returnedDomainElement.instances as Entity[]
     ).filter((e: EntityInstanceWithName) => ["Entity", "EntityDefinition"].indexOf(e.name) == -1); // for Miroir selfApplication only, which has the Meta-Entities Entity and EntityDefinition defined in its Entity table
@@ -657,37 +598,11 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     const instances: Action2EntityInstanceCollectionOrFailure = await currentStore.getInstances(entityUuid);
 
     if (instances instanceof Action2Error) {
-      return Promise.resolve({
-        status: "error",
-        errorType: "FailedToGetInstances",
-        errorMessage: `getInstances failed for section: ${section}, entityUuid ${entityEntity.uuid}, error: ${instances.errorType}, ${instances.errorMessage}`,
-      });
+      return new Action2Error("FailedToGetInstances", `getInstances failed for section: ${section}, entityUuid ${entityEntity.uuid}, error: ${instances.errorType}, ${instances.errorMessage}`);
     }
     if (instances.returnedDomainElement instanceof Domain2ElementFailed) {
-      return Promise.resolve({
-        status: "error",
-        errorType: "FailedToGetInstances",
-        errorMessage: `getInstances failed for section: ${section}, entityUuid ${entityEntity.uuid}, error: ${instances}`,
-      });
+      return new Action2Error("FailedToGetInstances", `getInstances failed for section: ${section}, entityUuid ${entityEntity.uuid}, error: ${instances}`);
     }
-    // if (instances.returnedDomainElement?.elementType != "entityInstanceCollection") {
-    //   return Promise.resolve({
-    //     status: "error",
-    //     error: {
-    //       errorType: "FailedToGetInstances",
-    //       errorMessage: `getInstances failed for section: ${section}, entityUuid ${entityEntity.uuid} wrong element type, expected "entityInstanceCollection", got elementType: ${instances.returnedDomainElement?.elementType}`,
-    //     },
-    //   });
-    // }
-    // const result:Action2EntityInstanceCollectionOrFailure = {
-    //   status: "ok",
-    //   returnedDomainElement: instances.returnedDomainElement
-    //   // }
-    //   // returnedDomainElement: {
-    //   //   elementType: "entityInstanceCollection",
-    //   //   elementValue: instances.returnedDomainElement.elementValue
-    //   // }
-    // }
 
     log.info(this.logHeader,'getInstances','section',section,'entity',entityUuid, "result", instances);
     return instances;

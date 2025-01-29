@@ -18,7 +18,8 @@ import {
   RunBoxedQueryAction,
   RunBoxedQueryTemplateAction,
   RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
-  Action2EntityInstanceReturnType
+  Action2EntityInstanceReturnType,
+  Action2Error
 } from "miroir-core";
 
 import { packageName } from "../constants.js";
@@ -122,11 +123,10 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
           returnedDomainElement: { elementType: "instance", elementValue: JSON.parse(fileContents) },
         });
       } catch (error) {
-        return Promise.resolve({
-          status: "error",
-          errorType: "FailedToCreateStore",
-          errorMessage: `failed to get instance ${uuid} of entity ${entityUuid}`,
-        });
+        return Promise.resolve(new Action2Error(
+          "FailedToGetInstance",
+          `failed to get instance ${uuid} of entity ${entityUuid}`
+        ));
       }
     }
 
@@ -155,11 +155,10 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
           "could not find path",
           entityInstancesPath
         );
-        return Promise.resolve({
-          status: "error",
-          errorType: "FailedToGetInstances",
-          errorMessage: `FileSystemInstanceStore getInstances entityUuid ${entityUuid} could not find path ${entityInstancesPath}`,
-        });
+        return Promise.resolve(new Action2Error(
+          "FailedToGetInstances",
+          `FileSystemInstanceStore getInstances entityUuid ${entityUuid} could not find path ${entityInstancesPath}`
+        ));
       }
 
       try {
@@ -200,11 +199,10 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
           returnedDomainElement: entityInstances
         });
       } catch (error) {
-        return Promise.resolve({
-          status: "error",
-          errorType: "FailedToGetInstances",
-          errorMessage: `FileSystemInstanceStore getInstances entityUuid ${entityUuid} failed to read directory ${entityInstancesPath}`,
-        });
+        return Promise.resolve(new Action2Error(
+          "FailedToGetInstances",
+          `FileSystemInstanceStore getInstances entityUuid ${entityUuid} failed to read directory ${entityInstancesPath}`
+        ));
       }
     }
     // #########################################################################################
@@ -215,12 +213,10 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
   
         return Promise.resolve(ACTION_OK);
       } catch (error) {
-        return Promise.resolve({
-          status: "error",
-          errorType: "FailedToUpdateInstance",
-          errorMessage: `failed to upsert instance ${instance.uuid} of entity ${entityUuid}`,
-        });
-        
+        return Promise.resolve(new Action2Error(
+          "FailedToUpdateInstance",
+          `failed to upsert instance ${instance.uuid} of entity ${entityUuid}`
+        ));
       }
     }
 
@@ -255,20 +251,18 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
           );
           const entityPath = path.join(this.directory, entityUuid);
           if (!fs.existsSync(filePath)) {
-            return Promise.resolve({
-              status: "error",
-              errorType: "FailedToDeleteInstance",
-              errorMessage: `could not find entity ${entityUuid}`,
-            });
+            return Promise.resolve(new Action2Error(
+              "FailedToDeleteInstance",
+              `could not find file to delete: ${filePath} entityUuid ${entityUuid} instance ${instance}`
+            ));
           }
         }
         return Promise.resolve(ACTION_OK);
       } catch (error) {
-        return Promise.resolve({
-          status: "error",
-          errorType: "FailedToDeleteInstance",
-          errorMessage: `failed to delete instance ${instance.uuid} of entity ${entityUuid}`,
-        });
+        return Promise.resolve(new Action2Error(
+          "FailedToDeleteInstance",
+          `failed to delete instance ${instance.uuid} of entity ${entityUuid}`
+        ));
       }
     }
   // };

@@ -1,6 +1,7 @@
 import {
   Action2EntityInstanceCollectionOrFailure,
   Action2EntityInstanceReturnType,
+  Action2Error,
   Action2ReturnType,
   Action2VoidReturnType,
   ACTION_OK,
@@ -104,11 +105,7 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
           returnedDomainElement: result,
         });
       } catch (error) {
-        return Promise.resolve({
-          status: "error",
-          errorType: "FailedToGetInstance",
-          errorMessage: `getInstance could not retrieve instance ${uuid} of entity ${parentUuid}: ` + error,
-        });
+        return Promise.resolve(new Action2Error("FailedToGetInstance", `getInstance could not retrieve instance ${uuid} of entity ${parentUuid}: ` + error));
       }
     }
 
@@ -121,11 +118,7 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
           returnedDomainElement: { parentUuid, applicationSection: this.localUuidIndexedDb.applicationSection, instances: result },
         });
       } catch (error) {
-        return {
-          status: "error",
-          errorType: "FailedToGetInstances",
-          errorMessage: ("getInstances error: " + error) as string,
-        };
+        return Promise.resolve(new Action2Error("FailedToGetInstances", `getInstances error: ${error}`));
       }
     }
 
@@ -143,21 +136,12 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
           // ret
         } else {
           log.error(this.logHeader, "upsertInstance", instance.parentUuid, "does not exists.");
-          return Promise.resolve({
-            status: "error",
-            errorType: "FailedToUpdateInstance",
-            errorMessage: `failed to upsert instance ${instance.uuid} of entity ${parentUuid}`,
-          });
+          return Promise.resolve(new Action2Error("FailedToUpdateInstance", `upsertInstance could not update instance ${instance.uuid} of entity ${parentUuid}`));
         }
         // return Promise.resolve( { status: "ok", returnedDomainElement: { elementType: "void", elementValue: undefined } } );
       } catch (error) {
         log.error(this.logHeader, "upsertInstance", instance.parentUuid, "could not upsert instance", instance, error);
-        return Promise.resolve({
-          status: "error",
-          errorType: "FailedToUpdateInstance",
-          errorMessage: `failed to upsert instance ${instance.uuid} of entity ${parentUuid}`,
-          errorStack: error as any, // TODO: check the type of "error" value
-        });
+        return Promise.resolve(new Action2Error("FailedToUpdateInstance", `upsertInstance could not update instance ${instance.uuid} of entity ${parentUuid}: `,error as any));
       }
     }
 
@@ -169,11 +153,7 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
           await this.deleteInstance(parentUuid, { uuid: o.uuid } as EntityInstance);
         } catch (error) {
           log.error(this.logHeader, "deleteInstances", parentUuid, "could not delete instance", o, error);
-          return Promise.resolve({
-            status: "error",
-            errorType: "FailedToDeleteInstance",
-            errorMessage: `deleteInstances could not delete instance ${o.uuid} of entity ${parentUuid}: ` + error,
-          });
+          return Promise.resolve(new Action2Error("FailedToDeleteInstance", `deleteInstances could not delete instance ${o.uuid} of entity ${parentUuid}`));
         }
       }
       return Promise.resolve(ACTION_OK);
@@ -199,11 +179,7 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
         // return Promise.resolve(ACTION_OK);
       } catch (error) {
         log.error(this.logHeader, "deleteInstance failed.", "entity", parentUuid, "instance", instance, "error", error);
-        return Promise.resolve({
-          status: "error",
-          errorType: "FailedToDeleteInstance",
-          errorMessage: `deleteInstance could not delete instance ${instance.uuid} of entity ${parentUuid}: ` + error,
-        });
+        return Promise.resolve(new Action2Error("FailedToDeleteInstance", `deleteInstance could not delete instance ${instance.uuid} of entity ${parentUuid}: ` + error));
       }
     }
   };

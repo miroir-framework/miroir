@@ -1,5 +1,5 @@
 import { Level } from 'level';
-import { ACTION_OK, Action2VoidReturnType, ApplicationSection, LoggerInterface, MiroirLoggerFactory, entityDefinitionEntityDefinition } from "miroir-core";
+import { ACTION_OK, Action2Error, Action2VoidReturnType, ApplicationSection, LoggerInterface, MiroirLoggerFactory, entityDefinitionEntityDefinition } from "miroir-core";
 
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
@@ -214,12 +214,10 @@ export class IndexedDb {
         const instance = await store?.get(uuid);
         if (!instance) {
           log.warn(this.logHeader, 'deleteValue Id not found', uuid);
-          return Promise.resolve({
-            status: "error",
-            errorType: "FailedToDeleteInstance",
-            errorMessage: `failed to delete instance ${uuid} of entity ${tableUuid}`,
-            // message: 'Id not found',
-          });
+          return Promise.resolve(new Action2Error(
+            "FailedToDeleteInstance",
+            `failed to delete instance ${uuid} of entity ${tableUuid}`
+          ));
         } else {
           await store?.del(uuid);
           log.debug(this.logHeader, 'DeleteValue done for entity', tableUuid, "instance with uuid", uuid);
@@ -227,19 +225,17 @@ export class IndexedDb {
         }
       } catch (error) {
         log.error(this.logHeader, "deleteValue could not find instance of entity: " + tableUuid + " with uuid: ", uuid);
-        return {
-          status: "error",
-          errorType: "FailedToDeleteInstance",
-          errorMessage: `failed to delete instance ${uuid} of entity ${tableUuid}`,
-        };
+        return Promise.resolve(new Action2Error(
+          "FailedToDeleteInstance",
+          `failed to delete instance ${uuid} of entity ${tableUuid}`
+        ));
       }
     } else {
       log.error(this.logHeader, "deleteValue could not find sublevel: " + tableUuid + " existing sublevels: ", this.getSubLevels());
-      return {
-        status: "error",
-        errorType: "FailedToDeleteInstance",
-        errorMessage: `could not find entity ${tableUuid}`,
-      };
+      return Promise.resolve(new Action2Error(
+        "FailedToDeleteInstance",
+        `could not find entity ${tableUuid}`
+      ));
     }
   }
 }

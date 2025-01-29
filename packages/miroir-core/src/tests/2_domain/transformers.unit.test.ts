@@ -129,10 +129,6 @@ async function runTransformerTest(transformerTest: TransformerTest) {
     undefined
   );
 
-  // const expectedResult: Domain2QueryReturnType<any> = {
-  //   elementType: "instanceUuid",
-  //   elementValue: "test",
-  // };
 
   console.log("################################ result", JSON.stringify(result, null, 2));
   console.log(
@@ -793,14 +789,6 @@ describe("transformers.unit.test", async () => {
           name: "test",
         }
       };
-      // const expectedResult: Domain2QueryReturnType<any> = {
-      //   elementType: "object",
-      //   elementValue: {
-      //     "1": {
-      //       name: "test",
-      //     } as any, // TODO: redefine "object" Domain2QueryReturnType<any>, so as to be non-recursive
-      //   }
-      // };
 
       console.log("################################ result", JSON.stringify(result,null,2))
       console.log("################################ expectedResult", JSON.stringify(expectedResult,null,2))
@@ -2118,7 +2106,6 @@ describe("transformers.unit.test", async () => {
         contextResults
       );
 
-      // expect(result.elementType).toBe("object");
       expect(result.name).toBe("testName");
       expect(result.uuid).toMatch(
         /^[0-9a-f]{8}-[0-9a-f]{4}-[4][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i

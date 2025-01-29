@@ -12,6 +12,7 @@ import { Provider } from 'react-redux';
 
 // As a basic setup, import your same slice reducers
 import {
+  Action2Error,
   Action2ReturnType,
   CompositeAction,
   ConfigurationService,
@@ -773,12 +774,10 @@ export const chainVitestSteps = async (
     JSON.stringify(domainElement, undefined, 2)
   );
   let testResult
-  if (domainElement.status == "ok") {
+  if (!(domainElement instanceof Action2Error)) {
     testResult = resultTransformation
       ? resultTransformation(domainElement, context)
-      : domainElement.status == "ok"
-      ? domainElement?.returnedDomainElement?.elementValue
-      : undefined;
+      : domainElement?.returnedDomainElement;
 
     log.info(
       "########################################### chainTestAsyncDomainCalls",
@@ -793,7 +792,6 @@ export const chainVitestSteps = async (
           stepName + "received wrong type for result: " + domainElement.returnedDomainElement?.elementType + " expected: " + expectedDomainElementType
         ).toEqual(expectedDomainElementType); // fails
       } else {
-        // const testResult = ignorePostgresExtraAttributes(domainElement?.returnedDomainElement.elementValue)
         if (expectedValue) {
           expect(testResult).toEqual(expectedValue);
         } else {
@@ -801,13 +799,18 @@ export const chainVitestSteps = async (
         }
       }
     } else {
-     // no test to be done 
-     log.info(
-       "########################################### chainTestAsyncDomainCalls",
-       stepName,
-       "no test done because expectedDomainElementType is undefined",
-       expectedDomainElementType
-     );
+      if (expectedValue) {
+        expect(testResult).toEqual(expectedValue);
+      } else {
+        // no test to be done
+      }
+   // no test to be done 
+    //  log.info(
+    //    "########################################### chainTestAsyncDomainCalls",
+    //    stepName,
+    //    "no test done because expectedDomainElementType is undefined",
+    //    expectedDomainElementType
+    //  );
     }
   } else {
     log.info(

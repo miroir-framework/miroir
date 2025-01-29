@@ -26,7 +26,8 @@ import {
   ModelActionReplayableAction,
   RunBoxedExtractorOrQueryAction,
   TransactionalInstanceAction,
-  Domain2ElementFailed
+  Domain2ElementFailed,
+  Action2Error
 } from "miroir-core";
 import { packageName } from '../constants.js';
 import { cleanLevel } from './constants.js';
@@ -92,11 +93,7 @@ function exceptionToActionReturnType(f:()=>void): Action2ReturnType {
   try {
     f()
   } catch (e: any) {
-    return {
-      status: "error",
-      errorType: "FailedToDeployModule", // TODO: correct errorType
-      errorMessage: e,
-    };
+    return new Action2Error("FailedToDeployModule", e);
   }
   return ACTION_OK;
 }

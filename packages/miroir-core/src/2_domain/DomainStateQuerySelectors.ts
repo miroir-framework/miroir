@@ -78,12 +78,9 @@ export const dummyDomainModelGetFetchParamJzodSchemaQueryParams: QueryByTemplate
   queryType: "queryByTemplateGetParamJzodSchema",
   deploymentUuid: "",
   pageParams: {
-    elementType: "object",
-    elementValue: {
-      applicationSection: "data" ,
-      deploymentUuid: "" ,
-      instanceUuid: "" ,
-    },
+    applicationSection: "data" ,
+    deploymentUuid: "" ,
+    instanceUuid: "" ,
   },
   queryParams: {},
   contextResults: {},
@@ -292,7 +289,6 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
       //   JSON.stringify(selectorParams.query.contextResults, undefined, 2)
       // );
       return domainState[deploymentUuid][applicationSection][entityUuidReference][
-            // (referenceObject.elementValue as any)[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
             referenceObject[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
           ];
       break;

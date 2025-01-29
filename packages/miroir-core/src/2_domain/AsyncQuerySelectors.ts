@@ -14,7 +14,7 @@ import {
   ExtractorOrCombiner,
   QueryFailed
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement.js";
+import { Domain2ElementFailed, Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement.js";
 import {
   AsyncBoxedExtractorOrQueryRunnerMap,
   AsyncBoxedExtractorRunnerParams,
@@ -248,7 +248,6 @@ export function asyncInnerSelectElementFromQuery/*BoxedExtractorTemplateRunner*/
               extractorOrCombiner.rootExtractorOrReference
             );
       return rootQueryResults.then((rootQueryResults) => {
-        // if (rootQueryResults.elementType == "instanceUuidIndex") {
         if (typeof rootQueryResults == "object") {
           const entries = Object.entries(rootQueryResults as Record<string, EntityInstance>);
           const promises = entries.map((entry: [string, EntityInstance]) => {
@@ -406,7 +405,7 @@ export const asyncRunQuery = async (
     context[result[0]] = result[1]; // does side effect!
   }
 
-  const extractorFailure = Object.values(context).find((e) => e.elementType == "failure");
+  const extractorFailure = Object.values(context).find((e) => e instanceof Domain2ElementFailed);
 
   if (extractorFailure) {
     return { elementType: "failure", 

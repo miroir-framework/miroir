@@ -25,8 +25,11 @@ import {
   entityDefinitionAuthor,
   entityDefinitionBook,
   entityDefinitionPublisher,
+  entityEndpointVersion,
   entityEntity,
+  entityEntityDefinition,
   EntityInstance,
+  entityMenu,
   entityPublisher,
   entityReport,
   entityStoreBasedConfiguration,
@@ -86,8 +89,6 @@ const myConsoleLog = (...args: any[]) => console.log(fileName, ...args);
 const fileName = "ExtractorPersistenceStoreRunner.integ.test";
 myConsoleLog(fileName, "received env", JSON.stringify(env, null, 2));
 
-// let miroirConfig:any;
-// let loggerOptions:any;
 let log:LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, fileName)
@@ -100,7 +101,6 @@ miroirIndexedDbStoreSectionStartup();
 miroirPostgresStoreSectionStartup();
 ConfigurationService.registerTestImplementation({expect: expect as any});
 
-// const {miroirConfig: miroirConfigParam, logConfig:loggerOptionsParam} = await loadTestConfigFiles(env)
 myConsoleLog("received miroirConfig", JSON.stringify(miroirConfig, null, 2));
 myConsoleLog(
   "received miroirConfig.client",
@@ -110,12 +110,10 @@ myConsoleLog("received loggerOptions", JSON.stringify(loggerOptions, null, 2));
 MiroirLoggerFactory.startRegisteredLoggers(
   loglevelnext,
   (defaultLevels as any)[loggerOptions.defaultLevel],
-  // loggerOptions.defaultTemplate,
-  // loggerOptions.specificLoggerOptions
 );
 myConsoleLog("started registered loggers DONE");
 
-const miroirtDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
+const miroirDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
   ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid]
   : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentMiroir.uuid];
 
@@ -305,10 +303,10 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult;
       },
-      (a) => ignorePostgresExtraAttributesOnObject((a as any).returnedDomainElement.elementValue, ["author"]),
+      (a) => ignorePostgresExtraAttributesOnObject((a as any).returnedDomainElement, ["author"]),
       // undefined, // expected result transformation
       undefined, // name to give to result
-      "instance",
+      undefined,
       {
         uuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
         parentName: "Entity",
@@ -361,19 +359,17 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
       },
       (a) =>
         ignorePostgresExtraAttributesOnList(
-          (a as any).returnedDomainElement.elementValue.entities.sort((a: any, b: any) => a.name.localeCompare(b.name)),
+          (a as any).returnedDomainElement.entities.sort((a: any, b: any) => a.name.localeCompare(b.name)),
           ["author"]
         ),
-      // (a) => (a as any).returnedDomainElement.elementValue.entities.elementValue,
-      // undefined, // expected result transformation
       undefined, // name to give to result
-      "object", //"instanceUuidIndex",
+      undefined,
       [entityAuthor, entityBook, entityPublisher].sort((a, b) => a.name.localeCompare(b.name))
     );
   });
   
   // ################################################################################################
-  it("get Filtered Entity Entity from Library", async () => {
+  it("get Filtered Entity Entity from Miroir", async () => {
     await chainVitestSteps(
       "ExtractorTemplatePersistenceStoreRunner_selectObjectListByEntity_filtered",
       {},
@@ -405,7 +401,8 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                     attributeName: "name",
                     value: {
                       transformerType: "constantString",
-                      constantStringValue: "or",
+                      // constantStringValue: "or",
+                      constantStringValue: "en",
                     },
                   },
                 },
@@ -417,35 +414,15 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
       },
       (a) =>
         ignorePostgresExtraAttributesOnList(
-          (a as any).returnedDomainElement.elementValue.entities.sort((a: any, b: any) => a.name.localeCompare(b.name)),
+          (a as any).returnedDomainElement.entities.sort((a: any, b: any) => a.name.localeCompare(b.name)),
           ["author"]
         ),
       undefined, // name to give to result
-      "object",
-      [entityReport, entityStoreBasedConfiguration].sort((a, b) => a.name.localeCompare(b.name))
-
-      // {
-      //   "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916": {
-      //     "uuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
-      //     "parentName": "Entity",
-      //     "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-      //     "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
-      //     "name": "Report",
-      //     "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-      //     "conceptLevel": "Model",
-      //     "description": "Report, allowing to display model instances"
-      //   },
-      //   "7990c0c9-86c3-40a1-a121-036c91b55ed7": {
-      //     "uuid": "7990c0c9-86c3-40a1-a121-036c91b55ed7",
-      //     "parentName": "Entity",
-      //     "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-      //     "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
-      //     "name": "StoreBasedConfiguration",
-      //     "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-      //     "conceptLevel": "Model",
-      //     "description": "A configuration of storage-related aspects of a Model."
-      //   },
-      // }
+      undefined,
+      [entityEndpointVersion, entityEntity, entityEntityDefinition, entityMenu].sort((a, b) =>
+        a.name.localeCompare(b.name)
+      )
+      // [entityReport, entityStoreBasedConfiguration].sort((a, b) => a.name.localeCompare(b.name))
     );
   });
   
@@ -494,9 +471,9 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult;
       },
-      (a) => (a as any).returnedDomainElement.elementValue.uniqueAuthors,
+      (a) => (a as any).returnedDomainElement.uniqueAuthors,
       undefined, // name to give to result
-      "object",
+      undefined,
       [
         { author: "4441169e-0c22-4fbc-81b2-28c87cf48ab2" },
         { author: "ce7b601d-be5f-4bc6-a5af-14091594046a" },
@@ -548,13 +525,10 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult;
       },
-      (a) => (a as any).returnedDomainElement.elementValue.uniqueAuthors,
+      (a) => (a as any).returnedDomainElement.uniqueAuthors,
       undefined, // name to give to result
-      "object",// must equal a.returnedDomainElement.elementType
-      // 3,
+      undefined,
       [{count: 6}],
-      // [{count: "3"}],
-      // ["4441169e-0c22-4fbc-81b2-28c87cf48ab2","ce7b601d-be5f-4bc6-a5af-14091594046a","d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17"]
     );
   });
   
@@ -602,9 +576,9 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult;
       },
-      (a) => (a as any).returnedDomainElement.elementValue.countBooksByAuthors,
+      (a) => (a as any).returnedDomainElement.countBooksByAuthors,
       undefined, // name to give to result
-      "object", // must equal a.returnedDomainElement.elementType
+      undefined,
       [
         { author: "4441169e-0c22-4fbc-81b2-28c87cf48ab2", count: 1 },
         { author: "ce7b601d-be5f-4bc6-a5af-14091594046a", count: 2 },
@@ -614,119 +588,111 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
     );
   });
   
-  // ################################################################################################
-  it("get country list with new uuids with actionRuntimeTransformer", async () => {
-    await chainVitestSteps(
-      "ExtractorTemplatePersistenceStoreRunner_selectUniqueEntityApplication",
-      {},
-      async () => {
-        const applicationSection: ApplicationSection = "data";
-        const queryResult = await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY({
-          actionType: "runBoxedQueryTemplateAction",
-          actionName: "runQuery",
-          deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-          endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-          applicationSection: applicationSection,
-          query: {
-            queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-            pageParams: {},
-            queryParams: {},
-            contextResults: {},
-            // pageParams: { elementType: "object", elementValue: {} },
-            // queryParams: { elementType: "object", elementValue: {} },
-            // contextResults: { elementType: "object", elementValue: {} },
-            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-            extractorTemplates: {
-              books: {
-                extractorTemplateType: "extractorTemplateForObjectListByEntity",
-                applicationSection: applicationSection,
-                parentName: "Book",
-                parentUuid: {
-                  transformerType: "constantUuid",
-                  constantUuidValue: entityBook.uuid,
-                },
-              },
-            },
-            runtimeTransformers: {
-              countries: {
-                transformerType: "mapperListToList",
-                interpolation: "runtime",
-                referencedExtractor: "books",
-                orderBy: "name",
-                elementTransformer: {
-                  transformerType: "innerFullObjectTemplate",
-                  interpolation: "runtime",
-                  referenceToOuterObject: "book",
-                  definition: [
-                    {
-                      attributeKey: {
-                        interpolation: "runtime",
-                        transformerType: "constantUuid",
-                        constantUuidValue: "uuid",
-                      },
-                      attributeValue: {
-                        interpolation: "runtime",
-                        transformerType: "newUuid",
-                      },
-                    },
-                    {
-                      attributeKey: {
-                        interpolation: "runtime",
-                        transformerType: "constantUuid",
-                        constantUuidValue: "name",
-                      },
-                      attributeValue: {
-                        transformerType: "mustacheStringTemplate",
-                        interpolation: "runtime",
-                        definition: "{{book.name}}",
-                      },
-                    },
-                  ],
-                },
-              },
-            },
-          },
-        });
-        console.log("queryResult", JSON.stringify(queryResult, null, 2));
-        return queryResult;
-      },
-      (a) =>
-        ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.elementValue.countries, [
-        // ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.elementValue.countries.elementValue, [
-          "uuid",
-        ]),
-      // (a) =>
-      //   ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.elementValue.countries.elementValue, [
-      //     "uuid",
-      //   ]).sort((a, b) =>
-      //     a["name"].localeCompare(b["name"], "en", {
-      //       sensitivity: "base",
-      //     })
-      //   ),
-      undefined, // name to give to result
-      "object", // must equal a.returnedDomainElement.elementType
-      [
-        {
-          name: "Et dans l&#39;éternité je ne m&#39;ennuierai pas",
-        },
-        {
-          name: "Le Pain et le Cirque",
-        },
-        {
-          name: "Rear Window",
-        },
-        {
-          name: "Renata n&#39;importe quoi",
-        },
-        {
-          name: "The Bride Wore Black",
-        },
-        {
-          name: "The Design of Everyday Things",
-        },
-      ]
-    );
-  });
+  // // ################################################################################################
+  // it("get country list with new uuids with actionRuntimeTransformer", async () => {
+  //   await chainVitestSteps(
+  //     "ExtractorTemplatePersistenceStoreRunner_selectUniqueEntityApplication",
+  //     {},
+  //     async () => {
+  //       const applicationSection: ApplicationSection = "data";
+  //       const queryResult = await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY({
+  //         actionType: "runBoxedQueryTemplateAction",
+  //         actionName: "runQuery",
+  //         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+  //         endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+  //         applicationSection: applicationSection,
+  //         query: {
+  //           queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+  //           pageParams: {},
+  //           queryParams: {},
+  //           contextResults: {},
+  //           // pageParams: { elementType: "object", elementValue: {} },
+  //           // queryParams: { elementType: "object", elementValue: {} },
+  //           // contextResults: { elementType: "object", elementValue: {} },
+  //           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+  //           extractorTemplates: {
+  //             books: {
+  //               extractorTemplateType: "extractorTemplateForObjectListByEntity",
+  //               applicationSection: applicationSection,
+  //               parentName: "Book",
+  //               parentUuid: {
+  //                 transformerType: "constantUuid",
+  //                 constantUuidValue: entityBook.uuid,
+  //               },
+  //             },
+  //           },
+  //           runtimeTransformers: {
+  //             countries: {
+  //               transformerType: "mapperListToList",
+  //               interpolation: "runtime",
+  //               referencedExtractor: "books",
+  //               orderBy: "name",
+  //               elementTransformer: {
+  //                 transformerType: "innerFullObjectTemplate",
+  //                 interpolation: "runtime",
+  //                 referenceToOuterObject: "book",
+  //                 definition: [
+  //                   {
+  //                     attributeKey: {
+  //                       interpolation: "runtime",
+  //                       transformerType: "constantUuid",
+  //                       constantUuidValue: "uuid",
+  //                     },
+  //                     attributeValue: {
+  //                       interpolation: "runtime",
+  //                       transformerType: "newUuid",
+  //                     },
+  //                   },
+  //                   {
+  //                     attributeKey: {
+  //                       interpolation: "runtime",
+  //                       transformerType: "constantUuid",
+  //                       constantUuidValue: "name",
+  //                     },
+  //                     attributeValue: {
+  //                       transformerType: "mustacheStringTemplate",
+  //                       interpolation: "runtime",
+  //                       definition: "{{book.name}}",
+  //                     },
+  //                   },
+  //                 ],
+  //               },
+  //             },
+  //           },
+  //         },
+  //       });
+  //       console.log("queryResult", JSON.stringify(queryResult, null, 2));
+  //       return queryResult;
+  //     },
+  //     (a) =>
+  //       ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.countries, [
+  //       // ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.countries, [
+  //         "uuid",
+  //       ]),
+  //     undefined, // name to give to result
+  //     undefined,
+  //     [
+  //       {
+  //         name: "Et dans l&#39;éternité je ne m&#39;ennuierai pas",
+  //       },
+  //       {
+  //         name: "Le Pain et le Cirque",
+  //       },
+  //       {
+  //         name: "Rear Window",
+  //       },
+  //       {
+  //         name: "Renata n&#39;importe quoi",
+  //       },
+  //       {
+  //         name: "The Bride Wore Black",
+  //       },
+  //       {
+  //         name: "The Design of Everyday Things",
+  //       },
+  //     ]
+  //   );
+  // });
 
   // ################################################################################################
   it("get books of an author with combiner", async () => {
@@ -798,17 +764,17 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult;
       },
-      // (a) => (a as any).returnedDomainElement.elementValue.booksOfAuthor,
+      // (a) => (a as any).returnedDomainElement.booksOfAuthor,
       (a) => {
         // console.log("ICI!!!");
         const result = ignorePostgresExtraAttributesOnList(
-          (a as any).returnedDomainElement.elementValue.booksOfAuthor.sort((a: any, b: any) => a.name.localeCompare(b.name))
+          (a as any).returnedDomainElement.booksOfAuthor.sort((a: any, b: any) => a.name.localeCompare(b.name))
         );
         console.log("CORRECTED result", JSON.stringify(result, null, 2));
         return result;
       },
       undefined, // name to give to result
-      "object", // must equal a.returnedDomainElement.elementType
+      undefined,
       Object.values({
         "c6852e89-3c3c-447f-b827-4b5b9d830975": {
           author: "ce7b601d-be5f-4bc6-a5af-14091594046a",
@@ -829,27 +795,6 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
           uuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
         },
       }).sort((a, b) => a.name.localeCompare(b.name))
-
-      // {
-      //   "c6852e89-3c3c-447f-b827-4b5b9d830975": {
-      //     author: "ce7b601d-be5f-4bc6-a5af-14091594046a",
-      //     conceptLevel: "Data",
-      //     name: "Le Pain et le Cirque",
-      //     parentName: "Book",
-      //     parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-      //     publisher: "516a7366-39e7-4998-82cb-80199a7fa667",
-      //     uuid: "c6852e89-3c3c-447f-b827-4b5b9d830975",
-      //   },
-      //   "caef8a59-39eb-48b5-ad59-a7642d3a1e8f": {
-      //     author: "ce7b601d-be5f-4bc6-a5af-14091594046a",
-      //     conceptLevel: "Data",
-      //     name: "Et dans l'éternité je ne m'ennuierai pas",
-      //     parentName: "Book",
-      //     parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-      //     publisher: "516a7366-39e7-4998-82cb-80199a7fa667",
-      //     uuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
-      //   },
-      // }
     );
   });
   

@@ -3,6 +3,7 @@ import * as path from "path";
 
 import {
   ACTION_OK,
+  Action2Error,
   Action2VoidReturnType,
   EntityDefinition,
   LoggerInterface,
@@ -103,11 +104,10 @@ export class FileSystemStoreSection
       }
       return Promise.resolve(ACTION_OK);
     } catch (error) {
-      return Promise.resolve({
-        status: "error",
-        errorType: "FailedToDeployModule",
-        errorMessage: "dropStorageSpaceForInstancesOfEntity error:" + error,
-      });
+      return Promise.resolve(new Action2Error(
+        "FailedToDeployModule",
+        "dropStorageSpaceForInstancesOfEntity error:" + error
+      ));
     }
   }
 

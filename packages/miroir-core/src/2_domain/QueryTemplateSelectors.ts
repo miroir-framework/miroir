@@ -18,7 +18,7 @@ import {
   RunBoxedQueryTemplateAction,
   RunBoxedQueryTemplateOrBoxedExtractorTemplateAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { Action2ReturnType, Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement.js";
+import { Action2ReturnType, Domain2ElementFailed, Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement.js";
 import {
   AsyncBoxedExtractorOrQueryRunnerMap,
   ExtractorTemplateRunnerParamsForJzodSchema,
@@ -290,7 +290,14 @@ export const extractzodSchemaForSingleSelectQueryTemplate = <StateType>(
     entityUuidDomainElement
   );
 
-  if (typeof entityUuidDomainElement != "object" || entityUuidDomainElement.elementType != "instanceUuid") {
+  if (entityUuidDomainElement instanceof Domain2ElementFailed) {
+  // if (typeof entityUuidDomainElement != "object" || entityUuidDomainElement.elementType != "instanceUuid") {
+    log.error(
+      "extractzodSchemaForSingleSelectQuery called",
+      selectorParams.query,
+      "error on resolving entityUuid",
+      entityUuidDomainElement
+    );
     return undefined
   }
 

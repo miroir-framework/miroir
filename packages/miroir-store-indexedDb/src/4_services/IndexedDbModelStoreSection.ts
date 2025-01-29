@@ -36,7 +36,7 @@ export class IndexedDbModelStoreSection
       "IndexedDbModelStoreSection " + indexedDbStoreName, // logheader
       dataStore
     );
-    log.info("IndexedDbModelStoreSection " + indexedDbStoreName, dataStore);
+    log.info("IndexedDbModelStoreSection started for",indexedDbStoreName);
   }
 
   // ##############################################################################################

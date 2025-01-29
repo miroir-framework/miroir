@@ -32,7 +32,8 @@ import {
   selfApplicationDeploymentConfiguration,
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunner,
-  SyncQueryRunnerParams
+  SyncQueryRunnerParams,
+  domain2ElementObjectZodSchema
 } from "miroir-core";
 
 import { Button } from "@mui/material";
@@ -75,7 +76,7 @@ export const ReportSectionDisplayCorePropsSchema = z.object({
   domainElementObject: domain2ElementObjectZodSchema, // ugly, this is due to the need of calling hooks in the same order, irrelevant of tableComponentReportType. Should be in ReportSectionDisplayEntityInstancePropsSchema.
   fetchedDataJzodSchema: z.record(jzodObject.optional()).optional(), // ugly, this is due to the need of calling hooks in the same order, irrelevant of tableComponentReportType. Should be in ReportSectionDisplayEntityInstancePropsSchema.
   chosenApplicationSection: applicationSection.optional(), // ugly, this is due to the need of calling hooks in the same order, irrelevant of tableComponentReportType. Should be in ReportSectionDisplayEntityInstancePropsSchema.
-  paramsAsdomainElements: domainElementObject,
+  paramsAsdomainElements: domain2ElementObjectZodSchema,
 });
 
 export const ReportSectionDisplayEntityInstancePropsSchema = ReportSectionDisplayCorePropsSchema.extend({
@@ -619,10 +620,10 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
 
   const instancesToDisplay: EntityInstancesUuidIndex = useMemo(() =>
     props.domainElementObject &&
-    props.domainElementObject.elementType == "object" &&
-    props.section.definition.fetchedDataReference &&
-    props.domainElementObject.elementValue[props.section.definition.fetchedDataReference]
-      ? props.domainElementObject.elementValue[props.section.definition.fetchedDataReference] as any as EntityInstancesUuidIndex
+    // props.domainElementObject.elementType == "object" &&
+    props.section?.definition.fetchedDataReference &&
+    props.domainElementObject[props.section.definition.fetchedDataReference]
+      ? props.domainElementObject[props.section.definition.fetchedDataReference] as any as EntityInstancesUuidIndex
       : {}
     ,[props.domainElementObject,]
   );

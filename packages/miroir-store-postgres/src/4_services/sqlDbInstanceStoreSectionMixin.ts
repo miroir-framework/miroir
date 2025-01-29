@@ -3,6 +3,7 @@
 import {
   Action2EntityInstanceCollectionOrFailure,
   Action2EntityInstanceReturnType,
+  Action2Error,
   Action2ReturnType,
   Action2VoidReturnType,
   ACTION_OK,
@@ -241,16 +242,15 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
         } else {
           // TODO: indicate exact reason!
           console.warn(this.logHeader, "getInstance", "could not find entityUuid", parentUuid);
-          return Promise.resolve({ status: "error", errorType: "FailedToGetInstance" } );
+          return Promise.resolve(new Action2Error("FailedToGetInstance", "could not find entityUuid " + parentUuid));
         }
       } catch (error) {
         // TODO: indicate exact reason!
         log.warn(this.logHeader, "getInstance", "could not fetch instance from db: parentId", parentUuid, "uuid", uuid);
-        return Promise.resolve({
-          status: "error",
-          errorType: "FailedToGetInstance",
-          errorMessage: "could not fetch instance from db: parentId " + parentUuid + ", uuid=" + uuid + ": " + error,
-        });
+        return Promise.resolve(new Action2Error(
+          "FailedToGetInstance",
+          "could not fetch instance from db: parentId " + parentUuid + ", uuid=" + uuid + ": " + error
+        ));
       }
     }
 
@@ -284,10 +284,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
             "could not find entity in database: entityUuid",
             parentUuid
           );
-          return {
-            status: "error",
-            errorType: "FailedToGetInstances", errorMessage: `could not find entity ${parentUuid}` ,
-          };
+          return Promise.resolve(new Action2Error("FailedToGetInstances", `could not find entity ${parentUuid}`));
         }
         // TODO: CORRECT APPLICATION SECTION
         return Promise.resolve({
@@ -300,11 +297,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
         });
       } catch (e) {
         log.warn(this.logHeader, "getInstancesWithFilter", "failed to fetch instances of entityUuid", parentUuid);
-        return {
-          status: "error",
-          errorType: "FailedToGetInstances",
-          errorMessage: `could not get instances for entity ${parentUuid}`,
-        };
+        return Promise.resolve(new Action2Error("FailedToGetInstances", `could not get instances for entity ${parentUuid}`));
       }
     }
 
@@ -343,11 +336,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
             "could not find entity in database: entityUuid",
             parentUuid
           );
-          return {
-            status: "error",
-            errorType: "FailedToGetInstances",
-            errorMessage: `getOrderedInstancesWithFilter could not find entity ${parentUuid}`,
-          };
+          return Promise.resolve(new Action2Error("FailedToGetInstances", `could not find entity ${parentUuid}`));
         }
         // TODO: CORRECT APPLICATION SECTION
         return Promise.resolve({
@@ -365,11 +354,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           "failed to fetch instances of entityUuid",
           parentUuid
         );
-        return {
-          status: "error",
-          errorType: "FailedToGetInstances",
-          errorMessage: `could not get instances for entity ${parentUuid}`,
-        };
+        return Promise.resolve(new Action2Error("FailedToGetInstances", `could not get instances for entity ${parentUuid}`));
       }
     }
 
@@ -390,11 +375,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           // log.info("getInstances result", cleanResult);
         } else {
           log.warn(this.logHeader, "getInstances", "could not find entity in database: entityUuid", parentUuid);
-          return {
-            status: "error",
-            errorType: "FailedToGetInstances",
-            errorMessage: `could not find entity ${parentUuid}`,
-          };
+          return Promise.resolve(new Action2Error("FailedToGetInstances", `could not find entity ${parentUuid}`));
         }
         // TODO: CORRECT APPLICATION SECTION
         return Promise.resolve({
@@ -407,11 +388,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
         });
       } catch (e) {
         log.warn(this.logHeader, "getInstances", "failed to fetch instances of entityUuid", parentUuid);
-        return {
-          status: "error",
-          errorType: "FailedToGetInstances",
-          errorMessage: `could not get instances for entity ${parentUuid}`,
-        };
+        return Promise.resolve(new Action2Error("FailedToGetInstances", `could not get instances for entity ${parentUuid}`));
       }
     }
 
@@ -439,12 +416,10 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           "error",
           errorText,
         );
-        return Promise.resolve({
-          status: "error",
-          errorType: "FailedToUpdateInstance",
-          errorMessage: `failed to upsert instance ${instance.uuid} of entity ${instance.parentUuid}`,
-          errorStack: error,
-        });
+        return Promise.resolve(new Action2Error(
+          "FailedToUpdateInstance",
+          `failed to upsert instance ${instance.uuid} of entity ${instance.parentUuid}: ${errorText}`
+        ));
       }
       return Promise.resolve(ACTION_OK);
     }
@@ -466,12 +441,10 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
             "uuid",
             instance.uuid
           );
-          return Promise.resolve({
-            status: "error",
-            errorType: "FailedToDeleteInstance",
-            errorMessage:
-              "could not delete instance: parentId " + parentUuid + ", uuid=" + instance.uuid + ": " + error,
-          });
+          return Promise.resolve(new Action2Error(
+            "FailedToDeleteInstance",
+            `could not delete instance: parentId ${parentUuid}, uuid=${instance.uuid}: ${error}`
+          ));
         }
       }
       return Promise.resolve(ACTION_OK);
@@ -482,11 +455,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
       log.info(this.logHeader, "deleteInstance", parentUuid, instance);
       if (!this.sqlSchemaTableAccess[parentUuid]) {
         log.warn(this.logHeader, "deleteInstance", "could not find entity in database: entityUuid", parentUuid);
-        return Promise.resolve({
-          status: "error",
-          errorType: "FailedToDeleteInstance",
-          errorMessage: `could not find entity ${parentUuid}`,
-        });
+        return Promise.resolve(new Action2Error("FailedToDeleteInstance", `could not find entity ${parentUuid}`));
       }
       try {
         const sequelizeModel = this.sqlSchemaTableAccess[parentUuid].sequelizeModel;
@@ -501,11 +470,10 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           "uuid",
           instance.uuid
         );
-        return Promise.resolve({
-          status: "error",
-          errorType: "FailedToDeleteInstance",
-          errorMessage: "could not delete instance: parentId " + parentUuid + ", uuid=" + instance.uuid + ": " + error,
-        });
+        return Promise.resolve(new Action2Error(
+          "FailedToDeleteInstance",
+          `could not delete instance: parentId ${parentUuid}, uuid=${instance.uuid}: ${error}`
+        ));
       }
     }
   };

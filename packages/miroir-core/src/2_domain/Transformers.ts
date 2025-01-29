@@ -30,7 +30,7 @@ import {
   TransformerForRuntime_object_fullTemplate,
   TransformerForRuntime_objectDynamicAccess
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement.js";
+import { Domain2ElementFailed, Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { transformer_menu_AddItem } from "../1_core/Menu.js";
 import { MiroirLoggerFactory } from "../4_services/LoggerFactory.js";
@@ -717,7 +717,6 @@ export function transformer_dynamicObjectAccess_apply(
     undefined
   );
   return result;
-  // return { elementType: "any", elementValue: result };
 
 }
 // ################################################################################################
@@ -771,14 +770,23 @@ export function innerTransformer_apply(
           : innerTransformer_apply(step, label, transformer.referencedExtractor, queryParams, contextResults);
           ;
 
-      // if (!["instanceUuidIndex", "object"].includes(resolvedReference.elementType)) {
-      if ( typeof resolvedReference != "object" || !Array.isArray(resolvedReference)) {
+      if (resolveReference instanceof Domain2ElementFailed) {
         log.error(
           "innerTransformer_apply extractorTransformer count can not apply to resolvedReference",
           resolvedReference
         );
         return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } }; // TODO: improve error message / queryFailure
       }
+
+      if ( typeof resolvedReference != "object" || !Array.isArray(resolvedReference)) {
+      // if ( typeof resolvedReference != "object" || !Array.isArray(resolvedReference)) {
+        log.error(
+          "innerTransformer_apply extractorTransformer count can not apply to resolvedReference",
+          resolvedReference
+        );
+        return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } }; // TODO: improve error message / queryFailure
+      }
+
       log.info("innerTransformer_apply extractorTransformer count resolvedReference", resolvedReference.length);
       const sortByAttribute = transformer.orderBy
         ? (a: any[]) =>
@@ -848,7 +856,14 @@ export function innerTransformer_apply(
       //   resolvedReference
       // );
 
-      // if (!(["instanceUuidIndex", "object", "any"].includes(resolvedReference.elementType))) {
+      if (resolveReference instanceof Domain2ElementFailed) {
+        log.error(
+          "innerTransformer_apply extractorTransformer objectEntries can not apply to resolvedReference",
+          resolvedReference
+        );
+        return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } }; // TODO: improve error message / queryFailure
+      }
+
       if (!(typeof resolvedReference == "object") || Array.isArray(resolvedReference)) {
         const failure: DomainElementFailed = {
           elementType: "failure",
@@ -877,6 +892,14 @@ export function innerTransformer_apply(
         queryParams,
         contextResults
       );
+
+      if (resolveReference instanceof Domain2ElementFailed) {
+        log.error(
+          "innerTransformer_apply extractorTransformer objectValues can not apply to resolvedReference",
+          resolvedReference
+        );
+        return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } }; // TODO: improve error message / queryFailure
+      }
 
       if (typeof resolvedReference != "object" || Array.isArray(resolvedReference)) {
         log.error(
@@ -910,6 +933,14 @@ export function innerTransformer_apply(
         queryParams,
         contextResults
       );
+
+      if (resolveReference instanceof Domain2ElementFailed) {
+        log.error(
+          "innerTransformer_apply extractorTransformer listPickElement can not apply to resolvedReference",
+          resolvedReference
+        );
+        return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } }; // TODO: improve error message / queryFailure
+      }
 
       // if (!["instanceUuidIndex", "object"].includes(resolvedReference.elementType)) {
       if (typeof resolvedReference != "object" || !Array.isArray(resolvedReference)) {
@@ -969,6 +1000,14 @@ export function innerTransformer_apply(
         resolvedReference
       );
 
+      if (resolveReference instanceof Domain2ElementFailed) {
+        log.error(
+          "innerTransformer_apply extractorTransformer unique can not apply to resolvedReference",
+          resolvedReference
+        );
+        return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } }; // TODO: improve error message / queryFailure
+      }
+
       if (typeof resolvedReference != "object" || !Array.isArray(resolvedReference)) {
         log.error(
           "innerTransformer_apply extractorTransformer unique referencedExtractor can not apply to resolvedReference",
@@ -1024,24 +1063,20 @@ export function innerTransformer_apply(
         JSON.stringify(transformer, null, 2)
       );
       return result;
-      // return { elementType: "object", elementValue: result };
       break;
     }
     case "constantObject": {
       log.info("innerTransformer_apply constantObject", transformer.constantObjectValue);
       // log.error("innerTransformer_apply called with constantObject", transformer.constantObjectValue);
       return transformer.constantObjectValue;
-      // return { elementType: "object", elementValue: transformer.constantObjectValue };
       break;
     }
 
     case "constantString": {
       return transformer.constantStringValue;
-      // return { elementType: "string", elementValue: transformer.constantStringValue };
     }
     case "constantUuid": {
       return transformer.constantUuidValue;
-      // return { elementType: "instanceUuid", elementValue: transformer.constantUuidValue };
     }
     case "dataflowObject": {
       const resultObject: Record<string,any> = {};
@@ -1064,7 +1099,6 @@ export function innerTransformer_apply(
         );
       }
       return resultObject
-      // return { elementType: "object", elementValue: resultObject };
       break;
     }
     case "newUuid":
@@ -1154,10 +1188,6 @@ export function innerTransformer_plainObject_apply(
     //   JSON.stringify(result, null, 2)
     // );
     return result;
-    // return {
-    //   elementType: "object",
-    //   elementValue: result,
-    // };
   } else {
     log.error(
       "innerTransformer_plainObject_apply failed converting plain object",
@@ -1288,7 +1318,6 @@ export function transformer_apply(
   } else {
     // plain value
     return transformer;
-    // return { elementType: "any", elementValue: transformer};
   }
 }
 
@@ -1351,7 +1380,6 @@ export function transformer_extended_apply(
           }
         } else {
           // log.info("THERE");
-          // result = { elementType: "any", elementValue: transformer};
           result = innerTransformer_plainObject_apply(step, label, transformer, queryParams, contextResults);
         }
       } else {
@@ -1362,7 +1390,6 @@ export function transformer_extended_apply(
   } else {
     // plain value
     return transformer;
-    // result = { elementType: "any", elementValue: transformer};
   }
 
   // log.info(

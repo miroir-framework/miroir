@@ -141,11 +141,10 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
         return currentEntity
       }
       if (currentEntity.returnedDomainElement instanceof Domain2ElementFailed) {
-        return {
-          status: "error",
-          errorType: "FailedToDeployModule", // TODO: correct errorType
-          errorMessage: `renameEntityClean failed for section: data, entityUuid ${update.entityUuid}, error: ${currentEntity.returnedDomainElement.elementValue.queryFailure}, ${currentEntity.returnedDomainElement.elementValue.failureMessage}`,
-        };
+        return Promise.resolve(new Action2Error(
+          "FailedToDeployModule",
+          `renameEntityClean failed for section: data, entityUuid ${update.entityUuid}, error: ${currentEntity.returnedDomainElement.elementValue.queryFailure}, ${currentEntity.returnedDomainElement.elementValue.failureMessage}`
+        ));
       }
       const currentEntityDefinition: Action2EntityInstanceReturnType = await this.getInstance(
         entityEntityDefinition.uuid,
@@ -157,11 +156,10 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
       }
 
       if (currentEntityDefinition.returnedDomainElement instanceof Domain2ElementFailed) {
-        return {
-          status: "error",
-          errorType: "FailedToDeployModule", // TODO: correct errorType
-          errorMessage: `renameEntityClean failed for section: data, entityUuid ${update.entityDefinitionUuid}, error: ${currentEntityDefinition.returnedDomainElement.elementValue.queryFailure}, ${currentEntityDefinition.returnedDomainElement.elementValue.failureMessage}`,
-        }
+        return Promise.resolve(new Action2Error(
+          "FailedToDeployModule",
+          `renameEntityClean failed for section: data, entityUuid ${update.entityDefinitionUuid}, error: ${currentEntityDefinition.returnedDomainElement.elementValue.queryFailure}, ${currentEntityDefinition.returnedDomainElement.elementValue.failureMessage}`
+        ));
       }
       const modifiedEntity:EntityInstanceWithName = Object.assign({},currentEntity.returnedDomainElement,{name:update.targetValue});
       const modifiedEntityDefinition:EntityDefinition = Object.assign({},currentEntityDefinition.returnedDomainElement as EntityDefinition,{name:update.targetValue});
@@ -189,12 +187,10 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
         return currentEntityDefinition
       }
       if (currentEntityDefinition.returnedDomainElement instanceof Domain2ElementFailed) {
-        return {
-          status: "error",
-          errorType: "FailedToDeployModule", // TODO: correct errorType
-          errorMessage: `alterEntityAttribute failed for section: data, entityUuid ${update.entityDefinitionUuid}, error: ${currentEntityDefinition.returnedDomainElement.elementValue.queryFailure}, ${currentEntityDefinition.returnedDomainElement.elementValue.failureMessage}`,
-        }
-        
+        return Promise.resolve(new Action2Error(
+          "FailedToDeployModule",
+          `alterEntityAttribute failed for section: data, entityUuid ${update.entityDefinitionUuid}, error: ${currentEntityDefinition.returnedDomainElement.elementValue.queryFailure}, ${currentEntityDefinition.returnedDomainElement.elementValue.failureMessage}`
+        ));
       }
       const localEntityDefinition: EntityDefinition = currentEntityDefinition.returnedDomainElement as EntityDefinition;
       const localEntityJzodSchemaDefinition = update.removeColumns != undefined && Array.isArray(update.removeColumns)?
@@ -234,29 +230,17 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
       if (this.localUuidIndexedDb.hasSubLevel(entityEntityDefinition.uuid)) {
         const entityDefinitions: Action2EntityInstanceCollectionOrFailure = await this.getInstances(entityEntityDefinition.uuid);
         if (entityDefinitions instanceof Action2Error) {
-          return Promise.resolve({
-            status: "error",
-            errorType: "FailedToDeleteStore", // TODO: correct errorType
-            errorMessage: `dropEntity failed for section: data, entityUuid ${entityUuid}, error: ${entityDefinitions.errorType}, ${entityDefinitions.errorMessage}`,
-          });
+          return Promise.resolve(new Action2Error(
+            "FailedToDeleteStore",
+            `dropEntity failed for section: data, entityUuid ${entityUuid}, error: ${entityDefinitions.errorType}, ${entityDefinitions.errorMessage}`
+          ));
         }
         if (entityDefinitions.returnedDomainElement instanceof Domain2ElementFailed) {
-          return Promise.resolve({
-            status: "error",
-            errorType: "FailedToDeleteStore", // TODO: correct errorType
-            errorMessage: `dropEntity failed for section: data, entityUuid ${entityUuid}, error: ${entityDefinitions.returnedDomainElement.elementValue.queryFailure}, ${entityDefinitions.returnedDomainElement.elementValue.failureMessage}`,
-          });
+          return Promise.resolve(new Action2Error(
+            "FailedToDeleteStore",
+            `dropEntity failed for section: data, entityUuid ${entityUuid}, error: ${entityDefinitions.returnedDomainElement.elementValue.queryFailure}, ${entityDefinitions.returnedDomainElement.elementValue.failureMessage}`
+          ));
         }
-        // if (entityDefinitions.returnedDomainElement?.elementType != "entityInstanceCollection") {
-        //   return Promise.resolve({
-        //     status: "error",
-        //     error: {
-        //       errorType: "FailedToGetInstances", // TODO: correct errorType
-        //       errorMessage: `getInstances failed for section: data, entityUuid ${entityUuid} wrong element type, expected "entityInstanceCollection", got elementType: ${entityDefinitions.returnedDomainElement?.elementType}`,
-        //     },
-        //   });
-        // }
-
         log.debug(
           this.logHeader,
           "dropEntity entity",

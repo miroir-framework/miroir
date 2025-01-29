@@ -293,7 +293,7 @@ const testActions: Record<string, TestActionParams> = {
                 testType: "testAssertion",
                 testLabel: "checkNumberOfEntitiesInLibraryApplicationDeployment",
                 definition: {
-                  resultAccessPath: ["elementValue", "0"],
+                  resultAccessPath: ["0"],
                   resultTransformer: {
                     transformerType: "count",
                     interpolation: "runtime",
@@ -397,7 +397,7 @@ const testActions: Record<string, TestActionParams> = {
                 testType: "testAssertion",
                 testLabel: "checkNumberOfBooks",
                 definition: {
-                  resultAccessPath: ["elementValue", "0"],
+                  resultAccessPath: ["0"],
                   resultTransformer: {
                     transformerType: "count",
                     interpolation: "runtime",
@@ -514,7 +514,7 @@ const testActions: Record<string, TestActionParams> = {
                 testType: "testAssertion",
                 testLabel: "checkNumberOfBooks",
                 definition: {
-                  resultAccessPath: ["elementValue", "0"],
+                  resultAccessPath: ["0"],
                   resultTransformer: {
                     transformerType: "count",
                     interpolation: "runtime",
@@ -645,7 +645,7 @@ const testActions: Record<string, TestActionParams> = {
                 testType: "testAssertion",
                 testLabel: "checkNumberOfBooks",
                 definition: {
-                  resultAccessPath: ["elementValue", "0"],
+                  resultAccessPath: ["0"],
                   resultTransformer: {
                     transformerType: "count",
                     interpolation: "runtime",
@@ -681,7 +681,7 @@ const testActions: Record<string, TestActionParams> = {
                 testType: "testAssertion",
                 testLabel: "checkNumberOfBooks",
                 definition: {
-                  resultAccessPath: ["elementValue", "0"],
+                  resultAccessPath: ["0"],
                   resultTransformer: {
                     transformerType: "count",
                     interpolation: "runtime",
@@ -796,7 +796,7 @@ const testActions: Record<string, TestActionParams> = {
                 testType: "testAssertion",
                 testLabel: "checkNumberOfEntities",
                 definition: {
-                  resultAccessPath: ["elementValue", "0"],
+                  resultAccessPath: ["0"],
                   resultTransformer: {
                     transformerType: "count",
                     interpolation: "runtime",
@@ -917,7 +917,7 @@ const testActions: Record<string, TestActionParams> = {
                 testType: "testAssertion",
                 testLabel: "checkNumberOfBooks",
                 definition: {
-                  resultAccessPath: ["elementValue", "0"],
+                  resultAccessPath: ["0"],
                   resultTransformer: {
                     transformerType: "count",
                     interpolation: "runtime",
@@ -1074,7 +1074,7 @@ const testActions: Record<string, TestActionParams> = {
                 testType: "testAssertion",
                 testLabel: "checkNumberOfBooks",
                 definition: {
-                  resultAccessPath: ["elementValue", "0"],
+                  resultAccessPath: ["0"],
                   resultTransformer: {
                     transformerType: "count",
                     interpolation: "runtime",
@@ -1096,7 +1096,7 @@ const testActions: Record<string, TestActionParams> = {
                 testType: "testAssertion",
                 testLabel: "checkNumberOfBooks",
                 definition: {
-                  resultAccessPath: ["elementValue", "0"],
+                  resultAccessPath: ["0"],
                   resultTransformer: {
                     transformerType: "count",
                     interpolation: "runtime",

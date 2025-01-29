@@ -476,7 +476,7 @@ function handleInstanceAction(
       break;
     }
     case "loadNewInstancesInLocalCache": {
-      // log.info("localCacheSlice handleInstanceAction loadNewInstancesInLocalCache called!");
+      log.info("localCacheSlice handleInstanceAction loadNewInstancesInLocalCache called!");
       for (const instanceCollection of instanceAction.objects) {
         loadNewEntityInstancesInLocalCache(
           instanceAction.deploymentUuid,

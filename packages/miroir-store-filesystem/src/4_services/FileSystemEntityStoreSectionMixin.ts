@@ -158,18 +158,16 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
           entityEntityDefinition.uuid
         );
         if (entityDefinitions instanceof Action2Error) {
-          return Promise.resolve({
-            status: "error",
-            errorType: "FailedToDeleteStore", // TODO: correct errorType
-            errorMessage: `dropEntity failed for section: data, entityUuid ${entityUuid}, error: ${entityDefinitions.errorType}, ${entityDefinitions.errorMessage}`,
-          });
+          return Promise.resolve(new Action2Error(
+            "FailedToDeleteStore",
+            `dropEntity failed for section: data, entityUuid ${entityUuid}, error: ${entityDefinitions.errorMessage}`
+          ));
         }
         if (entityDefinitions.returnedDomainElement instanceof Domain2ElementFailed) {
-          return Promise.resolve({
-            status: "error",
-            errorType: "FailedToDeleteStore", // TODO: correct errorType
-            errorMessage: `dropEntity failed for section: data, entityUuid ${entityUuid}, error: ${entityDefinitions.returnedDomainElement.elementValue.queryFailure}, ${entityDefinitions.returnedDomainElement.elementValue.failureMessage}`,
-          });
+          return Promise.resolve(new Action2Error(
+            "FailedToDeleteStore",
+            `dropEntity failed for section: data, entityUuid ${entityUuid}, error: ${entityDefinitions.returnedDomainElement.elementValue.queryFailure}, ${entityDefinitions.returnedDomainElement.elementValue.failureMessage}`
+          ));
         }
 
         for (const entityDefinition of entityDefinitions.returnedDomainElement.instances.filter(
@@ -210,11 +208,10 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
         return currentEntity
       }
       if (currentEntity.returnedDomainElement instanceof Domain2ElementFailed) {
-        return {
-          status: "error",
-          errorType: "FailedToDeployModule",
-          errorMessage: `renameEntityClean failed for section: data, entityUuid ${update.entityUuid}, error: ${currentEntity.returnedDomainElement.elementValue.queryFailure}, ${currentEntity.returnedDomainElement.elementValue.failureMessage}`,
-        }
+        return Promise.resolve(new Action2Error(
+          "FailedToDeployModule",
+          `renameEntityClean failed for section: data, entityUuid ${update.entityUuid}, error: ${currentEntity.returnedDomainElement.elementValue.queryFailure}, ${currentEntity.returnedDomainElement.elementValue.failureMessage}`
+        ));
       }
       const currentEntityDefinition: Action2EntityInstanceReturnType = await this.getInstance(
         entityEntityDefinition.uuid,
@@ -225,11 +222,10 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
         return currentEntityDefinition
       }
       if (currentEntityDefinition.returnedDomainElement instanceof Domain2ElementFailed) {
-        return {
-          status: "error",
-          errorType: "FailedToDeployModule",
-          errorMessage: `renameEntityClean failed for section: data, entityUuid ${update.entityDefinitionUuid}, error: ${currentEntityDefinition.returnedDomainElement.elementValue.queryFailure}, ${currentEntityDefinition.returnedDomainElement.elementValue.failureMessage}`,
-        }
+        return Promise.resolve(new Action2Error(
+          "FailedToDeployModule",
+          `renameEntityClean failed for section: data, entityUuid ${update.entityDefinitionUuid}, error: ${currentEntityDefinition.returnedDomainElement.elementValue.queryFailure}, ${currentEntityDefinition.returnedDomainElement.elementValue.failureMessage}`
+        ));
       }
       const modifiedEntity: EntityInstanceWithName = Object.assign(
         {},
@@ -265,11 +261,10 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
         return currentEntityDefinition
       }
       if (currentEntityDefinition.returnedDomainElement instanceof Domain2ElementFailed) {
-        return {
-          status: "error",
-          errorType: "FailedToDeployModule",
-          errorMessage: `alterEntityAttribute failed for section: data, entityUuid ${update.entityDefinitionUuid}, error: ${currentEntityDefinition.returnedDomainElement.elementValue.queryFailure}, ${currentEntityDefinition.returnedDomainElement.elementValue.failureMessage}`,
-        }
+        return Promise.resolve(new Action2Error(
+          "FailedToDeployModule",
+          `alterEntityAttribute failed for section: data, entityUuid ${update.entityDefinitionUuid}, error: ${currentEntityDefinition.returnedDomainElement.elementValue.queryFailure}, ${currentEntityDefinition.returnedDomainElement.elementValue.failureMessage}`
+        ));
       }
       const localEntityDefinition: EntityDefinition = currentEntityDefinition.returnedDomainElement as EntityDefinition;
       const localEntityJzodSchemaDefinition =

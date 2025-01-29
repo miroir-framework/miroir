@@ -74,10 +74,10 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
       }
     );
     if (queryResult instanceof Domain2ElementFailed) {
-      return {
-        status: "error",
-        errorType: "FailedToGetInstances", errorMessage: JSON.stringify(queryResult),
-      } as Action2ReturnType;
+      return Promise.resolve(new Action2Error(
+        "FailedToGetInstances",
+        JSON.stringify(queryResult)
+      ));
     } else {
       const result: Action2ReturnType = { status: "ok", returnedDomainElement: queryResult };
       log.info(this.logHeader, "handleBoxedExtractorAction", "runBoxedExtractorAction", runBoxedExtractorAction, "result", JSON.stringify(result, null, 2));
@@ -96,10 +96,10 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
       }
     );
     if (queryResult instanceof Domain2ElementFailed) {
-      return {
-        status: "error",
-        errorType: "FailedToGetInstances", errorMessage: JSON.stringify(queryResult),
-      } as Action2ReturnType;
+      return Promise.resolve(new Action2Error(
+        "FailedToGetInstances",
+        JSON.stringify(queryResult)
+      ));
     } else {
       const result: Action2ReturnType = { status: "ok", returnedDomainElement: queryResult };
       log.info(this.logHeader, "handleBoxedQueryAction", "runBoxedQueryAction", runBoxedQueryAction, "result", JSON.stringify(result, null, 2));
@@ -118,7 +118,6 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
     const deploymentUuid = selectorParams.extractor.deploymentUuid;
     const applicationSection: ApplicationSection =
       selectorParams.extractor.select.applicationSection ??
-      // ((selectorParams.extractor.pageParams?.elementValue?.applicationSection?.elementValue ??
       ((selectorParams.extractor.pageParams?.applicationSection ??
         "data") as ApplicationSection);
 
@@ -158,9 +157,8 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
         }
 
         const result = await this.persistenceStoreController.getInstance(
-          // applicationSection,
           entityUuidReference,
-          (referenceObject.elementValue as any)[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
+          referenceObject[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
         );
 
         if (result instanceof Action2Error || result.returnedDomainElement instanceof Domain2ElementFailed) {
@@ -300,9 +298,6 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
         },
       };
     }
-    // const entityInstanceUuidIndex = Object.fromEntries(
-    //   entityInstanceCollection.returnedDomainElement.elementValue.instances.map((i:any) => [i.uuid, i])
-    // );
     return entityInstanceCollection.returnedDomainElement.instances;
   };
 

@@ -261,15 +261,21 @@ export class DomainController implements DomainControllerInterface {
 
           if (
             !context.dataEntitiesFromModelSection ||
-            context.dataEntitiesFromModelSection instanceof Action2Error ||
-            context.dataEntitiesFromModelSection.returnedDomainElement.elementType != "entityInstanceCollection"
+            context.dataEntitiesFromModelSection instanceof Action2Error
           ) {
             throw new Error(
               "DomainController loadConfigurationFromPersistenceStore could not fetch entity instance list " +
-                // JSON.stringify(context.dataEntitiesFromModelSection.map((e: any) => e.name), undefined, 2)
                 JSON.stringify(context.dataEntitiesFromModelSection, undefined, 2)
             );
           }
+
+          if (!context.dataEntitiesFromModelSection.returnedDomainElement || context.dataEntitiesFromModelSection.returnedDomainElement instanceof Domain2ElementFailed) {
+            throw new Error(
+              "DomainController loadConfigurationFromPersistenceStore could not fetch entity instance list " +
+                JSON.stringify(context.dataEntitiesFromModelSection, undefined, 2)
+            );
+          }
+
           // TODO: information has to come from localCacheSlice, not from hard-coded source!
           const modelEntitiesToFetch: MetaEntity[] =
             deploymentUuid == adminConfigurationDeploymentMiroir.uuid ? miroirModelEntities : metaModelEntities;
@@ -280,7 +286,8 @@ export class DomainController implements DomainControllerInterface {
                     modelEntitiesToFetch.filter((modelEntity) => dataEntity.uuid == modelEntity.uuid).length == 0
                 )
               : context.dataEntitiesFromModelSection.returnedDomainElement?.instances ?? []; // hack, hack, hack
-          log.debug(
+
+          log.info(
             "DomainController loadConfigurationFromPersistenceStore for deployment",
             deploymentUuid,
             "found data entities to fetch",
@@ -289,7 +296,6 @@ export class DomainController implements DomainControllerInterface {
             modelEntitiesToFetch.map((e) => e.name)
           );
 
-          // const modelEntities = [entityReport].filter(me=>dataEntities.instances.filter(de=>de.uuid == me.uuid).length == 0)
           const toFetchEntities: { section: ApplicationSection; entity: MetaEntity }[] = [
             ...modelEntitiesToFetch.map((e) => ({ section: "model" as ApplicationSection, entity: e })),
             ...dataEntitiesToFetch.map((e) => ({ section: "data" as ApplicationSection, entity: e as MetaEntity })),
@@ -394,11 +400,10 @@ export class DomainController implements DomainControllerInterface {
     } catch (error) {
       log.warn("DomainController loadConfigurationFromPersistenceStore caught error:", error);
       // throw error;
-      return Promise.resolve({
-        status: "error",
-        errorType: "FailedToDeployModule",
-        errorMessage: "DomainController loadConfigurationFromPersistenceStore caught error: " + error,
-      });
+      return new Action2Error(
+        "FailedToDeployModule",
+        "DomainController loadConfigurationFromPersistenceStore caught error: " + error,
+      )
     }
     return Promise.resolve(ACTION_OK);
   }
@@ -969,11 +974,10 @@ export class DomainController implements DomainControllerInterface {
       return Promise.resolve(ACTION_OK);
     } catch (error) {
       log.error("handleTestCompositeActionSuite caught error", error);
-      return Promise.resolve({
-        status: "error",
-        errorType: "FailedToDeployModule",
-        errorMessage: "handleTestCompositeActionSuite caught error: " + JSON.stringify(error, null, 2),
-      });
+      return new Action2Error(
+        "FailedToDeployModule",
+        "handleTestCompositeActionSuite caught error: " + JSON.stringify(error, null, 2),
+      );
     } finally {
       TestSuiteContext.resetContext();
     }
@@ -1006,12 +1010,10 @@ export class DomainController implements DomainControllerInterface {
 
     if (resolveErrors.length > 0) {
       log.error("handleTestCompositeActionTemplateSuite resolveTestCompositeActionTemplateSuite errors", resolveErrors);
-      return Promise.resolve({
-        status: "error",
-        errorType: "FailedToResolveTemplate",
-        innerError: resolveErrors[0][1].compositeAction.definition as any,
-        errorMessage: "handleTestCompositeActionTemplateSuite resolveTestCompositeActionTemplateSuite errors for entries: " + JSON.stringify(resolveErrors.map(e=> e[0]), null, 2),
-      });
+      return new Action2Error(
+        "FailedToResolveTemplate",
+        "handleTestCompositeActionTemplateSuite resolveTestCompositeActionTemplateSuite errors for entries: " + JSON.stringify(resolveErrors.map(e=> e[0]), null, 2),
+      );
       
     }
     log.info("handleTestCompositeActionTemplateSuite resolved testSuite template:", JSON.stringify(resolvedAction.resolvedTestCompositeActionDefinition));
@@ -1127,12 +1129,11 @@ export class DomainController implements DomainControllerInterface {
     } finally {
       TestSuiteContext.setTestAssertion(undefined);
     }
-    return actionResult??{
-      status: "error",
-      errorType: "FailedToDeployModule",
-      errorMessage: "handleTestCompositeActionAssertionNOTUSED compositeRunTestAssertion error: " + JSON.stringify(compositeRunTestAssertion)
-    };
-
+    return actionResult??
+    new Action2Error(
+      "FailedToDeployModule",
+      "handleTestCompositeActionAssertionNOTUSED compositeRunTestAssertion error: " + JSON.stringify(compositeRunTestAssertion)
+    )
   }
 
   // ##############################################################################################
@@ -1387,7 +1388,7 @@ export class DomainController implements DomainControllerInterface {
                   );
                   actionResult = {
                     status: "ok",
-                    returnedDomainElement: { elementType: "void" },
+                    returnedDomainElement: undefined,
                   };
                   TestSuiteContext.setTestAssertionResult({
                     assertionName: currentAction.testAssertion.testLabel,
@@ -1414,77 +1415,12 @@ export class DomainController implements DomainControllerInterface {
                 // assertionExpectedValue: compositeRunTestAssertion.testAssertion.definition.expectedValue,
                 // assertionActualValue: valueToTest,
               });
-              // return {
-              //   status: "ok",
-              //   returnedDomainElement: { elementType: "void" },
-              // };
               throw new Error(
                 "handleCompositeAction compositeRunTestAssertion error" + JSON.stringify(error, null, 2)
               );
             } finally {
               TestSuiteContext.setTestAssertion(undefined);
             }
-                    // try {
-            //   LoggerGlobalContext.setTestAssertion(currentAction.testAssertion.testLabel);
-            //   const prePreValueToTest = currentAction.testAssertion.definition.resultTransformer
-            //     ? transformer_extended_apply(
-            //         "runtime",
-            //         undefined /**WHAT?? */,
-            //         currentAction.testAssertion.definition.resultTransformer,
-            //         {},
-            //         localContext
-            //       )
-            //     : localContext;
-
-            //   const preValueToTest = resolvePathOnObject(
-            //     prePreValueToTest,
-            //     currentAction.testAssertion.definition.resultAccessPath ?? []
-            //   );
-
-            //   const valueToTest = Array.isArray(preValueToTest)
-            //     ? ignorePostgresExtraAttributesOnList(
-            //         preValueToTest,
-            //         currentAction.testAssertion.definition.ignoreAttributes ?? []
-            //       )
-            //     : ignorePostgresExtraAttributesOnObject(
-            //         preValueToTest,
-            //         currentAction.testAssertion.definition.ignoreAttributes ?? []
-            //       );
-            //   log.info(
-            //     "handleCompositeAction compositeRunTestAssertion to handle",
-            //     JSON.stringify(currentAction.testAssertion, null, 2),
-            //     // "preValueToTest typeof", typeof preValueToTest,
-            //     // "preValueToTest instanceof Array", preValueToTest instanceof Array,
-            //     "preValueToTest is array",
-            //     Array.isArray(preValueToTest),
-            //     // "preValueToTest object proto is array", JSON.stringify(Object.prototype.toString.call(preValueToTest)),
-            //     // "preValueToTest constuctor is array", preValueToTest.constructor === Array,
-            //     "preValueToTest",
-            //     JSON.stringify(preValueToTest, null, 2),
-            //     "valueToTest",
-            //     JSON.stringify(valueToTest, null, 2)
-            //   );
-            //   ConfigurationService.testImplementation
-            //     .expect(valueToTest, currentAction.nameGivenToResult)
-            //     .toEqual(currentAction.testAssertion.definition.expectedValue);
-            //   log.info(
-            //     "handleCompositeAction compositeRunTestAssertion test passed",
-            //     currentAction.testAssertion
-            //   );
-            //   actionResult = {
-            //     status: "ok",
-            //     returnedDomainElement: { elementType: "void" },
-            //     // testExpectedValue: currentAction.testAssertion.definition.expectedValue,
-            //     // testReturnedValue: valueToTest,
-            //   };
-            // } catch (error) {
-            //   log.error("handleCompositeAction compositeRunTestAssertion error", error);
-            //   throw new Error(
-            //     "handleCompositeAction compositeRunTestAssertion error" + JSON.stringify(error, null, 2)
-            //   );
-            // } finally {
-            //   LoggerGlobalContext.setTestAssertion(undefined);
-            // }
             break;
           }
           default: {
@@ -1508,11 +1444,10 @@ export class DomainController implements DomainControllerInterface {
         }
       } catch (error) {
         log.error("handleCompositeAction caught error", error);
-        return Promise.resolve({
-          status: "error",
-          errorType: "FailedToDeployModule",
-          errorMessage: "handleCompositeAction caught error: " + JSON.stringify(error, null, 2),
-        });
+        return new Action2Error(
+          "FailedToDeployModule",
+          "handleCompositeAction caught error: " + JSON.stringify(error, null, 2),
+        )
       } finally {
         LoggerGlobalContext.setCompositeAction(undefined);
       }
@@ -2268,11 +2203,10 @@ export class DomainController implements DomainControllerInterface {
       return Promise.resolve(ACTION_OK);
     } catch (error) {
       log.error("DomainController handleAction caught error", error);
-      return Promise.resolve({
-        status: "error",
-        errorType: "FailedToDeployModule",
-        errorMessage: "DomainController handleAction caught error: " + JSON.stringify(error, null, 2),
-      });
+      return new Action2Error(
+        "FailedToDeployModule",
+        "DomainController handleAction caught error: " + JSON.stringify(error, null, 2),
+      )
     } finally {
       LoggerGlobalContext.setAction(undefined);
     }

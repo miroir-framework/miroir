@@ -125,7 +125,6 @@ export async function restMethodGetHandler
               JSON.stringify(results)
           );
         }
-        // if (results.returnedDomainElement.elementType != "entityInstanceCollection") {
         if (results.returnedDomainElement instanceof Domain2ElementFailed) {
           throw new Error(
             "restMethodGetHandler wrong returnType for instances of parentUuid: " +
@@ -145,7 +144,6 @@ export async function restMethodGetHandler
           );
           
         }
-        // log.info("restMethodGetHandler found results", results.returnedDomainElement.elementValue.instances)
         return wrapResults(results.returnedDomainElement.instances);
       },
       continuationFunction(responseHandler)

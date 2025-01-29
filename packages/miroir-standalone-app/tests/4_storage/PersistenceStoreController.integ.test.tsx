@@ -38,7 +38,9 @@ import {
   miroirCoreStartup,
   resetAndInitApplicationDeployment,
   selfApplicationDeploymentLibrary,
-  selfApplicationDeploymentMiroir
+  selfApplicationDeploymentMiroir,
+  Domain2ElementFailed,
+  Action2Error
 } from "miroir-core";
 
 
@@ -219,7 +221,7 @@ const chainVitestSteps = async (
     "previousResult:",
     JSON.stringify(context, undefined, 2)
   );
-  const domainElement = await functionCallingActionToTest();
+  const domainElement: Action2ReturnType = await functionCallingActionToTest();
   console.log(
     "########################################### chainTestAsyncDomainCalls",
     stepName,
@@ -227,12 +229,11 @@ const chainVitestSteps = async (
     JSON.stringify(domainElement, undefined, 2)
   );
   let testResult
-  if (domainElement.status == "ok") {
+  if (!(domainElement instanceof Action2Error)) {
     testResult = resultTransformation
       ? resultTransformation(domainElement, context)
-      : domainElement.status == "ok"
-      ? domainElement?.returnedDomainElement?.elementValue
-      : undefined;
+      : domainElement?.returnedDomainElement
+      ;
     if (expectedDomainElementType) {
       if (domainElement.returnedDomainElement?.elementType != expectedDomainElementType) {
         expect(
@@ -240,7 +241,7 @@ const chainVitestSteps = async (
           stepName + "received result: " + domainElement.returnedDomainElement
         ).toEqual(expectedDomainElementType); // fails
       } else {
-        // const testResult = ignorePostgresExtraAttributes(domainElement?.returnedDomainElement.elementValue)
+        // const testResult = ignorePostgresExtraAttributes(domainElement?.returnedDomainElement)
         if (expectedValue) {
           expect(testResult).toEqual(expectedValue);
         } else {
@@ -248,12 +249,16 @@ const chainVitestSteps = async (
         }
       }
     } else {
-     // no test to be done 
+      if (expectedValue) {
+        expect(testResult).toEqual(expectedValue);
+      } else {
+        // no test to be done
+      }
     }
   } else {
     expect(
       domainElement.status,
-      domainElement.error?.errorType ?? "no errorType" + ": " + domainElement.error?.errorMessage ?? "no errorMessage"
+      domainElement.errorType ?? "no errorType" + ": " + domainElement.errorMessage ?? "no errorMessage"
     ).toEqual("ok");
   }
   console.log("########################################### chainTestAsyncDomainCalls", stepName, "testResult:", JSON.stringify(testResult,undefined, 2));
@@ -266,92 +271,92 @@ const chainVitestSteps = async (
 
 describe.sequential("PersistenceStoreController.unit.test", () => {
 
-  // // ################################################################################################
-  // TODO: rephrase as deployment of a module that is not yet deployed, neither miroir nor library
-  // it("Create miroir2 store", async () => { // TODO: test failure cases!
-  //     if (miroirConfig.client.emulateServer) {
-  //       console.log("Create miroir2 store START")
-  //       const testResult: Action2ReturnType = await localMiroirPersistenceStoreController.createStore(
-  //         miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid].model
-  //       );
-  //       const testResult2: Action2ReturnType = await localMiroirPersistenceStoreController.createStore(
-  //         miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid].data
-  //       );
-  //       //cleanup
-  //       const testResult3: Action2ReturnType = await localMiroirPersistenceStoreController.deleteStore(
-  //         miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid].model
-  //       );
-  //       const testResult4: Action2ReturnType = await localMiroirPersistenceStoreController.deleteStore(
-  //         miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid].data
-  //       );
-  //       // test
-  //       expect(testResult).toEqual(ACTION_OK)
-  //       expect(testResult2).toEqual(ACTION_OK)
-  //       expect(testResult3).toEqual(ACTION_OK)
-  //       expect(testResult4).toEqual(ACTION_OK)
-  //       console.log("Create miroir2 store END")
-  //     } else {
-  //       expect(false, "could not test store creation, configuration can not specify to use a real server, only emulated server makes sense in this case")
-  //     }
-  //   }
-  // );
-
-  // // ################################################################################################
-  // TODO: rephrase as deployment of a module that is not yet deployed, neither miroir nor library
-  // it("deploy Miroir and Library modules.", async () => {
-  //   if (miroirConfig.client.emulateServer) {
-  //     if (persistenceStoreControllerManager) {
-  //       const newMiroirDeploymentUuid = uuidv4();
-  //       const newLibraryDeploymentUuid = uuidv4();
-  //       const deployMiroir = await persistenceStoreControllerManager.deployModule(
-  //         localMiroirPersistenceStoreController,
-  //         newMiroirDeploymentUuid,
-  //         miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid],
-  //         {
-  //           metaModel: defaultMiroirMetaModel,
-  //           dataStoreType: 'miroir',
-  //           selfApplication: selfApplicationMiroir,
-  //           applicationDeploymentConfiguration: selfApplicationDeploymentMiroir, //adminConfigurationDeploymentMiroir,
-  //           applicationModelBranch: selfApplicationModelBranchMiroirMasterBranch,
-  //           applicationVersion: selfApplicationVersionInitialMiroirVersion,
-  //           applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationMiroir,
-  //         }
-  //       );
-  //       const deployApp = await persistenceStoreControllerManager.deployModule(
-  //         localMiroirPersistenceStoreController,
-  //         newLibraryDeploymentUuid,
-  //         miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentLibrary.uuid],
-  //         {
-  //           metaModel: defaultMiroirMetaModel,
-  //           dataStoreType: 'app',
-  //           selfApplication: selfApplicationLibrary,
-  //           applicationDeploymentConfiguration: selfApplicationDeploymentLibrary, //adminConfigurationDeploymentLibrary,
-  //           applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,
-  //           applicationVersion: selfApplicationVersionLibraryInitialVersion,
-  //           applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationLibrary,
-  //         }
-  //       );
-  //       expect(deployMiroir).toEqual( ACTION_OK )
-  //       expect(deployApp).toEqual( ACTION_OK )
-  //     }
-  //   } else {
-  //     expect(false, "could not test module deployment, configuration can not specify to use a real server, only emulated server makes sense in this case")
-  //   }
-  //   expect(true).toEqual(true);
-  // },10000);
-
   // ################################################################################################
-  it("get Entity instance: the Report Entity", async () => {
-    await chainVitestSteps(
-      "actualTest_getInstancesAndCheckResult",
-      {},
-      async () => localMiroirPersistenceStoreController.getInstance("model",entityEntity.uuid, entityReport.uuid),
-      (a) => (a as any).returnedDomainElement.elementValue.uuid,
-      undefined, // name to give to result
-      "instance",
-      "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
-    );
-  });
+  // // TODO: rephrase as deployment of a module that is not yet deployed, neither miroir nor library
+  // // it("Create miroir2 store", async () => { // TODO: test failure cases!
+  // //     if (miroirConfig.client.emulateServer) {
+  // //       console.log("Create miroir2 store START")
+  // //       const testResult: Action2ReturnType = await localMiroirPersistenceStoreController.createStore(
+  // //         miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid].model
+  // //       );
+  // //       const testResult2: Action2ReturnType = await localMiroirPersistenceStoreController.createStore(
+  // //         miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid].data
+  // //       );
+  // //       //cleanup
+  // //       const testResult3: Action2ReturnType = await localMiroirPersistenceStoreController.deleteStore(
+  // //         miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid].model
+  // //       );
+  // //       const testResult4: Action2ReturnType = await localMiroirPersistenceStoreController.deleteStore(
+  // //         miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid].data
+  // //       );
+  // //       // test
+  // //       expect(testResult).toEqual(ACTION_OK)
+  // //       expect(testResult2).toEqual(ACTION_OK)
+  // //       expect(testResult3).toEqual(ACTION_OK)
+  // //       expect(testResult4).toEqual(ACTION_OK)
+  // //       console.log("Create miroir2 store END")
+  // //     } else {
+  // //       expect(false, "could not test store creation, configuration can not specify to use a real server, only emulated server makes sense in this case")
+  // //     }
+  // //   }
+  // // );
+
+  // // // ################################################################################################
+  // // TODO: rephrase as deployment of a module that is not yet deployed, neither miroir nor library
+  // // it("deploy Miroir and Library modules.", async () => {
+  // //   if (miroirConfig.client.emulateServer) {
+  // //     if (persistenceStoreControllerManager) {
+  // //       const newMiroirDeploymentUuid = uuidv4();
+  // //       const newLibraryDeploymentUuid = uuidv4();
+  // //       const deployMiroir = await persistenceStoreControllerManager.deployModule(
+  // //         localMiroirPersistenceStoreController,
+  // //         newMiroirDeploymentUuid,
+  // //         miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid],
+  // //         {
+  // //           metaModel: defaultMiroirMetaModel,
+  // //           dataStoreType: 'miroir',
+  // //           selfApplication: selfApplicationMiroir,
+  // //           applicationDeploymentConfiguration: selfApplicationDeploymentMiroir, //adminConfigurationDeploymentMiroir,
+  // //           applicationModelBranch: selfApplicationModelBranchMiroirMasterBranch,
+  // //           applicationVersion: selfApplicationVersionInitialMiroirVersion,
+  // //           applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationMiroir,
+  // //         }
+  // //       );
+  // //       const deployApp = await persistenceStoreControllerManager.deployModule(
+  // //         localMiroirPersistenceStoreController,
+  // //         newLibraryDeploymentUuid,
+  // //         miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentLibrary.uuid],
+  // //         {
+  // //           metaModel: defaultMiroirMetaModel,
+  // //           dataStoreType: 'app',
+  // //           selfApplication: selfApplicationLibrary,
+  // //           applicationDeploymentConfiguration: selfApplicationDeploymentLibrary, //adminConfigurationDeploymentLibrary,
+  // //           applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,
+  // //           applicationVersion: selfApplicationVersionLibraryInitialVersion,
+  // //           applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationLibrary,
+  // //         }
+  // //       );
+  // //       expect(deployMiroir).toEqual( ACTION_OK )
+  // //       expect(deployApp).toEqual( ACTION_OK )
+  // //     }
+  // //   } else {
+  // //     expect(false, "could not test module deployment, configuration can not specify to use a real server, only emulated server makes sense in this case")
+  // //   }
+  // //   expect(true).toEqual(true);
+  // // },10000);
+
+  // // ################################################################################################
+  // it("get Entity instance: the Report Entity", async () => {
+  //   await chainVitestSteps(
+  //     "actualTest_getInstancesAndCheckResult",
+  //     {},
+  //     async () => localMiroirPersistenceStoreController.getInstance("model",entityEntity.uuid, entityReport.uuid),
+  //     (a) => (a as any).returnedDomainElement.uuid,
+  //     undefined, // name to give to result
+  //     undefined,
+  //     "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  //   );
+  // });
 
   // ################################################################################################
   it("get Miroir Entities", async () => {
@@ -360,9 +365,10 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
       "actualTest_getInstancesAndCheckResult",
       {},
       async () => localMiroirPersistenceStoreController.getInstances("model", entityEntity.uuid),
-      (a) => (a as any).returnedDomainElement.elementValue.instances.map((i: EntityInstance) => i["uuid"]).sort(),
+      (a) => (a as any).returnedDomainElement.instances.map((i: EntityInstance) => i["uuid"]).sort(),
       undefined, // name to give to result
-      "entityInstanceCollection",
+      // "entityInstanceCollection",
+      undefined,
       [
         "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
         "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
@@ -386,10 +392,11 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
       {},
       // async () => localAppPersistenceStoreController.getInstances("model",entityEntity.uuid),
       async () => localAppPersistenceStoreController.getInstances("model",entityEntity.uuid),
-      // (a) => ignorePostgresExtraAttributes((a as any).returnedDomainElement.elementValue.instances),
+      // (a) => ignorePostgresExtraAttributes((a as any).returnedDomainElement.instances),
       undefined, // expected result transformation
       undefined, // name to give to result
-      "entityInstanceCollection",
+      // "entityInstanceCollection",
+      undefined,
       {
         "applicationSection": "model",
         "instances": [],
@@ -414,16 +421,17 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
       undefined,
       undefined, // name to give to result
       undefined, // expected result.elementType
-      undefined // expected result.elementValue
+      undefined // expected result
     );
 
     await chainVitestSteps(
       "actualTest_getInstancesAndCheckResult",
       {},
       async () => localAppPersistenceStoreController.getInstances("model", entityEntity.uuid),
-      (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.elementValue.instances, ["author"]),
+      (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.instances, ["author"]),
       undefined, // name to give to result
-      "entityInstanceCollection",
+      // "entityInstanceCollection",
+      undefined,
       [entityAuthor]
     );
   });
@@ -451,20 +459,22 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
       "fetchEntities",
       { },
       async () => await localAppPersistenceStoreController.getInstances("model",entityEntity.uuid),
-      (a, p) => (a as any).returnedDomainElement.elementValue.instances as MetaEntity[],
+      (a, p) => (a as any).returnedDomainElement.instances as MetaEntity[],
       "entities", // name to give to result
-      "entityInstanceCollection", // expected result.elementType
-      undefined, // test result.elementValue
+      // "entityInstanceCollection", // expected result.elementType
+      undefined,
+      undefined, // test result
     )
     .then (
       (v) => chainVitestSteps(
         "fetchEntityDefinitions",
         v,
         async () => await localAppPersistenceStoreController.getInstances("model", entityEntityDefinition.uuid),
-        (a, p) => (a as any).returnedDomainElement.elementValue.instances as EntityDefinition[],
+        (a, p) => (a as any).returnedDomainElement.instances as EntityDefinition[],
         "entityDefinitions", // name to give to result
-        "entityInstanceCollection", // expected result.elementType
-        undefined, // expected result.elementValue
+        // "entityInstanceCollection", // expected result.elementType
+        undefined,
+        undefined, // expected result
       )
     )
     .then (
@@ -475,7 +485,7 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
         undefined,
         undefined, // name to give to result
         undefined, // expected result.elementType
-        undefined, // expected result.elementValue
+        undefined, // expected result
       )
     )
     .then((v) =>
@@ -483,9 +493,10 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
         "getEntityInstancesToCheckResult",
         v,
         async () => await localAppPersistenceStoreController.getInstances("model", entityEntity.uuid),
-        (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.elementValue.instances, ["author", "icon"]),
+        (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.instances, ["author", "icon"]),
         undefined, // name to give to result
-        "entityInstanceCollection",
+        // "entityInstanceCollection",
+        undefined,
         [
           {
             ...entityAuthor,
@@ -499,9 +510,10 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
         "getEntityDefinitionInstancesToCheckResult",
         v,
         async () => await localAppPersistenceStoreController.getInstances("model", entityEntityDefinition.uuid),
-        (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.elementValue.instances, ["author", "icon"]),
+        (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.instances, ["author", "icon"]),
         undefined, // name to give to result
-        "entityInstanceCollection",
+        // "entityInstanceCollection",
+        undefined,
         [
           {
             ...entityDefinitionAuthor,
@@ -541,17 +553,18 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
       //   undefined,
       //   undefined, // name to give to result
       //   undefined, // expected result.elementType
-      //   undefined, // expected result.elementValue
+      //   undefined, // expected result
       // )
       // .then(
         // (v) => chainVitestSteps(
         "fetchEntities",
         {},
         async () => await localAppPersistenceStoreController.getInstances("model",entityEntity.uuid),
-        (a, p) => (a as any).returnedDomainElement.elementValue.instances as MetaEntity[],
+        (a, p) => (a as any).returnedDomainElement.instances as MetaEntity[],
         "entities", // name to give to result
-        "entityInstanceCollection", // expected result.elementType
-        undefined, // test result.elementValue
+        // "entityInstanceCollection", // expected result.elementType
+        undefined,
+        undefined, // test result
         // )
       )
       .then (
@@ -559,10 +572,11 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
           "fetchEntityDefinitions",
           v,
           async () => await localAppPersistenceStoreController.getInstances("model", entityEntityDefinition.uuid),
-          (a, p) => (a as any).returnedDomainElement.elementValue.instances as EntityDefinition[],
+          (a, p) => (a as any).returnedDomainElement.instances as EntityDefinition[],
           "entityDefinitions", // name to give to result
-          "entityInstanceCollection", // expected result.elementType
-          undefined, // expected result.elementValue
+          // "entityInstanceCollection", // expected result.elementType
+          undefined,
+          undefined, // expected result
         )
       )
       .then (
@@ -573,16 +587,17 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
       undefined,
       undefined, // name to give to result
       undefined, // expected result.elementType
-      undefined // expected result.elementValue
+      undefined // expected result
       )
     ).then((v) =>
       chainVitestSteps(
         "actualTest_getInstancesAndCheckResult",
         v,
         async () => await localAppPersistenceStoreController.getInstances("model", entityEntity.uuid),
-        (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.elementValue.instances),
+        (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.instances),
         undefined, // name to give to result
-        "entityInstanceCollection",
+        // "entityInstanceCollection",
+        undefined,
         []
       )
     );
@@ -597,7 +612,9 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
     expect(entityCreated, "failed to setup test case").toEqual(ACTION_OK)
     // test starts
     const iconsDefinition: JzodElement = {
-      "type": "number", "optional": true, "tag": { "value": { "id":6, "defaultLabel": "Gender (narrow-minded)", "editable": true } }
+      type: "number",
+      optional: true,
+      tag: { value: { id: 6, defaultLabel: "Gender (narrow-minded)", editable: true } },
     };
     const modelActionAlterAttribute:ModelAction =  {
       actionType: "modelAction",
@@ -625,20 +642,22 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
       "fetchEntities",
       {},
       async () => await localAppPersistenceStoreController.getInstances("model", entityEntity.uuid),
-      (a, p) => (a as any).returnedDomainElement.elementValue.instances as MetaEntity[],
+      (a, p) => (a as any).returnedDomainElement.instances as MetaEntity[],
       "entities", // name to give to result
-      "entityInstanceCollection", // expected result.elementType
-      undefined // test result.elementValue
+      // "entityInstanceCollection", // expected result.elementType
+      undefined,
+      undefined // test result
     )
       .then((v) =>
         chainVitestSteps(
           "fetchEntityDefinitions",
           v,
           async () => await localAppPersistenceStoreController.getInstances("model", entityEntityDefinition.uuid),
-          (a, p) => (a as any).returnedDomainElement.elementValue.instances as EntityDefinition[],
+          (a, p) => (a as any).returnedDomainElement.instances as EntityDefinition[],
           "entityDefinitions", // name to give to result
-          "entityInstanceCollection", // expected result.elementType
-          undefined // expected result.elementValue
+          // "entityInstanceCollection", // expected result.elementType
+          undefined,
+          undefined // expected result
         )
       )
       .then((v) =>
@@ -649,7 +668,7 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
           undefined,
           undefined, // name to give to result
           undefined, // expected result.elementType
-          undefined // expected result.elementValue
+          undefined // expected result
         )
       )
       .then((v) =>
@@ -657,9 +676,10 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
           "getEntityInstancesToCheckResult",
           v,
           async () => await localAppPersistenceStoreController.getInstances("model", entityEntityDefinition.uuid),
-          (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.elementValue.instances, [ "icon" ]),
+          (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.instances, ["icon"]),
           undefined, // name to give to result
-          "entityInstanceCollection",
+          // "entityInstanceCollection",
+          undefined,
           [
             {
               ...entityDefinitionAuthor,
@@ -684,7 +704,7 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
     //     "getEntityDefinitionInstancesToCheckResult",
     //     v,
     //     async () => await localAppPersistenceStoreController.getInstances("model", entityEntityDefinition.uuid),
-    //     (a) => ignorePostgresExtraAttributes((a as any).returnedDomainElement.elementValue.instances),
+    //     (a) => ignorePostgresExtraAttributes((a as any).returnedDomainElement.instances),
     //     undefined, // name to give to result
     //     "entityInstanceCollection",
     //     [
@@ -711,7 +731,7 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
       undefined,
       undefined, // name to give to result
       undefined, // expected result.elementType
-      undefined, // expected result.elementValue
+      undefined, // expected result
     )
 
     const instanceAdded = await localAppPersistenceStoreController?.upsertInstance('data', author1 as EntityInstance);
@@ -735,7 +755,7 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
       {},
       async () => localAppPersistenceStoreController.getInstances("data", entityAuthor.uuid),
       (a) =>
-        ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.elementValue.instances, [
+        ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.instances, [
           "birthDate",
           "deathDate",
           "conceptLevel",
@@ -743,7 +763,8 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
           "language",
         ]),
       undefined, // name to give to result
-      "entityInstanceCollection",
+      // "entityInstanceCollection",
+      undefined,
       [author1]
     );
 
@@ -758,7 +779,7 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
       undefined,
       undefined, // name to give to result
       undefined, // expected result.elementType
-      undefined, // expected result.elementValue
+      undefined, // expected result
     )
 
     const instanceAdded = (await localAppPersistenceStoreController?.upsertInstance('data', book1 as EntityInstance)) as ActionError;
@@ -778,7 +799,7 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
       undefined,
       undefined, // name to give to result
       undefined, // expected result.elementType
-      undefined, // expected result.elementValue
+      undefined, // expected result
     )
 
     // test
@@ -791,9 +812,10 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
       "actualTest_getInstancesAndCheckResult",
       {},
       async () => localAppPersistenceStoreController.getInstances("data",entityAuthor.uuid),
-      (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.elementValue.instances, ["birthDate", "deathDate", "conceptLevel", "icons", "language" ]),
+      (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.instances, ["birthDate", "deathDate", "conceptLevel", "icons", "language" ]),
       undefined, // name to give to result
-      "entityInstanceCollection",
+      // "entityInstanceCollection",
+      undefined,
       [{...author1, "name": author1.name + "ssss"}]
     )
 
@@ -811,7 +833,7 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
       undefined,
       undefined, // name to give to result
       undefined, // expected result.elementType
-      undefined, // expected result.elementValue
+      undefined, // expected result
     )
 
     const instanceAdded = await localAppPersistenceStoreController?.upsertInstance('data', author1 as EntityInstance);
@@ -828,9 +850,10 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
       "actualTest_getInstancesAndCheckResult",
       {},
       async () => localAppPersistenceStoreController.getInstances("data", entityAuthor.uuid),
-      (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.elementValue.instances),
+      (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.instances),
       undefined, // name to give to result
-      "entityInstanceCollection",
+      // "entityInstanceCollection",
+      undefined,
       []
     );
   });

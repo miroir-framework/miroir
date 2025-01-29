@@ -62,7 +62,6 @@ export class SqlDbModelStoreSection extends MixedSqlDbEntityAndInstanceStoreSect
         Object.assign(result,{[parentUuid]:{parentUuid, instances: []}});
       } else
       {
-        // const instanceCollection:EntityInstanceCollection = {parentUuid:parentUuid, applicationSection:'data',instances:instances.returnedDomainElement.elementValue};
         Object.assign(result,{[parentUuid]:instances});
       }
       

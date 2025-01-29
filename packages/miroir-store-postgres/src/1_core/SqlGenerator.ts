@@ -128,7 +128,8 @@ export type sqlStringForTransformerElementValue = {
 export function sqlStringForTransformer(
   actionRuntimeTransformer: TransformerForRuntime | TransformerForRuntime_innerFullObjectTemplate,
   topLevelTransformer: boolean = true
-): Domain2QueryReturnType<DomainElementSuccess> {
+// ): Domain2QueryReturnType<DomainElementSuccess> {
+): Domain2QueryReturnType<any> {
   // TODO: DomainElement should be dependent type, the real type is hidden here
   // log.info("SqlDbQueryRunner applyExtractorTransformerSql extractors", extractors);
   log.info(
@@ -160,46 +161,31 @@ export function sqlStringForTransformer(
   switch (actionRuntimeTransformer.transformerType) {
     case "constantUuid": {
       return {
-        elementType: "any",
-        // elementType: "object",
-        elementValue: {
-          sqlStringOrObject: topLevelTransformer
-            ? `select '${actionRuntimeTransformer.constantUuidValue}' as constantuuid`
-            : `'${actionRuntimeTransformer.constantUuidValue}'`,
-          // resultAccessPath: topLevelTransformer?[0]:undefined,
-          resultAccessPath: topLevelTransformer ? [0, "constantuuid"] : undefined,
-        },
+        sqlStringOrObject: topLevelTransformer
+          ? `select '${actionRuntimeTransformer.constantUuidValue}' as constantuuid`
+          : `'${actionRuntimeTransformer.constantUuidValue}'`,
+        // resultAccessPath: topLevelTransformer?[0]:undefined,
+        resultAccessPath: topLevelTransformer ? [0, "constantuuid"] : undefined,
       };
       break;
     }
     case "constantString": {
       return {
-        elementType: "any",
-        elementValue: {
-          sqlStringOrObject:
-            (topLevelTransformer ? "select " : "") + `"${actionRuntimeTransformer.constantStringValue}"`,
-          // resultAccessPath: undefined
-        },
+        sqlStringOrObject:
+          (topLevelTransformer ? "select " : "") + `"${actionRuntimeTransformer.constantStringValue}"`,
+        // resultAccessPath: undefined
       };
       break;
     }
     case "newUuid": {
       return {
-        elementType: "any",
-        elementValue: {
-          sqlStringOrObject: (topLevelTransformer ? "select " : "") + "gen_random_uuid()",
-          // resultAccessPath: undefined
-        },
+        sqlStringOrObject: (topLevelTransformer ? "select " : "") + "gen_random_uuid()",
       };
     }
     case "mustacheStringTemplate": {
       const result = actionRuntimeTransformer.definition.replace(/{{/g, '"').replace(/}}/g, '"').replace(/\./g, '"."');
       return {
-        elementType: "any",
-        elementValue: {
-          sqlStringOrObject: result,
-          // resultAccessPath: undefined
-        },
+        sqlStringOrObject: result,
       };
     }
     case "innerFullObjectTemplate":
@@ -210,10 +196,10 @@ export function sqlStringForTransformer(
       const selectFields = actionRuntimeTransformer.definition
         .map(
           (f) =>
-            sqlStringForTransformer(f.attributeValue, false).elementValue.sqlStringOrObject + // TODO: check for actual type of sqlStringOrObject
+            sqlStringForTransformer(f.attributeValue, false).sqlStringOrObject + // TODO: check for actual type of sqlStringOrObject
             " AS " +
             tokenQuote +
-            sqlStringForTransformer(f.attributeKey, false).elementValue.sqlStringOrObject +
+            sqlStringForTransformer(f.attributeKey, false).sqlStringOrObject +
             tokenQuote
         )
         .join(tokenSeparatorForSelect);
@@ -223,12 +209,9 @@ export function sqlStringForTransformer(
       ${orderBy}`;
       log.info("applyExtractorTransformerSql innerFullObjectTemplate sqlResult", JSON.stringify(sqlResult));
       return {
-        elementType: "any",
-        elementValue: {
-          sqlStringOrObject: sqlResult,
-          resultAccessPath: [0, "innerFullObjectTemplate"],
-          encloseEndResultInArray: true,
-        },
+        sqlStringOrObject: sqlResult,
+        resultAccessPath: [0, "innerFullObjectTemplate"],
+        encloseEndResultInArray: true,
       };
       break;
     }
@@ -240,10 +223,10 @@ export function sqlStringForTransformer(
       throw new Error("extractorTransformerSql mapperListToList not implemented");
       // const referenceName:string = (actionRuntimeTransformer as any).referencedExtractor;
       // const sqlStringForElementTransformer = sqlStringForTransformer(actionRuntimeTransformer.elementTransformer, false);
-      // // const sqlResult = `SELECT array_agg(${sqlStringForElementTransformer.elementValue.sqlString}) AS "mapperListToList" FROM "${referenceName}" ${orderBy}`;
+      // // const sqlResult = `SELECT array_agg(${sqlStringForElementTransformer.sqlString}) AS "mapperListToList" FROM "${referenceName}" ${orderBy}`;
       // // log.info("extractorTransformerSql mapperListToList actionRuntimeTransformer.elementTransformer", actionRuntimeTransformer.elementTransformer);
       // log.info("extractorTransformerSql mapperListToList sqlStringForElementTransformer", JSON.stringify(sqlStringForElementTransformer, null, 2));
-      // // const sqlResult = sqlStringForElementTransformer.elementValue.sqlStringOrObject;
+      // // const sqlResult = sqlStringForElementTransformer.sqlStringOrObject;
 
       // // we suppose we have an innerFullObjectTemplate inside the elementTransformer
       // if (actionRuntimeTransformer.elementTransformer.transformerType != "innerFullObjectTemplate") {
@@ -253,22 +236,22 @@ export function sqlStringForTransformer(
       // const innerQueryName = "inner_" + actionRuntimeTransformer.referenceToOuterObject;
       // // const sqlResult = `SELECT "${innerQueryName}".* FROM "${innerQueryName}"`
       // // const sqlResult = `SELECT "${innerQueryName}"."${
-      // const subQueryColumnName = sqlStringForElementTransformer.elementValue.resultAccessPath
-      // ? sqlStringForElementTransformer.elementValue.resultAccessPath.slice(1).join(".") : "*";
+      // const subQueryColumnName = sqlStringForElementTransformer.resultAccessPath
+      // ? sqlStringForElementTransformer.resultAccessPath.slice(1).join(".") : "*";
       // const resultColumns = actionRuntimeTransformer.elementTransformer.definition.map(
       //   (f:any) =>
       //     tokenQuote +  subQueryColumnName + tokenQuote + // TODO: check for actual type of sqlStringOrObject
       //     " -> " +
-      //     stringQuote + sqlStringForTransformer(f.attributeKey, false).elementValue.sqlStringOrObject + stringQuote +
+      //     stringQuote + sqlStringForTransformer(f.attributeKey, false).sqlStringOrObject + stringQuote +
       //     " AS " +
-      //     tokenQuote + sqlStringForTransformer(f.attributeKey, false).elementValue.sqlStringOrObject + tokenQuote
+      //     tokenQuote + sqlStringForTransformer(f.attributeKey, false).sqlStringOrObject + tokenQuote
       // ).join(tokenSeparatorForSelect);
 
       // const sqlResult = `SELECT ${resultColumns} FROM "${innerQueryName}"`
       // return {
       //   elementType: "any",
       //   elementValue: {
-      //     // sqlStringOrObject: sqlStringForElementTransformer.elementValue.sqlStringOrObject,
+      //     // sqlStringOrObject: sqlStringForElementTransformer.sqlStringOrObject,
       //     sqlStringOrObject: sqlResult,
       //     extraWith: [
       //       {
@@ -277,13 +260,13 @@ export function sqlStringForTransformer(
       //       },
       //       {
       //         name: innerQueryName,
-      //         sql: sqlStringForElementTransformer.elementValue.sqlStringOrObject,
+      //         sql: sqlStringForElementTransformer.sqlStringOrObject,
       //       }
       //       // {
       //       //   name: actionRuntimeTransformer.elementTransformer.referenceToOuterObject,
       //       //   sql: `SELECT "${referenceName}"."${
-      //       //     sqlStringForElementTransformer.elementValue.resultAccessPath
-      //       //       ? sqlStringForElementTransformer.elementValue.resultAccessPath.slice(1).join(".") // TODO: HACK! HACK!
+      //       //     sqlStringForElementTransformer.resultAccessPath
+      //       //       ? sqlStringForElementTransformer.resultAccessPath.slice(1).join(".") // TODO: HACK! HACK!
       //       //       : "*"
       //       //   }" FROM "${referenceName}"`,
       //       // },
@@ -303,11 +286,8 @@ export function sqlStringForTransformer(
       // const sqlResult = `SELECT * FROM "${referenceName}" ${orderBy} LIMIT ${limit}`;
       const sqlResult = `SELECT * FROM "${referenceName}" ${orderBy} LIMIT ${limit}`; // TODO: this selects 1 element only when actionRuntimeTransformer.index == 0
       return {
-        elementType: "any",
-        elementValue: {
-          sqlStringOrObject: sqlResult,
-          resultAccessPath: [0],
-        },
+        sqlStringOrObject: sqlResult,
+        resultAccessPath: [0],
       };
       break;
     }
@@ -323,8 +303,7 @@ export function sqlStringForTransformer(
         result
       );
       return {
-        elementType: "any",
-        elementValue: { sqlStringOrObject: result, resultAccessPath: [0] },
+        sqlStringOrObject: result, resultAccessPath: [0]
       };
       break;
     }
@@ -361,8 +340,7 @@ export function sqlStringForTransformer(
       // log.info("applyExtractorTransformerSql unique aggregateRawQuery", transformerSqlQuery);
       log.info("extractorTransformerSql unique transformerRawQuery", JSON.stringify(transformerSqlQuery));
       return {
-        elementType: "any",
-        elementValue: { sqlStringOrObject: transformerSqlQuery, resultAccessPath: undefined },
+        sqlStringOrObject: transformerSqlQuery, resultAccessPath: undefined,
       };
       break;
     }
@@ -380,8 +358,7 @@ export function sqlStringForTransformer(
           ${orderBy}`;
       log.info("extractorTransformerSql count transformerSqlQuery", transformerSqlQuery);
       return {
-        elementType: "any",
-        elementValue: { sqlStringOrObject: transformerSqlQuery, resultAccessPath: undefined },
+        sqlStringOrObject: transformerSqlQuery, resultAccessPath: undefined,
       };
       break;
     }
@@ -421,14 +398,13 @@ export function sqlStringForQuery(
   log.info("applyExtractorTransformerSql extractorRawQueries", extractorRawQueries);
 
   const combinerRawQueries = Object.entries(selectorParams.extractor.combiners ?? {}).map(([key, value]) => {
-    // return [key, sqlStringForCombiner(value, this.schema).elementValue];
-    return [key, sqlStringForCombiner(value, schema).elementValue];
+    return [key, sqlStringForCombiner(value, schema)];
   });
   log.info("applyExtractorTransformerSql combinerRawQueries", combinerRawQueries);
 
   const transformerRawQueries = Object.entries(selectorParams.extractor.runtimeTransformers ?? {}).map(
     ([key, value]) => {
-      return [key, sqlStringForTransformer(value as TransformerForRuntime).elementValue]; // TODO: handle ExtendedExtractorForRuntime?
+      return [key, sqlStringForTransformer(value as TransformerForRuntime)]; // TODO: handle ExtendedExtractorForRuntime?
     }
   );
   log.info("applyExtractorTransformerSql transformerRawQueries", JSON.stringify(transformerRawQueries, null, 2));

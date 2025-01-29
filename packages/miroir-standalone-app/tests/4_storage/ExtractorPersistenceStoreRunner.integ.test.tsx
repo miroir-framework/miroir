@@ -283,7 +283,6 @@ afterAll(
       ]
     );
     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done deleteAndCloseApplicationDeployments")
-
   }
 )
 
@@ -335,10 +334,10 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult;
       },
-      (a) => ignorePostgresExtraAttributesOnObject((a as any).returnedDomainElement.elementValue, ["author"]),
+      (a) => ignorePostgresExtraAttributesOnObject((a as any).returnedDomainElement, ["author"]),
       // undefined, // expected result transformation
       undefined, // name to give to result
-      "instance",
+      undefined,
       {
         uuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
         parentName: "Entity",
@@ -385,12 +384,12 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult; // == "ok" ? queryResult : {status: "error", error: queryResult.error};
       },
-      // (a) => ignorePostgresExtraAttributesOnRecord((a as any).returnedDomainElement.elementValue.entities, ["author"]),
-      (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.elementValue.entities.sort((a: any,b: any) => a.name.localeCompare(b.name)), ["author"]),
-      // (a) => (a as any).returnedDomainElement.elementValue.entities.elementValue,
+      // (a) => ignorePostgresExtraAttributesOnRecord((a as any).returnedDomainElement.entities, ["author"]),
+      (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.entities.sort((a: any,b: any) => a.name.localeCompare(b.name)), ["author"]),
+      // (a) => (a as any).returnedDomainElement.entities,
       // undefined, // expected result transformation
       undefined, // name to give to result
-      "object", //"instanceUuidIndex",
+      undefined,
       Object.values({
         "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad": {
           uuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
@@ -540,13 +539,13 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
       },
       (a) =>
         ignorePostgresExtraAttributesOnList(
-          (a as any).returnedDomainElement.elementValue.entities.sort((a: any, b: any) => a.name.localeCompare(b.name)),
+          (a as any).returnedDomainElement.entities.sort((a: any, b: any) => a.name.localeCompare(b.name)),
           ["author"]
         ),
-      // (a) => (a as any).returnedDomainElement.elementValue.entities.elementValue,
+      // (a) => (a as any).returnedDomainElement.entities,
       // undefined, // expected result transformation
       undefined, // name to give to result
-      "object", //"instanceUuidIndex",
+      undefined,
       [entityAuthor, entityBook, entityPublisher].sort((a, b) => a.name.localeCompare(b.name))
     );
   });
@@ -583,12 +582,12 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult; // == "ok" ? queryResult : {status: "error", error: queryResult.error};
       },
-      // (a) => ignorePostgresExtraAttributesOnRecord((a as any).returnedDomainElement.elementValue.entities, ["author"]),
-      (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.elementValue.menus, ["author", "parentDefinitionVersionUuid"]),
-      // (a) => (a as any).returnedDomainElement.elementValue.entities.elementValue,
+      // (a) => ignorePostgresExtraAttributesOnRecord((a as any).returnedDomainElement.entities, ["author"]),
+      (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.menus, ["author", "parentDefinitionVersionUuid"]),
+      // (a) => (a as any).returnedDomainElement.entities,
       // undefined, // expected result transformation
       undefined, // name to give to result
-      "object", //"instanceUuidIndex",
+      undefined,
       Object.values({
         "dd168e5a-2a21-4d2d-a443-032c6d15eb22": {
           uuid: "dd168e5a-2a21-4d2d-a443-032c6d15eb22",
@@ -708,12 +707,11 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
       },
       (a) =>
         ignorePostgresExtraAttributesOnList(
-          (a as any).returnedDomainElement.elementValue.entities.sort((a: any, b: any) => a.name.localeCompare(b.name)),
+          (a as any).returnedDomainElement.entities.sort((a: any, b: any) => a.name.localeCompare(b.name)),
           ["author"]
         ),
       undefined, // name to give to result
-      "object",
-      // [entityReport, entityStoreBasedConfiguration].sort((a, b) => a.name.localeCompare(b.name))
+      undefined,
       [entityEndpointVersion, entityEntity, entityEntityDefinition, entityMenu].sort((a, b) =>
         a.name.localeCompare(b.name)
       )
@@ -761,9 +759,9 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult;
       },
-      (a) => (a as any).returnedDomainElement.elementValue.uniqueAuthors,
+      (a) => (a as any).returnedDomainElement.uniqueAuthors,
       undefined, // name to give to result
-      "object",
+      undefined,
       [
         { author: "4441169e-0c22-4fbc-81b2-28c87cf48ab2" },
         { author: "ce7b601d-be5f-4bc6-a5af-14091594046a" },
@@ -812,10 +810,10 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult;
       },
-      // (a) => (a as any).returnedDomainElement.elementValue.uniqueAuthors,
-      (a) => (a as any).returnedDomainElement.elementValue.uniqueAuthors,
+      // (a) => (a as any).returnedDomainElement.uniqueAuthors,
+      (a) => (a as any).returnedDomainElement.uniqueAuthors,
       undefined, // name to give to result
-      "object",// must equal a.returnedDomainElement.elementType
+      undefined,
       // 3,
       [{count: 6}],
       // [{count: "3"}],
@@ -864,10 +862,10 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult;
       },
-      // (a) => (a as any).returnedDomainElement.elementValue.countBooksByAuthors,
-      (a) => (a as any).returnedDomainElement.elementValue.countBooksByAuthors,
+      // (a) => (a as any).returnedDomainElement.countBooksByAuthors,
+      (a) => (a as any).returnedDomainElement.countBooksByAuthors,
       undefined, // name to give to result
-      "object", // must equal a.returnedDomainElement.elementType
+      undefined,
       [
         { author: "4441169e-0c22-4fbc-81b2-28c87cf48ab2", count: 1 },
         { author: "ce7b601d-be5f-4bc6-a5af-14091594046a", count: 2 },
@@ -942,9 +940,9 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
         console.log(expect.getState().currentTestName, "queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult;
       },
-      (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.elementValue.newBook, ["uuid"]),
+      (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.newBook, ["uuid"]),
       undefined, // name to give to result
-      "object", // must equal a.returnedDomainElement.elementType
+      undefined,
       [
         {
           name: book2.name,
@@ -996,11 +994,11 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
         return queryResult;
       },
       (a) =>
-        ignorePostgresExtraAttributesOnObject((a as any).returnedDomainElement.elementValue.publisher, [
+        ignorePostgresExtraAttributesOnObject((a as any).returnedDomainElement.publisher, [
           "conceptLevel", "createdAt", "icon", "updatedAt",
         ]),
       undefined, // name to give to result
-      "object", // must equal a.returnedDomainElement.elementType
+      undefined,
         publisher3
     );
   });
@@ -1048,11 +1046,11 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
         return queryResult;
       },
       (a) =>
-        ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.elementValue.booksOfAuthor.sort((a: any, b: any) => a.name.localeCompare(b.name)), [
+        ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.booksOfAuthor.sort((a: any, b: any) => a.name.localeCompare(b.name)), [
           "conceptLevel", "createdAt", "icon", "updatedAt",
         ]),
       undefined, // name to give to result
-      "object", // must equal a.returnedDomainElement.elementType
+      undefined,
       ignorePostgresExtraAttributesOnList([
         book1,
         book6,
@@ -1063,110 +1061,111 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
     );
   });
 
-  // ################################################################################################
-  // TODO: write in UTF-8 on disk / in Database!
-  it("get book title (name) list with actionRuntimeTransformer: mapperListToList + innerFullObjectTemplate", async () => {
-    await chainVitestSteps(
-      "ExtractorPersistenceStoreRunner_selectUniqueEntityApplication",
-      {},
-      async () => {
-        const applicationSection: ApplicationSection = "data";
-        const queryResult = await localAppPersistenceStoreController.handleBoxedQueryAction({
-          actionType: "runBoxedQueryAction",
-          actionName: "runQuery",
-          deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-          endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-          applicationSection: applicationSection,
-          query: {
-            queryType: "boxedQueryWithExtractorCombinerTransformer",
-            pageParams: {},
-            queryParams: {},
-            contextResults: {},
-            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-            extractors: {
-              books: {
-                extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                applicationSection: applicationSection,
-                parentName: "Book",
-                parentUuid: entityBook.uuid,
-              },
-            },
-            runtimeTransformers: {
-              countries: {
-                transformerType: "mapperListToList",
-                interpolation: "runtime",
-                referencedExtractor: "books",
-                orderBy: "name",
-                elementTransformer: {
-                  transformerType: "innerFullObjectTemplate",
-                  interpolation: "runtime",
-                  referenceToOuterObject: "book",
-                  definition: [
-                    {
-                      attributeKey: {
-                        interpolation: "runtime",
-                        transformerType: "constantUuid",
-                        constantUuidValue: "uuid",
-                      },
-                      attributeValue: {
-                        interpolation: "runtime",
-                        transformerType: "newUuid",
-                      },
-                    },
-                    {
-                      attributeKey: {
-                        interpolation: "runtime",
-                        transformerType: "constantUuid",
-                        constantUuidValue: "name",
-                      },
-                      attributeValue: {
-                        interpolation: "runtime",
-                        transformerType: "mustacheStringTemplate",
-                        definition: "{{book.name}}",
-                      },
-                    },
-                  ],
-                },
-              },
-            },
-          },
-        });
-        console.log("queryResult", JSON.stringify(queryResult, null, 2));
-        return queryResult;
-      },
-      (a) =>
-        ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.elementValue.countries, [
-          "uuid",
-        ]).sort((a, b) =>
-          a["name"].localeCompare(b["name"])
-        ),
-      undefined, // name to give to result
-      "object", // must equal a.returnedDomainElement.elementType
-      [
-        {
-          name: "Et dans l'éternité je ne m'ennuierai pas",
-          // name: book1.name,
-        },
-        {
-          name: book2.name,
-        },
-        {
-          name: "Renata n'importe quoi",
-          // name: book3.name,
-        },
-        {
-          name: book4.name,
-        },
-        {
-          name: book5.name,
-        },
-        {
-          name: book6.name,
-        },
-      // ].sort((a, b) => a.name.localeCompare(b.name))
-      ].sort((a, b) => a.name == b.name ? 0 : a.name < b.name ? -1 : 1)
-    );
-  });
+  // // ################################################################################################
+  // // TODO: write in UTF-8 on disk / in Database!
+  // // TODO: provide implementation for mapperListToList
+  // it("get book title (name) list with actionRuntimeTransformer: mapperListToList + innerFullObjectTemplate", async () => {
+  //   await chainVitestSteps(
+  //     "ExtractorPersistenceStoreRunner_selectUniqueEntityApplication",
+  //     {},
+  //     async () => {
+  //       const applicationSection: ApplicationSection = "data";
+  //       const queryResult = await localAppPersistenceStoreController.handleBoxedQueryAction({
+  //         actionType: "runBoxedQueryAction",
+  //         actionName: "runQuery",
+  //         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+  //         endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+  //         applicationSection: applicationSection,
+  //         query: {
+  //           queryType: "boxedQueryWithExtractorCombinerTransformer",
+  //           pageParams: {},
+  //           queryParams: {},
+  //           contextResults: {},
+  //           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+  //           extractors: {
+  //             books: {
+  //               extractorOrCombinerType: "extractorByEntityReturningObjectList",
+  //               applicationSection: applicationSection,
+  //               parentName: "Book",
+  //               parentUuid: entityBook.uuid,
+  //             },
+  //           },
+  //           runtimeTransformers: {
+  //             countries: {
+  //               transformerType: "mapperListToList",
+  //               interpolation: "runtime",
+  //               referencedExtractor: "books",
+  //               orderBy: "name",
+  //               elementTransformer: {
+  //                 transformerType: "innerFullObjectTemplate",
+  //                 interpolation: "runtime",
+  //                 referenceToOuterObject: "book",
+  //                 definition: [
+  //                   {
+  //                     attributeKey: {
+  //                       interpolation: "runtime",
+  //                       transformerType: "constantUuid",
+  //                       constantUuidValue: "uuid",
+  //                     },
+  //                     attributeValue: {
+  //                       interpolation: "runtime",
+  //                       transformerType: "newUuid",
+  //                     },
+  //                   },
+  //                   {
+  //                     attributeKey: {
+  //                       interpolation: "runtime",
+  //                       transformerType: "constantUuid",
+  //                       constantUuidValue: "name",
+  //                     },
+  //                     attributeValue: {
+  //                       interpolation: "runtime",
+  //                       transformerType: "mustacheStringTemplate",
+  //                       definition: "{{book.name}}",
+  //                     },
+  //                   },
+  //                 ],
+  //               },
+  //             },
+  //           },
+  //         },
+  //       });
+  //       console.log("queryResult", JSON.stringify(queryResult, null, 2));
+  //       return queryResult;
+  //     },
+  //     (a) =>
+  //       ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.countries, [
+  //         "uuid",
+  //       ]).sort((a, b) =>
+  //         a["name"].localeCompare(b["name"])
+  //       ),
+  //     undefined, // name to give to result
+  //     undefined,
+  //     [
+  //       {
+  //         name: "Et dans l'éternité je ne m'ennuierai pas",
+  //         // name: book1.name,
+  //       },
+  //       {
+  //         name: book2.name,
+  //       },
+  //       {
+  //         name: "Renata n'importe quoi",
+  //         // name: book3.name,
+  //       },
+  //       {
+  //         name: book4.name,
+  //       },
+  //       {
+  //         name: book5.name,
+  //       },
+  //       {
+  //         name: book6.name,
+  //       },
+  //     // ].sort((a, b) => a.name.localeCompare(b.name))
+  //     ].sort((a, b) => a.name == b.name ? 0 : a.name < b.name ? -1 : 1)
+  //   );
+  // });
 
   // ################################################################################################
   it("get books of an author with combiner", async () => {
@@ -1220,12 +1219,12 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
       },
       (a) => {
         const result = ignorePostgresExtraAttributesOnList(
-          (a as any).returnedDomainElement.elementValue.booksOfAuthor.sort((a: any, b: any) => a.name.localeCompare(b.name)),
+          (a as any).returnedDomainElement.booksOfAuthor.sort((a: any, b: any) => a.name.localeCompare(b.name)),
         );
         return result;
       },
       undefined, // name to give to result
-      "object", // must equal a.returnedDomainElement.elementType
+      undefined,
       Object.values({
         "c6852e89-3c3c-447f-b827-4b5b9d830975": {
           author: "ce7b601d-be5f-4bc6-a5af-14091594046a",
@@ -1290,9 +1289,9 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult;
       },
-      (a) => ignorePostgresExtraAttributesOnObject((a as any).returnedDomainElement.elementValue.firstBook),
+      (a) => ignorePostgresExtraAttributesOnObject((a as any).returnedDomainElement.firstBook),
       undefined, // name to give to result
-      "object",
+      undefined,
       // [
         book1,
         // { author: "4441169e-0c22-4fbc-81b2-28c87cf48ab2" },

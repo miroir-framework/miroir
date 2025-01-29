@@ -1,5 +1,6 @@
 import {
   ACTION_OK,
+  Action2Error,
   Action2VoidReturnType,
   LoggerInterface,
   MiroirLoggerFactory,
@@ -35,10 +36,7 @@ export class SqlDbAdminStore extends SqlDbStore implements PersistenceStoreAdmin
       await this.sequelize.createSchema(config.schema, {});
       log.info("createStore DONE!");
     } catch (error) {
-      return Promise.resolve({
-        status: "error",
-        errorType: "FailedToCreateStore", errorMessage: error as string ,
-      });
+      return Promise.resolve(new Action2Error("FailedToCreateStore", error as string));
     }
     return Promise.resolve(ACTION_OK);
   }
@@ -51,10 +49,7 @@ export class SqlDbAdminStore extends SqlDbStore implements PersistenceStoreAdmin
       }
       await this.sequelize.dropSchema(config.schema, {});
     } catch (error) {
-      return Promise.resolve({
-        status: "error",
-        errorType: "FailedToDeleteStore", errorMessage: error as string ,
-      });
+      return Promise.resolve(new Action2Error("FailedToDeleteStore", error as string));
     }
     return Promise.resolve(ACTION_OK);
   }

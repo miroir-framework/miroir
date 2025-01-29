@@ -39,10 +39,6 @@ export const transformerTests: TransformerTestSuite = {
       },
       transformerParams: {},
       expectedValue: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-      // expectedValue: {
-      //   elementType: "instanceUuid",
-      //   elementValue: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-      // },
     },
 //     "resolve basic transformer constantString": {
 //       transformerTestType: "transformerTest",

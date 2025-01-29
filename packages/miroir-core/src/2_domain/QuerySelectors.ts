@@ -29,7 +29,7 @@ import {
   RunBoxedExtractorAction,
   RunBoxedQueryAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { Action2ReturnType, Domain2ElementFailed, Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement.js";
+import { Action2Error, Action2ReturnType, Domain2ElementFailed, Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement.js";
 import {
   AsyncBoxedExtractorOrQueryRunnerMap,
   ExtractorRunnerParamsForJzodSchema,
@@ -177,9 +177,7 @@ export function plainObjectToDomainElementDEFUNCT(r:any): DomainElement {
 export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = (
   selectedInstancesList: Domain2QueryReturnType<EntityInstance[]>,
   query: BoxedExtractorOrCombinerReturningObjectList,
-// ): Domain2QueryReturnType<DomainElementInstanceArray> => {
 ): Domain2QueryReturnType<EntityInstance[]> => {
-  // if (selectedInstancesList.elementType == "failure") {
   if (selectedInstancesList instanceof Domain2ElementFailed) {
     return selectedInstancesList;
   }
@@ -198,14 +196,14 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
         );
       }: undefined;
       // log.info(
-      //   "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory filter",
+      //   "applyExtractorForSingleObjectListToSelectedInstancesListInMemory filter",
       //   JSON.stringify(localQuery.filter)
       // );
       const filteredResult: Domain2QueryReturnType<EntityInstance[]> = localQuery.filter
         ? selectedInstancesList.filter((i: EntityInstance) => {
             const matchResult = filterTest?.test((i as any)[localQuery.filter?.attributeName ?? ""]);
             // log.info(
-            //   "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory filter",
+            //   "applyExtractorForSingleObjectListToSelectedInstancesListInMemory filter",
             //   JSON.stringify(i[1]),
             //   "matchResult",
             //   matchResult
@@ -230,7 +228,7 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
         ] as any) ?? {})[relationQuery.objectReferenceAttribute ?? "uuid"];
       } else {
         log.error(
-          "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerByRelationReturningObjectList could not find objectReference in contextResults, objectReference=",
+          "applyExtractorForSingleObjectListToSelectedInstancesListInMemory combinerByRelationReturningObjectList could not find objectReference in contextResults, objectReference=",
           relationQuery.objectReference,
           "contextResults",
           query.contextResults
@@ -386,7 +384,6 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
           }
         )
       );
-    // } as DomainElementInstanceUuidIndex;
 
     }
     case "combinerByManyToManyRelationReturningObjectList": {
@@ -541,11 +538,11 @@ export async function handleBoxedExtractorAction(
     }
   );
   if (queryResult instanceof Domain2ElementFailed) {
-    return {
-      status: "error",
-      errorType: "FailedToGetInstances",
-      errorMessage: JSON.stringify(queryResult),
-    } as Action2ReturnType;
+    return new Action2Error(
+      "FailedToGetInstances",
+      JSON.stringify(queryResult)
+    );
+    
   } else {
     // const result: Action2ReturnType = { status: "ok", returnedDomainElement: queryResult };
     const result: Action2ReturnType = { status: "ok", returnedDomainElement: queryResult };
@@ -575,11 +572,10 @@ export async function handleBoxedQueryAction(
     }
   );
   if (queryResult instanceof Domain2ElementFailed) {
-    return {
-      status: "error",
-      errorType: "FailedToGetInstances",
-      errorMessage: JSON.stringify(queryResult),
-    } as Action2ReturnType;
+    return new Action2Error(
+      "FailedToGetInstances",
+      JSON.stringify(queryResult)
+    );
   } else {
     const result: Action2ReturnType = { status: "ok", returnedDomainElement: queryResult };
     log.info(
@@ -776,7 +772,6 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
         context[extractorOrCombiner.extractorOrCombinerContextReference]
       );
       return context &&
-        // newFetchedData.elementType == "object" &&
         context[extractorOrCombiner.extractorOrCombinerContextReference]
         ? context[extractorOrCombiner.extractorOrCombinerContextReference]
         : {

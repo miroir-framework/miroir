@@ -254,7 +254,6 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
       const entityInstanceUuidIndex = Object.fromEntries(
         result.map((i: any) => [i.uuid, i])
         );
-      // return { elementType: "instanceUuidIndex", elementValue: entityInstanceUuidIndex };
       return entityInstanceUuidIndex;
     });
 

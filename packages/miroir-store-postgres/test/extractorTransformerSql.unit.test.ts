@@ -4,16 +4,6 @@ import { sqlStringForTransformer } from "../src/1_core/SqlGenerator";
 
 // console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 
-function cleanResult(r:DomainElement) {
-  if (r.elementType !== "string") {
-    throw new Error("unexpected elementType: "+r.elementType)
-  }
-  return {
-    elementType: r.elementType,
-    elementValue: r.elementValue.replace(/\s+/g, ' ').trim()
-  }
-}
-
 /**
  * PROBLEM: this tests implementation details of the sqlStringForTransformer function
  */

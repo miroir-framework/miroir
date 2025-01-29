@@ -1,7 +1,9 @@
 import {
+  Action2Error,
   Action2ReturnType,
   ApplicationSection,
   BoxedQueryTemplateWithExtractorCombinerTransformer,
+  Domain2QueryReturnType,
   DomainControllerInterface,
   EntityDefinition,
   EntityInstance,
@@ -97,11 +99,8 @@ export const deleteCascade = async (p: {
   
   if (Object.keys(foreignKeysPointingToEntity).length > 0) {
     const pageParams: Domain2QueryReturnType<Record<string,any>> = {
-      elementType: "object",
-      elementValue: {
-        deploymentUuid: { elementType: "string", elementValue: p.deploymentUuid },
-        applicationSection: { elementType: "string", elementValue: p.applicationSection },
-      },
+      deploymentUuid: p.deploymentUuid ,
+      applicationSection: p.applicationSection ,
     };
   
     const foreignKeyObjectsFetchQuery: BoxedQueryTemplateWithExtractorCombinerTransformer = {
@@ -110,8 +109,6 @@ export const deleteCascade = async (p: {
       pageParams,
       queryParams: {},
       contextResults: {},
-      // queryParams: { elementType: "object", elementValue: {} },
-      // contextResults: { elementType: "object", elementValue: {} },
       extractorTemplates: Object.fromEntries(
         Object.keys(foreignKeysPointingToEntity).map((entityUuid) => [
           entityUuid,
@@ -140,13 +137,13 @@ export const deleteCascade = async (p: {
         }
       )
   
-    if (foreignKeyUnfilteredObjects.status != "ok") {
-      throw new Error("deleteInstanceWithCascade deleteCascade found foreignKeyUnfilteredObjects with error " + foreignKeyUnfilteredObjects.error);
+    if (foreignKeyUnfilteredObjects instanceof Action2Error) {
+      throw new Error("deleteInstanceWithCascade deleteCascade found foreignKeyUnfilteredObjects with error " + foreignKeyUnfilteredObjects);
     }
   
-    if (foreignKeyUnfilteredObjects.returnedDomainElement.elementType != "entityInstanceCollection") {
-      throw new Error("deleteInstanceWithCascade deleteCascade found foreignKeyUnfilteredObjects not an instance collection " + foreignKeyUnfilteredObjects.returnedDomainElement);
-    }
+    // if (foreignKeyUnfilteredObjects.returnedDomainElement.elementType != "entityInstanceCollection") {
+    //   throw new Error("deleteInstanceWithCascade deleteCascade found foreignKeyUnfilteredObjects not an instance collection " + foreignKeyUnfilteredObjects.returnedDomainElement);
+    // }
     log.info("deleteInstanceWithCascade deleteCascade found foreignKeyUnfilteredObjects", JSON.stringify(foreignKeyUnfilteredObjects));
   
     const foreignKeyObjects: EntityInstance[] = foreignKeyUnfilteredObjects.returnedDomainElement.instances.filter(

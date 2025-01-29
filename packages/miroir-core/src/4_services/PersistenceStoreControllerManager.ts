@@ -22,7 +22,7 @@ import { DomainController } from "../3_controllers/DomainController.js";
 import { packageName } from "../constants.js";
 import { MiroirLoggerFactory } from "./LoggerFactory.js";
 import { cleanLevel } from "./constants.js";
-import { Action2VoidReturnType } from "../0_interfaces/2_domain/DomainElement.js";
+import { Action2Error, Action2VoidReturnType } from "../0_interfaces/2_domain/DomainElement.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -193,7 +193,7 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
 
     } else { // TODO: inject interface to raise errors!
       // throw new Error("deployModule could not find persistenceStoreController for " + newDeploymentUuid);
-      return { status: "error", errorType: "FailedToDeployModule" }
+      return new Action2Error("FailedToDeployModule", "deployModule could not find persistenceStoreController for " + newDeploymentUuid);
     }
     return ACTION_OK
   }
