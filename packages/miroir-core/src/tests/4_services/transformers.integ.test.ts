@@ -1,4 +1,5 @@
-import { describe, expect } from 'vitest';
+// import { describe, expect } from 'vitest';
+import * as vitest from 'vitest';
 
 import {
   SqlDbAdminStore,
@@ -40,10 +41,13 @@ import {
   publisher2,
   publisher3,
   Uuid
-} from "../../index.js";
+} from "miroir-core";
+// } from "../../index.js";
 import { runTransformerTestSuite, TransformerTest, transformerTests } from "../2_domain/transformersTests.data.js";
 // const env:any = (import.meta as any).env
 // console.log("@@@@@@@@@@@@@@@@@@ env", env);
+const RUN_TEST= process.env.RUN_TEST
+console.log("@@@@@@@@@@@@@@@@@@ RUN_TEST", RUN_TEST);
 
 // console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 
@@ -102,98 +106,98 @@ const libraryEntitesAndInstances = [
   }
 ];
 
-// beforeAll(async () => {
-//   console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ beforeAll")
-//   // sqlDbAdminStore = new SqlDbDataStoreSection("data", sqlDbStoreName, connectionString, schema);
-//   sqlDbAdminStore = new SqlDbAdminStore("data", sqlDbStoreName, connectionString, schema);
-//   sqlDbDataStore = new SqlDbDataStoreSection("data", sqlDbStoreName, connectionString, schema);
-//   sqlDbModelStore = new SqlDbModelStoreSection("model", sqlDbStoreName, connectionString, schema, sqlDbDataStore)
+const beforeAll = (async () => {
+  console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ beforeAll")
+  // sqlDbAdminStore = new SqlDbDataStoreSection("data", sqlDbStoreName, connectionString, schema);
+  sqlDbAdminStore = new SqlDbAdminStore("data", sqlDbStoreName, connectionString, schema);
+  sqlDbDataStore = new SqlDbDataStoreSection("data", sqlDbStoreName, connectionString, schema);
+  sqlDbModelStore = new SqlDbModelStoreSection("model", sqlDbStoreName, connectionString, schema, sqlDbDataStore)
 
-//   persistenceStoreController = new PersistenceStoreController(sqlDbAdminStore, sqlDbModelStore, sqlDbDataStore);
+  persistenceStoreController = new PersistenceStoreController(sqlDbAdminStore, sqlDbModelStore, sqlDbDataStore);
 
-//   const testApplicationConfig: InitApplicationParameters = getBasicApplicationConfiguration(
-//     testApplicationName,
-//     paramSelfApplicationUuid,
-//     // {
-//     //   emulatedServerType: "sql",
-//     //   connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
-//     // },
-//     paramAdminConfigurationDeploymentUuid,
-//     applicationModelBranchUuid,
-//     selfApplicationVersionUuid,
+  const testApplicationConfig: InitApplicationParameters = getBasicApplicationConfiguration(
+    testApplicationName,
+    paramSelfApplicationUuid,
+    // {
+    //   emulatedServerType: "sql",
+    //   connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+    // },
+    paramAdminConfigurationDeploymentUuid,
+    applicationModelBranchUuid,
+    selfApplicationVersionUuid,
 
-//   )
-//   await persistenceStoreController.createStore(
-//     testStoreConfig.admin
-//   );
-//   await persistenceStoreController.createStore(
-//     testStoreConfig.model
-//   );
-//   await persistenceStoreController.createStore(
-//     testStoreConfig.data
-//   );
-//   await persistenceStoreController.open();
+  )
+  await persistenceStoreController.createStore(
+    testStoreConfig.admin
+  );
+  await persistenceStoreController.createStore(
+    testStoreConfig.model
+  );
+  await persistenceStoreController.createStore(
+    testStoreConfig.data
+  );
+  await persistenceStoreController.open();
 
-//   await persistenceStoreController.initApplication(
-//     defaultMiroirMetaModel,
-//     "miroir",
-//     testApplicationConfig.selfApplication,
-//     testApplicationConfig.applicationModelBranch,
-//     testApplicationConfig.applicationVersion,
-//   )
+  await persistenceStoreController.initApplication(
+    defaultMiroirMetaModel,
+    "miroir",
+    testApplicationConfig.selfApplication,
+    testApplicationConfig.applicationModelBranch,
+    testApplicationConfig.applicationVersion,
+  )
   
-//   await persistenceStoreController.handleAction(
-//     {
-//       actionType: "modelAction",
-//       actionName: "resetModel",
-//       actionLabel: "resetTestStore",
-//       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-//       deploymentUuid: paramAdminConfigurationDeploymentUuid,
-//     },
-//   );
-//   await persistenceStoreController.handleAction({
-//     actionType: "modelAction",
-//     actionName: "initModel",
-//     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-//     deploymentUuid: paramAdminConfigurationDeploymentUuid,
-//     params: {
-//       dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
-//       metaModel: defaultMiroirMetaModel,
-//       // TODO: this is wrong, selfApplication, selfApplication version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
-//       selfApplication: testApplicationConfig.selfApplication,
-//       applicationModelBranch: testApplicationConfig.applicationModelBranch,
-//       applicationVersion: testApplicationConfig.applicationVersion,
-//     },
-//   });
-//   // }, defaultMiroirMetaModel);
-//   await persistenceStoreController.handleAction({
-//     actionType: "modelAction",
-//     actionName: "createEntity",
-//     actionLabel: "CreateLibraryStoreEntities",
-//     deploymentUuid: paramAdminConfigurationDeploymentUuid,
-//     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-//     entities: libraryEntitesAndInstances,
-//   });
-//   await persistenceStoreController.handleAction({
-//     actionType: "instanceAction",
-//     actionName: "createInstance",
-//     actionLabel: "CreateLibraryStoreInstances",
-//     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-//     applicationSection: "data",
-//     deploymentUuid: paramAdminConfigurationDeploymentUuid,
-//     objects: libraryEntitesAndInstances.map((e) => {
-//       return {
-//         parentName: e.entity.name,
-//         parentUuid: e.entity.uuid,
-//         applicationSection: "data",
-//         instances: e.instances,
-//       };
-//     }),
-//   });
-//   console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ END beforeAll")
-// });
+  await persistenceStoreController.handleAction(
+    {
+      actionType: "modelAction",
+      actionName: "resetModel",
+      actionLabel: "resetTestStore",
+      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+      deploymentUuid: paramAdminConfigurationDeploymentUuid,
+    },
+  );
+  await persistenceStoreController.handleAction({
+    actionType: "modelAction",
+    actionName: "initModel",
+    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+    deploymentUuid: paramAdminConfigurationDeploymentUuid,
+    params: {
+      dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
+      metaModel: defaultMiroirMetaModel,
+      // TODO: this is wrong, selfApplication, selfApplication version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
+      selfApplication: testApplicationConfig.selfApplication,
+      applicationModelBranch: testApplicationConfig.applicationModelBranch,
+      applicationVersion: testApplicationConfig.applicationVersion,
+    },
+  });
+  // }, defaultMiroirMetaModel);
+  await persistenceStoreController.handleAction({
+    actionType: "modelAction",
+    actionName: "createEntity",
+    actionLabel: "CreateLibraryStoreEntities",
+    deploymentUuid: paramAdminConfigurationDeploymentUuid,
+    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+    entities: libraryEntitesAndInstances,
+  });
+  await persistenceStoreController.handleAction({
+    actionType: "instanceAction",
+    actionName: "createInstance",
+    actionLabel: "CreateLibraryStoreInstances",
+    endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+    applicationSection: "data",
+    deploymentUuid: paramAdminConfigurationDeploymentUuid,
+    objects: libraryEntitesAndInstances.map((e) => {
+      return {
+        parentName: e.entity.name,
+        parentUuid: e.entity.uuid,
+        applicationSection: "data",
+        instances: e.instances,
+      };
+    }),
+  });
+  console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ END beforeAll")
+});
 
-// afterAll(async () => {
+// vitest.afterAll(async () => {
 //   await persistenceStoreController.deleteStore(
 //     testStoreConfig.data
 //   );
@@ -217,54 +221,70 @@ const extractors: ExtractorOrCombinerRecord = {
   },
 };
 
-// async function runTransformerTest(transformerTest: TransformerTest) {
-//   console.log(expect.getState().currentTestName, "START");
-  
-//   const transformer: TransformerForRuntime = {
-//     ...transformerTest.transformer,
-//     interpolation: "runtime",
-//   } as any; // TODO: fix typing
+async function runTransformerTest(vitest: any, testName: string, transformerTest: TransformerTest) {
+  console.log("runTransformerTest called for", testName, "START");
 
-//   console.log(expect.getState().currentTestName, "transformerTest", transformerTest);
+  const transformer: TransformerForRuntime = {
+    ...transformerTest.transformer,
+    interpolation: "runtime",
+  } as any; // TODO: fix typing
 
-//   const queryResult = await sqlDbDataStore.handleBoxedQueryAction({
-//     actionType: "runBoxedQueryAction",
-//     actionName: "runQuery",
-//     deploymentUuid: "",
-//     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-//     applicationSection: "data",
-//     query: {
-//       queryType: "boxedQueryWithExtractorCombinerTransformer",
-//       runAsSql: true,
-//       pageParams: {},
-//       queryParams: {},
-//       contextResults: {},
-//       deploymentUuid: "",
-//       // extractors,
-//       runtimeTransformers: {
-//         transformer,
-//       },
-//     },
-//   });
+  // console.log(expect.getState().currentTestName, "transformerTest", transformerTest);
+  console.log(testName, "transformerTest", transformerTest);
 
-//   console.log(expect.getState().currentTestName, "queryResult", JSON.stringify(queryResult, null, 2));
-  
-//   if (queryResult instanceof Action2Error) {
-//     expect(queryResult instanceof Action2Error).toEqual(false);
-//   } else {
-//     const testResult = (queryResult as Action2Success).returnedDomainElement.transformer;
-//     // const testResult = queryResult.returnedDomainElement.transformer;
-//     console.log(expect.getState().currentTestName, "testResult", JSON.stringify(queryResult, null, 2));
-//     console.log(expect.getState().currentTestName, "expectedValue", transformerTest.expectedValue);
-//     expect(testResult).toEqual(transformerTest.expectedValue);
-//   }
+  const queryResult = await sqlDbDataStore.handleBoxedQueryAction({
+    actionType: "runBoxedQueryAction",
+    actionName: "runQuery",
+    deploymentUuid: "",
+    endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+    applicationSection: "data",
+    query: {
+      queryType: "boxedQueryWithExtractorCombinerTransformer",
+      runAsSql: true,
+      pageParams: {},
+      queryParams: {},
+      contextResults: {},
+      deploymentUuid: "",
+      // extractors,
+      runtimeTransformers: {
+        transformer,
+      },
+    },
+  });
 
-//   console.log(expect.getState().currentTestName, "END");
-// }
+  console.log(testName, "WWWWWWWWWWWWWWWWWW queryResult", JSON.stringify(queryResult, null, 2));
+  console.log(testName, "WWWWWWWWWWWWWWWWWW queryResult error", queryResult instanceof Action2Error);
 
+  if (queryResult instanceof Action2Error) {
+    // vitest.expect(queryResult instanceof Action2Error, testName).toEqual(false);
+    vitest.expect(queryResult.innerError, testName).toEqual(transformerTest.expectedValue.elementValue);
+    // vitest.expect(queryResult, testName).toEqual(transformerTest.expectedValue.elementValue);
+  } else {
+    const testResult = (queryResult as Action2Success).returnedDomainElement.transformer;
+    // const testResult = queryResult.returnedDomainElement.transformer;
+    console.log(testName, "testResult", JSON.stringify(queryResult, null, 2));
+    console.log(testName, "expectedValue", transformerTest.expectedValue);
+    vitest.expect(testResult, testName).toEqual(transformerTest.expectedValue);
+  }
 
-describe("transformers.integ.test", async () => {
-  // await beforeAll();
+  console.log(testName, "END");
+}
+
+const testSuiteName = "transformers.integ.test";
+if (RUN_TEST == testSuiteName) {
+  await beforeAll();
+  await runTransformerTestSuite(vitest, testSuiteName, transformerTests, runTransformerTest);
+} else {
+  console.log("################################ skipping test suite:", testSuiteName);
+}
+
+// await runTransformerTestSuite(vitest, "transformers.integ.test", transformerTests, runTransformerTest);
+
+// vitest.describe("transformers.integ.test", async () => {
+//   // await beforeAll();
+//   // it("should run transformer tests", async () => {
+//     // });
+//     await runTransformerTestSuite(vitest, "transformers.integ.test", transformerTests, runTransformerTest);
   
   
   // await runTransformerTestSuite(transformerTests, runTransformerTest);
@@ -2832,4 +2852,4 @@ describe("transformers.integ.test", async () => {
   // }
   // );
 
-});
+// });

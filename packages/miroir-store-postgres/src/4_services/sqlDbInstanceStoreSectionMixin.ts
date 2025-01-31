@@ -70,8 +70,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
       log.info(this.logHeader, "executeRawQuery", "query", query, "rawResult", rawResult);
       const result: Action2ReturnType = {
         status: "ok",
-        // returnedDomainElement: { elementType: "any", elementValue: Number((rawResult[0] as any).count) },
-        returnedDomainElement: { elementType: "any", elementValue: rawResult[0] },
+        returnedDomainElement: rawResult[0],
       };
       log.info(this.logHeader, "executeRawQuery", "query", query, "result", JSON.stringify(result));
       return Promise.resolve(result);

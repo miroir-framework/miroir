@@ -676,6 +676,7 @@ export {
 } from './2_domain/ModelEntityActionTransformer.js';
 export { 
   ActionTemplate,
+  transformer_resolveReference,
   transformer_apply,
   transformer_extended_apply,
   transformer_InnerReference_resolve,
@@ -753,6 +754,7 @@ export {
   ignorePostgresExtraAttributesOnList,
   ignorePostgresExtraAttributesOnObject,
   ignorePostgresExtraAttributesOnRecord,
+  ignorePostgresExtraAttributes,
 } from './4_services/otherTools.js';
 export { miroirCoreStartup } from './startup.js';
 export { stringTuple, circularReplacer, resolvePathOnObject } from './tools.js';

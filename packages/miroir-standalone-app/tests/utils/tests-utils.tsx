@@ -920,7 +920,10 @@ export function displayTestSuiteResults(currentTestSuiteName: string) {
       for (const [testAssertionLabel, testAssertionResult] of Object.entries(testResult.testAssertionsResults)) {
         if (testAssertionResult.assertionResult !== "ok") {
           console.log("testAssertionResult", JSON.stringify(testAssertionResult, null, 2));
-          expect(testAssertionResult.assertionActualValue, `${currentTestSuiteName} > ${testResult.testLabel} > ${testAssertionLabel} failed!`).toBe(testAssertionResult.assertionExpectedValue);
+          expect(
+            testAssertionResult.assertionActualValue,
+            `${currentTestSuiteName} > ${testResult.testLabel} > ${testAssertionLabel} failed!`
+          ).toBe(testAssertionResult.assertionExpectedValue);
         }
       }
     } else {
@@ -945,7 +948,10 @@ export function displayTestSuiteResultsDetails(currentTestSuiteName: string) {
       // console.log(`    Actual: ${testAssertionResult.assertionActualValue}`);
       // console.log(`    Result: ${testAssertionResult.assertionResult}`);
       if (testAssertionResult.assertionResult !== "ok") {
-        expect(testAssertionResult.assertionActualValue, `${currentTestSuiteName} > ${testResult.testLabel} > ${testAssertionLabel} failed!`).toBe(testAssertionResult.assertionExpectedValue);
+        expect(
+          testAssertionResult.assertionActualValue,
+          `${currentTestSuiteName} > ${testResult.testLabel} > ${testAssertionLabel} failed!`
+        ).toBe(testAssertionResult.assertionExpectedValue);
       }
     }
     if (testResult.testResult !== "ok") {

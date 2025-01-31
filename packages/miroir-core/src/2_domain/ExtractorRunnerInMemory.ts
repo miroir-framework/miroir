@@ -118,14 +118,11 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
         if (
           !querySelectorParams.AttributeOfObjectToCompareToReferenceUuid
         ) {
-          return {
-            elementType: "failure",
-            elementValue: {
-              queryFailure: "IncorrectParameters",
-              queryParameters: JSON.stringify(selectorParams.extractor.pageParams),
-              queryContext: "extractRunnerInMemory extractEntityInstance query has no AttributeOfObjectToCompareToReferenceUuid, query=" + JSON.stringify(querySelectorParams),
-            },
-          };
+          return new Domain2ElementFailed({
+            queryFailure: "IncorrectParameters",
+            queryParameters: JSON.stringify(selectorParams.extractor.pageParams),
+            queryContext: "extractRunnerInMemory extractEntityInstance query has no AttributeOfObjectToCompareToReferenceUuid, query=" + JSON.stringify(querySelectorParams),
+          });
         }
 
         const result = await this.persistenceStoreController.getInstance(
@@ -134,30 +131,30 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
         );
 
         if (result instanceof Action2Error) {
-          return {
-            elementType: "failure",
-            elementValue: {
-              queryFailure: "InstanceNotFound",
-              deploymentUuid,
-              applicationSection,
-              entityUuid: entityUuidReference,
-            },
-          };
+          const failureMessage = `could not find instance of Entity ${entityUuidReference} with uuid=${referenceObject[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]}`;
+          return new Domain2ElementFailed({
+            queryFailure: "InstanceNotFound",
+            deploymentUuid,
+            applicationSection,
+            entityUuid: entityUuidReference,
+            failureMessage: `could not find instance of Entity ${entityUuidReference} with uuid=${referenceObject[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]}`,
+            errorStack:
+              typeof result.errorStack == "string"
+                ? [failureMessage, result.errorStack]
+                : [failureMessage, ...(result.errorStack as any ?? [])],
+          });
         }
 
         const failureMessage = `could not find instance of Entity ${entityUuidReference} with uuid=${referenceObject[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]}`;
         if (result.returnedDomainElement instanceof Domain2ElementFailed) {
-          return {
-            elementType: "failure",
-            elementValue: {
-              queryFailure: "InstanceNotFound",
-              deploymentUuid,
-              applicationSection,
-              entityUuid: entityUuidReference,
-              failureMessage: failureMessage,
-              errorStack: [failureMessage, ...(result.returnedDomainElement.elementValue.errorStack??[])],
-            },
-          };
+          return new Domain2ElementFailed({
+            queryFailure: "InstanceNotFound",
+            deploymentUuid,
+            applicationSection,
+            entityUuid: entityUuidReference,
+            failureMessage: failureMessage,
+            errorStack: [failureMessage, ...(result.returnedDomainElement.errorStack??[])],
+          });
         }
         // log.info(
         //   "extractEntityInstance combinerForObjectByRelation, ############# reference",
@@ -189,30 +186,31 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
         );
 
         if (result instanceof Action2Error) {
-          return {
-            elementType: "failure",
-            elementValue: {
-              queryFailure: "InstanceNotFound",
-              deploymentUuid,
-              applicationSection,
-              entityUuid: entityUuidReference,
-              instanceUuid: instanceUuid,
-            },
-          };
+          const failureMessage = `could not find instance of Entity ${entityUuidReference} with uuid=${instanceUuid}`;
+          return new Domain2ElementFailed({
+            queryFailure: "InstanceNotFound",
+            deploymentUuid,
+            applicationSection,
+            entityUuid: entityUuidReference,
+            failureMessage: `could not find instance of Entity ${entityUuidReference} with uuid=${instanceUuid}`,
+            errorStack:
+              typeof result.errorStack == "string"
+                ? [failureMessage, result.errorStack]
+                : [failureMessage, ...(result.errorStack as any ?? [])],
+            innerError: result as any, // TODO: fix type
+          });
         }
         const failureMessage = `could not find instance of Entity ${entityUuidReference} with uuid=${instanceUuid}`;
         if (result.returnedDomainElement instanceof Domain2ElementFailed) {
-          return {
-            elementType: "failure",
-            elementValue: {
-              queryFailure: "InstanceNotFound",
-              deploymentUuid,
-              applicationSection,
-              entityUuid: entityUuidReference,
-              failureMessage: failureMessage,
-              errorStack: [failureMessage, ...(result.returnedDomainElement.elementValue.errorStack??[])],
-            },
-          };
+          return new Domain2ElementFailed({
+            queryFailure: "InstanceNotFound",
+            deploymentUuid,
+            applicationSection,
+            entityUuid: entityUuidReference,
+            failureMessage: failureMessage,
+            errorStack: [failureMessage, ...(result.returnedDomainElement.errorStack??[])],
+            innerError: result.returnedDomainElement as any// todo: fix type
+          });
         }
         log.info(
           "extractEntityInstance extractorForObjectByDirectReference, ############# reference",
@@ -275,48 +273,38 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
     // log.info("extractEntityInstanceUuidIndex domainState", domainState);
 
     if (!deploymentUuid || !applicationSection || !entityUuid) {
-      return {
+      return new Domain2ElementFailed({
         // new object
-        elementType: "failure",
-        elementValue: {
-          queryFailure: "IncorrectParameters",
-          queryContext:
-            "extractEntityInstanceList wrong context as deploymentUuid, applicationSection, entityUuid not found, deploymentUuid=" +
-            deploymentUuid +
-            ", applicationSection=" +
-            applicationSection +
-            ", entityUuid=" +
-            entityUuid,
-          queryParameters: JSON.stringify(extractorRunnerParams),
-        },
-      };
-      // resolving by fetchDataReference, fetchDataReferenceAttribute
+        queryFailure: "IncorrectParameters",
+        queryContext:
+          "extractEntityInstanceList wrong context as deploymentUuid, applicationSection, entityUuid not found, deploymentUuid=" +
+          deploymentUuid +
+          ", applicationSection=" +
+          applicationSection +
+          ", entityUuid=" +
+          entityUuid,
+        queryParameters: JSON.stringify(extractorRunnerParams),
+      });
     }
 
     const entityInstanceCollection: Action2EntityInstanceCollectionOrFailure =
       await this.persistenceStoreController.getInstances(/*applicationSection, */ entityUuid);
 
     if (entityInstanceCollection instanceof Action2Error) {
-      return {
-        elementType: "failure",
-        elementValue: {
-          queryFailure: "EntityNotFound", // TODO: find corresponding queryFailure from data
-          deploymentUuid,
-          applicationSection,
-          entityUuid: entityUuid,
-        },
-      };
+      return new Domain2ElementFailed({
+        queryFailure: "EntityNotFound", // TODO: find corresponding queryFailure from data
+        deploymentUuid,
+        applicationSection,
+        entityUuid: entityUuid,
+      });
     }
     if (entityInstanceCollection.returnedDomainElement instanceof Domain2ElementFailed) {
-      return {
-        elementType: "failure",
-        elementValue: {
-          queryFailure: "EntityNotFound", // TODO: find corresponding queryFailure from data
-          deploymentUuid,
-          applicationSection,
-          entityUuid: entityUuid,
-        },
-      };
+      return new Domain2ElementFailed({
+        queryFailure: "EntityNotFound", // TODO: find corresponding queryFailure from data
+        deploymentUuid,
+        applicationSection,
+        entityUuid: entityUuid,
+      });
     }
     if (entityInstanceCollection.returnedDomainElement instanceof Domain2ElementFailed) {
       return entityInstanceCollection.returnedDomainElement;

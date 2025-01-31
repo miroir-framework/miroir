@@ -47,8 +47,6 @@ export function resolveExtractorTemplate(
         return {
           extractorOrCombinerType: "extractorByEntityReturningObjectList",
           ...cleanQueryTemplate,
-          // applicationSection: queryTemplate.applicationSection,
-          // parentName: queryTemplate.parentName,
           parentUuid:
             typeof extractorOrCombinerTemplate.parentUuid == "string"
               ? extractorOrCombinerTemplate.parentUuid
@@ -62,8 +60,6 @@ export function resolveExtractorTemplate(
         return {
           extractorOrCombinerType: "extractorByEntityReturningObjectList",
           ...cleanQueryTemplate,
-          // applicationSection: queryTemplate.applicationSection,
-          // parentName: queryTemplate.parentName,
           parentUuid:
             typeof extractorOrCombinerTemplate.parentUuid == "string"
               ? extractorOrCombinerTemplate.parentUuid
@@ -76,8 +72,6 @@ export function resolveExtractorTemplate(
       return {
         extractorOrCombinerType: "extractorForObjectByDirectReference",
         ...cleanQueryTemplate,
-        // applicationSection: queryTemplate.applicationSection,
-        // parentName: queryTemplate.parentName,
         parentUuid:
           typeof extractorOrCombinerTemplate.parentUuid == "string"
             ? extractorOrCombinerTemplate.parentUuid
@@ -124,9 +118,6 @@ export function resolveExtractorTemplate(
       return {
         extractorOrCombinerType: extractorOrCombinerTemplate.extractorTemplateType,
         ...cleanQueryTemplate,
-        // applicationSection: queryTemplate.applicationSection,
-        // AttributeOfListObjectToCompareToReferenceUuid: queryTemplate.AttributeOfListObjectToCompareToReferenceUuid,
-        // parentName: queryTemplate.parentName,
         parentUuid:
           typeof extractorOrCombinerTemplate.parentUuid == "string"
             ? extractorOrCombinerTemplate.parentUuid
@@ -143,9 +134,6 @@ export function resolveExtractorTemplate(
       return {
         extractorOrCombinerType: extractorOrCombinerTemplate.extractorTemplateType,
         ...cleanQueryTemplate,
-        // applicationSection: queryTemplate.applicationSection,
-        // parentName: queryTemplate.parentName,
-        // objectListReferenceAttribute: queryTemplate.objectListReferenceAttribute,
         parentUuid:
           typeof extractorOrCombinerTemplate.parentUuid == "string"
             ? extractorOrCombinerTemplate.parentUuid
@@ -162,9 +150,6 @@ export function resolveExtractorTemplate(
       return {
         extractorOrCombinerType: extractorOrCombinerTemplate.extractorTemplateType,
         ...cleanQueryTemplate,
-        // applicationSection: queryTemplate.applicationSection,
-        // AttributeOfObjectToCompareToReferenceUuid: queryTemplate.AttributeOfObjectToCompareToReferenceUuid,
-        // parentName: queryTemplate.parentName,
         parentUuid:
           typeof extractorOrCombinerTemplate.parentUuid == "string"
             ? extractorOrCombinerTemplate.parentUuid
@@ -289,7 +274,6 @@ export function resolveExtractorTemplateForExtractorOrCombinerReturningObjectOrO
   deploymentUuid: string //?
 ): ExtractorOrCombinerReturningObjectOrObjectList {
 
-  // const params = { ...extractorTemplateReturningObjectOrObjectList.pageParams, ...extractorTemplateReturningObjectOrObjectList.queryParams };
   const params = { ...pageParams, ...queryParams };
 
   // log.info("resolveQueryTemplateForBoxedExtractorOrCombinerReturningObjectOrObjectList converting extractorTemplates:", boxedExtractorTemplateReturningObject);
@@ -301,18 +285,6 @@ export function resolveExtractorTemplateForExtractorOrCombinerReturningObjectOrO
   ) as any;
   // log.info("resolveQueryTemplateForBoxedExtractorOrCombinerReturningObjectOrObjectList converted extractorTemplates, result:", select);
   return select as ExtractorOrCombinerReturningObjectOrObjectList;
-  // return {
-  //   // pageParams: pageParams,
-  //   // queryParams: queryParams,
-  //   // contextResults: contextResults,
-  //   // deploymentUuid: deploymentUuid,
-  //   : extractorTemplateReturningObjectOrObjectList.extractorTemplateType,
-  //     // extractorTemplateReturningObjectOrObjectList.extractorTemplateType == "extractorTemplateReturningObjectList"
-  //     //   ? "boxedExtractorOrCombinerReturningObjectList"
-  //     //   : "boxedExtractorOrCombinerReturningObject",
-  //   select: select,
-  //   // runtimeTransformers: boxedExtractorTemplateReturningObject.runtimeTransformers,
-  // };
 }
 
 // ################################################################################################
@@ -340,24 +312,20 @@ export function resolveBoxedExtractorOrCombinerTemplateReturningObjectOrObjectLi
         ? "boxedExtractorOrCombinerReturningObjectList"
         : "boxedExtractorOrCombinerReturningObject",
     select: select,
-    // runtimeTransformers: boxedExtractorTemplateReturningObject.runtimeTransformers,
   };
 }
 
 // ################################################################################################
 export function resolveExtractorOrQueryTemplate(
-  // extractorOrCombinerTemplate: BoxedExtractorTemplateReturningObjectOrObjectList | BoxedQueryTemplateWithExtractorCombinerTransformer
   extractorOrCombinerTemplate: ExtractorTemplateReturningObjectOrObjectList | BoxedQueryTemplateWithExtractorCombinerTransformer,
   pageParams: Record<string, any>,
   queryParams: Record<string, any>,
   contextResults: Record<string, any>,
   deploymentUuid: string //?
-// ): BoxedExtractorOrCombinerReturningObjectOrObjectList | BoxedQueryWithExtractorCombinerTransformer {
 ): ExtractorOrCombinerReturningObjectOrObjectList | BoxedQueryWithExtractorCombinerTransformer {
   if ("queryType" in extractorOrCombinerTemplate) { // TODO: implementation-specific, to be improved!
     return resolveQueryTemplateWithExtractorCombinerTransformer(extractorOrCombinerTemplate as BoxedQueryTemplateWithExtractorCombinerTransformer);
   } else {
-    // return resolveQueryTemplateForBoxedExtractorOrCombinerReturningObjectOrObjectList(extractorOrCombinerTemplate);
     return resolveExtractorTemplateForExtractorOrCombinerReturningObjectOrObjectList(
       extractorOrCombinerTemplate,
       pageParams,

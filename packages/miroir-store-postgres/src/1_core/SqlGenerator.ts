@@ -6,7 +6,9 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   TransformerForRuntime,
-  TransformerForRuntime_innerFullObjectTemplate
+  TransformerForRuntime_innerFullObjectTemplate,
+  Domain2ElementFailed,
+  transformer_resolveReference
 } from "miroir-core";
 import { RecursiveStringRecords } from "../4_services/SqlDbQueryTemplateRunner";
 import { cleanLevel } from "../4_services/constants";
@@ -25,11 +27,15 @@ MiroirLoggerFactory.registerLoggerToStart(
   log = logger;
 });
 
+export interface SqlStringForCombinerReturnType {
+  sqlString: string;
+  resultAccessPath?: (string | number)[];
+}
 // ################################################################################################
 export function sqlStringForCombiner /*BoxedExtractorTemplateRunner*/(
   query: ExtractorOrCombiner,
   schema: string
-): Domain2QueryReturnType<DomainElementSuccess> {
+): Domain2QueryReturnType<SqlStringForCombinerReturnType> {
   // TODO: fetch parentName from parentUuid in query!
   switch (query.extractorOrCombinerType) {
     case "extractorByEntityReturningObjectList":
@@ -52,11 +58,8 @@ export function sqlStringForCombiner /*BoxedExtractorTemplateRunner*/(
         SELECT "${query.parentName}".* FROM "${schema}"."${query.parentName}", "${query.objectReference}"
         WHERE "${query.parentName}"."uuid" = "${query.objectReference}"."${query.AttributeOfObjectToCompareToReferenceUuid}"`;
       return {
-        elementType: "any",
-        elementValue: {
-          sqlString: result,
-          resultAccessPath: [0],
-        },
+        sqlString: result,
+        resultAccessPath: [0],
       };
     }
     case "combinerByRelationReturningObjectList": {
@@ -64,11 +67,8 @@ export function sqlStringForCombiner /*BoxedExtractorTemplateRunner*/(
       SELECT "${query.parentName}".* FROM "${schema}"."${query.parentName}", "${query.objectReference}"
       WHERE "${query.parentName}"."${query.AttributeOfListObjectToCompareToReferenceUuid}" = "${query.objectReference}"."uuid"`;
       return {
-        elementType: "any",
-        elementValue: {
-          sqlString: result,
-          resultAccessPath: undefined,
-        },
+        sqlString: result,
+        resultAccessPath: undefined,
       };
     }
     case "combinerByManyToManyRelationReturningObjectList":
@@ -121,17 +121,19 @@ export function sqlStringForExtractor(extractor: ExtractorOrCombiner, schema: st
 
 export type sqlStringForTransformerElementValue = {
   sqlStringOrObject: string | Record<string, string>;
-  resultAccessPath?: string[];
-  encloseEndResultInArray: boolean;
+  resultAccessPath?: (string | number)[];
+  encloseEndResultInArray?: boolean;
+  extraWith?: { name: string; sql: string }[];
 };
+
 // ################################################################################################
 export function sqlStringForTransformer(
   actionRuntimeTransformer: TransformerForRuntime | TransformerForRuntime_innerFullObjectTemplate,
+  queryParams: Record<string, any> = {},
+  newFetchedData: Record<string, any> = {},
   topLevelTransformer: boolean = true
-// ): Domain2QueryReturnType<DomainElementSuccess> {
-): Domain2QueryReturnType<any> {
+): Domain2QueryReturnType<sqlStringForTransformerElementValue> {
   // TODO: DomainElement should be dependent type, the real type is hidden here
-  // log.info("SqlDbQueryRunner applyExtractorTransformerSql extractors", extractors);
   log.info(
     "extractorTransformerSql called with actionRuntimeTransformer",
     JSON.stringify(actionRuntimeTransformer, null, 2)
@@ -144,7 +146,6 @@ export function sqlStringForTransformer(
   //   newFetchedData
   // );
 
-  // log.info("extractorTransformerSql applyExtractorTransformerSql resolvedReference", resolvedReference);
 
   // const extractorRawQueries = Object.entries(extractors).map(([key, value]) => {
   //   return [key, this.persistenceStoreController.sqlForExtractor(value)];
@@ -193,21 +194,32 @@ export function sqlStringForTransformer(
       const referenceName: string =
         (actionRuntimeTransformer as any).referenceToOuterObject ??
         (actionRuntimeTransformer as any).referencedExtractor;
+
       const selectFields = actionRuntimeTransformer.definition
         .map(
-          (f) =>
-            sqlStringForTransformer(f.attributeValue, false).sqlStringOrObject + // TODO: check for actual type of sqlStringOrObject
+          (f) => {
+            const attributeValue = sqlStringForTransformer(f.attributeValue, queryParams, newFetchedData, false);
+            if (attributeValue instanceof Domain2ElementFailed) {
+              return attributeValue;
+            }
+            
+            const attributeKey = sqlStringForTransformer(f.attributeKey, queryParams, newFetchedData, false);
+            if (attributeKey instanceof Domain2ElementFailed) {
+              return attributeKey;
+            }
+
+            return  attributeValue.sqlStringOrObject + // TODO: check for actual type of sqlStringOrObject
             " AS " +
             tokenQuote +
-            sqlStringForTransformer(f.attributeKey, false).sqlStringOrObject +
+            attributeKey.sqlStringOrObject +
             tokenQuote
+          }
         )
         .join(tokenSeparatorForSelect);
-      // log.info("extractorTransformerSql innerFullObjectTemplate selectFields", selectFields);
 
       const sqlResult = `SELECT row_to_json(t) AS "innerFullObjectTemplate" FROM ( SELECT ${selectFields} FROM "${referenceName}" ) t
       ${orderBy}`;
-      log.info("applyExtractorTransformerSql innerFullObjectTemplate sqlResult", JSON.stringify(sqlResult));
+      log.info("sqlStringForTransformer innerFullObjectTemplate sqlResult", JSON.stringify(sqlResult));
       return {
         sqlStringOrObject: sqlResult,
         resultAccessPath: [0, "innerFullObjectTemplate"],
@@ -220,7 +232,7 @@ export function sqlStringForTransformer(
        * must take the rerferencedExtractor result and make it avaialable to elementTransformer, apply the elementTransformer to
        * each element of the list and return the sorted list of transformed elements
        */
-      throw new Error("extractorTransformerSql mapperListToList not implemented");
+      throw new Error("sqlStringForTransformer mapperListToList not implemented");
       // const referenceName:string = (actionRuntimeTransformer as any).referencedExtractor;
       // const sqlStringForElementTransformer = sqlStringForTransformer(actionRuntimeTransformer.elementTransformer, false);
       // // const sqlResult = `SELECT array_agg(${sqlStringForElementTransformer.sqlString}) AS "mapperListToList" FROM "${referenceName}" ${orderBy}`;
@@ -297,7 +309,7 @@ export function sqlStringForTransformer(
         JSON.stringify(actionRuntimeTransformer.constantObjectValue).replace(/\\"/g, '"') +
         "'::jsonb FROM generate_series(1,1)";
       log.info(
-        "applyExtractorTransformerSql constantObject",
+        "sqlStringForTransformer constantObject",
         actionRuntimeTransformer.constantObjectValue,
         "result",
         result
@@ -307,7 +319,28 @@ export function sqlStringForTransformer(
       };
       break;
     }
-    case "contextReference":
+    case "contextReference": {
+      const resolvedReference = transformer_resolveReference(
+        "runtime",
+        actionRuntimeTransformer,
+        "context",
+        queryParams,
+        newFetchedData
+      )
+      if (resolvedReference instanceof Domain2ElementFailed) {
+        return resolvedReference;
+      }
+      return {
+        sqlStringOrObject: resolvedReference,
+        // resultAccessPath: [0]
+      };
+      // return new Domain2ElementFailed({
+      //   queryFailure: "QueryNotExecutable",
+      //   query: JSON.stringify(actionRuntimeTransformer),
+      //   failureMessage: "sqlStringForTransformer transformerType not implemented: " + actionRuntimeTransformer.transformerType,
+      // });
+      break;
+    }
     case "parameterReference":
     case "objectDynamicAccess":
     case "freeObjectTemplate":
@@ -315,15 +348,20 @@ export function sqlStringForTransformer(
     case "listReducerToIndexObject":
     case "objectEntries":
     case "objectValues": {
-      return {
-        elementType: "failure",
-        elementValue: {
-          queryFailure: "QueryNotExecutable",
-          query: JSON.stringify(actionRuntimeTransformer),
-          failureMessage:
-            "applyExtractorTransformerSql transformerType not implemented: " + actionRuntimeTransformer.transformerType,
-        },
-      };
+      return new Domain2ElementFailed({
+        queryFailure: "QueryNotExecutable",
+        query: JSON.stringify(actionRuntimeTransformer),
+        failureMessage: "sqlStringForTransformer transformerType not implemented: " + actionRuntimeTransformer.transformerType,
+      });
+      // return {
+      //   elementType: "failure",
+      //   elementValue: {
+      //     queryFailure: "QueryNotExecutable",
+      //     query: JSON.stringify(actionRuntimeTransformer),
+      //     failureMessage:
+      //       "sqlStringForTransformer transformerType not implemented: " + actionRuntimeTransformer.transformerType,
+      //   },
+      // };
       break;
     }
     case "unique": {
@@ -337,8 +375,7 @@ export function sqlStringForTransformer(
       const transformerSqlQuery = `SELECT DISTINCT ON ("${actionRuntimeTransformer.attribute}") "${actionRuntimeTransformer.attribute}" FROM "${referenceName}"
         ${orderBy}
       `;
-      // log.info("applyExtractorTransformerSql unique aggregateRawQuery", transformerSqlQuery);
-      log.info("extractorTransformerSql unique transformerRawQuery", JSON.stringify(transformerSqlQuery));
+      log.info("sqlStringForTransformer unique transformerRawQuery", JSON.stringify(transformerSqlQuery));
       return {
         sqlStringOrObject: transformerSqlQuery, resultAccessPath: undefined,
       };
@@ -347,16 +384,16 @@ export function sqlStringForTransformer(
     case "count": {
       const referenceName: string = (actionRuntimeTransformer as any).referencedExtractor;
       if (!(actionRuntimeTransformer as any).referencedExtractor) {
-        throw new Error("extractorTransformerSql count missing referencedExtractor");
+        throw new Error("sqlStringForTransformer count missing referencedExtractor");
       }
-      log.info("extractorTransformerSql count actionRuntimeTransformer.groupBy", actionRuntimeTransformer.groupBy);
+      log.info("sqlStringForTransformer count actionRuntimeTransformer.groupBy", actionRuntimeTransformer.groupBy);
       const transformerSqlQuery = actionRuntimeTransformer.groupBy
         ? `SELECT "${actionRuntimeTransformer.groupBy}", COUNT("uuid")::int FROM ${referenceName}
           GROUP BY "${actionRuntimeTransformer.groupBy}"
           ${orderBy}`
         : `SELECT COUNT("uuid")::int FROM "${referenceName}"
           ${orderBy}`;
-      log.info("extractorTransformerSql count transformerSqlQuery", transformerSqlQuery);
+      log.info("sqlStringForTransformer count transformerSqlQuery", transformerSqlQuery);
       return {
         sqlStringOrObject: transformerSqlQuery, resultAccessPath: undefined,
       };
@@ -366,48 +403,63 @@ export function sqlStringForTransformer(
       break;
   }
 
-  return {
-    elementType: "failure",
-    elementValue: {
-      queryFailure: "QueryNotExecutable",
-      failureOrigin: ["extractorTransformerSql"],
-      query: actionRuntimeTransformer,
-      failureMessage: "could not handle transformer",
-    },
-  };
+  return new Domain2ElementFailed({
+    queryFailure: "QueryNotExecutable",
+    failureOrigin: ["sqlStringForTransformer"],
+    query: actionRuntimeTransformer,
+    failureMessage: "could not handle transformer",
+  });
+  // return {
+  //   elementType: "failure",
+  //   elementValue: {
+  //     queryFailure: "QueryNotExecutable",
+  //     failureOrigin: ["sqlStringForTransformer"],
+  //     query: actionRuntimeTransformer,
+  //     failureMessage: "could not handle transformer",
+  //   },
+  // };
 }
 
 // ################################################################################################
-// export function sqlStringForQuery(selectorParams: AsyncQueryRunnerParams, schema: string): RecursiveStringRecords {
+export interface SqlStringForExtractorReturnType {
+  query: string;
+  transformerRawQueriesObject: Record<string, sqlStringForTransformerElementValue>;
+  endResultName: string;
+  combinerRawQueriesObject: Record<string, sqlStringForTransformerElementValue>;
+}
 export function sqlStringForQuery(
   selectorParams: AsyncQueryRunnerParams,
   schema: string
-): {
-  query: string;
-  // transformerRawQueriesObject: Record<string, { resultAccessPath: string[]}>;
-  transformerRawQueriesObject: Record<string, sqlStringForTransformerElementValue>;
-  endResultName: string;
-  // combinerRawQueriesObject: Record<string, string>;
-  combinerRawQueriesObject: Record<string, sqlStringForTransformerElementValue>;
-} {
+): Domain2QueryReturnType<SqlStringForExtractorReturnType>  {
   const extractorRawQueries = Object.entries(selectorParams.extractor.extractors ?? {}).map(([key, value]) => {
-    // return [key, sqlStringForExtractor(value,this.persistenceStoreController.schema)];
     return [key, sqlStringForExtractor(value, schema)];
   });
 
-  log.info("applyExtractorTransformerSql extractorRawQueries", extractorRawQueries);
+  log.info("sqlStringForQuery extractorRawQueries", extractorRawQueries);
 
   const combinerRawQueries = Object.entries(selectorParams.extractor.combiners ?? {}).map(([key, value]) => {
     return [key, sqlStringForCombiner(value, schema)];
   });
-  log.info("applyExtractorTransformerSql combinerRawQueries", combinerRawQueries);
+  log.info("sqlStringForQuery combinerRawQueries", combinerRawQueries);
 
   const transformerRawQueries = Object.entries(selectorParams.extractor.runtimeTransformers ?? {}).map(
     ([key, value]) => {
-      return [key, sqlStringForTransformer(value as TransformerForRuntime)]; // TODO: handle ExtendedExtractorForRuntime?
+      return [
+        key,
+        sqlStringForTransformer(
+          value as TransformerForRuntime,
+          selectorParams.extractor.queryParams,
+          selectorParams.extractor.contextResults
+        ),
+      ]; // TODO: handle ExtendedExtractorForRuntime?
     }
   );
-  log.info("applyExtractorTransformerSql transformerRawQueries", JSON.stringify(transformerRawQueries, null, 2));
+  const foundError = transformerRawQueries.find((q) => q[1] instanceof Domain2ElementFailed);
+  log.info("sqlStringForQuery transformerRawQueries", JSON.stringify(transformerRawQueries, null, 2));
+  log.info("sqlStringForQuery found error in transformerRawQueries", JSON.stringify(foundError, null, 2));
+  if (foundError) {
+    return foundError[1] as Domain2ElementFailed;
+  }
 
   const combinerRawQueriesObject = Object.fromEntries(combinerRawQueries);
   const transformerRawQueriesObject = Object.fromEntries(transformerRawQueries);
@@ -433,7 +485,7 @@ export function sqlStringForQuery(
   }
   if (transformerRawQueries.length > 0) {
     queryParts.push(
-      transformerRawQueries
+      (transformerRawQueries as any as [string, sqlStringForTransformerElementValue][])
         .flatMap((q) =>
           typeof q[1] == "string"
             ? '"' + q[0] + '" AS (' + q[1] + " )"
@@ -482,6 +534,6 @@ export function sqlStringForQuery(
     // ].join(tokenSeparatorForWith) +
     `
       SELECT * FROM "${endResultName}"`;
-  log.info("applyExtractorTransformerSql innerFullObjectTemplate aggregateRawQuery", query);
+  log.info("sqlStringForQuery innerFullObjectTemplate aggregateRawQuery", query);
   return { query, transformerRawQueriesObject, endResultName, combinerRawQueriesObject };
 }

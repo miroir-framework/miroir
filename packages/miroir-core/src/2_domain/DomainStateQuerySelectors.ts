@@ -113,34 +113,30 @@ export const selectEntityInstanceUuidIndexFromDomainState: SyncBoxedExtractorRun
   // log.info("selectEntityInstanceUuidIndexFromDomainState domainState", domainState);
 
   if (!deploymentUuid || !applicationSection || !entityUuid) {
-    return {
-      // new object
-      elementType: "failure",
-      elementValue: {
-        queryFailure: "IncorrectParameters",
-        queryContext:
-          "deploymentUuid=" +
-          deploymentUuid +
-          ", applicationSection=" +
-          applicationSection +
-          ", entityUuid=" +
-          JSON.stringify(entityUuid),
-        queryParameters: JSON.stringify(selectorParams),
-      },
-    };
+    return new Domain2ElementFailed({
+      queryFailure: "IncorrectParameters",
+      queryContext: "deploymentUuid=" + deploymentUuid + ", applicationSection=" + applicationSection + ", entityUuid=" + entityUuid,
+      queryParameters: JSON.stringify(selectorParams),
+    });
     // resolving by fetchDataReference, fetchDataReferenceAttribute
   }
   if (!domainState) {
-    return { elementType: "failure", elementValue: { queryFailure: "DomainStateNotLoaded" } };
+    return new Domain2ElementFailed({
+      queryFailure: "DomainStateNotLoaded",
+    });
   }
   if (!domainState[deploymentUuid]) {
-    return { elementType: "failure", elementValue: { queryFailure: "DeploymentNotFound", deploymentUuid } };
+    return new Domain2ElementFailed({
+      queryFailure: "DeploymentNotFound",
+      deploymentUuid,
+    });
   }
   if (!domainState[deploymentUuid][applicationSection]) {
-    return {
-      elementType: "failure",
-      elementValue: { queryFailure: "ApplicationSectionNotFound", deploymentUuid, applicationSection },
-    };
+    return new Domain2ElementFailed({
+      queryFailure: "ApplicationSectionNotFound",
+      deploymentUuid,
+      applicationSection,
+    });
   }
   if (!domainState[deploymentUuid][applicationSection][entityUuid]) {
     log.error(
@@ -152,15 +148,12 @@ export const selectEntityInstanceUuidIndexFromDomainState: SyncBoxedExtractorRun
       "entityUuid",
       entityUuid
     );
-    return {
-      elementType: "failure",
-      elementValue: {
-        queryFailure: "EntityNotFound",
-        deploymentUuid,
-        applicationSection,
-        entityUuid: entityUuid,
-      },
-    };
+    return new Domain2ElementFailed({
+      queryFailure: "EntityNotFound",
+      deploymentUuid,
+      applicationSection,
+      entityUuid: entityUuid,
+    });
   }
 
   return domainState[deploymentUuid][applicationSection][entityUuid];
@@ -231,29 +224,32 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
         // ||
         // referenceObject.elementType != "instance"
       ) {
-        return {
-          elementType: "failure",
-          elementValue: {
-            queryFailure: "IncorrectParameters",
-            queryParameters: JSON.stringify(selectorParams.extractor.pageParams),
-            queryContext:
-              "DomainStateQuerySelectors combinerForObjectByRelation did not find AttributeOfObjectToCompareToReferenceUuid in " +
-              JSON.stringify(querySelectorParams),
-          },
-        };
+        return new Domain2ElementFailed({
+          queryFailure: "IncorrectParameters",
+          queryParameters: JSON.stringify(selectorParams.extractor.pageParams),
+          queryContext:
+            "DomainStateQuerySelectors combinerForObjectByRelation did not find AttributeOfObjectToCompareToReferenceUuid in " +
+            JSON.stringify(querySelectorParams),
+        });
       }
 
       if (!domainState) {
-        return { elementType: "failure", elementValue: { queryFailure: "DomainStateNotLoaded" } };
+        return new Domain2ElementFailed({
+          queryFailure: "DomainStateNotLoaded",
+        });
       }
       if (!domainState[deploymentUuid]) {
-        return { elementType: "failure", elementValue: { queryFailure: "DeploymentNotFound", deploymentUuid } };
+        return new Domain2ElementFailed({
+          queryFailure: "DeploymentNotFound",
+          deploymentUuid,
+        });
       }
       if (!domainState[deploymentUuid][applicationSection]) {
-        return {
-          elementType: "failure",
-          elementValue: { queryFailure: "ApplicationSectionNotFound", deploymentUuid, applicationSection },
-        };
+        return new Domain2ElementFailed({
+          queryFailure: "ApplicationSectionNotFound",
+          deploymentUuid,
+          applicationSection,
+        });
       }
       if (!domainState[deploymentUuid][applicationSection][entityUuidReference]) {
         log.error(
@@ -265,15 +261,12 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
           "entityUuid",
           entityUuidReference
         );
-        return {
-          elementType: "failure",
-          elementValue: {
-            queryFailure: "EntityNotFound",
-            deploymentUuid,
-            applicationSection,
-            entityUuid: entityUuidReference,
-          },
-        };
+        return new Domain2ElementFailed({
+          queryFailure: "EntityNotFound",
+          deploymentUuid,
+          applicationSection,
+          entityUuid: entityUuidReference,
+        });
       }
 
       // log.info(
@@ -303,16 +296,22 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
 
       // log.info("selectEntityInstanceFromObjectQueryAndDomainState resolved instanceUuid =", instanceUuid);
       if (!domainState) {
-        return { elementType: "failure", elementValue: { queryFailure: "DomainStateNotLoaded" } };
+        return new Domain2ElementFailed({
+          queryFailure: "DomainStateNotLoaded",
+        });
       }
       if (!domainState[deploymentUuid]) {
-        return { elementType: "failure", elementValue: { queryFailure: "DeploymentNotFound", deploymentUuid } };
+        return new Domain2ElementFailed({
+          queryFailure: "DeploymentNotFound",
+          deploymentUuid,
+        });
       }
       if (!domainState[deploymentUuid][applicationSection]) {
-        return {
-          elementType: "failure",
-          elementValue: { queryFailure: "ApplicationSectionNotFound", deploymentUuid, applicationSection },
-        };
+        return new Domain2ElementFailed({
+          queryFailure: "ApplicationSectionNotFound",
+          deploymentUuid,
+          applicationSection,
+        });
       }
       if (!domainState[deploymentUuid][applicationSection][entityUuidReference]) {
         log.error(
@@ -324,31 +323,25 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
           "entityUuid",
           entityUuidReference
         );
-        return {
-          elementType: "failure",
-          elementValue: {
-            queryFailure: "EntityNotFound",
-            deploymentUuid,
-            applicationSection,
-            entityUuid: entityUuidReference,
-          },
-        };
+        return new Domain2ElementFailed({
+          queryFailure: "EntityNotFound",
+          deploymentUuid,
+          applicationSection,
+          entityUuid: entityUuidReference,
+        });
       }
       if (
         !domainState[deploymentUuid][applicationSection][entityUuidReference][
           instanceUuidDomainElement
         ]
       ) {
-        return {
-          elementType: "failure",
-          elementValue: {
-            queryFailure: "InstanceNotFound",
-            deploymentUuid,
-            applicationSection,
-            entityUuid: entityUuidReference,
-            instanceUuid: instanceUuidDomainElement,
-          },
-        };
+        return new Domain2ElementFailed({
+          queryFailure: "InstanceNotFound",
+          deploymentUuid,
+          applicationSection,
+          entityUuid: entityUuidReference,
+          instanceUuid: instanceUuidDomainElement,
+        });
       }
 
       // log.info("selectEntityInstanceFromObjectQueryAndDomainState extractorForObjectByDirectReference, ############# reference",

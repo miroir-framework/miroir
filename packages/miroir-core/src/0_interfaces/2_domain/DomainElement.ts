@@ -2,19 +2,59 @@ import { z } from "zod";
 
 import {
   ActionError,
+  ApplicationSection,
   EntityInstance,
   EntityInstanceCollection,
   QueryFailed,
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 
 export class Domain2ElementFailed {
-  public get elementType () {
+  public get elementType() {
     return "failure";
-  };
+  }
 
-  constructor(
-    public elementValue: QueryFailed) {}
-    // elementValue: QueryFailed;
+  public queryFailure:
+    | "FailedTransformer_objectEntries"
+    | "FailedExtractor"
+    | "QueryNotExecutable"
+    | "DomainStateNotLoaded"
+    | "IncorrectParameters"
+    | "DeploymentNotFound"
+    | "ApplicationSectionNotFound"
+    | "EntityNotFound"
+    | "InstanceNotFound"
+    | "ReferenceNotFound"
+    | "ReferenceFoundButUndefined"
+    | "ReferenceFoundButAttributeUndefinedOnFoundObject";
+  public query?: string | undefined;
+  public failureOrigin?: string[] | undefined;
+  public failureMessage?: string | undefined;
+  public queryReference?: string | undefined;
+  public queryParameters?: string | undefined;
+  public queryContext?: string | undefined;
+  public deploymentUuid?: string | undefined;
+  public errorStack?: string[] | undefined;
+  public innerError?: QueryFailed | Domain2ElementFailed | Action2Error | undefined;
+  public applicationSection?: ApplicationSection | undefined;
+  public entityUuid?: string | undefined;
+  public instanceUuid?: string | undefined;
+
+  constructor(elementValue: QueryFailed) {
+    this.queryFailure = elementValue.queryFailure;
+    this.query = elementValue.query;
+    this.failureOrigin = elementValue.failureOrigin;
+    this.failureMessage = elementValue.failureMessage;
+    this.queryReference = elementValue.queryReference;
+    this.queryParameters = elementValue.queryParameters;
+    this.queryContext = elementValue.queryContext;
+    this.deploymentUuid = elementValue.deploymentUuid;
+    this.errorStack = elementValue.errorStack;
+    this.innerError = elementValue.innerError;
+    this.applicationSection = elementValue.applicationSection;
+    this.entityUuid = elementValue.entityUuid;
+    this.instanceUuid = elementValue.instanceUuid;
+  }
+  // elementValue: QueryFailed;
 };
 
 export type errorType =
@@ -39,7 +79,7 @@ export class Action2Error {
     public errorType: errorType,
     public errorMessage?: string | undefined,
     public errorStack?: (string | undefined)[] | undefined,
-    public innerError?: ActionError | undefined
+    public innerError?: ActionError | Domain2ElementFailed | undefined
   ){};
 }
 
@@ -78,10 +118,11 @@ export type Domain2QueryReturnType<T> =
   // export type Domain2Element = DomainElementSuccess | Domain2ElementFailed;
   export type Domain2Element = Domain2QueryReturnType<any>;
 
-  export const domain2ElementObjectZodSchema = z.object({
-    elementType: z.string(),
-    elementValue: z.record(z.any()),
-  })
+  export const domain2ElementObjectZodSchema = z.record(z.any());
+  // export const domain2ElementObjectZodSchema = z.object({
+  //   elementType: z.string(),
+  //   elementValue: z.record(z.any()),
+  // })
   
 
   export type Action2EntityInstanceSuccess = {

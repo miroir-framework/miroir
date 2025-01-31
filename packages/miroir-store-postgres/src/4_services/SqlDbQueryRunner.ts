@@ -132,16 +132,21 @@ export class SqlDbQueryRunner {
   ): Promise<Domain2QueryReturnType<Record<string, any>>> => {
     // log.info("########## asyncRunQuery begin, query", selectorParams);
   
-    const { query, transformerRawQueriesObject, endResultName, combinerRawQueriesObject } = sqlStringForQuery(
+    const sqlQueryParams = sqlStringForQuery(
       selectorParams,
       this.schema
     );
+    if (sqlQueryParams instanceof Domain2ElementFailed) {
+      return Promise.resolve(sqlQueryParams);
+    }
+    
+    const { query, transformerRawQueriesObject, endResultName, combinerRawQueriesObject } = sqlQueryParams
 
     const rawResult = await this.persistenceStoreController.executeRawQuery(query);
-    log.info("applyExtractorTransformerSql innerFullObjectTemplate #####RAWRESULT", JSON.stringify(rawResult));
+    log.info("asyncExtractWithQuery innerFullObjectTemplate #####RAWRESULT", JSON.stringify(rawResult));
 
     if (rawResult instanceof Action2Error || rawResult.returnedDomainElement instanceof Domain2ElementFailed) {
-      log.error("applyExtractorTransformerSql rawResult", JSON.stringify(rawResult));
+      log.error("asyncExtractWithQuery rawResult", JSON.stringify(rawResult));
       return Promise.resolve({ elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } });
     }
 
@@ -158,7 +163,7 @@ export class SqlDbQueryRunner {
         ? combinerRawQueriesObject[endResultName].encloseEndResultInArray
         : undefined;
     log.info(
-      "applyExtractorTransformerSql runtimeTransformers",
+      "asyncExtractWithQuery runtimeTransformers",
       selectorParams.extractor.runtimeTransformers &&
         Array.isArray(transformerRawQueriesObject[endResultName].resultAccessPath),
         "endResultName", endResultName,
@@ -168,13 +173,13 @@ export class SqlDbQueryRunner {
     const sqlResult =
       endResultPath !== undefined
         ? encloseEndResultInArray
-          ? [resolvePathOnObject(rawResult.returnedDomainElement, endResultPath)] // TODO: HACK! HACK!
+          ? [resolvePathOnObject(rawResult.returnedDomainElement, endResultPath??[])] // TODO: HACK! HACK!
           : resolvePathOnObject(rawResult.returnedDomainElement, endResultPath)
         : rawResult.returnedDomainElement;
-    log.info("applyExtractorTransformerSql sqlResult", JSON.stringify(sqlResult));
+    log.info("asyncExtractWithQuery sqlResult", JSON.stringify(sqlResult));
     // const result: Domain2QueryReturnType<DomainElementSuccess> = { elementType: "object", elementValue: {[endResultName]:sqlResult} }
     const result: Domain2QueryReturnType<any> = {[endResultName]:sqlResult}
-    log.info("applyExtractorTransformerSql returning result", JSON.stringify(result));
+    log.info("asyncExtractWithQuery returning result", JSON.stringify(result));
     return Promise.resolve(result);
   };
   
@@ -223,13 +228,17 @@ export class SqlDbQueryRunner {
         break;
       }
       default: {
-        return Promise.resolve({
-          elementType: "failure",
-          elementValue: {
-            queryFailure: "IncorrectParameters",
-            queryParameters: JSON.stringify(selectorParams),
-          },
-        });
+        return Promise.resolve(new Domain2ElementFailed({
+          queryFailure: "IncorrectParameters",
+          queryParameters: JSON.stringify(selectorParams),
+        }));
+        // return Promise.resolve({
+        //   elementType: "failure",
+        //   elementValue: {
+        //     queryFailure: "IncorrectParameters",
+        //     queryParameters: JSON.stringify(selectorParams),
+        //   },
+        // });
         break;
       }
     }
@@ -280,13 +289,17 @@ export class SqlDbQueryRunner {
         break;
       }
       default: {
-        return Promise.resolve({
-          elementType: "failure",
-          elementValue: {
-            queryFailure: "IncorrectParameters",
-            queryParameters: JSON.stringify(selectorParams),
-          },
-        });
+        return Promise.resolve(new Domain2ElementFailed({
+          queryFailure: "IncorrectParameters",
+          queryParameters: JSON.stringify(selectorParams),
+        }));
+        // return Promise.resolve({
+        //   elementType: "failure",
+        //   elementValue: {
+        //     queryFailure: "IncorrectParameters",
+        //     queryParameters: JSON.stringify(selectorParams),
+        //   },
+        // });
         break;
       }
     }
@@ -301,9 +314,12 @@ export class SqlDbQueryRunner {
       extractorRunnerMap: this.inMemoryImplementationExtractorRunnerMap,
     });
     if (queryResult instanceof Domain2ElementFailed) {
+      log.info("handleBoxedExtractorAction failed to run extractor, failure:", JSON.stringify(queryResult));
       return Promise.resolve(new Action2Error(
         "FailedToGetInstances",
-        JSON.stringify(queryResult)
+        JSON.stringify(queryResult),
+        undefined,
+        queryResult as any
       ));
     } else {
       const result: Action2ReturnType = { status: "ok", returnedDomainElement: queryResult };
@@ -339,10 +355,7 @@ export class SqlDbQueryRunner {
       });
     }
     if (queryResult instanceof Domain2ElementFailed) {
-      return Promise.resolve(new Action2Error(
-        "FailedToGetInstances",
-        JSON.stringify(queryResult)
-      ));
+      return Promise.resolve(new Action2Error("FailedToGetInstances", JSON.stringify(queryResult), undefined, queryResult));
     } else {
       const result: Action2ReturnType = { status: "ok", returnedDomainElement: queryResult };
       log.info(
@@ -395,18 +408,27 @@ export class SqlDbQueryRunner {
           ||
           referenceObject instanceof Domain2ElementFailed
         ) {
-          return {
-            elementType: "failure",
-            elementValue: {
-              queryFailure: "IncorrectParameters",
-              failureMessage:
-                "sqlDbExtractorRunner combinerForObjectByRelation objectReference not found:" +
-                JSON.stringify(querySelectorParams.objectReference),
-              query: JSON.stringify(querySelectorParams),
-              queryParameters: JSON.stringify(selectorParams.extractor.pageParams),
-              queryContext: JSON.stringify(selectorParams.extractor.contextResults),
-            },
-          };
+          return new Domain2ElementFailed({
+            queryFailure: "IncorrectParameters",
+            failureMessage:
+              "sqlDbExtractorRunner combinerForObjectByRelation objectReference not found:" +
+              JSON.stringify(querySelectorParams.objectReference),
+            query: JSON.stringify(querySelectorParams),
+            queryParameters: JSON.stringify(selectorParams.extractor.pageParams),
+            queryContext: JSON.stringify(selectorParams.extractor.contextResults),
+          });
+          // return {
+          //   elementType: "failure",
+          //   elementValue: {
+          //     queryFailure: "IncorrectParameters",
+          //     failureMessage:
+          //       "sqlDbExtractorRunner combinerForObjectByRelation objectReference not found:" +
+          //       JSON.stringify(querySelectorParams.objectReference),
+          //     query: JSON.stringify(querySelectorParams),
+          //     queryParameters: JSON.stringify(selectorParams.extractor.pageParams),
+          //     queryContext: JSON.stringify(selectorParams.extractor.contextResults),
+          //   },
+          // };
         }
 
         const result = await this.persistenceStoreController.getInstance(
@@ -415,15 +437,21 @@ export class SqlDbQueryRunner {
         );
 
         if (result instanceof Action2Error || result.returnedDomainElement instanceof Domain2ElementFailed) {
-          return {
-            elementType: "failure",
-            elementValue: {
-              queryFailure: "InstanceNotFound",
-              deploymentUuid,
-              applicationSection,
-              entityUuid: entityUuidReference,
-            },
-          };
+          return new Domain2ElementFailed({
+            queryFailure: "InstanceNotFound",
+            deploymentUuid,
+            applicationSection,
+            entityUuid: entityUuidReference,
+          });
+          // return {
+          //   elementType: "failure",
+          //   elementValue: {
+          //     queryFailure: "InstanceNotFound",
+          //     deploymentUuid,
+          //     applicationSection,
+          //     entityUuid: entityUuidReference,
+          //   },
+          // };
         }
         // log.info(
         //   "extractEntityInstance combinerForObjectByRelation, ############# reference",
@@ -456,16 +484,23 @@ export class SqlDbQueryRunner {
         );
 
         if (result instanceof Action2Error || result.returnedDomainElement instanceof Domain2ElementFailed) {
-          return {
-            elementType: "failure",
-            elementValue: {
-              queryFailure: "InstanceNotFound",
-              deploymentUuid,
-              applicationSection,
-              entityUuid: entityUuidReference,
-              instanceUuid: instanceDomainElement,
-            },
-          };
+          return new Domain2ElementFailed({
+            queryFailure: "InstanceNotFound",
+            deploymentUuid,
+            applicationSection,
+            entityUuid: entityUuidReference,
+            instanceUuid: instanceDomainElement,
+          });
+          // return {
+          //   elementType: "failure",
+          //   elementValue: {
+          //     queryFailure: "InstanceNotFound",
+          //     deploymentUuid,
+          //     applicationSection,
+          //     entityUuid: entityUuidReference,
+          //     instanceUuid: instanceDomainElement,
+          //   },
+          // };
         }
         log.info(
           "extractEntityInstance extractorForObjectByDirectReference, ############# reference",
@@ -533,27 +568,39 @@ export class SqlDbQueryRunner {
     if (entityInstanceCollection instanceof Action2Error) {
       log.error("sqlDbQueryRunner extractEntityInstanceList failed with EntityNotFound for extractor", JSON.stringify(extractorRunnerParams.extractor, null, 2));
 
-      return {
-        elementType: "failure",
-        elementValue: {
-          queryFailure: "EntityNotFound", // TODO: find corresponding queryFailure from data.status
-          deploymentUuid,
-          applicationSection,
-          entityUuid: entityUuid,
-        },
-      };
+      return new Domain2ElementFailed({
+        queryFailure: "EntityNotFound",
+        deploymentUuid,
+        applicationSection,
+        entityUuid: entityUuid,
+      });
+      // return {
+      //   elementType: "failure",
+      //   elementValue: {
+      //     queryFailure: "EntityNotFound", // TODO: find corresponding queryFailure from data.status
+      //     deploymentUuid,
+      //     applicationSection,
+      //     entityUuid: entityUuid,
+      //   },
+      // };
     }
     if (entityInstanceCollection.returnedDomainElement instanceof Domain2ElementFailed) {
       log.error("sqlDbQueryRunner extractEntityInstanceList failed for extractor", JSON.stringify(extractorRunnerParams.extractor, null, 2));
-      return {
-        elementType: "failure",
-        elementValue: {
-          queryFailure: "EntityNotFound", // TODO: find corresponding queryFailure from data.status
-          deploymentUuid,
-          applicationSection,
-          entityUuid: entityUuid,
-        },
-      };
+      return new Domain2ElementFailed({
+        queryFailure: "EntityNotFound",
+        deploymentUuid,
+        applicationSection,
+        entityUuid: entityUuid,
+      });
+      // return {
+      //   elementType: "failure",
+      //   elementValue: {
+      //     queryFailure: "EntityNotFound", // TODO: find corresponding queryFailure from data.status
+      //     deploymentUuid,
+      //     applicationSection,
+      //     entityUuid: entityUuid,
+      //   },
+      // };
     }
     return entityInstanceCollection.returnedDomainElement.instances;
   };
@@ -592,14 +639,19 @@ export class SqlDbQueryRunner {
     // log.info("extractEntityInstanceUuidIndexWithFilter domainState", domainState);
 
     if (!deploymentUuid || !applicationSection || !entityUuid) {
-      return {
+      return new Domain2ElementFailed({
         // new object
-        elementType: "failure",
-        elementValue: {
-          queryFailure: "IncorrectParameters",
-          queryParameters: JSON.stringify(extractorRunnerParams),
-        },
-      };
+        queryFailure: "IncorrectParameters",
+        queryParameters: JSON.stringify(extractorRunnerParams),
+      });
+      // return {
+      //   // new object
+      //   elementType: "failure",
+      //   elementValue: {
+      //     queryFailure: "IncorrectParameters",
+      //     queryParameters: JSON.stringify(extractorRunnerParams),
+      //   },
+      // };
       // resolving by fetchDataReference, fetchDataReferenceAttribute
     }
 
@@ -629,15 +681,21 @@ export class SqlDbQueryRunner {
         "sqlDbQueryRunner extractEntityInstanceListWithFilter failed with EntityNotFound for extractor",
         JSON.stringify(extractorRunnerParams.extractor, null, 2)
       );
-      return {
-        elementType: "failure",
-        elementValue: {
-          queryFailure: "EntityNotFound", // TODO: find corresponding queryFailure from data.status
-          deploymentUuid,
-          applicationSection,
-          entityUuid: entityUuid,
-        },
-      };
+      return new Domain2ElementFailed({
+        queryFailure: "EntityNotFound",
+        deploymentUuid,
+        applicationSection,
+        entityUuid: entityUuid,
+      });
+      // return {
+      //   elementType: "failure",
+      //   elementValue: {
+      //     queryFailure: "EntityNotFound", // TODO: find corresponding queryFailure from data.status
+      //     deploymentUuid,
+      //     applicationSection,
+      //     entityUuid: entityUuid,
+      //   },
+      // };
     }
     return entityInstanceCollection.returnedDomainElement.instances;
   };

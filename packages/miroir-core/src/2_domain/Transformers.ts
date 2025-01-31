@@ -38,6 +38,8 @@ import { packageName } from "../constants.js";
 import { resolvePathOnObject } from "../tools.js";
 import { cleanLevel } from "./constants.js";
 import { b } from "vitest/dist/chunks/suite.B2jumIFP.js";
+import { Action2Error } from "../../dist/index.js";
+import { D } from "vitest/dist/chunks/reporters.D7Jzd9GS.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -121,15 +123,12 @@ function transformerForBuild_list_listMapperToList_apply(
       }
     } else {
       log.error("transformerForBuild_list_listMapperToList_apply extractorTransformer can not work on resolvedReference", resolvedReference);
-      return {
-        elementType: "failure",
-        elementValue: {
-          queryFailure: "QueryNotExecutable",
-          failureOrigin: ["transformerForBuild_list_listMapperToList_apply"],
-          failureMessage:
-            "resolved reference is not instanceUuidIndex or object " + JSON.stringify(resolvedReference, null, 2),
-        },
-      }
+      return new Domain2ElementFailed({
+        queryFailure: "QueryNotExecutable",
+        failureOrigin: ["transformerForBuild_list_listMapperToList_apply"],
+        failureMessage:
+          "resolved reference is not instanceUuidIndex or object " + JSON.stringify(resolvedReference, null, 2),
+      });
     }
   }
   const sortByAttribute = transformer.orderBy
@@ -249,7 +248,7 @@ function transformer_object_fullTemplate(
   contextResults?: Record<string, any>
 ): Domain2QueryReturnType<DomainElementString | DomainElementInstanceArray> {
   // log.info(
-  //   "transformer_apply innerFullObjectTemplate objectName=",
+  //   "transformer_apply transformer_object_fullTemplate objectName=",
   //   objectName,
   //   "transformerForBuild=",
   //   // transformerForBuild,
@@ -259,7 +258,6 @@ function transformer_object_fullTemplate(
   // );
   const attributeEntries = transformerForBuild.definition.map(
     (innerEntry: {
-      // attributeKey: Transformer_InnerReference | TransformerForRuntime_InnerReference;
       attributeKey: TransformerForBuild | TransformerForRuntime;
       attributeValue: TransformerForBuild | TransformerForRuntime;
     }): [
@@ -267,7 +265,6 @@ function transformer_object_fullTemplate(
       { renderedRightValue: Domain2QueryReturnType<DomainElementSuccess>; finalRightValue: Domain2QueryReturnType<DomainElementSuccess> }
     ] => {
       const rawLeftValue: Domain2QueryReturnType<DomainElementSuccess> = innerEntry.attributeKey.transformerType
-        // ? defaultTransformers.transformer_InnerReference_resolve(
         ? defaultTransformers.transformer_extended_apply(
             step,
             objectName, // is this correct? or should it be undefined?
@@ -280,14 +277,14 @@ function transformer_object_fullTemplate(
       // const leftValue: { rawLeftValue: Domain2QueryReturnType<DomainElementSuccess>; finalLeftValue: Domain2QueryReturnType<DomainElementSuccess> } = {
         rawLeftValue,
         finalLeftValue:
-          rawLeftValue.elementType != "failure" &&
+          !(rawLeftValue instanceof Action2Error) &&
           typeof innerEntry.attributeKey == "object" &&
           (innerEntry.attributeKey as any).applyFunction
             ? (innerEntry.attributeKey as any).applyFunction(rawLeftValue)
             : rawLeftValue,
       };
       // log.info(
-      //   "transformer_apply innerFullObjectTemplate innerEntry.attributeKey",
+      //   "transformer_apply transformer_object_fullTemplate innerEntry.attributeKey",
       //   innerEntry.attributeKey,
       //   "leftValue",
       //   leftValue
@@ -309,12 +306,11 @@ function transformer_object_fullTemplate(
             : renderedRightValue,
       };
       log.info(
-        "transformer_apply innerFullObjectTemplate innerEntry.attributeKey",
+        "transformer_apply transformer_object_fullTemplate innerEntry.attributeKey",
         innerEntry.attributeValue,
         "rightValue",
         JSON.stringify(rightValue, null, 2),
         "contextResults",
-        // Object.keys(contextResults??{}),
         JSON.stringify(contextResults, null, 2)
       );
       return [leftValue, rightValue];
@@ -329,21 +325,18 @@ function transformer_object_fullTemplate(
       attributeEntries.map((e) => [e[0].finalLeftValue, e[1].finalRightValue])
     );
     // log.info("transformer_apply innerFullObjectTemplate for", transformerForBuild, "fullObjectResult", fullObjectResult);
-    return transformerForBuild.transformerType == "innerFullObjectTemplate" ? fullObjectResult : [fullObjectResult];
+    // return transformerForBuild.transformerType == "innerFullObjectTemplate" ? fullObjectResult : [fullObjectResult];
+    return fullObjectResult;
   } else {
-    return {
-      elementType: "failure",
-      elementValue: {
-        queryFailure: "ReferenceNotFound",
-        failureOrigin: ["transformer_object_fullTemplate"],
-
-        queryContext:
-          "innerFullObjectTemplate error in " +
-          objectName +
-          " in " +
-          JSON.stringify(attributeEntries[failureIndex], null, 2),
-      },
-    };
+    return new Domain2ElementFailed({
+      queryFailure: "ReferenceNotFound",
+      failureOrigin: ["transformer_object_fullTemplate"],
+      queryContext:
+        "innerFullObjectTemplate error in " +
+        objectName +
+        " in " +
+        JSON.stringify(attributeEntries[failureIndex], null, 2),
+    });
   }
 }
 
@@ -388,14 +381,13 @@ function transformer_objectAlter(
  * be a class somehow.
  */
 // ################################################################################################
-function resolveReference(
+export function transformer_resolveReference(
   step: Step,
   transformerInnerReference: Transformer_contextOrParameterReference,
   paramOrContext: "param" | "context",
-  // bank: Record<string, any>,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
-) {
+): Domain2QueryReturnType<any> {
   // ReferenceNotFound
   const bank: Record<string, any> = paramOrContext == "param" ? queryParams??{} : contextResults??{};
   if (!bank) {
@@ -405,25 +397,20 @@ function resolveReference(
       "transformerInnerReference=",
       transformerInnerReference
     );
-    return {
-      elementType: "failure",
-      elementValue: {
-        queryFailure: "ReferenceNotFound",
-        failureOrigin: ["transformer_InnerReference_resolve"],
-        queryReference: transformerInnerReference.referenceName,
-        failureMessage: "no contextResults",
-        queryContext: "no contextResults",
-      },
-    };
+    return new Domain2ElementFailed({
+      queryFailure: "ReferenceNotFound",
+      failureOrigin: ["transformer_InnerReference_resolve"],
+      queryReference: transformerInnerReference.referenceName,
+      failureMessage: "no contextResults",
+      queryContext: "no contextResults",
+    });
   }
     
   // ReferenceNotFound
   if (transformerInnerReference.referenceName) {
     // ReferenceNotFound
     if (
-      // transformerInnerReference.referenceName &&
       !Object.hasOwn(bank, transformerInnerReference.referenceName)
-      // !localContextResults[transformerInnerReference.referenceName]
     ) {
       log.error(
         "transformer_InnerReference_resolve failed, reference not found for step",
@@ -435,32 +422,25 @@ function resolveReference(
         "in",
         bank
       );
-      return {
-        elementType: "failure",
-        elementValue: {
-          queryFailure: "ReferenceNotFound",
-          failureOrigin: ["transformer_InnerReference_resolve"],
-          queryReference: transformerInnerReference.referenceName,
-          failureMessage: "no referenceName " + transformerInnerReference.referenceName,
-          queryContext: JSON.stringify(Object.keys(bank)),
-        },
-      };
+      return new Domain2ElementFailed({
+        queryFailure: "ReferenceNotFound",
+        failureOrigin: ["transformer_InnerReference_resolve"],
+        queryReference: transformerInnerReference.referenceName,
+        failureMessage: "no referenceName " + transformerInnerReference.referenceName,
+        queryContext: JSON.stringify(Object.keys(bank)),
+      });
     }
 
     if (
-    // transformerInnerReference.referenceName &&
       Object.hasOwn(bank, transformerInnerReference.referenceName) &&
       !bank[transformerInnerReference.referenceName]
     ) {
-      return {
-        elementType: "failure",
-        elementValue: {
-          queryFailure: "ReferenceFoundButUndefined",
-          queryContext: JSON.stringify(Object.keys(bank)),
-          failureMessage:
-            "found but undefined: referenceName " + transformerInnerReference.referenceName,
-        },
-      };
+      return new Domain2ElementFailed({
+        queryFailure: "ReferenceFoundButUndefined",
+        queryContext: JSON.stringify(Object.keys(bank)),
+        failureMessage:
+          "found but undefined: referenceName " + transformerInnerReference.referenceName,
+      });
     }
     return bank[transformerInnerReference.referenceName];
   }
@@ -480,16 +460,13 @@ function resolveReference(
           "in",
           bank
         );
-        return {
-          elementType: "failure",
-          elementValue: {
-            queryFailure: "ReferenceFoundButUndefined",
-            failureOrigin: ["transformer_InnerReference_resolve"],
-            queryReference: transformerInnerReference.referencePath,
-            failureMessage: "no referencePath " + transformerInnerReference.referencePath,
-            queryContext: JSON.stringify(Object.keys(bank)),
-          },
-        };
+        return new Domain2ElementFailed({
+          queryFailure: "ReferenceFoundButUndefined",
+          failureOrigin: ["transformer_InnerReference_resolve"],
+          queryReference: JSON.stringify(transformerInnerReference.referencePath),
+          failureMessage: "no referencePath " + transformerInnerReference.referencePath,
+          queryContext: JSON.stringify(Object.keys(bank)),
+        });
       }
       return pathResult;
     } catch (error) {
@@ -503,16 +480,13 @@ function resolveReference(
         "in",
         bank
       );
-      return {
-        elementType: "failure",
-        elementValue: {
-          queryFailure: "ReferenceNotFound",
-          failureOrigin: ["transformer_InnerReference_resolve"],
-          queryReference: transformerInnerReference.referencePath,
-          failureMessage: "no referencePath " + transformerInnerReference.referencePath,
-          queryContext: JSON.stringify(Object.keys(bank)),
-        },
-      };
+      return new Domain2ElementFailed({
+        queryFailure: "ReferenceNotFound",
+        failureOrigin: ["transformer_InnerReference_resolve"],
+        queryReference: JSON.stringify(transformerInnerReference.referencePath),
+        failureMessage: "no referencePath " + transformerInnerReference.referencePath,
+        queryContext: JSON.stringify(Object.keys(bank)),
+      });
     }
   }
 }
@@ -576,11 +550,11 @@ export function transformer_InnerReference_resolve  (
       break;
     }
     case "contextReference": {
-      return resolveReference(step, transformerInnerReference, "context", localQueryParams, localContextResults);
+      return transformer_resolveReference(step, transformerInnerReference, "context", localQueryParams, localContextResults);
       break;
     }
     case "parameterReference": {
-      return resolveReference(step, transformerInnerReference, "param", localQueryParams, localContextResults);
+      return transformer_resolveReference(step, transformerInnerReference, "param", localQueryParams, localContextResults);
       break;
     }
     case "objectDynamicAccess": {
@@ -639,15 +613,12 @@ export function transformer_dynamicObjectAccess_apply(
       switch (typeof currentPathElement) {
         case "string": {
           if (!acc) {
-            return {
-              elementType: "failure",
-              elementValue: {
-                queryFailure: "ReferenceNotFound",
-                failureOrigin: ["transformer_apply"],
-                query: currentPathElement,
-                queryContext: "error in transformer_dynamicObjectAccess_apply, could not find key: " + JSON.stringify(currentPathElement, null, 2),
-              },
-            };
+            return new Domain2ElementFailed({
+              queryFailure: "ReferenceNotFound",
+              failureOrigin: ["transformer_apply"],
+              query: currentPathElement,
+              queryContext: "error in transformer_dynamicObjectAccess_apply, could not find key: " + JSON.stringify(currentPathElement, null, 2),
+            });
           }
           const innerResult = acc[currentPathElement]
           log.info(
@@ -678,16 +649,14 @@ export function transformer_dynamicObjectAccess_apply(
             queryParams,
             contextResults
           );
-          if (key.elementType == "failure") {
-            return {
-              elementType: "failure",
-              elementValue: {
-                queryFailure: "ReferenceNotFound",
-                failureOrigin: ["transformer_apply"],
-                query: currentPathElement,
-                queryContext: "error in transformer_dynamicObjectAccess_apply, could not find key: " + JSON.stringify(key, null, 2),
-              },
-            };
+          if (key instanceof Domain2ElementFailed) {
+            return new Domain2ElementFailed({
+              queryFailure: "ReferenceNotFound",
+              failureOrigin: ["transformer_apply"],
+              query: currentPathElement,
+              queryContext:
+                "error in transformer_dynamicObjectAccess_apply, could not find key: " + JSON.stringify(key, null, 2),
+            });
           }
           const innerResult = acc?acc[key]:key;
           log.info(
@@ -770,12 +739,16 @@ export function innerTransformer_apply(
           : innerTransformer_apply(step, label, transformer.referencedExtractor, queryParams, contextResults);
           ;
 
-      if (resolveReference instanceof Domain2ElementFailed) {
+      if (transformer_resolveReference instanceof Domain2ElementFailed) {
         log.error(
           "innerTransformer_apply extractorTransformer count can not apply to resolvedReference",
           resolvedReference
         );
-        return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } }; // TODO: improve error message / queryFailure
+        return new Domain2ElementFailed({
+          queryFailure: "QueryNotExecutable",
+          failureOrigin: ["transformer_apply"],
+          queryContext: "count can not apply to resolvedReference",
+        });
       }
 
       if ( typeof resolvedReference != "object" || !Array.isArray(resolvedReference)) {
@@ -784,7 +757,11 @@ export function innerTransformer_apply(
           "innerTransformer_apply extractorTransformer count can not apply to resolvedReference",
           resolvedReference
         );
-        return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } }; // TODO: improve error message / queryFailure
+        return new Domain2ElementFailed({
+          queryFailure: "QueryNotExecutable",
+          failureOrigin: ["transformer_apply"],
+          queryContext: "count can not apply to resolvedReference",
+        });
       }
 
       log.info("innerTransformer_apply extractorTransformer count resolvedReference", resolvedReference.length);
@@ -856,23 +833,24 @@ export function innerTransformer_apply(
       //   resolvedReference
       // );
 
-      if (resolveReference instanceof Domain2ElementFailed) {
+      if (transformer_resolveReference instanceof Domain2ElementFailed) {
         log.error(
           "innerTransformer_apply extractorTransformer objectEntries can not apply to resolvedReference",
           resolvedReference
         );
-        return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } }; // TODO: improve error message / queryFailure
+        return new Domain2ElementFailed({
+          queryFailure: "QueryNotExecutable",
+          failureOrigin: ["transformer_apply"],
+          queryContext: "objectEntries can not apply to resolvedReference",
+        });
       }
 
       if (!(typeof resolvedReference == "object") || Array.isArray(resolvedReference)) {
-        const failure: DomainElementFailed = {
-          elementType: "failure",
-          elementValue: {
-            queryFailure: "FailedTransformer_objectEntries",
-            failureMessage: "objectEntries transformer called on something that is not an object.",
-            queryParameters: JSON.stringify(resolvedReference, null, 2),
-          }
-        }
+        const failure: Domain2ElementFailed = new Domain2ElementFailed({
+          queryFailure: "FailedTransformer_objectEntries",
+          failureMessage: "objectEntries transformer called on something that is not an object.",
+          queryParameters: JSON.stringify(resolvedReference, null, 2),
+        });
         log.error(
           "innerTransformer_apply extractorTransformer objectEntries referencedExtractor resolvedReference",
           resolvedReference
@@ -893,12 +871,16 @@ export function innerTransformer_apply(
         contextResults
       );
 
-      if (resolveReference instanceof Domain2ElementFailed) {
+      if (transformer_resolveReference instanceof Domain2ElementFailed) {
         log.error(
           "innerTransformer_apply extractorTransformer objectValues can not apply to resolvedReference",
           resolvedReference
         );
-        return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } }; // TODO: improve error message / queryFailure
+        return new Domain2ElementFailed({
+          queryFailure: "QueryNotExecutable",
+          failureOrigin: ["transformer_apply"],
+          queryContext: "objectValues can not apply to resolvedReference",
+        });
       }
 
       if (typeof resolvedReference != "object" || Array.isArray(resolvedReference)) {
@@ -906,7 +888,11 @@ export function innerTransformer_apply(
           "innerTransformer_apply extractorTransformer count referencedExtractor resolvedReference",
           resolvedReference
         );
-        return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } }; // TODO: improve error message / queryFailure
+        return new Domain2ElementFailed({
+          queryFailure: "QueryNotExecutable",
+          failureOrigin: ["transformer_apply"],
+          queryContext: "objectValues can not apply to resolvedReference",
+        });
       }
       log.info(
         "innerTransformer_apply extractorTransformer objectValues resolvedReference",
@@ -934,12 +920,16 @@ export function innerTransformer_apply(
         contextResults
       );
 
-      if (resolveReference instanceof Domain2ElementFailed) {
+      if (transformer_resolveReference instanceof Domain2ElementFailed) {
         log.error(
           "innerTransformer_apply extractorTransformer listPickElement can not apply to resolvedReference",
           resolvedReference
         );
-        return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } }; // TODO: improve error message / queryFailure
+        return new Domain2ElementFailed({
+          queryFailure: "QueryNotExecutable",
+          failureOrigin: ["transformer_apply"],
+          queryContext: "listPickElement can not apply to resolvedReference",
+        });
       }
 
       // if (!["instanceUuidIndex", "object"].includes(resolvedReference.elementType)) {
@@ -948,7 +938,11 @@ export function innerTransformer_apply(
           "innerTransformer_apply extractorTransformer listPickElement can not apply to resolvedReference",
           resolvedReference
         );
-        return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } }; // TODO: improve error message / queryFailure
+        return new Domain2ElementFailed({
+          queryFailure: "QueryNotExecutable",
+          failureOrigin: ["transformer_apply"],
+          queryContext: "listPickElement can not apply to resolvedReference",
+        });
       }
 
       const orderByAttribute = transformer.orderBy??"";
@@ -1000,12 +994,16 @@ export function innerTransformer_apply(
         resolvedReference
       );
 
-      if (resolveReference instanceof Domain2ElementFailed) {
+      if (transformer_resolveReference instanceof Domain2ElementFailed) {
         log.error(
           "innerTransformer_apply extractorTransformer unique can not apply to resolvedReference",
           resolvedReference
         );
-        return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } }; // TODO: improve error message / queryFailure
+        return new Domain2ElementFailed({
+          queryFailure: "QueryNotExecutable",
+          failureOrigin: ["transformer_apply"],
+          queryContext: "unique can not apply to resolvedReference",
+        });
       }
 
       if (typeof resolvedReference != "object" || !Array.isArray(resolvedReference)) {
@@ -1013,7 +1011,11 @@ export function innerTransformer_apply(
           "innerTransformer_apply extractorTransformer unique referencedExtractor can not apply to resolvedReference",
           resolvedReference
         );
-        return { elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } }; // TODO: improve error message / queryFailure
+        return new Domain2ElementFailed({
+          queryFailure: "QueryNotExecutable",
+          failureOrigin: ["transformer_apply"],
+          queryContext: "unique can not apply to resolvedReference",
+        });
       }
 
       const sortByAttribute = transformer.orderBy
@@ -1199,15 +1201,12 @@ export function innerTransformer_plainObject_apply(
       "in",
       JSON.stringify(attributeEntries[failureIndex], null, 2)
     );
-    return {
-      elementType: "failure",
-      elementValue: {
-        queryFailure: "ReferenceNotFound",
-        failureOrigin: ["innerTransformer_plainObject_apply"],
-        innerError: attributeEntries[failureIndex][1],
-        queryContext: "error in attribute: " + attributeEntries[failureIndex][0]
-      },
-    };
+    return new Domain2ElementFailed({
+      queryFailure: "ReferenceNotFound",
+      failureOrigin: ["innerTransformer_plainObject_apply"],
+      innerError: attributeEntries[failureIndex][1] as any, // TODO: type!
+      queryContext: "error in attribute: " + attributeEntries[failureIndex][0]
+    });
   }
 }
 
@@ -1254,22 +1253,19 @@ export function innerTransformer_array_apply(
       "error in",
       JSON.stringify(subObject[failureIndex], null, 2)
     );
-    return {
-      elementType: "failure",
-      elementValue: {
-        queryFailure: "ReferenceNotFound",
-        failureOrigin: ["innerTransformer_array_apply"],
-        innerError: subObject[failureIndex],
-        queryContext:
-          "failed to transform object attribute for array index " +
-          failureIndex +
-          // " failure " +
-          // JSON.stringify(subObject[failureIndex]) +
-          " in transformer " +
-          transformer[failureIndex]
-          // JSON.stringify(transformer[failureIndex]),
-      },
-    };
+    return new Domain2ElementFailed({
+      queryFailure: "ReferenceNotFound",
+      failureOrigin: ["innerTransformer_array_apply"],
+      innerError: subObject[failureIndex],
+      queryContext:
+        "failed to transform object attribute for array index " +
+        failureIndex +
+        // " failure " +
+        // JSON.stringify(subObject[failureIndex]) +
+        " in transformer " +
+        transformer[failureIndex]
+        // JSON.stringify(transformer[failureIndex]),
+    });
   }
 }
 

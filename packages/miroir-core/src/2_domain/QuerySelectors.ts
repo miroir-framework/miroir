@@ -29,7 +29,12 @@ import {
   RunBoxedExtractorAction,
   RunBoxedQueryAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { Action2Error, Action2ReturnType, Domain2ElementFailed, Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement.js";
+import {
+  Action2Error,
+  Action2ReturnType,
+  Domain2ElementFailed,
+  Domain2QueryReturnType,
+} from "../0_interfaces/2_domain/DomainElement.js";
 import {
   AsyncBoxedExtractorOrQueryRunnerMap,
   ExtractorRunnerParamsForJzodSchema,

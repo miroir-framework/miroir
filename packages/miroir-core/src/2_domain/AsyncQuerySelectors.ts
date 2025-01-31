@@ -134,7 +134,6 @@ export function asyncInnerSelectElementFromQuery/*BoxedExtractorTemplateRunner*/
   deploymentUuid: Uuid,
   extractors: Record<string, BoxedExtractorOrCombinerReturningObjectList | BoxedExtractorOrCombinerReturningObject | BoxedQueryWithExtractorCombinerTransformer>,
   extractorOrCombiner: ExtractorOrCombiner
-// ): Promise<Domain2QueryReturnType<DomainElementSuccess>> {
 ): Promise<Domain2QueryReturnType<any>> {
   switch (extractorOrCombiner.extractorOrCombinerType) {
     case "literal": {
@@ -284,13 +283,10 @@ export function asyncInnerSelectElementFromQuery/*BoxedExtractorTemplateRunner*/
             return Object.fromEntries(results);
           });
         } else {
-          return {
-            elementType: "failure",
-            elementValue: {
-              queryFailure: "IncorrectParameters",
-              query: JSON.stringify(extractorOrCombiner.rootExtractorOrReference),
-            },
-          };
+          return new Domain2ElementFailed({
+            queryFailure: "IncorrectParameters",
+            query: JSON.stringify(extractorOrCombiner.rootExtractorOrReference),
+          });
         }
       });
 
@@ -300,20 +296,28 @@ export function asyncInnerSelectElementFromQuery/*BoxedExtractorTemplateRunner*/
       return newFetchedData &&
         newFetchedData[extractorOrCombiner.extractorOrCombinerContextReference]
         ? Promise.resolve(newFetchedData[extractorOrCombiner.extractorOrCombinerContextReference])
-        : Promise.resolve({
-            elementType: "failure",
-            elementValue: { 
-              queryFailure: "ReferenceNotFound", 
-              failureOrigin: ["AsyncQuerySelectors", "asyncInnerSelectElementFromQuery"],
-              failureMessage: "could not find extractorOrCombinerContextReference " + extractorOrCombiner.extractorOrCombinerContextReference + " in context" + JSON.stringify(Object.keys(newFetchedData)),
-              queryContext: JSON.stringify(newFetchedData),
-              query: JSON.stringify(extractorOrCombiner) 
-            },
-          });
+        : Promise.resolve(
+          new Domain2ElementFailed({
+            queryFailure: "ReferenceNotFound",
+            failureOrigin: ["AsyncQuerySelectors", "asyncInnerSelectElementFromQuery"],
+            failureMessage:
+              "could not find extractorOrCombinerContextReference " +
+              extractorOrCombiner.extractorOrCombinerContextReference +
+              " in context" +
+              JSON.stringify(Object.keys(newFetchedData)),
+            queryContext: JSON.stringify(newFetchedData),
+            query: JSON.stringify(extractorOrCombiner),
+          })
+        );
       break;
     }
     default: {
-      return Promise.resolve({ elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable", query: extractorOrCombiner } });
+      return Promise.resolve(
+        new Domain2ElementFailed({
+          queryFailure: "QueryNotExecutable",
+          query: extractorOrCombiner,
+        })
+      );
       break;
     }
   }
@@ -408,12 +412,10 @@ export const asyncRunQuery = async (
   const extractorFailure = Object.values(context).find((e) => e instanceof Domain2ElementFailed);
 
   if (extractorFailure) {
-    return { elementType: "failure", 
-      elementValue: {
-        queryFailure: "FailedExtractor",
-        errorStack: extractorFailure
-      }
-    };
+    return new Domain2ElementFailed({
+      queryFailure: "FailedExtractor",
+      errorStack: extractorFailure as any,
+    });
   }
   const combinerPromises = Object.entries(selectorParams.extractor.combiners ?? {})
   .map((query: [string, ExtractorOrCombiner]) => {

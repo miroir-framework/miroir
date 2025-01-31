@@ -42,7 +42,7 @@ export function domainStateToDeploymentEntityState(
 }
 
 // ################################################################################################
-export function resolvePathOnObject(valueObject:any, path: string[]) {
+export function resolvePathOnObject(valueObject:any, path: (string | number)[]) {
   // console.info("resolvePathOnObject called with", valueObject, "path", path)
   return path.reduce((acc, curr, index) => {
     if (index == path.length && (acc == undefined || acc[curr] == undefined)) {
@@ -56,7 +56,7 @@ export function resolvePathOnObject(valueObject:any, path: string[]) {
           " not found in " +
           acc +
           " or not last in path but leading to undefined " +
-          curr[acc]
+          (curr as any)[acc]
       );
     } else {
       console.info("resolvePathOnObject called with", valueObject, "path", path, "result", acc[curr])
