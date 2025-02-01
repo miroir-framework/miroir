@@ -751,6 +751,8 @@ export {
 } from './4_services/TestSuiteContext.js';
 
 export {
+  displayTestSuiteResults,
+  displayTestSuiteResultsDetails,
   ignorePostgresExtraAttributesOnList,
   ignorePostgresExtraAttributesOnObject,
   ignorePostgresExtraAttributesOnRecord,

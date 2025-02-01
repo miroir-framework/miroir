@@ -17,6 +17,7 @@ import {
   book6,
   ConfigurationService,
   defaultMiroirMetaModel,
+  displayTestSuiteResultsDetails,
   DomainControllerInterface,
   entityAuthor,
   entityBook,
@@ -67,8 +68,6 @@ import { miroirAppStartup } from '../../src/startup.js';
 import {
   createDeploymentCompositeAction,
   deleteAndCloseApplicationDeployments,
-  displayTestSuiteResults,
-  displayTestSuiteResultsDetails,
   loadTestConfigFiles,
   resetAndinitializeDeploymentCompositeAction,
   runTestOrTestSuite,
@@ -209,7 +208,7 @@ afterAll(
     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done deleteAndCloseApplicationDeployments")
     // console.log("globalTestSuiteResults:\n", Object.values(globalTestSuiteResults).map((r) => "\"" + r.testLabel + "\": " + r.testResult).join("\n"));
     // displayTestSuiteResults(Object.keys(testTemplateSuites)[0]);
-    displayTestSuiteResultsDetails(Object.keys(testTemplateSuites)[0]);
+    displayTestSuiteResultsDetails(expect,Object.keys(testTemplateSuites)[0]);
   }
 )
 

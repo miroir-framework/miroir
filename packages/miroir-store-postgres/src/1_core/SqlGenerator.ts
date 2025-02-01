@@ -165,16 +165,16 @@ export function sqlStringForTransformer(
         sqlStringOrObject: topLevelTransformer
           ? `select '${actionRuntimeTransformer.constantUuidValue}' as constantuuid`
           : `'${actionRuntimeTransformer.constantUuidValue}'`,
-        // resultAccessPath: topLevelTransformer?[0]:undefined,
         resultAccessPath: topLevelTransformer ? [0, "constantuuid"] : undefined,
       };
       break;
     }
     case "constantString": {
       return {
-        sqlStringOrObject:
-          (topLevelTransformer ? "select " : "") + `"${actionRuntimeTransformer.constantStringValue}"`,
-        // resultAccessPath: undefined
+          sqlStringOrObject: topLevelTransformer
+          ? `select '${actionRuntimeTransformer.constantStringValue}' as constantstring`
+          : `'${actionRuntimeTransformer.constantStringValue}'`,
+        resultAccessPath: topLevelTransformer ? [0, "constantstring"] : undefined,
       };
       break;
     }
@@ -319,29 +319,32 @@ export function sqlStringForTransformer(
       };
       break;
     }
+    case "parameterReference":
     case "contextReference": {
       const resolvedReference = transformer_resolveReference(
         "runtime",
         actionRuntimeTransformer,
-        "context",
+        actionRuntimeTransformer.transformerType == "contextReference" ? "context" : "param",
         queryParams,
         newFetchedData
       )
       if (resolvedReference instanceof Domain2ElementFailed) {
         return resolvedReference;
       }
-      return {
-        sqlStringOrObject: resolvedReference,
-        // resultAccessPath: [0]
-      };
-      // return new Domain2ElementFailed({
-      //   queryFailure: "QueryNotExecutable",
-      //   query: JSON.stringify(actionRuntimeTransformer),
-      //   failureMessage: "sqlStringForTransformer transformerType not implemented: " + actionRuntimeTransformer.transformerType,
-      // });
+      const referenceQuery = sqlStringForTransformer(
+        {
+          transformerType: "constantString",
+          interpolation: "runtime",
+          constantStringValue: resolvedReference as any,
+        },
+        queryParams,
+        newFetchedData,
+        true
+      );
+
+      return referenceQuery;
       break;
     }
-    case "parameterReference":
     case "objectDynamicAccess":
     case "freeObjectTemplate":
     case "objectAlter":

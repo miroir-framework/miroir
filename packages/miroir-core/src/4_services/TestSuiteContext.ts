@@ -8,12 +8,16 @@ import {
 import { LoggerGlobalContext } from "./LoggerContext.js";
 
 export class TestSuiteContext {
-  private static testAssertionsResults: { [testSuite: string]: { [test: string]: TestAssertionsResults } } = {};
+  public static testAssertionsResults: { [testSuite: string]: { [test: string]: TestAssertionsResults } } = {};
 
   public static testLogLabel: string = "";
 
   public static resetContext(): void {
     LoggerGlobalContext.reset();
+  }
+
+  public static testSuitePathName(testSuitePath: string[]): string {
+    return testSuitePath.join("#");
   }
 
   public static resetResults(): void {
@@ -26,10 +30,13 @@ export class TestSuiteContext {
   }
 
   public static setTestAssertionResult(testAssertionResult: TestAssertionResult): void {
-    const testSuite = LoggerGlobalContext.getTestSuite();
-    const test = LoggerGlobalContext.getTest();
+    const testSuite = TestSuiteContext.getTestSuite();
+    const test = TestSuiteContext.getTest();
+    // const testSuite = LoggerGlobalContext.getTestSuite();
+    // const test = LoggerGlobalContext.getTest();
+    console.log("TestSuiteContext.setTestAssertionResult called for", testSuite, test, testAssertionResult.assertionName);
     if (testSuite === undefined || test === undefined || testAssertionResult.assertionName === undefined) {
-      throw new Error("TestSuite or Test not defined");
+      throw new Error("TestSuite or Test not defined: suite=" + testSuite + ", test=" + test + ", assertion=" + testAssertionResult.assertionName);
     }
     if (!TestSuiteContext.testAssertionsResults[testSuite]) {
       TestSuiteContext.testAssertionsResults[testSuite] = {};
@@ -90,6 +97,7 @@ export class TestSuiteContext {
   }
 
   public static setTestSuite(testSuite: string | undefined): void {
+    console.log("TestSuiteContext.setTestSuite", testSuite);
     LoggerGlobalContext.setTestSuite(testSuite);
   }
 

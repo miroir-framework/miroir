@@ -1,4 +1,5 @@
 import { EntityInstance } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js"
+import { TestSuiteContext } from "./TestSuiteContext.js"
 
 // ################################################################################################
 export function ignorePostgresExtraAttributesOnRecord(instances: Record<string, EntityInstance>, furtherIgnore: string[] = []){
@@ -25,4 +26,61 @@ export function ignorePostgresExtraAttributes(instance: any, furtherIgnore: stri
       ? ignorePostgresExtraAttributesOnList(instance, ignore)
       : ignorePostgresExtraAttributesOnObject(instance, ignore)
     : instance;
+}
+
+
+// ################################################################################################
+export function displayTestSuiteResults(
+  expect: any, // vitest.expect
+  currentTestSuiteName: string) {
+  console.log("============ results of testSuite: ", currentTestSuiteName);
+  // const currentTestSuiteName = currentTestSuiteName;
+  const globalTestSuiteResults = TestSuiteContext.getTestSuiteResult(currentTestSuiteName);
+  // console.log("globalTestSuiteResults", JSON.stringify(globalTestSuiteResults, null, 2));
+  // console.log("============ results of testSuite: ", currentTestSuiteName);
+  for (const testResult of Object.values(globalTestSuiteResults[currentTestSuiteName])) {
+    if (testResult.testResult !== "ok") {
+      for (const [testAssertionLabel, testAssertionResult] of Object.entries(testResult.testAssertionsResults)) {
+        if (testAssertionResult.assertionResult !== "ok") {
+          console.log("  testAssertionResult", JSON.stringify(testAssertionResult, null, 2));
+          expect(
+            testAssertionResult.assertionActualValue,
+            `${currentTestSuiteName} > ${testResult.testLabel} > ${testAssertionLabel} failed!`
+          ).toBe(testAssertionResult.assertionExpectedValue);
+        }
+      }
+    } else {
+      // console.log("testResult", JSON.stringify(testResult, null, 2));
+      expect(testResult.testResult, `${currentTestSuiteName} > ${testResult.testLabel} failed!`).toBe("ok");
+      console.log(" ",testResult.testLabel, ": ok");
+    }
+  }
+  console.log("============ end of results of testSuite");
+}
+
+// ################################################################################################
+export function displayTestSuiteResultsDetails(
+  expect: any, // vitest.expect
+  currentTestSuiteName: string) {
+  console.log("============ detailed results of testSuite: ", currentTestSuiteName);
+  const globalTestSuiteResults = TestSuiteContext.getTestSuiteResult(currentTestSuiteName);
+  for (const testResult of Object.values(globalTestSuiteResults[currentTestSuiteName])) {
+    console.log(`Test: ${testResult.testLabel}`);
+    for (const [testAssertionLabel, testAssertionResult] of Object.entries(testResult.testAssertionsResults)) {
+      console.log(`  Assertion: ${testAssertionLabel} ${testAssertionResult.assertionResult}`);
+      // console.log(`    Expected: ${testAssertionResult.assertionExpectedValue}`);
+      // console.log(`    Actual: ${testAssertionResult.assertionActualValue}`);
+      // console.log(`    Result: ${testAssertionResult.assertionResult}`);
+      if (testAssertionResult.assertionResult !== "ok") {
+        expect(
+          testAssertionResult.assertionActualValue,
+          `${currentTestSuiteName} > ${testResult.testLabel} > ${testAssertionLabel} failed!`
+        ).toBe(testAssertionResult.assertionExpectedValue);
+      }
+    }
+    if (testResult.testResult !== "ok") {
+      expect(testResult.testResult, `${currentTestSuiteName} > ${testResult.testLabel} failed!`).toBe("ok");
+    }
+  }
+  console.log("============ end of results of testSuite");
 }

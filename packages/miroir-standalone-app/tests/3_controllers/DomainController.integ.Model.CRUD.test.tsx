@@ -6,6 +6,7 @@ import { fetch as crossFetch } from "cross-fetch";
 import {
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
+  displayTestSuiteResults,
   DomainControllerInterface,
   entityAuthor,
   EntityDefinition,
@@ -37,7 +38,6 @@ import {
   adminApplicationDeploymentConfigurations,
   createDeploymentCompositeAction,
   deleteAndCloseApplicationDeployments,
-  displayTestSuiteResults,
   loadTestConfigFiles,
   resetAndinitializeDeploymentCompositeAction,
   runTestOrTestSuite,
@@ -189,7 +189,7 @@ beforeEach(async () => {
 
 afterAll(async () => {
   await deleteAndCloseApplicationDeployments(miroirConfig, domainController, adminApplicationDeploymentConfigurations);
-  displayTestSuiteResults(Object.keys(testActions)[0]);
+  displayTestSuiteResults(expect,Object.keys(testActions)[0]);
 });
 
 const testActions: Record<string, TestActionParams> = {

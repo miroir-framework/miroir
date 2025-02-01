@@ -14,6 +14,7 @@ import {
   book4,
   book5,
   book6,
+  displayTestSuiteResults,
   DomainControllerInterface,
   entityAuthor,
   entityBook,
@@ -46,7 +47,6 @@ import {
   adminApplicationDeploymentConfigurations,
   createDeploymentCompositeAction,
   deleteAndCloseApplicationDeployments,
-  displayTestSuiteResults,
   loadTestConfigFiles,
   resetAndinitializeDeploymentCompositeAction,
   runTestOrTestSuite,
@@ -197,7 +197,7 @@ afterAll(async () => {
     // deploymentConfigurations,
     adminApplicationDeploymentConfigurations
   );
-  displayTestSuiteResults(Object.keys(testActions)[0]);
+  displayTestSuiteResults(expect, Object.keys(testActions)[0]);
 });
 
 const testActions: Record<string, TestActionParams> = {

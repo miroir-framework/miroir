@@ -26,12 +26,14 @@ import {
   Country2,
   Country3,
   Country4,
+  displayTestSuiteResults,
   Domain2QueryReturnType,
   ignorePostgresExtraAttributes,
   ignorePostgresExtraAttributesOnList,
-  ignorePostgresExtraAttributesOnObject
-} from "../../index.js";
-import { runTransformerTestSuite, TransformerTest, transformerTests } from "./transformersTests.data.js";
+  ignorePostgresExtraAttributesOnObject,
+  TestSuiteContext
+} from "miroir-core";
+import { runTransformerTestSuite, transformerTestsDisplayResults, testSuites, TransformerTest, transformerTests } from "./transformersTests.data.js";
 
 
 // const env:any = (import.meta as any).env
@@ -113,9 +115,18 @@ const params = getCommandLineArgs();
 //   }
 // ];
 
+afterAll(async () => {
+  if (!RUN_TEST) {
+    throw new Error("environment variable RUN_TEST must be defined");
+  }
+  transformerTestsDisplayResults(RUN_TEST, testSuiteName);
+});
+
 // ################################################################################################
-async function runTransformerTest(vitest: any, testSuiteName: string, transformerTest: TransformerTest) {
-  console.log(expect.getState().currentTestName, "START");
+async function runTransformerTest(vitest: any, testSuiteNamePath: string[], transformerTest: TransformerTest) {
+  const assertionName = transformerTest.transformerTestLabel ?? transformerTest.transformerName;
+  console.log("#################################### test", assertionName, "START");
+  // TestSuiteContext.setTest(transformerTest.transformerTestLabel);
 
   if (!transformerTests) {
     throw new Error("transformerTests is undefined");
@@ -130,8 +141,9 @@ async function runTransformerTest(vitest: any, testSuiteName: string, transforme
     "build",
     undefined,
     transformer,
-    {},
-    undefined
+    transformerTest.transformerParams,
+    transformerTest.transformerRuntimeContext??{}
+    // Object.hasOwn(transformerTest,"transformerRuntimeContext")?transformerTest.transformerRuntimeContext:{}
   );
 
 
@@ -141,17 +153,35 @@ async function runTransformerTest(vitest: any, testSuiteName: string, transforme
     JSON.stringify(transformerTest.expectedValue, null, 2)
   );
   const result = ignorePostgresExtraAttributes(rawResult, transformerTest.ignoreAttributes);
-  vitest.expect(
-    result,
-    `${testSuiteName} > ${transformerTest.transformerTestLabel ?? transformerTest.transformerName}`
-  ).toEqual(transformerTest.expectedValue);
+  const testSuiteNamePathAsString = TestSuiteContext.testSuitePathName(testSuiteNamePath);
+  try {
+    vitest.expect(
+      result,
+      `${testSuiteNamePathAsString} > ${assertionName}`
+    ).toEqual(transformerTest.expectedValue);
+    TestSuiteContext.setTestAssertionResult({
+      assertionName,
+      assertionResult: "ok",
+    });
+  } catch (error) {
+    TestSuiteContext.setTestAssertionResult({
+      assertionName,
+      assertionResult: "error",
+      assertionExpectedValue: transformerTest.expectedValue,
+      assertionActualValue: result,
+    });
+  }
 
-  console.log(expect.getState().currentTestName, "END");
+  console.log("############################ test", assertionName, "END");
+  return Promise.resolve();
 }
 
+// ################################################################################################
 const testSuiteName = "transformers.unit.test";
 if (RUN_TEST == testSuiteName) {
-  await runTransformerTestSuite(vitest, testSuiteName, transformerTests, runTransformerTest);
+  // await runTransformerTestSuite(vitest, [transformerTests.transformerTestLabel ?? transformerTests.transformerTestType], transformerTests, runTransformerTest);
+  await runTransformerTestSuite(vitest, [], transformerTests, runTransformerTest);
+  
 } else {
   console.log("################################ skipping test suite:", testSuiteName);
 }
