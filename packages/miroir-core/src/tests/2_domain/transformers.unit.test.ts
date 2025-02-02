@@ -116,10 +116,9 @@ const params = getCommandLineArgs();
 // ];
 
 afterAll(async () => {
-  if (!RUN_TEST) {
-    throw new Error("environment variable RUN_TEST must be defined");
+  if (RUN_TEST) {
+    transformerTestsDisplayResults(RUN_TEST, testSuiteName);
   }
-  transformerTestsDisplayResults(RUN_TEST, testSuiteName);
 });
 
 // ################################################################################################
@@ -135,7 +134,7 @@ async function runTransformerTest(vitest: any, testSuiteNamePath: string[], tran
     "################################ transformerTestParams",
     JSON.stringify(transformerTest, null, 2)
   );
-  const transformer: TransformerForBuild = transformerTest.transformer;
+  const transformer: TransformerForBuild | TransformerForRuntime = transformerTest.transformer;
 
   const rawResult: Domain2QueryReturnType<any> = transformer_apply(
     "build",
@@ -153,6 +152,7 @@ async function runTransformerTest(vitest: any, testSuiteNamePath: string[], tran
     JSON.stringify(transformerTest.expectedValue, null, 2)
   );
   const result = ignorePostgresExtraAttributes(rawResult, transformerTest.ignoreAttributes);
+  console.log("################################ result", JSON.stringify(result, null, 2));
   const testSuiteNamePathAsString = TestSuiteContext.testSuitePathName(testSuiteNamePath);
   try {
     vitest.expect(
@@ -267,119 +267,6 @@ if (RUN_TEST == testSuiteName) {
 
 
 
-  // // ################################################################################################
-  // describe("contextReference failure cases", () => {
-  //   it("should fail when context reference is not found", async () => {
-  //     const transformer: TransformerForBuild = {
-  //       transformerType: "contextReference",
-  //       referenceName: "nonExistentReference"
-  //     };
-
-  //     const result = transformer_apply(
-  //       "build",
-  //       undefined,
-  //       transformer,
-  //       {},
-  //       {}
-  //     );
-
-  //     expect(result.elementType).toEqual("failure");
-  //     expect(result.elementValue.queryFailure).toEqual("ReferenceNotFound");
-  //   });
-
-  //   it("should fail when context reference is undefined", async () => {
-  //     const transformer: TransformerForBuild = {
-  //       transformerType: "contextReference",
-  //       referenceName: "undefinedReference"
-  //     };
-
-  //     const result = transformer_apply(
-  //       "build",
-  //       undefined,
-  //       transformer,
-  //       {},
-  //       { undefinedReference: undefined }
-  //     );
-
-  //     expect(result.elementType).toEqual("failure");
-  //     expect(result.elementValue.queryFailure).toEqual("ReferenceFoundButUndefined");
-  //   });
-
-  //   it("should fail when context reference path is invalid", async () => {
-  //     const transformer: TransformerForBuild = {
-  //       transformerType: "contextReference",
-  //       referencePath: ["invalid", "path"]
-  //     };
-
-  //     const result = transformer_apply(
-  //       "build",
-  //       undefined,
-  //       transformer,
-  //       {},
-  //       { valid: { path: "value" } }
-  //     );
-
-  //     expect(result.elementType).toEqual("failure");
-  //     expect(result.elementValue.queryFailure).toEqual("ReferenceNotFound");
-  //   });
-  // });
-
-  // // ################################################################################################
-  // describe("paramReference failure cases", () => {
-  //   it("should fail when parrameter reference is not found", async () => {
-  //     const transformer: TransformerForBuild = {
-  //       transformerType: "parameterReference",
-  //       referenceName: "nonExistentReference"
-  //     };
-
-  //     const result = transformer_apply(
-  //       "build",
-  //       undefined,
-  //       transformer,
-  //       {},
-  //       {}
-  //     );
-
-  //     expect(result.elementType).toEqual("failure");
-  //     expect(result.elementValue.queryFailure).toEqual("ReferenceNotFound");
-  //   });
-
-  //   it("should fail when parameter reference is undefined", async () => {
-  //     const transformer: TransformerForBuild = {
-  //       transformerType: "parameterReference",
-  //       referenceName: "undefinedReference"
-  //     };
-
-  //     const result = transformer_apply(
-  //       "build",
-  //       undefined,
-  //       transformer,
-  //       { undefinedReference: undefined },
-  //       {},
-  //     );
-
-  //     expect(result.elementType).toEqual("failure");
-  //     expect(result.elementValue.queryFailure).toEqual("ReferenceFoundButUndefined");
-  //   });
-
-  //   it("should fail when parameter reference path is invalid", async () => {
-  //     const transformer: TransformerForBuild = {
-  //       transformerType: "parameterReference",
-  //       referencePath: ["invalid", "path"]
-  //     };
-
-  //     const result = transformer_apply(
-  //       "build",
-  //       undefined,
-  //       transformer,
-  //       { valid: { path: "value" } },
-  //       {},
-  //     );
-
-  //     expect(result.elementType).toEqual("failure");
-  //     expect(result.elementValue.queryFailure).toEqual("ReferenceNotFound");
-  //   });
-  // });
 
   // // ################################################################################################
   // describe("objectEntries", () => {

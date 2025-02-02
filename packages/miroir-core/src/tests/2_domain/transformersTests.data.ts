@@ -1,5 +1,5 @@
 // import { LoggerGlobalContext } from "../../4_services/LoggerContext.js";
-import { displayTestSuiteResults, TestSuiteContext, TransformerForBuild } from "miroir-core";
+import { displayTestSuiteResults, TestSuiteContext, TransformerForBuild, TransformerForRuntime } from "miroir-core";
 
 // ################################################################################################
 // export interface TransformerTestParams {
@@ -9,7 +9,7 @@ export type TransformerTest = {
   transformerTestLabel: string;
   // deploymentUuid: Uuid;
   transformerName: string;
-  transformer: TransformerForBuild;
+  transformer: TransformerForBuild | TransformerForRuntime;
   transformerParams: Record<string, any>;
   transformerRuntimeContext?: Record<string, any>;
   expectedValue: any;
@@ -24,32 +24,17 @@ export type TransformerTestSuite =
   transformerTests: Record<string, TransformerTestSuite>;
 }
 
-export const testSuites = (transformerTestSuite: TransformerTestSuite):string[][] => {
-  const result: string[][] = [];
+const ignoreFailureAttributes:string[] = [
+  "applicationSection",
+  "deploymentUuid",
+  "entityUuid",
+  "instanceUuid",
+  "errorStack",
+  "innerError",
+  "queryParameters",
+  "query",
+];
 
-  const traverseTestSuites = (suite: TransformerTestSuite, path: string[] = []) => {
-    // if (suite.transformerTestType === "transformerTest") {
-    //   result.push([...path, suite.transformerTestLabel]);
-    // } else
-    if (suite.transformerTestType === "transformerTestSuite") {
-      const newPath = [...path, suite.transformerTestLabel];
-      const subSuites = Object.values(suite.transformerTests);
-
-      if (subSuites.length === 0 || subSuites.every((subSuite) => subSuite.transformerTestType === "transformerTest")) {
-        result.push(newPath);
-      } else {
-        for (const subSuite of subSuites) {
-          if (subSuite.transformerTestType === "transformerTestSuite") {
-            traverseTestSuites(subSuite, newPath);
-          }
-        }
-      }
-    }
-  };
-
-  traverseTestSuites(transformerTestSuite);
-  return result;
-}
 // export const transformerTests: Record<string, TransformerTestSuite | Record<string, TransformerTestSuite>> = {
 export const transformerTests: TransformerTestSuite = {
   // "resolve basic transformer constantUuid": {
@@ -58,7 +43,7 @@ export const transformerTests: TransformerTestSuite = {
   transformerTestType: "transformerTestSuite",
   transformerTestLabel: "transformers",
   transformerTests: {
-    "constants": {
+    constants: {
       transformerTestType: "transformerTestSuite",
       transformerTestLabel: "constants",
       transformerTests: {
@@ -123,9 +108,26 @@ export const transformerTests: TransformerTestSuite = {
             },
           },
         },
-      }
+        constantObject: {
+          transformerTestType: "transformerTestSuite",
+          transformerTestLabel: "constantObject",
+          transformerTests: {
+            "resolve basic transformer constantObject": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel: "resolve basic transformer constantObject",
+              transformerName: "constantObject",
+              transformer: {
+                transformerType: "constantObject",
+                constantObjectValue: { test: "test" },
+              },
+              transformerParams: {},
+              expectedValue: { test: "test" },
+            },
+          },
+        },
+      },
     },
-    "references": {
+    references: {
       transformerTestType: "transformerTestSuite",
       transformerTestLabel: "references",
       transformerTests: {
@@ -142,19 +144,52 @@ export const transformerTests: TransformerTestSuite = {
                 referenceName: "a",
               },
               transformerParams: {
-                a: "test"
+                a: "test",
               },
               expectedValue: "test",
             },
-            "should fail when parameter reference is not found": {
+            "resolve basic transformer parameterReference for referencePath": {
               transformerTestType: "transformerTest",
-              transformerTestLabel: "should fail when parameter reference is not found",
+              transformerTestLabel: "resolve basic transformer parameterReference for referencePath",
+              transformerName: "parameterReferenceForReferencePath",
+              transformer: {
+                transformerType: "parameterReference",
+                referencePath: ["a", "b", "c"],
+              },
+              transformerParams: {
+                a: { b: { c: "test" } },
+              },
+              expectedValue: "test",
+            },
+            "should fail when parameter referenceName is not found": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel: "should fail when parameter referenceName is not found",
               transformerName: "parameterReference",
               transformer: {
                 transformerType: "parameterReference",
                 referenceName: "nonExistentReference",
               },
               transformerParams: {},
+              ignoreAttributes: ignoreFailureAttributes,
+              expectedValue: {
+                queryFailure: "ReferenceNotFound",
+                failureOrigin: ["transformer_InnerReference_resolve"],
+                queryReference: "nonExistentReference",
+                failureMessage: "no referenceName nonExistentReference",
+                queryContext: "[]",
+              },
+            },
+            "should fail when parameter reference value is undefined": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel: "should fail when parameter reference value is undefined",
+              transformerName: "parameterReference",
+              transformer: {
+                transformerType: "parameterReference",
+                referenceName: "referenceFoundButUndefined",
+              },
+              transformerParams: {
+                referenceFoundButUndefined: undefined,
+              },
               ignoreAttributes: [
                 "applicationSection",
                 "deploymentUuid",
@@ -166,11 +201,31 @@ export const transformerTests: TransformerTestSuite = {
                 "query",
               ],
               expectedValue: {
-                queryFailure: "ReferenceNotFound",
+                queryFailure: "ReferenceFoundButUndefined",
                 failureOrigin: ["transformer_InnerReference_resolve"],
-                queryReference: "nonExistentReference",
-                failureMessage: "no referenceName nonExistentReference",
-                queryContext: "[]",
+                queryReference: "referenceFoundButUndefined",
+                failureMessage: "found but undefined: referenceName referenceFoundButUndefined",
+                queryContext: '["referenceFoundButUndefined"]',
+              },
+            },
+            "should fail when parameter referencePath is invalid": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel: "should fail when parameter referencePath is invalid",
+              transformerName: "parameterReference",
+              transformer: {
+                transformerType: "parameterReference",
+                referencePath: ["invalidPath"],
+              },
+              transformerParams: {
+                a: "test",
+              },
+              ignoreAttributes: ignoreFailureAttributes,
+              expectedValue: {
+                queryFailure: "ReferenceFoundButUndefined",
+                failureOrigin: ["transformer_InnerReference_resolve"],
+                queryReference: '["invalidPath"]',
+                failureMessage: "no referencePath invalidPath",
+                queryContext: '["a"]',
               },
             },
           },
@@ -179,10 +234,10 @@ export const transformerTests: TransformerTestSuite = {
           transformerTestType: "transformerTestSuite",
           transformerTestLabel: "contextReference",
           transformerTests: {
-            "resolve basic transformer contextReference": {
+            "resolve basic transformer contextReference for referenceName": {
               transformerTestType: "transformerTest",
-              transformerTestLabel: "resolve basic transformer constantString",
-              transformerName: "contextReference",
+              transformerTestLabel: "resolve basic transformer contextReference for referenceName",
+              transformerName: "contextReferenceForReferenceName",
               transformer: {
                 transformerType: "contextReference",
                 referenceName: "a",
@@ -193,9 +248,23 @@ export const transformerTests: TransformerTestSuite = {
               },
               expectedValue: "test",
             },
-            "should fail when context reference is not found": {
+            "resolve basic transformer contextReference for referencePath": {
               transformerTestType: "transformerTest",
-              transformerTestLabel: "should fail when context reference is not found",
+              transformerTestLabel: "resolve basic transformer contextReference for referencePath",
+              transformerName: "contextReferenceForReferencePath",
+              transformer: {
+                transformerType: "contextReference",
+                referencePath: ["a", "b", "c"],
+              },
+              transformerParams: {},
+              transformerRuntimeContext: {
+                a: { b: { c: "test" } },
+              },
+              expectedValue: "test",
+            },
+            "should fail when context referenceName is not found": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel: "should fail when context referenceName is not found",
               transformerName: "contextReference",
               transformer: {
                 transformerType: "contextReference",
@@ -220,14 +289,104 @@ export const transformerTests: TransformerTestSuite = {
                 queryContext: "[]",
               },
             },
+            "should fail when context referencePath is invalid": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel: "should fail when context referencePath is invalid",
+              transformerName: "contextReference",
+              transformer: {
+                transformerType: "contextReference",
+                referencePath: ["a", "invalidPath"],
+              },
+              transformerParams: {},
+              transformerRuntimeContext: {
+                a: "test",
+              },
+              ignoreAttributes: ignoreFailureAttributes,
+              expectedValue: {
+                queryFailure: "ReferenceFoundButUndefined",
+                failureOrigin: ["transformer_InnerReference_resolve"],
+                queryReference: '["a","invalidPath"]',
+                failureMessage: "no referencePath a,invalidPath",
+                queryContext: '["a"]',
+              },
+            },
+            "should fail when context reference value is undefined": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel: "should fail when context reference value is undefined",
+              transformerName: "contextReference",
+              transformer: {
+                transformerType: "contextReference",
+                referenceName: "referenceFoundButUndefined",
+              },
+              transformerParams: {},
+              transformerRuntimeContext: {
+                referenceFoundButUndefined: undefined,
+              },
+              ignoreAttributes: ignoreFailureAttributes,
+              expectedValue: {
+                queryFailure: "ReferenceFoundButUndefined",
+                failureOrigin: ["transformer_InnerReference_resolve"],
+                queryReference: "referenceFoundButUndefined",
+                failureMessage: "found but undefined: referenceName referenceFoundButUndefined",
+                queryContext: '["referenceFoundButUndefined"]',
+              },
+            },
           },
         },
-      }
-    }
+      },
+    },
+    objectEntries: {
+      transformerTestType: "transformerTestSuite",
+      transformerTestLabel: "objectEntries",
+      transformerTests: {
+        "object entries with string referencedExtractor": {
+          transformerTestType: "transformerTest",
+          transformerTestLabel: "object entries with string referencedExtractor",
+          transformerName: "objectEntries",
+          transformer: {
+            transformerType: "objectEntries",
+            interpolation: "runtime",
+            referencedExtractor: {
+              transformerType: "parameterReference",
+              referenceName: "testObject1",
+            },
+          },
+          transformerParams: {
+            testObject1: { a: "testA", b: "testB" },
+          },
+          expectedValue: [ ["a", "testA"], ["b", "testB"] ],
+        },
+      },
+    },
   },
 };
 
 const globalTimeOut = 30000;
+
+// ################################################################################################
+export const testSuites = (transformerTestSuite: TransformerTestSuite):string[][] => {
+  const result: string[][] = [];
+
+  const traverseTestSuites = (suite: TransformerTestSuite, path: string[] = []) => {
+    if (suite.transformerTestType === "transformerTestSuite") {
+      const newPath = [...path, suite.transformerTestLabel];
+      const subSuites = Object.values(suite.transformerTests);
+
+      if (subSuites.length === 0 || subSuites.every((subSuite) => subSuite.transformerTestType === "transformerTest")) {
+        result.push(newPath);
+      } else {
+        for (const subSuite of subSuites) {
+          if (subSuite.transformerTestType === "transformerTestSuite") {
+            traverseTestSuites(subSuite, newPath);
+          }
+        }
+      }
+    }
+  };
+
+  traverseTestSuites(transformerTestSuite);
+  return result;
+}
 
 // ################################################################################################
 export async function runTransformerTestSuite(
@@ -280,6 +439,7 @@ export const transformerTestsDisplayResults = (RUN_TEST: string,testSuiteName: s
     console.log("#################################### afterAll", testSuiteName,"TestResults:");
     for (const testSuiteName of testSuitesNames) {
       displayTestSuiteResults(expect, testSuiteName);
+      console.log("");
     }
     TestSuiteContext.resetResults();
   }

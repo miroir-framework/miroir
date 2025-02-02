@@ -120,7 +120,8 @@ export function sqlStringForExtractor(extractor: ExtractorOrCombiner, schema: st
 }
 
 export type sqlStringForTransformerElementValue = {
-  sqlStringOrObject: string | Record<string, string>;
+  // sqlStringOrObject: string | Record<string, string>;
+  sqlStringOrObject: string;
   resultAccessPath?: (string | number)[];
   encloseEndResultInArray?: boolean;
   extraWith?: { name: string; sql: string }[];
@@ -160,24 +161,6 @@ export function sqlStringForTransformer(
 
   log.info("extractorTransformerSql actionRuntimeTransformer", actionRuntimeTransformer);
   switch (actionRuntimeTransformer.transformerType) {
-    case "constantUuid": {
-      return {
-        sqlStringOrObject: topLevelTransformer
-          ? `select '${actionRuntimeTransformer.constantUuidValue}' as constantuuid`
-          : `'${actionRuntimeTransformer.constantUuidValue}'`,
-        resultAccessPath: topLevelTransformer ? [0, "constantuuid"] : undefined,
-      };
-      break;
-    }
-    case "constantString": {
-      return {
-          sqlStringOrObject: topLevelTransformer
-          ? `select '${actionRuntimeTransformer.constantStringValue}' as constantstring`
-          : `'${actionRuntimeTransformer.constantStringValue}'`,
-        resultAccessPath: topLevelTransformer ? [0, "constantstring"] : undefined,
-      };
-      break;
-    }
     case "newUuid": {
       return {
         sqlStringOrObject: (topLevelTransformer ? "select " : "") + "gen_random_uuid()",
@@ -303,11 +286,29 @@ export function sqlStringForTransformer(
       };
       break;
     }
+    case "constantUuid": {
+      return {
+        sqlStringOrObject: topLevelTransformer
+          ? `select '${actionRuntimeTransformer.constantUuidValue}' as constantuuid`
+          : `'${actionRuntimeTransformer.constantUuidValue}'`,
+        resultAccessPath: topLevelTransformer ? [0, "constantuuid"] : undefined,
+      };
+      break;
+    }
+    case "constantString": {
+      return {
+          sqlStringOrObject: topLevelTransformer
+          ? `select '${actionRuntimeTransformer.constantStringValue}' as constantstring`
+          : `'${actionRuntimeTransformer.constantStringValue}'`,
+        resultAccessPath: topLevelTransformer ? [0, "constantstring"] : undefined,
+      };
+      break;
+    }
     case "constantObject": {
       const result =
         "SELECT '" +
         JSON.stringify(actionRuntimeTransformer.constantObjectValue).replace(/\\"/g, '"') +
-        "'::jsonb FROM generate_series(1,1)";
+        "'::jsonb as constantobject";
       log.info(
         "sqlStringForTransformer constantObject",
         actionRuntimeTransformer.constantObjectValue,
@@ -315,9 +316,51 @@ export function sqlStringForTransformer(
         result
       );
       return {
-        sqlStringOrObject: result, resultAccessPath: [0]
+        sqlStringOrObject: result, resultAccessPath: [0, "constantobject"],
       };
       break;
+    }
+    case "constant": {
+      switch (typeof actionRuntimeTransformer.constantValue) {
+        case "string": {
+          return {
+            sqlStringOrObject: topLevelTransformer
+              ? `select '${actionRuntimeTransformer.constantValue}' as constantstring`
+              : `'${actionRuntimeTransformer.constantValue}'`,
+            resultAccessPath: topLevelTransformer ? [0, "constantstring"] : undefined,
+          };
+        }
+        case "number":
+        case "bigint": {
+          return {
+            sqlStringOrObject: topLevelTransformer
+              ? `select '${actionRuntimeTransformer.constantValue}' as constantnumber`
+              : `'${actionRuntimeTransformer.constantValue}'`,
+            resultAccessPath: topLevelTransformer ? [0, "constantnumber"] : undefined,
+          };
+        }
+        case "object": {
+          const result =
+            "SELECT '" +
+            JSON.stringify(actionRuntimeTransformer.constantValue).replace(/\\"/g, '"') +
+            "'::jsonb as constantobject";
+          log.info("sqlStringForTransformer constantObject", actionRuntimeTransformer.constantValue, "result", result);
+        return {
+          sqlStringOrObject: result, resultAccessPath: [0, "constantobject"],
+        };
+        }
+        case "boolean":
+        case "symbol":
+        case "undefined":
+        case "function": {
+          throw new Error("sqlStringForTransformer constantValue not implemented: " + typeof actionRuntimeTransformer.constantValue);
+          break;
+        }
+        default: {
+          throw new Error("sqlStringForTransformer constantValue not implemented: " + typeof actionRuntimeTransformer.constantValue);
+          break;
+        }
+      }
     }
     case "parameterReference":
     case "contextReference": {
@@ -333,9 +376,9 @@ export function sqlStringForTransformer(
       }
       const referenceQuery = sqlStringForTransformer(
         {
-          transformerType: "constantString",
+          transformerType: "constant",
           interpolation: "runtime",
-          constantStringValue: resolvedReference as any,
+          constantValue: resolvedReference as any,
         },
         queryParams,
         newFetchedData,
@@ -345,11 +388,42 @@ export function sqlStringForTransformer(
       return referenceQuery;
       break;
     }
+    case "objectEntries": {
+      const referenceQuery = typeof actionRuntimeTransformer.referencedExtractor == "string"?sqlStringForTransformer(
+        {
+          transformerType: "constant",
+          interpolation: "runtime",
+          constantValue: actionRuntimeTransformer.referencedExtractor as any,
+        },
+        queryParams,
+        newFetchedData,
+        true
+      ):sqlStringForTransformer(
+        actionRuntimeTransformer.referencedExtractor,
+        queryParams,
+        newFetchedData,
+        true
+      );
+
+      if (referenceQuery instanceof Domain2ElementFailed) {
+        return referenceQuery;
+      }
+
+      const extraWith:{ name: string; sql: string }[] = [{
+        name: "innerQuery",
+        sql: referenceQuery.sqlStringOrObject,
+      }]
+      const sqlResult = `SELECT json_agg(json_build_array(key, value))  AS "objectEntries" FROM "innerQuery", jsonb_each("innerQuery"."${(referenceQuery as any).resultAccessPath[1]}")`
+
+      return {
+        sqlStringOrObject: sqlResult, resultAccessPath: [0, "objectEntries"], extraWith,
+      };
+      break;
+    }
     case "objectDynamicAccess":
     case "freeObjectTemplate":
     case "objectAlter":
     case "listReducerToIndexObject":
-    case "objectEntries":
     case "objectValues": {
       return new Domain2ElementFailed({
         queryFailure: "QueryNotExecutable",
@@ -489,17 +563,17 @@ export function sqlStringForQuery(
   if (transformerRawQueries.length > 0) {
     queryParts.push(
       (transformerRawQueries as any as [string, sqlStringForTransformerElementValue][])
-        .flatMap((q) =>
-          typeof q[1] == "string"
-            ? '"' + q[0] + '" AS (' + q[1] + " )"
-            : (q[1].extraWith
-                ? q[1].extraWith.map((s: any) => '"' + s.name + '" AS (' + s.sql + " )").join(tokenSeparatorForWith) +
+        .flatMap((transformerRawQuery) =>
+          typeof transformerRawQuery[1] == "string"
+            ? '"' + transformerRawQuery[0] + '" AS (' + transformerRawQuery[1] + " )"
+            : (transformerRawQuery[1].extraWith
+                ? transformerRawQuery[1].extraWith.map((extra: any) => '"' + extra.name + '" AS (' + extra.sql + " )").join(tokenSeparatorForWith) +
                   tokenSeparatorForWith
                 : "") +
               '"' +
-              q[0] +
+              transformerRawQuery[0] +
               '" AS (' +
-              q[1].sqlStringOrObject +
+              transformerRawQuery[1].sqlStringOrObject +
               " )"
         )
         .join(tokenSeparatorForWith)

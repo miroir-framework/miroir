@@ -68,6 +68,18 @@
           }
         }
       },
+      "transformer_constant": {
+        "type": "object",
+        "definition": {
+          "transformerType": {
+            "type": "literal",
+            "definition": "constant"
+          },
+          "constantValue": {
+            "type": "any"
+          }
+        }
+      },
       "transformer_constantUuid": {
         "type": "object",
         "definition": {
@@ -217,6 +229,12 @@
           {
             "type": "schemaReference",
             "definition": {
+              "relativePath": "transformer_constant"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
               "relativePath": "transformer_constantUuid"
             }
           },
@@ -248,6 +266,12 @@
             "type": "schemaReference",
             "definition": {
               "relativePath": "transformer_mustacheStringTemplate"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformer_constant"
             }
           },
           {
@@ -922,6 +946,26 @@
           }
         }
       },
+      "transformerForRuntime_constant": {
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformerForRuntime_Abstract"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformer_constant"
+            }
+          }
+        ],
+        "definition": {}
+      },
       "transformerForRuntime_constantUuid": {
         "type": "object",
         "extend": [
@@ -1109,6 +1153,12 @@
         "type": "union",
         "discriminator": "transformerType",
         "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformerForRuntime_constant"
+            }
+          },
           {
             "type": "schemaReference",
             "definition": {

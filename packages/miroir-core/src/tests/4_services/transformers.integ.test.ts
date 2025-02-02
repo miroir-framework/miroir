@@ -193,10 +193,6 @@ const beforeAll = async () => {
 };
 
 afterAll(async () => {
-  if (!RUN_TEST) {
-    throw new Error("environment variable RUN_TEST must be defined");
-  }
-
   if (RUN_TEST == testSuiteName) {
     await persistenceStoreController.deleteStore(testStoreConfig.data);
     await persistenceStoreController.deleteStore(testStoreConfig.model);

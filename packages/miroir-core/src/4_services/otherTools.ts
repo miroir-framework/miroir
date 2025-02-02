@@ -8,7 +8,8 @@ export function ignorePostgresExtraAttributesOnRecord(instances: Record<string, 
 
 // ################################################################################################
 export function ignorePostgresExtraAttributesOnList(instances: EntityInstance[], furtherIgnore: string[] = []){
-  return instances.map(i => ignorePostgresExtraAttributesOnObject(i, furtherIgnore))
+  // return instances.map(i => ignorePostgresExtraAttributesOnObject(i, furtherIgnore))
+  return instances.map(i => ignorePostgresExtraAttributes(i, furtherIgnore))
 }
 
 // ################################################################################################
@@ -18,7 +19,7 @@ export function ignorePostgresExtraAttributesOnObject(instance: EntityInstance, 
 }
 
 // ################################################################################################
-export function ignorePostgresExtraAttributes(instance: any, furtherIgnore: string[] = []){
+export function ignorePostgresExtraAttributes(instance: any, furtherIgnore: string[] = []):any{
   const ignore = ["createdAt", "updatedAt", ...furtherIgnore]
   // return Object.fromEntries(Object.entries(instance).filter(e=>!ignore.includes(e[0])))
   return typeof instance == "object"
@@ -55,7 +56,7 @@ export function displayTestSuiteResults(
       console.log(" ",testResult.testLabel, ": ok");
     }
   }
-  console.log("============ end of results of testSuite");
+  // console.log("============ end of results of testSuite", currentTestSuiteName);
 }
 
 // ################################################################################################

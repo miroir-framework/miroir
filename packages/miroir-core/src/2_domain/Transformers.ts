@@ -437,9 +437,11 @@ export function transformer_resolveReference(
     ) {
       return new Domain2ElementFailed({
         queryFailure: "ReferenceFoundButUndefined",
-        queryContext: JSON.stringify(Object.keys(bank)),
+        failureOrigin: ["transformer_InnerReference_resolve"],
+        queryReference: transformerInnerReference.referenceName,
         failureMessage:
-          "found but undefined: referenceName " + transformerInnerReference.referenceName,
+        "found but undefined: referenceName " + transformerInnerReference.referenceName,
+        queryContext: JSON.stringify(Object.keys(bank)),
       });
     }
     return bank[transformerInnerReference.referenceName];
@@ -1073,12 +1075,14 @@ export function innerTransformer_apply(
       return transformer.constantObjectValue;
       break;
     }
-
     case "constantString": {
       return transformer.constantStringValue;
     }
     case "constantUuid": {
       return transformer.constantUuidValue;
+    }
+    case "constant": {
+      return transformer.constantValue;
     }
     case "dataflowObject": {
       const resultObject: Record<string,any> = {};

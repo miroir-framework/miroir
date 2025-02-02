@@ -581,11 +581,17 @@ export {
   GetQueryRunnerParamsForDeploymentEntityState,
   getQueryRunnerParamsForDeploymentEntityState,
   runQueryFromDeploymentEntityState,
+  GetExtractorRunnerParamsForDeploymentEntityState,
+  getExtractorRunnerParamsForDeploymentEntityState
 } from './2_domain/DeploymentEntityStateQuerySelectors.js';
 export {
   getDeploymentEntityStateJzodSchemaSelectorTemplateMap,
   getDeploymentEntityStateSelectorTemplateMap,
   getExtractorTemplateRunnerParamsForDeploymentEntityState,
+  GetExtractorTemplateRunnerParamsForDeploymentEntityState,
+  getQueryTemplateRunnerParamsForDeploymentEntityState,
+  GetQueryTemplateRunnerParamsForDeploymentEntityState,
+  runQueryTemplateFromDeploymentEntityState,
 } from './2_domain/DeploymentEntityStateQueryTemplateSelectors.js';
 export {
   selectEntityInstances,
@@ -615,6 +621,7 @@ export {
   extractEntityInstanceListFromListQueryAndDomainState,
   selectFetchQueryJzodSchemaFromDomainStateNew,
   selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
+  runQueryFromDomainState,
 } from './2_domain/DomainStateQuerySelectors.js';
 export {
   getSelectorMapForTemplate,
@@ -622,7 +629,15 @@ export {
   selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate,
   selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
   selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
-  selectEntityJzodSchemaFromDomainStateNewForTemplate
+  selectEntityJzodSchemaFromDomainStateNewForTemplate,
+  getQueryTemplateRunnerParamsForDomainState,
+  GetSelectorParamsForQueryTemplateOnDomainStateType,
+  getExtractorTemplateRunnerParamsForDomainState,
+  ExtractorTemplateRunnerForDomainState,
+  GetSelectorParamsForExtractorTemplateOnDomainStateType,
+  QueryTemplateRunnerForDomainState,
+  extractorTemplateRunnerForDomainState,
+  queryTemplateRunnerForDomainState,
 } from './2_domain/DomainStateQueryTemplateSelector.js';
 export {
   ExtractorTemplateRunnerInMemory
@@ -759,7 +774,7 @@ export {
   ignorePostgresExtraAttributes,
 } from './4_services/otherTools.js';
 export { miroirCoreStartup } from './startup.js';
-export { stringTuple, circularReplacer, resolvePathOnObject } from './tools.js';
+export { stringTuple, circularReplacer, resolvePathOnObject, domainStateToDeploymentEntityState } from "./tools.js";
 
 import entityAdminApplication from "../src/assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/25d935e7-9e93-42c2-aade-0472b883492b.json" assert { type: "json" };
 import entityEndpointVersion from './assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3d8da4d4-8f76-4bb4-9212-14869d81c00c.json' assert { type: "json" };
