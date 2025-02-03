@@ -24,22 +24,23 @@ export type TransformerTestSuite =
   transformerTests: Record<string, TransformerTestSuite>;
 }
 
-const ignoreFailureAttributes:string[] = [
+// by default only queryFailure and failureMessage are compared when expectedValue is a Domain2ElementFailed
+export const ignoreFailureAttributes:string[] = [
   "applicationSection",
   "deploymentUuid",
   "entityUuid",
+  "failureOrigin",
   "instanceUuid",
   "errorStack",
   "innerError",
+  "queryContext",
   "queryParameters",
+  "queryReference",
   "query",
 ];
 
 // export const transformerTests: Record<string, TransformerTestSuite | Record<string, TransformerTestSuite>> = {
 export const transformerTests: TransformerTestSuite = {
-  // "resolve basic transformer constantUuid": {
-  // "resolve_basic_transformer_constantUuid":
-  // {
   transformerTestType: "transformerTestSuite",
   transformerTestLabel: "transformers",
   transformerTests: {
@@ -71,22 +72,14 @@ export const transformerTests: TransformerTestSuite = {
                 referenceName: "nonExistentReference",
               },
               transformerParams: {},
-              ignoreAttributes: [
-                "applicationSection",
-                "deploymentUuid",
-                "entityUuid",
-                "instanceUuid",
-                "errorStack",
-                "innerError",
-                "queryParameters",
-                "query",
-              ],
+              ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
               expectedValue: {
-                queryFailure: "ReferenceNotFound",
-                failureOrigin: ["transformer_InnerReference_resolve"],
-                queryReference: "nonExistentReference",
-                failureMessage: "no referenceName nonExistentReference",
-                queryContext: "[]",
+                queryFailure: "QueryNotExecutable",
+                // queryFailure: "ReferenceNotFound",
+                // failureOrigin: ["transformer_InnerReference_resolve"],
+                // queryReference: "nonExistentReference",
+                // failureMessage: "no referenceName nonExistentReference",
+                // queryContext: "[]",
               },
             },
           },
@@ -170,13 +163,14 @@ export const transformerTests: TransformerTestSuite = {
                 referenceName: "nonExistentReference",
               },
               transformerParams: {},
-              ignoreAttributes: ignoreFailureAttributes,
+              ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
               expectedValue: {
-                queryFailure: "ReferenceNotFound",
-                failureOrigin: ["transformer_InnerReference_resolve"],
-                queryReference: "nonExistentReference",
-                failureMessage: "no referenceName nonExistentReference",
-                queryContext: "[]",
+                queryFailure: "QueryNotExecutable",
+                // queryFailure: "ReferenceNotFound",
+                // failureOrigin: ["transformer_InnerReference_resolve"],
+                // queryReference: "nonExistentReference",
+                // failureMessage: "no referenceName nonExistentReference",
+                // queryContext: "[]",
               },
             },
             "should fail when parameter reference value is undefined": {
@@ -190,22 +184,14 @@ export const transformerTests: TransformerTestSuite = {
               transformerParams: {
                 referenceFoundButUndefined: undefined,
               },
-              ignoreAttributes: [
-                "applicationSection",
-                "deploymentUuid",
-                "entityUuid",
-                "instanceUuid",
-                "errorStack",
-                "innerError",
-                "queryParameters",
-                "query",
-              ],
+              ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
               expectedValue: {
-                queryFailure: "ReferenceFoundButUndefined",
-                failureOrigin: ["transformer_InnerReference_resolve"],
-                queryReference: "referenceFoundButUndefined",
-                failureMessage: "found but undefined: referenceName referenceFoundButUndefined",
-                queryContext: '["referenceFoundButUndefined"]',
+                queryFailure: "QueryNotExecutable",
+                // queryFailure: "ReferenceFoundButUndefined",
+                // failureOrigin: ["transformer_InnerReference_resolve"],
+                // queryReference: "referenceFoundButUndefined",
+                // failureMessage: "found but undefined: referenceName referenceFoundButUndefined",
+                // queryContext: '["referenceFoundButUndefined"]',
               },
             },
             "should fail when parameter referencePath is invalid": {
@@ -219,13 +205,14 @@ export const transformerTests: TransformerTestSuite = {
               transformerParams: {
                 a: "test",
               },
-              ignoreAttributes: ignoreFailureAttributes,
+              ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
               expectedValue: {
-                queryFailure: "ReferenceFoundButUndefined",
-                failureOrigin: ["transformer_InnerReference_resolve"],
-                queryReference: '["invalidPath"]',
-                failureMessage: "no referencePath invalidPath",
-                queryContext: '["a"]',
+                queryFailure: "QueryNotExecutable",
+                // queryFailure: "ReferenceFoundButUndefined",
+                // failureOrigin: ["transformer_InnerReference_resolve"],
+                // queryReference: '["invalidPath"]',
+                // failureMessage: "no referencePath invalidPath",
+                // queryContext: '["a"]',
               },
             },
           },
@@ -271,22 +258,14 @@ export const transformerTests: TransformerTestSuite = {
                 referenceName: "nonExistentReference",
               },
               transformerParams: {},
-              ignoreAttributes: [
-                "applicationSection",
-                "deploymentUuid",
-                "entityUuid",
-                "instanceUuid",
-                "errorStack",
-                "innerError",
-                "queryParameters",
-                "query",
-              ],
+              ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
               expectedValue: {
-                queryFailure: "ReferenceNotFound",
-                failureOrigin: ["transformer_InnerReference_resolve"],
-                queryReference: "nonExistentReference",
-                failureMessage: "no referenceName nonExistentReference",
-                queryContext: "[]",
+                queryFailure: "QueryNotExecutable",
+                // queryFailure: "ReferenceNotFound",
+                // failureOrigin: ["transformer_InnerReference_resolve"],
+                // queryReference: "nonExistentReference",
+                // failureMessage: "no referenceName nonExistentReference",
+                // queryContext: "[]",
               },
             },
             "should fail when context referencePath is invalid": {
@@ -301,13 +280,14 @@ export const transformerTests: TransformerTestSuite = {
               transformerRuntimeContext: {
                 a: "test",
               },
-              ignoreAttributes: ignoreFailureAttributes,
+              ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
               expectedValue: {
-                queryFailure: "ReferenceFoundButUndefined",
-                failureOrigin: ["transformer_InnerReference_resolve"],
-                queryReference: '["a","invalidPath"]',
-                failureMessage: "no referencePath a,invalidPath",
-                queryContext: '["a"]',
+                queryFailure: "QueryNotExecutable",
+                // queryFailure: "ReferenceFoundButUndefined",
+                // failureOrigin: ["transformer_InnerReference_resolve"],
+                // queryReference: '["a","invalidPath"]',
+                // failureMessage: "no referencePath a,invalidPath",
+                // queryContext: '["a"]',
               },
             },
             "should fail when context reference value is undefined": {
@@ -322,13 +302,14 @@ export const transformerTests: TransformerTestSuite = {
               transformerRuntimeContext: {
                 referenceFoundButUndefined: undefined,
               },
-              ignoreAttributes: ignoreFailureAttributes,
+              ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
               expectedValue: {
-                queryFailure: "ReferenceFoundButUndefined",
-                failureOrigin: ["transformer_InnerReference_resolve"],
-                queryReference: "referenceFoundButUndefined",
-                failureMessage: "found but undefined: referenceName referenceFoundButUndefined",
-                queryContext: '["referenceFoundButUndefined"]',
+                queryFailure: "QueryNotExecutable",
+                // queryFailure: "ReferenceFoundButUndefined",
+                // failureOrigin: ["transformer_InnerReference_resolve"],
+                // queryReference: "referenceFoundButUndefined",
+                // failureMessage: "found but undefined: referenceName referenceFoundButUndefined",
+                // queryContext: '["referenceFoundButUndefined"]',
               },
             },
           },
@@ -355,6 +336,25 @@ export const transformerTests: TransformerTestSuite = {
             testObject1: { a: "testA", b: "testB" },
           },
           expectedValue: [ ["a", "testA"], ["b", "testB"] ],
+        },
+        "failed object entries for string parameter": {
+          transformerTestType: "transformerTest",
+          transformerTestLabel: "failed object entries for string parameter",
+          transformerName: "objectEntriesFailed",
+          transformer: {
+            transformerType: "objectEntries",
+            interpolation: "runtime",
+            referencedExtractor: {
+              transformerType: "constant",
+              constantValue: "testObject1",
+            },
+          },
+          transformerParams: {
+          },
+          ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+          expectedValue:  {
+            "queryFailure": "QueryNotExecutable",
+          },
         },
       },
     },

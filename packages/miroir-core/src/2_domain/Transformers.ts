@@ -830,10 +830,10 @@ export function innerTransformer_apply(
           : transformer_extended_apply(step, label, transformer.referencedExtractor, queryParams, contextResults);
       ;
 
-      // log.info(
-      //   "transformer_apply extractorTransformer count referencedExtractor resolvedReference",
-      //   resolvedReference
-      // );
+      log.info(
+        "transformer_apply objectEntries referencedExtractor=",
+        resolvedReference
+      );
 
       if (transformer_resolveReference instanceof Domain2ElementFailed) {
         log.error(
@@ -850,8 +850,9 @@ export function innerTransformer_apply(
       if (!(typeof resolvedReference == "object") || Array.isArray(resolvedReference)) {
         const failure: Domain2ElementFailed = new Domain2ElementFailed({
           queryFailure: "FailedTransformer_objectEntries",
-          failureMessage: "objectEntries transformer called on something that is not an object.",
-          queryParameters: JSON.stringify(resolvedReference, null, 2),
+          failureMessage: "objectEntries transformer called on something that is not an object: " + typeof resolvedReference,
+          // queryParameters: JSON.stringify(resolvedReference, null, 2),
+          queryParameters: resolvedReference,
         });
         log.error(
           "innerTransformer_apply extractorTransformer objectEntries referencedExtractor resolvedReference",
@@ -1300,21 +1301,43 @@ export function transformer_apply(
   //   JSON.stringify(Object.keys(contextResults??{}), null, 2)
   // );
   if (typeof transformer == "object") {
+    let result: Domain2QueryReturnType<any> = undefined as any;
     if (transformer instanceof Array) {
       log.info("transformer_apply called for array:", JSON.stringify(transformer, null, 2));
-      return innerTransformer_array_apply(step, label, transformer, queryParams, contextResults);
+      result = innerTransformer_array_apply(step, label, transformer, queryParams, contextResults);
     } else {
       // TODO: improve test, refuse interpretation of build transformer in runtime step
       if (transformer.transformerType != undefined) {
         if ((transformer as any)?.interpolation??"build" == step) {
-          return innerTransformer_apply(step, label, transformer, queryParams, contextResults);
+          result = innerTransformer_apply(step, label, transformer, queryParams, contextResults);
         } else {
-          return innerTransformer_plainObject_apply(step, label, transformer, queryParams, contextResults);
+          result = innerTransformer_plainObject_apply(step, label, transformer, queryParams, contextResults);
         }
       } else {
-        return innerTransformer_plainObject_apply(step, label, transformer, queryParams, contextResults);
+        result = innerTransformer_plainObject_apply(step, label, transformer, queryParams, contextResults);
       }
     }
+    return result
+    // if (result instanceof Domain2ElementFailed) {
+    //   log.error(
+    //     "transformer_apply failed for",
+    //     label,
+    //     "step",
+    //     step,
+    //     "transformer",
+    //     JSON.stringify(transformer, null, 2),
+    //     "result",
+    //     JSON.stringify(result, null, 2)
+    //   );
+    //   return new Domain2ElementFailed({
+    //     queryFailure: "QueryNotExecutable",
+    //     failureOrigin: ["transformer_apply"],
+    //     innerError: result,
+    //     queryContext: "failed to transform object attribute",
+    //   });
+    // } else {
+    //   return result;
+    // }
   } else {
     // plain value
     return transformer;
@@ -1387,6 +1410,7 @@ export function transformer_extended_apply(
         result = innerTransformer_plainObject_apply(step, label, transformer, queryParams, contextResults);
       }
     }
+    return result;
   } else {
     // plain value
     return transformer;
@@ -1412,10 +1436,70 @@ export function transformer_extended_apply(
   //   // Object.keys(contextResults??{})
   //   // // JSON.stringify(Object.keys(contextResults??{}), null, 2)
   // );
-  return result;
-
+  // return result
 }
 
+export function transformer_apply_wrapper(  step: Step,
+  label: string | undefined,
+  // transformer: TransformerForBuild | TransformerForRuntime | ExtendedTransformerForRuntime,
+  transformer: TransformerForBuild | TransformerForRuntime,
+  queryParams: Record<string, any>,
+  contextResults?: Record<string, any>,
+): Domain2QueryReturnType<any> {
+  // const result = transformer_extended_apply(step, label, transformer, queryParams, contextResults);
+  const result = transformer_apply(step, label, transformer, queryParams, contextResults);
+  if (result instanceof Domain2ElementFailed) {
+    log.error(
+      "transformer_extended_apply failed for",
+      label,
+      "step",
+      step,
+      "transformer",
+      JSON.stringify(transformer, null, 2),
+      "result",
+      JSON.stringify(result, null, 2)
+    );
+    return new Domain2ElementFailed({
+      queryFailure: "QueryNotExecutable",
+      failureOrigin: ["transformer_extended_apply"],
+      innerError: result,
+      queryContext: "failed to transform object attribute",
+    });
+  } else {
+    return result;
+  }
+}
+
+export function transformer_extended_apply_wrapper(  step: Step,
+  label: string | undefined,
+  transformer: TransformerForBuild | TransformerForRuntime | ExtendedTransformerForRuntime,
+  // transformer: TransformerForBuild | TransformerForRuntime,
+  queryParams: Record<string, any>,
+  contextResults?: Record<string, any>,
+): Domain2QueryReturnType<any> {
+  const result = transformer_extended_apply(step, label, transformer, queryParams, contextResults);
+  // const result = transformer_apply(step, label, transformer, queryParams, contextResults);
+  if (result instanceof Domain2ElementFailed) {
+    log.error(
+      "transformer_extended_apply failed for",
+      label,
+      "step",
+      step,
+      "transformer",
+      JSON.stringify(transformer, null, 2),
+      "result",
+      JSON.stringify(result, null, 2)
+    );
+    return new Domain2ElementFailed({
+      queryFailure: "QueryNotExecutable",
+      failureOrigin: ["transformer_extended_apply"],
+      innerError: result,
+      queryContext: "failed to transform object attribute",
+    });
+  } else {
+    return result;
+  }
+}
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################

@@ -10,7 +10,7 @@ import {
   TransformerForBuild_dataflowObject,
   TransformerForRuntime
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { transformer_apply } from "../../2_domain/Transformers.js";
+import { transformer_apply, transformer_apply_wrapper } from "../../2_domain/Transformers.js";
 import {
   author1,
   author2,
@@ -136,7 +136,8 @@ async function runTransformerTest(vitest: any, testSuiteNamePath: string[], tran
   );
   const transformer: TransformerForBuild | TransformerForRuntime = transformerTest.transformer;
 
-  const rawResult: Domain2QueryReturnType<any> = transformer_apply(
+  // const rawResult: Domain2QueryReturnType<any> = transformer_apply(
+  const rawResult: Domain2QueryReturnType<any> = transformer_apply_wrapper(
     "build",
     undefined,
     transformer,

@@ -34,6 +34,7 @@ import {
   entityPublisher,
   getBasicApplicationConfiguration,
   getBasicStoreUnitConfiguration,
+  ignorePostgresExtraAttributes,
   InitApplicationParameters,
   MetaEntity,
   PersistenceStoreController,
@@ -45,7 +46,13 @@ import {
   Uuid,
 } from "miroir-core";
 // } from "../../index.js";
-import { runTransformerTestSuite, transformerTestsDisplayResults, testSuites, TransformerTest, transformerTests } from "../2_domain/transformersTests.data.js";
+import {
+  runTransformerTestSuite,
+  transformerTestsDisplayResults,
+  testSuites,
+  TransformerTest,
+  transformerTests,
+} from "../2_domain/transformersTests.data.js";
 // const env:any = (import.meta as any).env
 // console.log("@@@@@@@@@@@@@@@@@@ env", env);
 const RUN_TEST= process.env.RUN_TEST
@@ -246,17 +253,23 @@ async function runTransformerTest(vitest: any, testNameArray: string[], transfor
   });
 
   const testSuitePathName = TestSuiteContext.testSuitePathName(testNameArray);
+  // console.log(testSuitePathName, "WWWWWWWWWWWWWWWWWW queryResult", JSON.stringify(queryResult, null, 2));
   console.log(testSuitePathName, "WWWWWWWWWWWWWWWWWW queryResult", JSON.stringify(queryResult, null, 2));
-  console.log(testSuitePathName, "WWWWWWWWWWWWWWWWWW queryResult error", queryResult instanceof Action2Error);
+  console.log(testSuitePathName, "WWWWWWWWWWWWWWWWWW queryResult is error", queryResult instanceof Action2Error);
+  let resultToCompare: any
   try {
     if (queryResult instanceof Action2Error) {
-      vitest.expect(queryResult.innerError, testSuitePathName).toEqual(transformerTest.expectedValue);
+      resultToCompare = ignorePostgresExtraAttributes(queryResult.innerError, transformerTest.ignoreAttributes);
+      // resultToCompare = queryResult.innerError
+      console.log(testSuitePathName, "WWWWWWWWWWWWWWWWWW queryResult", JSON.stringify(resultToCompare, null, 2));
+
+      vitest.expect(resultToCompare, testSuitePathName + "comparing received query error to expected result").toEqual(transformerTest.expectedValue);
     } else {
-      const testResult = (queryResult as Action2Success).returnedDomainElement.transformer;
+      resultToCompare = (queryResult as Action2Success).returnedDomainElement.transformer;
       // const testResult = queryResult.returnedDomainElement.transformer;
-      console.log(testSuitePathName, "testResult", JSON.stringify(queryResult, null, 2));
+      console.log(testSuitePathName, "testResult", JSON.stringify(resultToCompare, null, 2));
       console.log(testSuitePathName, "expectedValue", transformerTest.expectedValue);
-      vitest.expect(testResult, testSuitePathName).toEqual(transformerTest.expectedValue);
+      vitest.expect(resultToCompare, testSuitePathName).toEqual(transformerTest.expectedValue);
     }
     TestSuiteContext.setTestAssertionResult({
       assertionName: testSuitePathName,
@@ -267,7 +280,7 @@ async function runTransformerTest(vitest: any, testNameArray: string[], transfor
       assertionName: testSuitePathName,
       assertionResult: "error",
       assertionExpectedValue: transformerTest.expectedValue,
-      assertionActualValue: queryResult,
+      assertionActualValue: resultToCompare,
     });
   }
 

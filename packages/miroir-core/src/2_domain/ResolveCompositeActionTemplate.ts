@@ -1,6 +1,5 @@
 import {
   CompositeAction,
-  CompositeActionDefinition,
   CompositeActionTemplate,
   MetaModel,
   TransformerForBuild
@@ -9,7 +8,7 @@ import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { MiroirLoggerFactory } from "../4_services/LoggerFactory.js";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
-import { transformer_apply, transformer_extended_apply } from "./Transformers.js";
+import { transformer_apply_wrapper } from "./Transformers.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -67,8 +66,7 @@ export function resolveCompositeActionTemplate(
         "newLocalParameters",
         newLocalParameters
       );
-      // const resolvedTemplate = transformer_extended_apply(
-      const resolvedTemplate = transformer_apply(
+      const resolvedTemplate = transformer_apply_wrapper(
         "build",
         t[0],
         t[1] as any,
@@ -85,8 +83,8 @@ export function resolveCompositeActionTemplate(
   }
 
   const actionParamsAndTemplates = { ...localActionParams, ...resolvedCompositeActionTemplates };
-  // const resolvedCompositeActionDefinition: CompositeAction = transformer_extended_apply(
-  const resolvedCompositeActionDefinition: CompositeAction = transformer_apply(
+  // const resolvedCompositeActionDefinition: CompositeAction = transformer_apply(
+  const resolvedCompositeActionDefinition: CompositeAction = transformer_apply_wrapper(
     "build",
     compositeActionLabel,
     (compositeActionTemplate as any).definition as any as TransformerForBuild,

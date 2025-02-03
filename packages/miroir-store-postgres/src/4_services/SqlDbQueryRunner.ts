@@ -137,50 +137,63 @@ export class SqlDbQueryRunner {
       this.schema
     );
     if (sqlQueryParams instanceof Domain2ElementFailed) {
-      return Promise.resolve(sqlQueryParams);
+      return Promise.resolve(
+        new Domain2ElementFailed({
+          queryFailure: "QueryNotExecutable",
+          failureMessage: "could not generate SQL query for transformer",
+          query: JSON.stringify(selectorParams),
+          innerError: sqlQueryParams,
+        }))
     }
     
     const { query, transformerRawQueriesObject, endResultName, combinerRawQueriesObject } = sqlQueryParams
 
-    const rawResult = await this.persistenceStoreController.executeRawQuery(query);
-    log.info("asyncExtractWithQuery innerFullObjectTemplate #####RAWRESULT", JSON.stringify(rawResult));
-
-    if (rawResult instanceof Action2Error || rawResult.returnedDomainElement instanceof Domain2ElementFailed) {
-      log.error("asyncExtractWithQuery rawResult", JSON.stringify(rawResult));
-      return Promise.resolve({ elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } });
+    try {
+      const rawResult = await this.persistenceStoreController.executeRawQuery(query);
+      log.info("asyncExtractWithQuery innerFullObjectTemplate #####RAWRESULT", JSON.stringify(rawResult));
+  
+      if (rawResult instanceof Action2Error || rawResult.returnedDomainElement instanceof Domain2ElementFailed) {
+        log.error("asyncExtractWithQuery rawResult", JSON.stringify(rawResult));
+        return Promise.resolve({ elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } });
+      }
+  
+      const endResultPath =
+        selectorParams.extractor.runtimeTransformers && transformerRawQueriesObject[endResultName].resultAccessPath
+          ? transformerRawQueriesObject[endResultName].resultAccessPath
+          : selectorParams.extractor.combiners && combinerRawQueriesObject[endResultName].resultAccessPath
+          ? combinerRawQueriesObject[endResultName].resultAccessPath
+          : undefined;
+      const encloseEndResultInArray =
+        selectorParams.extractor.runtimeTransformers && transformerRawQueriesObject[endResultName].encloseEndResultInArray
+          ? transformerRawQueriesObject[endResultName].encloseEndResultInArray
+          : selectorParams.extractor.combiners && combinerRawQueriesObject[endResultName].encloseEndResultInArray
+          ? combinerRawQueriesObject[endResultName].encloseEndResultInArray
+          : undefined;
+      log.info(
+        "asyncExtractWithQuery runtimeTransformers",
+        selectorParams.extractor.runtimeTransformers &&
+          Array.isArray(transformerRawQueriesObject[endResultName].resultAccessPath),
+          "endResultName", endResultName,
+          "transformerRawQueriesObject", JSON.stringify(transformerRawQueriesObject, null, 2),
+          "endResultPath", endResultPath, endResultPath!==undefined, !!selectorParams.extractor.runtimeTransformers
+      );
+      const sqlResult =
+        endResultPath !== undefined
+          ? encloseEndResultInArray
+            ? [resolvePathOnObject(rawResult.returnedDomainElement, endResultPath??[])] // TODO: HACK! HACK!
+            : resolvePathOnObject(rawResult.returnedDomainElement, endResultPath)
+          : rawResult.returnedDomainElement;
+      log.info("asyncExtractWithQuery sqlResult", JSON.stringify(sqlResult));
+      // const result: Domain2QueryReturnType<DomainElementSuccess> = { elementType: "object", elementValue: {[endResultName]:sqlResult} }
+      const result: Domain2QueryReturnType<any> = {[endResultName]:sqlResult}
+      log.info("asyncExtractWithQuery returning result", JSON.stringify(result));
+      return Promise.resolve(result);
+    } catch (error) {
+      return new Domain2ElementFailed({
+        queryFailure: "QueryNotExecutable",
+        failureMessage: error as any,
+      });
     }
-
-    const endResultPath =
-      selectorParams.extractor.runtimeTransformers && transformerRawQueriesObject[endResultName].resultAccessPath
-        ? transformerRawQueriesObject[endResultName].resultAccessPath
-        : selectorParams.extractor.combiners && combinerRawQueriesObject[endResultName].resultAccessPath
-        ? combinerRawQueriesObject[endResultName].resultAccessPath
-        : undefined;
-    const encloseEndResultInArray =
-      selectorParams.extractor.runtimeTransformers && transformerRawQueriesObject[endResultName].encloseEndResultInArray
-        ? transformerRawQueriesObject[endResultName].encloseEndResultInArray
-        : selectorParams.extractor.combiners && combinerRawQueriesObject[endResultName].encloseEndResultInArray
-        ? combinerRawQueriesObject[endResultName].encloseEndResultInArray
-        : undefined;
-    log.info(
-      "asyncExtractWithQuery runtimeTransformers",
-      selectorParams.extractor.runtimeTransformers &&
-        Array.isArray(transformerRawQueriesObject[endResultName].resultAccessPath),
-        "endResultName", endResultName,
-        "transformerRawQueriesObject", JSON.stringify(transformerRawQueriesObject, null, 2),
-        "endResultPath", endResultPath, endResultPath!==undefined, !!selectorParams.extractor.runtimeTransformers
-    );
-    const sqlResult =
-      endResultPath !== undefined
-        ? encloseEndResultInArray
-          ? [resolvePathOnObject(rawResult.returnedDomainElement, endResultPath??[])] // TODO: HACK! HACK!
-          : resolvePathOnObject(rawResult.returnedDomainElement, endResultPath)
-        : rawResult.returnedDomainElement;
-    log.info("asyncExtractWithQuery sqlResult", JSON.stringify(sqlResult));
-    // const result: Domain2QueryReturnType<DomainElementSuccess> = { elementType: "object", elementValue: {[endResultName]:sqlResult} }
-    const result: Domain2QueryReturnType<any> = {[endResultName]:sqlResult}
-    log.info("asyncExtractWithQuery returning result", JSON.stringify(result));
-    return Promise.resolve(result);
   };
   
   // ################################################################################################

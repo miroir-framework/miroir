@@ -39,7 +39,8 @@ export class Domain2ElementFailed {
   public entityUuid?: string | undefined;
   public instanceUuid?: string | undefined;
 
-  constructor(elementValue: QueryFailed) {
+  constructor(elementValue: QueryFailed | Domain2ElementFailed) {
+  // constructor(elementValue: Domain2ElementFailed) {
     this.queryFailure = elementValue.queryFailure;
     this.query = elementValue.query;
     this.failureOrigin = elementValue.failureOrigin;

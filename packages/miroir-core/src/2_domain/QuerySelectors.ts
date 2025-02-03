@@ -10,8 +10,6 @@ import {
   CombinerByRelationReturningObjectList,
   DomainElement,
   DomainElementFailed,
-  DomainElementInstanceArray,
-  DomainElementInstanceUuidIndex,
   DomainElementSuccess,
   EntityInstance,
   EntityInstancesUuidIndex,
@@ -50,7 +48,7 @@ import { MiroirLoggerFactory } from "../4_services/LoggerFactory.js";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
 import { resolveExtractorTemplate } from "./Templates.js";
-import { applyTransformer, transformer_extended_apply } from "./Transformers.js";
+import { applyTransformer, transformer_extended_apply_wrapper } from "./Transformers.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -518,7 +516,7 @@ export const applyExtractorTransformerInMemory = (
 // ): Domain2QueryReturnType<DomainElementSuccess> => {
 ): Domain2QueryReturnType<any> => {
   log.info("applyExtractorTransformerInMemory  query", JSON.stringify(actionRuntimeTransformer, null, 2));
-  return transformer_extended_apply("runtime", "ROOT"/**WHAT?? */, actionRuntimeTransformer, queryParams, newFetchedData);
+  return transformer_extended_apply_wrapper("runtime", "ROOT"/**WHAT?? */, actionRuntimeTransformer, queryParams, newFetchedData);
 };
 
 // ################################################################################################

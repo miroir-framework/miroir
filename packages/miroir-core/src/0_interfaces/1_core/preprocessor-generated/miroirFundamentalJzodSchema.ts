@@ -6817,13 +6817,8 @@ export const miroirFundamentalJzodSchema = {
             }
           },
           "innerError": {
-            "type": "schemaReference",
-            "optional": true,
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "queryFailed"
-            },
-            "context": {}
+            "type": "any",
+            "optional": true
           },
           "applicationSection": {
             "type": "schemaReference",
@@ -30480,12 +30475,20 @@ export const miroirFundamentalJzodSchema = {
                 ]
               },
               "innerError": {
-                "type": "schemaReference",
+                "type": "union",
                 "optional": true,
-                "definition": {
-                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryFailed"
-                },
-                "context": {}
+                "definition": [
+                  {
+                    "type": "any",
+                    "optional": true
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
               },
               "applicationSection": {
                 "type": "schemaReference",
