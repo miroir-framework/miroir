@@ -8,24 +8,43 @@ import {
   QueryFailed,
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 
-export class Domain2ElementFailed {
+export type QueryFailureType =
+  | "FailedTransformer_mustache"
+  | "FailedTransformer_objectEntries"
+  | "FailedExtractor"
+  | "QueryNotExecutable"
+  | "DomainStateNotLoaded"
+  | "IncorrectParameters"
+  | "DeploymentNotFound"
+  | "ApplicationSectionNotFound"
+  | "EntityNotFound"
+  | "InstanceNotFound"
+  | "ReferenceNotFound"
+  | "ReferenceFoundButUndefined"
+  | "ReferenceFoundButAttributeUndefinedOnFoundObject";
+
+export interface IDomain2ElementFailed {
+  queryFailure: QueryFailureType;
+  query?: string | undefined;
+  failureOrigin?: string[] | undefined;
+  failureMessage?: string | undefined;
+  queryReference?: string | undefined;
+  queryParameters?: string | undefined;
+  queryContext?: string | undefined;
+  deploymentUuid?: string | undefined;
+  errorStack?: string[] | undefined;
+  innerError?: QueryFailed | Domain2ElementFailed | Action2Error | undefined;
+  applicationSection?: ApplicationSection | undefined;
+  entityUuid?: string | undefined;
+  instanceUuid?: string | undefined;
+}
+
+export class Domain2ElementFailed implements IDomain2ElementFailed {
   public get elementType() {
     return "failure";
   }
 
-  public queryFailure:
-    | "FailedTransformer_objectEntries"
-    | "FailedExtractor"
-    | "QueryNotExecutable"
-    | "DomainStateNotLoaded"
-    | "IncorrectParameters"
-    | "DeploymentNotFound"
-    | "ApplicationSectionNotFound"
-    | "EntityNotFound"
-    | "InstanceNotFound"
-    | "ReferenceNotFound"
-    | "ReferenceFoundButUndefined"
-    | "ReferenceFoundButAttributeUndefinedOnFoundObject";
+  public queryFailure: QueryFailureType;
   public query?: string | undefined;
   public failureOrigin?: string[] | undefined;
   public failureMessage?: string | undefined;
@@ -39,8 +58,8 @@ export class Domain2ElementFailed {
   public entityUuid?: string | undefined;
   public instanceUuid?: string | undefined;
 
-  constructor(elementValue: QueryFailed | Domain2ElementFailed) {
-  // constructor(elementValue: Domain2ElementFailed) {
+  // constructor(elementValue: QueryFailed | Domain2ElementFailed) {
+  constructor(elementValue: IDomain2ElementFailed) {
     this.queryFailure = elementValue.queryFailure;
     this.query = elementValue.query;
     this.failureOrigin = elementValue.failureOrigin;

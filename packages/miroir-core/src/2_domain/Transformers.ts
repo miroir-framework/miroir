@@ -587,19 +587,26 @@ function mustacheStringTemplate_apply(
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
 ): Domain2QueryReturnType<any> {
-  const result = Mustache.render(transformer.definition, {...queryParams, ...contextResults});
-  // log.info(
-  //   "mustacheStringTemplate_apply for",
-  //   transformer,
-  //   "queryParams",
-  //   JSON.stringify(queryParams, null, 2),
-  //   "contextResults",
-  //   JSON.stringify(contextResults, null, 2),
-  //   "result",
-  //   result
-  // );
-  // return { elementType: "string", elementValue: result };
-  return result;
+  try {
+    const result = Mustache.render(transformer.definition, {...queryParams, ...contextResults});
+    return result;
+  } catch (error) {
+    log.info(
+      "mustacheStringTemplate_apply for",
+      transformer,
+      "queryParams",
+      JSON.stringify(queryParams, null, 2),
+      "contextResults",
+      JSON.stringify(contextResults, null, 2),
+      "error",
+      error
+    );
+    return new Domain2ElementFailed({
+      queryFailure: "FailedTransformer_mustache",
+      failureOrigin: ["mustacheStringTemplate_apply"],
+      queryContext: "error in mustacheStringTemplate_apply, could not render template: " + error,
+    });
+  }
 }
 
 // ################################################################################################
