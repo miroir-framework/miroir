@@ -720,20 +720,19 @@
       },
       "transformerForBuild_objectValues": {
         "type": "object",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "relativePath": "transformer_orderBy"
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformerForBuild_referencingOrRecursiveTransformer"
+            }
           }
-        },
+        ],
         "definition": {
           "transformerType": {
             "type": "literal",
             "definition": "objectValues"
-          },
-          "referencedExtractor": {
-            "type": "string"
           }
         }
       },

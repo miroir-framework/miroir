@@ -1822,22 +1822,19 @@ export const miroirFundamentalJzodSchema = {
       },
       "transformerForBuild_objectValues": {
         "type": "object",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "relativePath": "transformer_orderBy",
-            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
-          },
-          "context": {}
-        },
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformerForBuild_referencingOrRecursiveTransformer"
+            }
+          }
+        ],
         "definition": {
           "transformerType": {
             "type": "literal",
             "definition": "objectValues"
-          },
-          "referencedExtractor": {
-            "type": "string"
           }
         }
       },
@@ -33084,14 +33081,15 @@ export const miroirFundamentalJzodSchema = {
           },
           {
             "type": "object",
-            "extend": {
-              "type": "schemaReference",
-              "definition": {
-                "eager": true,
-                "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_orderBy_extend"
-              },
-              "context": {}
-            },
+            "extend": [
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "eager": true,
+                  "relativePath": "transformerForBuild_referencingOrRecursiveTransformer"
+                }
+              }
+            ],
             "definition": {
               "transformerType": {
                 "type": "union",
@@ -33099,20 +33097,6 @@ export const miroirFundamentalJzodSchema = {
                   {
                     "type": "literal",
                     "definition": "objectValues"
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "carryOnObject"
-                    }
-                  }
-                ]
-              },
-              "referencedExtractor": {
-                "type": "union",
-                "definition": [
-                  {
-                    "type": "string"
                   },
                   {
                     "type": "schemaReference",
@@ -33137,14 +33121,15 @@ export const miroirFundamentalJzodSchema = {
           },
           {
             "type": "object",
-            "extend": {
-              "type": "schemaReference",
-              "definition": {
-                "eager": true,
-                "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_orderBy_extend"
-              },
-              "context": {}
-            },
+            "extend": [
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "eager": true,
+                  "relativePath": "transformerForBuild_referencingOrRecursiveTransformer"
+                }
+              }
+            ],
             "definition": {
               "transformerType": {
                 "type": "union",
@@ -33152,20 +33137,6 @@ export const miroirFundamentalJzodSchema = {
                   {
                     "type": "literal",
                     "definition": "objectValues"
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "carryOnObject"
-                    }
-                  }
-                ]
-              },
-              "referencedExtractor": {
-                "type": "union",
-                "definition": [
-                  {
-                    "type": "string"
                   },
                   {
                     "type": "schemaReference",

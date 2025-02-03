@@ -8,6 +8,7 @@ import {
   TransformerForRuntime,
   TransformerForRuntime_innerFullObjectTemplate,
   Domain2ElementFailed,
+  transformer_mustacheStringTemplate_apply,
   transformer_resolveReference
 } from "miroir-core";
 import { RecursiveStringRecords } from "../4_services/SqlDbQueryTemplateRunner";
@@ -167,9 +168,35 @@ export function sqlStringForTransformer(
       };
     }
     case "mustacheStringTemplate": {
-      const result = actionRuntimeTransformer.definition.replace(/{{/g, '"').replace(/}}/g, '"').replace(/\./g, '"."');
+      // const renderSqlTemplate = (template: string): string =>{
+      //   return template.replace(/{{\s*([^}]+?)\s*}}/g, (match, ...splits: any):string => {
+      //     // Split the placeholder content by dot.
+      //     log.info("sqlStringForTransformer mustacheStringTemplate match", JSON.stringify(match, null, 2));
+      //     log.info("sqlStringForTransformer mustacheStringTemplate splits", JSON.stringify(splits, null, 2));
+      //     const parts = splits[0].split('.').map((p:string) => p.trim());
+      //     const result = parts.reduce((acc: string, part: string) => {
+      //       if (acc === "") {
+      //         return `"${part}"`;
+      //       } else {
+      //         return `${acc}->>"${part}"`; // using json object access. TODO: enable table.column access
+      //       }
+      //     }, "");
+      //     return result;
+      //   });
+      // }
+      const resolvedReference = transformer_mustacheStringTemplate_apply(
+        "build",
+        actionRuntimeTransformer,
+        queryParams,
+        newFetchedData
+      )
+      if (resolvedReference instanceof Domain2ElementFailed) {
+        return resolvedReference;
+      }
+      // log.info("sqlStringForTransformer mustacheStringTemplate sqlQuery", sqlQuery);
       return {
-        sqlStringOrObject: result,
+        sqlStringOrObject: `SELECT '${resolvedReference}' as "mustacheStringTemplate"`,
+        resultAccessPath: topLevelTransformer ? [0, "mustacheStringTemplate"] : undefined,
       };
     }
     case "innerFullObjectTemplate":
@@ -364,6 +391,7 @@ export function sqlStringForTransformer(
     }
     case "parameterReference":
     case "contextReference": {
+      // TODO: only resolves references to static values, not to values obtained during the execution of the query
       const resolvedReference = transformer_resolveReference(
         "runtime",
         actionRuntimeTransformer,
@@ -413,18 +441,49 @@ export function sqlStringForTransformer(
         name: "innerQuery",
         sql: referenceQuery.sqlStringOrObject,
       }]
-      const sqlResult = `SELECT json_agg(json_build_array(key, value))  AS "objectEntries" FROM "innerQuery", jsonb_each("innerQuery"."${(referenceQuery as any).resultAccessPath[1]}")`
+      const sqlResult = `SELECT json_agg(json_build_array(key, value)) AS "objectEntries" FROM "innerQuery", jsonb_each("innerQuery"."${(referenceQuery as any).resultAccessPath[1]}")`
 
       return {
         sqlStringOrObject: sqlResult, resultAccessPath: [0, "objectEntries"], extraWith,
       };
       break;
     }
+    case "objectValues": {
+      const referenceQuery = typeof actionRuntimeTransformer.referencedExtractor == "string"?sqlStringForTransformer(
+        {
+          transformerType: "constant",
+          interpolation: "runtime",
+          constantValue: actionRuntimeTransformer.referencedExtractor as any,
+        },
+        queryParams,
+        newFetchedData,
+        true
+      ):sqlStringForTransformer(
+        actionRuntimeTransformer.referencedExtractor,
+        queryParams,
+        newFetchedData,
+        true
+      );
+
+      if (referenceQuery instanceof Domain2ElementFailed) {
+        return referenceQuery;
+      }
+
+      const extraWith:{ name: string; sql: string }[] = [{
+        name: "innerQuery",
+        sql: referenceQuery.sqlStringOrObject,
+      }]
+      const sqlResult = `SELECT json_agg(value) AS "objectValues" FROM "innerQuery", jsonb_each("innerQuery"."${(referenceQuery as any).resultAccessPath[1]}")`
+
+      return {
+        sqlStringOrObject: sqlResult, resultAccessPath: [0, "objectValues"], extraWith,
+      };
+      break;
+    }
     case "objectDynamicAccess":
     case "freeObjectTemplate":
     case "objectAlter":
-    case "listReducerToIndexObject":
-    case "objectValues": {
+    case "listReducerToIndexObject": {
       return new Domain2ElementFailed({
         queryFailure: "QueryNotExecutable",
         query: JSON.stringify(actionRuntimeTransformer),

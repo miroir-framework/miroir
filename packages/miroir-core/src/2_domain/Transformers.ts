@@ -54,7 +54,7 @@ export type Step = "build" | "runtime";
 export const defaultTransformers = {
   transformer_apply,
   transformer_extended_apply,
-  mustacheStringTemplate_apply,
+  transformer_mustacheStringTemplate_apply,
   transformer_InnerReference_resolve,
   transformer_objectAlter,
   transformer_object_fullTemplate,
@@ -543,7 +543,7 @@ export function transformer_InnerReference_resolve  (
       break;
     }
     case "mustacheStringTemplate": {
-      return defaultTransformers.mustacheStringTemplate_apply(
+      return defaultTransformers.transformer_mustacheStringTemplate_apply(
         step,
         transformerInnerReference,
         localQueryParams,
@@ -581,7 +581,7 @@ export function transformer_InnerReference_resolve  (
 // string -> string
 // or
 // string, <A> -> A
-function mustacheStringTemplate_apply(
+export function transformer_mustacheStringTemplate_apply(
   step: Step,
   transformer: TransformerForBuild_mustacheStringTemplate | TransformerForRuntime_mustacheStringTemplate,
   queryParams: Record<string, any>,
@@ -592,7 +592,7 @@ function mustacheStringTemplate_apply(
     return result;
   } catch (error) {
     log.info(
-      "mustacheStringTemplate_apply for",
+      "transformer_mustacheStringTemplate_apply for",
       transformer,
       "queryParams",
       JSON.stringify(queryParams, null, 2),
@@ -603,8 +603,8 @@ function mustacheStringTemplate_apply(
     );
     return new Domain2ElementFailed({
       queryFailure: "FailedTransformer_mustache",
-      failureOrigin: ["mustacheStringTemplate_apply"],
-      queryContext: "error in mustacheStringTemplate_apply, could not render template: " + error,
+      failureOrigin: ["transformer_mustacheStringTemplate_apply"],
+      queryContext: "error in transformer_mustacheStringTemplate_apply, could not render template: " + error,
     });
   }
 }
@@ -874,9 +874,17 @@ export function innerTransformer_apply(
       return Object.entries(resolvedReference);
     }
     case "objectValues": {
-      const resolvedReference = defaultTransformers.transformer_InnerReference_resolve(
+      const resolvedReference = typeof transformer.referencedExtractor == "string"?
+      defaultTransformers.transformer_InnerReference_resolve(
         step,
         { transformerType: "contextReference", referenceName: transformer.referencedExtractor }, // TODO: there's a bug, count can not be used at build time, although it should be usable at build time
+        queryParams,
+        contextResults
+      ):
+      defaultTransformers.transformer_extended_apply(
+        step,
+        label,
+        transformer.referencedExtractor,
         queryParams,
         contextResults
       );
@@ -988,7 +996,7 @@ export function innerTransformer_apply(
       );
     }
     case "mustacheStringTemplate": {
-      return defaultTransformers.mustacheStringTemplate_apply(step, transformer, queryParams, contextResults);
+      return defaultTransformers.transformer_mustacheStringTemplate_apply(step, transformer, queryParams, contextResults);
       break;
     }
     case "unique": {
