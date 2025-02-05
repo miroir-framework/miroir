@@ -71,11 +71,7 @@ console.log("generateZodSchemaFileFromJzodSchema miroirFundamentalJzodSchema:", 
 
 // ################################################################################################
 export async function generateZodSchemaFileFromJzodSchema(
-  // jzodElement: any,
-  // targetFileName: any,
-  // jzodSchemaVariableName: any,
   jzodElement: any,
-  // jzodElement: JzodElement,
   targetFileName: string,
   jzodSchemaVariableName:string,
 ) {

@@ -21,13 +21,12 @@ import { MiroirLoggerFactory } from "../../../4_services/LoggerFactory.js";
 import { packageName } from "../../../constants.js";
 import { LoggerInterface } from "../../4-services/LoggerInterface.js";
 import { optional } from "zod";
-import { domainElement } from "../preprocessor-generated/miroirFundamentalType.js";
 // import {
 //   extractorOrCombinerReturningObject,
 //   boxedQueryWithExtractorCombinerTransformer,
 //   JzodElement,
-//   transformerForBuild_object_pickListElement,
-//   transformerForRuntime_object_pickListElement,
+//   transformerForBuild_object_listPickElement,
+//   transformerForRuntime_list_listPickElement,
 //   testActionRunTest,
 // } from "../preprocessor-generated/miroirFundamentalType.js";
 // import { entityDefinitionTest } from "../../...js";
@@ -84,7 +83,9 @@ function makeReferencesAbsolute(jzodSchema: any, absolutePath: string, force?: b
     }
     case "object": {
       const convertedExtend = jzodSchema.extend
-        ? makeReferencesAbsolute(jzodSchema.extend, absolutePath, force)
+        ? typeof jzodSchema.extend == "object" &&!Array.isArray(jzodSchema.extend)?
+          makeReferencesAbsolute(jzodSchema.extend, absolutePath, force)
+          : jzodSchema.extend.map((e: any) => makeReferencesAbsolute(e, absolutePath, force))
         : (undefined as any);
       const convertedDefinition = Object.fromEntries(
         Object.entries(jzodSchema.definition).map((e: [string, any]) => [
@@ -1423,106 +1424,6 @@ export function getMiroirFundamentalJzodSchema(
                 relativePath: "domainElementFailed",
               },
             },
-            // },
-            // {
-            //   type: "schemaReference",
-            //   definition: {
-            //     absolutePath: miroirFundamentalJzodSchemaUuid,
-            //     relativePath: "domainElementVoid",
-            //   },
-            // },
-            // {
-            //   type: "schemaReference",
-            //   definition: {
-            //     absolutePath: miroirFundamentalJzodSchemaUuid,
-            //     relativePath: "domainElementAny",
-            //   },
-            // },
-            // {
-            //   type: "schemaReference",
-            //   definition: {
-            //     absolutePath: miroirFundamentalJzodSchemaUuid,
-            //     relativePath: "domainElementObjectOrFailed",
-            //   },
-            // },
-            // {
-            //   type: "schemaReference",
-            //   definition: {
-            //     absolutePath: miroirFundamentalJzodSchemaUuid,
-            //     relativePath: "domainElementInstanceUuidIndexOrFailed",
-            //   },
-            // },
-            // {
-            //   type: "schemaReference",
-            //   definition: {
-            //     absolutePath: miroirFundamentalJzodSchemaUuid,
-            //     relativePath: "domainElementEntityInstanceCollectionOrFailed",
-            //   },
-            // },
-            // {
-            //   type: "schemaReference",
-            //   definition: {
-            //     absolutePath: miroirFundamentalJzodSchemaUuid,
-            //     relativePath: "domainElementInstanceArrayOrFailed",
-            //   },
-            // },
-            // {
-            //   type: "schemaReference",
-            //   definition: {
-            //     absolutePath: miroirFundamentalJzodSchemaUuid,
-            //     relativePath: "domainElementEntityInstanceOrFailed",
-            //   },
-            // },
-            // {
-            //   type: "object",
-            //   definition: {
-            //     elementType: {
-            //       type: "literal",
-            //       definition: "instanceUuid",
-            //     },
-            //     elementValue: {
-            //       type: "schemaReference",
-            //       definition: {
-            //         absolutePath: miroirFundamentalJzodSchemaUuid,
-            //         relativePath: "entityInstanceUuid",
-            //       },
-            //     },
-            //   },
-            // },
-            // {
-            //   type: "object",
-            //   definition: {
-            //     elementType: {
-            //       type: "literal",
-            //       definition: "instanceUuidIndexUuidIndex",
-            //     },
-            //     elementValue: {
-            //       type: "schemaReference",
-            //       definition: {
-            //         absolutePath: miroirFundamentalJzodSchemaUuid,
-            //         relativePath: "entityInstancesUuidIndex",
-            //       },
-            //     },
-            //   },
-            // },
-            // {
-            //   type: "schemaReference",
-            //   definition: {
-            //     relativePath: "domainElementString",
-            //   },
-            // },
-            // {
-            //   type: "schemaReference",
-            //   definition: {
-            //     relativePath: "domainElementNumber",
-            //   },
-            // },
-            // {
-            //   type: "schemaReference",
-            //   definition: {
-            //     relativePath: "domainElementArray",
-            //   },
-            // },
           ],
         },
         // ########################################################################################
@@ -2564,13 +2465,6 @@ export function getMiroirFundamentalJzodSchema(
     modelAction: (miroirFundamentalJzodSchema.definition as any).context?.modelAction as any,
     instanceAction: (miroirFundamentalJzodSchema.definition as any).context?.instanceAction as any,
     storeManagementAction: (miroirFundamentalJzodSchema.definition as any).context?.storeManagementAction as any,
-    // undoRedoAction: (miroirFundamentalJzodSchema.definition as JzodReference).context?.undoRedoAction as JzodElement,
-    // storeOrBundleAction: (miroirFundamentalJzodSchema.definition as JzodReference).context
-    //   ?.storeOrBundleAction as JzodElement,
-    // modelAction: (miroirFundamentalJzodSchema.definition as JzodReference).context?.modelAction as JzodElement,
-    // instanceAction: (miroirFundamentalJzodSchema.definition as JzodReference).context?.instanceAction as JzodElement,
-    // storeManagementAction: (miroirFundamentalJzodSchema.definition as JzodReference).context
-    //   ?.storeManagementAction as JzodElement,
     transactionalInstanceAction: domainEndpointVersionV1.definition.actions.find(
       (a: any) =>
         a.actionParameters.definition.actionType &&
@@ -2757,19 +2651,19 @@ export function getMiroirFundamentalJzodSchema(
         boxedExtractorOrCombinerReturningObjectList: (miroirFundamentalJzodSchema as any).definition.context.boxedExtractorOrCombinerReturningObjectList,
         boxedQueryWithExtractorCombinerTransformer: (miroirFundamentalJzodSchema as any).definition.context.boxedQueryWithExtractorCombinerTransformer,
         boxedExtractorOrCombinerReturningObjectOrObjectList: (miroirFundamentalJzodSchema as any).definition.context.boxedExtractorOrCombinerReturningObjectOrObjectList,
-        extractor: (miroirFundamentalJzodSchema as any).definition.context.extractor,
+        extractorOrCombinerRoot: (miroirFundamentalJzodSchema as any).definition.context.extractorOrCombinerRoot,
+        extractorByEntityReturningObjectList: (miroirFundamentalJzodSchema as any).definition.context.extractorByEntityReturningObjectList,
         extractorWrapperReturningList: (miroirFundamentalJzodSchema as any).definition.context.extractorWrapperReturningList,
         extractorWrapperReturningObject: (miroirFundamentalJzodSchema as any).definition.context.extractorWrapperReturningObject,
-        extractorByEntityReturningObjectList: (miroirFundamentalJzodSchema as any).definition.context.extractorByEntityReturningObjectList,
-        extractorOrCombinerContextReference: (miroirFundamentalJzodSchema as any).definition.context.extractorOrCombinerContextReference,
         extractorForObjectByDirectReference: (miroirFundamentalJzodSchema as any).definition.context.extractorForObjectByDirectReference,
-        extractorWrapper: (miroirFundamentalJzodSchema as any).definition.context.extractorWrapper,
+        extractorOrCombinerContextReference: (miroirFundamentalJzodSchema as any).definition.context.extractorOrCombinerContextReference,
         extractorCombinerByHeteronomousManyToManyReturningListOfObjectList: (miroirFundamentalJzodSchema as any).definition.context.extractorCombinerByHeteronomousManyToManyReturningListOfObjectList,
         extractorOrCombiner: (miroirFundamentalJzodSchema as any).definition.context.extractorOrCombiner,
-        extractorOrCombinerRoot: (miroirFundamentalJzodSchema as any).definition.context.extractorOrCombinerRoot,
         extractorOrCombinerReturningObject: (miroirFundamentalJzodSchema as any).definition.context.extractorOrCombinerReturningObject,
         extractorOrCombinerReturningObjectList: (miroirFundamentalJzodSchema as any).definition.context.extractorOrCombinerReturningObjectList,
         extractorOrCombinerReturningObjectOrObjectList: (miroirFundamentalJzodSchema as any).definition.context.extractorOrCombinerReturningObjectOrObjectList,
+        extractorWrapper: (miroirFundamentalJzodSchema as any).definition.context.extractorWrapper,
+        extractor: (miroirFundamentalJzodSchema as any).definition.context.extractor,
         combinerForObjectByRelation: (miroirFundamentalJzodSchema as any).definition.context.combinerForObjectByRelation,
         combinerByRelationReturningObjectList: (miroirFundamentalJzodSchema as any).definition.context.combinerByRelationReturningObjectList,
         combinerByManyToManyRelationReturningObjectList: (miroirFundamentalJzodSchema as any).definition.context.combinerByManyToManyRelationReturningObjectList,
@@ -2782,6 +2676,24 @@ export function getMiroirFundamentalJzodSchema(
         runBoxedExtractorTemplateAction: (miroirFundamentalJzodSchema as any).definition.context.runBoxedExtractorTemplateAction,
         // runBoxedQueryTemplateOrBoxedExtractorTemplateAction: queryEndpointVersionV1.definition.actions[0].actionParameters,
         // queries
+        // Transformer constants and references
+        transformer_label: (miroirFundamentalJzodSchema as any).definition.context.transformer_label,
+        transformer_orderBy: (miroirFundamentalJzodSchema as any).definition.context.transformer_orderBy,
+        transformer_constant: (transformerJzodSchema as any).definition.context.transformer_constant,
+        transformer_constantUuid: (transformerJzodSchema as any).definition.context.transformer_constantUuid,
+        transformer_constantObject: (transformerJzodSchema as any).definition.context.transformer_constantObject,
+        transformer_constantListAsExtractor: (transformerJzodSchema as any).definition.context.transformer_constantListAsExtractor,
+        transformer_constantString: (transformerJzodSchema as any).definition.context.transformer_constantString,
+        transformer_constants: (transformerJzodSchema as any).definition.context.transformer_constants,
+        transformer_extractors: (transformerJzodSchema as any).definition.context.transformer_extractors,
+        transformer_newUuid: (transformerJzodSchema as any).definition.context.transformer_newUuid,
+        transformer_parameterReference: (transformerJzodSchema as any).definition.context.transformer_parameterReference,
+        transformer_contextReference: (transformerJzodSchema as any).definition.context.transformer_contextReference,
+        transformer_contextOrParameterReference: (transformerJzodSchema as any).definition.context.transformer_contextOrParameterReference,
+        transformer_objectDynamicAccess: (transformerJzodSchema as any).definition.context.transformer_objectDynamicAccess,
+        transformer_InnerReference: (transformerJzodSchema as any).definition.context.transformer_InnerReference,
+        transformer_mustacheStringTemplate: (transformerJzodSchema as any).definition.context.transformer_mustacheStringTemplate,
+        // Extractor Templates
         extractorTemplateRoot: (miroirFundamentalJzodSchema as any).definition.context.extractorTemplateRoot,
         queryFailed: (miroirFundamentalJzodSchema as any).definition.context.queryFailed,
         extractorTemplateByManyToManyRelationReturningObjectList: (miroirFundamentalJzodSchema as any).definition.context
@@ -2803,21 +2715,9 @@ export function getMiroirFundamentalJzodSchema(
         extractorTemplateByExtractorCombiner: (miroirFundamentalJzodSchema as any).definition.context.extractorTemplateByExtractorCombiner,
         extractorOrCombinerTemplate: (miroirFundamentalJzodSchema as any).definition.context.extractorOrCombinerTemplate,
         extractorOrCombinerTemplateRecord: (miroirFundamentalJzodSchema as any).definition.context.extractorOrCombinerTemplateRecord,
-        transformer_mustacheStringTemplate: (transformerJzodSchema as any).definition.context.transformer_mustacheStringTemplate,
-        transformer_constant: (transformerJzodSchema as any).definition.context.transformer_constant,
-        transformer_constantUuid: (transformerJzodSchema as any).definition.context.transformer_constantUuid,
-        transformer_constantObject: (transformerJzodSchema as any).definition.context.transformer_constantObject,
-        transformer_constantString: (transformerJzodSchema as any).definition.context.transformer_constantString,
-        transformer_constants: (transformerJzodSchema as any).definition.context.transformer_constants,
-        transformer_newUuid: (transformerJzodSchema as any).definition.context.transformer_newUuid,
-        transformer_parameterReference: (transformerJzodSchema as any).definition.context.transformer_parameterReference,
-        transformer_contextReference: (transformerJzodSchema as any).definition.context.transformer_contextReference,
-        transformer_contextOrParameterReference: (transformerJzodSchema as any).definition.context.transformer_contextOrParameterReference,
-        transformer_objectDynamicAccess: (transformerJzodSchema as any).definition.context.transformer_objectDynamicAccess,
-        transformer_InnerReference: (transformerJzodSchema as any).definition.context.transformer_InnerReference,
-        transformer_label: (miroirFundamentalJzodSchema as any).definition.context.transformer_label,
-        transformer_orderBy: (miroirFundamentalJzodSchema as any).definition.context.transformer_orderBy,
         transformerForBuild: (transformerJzodSchema as any).definition.context.transformerForBuild,
+        transformerForBuild_reference: (transformerJzodSchema as any).definition.context.transformerForBuild_reference,
+        transformerForBuild_count_root: (miroirFundamentalJzodSchema as any).definition.context.transformerForBuild_count_root,
         transformerForBuild_count: (miroirFundamentalJzodSchema as any).definition.context.transformerForBuild_count,
         transformerForBuild_dataflowObject: (transformerJzodSchema as any).definition.context.transformerForBuild_dataflowObject,
         transformerForBuild_freeObjectTemplate: (transformerJzodSchema as any).definition.context.transformerForBuild_freeObjectTemplate,
@@ -2826,17 +2726,23 @@ export function getMiroirFundamentalJzodSchema(
         transformerForBuild_list: (transformerJzodSchema as any).definition.context.transformerForBuild_list,
         transformerForBuild_mustacheStringTemplate: (miroirFundamentalJzodSchema as any).definition.context.transformerForBuild_mustacheStringTemplate,
         transformerForBuild_list_listMapperToList: (miroirFundamentalJzodSchema as any).definition.context.transformerForBuild_list_listMapperToList,
+        transformerForBuild_object_listReducerToIndexObject_root: (miroirFundamentalJzodSchema as any).definition.context.transformerForBuild_object_listReducerToIndexObject_root,
         transformerForBuild_object_listReducerToIndexObject: (miroirFundamentalJzodSchema as any).definition.context.transformerForBuild_object_listReducerToIndexObject,
         transformerForBuild_object_listReducerToSpreadObject: (miroirFundamentalJzodSchema as any).definition.context.transformerForBuild_object_listReducerToSpreadObject,
         transformerForBuild_object: (transformerJzodSchema as any).definition.context.transformerForBuild_object,
+        transformerForBuild_object_fullTemplate_root: (miroirFundamentalJzodSchema as any).definition.context.transformerForBuild_object_fullTemplate_root,
         transformerForBuild_object_fullTemplate: (miroirFundamentalJzodSchema as any).definition.context.transformerForBuild_object_fullTemplate,
-        transformerForBuild_object_pickListElement: (miroirFundamentalJzodSchema as any).definition.context.transformerForBuild_object_pickListElement,
-        transformerForBuild_objectEntries: (transformerJzodSchema as any).definition.context.transformerForBuild_objectValues,
+        transformerForBuild_object_listPickElement_root: (miroirFundamentalJzodSchema as any).definition.context.transformerForBuild_object_listPickElement_root,
+        transformerForBuild_object_listPickElement: (miroirFundamentalJzodSchema as any).definition.context.transformerForBuild_object_listPickElement,
+        transformerForBuild_objectEntries_root: (transformerJzodSchema as any).definition.context.transformerForBuild_objectEntries_root,
+        transformerForBuild_objectEntries: (transformerJzodSchema as any).definition.context.transformerForBuild_objectEntries,
+        transformerForBuild_objectValues_root: (transformerJzodSchema as any).definition.context.transformerForBuild_objectValues_root,
         transformerForBuild_objectValues: (transformerJzodSchema as any).definition.context.transformerForBuild_objectValues,
-        transformerForBuild_referencedExtractor: (transformerJzodSchema as any).definition.context.transformerForBuild_referencedExtractor,
         transformerForBuild_string: (transformerJzodSchema as any).definition.context.transformerForBuild_string,
+        transformerForBuild_unique_root: (miroirFundamentalJzodSchema as any).definition.context.transformerForBuild_unique_root,
         transformerForBuild_unique: (miroirFundamentalJzodSchema as any).definition.context.transformerForBuild_unique,
         transformerForRuntime_Abstract: (miroirFundamentalJzodSchema as any).definition.context.transformerForRuntime_Abstract,
+        transformerForRuntime_reference: (miroirFundamentalJzodSchema as any).definition.context.transformerForRuntime_reference,
         transformerForRuntime_count: (transformerJzodSchema as any).definition.context.transformerForRuntime_count,
         transformerForRuntime_constant: (transformerJzodSchema as any).definition.context.transformerForRuntime_constant,
         transformerForRuntime_constantUuid: (transformerJzodSchema as any).definition.context.transformerForRuntime_constantUuid,
@@ -2846,21 +2752,20 @@ export function getMiroirFundamentalJzodSchema(
         transformerForRuntime_constants: (transformerJzodSchema as any).definition.context.transformer_constants,
         transformerForRuntime_contextOrParameterReference: (transformerJzodSchema as any).definition.context.transformer_contextOrParameterReference,
         transformerForRuntime_freeObjectTemplate: (transformerJzodSchema as any).definition.context.transformerForRuntime_freeObjectTemplate,
+        transformerForRuntime_orderedTransformer: (miroirFundamentalJzodSchema as any).definition.context.transformerForRuntime_orderedTransformer,
         transformerForRuntime_innerFullObjectTemplate: (transformerJzodSchema as any).definition.context.transformerForRuntime_innerFullObjectTemplate,
         transformerForRuntime_InnerReference: (transformerJzodSchema as any).definition.context.transformerForRuntime_InnerReference,
         transformerForRuntime_object_fullTemplate: (transformerJzodSchema as any).definition.context.transformerForRuntime_object_fullTemplate,
-        transformerForRuntime_orderedTransformer: (miroirFundamentalJzodSchema as any).definition.context.transformerForRuntime_orderedTransformer,
         transformerForRuntime_objectDynamicAccess: (transformerJzodSchema as any).definition.context.transformer_objectDynamicAccess,
         transformerForRuntime_objectEntries: (transformerJzodSchema as any).definition.context.transformerForRuntime_objectValues,
         transformerForRuntime_objectValues: (transformerJzodSchema as any).definition.context.transformerForRuntime_objectValues,
-        transformerForRuntime_object_pickListElement: (transformerJzodSchema as any).definition.context.transformerForRuntime_object_pickListElement,
+        transformerForRuntime_list_listPickElement: (transformerJzodSchema as any).definition.context.transformerForRuntime_list_listPickElement,
         transformerForRuntime_object_alter: (transformerJzodSchema as any).definition.context.transformerForRuntime_object_alter,
-        transformerForRuntime_mapper_listToList: (transformerJzodSchema as any).definition.context.transformerForRuntime_mapper_listToList,
+        transformerForRuntime_list_listMapperToList: (transformerJzodSchema as any).definition.context.transformerForRuntime_list_listMapperToList,
         transformerForRuntime_mapper_listToObject: (transformerJzodSchema as any).definition.context.transformerForRuntime_mapper_listToObject,
         transformerForRuntime_mustacheStringTemplate: (transformerJzodSchema as any).definition.context.transformer_mustacheStringTemplate,
         transformerForRuntime_newUuid: (transformerJzodSchema as any).definition.context.transformer_newUuid,
         transformerForRuntime_parameterReference: (transformerJzodSchema as any).definition.context.transformer_parameterReference,
-        transformerForRuntime_referencingTransformer: (miroirFundamentalJzodSchema as any).definition.context.transformerForRuntime_referencingTransformer,
         // transformerForRuntime_mustacheStringTemplate: (miroirFundamentalJzodSchema as any).definition.context.transformerForRuntime_mustacheStringTemplate,
         transformerForRuntime_unique: (transformerJzodSchema as any).definition.context.transformerForRuntime_unique,
         transformerForRuntime: (transformerJzodSchema as any).definition.context.transformerForRuntime,
@@ -2880,15 +2785,10 @@ export function getMiroirFundamentalJzodSchema(
 
   // log.info("innerResolutionStore", innerResolutionStore);
 
-  // log.info("innerResolutionStore baseObject", JSON.stringify((innerResolutionStore[miroirFundamentalJzodSchemaUuid] as any).context["jzodBaseObject"], null, 2));
-  // log.info("innerResolutionStore array", JSON.stringify((innerResolutionStore[miroirFundamentalJzodSchemaUuid] as any).context["jzodArray"], null, 2));
-
   const localizedResolutionStore: Record<string, any> = Object.fromEntries(
-    // const localizedResolutionStore: Record<string, JzodReference> = Object.fromEntries(
     Object.entries(innerResolutionStore).map((e) => [
       e[0],
       makeReferencesAbsolute(e[1], miroirFundamentalJzodSchemaUuid, true) as any,
-      // makeReferencesAbsolute(e[1], miroirFundamentalJzodSchemaUuid, true) as JzodReference,
     ])
   );
 
@@ -2905,9 +2805,33 @@ export function getMiroirFundamentalJzodSchema(
     },
   };
 
+
+  // console.log("getMiroirFundamentalJzodSchema #######################################################")
+  // console.log("getMiroirFundamentalJzodSchema", "localizedResolutionStore", JSON.stringify(localizedResolutionStore, null, 2))
+  // console.log("getMiroirFundamentalJzodSchema #######################################################")
+  // const localizedInnerResolutionStoreReferences: Record<string, JzodReference> = Object.fromEntries(
+  const extendedSchemas = [
+    "jzodBaseObject",
+    "shippingBox",
+    "extractorTemplateRoot",
+    "extractorOrCombinerRoot",
+    "transformer_label",
+    "transformer_Abstract",
+    "transformer_orderBy",
+    "transformerForBuild_reference",
+    "transformerForBuild_count_root",
+    "transformerForBuild_unique_root",
+    "transformerForBuild_object_fullTemplate_root",
+    "transformerForBuild_object_listReducerToIndexObject_root",
+    "transformerForBuild_object_listPickElement_root",
+    "transformerForBuild_objectEntries_root",
+    "transformerForBuild_objectValues_root",
+    "transformerForRuntime_reference",
+    "transformerForRuntime_Abstract",
+    "transformerForRuntime_orderedTransformer",
+  ];
+
   const resolveReferencesWithCarryOn = ((ref: any): any | undefined => {
-    // const resolveReferencesWithCarryOn = ((ref: JzodReference): JzodElement | undefined => {
-    // const resolvedAbsolutePath = innerResolutionStore[ref.definition?.absolutePath??""]
     const resolvedAbsolutePath = localizedResolutionStore[ref.definition?.absolutePath ?? ""];
     const result =
       resolvedAbsolutePath && resolvedAbsolutePath.context
@@ -2916,18 +2840,6 @@ export function getMiroirFundamentalJzodSchema(
     const resultWithAbsoluteReferences = result
       ? (makeReferencesAbsolute(result, miroirFundamentalJzodSchemaUuid) as any)
       : result;
-    // console.log(
-    //   "getMiroirFundamentalJzodSchema applyCarryOnSchema resolving reference " +
-    //     JSON.stringify(ref, null, 2) +
-    //     " in " +
-    //     Object.keys(innerResolutionStore)
-    // );
-    // console.log(
-    //   "getMiroirFundamentalJzodSchema applyCarryOnSchema for reference " +
-    //     JSON.stringify(ref, null, 2) +
-    //     " result " +
-    //     JSON.stringify(resultWithAbsoluteReferences, null, 2)
-    // );
     if (resultWithAbsoluteReferences) {
       return resultWithAbsoluteReferences;
     } else {
@@ -2939,27 +2851,6 @@ export function getMiroirFundamentalJzodSchema(
       );
     }
   }) as any;
-
-  // console.log("getMiroirFundamentalJzodSchema #######################################################")
-  // console.log("getMiroirFundamentalJzodSchema", "localizedResolutionStore", JSON.stringify(localizedResolutionStore, null, 2))
-  // console.log("getMiroirFundamentalJzodSchema #######################################################")
-  // const localizedInnerResolutionStoreReferences: Record<string, JzodReference> = Object.fromEntries(
-  const extendedSchemas = [
-    "jzodBaseObject",
-    "shippingBox",
-    "extractorTemplateRoot",
-    "extractorOrCombinerRoot",
-    "transformer_Abstract",
-    "transformer_label",
-    "transformer_orderBy",
-    "transformerForBuild_count",
-    "transformerForBuild_unique",
-    "transformerForBuild_object_pickListElement",
-    "transformerForBuild_referencedExtractor",
-    "transformerForRuntime_Abstract",
-    "transformerForRuntime_orderedTransformer",
-    "transformerForRuntime_referencingTransformer",
-  ];
 
   const localizedInnerResolutionStoreExtendedReferences = Object.fromEntries(
     Object.entries(localizedResolutionStore).flatMap((e) =>
@@ -2973,6 +2864,7 @@ export function getMiroirFundamentalJzodSchema(
             carryOnSchemaReference as any,
             false /** applyOnFirstLevel */,
             undefined,
+            "extend",
             resolveReferencesWithCarryOn
           ).resultSchema,
         ])
@@ -2989,8 +2881,14 @@ export function getMiroirFundamentalJzodSchema(
       Object.entries(e[1].context ?? {}).map((f) => [
         forgeCarryOnReferenceName(e[0], f[0]),
         // TODO: add inner references to environment!!!!
-        applyCarryOnSchema(f[1] as any, carryOnSchemaReference as any, undefined, resolveReferencesWithCarryOn)
-          .resultSchema,
+        applyCarryOnSchemaOnLevel(
+          f[1] as any,
+          carryOnSchemaReference as any,
+          false, // applyOnFirstLevel
+          undefined,
+          undefined,
+          resolveReferencesWithCarryOn
+        ).resultSchema,
       ])
     )
   );
@@ -3003,16 +2901,14 @@ export function getMiroirFundamentalJzodSchema(
     localizedInnerResolutionStorePlainReferences
   );
 
-  // console.log("localizedInnerResolutionStoreReferences", localizedInnerResolutionStoreReferences)
+  // console.log("localizedInnerResolutionStoreReferences", JSON.stringify(localizedInnerResolutionStoreReferences.keys, null, 2));
 
   const miroirFundamentalJzodSchemaWithActionTemplate: any = {
-    // const miroirFundamentalJzodSchemaWithActionTemplate: JzodSchema = {
     ...miroirFundamentalJzodSchema,
     definition: {
       ...miroirFundamentalJzodSchema.definition,
       context: {
         ...((miroirFundamentalJzodSchema.definition as any)?.context ?? {}),
-        // ...((miroirFundamentalJzodSchema.definition as JzodReference)?.context ?? {}),
         ...localizedInnerResolutionStoreReferences,
         carryOnObject: carryOnSchema,
         ...(() => {
@@ -3025,26 +2921,15 @@ export function getMiroirFundamentalJzodSchema(
               },
             },
             carryOnSchemaReference as any,
-            undefined,
+            undefined, // reference prefix
+            undefined, // reference suffix
             resolveReferencesWithCarryOn
           );
-          // const extendedCompositeActionSchemaBuilder = applyCarryOnSchema(
-          //   {
-          //     type: "schemaReference",
-          //     definition: {
-          //       relativePath: forgeCarryOnReferenceName(miroirFundamentalJzodSchemaUuid, "extendedCompositeAction"),
-          //     },
-          //   },
-          //   carryOnSchemaReference as any,
-          //   undefined,
-          //   resolveReferencesWithCarryOn
-          // );
           return {
             ...compositeActionSchemaBuilder.resolvedReferences,
             // TODO: use / define replayableActionTemplate (ModelAction + InstanceCUDAction) & Non-transactionalActionTemplate
             // non-transactional action templates can be used wich queries, they do not need to be replayable post-mortem.
             compositeActionTemplate: compositeActionSchemaBuilder.resultSchema, // compositeActionTemplate: THAT's THE RESULT OF THE WHOLE MOVEMENT!
-            // extendedCompositeActionTemplate: extendedCompositeActionSchemaBuilder.resultSchema, // compositeActionTemplate: THAT's THE RESULT OF THE WHOLE MOVEMENT!
           };
         })(),
       } as Record<string, any /**JzodElement */>,

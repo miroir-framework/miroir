@@ -297,7 +297,7 @@ const testActions: Record<string, TestActionParams> = {
                   resultTransformer: {
                     transformerType: "count",
                     interpolation: "runtime",
-                    referencedExtractor: {
+                    referencedTransformer: {
                       transformerType: "contextReference",
                       interpolation: "runtime",
                       referencePath: ["libraryEntityList", "entities"],
@@ -401,7 +401,7 @@ const testActions: Record<string, TestActionParams> = {
                   resultTransformer: {
                     transformerType: "count",
                     interpolation: "runtime",
-                    referencedExtractor: {
+                    referencedTransformer: {
                       transformerType: "contextReference",
                       interpolation: "runtime",
                       referencePath: ["libraryEntityList", "entities"],
@@ -518,7 +518,7 @@ const testActions: Record<string, TestActionParams> = {
                   resultTransformer: {
                     transformerType: "count",
                     interpolation: "runtime",
-                    referencedExtractor: {
+                    referencedTransformer: {
                       transformerType: "contextReference",
                       interpolation: "runtime",
                       referencePath: ["libraryEntityList", "entities"],
@@ -649,7 +649,7 @@ const testActions: Record<string, TestActionParams> = {
                   resultTransformer: {
                     transformerType: "count",
                     interpolation: "runtime",
-                    referencedExtractor: {
+                    referencedTransformer: {
                       transformerType: "contextReference",
                       interpolation: "runtime",
                       referencePath: ["libraryEntityListFromLocalCache", "entities"],
@@ -685,7 +685,7 @@ const testActions: Record<string, TestActionParams> = {
                   resultTransformer: {
                     transformerType: "count",
                     interpolation: "runtime",
-                    referencedExtractor: {
+                    referencedTransformer: {
                       transformerType: "contextReference",
                       interpolation: "runtime",
                       referencePath: ["libraryEntityListFromPersistentStore", "entities"],
@@ -800,7 +800,7 @@ const testActions: Record<string, TestActionParams> = {
                   resultTransformer: {
                     transformerType: "count",
                     interpolation: "runtime",
-                    referencedExtractor: {
+                    referencedTransformer: {
                       transformerType: "contextReference",
                       interpolation: "runtime",
                       referencePath: ["libraryEntityList", "entities"],
@@ -921,7 +921,7 @@ const testActions: Record<string, TestActionParams> = {
                   resultTransformer: {
                     transformerType: "count",
                     interpolation: "runtime",
-                    referencedExtractor: {
+                    referencedTransformer: {
                       transformerType: "contextReference",
                       interpolation: "runtime",
                       referencePath: ["libraryEntityList", "entities"],
@@ -1078,7 +1078,7 @@ const testActions: Record<string, TestActionParams> = {
                   resultTransformer: {
                     transformerType: "count",
                     interpolation: "runtime",
-                    referencedExtractor: {
+                    referencedTransformer: {
                       transformerType: "contextReference",
                       interpolation: "runtime",
                       referencePath: ["libraryEntityDefinitionListFromPersistentStore", "entityDefinitions"],
@@ -1100,7 +1100,7 @@ const testActions: Record<string, TestActionParams> = {
                   resultTransformer: {
                     transformerType: "count",
                     interpolation: "runtime",
-                    referencedExtractor: {
+                    referencedTransformer: {
                       transformerType: "contextReference",
                       interpolation: "runtime",
                       referencePath: ["libraryEntityDefinitionListFromLocalCache", "entityDefinitions"],

@@ -1004,7 +1004,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
   //       publishers: {
   //         transformerType: "unique",
   //         interpolation: "runtime",
-  //         referencedExtractor: "books",
+  //         referencedTransformer: "books",
   //         attribute: "publisher",
   //       },
   //     },
@@ -1028,7 +1028,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
   //       publishers: {
   //         transformerType: "unique",
   //         interpolation: "runtime",
-  //         referencedExtractor: "books",
+  //         referencedTransformer: "books",
   //         attribute: "publisher",
   //       },
   //     },

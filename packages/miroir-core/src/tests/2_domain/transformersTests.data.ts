@@ -58,6 +58,7 @@ export const transformerTests: TransformerTestSuite = {
     //           transformerName: "constantUuid",
     //           transformer: {
     //             transformerType: "constantUuid",
+    //             interpolation: "runtime",
     //             constantUuidValue: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
     //           },
     //           transformerParams: {},
@@ -69,17 +70,13 @@ export const transformerTests: TransformerTestSuite = {
     //           transformerName: "constantUuid",
     //           transformer: {
     //             transformerType: "contextReference",
+    //             interpolation: "runtime",
     //             referenceName: "nonExistentReference",
     //           },
     //           transformerParams: {},
     //           ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
     //           expectedValue: {
     //             queryFailure: "QueryNotExecutable",
-    //             // queryFailure: "ReferenceNotFound",
-    //             // failureOrigin: ["transformer_InnerReference_resolve"],
-    //             // queryReference: "nonExistentReference",
-    //             // failureMessage: "no referenceName nonExistentReference",
-    //             // queryContext: "[]",
     //           },
     //         },
     //       },
@@ -94,6 +91,7 @@ export const transformerTests: TransformerTestSuite = {
     //           transformerName: "constantString",
     //           transformer: {
     //             transformerType: "constantString",
+    //             interpolation: "runtime",
     //             constantStringValue: "test",
     //           },
     //           transformerParams: {},
@@ -111,6 +109,7 @@ export const transformerTests: TransformerTestSuite = {
     //           transformerName: "constantObject",
     //           transformer: {
     //             transformerType: "constantObject",
+    //             interpolation: "runtime",
     //             constantObjectValue: { test: "test" },
     //           },
     //           transformerParams: {},
@@ -134,6 +133,7 @@ export const transformerTests: TransformerTestSuite = {
     //           transformerName: "parameterReference",
     //           transformer: {
     //             transformerType: "parameterReference",
+    //             interpolation: "runtime",
     //             referenceName: "a",
     //           },
     //           transformerParams: {
@@ -141,196 +141,194 @@ export const transformerTests: TransformerTestSuite = {
     //           },
     //           expectedValue: "test",
     //         },
-    //         // "resolve basic transformer parameterReference for referencePath": {
-    //         //   transformerTestType: "transformerTest",
-    //         //   transformerTestLabel: "resolve basic transformer parameterReference for referencePath",
-    //         //   transformerName: "parameterReferenceForReferencePath",
-    //         //   transformer: {
-    //         //     transformerType: "parameterReference",
-    //         //     referencePath: ["a", "b", "c"],
-    //         //   },
-    //         //   transformerParams: {
-    //         //     a: { b: { c: "test" } },
-    //         //   },
-    //         //   expectedValue: "test",
-    //         // },
-    //         // "should fail when parameter referenceName is not found": {
-    //         //   transformerTestType: "transformerTest",
-    //         //   transformerTestLabel: "should fail when parameter referenceName is not found",
-    //         //   transformerName: "parameterReference",
-    //         //   transformer: {
-    //         //     transformerType: "parameterReference",
-    //         //     referenceName: "nonExistentReference",
-    //         //   },
-    //         //   transformerParams: {},
-    //         //   ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-    //         //   expectedValue: {
-    //         //     queryFailure: "QueryNotExecutable",
-    //         //     // queryFailure: "ReferenceNotFound",
-    //         //     // failureOrigin: ["transformer_InnerReference_resolve"],
-    //         //     // queryReference: "nonExistentReference",
-    //         //     // failureMessage: "no referenceName nonExistentReference",
-    //         //     // queryContext: "[]",
-    //         //   },
-    //         // },
-    //         // "should fail when parameter reference value is undefined": {
-    //         //   transformerTestType: "transformerTest",
-    //         //   transformerTestLabel: "should fail when parameter reference value is undefined",
-    //         //   transformerName: "parameterReference",
-    //         //   transformer: {
-    //         //     transformerType: "parameterReference",
-    //         //     referenceName: "referenceFoundButUndefined",
-    //         //   },
-    //         //   transformerParams: {
-    //         //     referenceFoundButUndefined: undefined,
-    //         //   },
-    //         //   ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-    //         //   expectedValue: {
-    //         //     queryFailure: "QueryNotExecutable",
-    //         //     // queryFailure: "ReferenceFoundButUndefined",
-    //         //     // failureOrigin: ["transformer_InnerReference_resolve"],
-    //         //     // queryReference: "referenceFoundButUndefined",
-    //         //     // failureMessage: "found but undefined: referenceName referenceFoundButUndefined",
-    //         //     // queryContext: '["referenceFoundButUndefined"]',
-    //         //   },
-    //         // },
-    //         // "should fail when parameter referencePath is invalid": {
-    //         //   transformerTestType: "transformerTest",
-    //         //   transformerTestLabel: "should fail when parameter referencePath is invalid",
-    //         //   transformerName: "parameterReference",
-    //         //   transformer: {
-    //         //     transformerType: "parameterReference",
-    //         //     referencePath: ["invalidPath"],
-    //         //   },
-    //         //   transformerParams: {
-    //         //     a: "test",
-    //         //   },
-    //         //   ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-    //         //   expectedValue: {
-    //         //     queryFailure: "QueryNotExecutable",
-    //         //     // queryFailure: "ReferenceFoundButUndefined",
-    //         //     // failureOrigin: ["transformer_InnerReference_resolve"],
-    //         //     // queryReference: '["invalidPath"]',
-    //         //     // failureMessage: "no referencePath invalidPath",
-    //         //     // queryContext: '["a"]',
-    //         //   },
-    //         // },
+    //         "resolve basic transformer parameterReference for referencePath": {
+    //           transformerTestType: "transformerTest",
+    //           transformerTestLabel: "resolve basic transformer parameterReference for referencePath",
+    //           transformerName: "parameterReferenceForReferencePath",
+    //           transformer: {
+    //             transformerType: "parameterReference",
+    //             interpolation: "runtime",
+    //             referencePath: ["a", "b", "c"],
+    //           },
+    //           transformerParams: {
+    //             a: { b: { c: "test" } },
+    //           },
+    //           expectedValue: "test",
+    //         },
+    //         "should fail when parameter referenceName is not found": {
+    //           transformerTestType: "transformerTest",
+    //           transformerTestLabel: "should fail when parameter referenceName is not found",
+    //           transformerName: "parameterReference",
+    //           transformer: {
+    //             transformerType: "parameterReference",
+    //             interpolation: "runtime",
+    //             referenceName: "nonExistentReference",
+    //           },
+    //           transformerParams: {},
+    //           ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+    //           expectedValue: {
+    //             queryFailure: "QueryNotExecutable",
+    //           },
+    //         },
+    //         "should fail when parameter reference value is undefined": {
+    //           transformerTestType: "transformerTest",
+    //           transformerTestLabel: "should fail when parameter reference value is undefined",
+    //           transformerName: "parameterReference",
+    //           transformer: {
+    //             transformerType: "parameterReference",
+    //             interpolation: "runtime",
+    //             referenceName: "referenceFoundButUndefined",
+    //           },
+    //           transformerParams: {
+    //             referenceFoundButUndefined: undefined,
+    //           },
+    //           ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+    //           expectedValue: {
+    //             queryFailure: "QueryNotExecutable",
+    //           },
+    //         },
+    //         "should fail when parameter referencePath is invalid": {
+    //           transformerTestType: "transformerTest",
+    //           transformerTestLabel: "should fail when parameter referencePath is invalid",
+    //           transformerName: "parameterReference",
+    //           transformer: {
+    //             transformerType: "parameterReference",
+    //             interpolation: "runtime",
+    //             referencePath: ["invalidPath"],
+    //           },
+    //           transformerParams: {
+    //             a: "test",
+    //           },
+    //           ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+    //           expectedValue: {
+    //             queryFailure: "QueryNotExecutable",
+    //           },
+    //         },
     //       },
     //     },
-    //     // contextReference: {
-    //     //   transformerTestType: "transformerTestSuite",
-    //     //   transformerTestLabel: "contextReference",
-    //     //   transformerTests: {
-    //     //     "resolve basic transformer contextReference for referenceName": {
-    //     //       transformerTestType: "transformerTest",
-    //     //       transformerTestLabel: "resolve basic transformer contextReference for referenceName",
-    //     //       transformerName: "contextReferenceForReferenceName",
-    //     //       transformer: {
-    //     //         transformerType: "contextReference",
-    //     //         referenceName: "a",
-    //     //       },
-    //     //       transformerParams: {},
-    //     //       transformerRuntimeContext: {
-    //     //         a: "test",
-    //     //       },
-    //     //       expectedValue: "test",
-    //     //     },
-    //     //     "resolve basic transformer contextReference for referencePath": {
-    //     //       transformerTestType: "transformerTest",
-    //     //       transformerTestLabel: "resolve basic transformer contextReference for referencePath",
-    //     //       transformerName: "contextReferenceForReferencePath",
-    //     //       transformer: {
-    //     //         transformerType: "contextReference",
-    //     //         referencePath: ["a", "b", "c"],
-    //     //       },
-    //     //       transformerParams: {},
-    //     //       transformerRuntimeContext: {
-    //     //         a: { b: { c: "test" } },
-    //     //       },
-    //     //       expectedValue: "test",
-    //     //     },
-    //     //     "should fail when context referenceName is not found": {
-    //     //       transformerTestType: "transformerTest",
-    //     //       transformerTestLabel: "should fail when context referenceName is not found",
-    //     //       transformerName: "contextReference",
-    //     //       transformer: {
-    //     //         transformerType: "contextReference",
-    //     //         referenceName: "nonExistentReference",
-    //     //       },
-    //     //       transformerParams: {},
-    //     //       ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-    //     //       expectedValue: {
-    //     //         queryFailure: "QueryNotExecutable",
-    //     //         // queryFailure: "ReferenceNotFound",
-    //     //         // failureOrigin: ["transformer_InnerReference_resolve"],
-    //     //         // queryReference: "nonExistentReference",
-    //     //         // failureMessage: "no referenceName nonExistentReference",
-    //     //         // queryContext: "[]",
-    //     //       },
-    //     //     },
-    //     //     "should fail when context referencePath is invalid": {
-    //     //       transformerTestType: "transformerTest",
-    //     //       transformerTestLabel: "should fail when context referencePath is invalid",
-    //     //       transformerName: "contextReference",
-    //     //       transformer: {
-    //     //         transformerType: "contextReference",
-    //     //         referencePath: ["a", "invalidPath"],
-    //     //       },
-    //     //       transformerParams: {},
-    //     //       transformerRuntimeContext: {
-    //     //         a: "test",
-    //     //       },
-    //     //       ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-    //     //       expectedValue: {
-    //     //         queryFailure: "QueryNotExecutable",
-    //     //         // queryFailure: "ReferenceFoundButUndefined",
-    //     //         // failureOrigin: ["transformer_InnerReference_resolve"],
-    //     //         // queryReference: '["a","invalidPath"]',
-    //     //         // failureMessage: "no referencePath a,invalidPath",
-    //     //         // queryContext: '["a"]',
-    //     //       },
-    //     //     },
-    //     //     "should fail when context reference value is undefined": {
-    //     //       transformerTestType: "transformerTest",
-    //     //       transformerTestLabel: "should fail when context reference value is undefined",
-    //     //       transformerName: "contextReference",
-    //     //       transformer: {
-    //     //         transformerType: "contextReference",
-    //     //         referenceName: "referenceFoundButUndefined",
-    //     //       },
-    //     //       transformerParams: {},
-    //     //       transformerRuntimeContext: {
-    //     //         referenceFoundButUndefined: undefined,
-    //     //       },
-    //     //       ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-    //     //       expectedValue: {
-    //     //         queryFailure: "QueryNotExecutable",
-    //     //         // queryFailure: "ReferenceFoundButUndefined",
-    //     //         // failureOrigin: ["transformer_InnerReference_resolve"],
-    //     //         // queryReference: "referenceFoundButUndefined",
-    //     //         // failureMessage: "found but undefined: referenceName referenceFoundButUndefined",
-    //     //         // queryContext: '["referenceFoundButUndefined"]',
-    //     //       },
-    //     //     },
-    //     //   },
-    //     // },
+    //     contextReference: {
+    //       transformerTestType: "transformerTestSuite",
+    //       transformerTestLabel: "contextReference",
+    //       transformerTests: {
+    //         "resolve basic transformer contextReference for referenceName": {
+    //           transformerTestType: "transformerTest",
+    //           transformerTestLabel: "resolve basic transformer contextReference for referenceName",
+    //           transformerName: "contextReferenceForReferenceName",
+    //           transformer: {
+    //             transformerType: "contextReference",
+    //             interpolation: "runtime",
+    //             referenceName: "a",
+    //           },
+    //           transformerParams: {},
+    //           transformerRuntimeContext: {
+    //             a: "test",
+    //           },
+    //           expectedValue: "test",
+    //         },
+    //         "resolve basic transformer contextReference for referencePath": {
+    //           transformerTestType: "transformerTest",
+    //           transformerTestLabel: "resolve basic transformer contextReference for referencePath",
+    //           transformerName: "contextReferenceForReferencePath",
+    //           transformer: {
+    //             transformerType: "contextReference",
+    //             interpolation: "runtime",
+    //             referencePath: ["a", "b", "c"],
+    //           },
+    //           transformerParams: {},
+    //           transformerRuntimeContext: {
+    //             a: { b: { c: "test" } },
+    //           },
+    //           expectedValue: "test",
+    //         },
+    //         "should fail when context referenceName is not found": {
+    //           transformerTestType: "transformerTest",
+    //           transformerTestLabel: "should fail when context referenceName is not found",
+    //           transformerName: "contextReference",
+    //           transformer: {
+    //             transformerType: "contextReference",
+    //             interpolation: "runtime",
+    //             referenceName: "nonExistentReference",
+    //           },
+    //           transformerParams: {},
+    //           ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+    //           expectedValue: {
+    //             queryFailure: "QueryNotExecutable",
+    //             // queryFailure: "ReferenceNotFound",
+    //             // failureOrigin: ["transformer_InnerReference_resolve"],
+    //             // queryReference: "nonExistentReference",
+    //             // failureMessage: "no referenceName nonExistentReference",
+    //             // queryContext: "[]",
+    //           },
+    //         },
+    //         "should fail when context referencePath is invalid": {
+    //           transformerTestType: "transformerTest",
+    //           transformerTestLabel: "should fail when context referencePath is invalid",
+    //           transformerName: "contextReference",
+    //           transformer: {
+    //             transformerType: "contextReference",
+    //             interpolation: "runtime",
+    //             referencePath: ["a", "invalidPath"],
+    //           },
+    //           transformerParams: {},
+    //           transformerRuntimeContext: {
+    //             a: "test",
+    //           },
+    //           ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+    //           expectedValue: {
+    //             queryFailure: "QueryNotExecutable",
+    //             // queryFailure: "ReferenceFoundButUndefined",
+    //             // failureOrigin: ["transformer_InnerReference_resolve"],
+    //             // queryReference: '["a","invalidPath"]',
+    //             // failureMessage: "no referencePath a,invalidPath",
+    //             // queryContext: '["a"]',
+    //           },
+    //         },
+    //         "should fail when context reference value is undefined": {
+    //           transformerTestType: "transformerTest",
+    //           transformerTestLabel: "should fail when context reference value is undefined",
+    //           transformerName: "contextReference",
+    //           transformer: {
+    //             transformerType: "contextReference",
+    //             interpolation: "runtime",
+    //             referenceName: "referenceFoundButUndefined",
+    //           },
+    //           transformerParams: {},
+    //           transformerRuntimeContext: {
+    //             referenceFoundButUndefined: undefined,
+    //           },
+    //           ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+    //           expectedValue: {
+    //             queryFailure: "QueryNotExecutable",
+    //             // queryFailure: "ReferenceFoundButUndefined",
+    //             // failureOrigin: ["transformer_InnerReference_resolve"],
+    //             // queryReference: "referenceFoundButUndefined",
+    //             // failureMessage: "found but undefined: referenceName referenceFoundButUndefined",
+    //             // queryContext: '["referenceFoundButUndefined"]',
+    //           },
+    //         },
+    //       },
+    //     },
     //   },
     // },
     // objectEntries: {
     //   transformerTestType: "transformerTestSuite",
     //   transformerTestLabel: "objectEntries",
     //   transformerTests: {
-    //     "object entries with string referencedExtractor": {
+    //     "object entries with string referencedTransformer": {
     //       transformerTestType: "transformerTest",
-    //       transformerTestLabel: "object entries with string referencedExtractor",
+    //       transformerTestLabel: "object entries with string referencedTransformer",
     //       transformerName: "objectEntries",
     //       transformer: {
     //         transformerType: "objectEntries",
     //         interpolation: "runtime",
-    //         referencedExtractor: {
-    //           transformerType: "parameterReference",
-    //           referenceName: "testObject1",
-    //         },
+    //         applyTo: {
+    //           referenceType: "referencedTransformer",
+    //           reference: {
+    //             transformerType: "parameterReference",
+    //             interpolation: "runtime",
+    //             referenceName: "testObject1",
+    //           }
+    //         }
     //       },
     //       transformerParams: {
     //         testObject1: { a: "testA", b: "testB" },
@@ -344,10 +342,14 @@ export const transformerTests: TransformerTestSuite = {
     //       transformer: {
     //         transformerType: "objectEntries",
     //         interpolation: "runtime",
-    //         referencedExtractor: {
-    //           transformerType: "constant",
-    //           constantValue: "testObject1",
-    //         },
+    //         applyTo: {
+    //           referenceType: "referencedTransformer",
+    //           reference: {
+    //             transformerType: "constant",
+    //             interpolation: "runtime",
+    //             constantValue: "nonExistingTestObject",
+    //           }
+    //         }
     //       },
     //       transformerParams: {
     //       },
@@ -358,48 +360,60 @@ export const transformerTests: TransformerTestSuite = {
     //     },
     //   },
     // },
-    objectValues: {
-      transformerTestType: "transformerTestSuite",
-      transformerTestLabel: "objectValues",
-      transformerTests: {
-        "object values with string referencedExtractor": {
-          transformerTestType: "transformerTest",
-          transformerTestLabel: "object values with string referencedExtractor",
-          transformerName: "objectEntries",
-          transformer: {
-            transformerType: "objectValues",
-            interpolation: "runtime",
-            referencedExtractor: {
-              transformerType: "parameterReference",
-              referenceName: "testObject",
-            },
-          },
-          transformerParams: {
-            testObject: { a: "testA", b: "testB" },
-          },
-          expectedValue: [ "testA", "testB" ],
-        },
-        "failed object values for string parameter": {
-          transformerTestType: "transformerTest",
-          transformerTestLabel: "failed object values for string parameter",
-          transformerName: "objectValuesFailed",
-          transformer: {
-            transformerType: "objectValues",
-            interpolation: "runtime",
-            referencedExtractor: {
-              transformerType: "constant",
-              constantValue: "testObject",
-            },
-          },
-          transformerParams: {
-          },
-          ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-          expectedValue:  {
-            "queryFailure": "QueryNotExecutable",
-          },
-        },
-      },
-    },
+    // objectValues: {
+    //   transformerTestType: "transformerTestSuite",
+    //   transformerTestLabel: "objectValues",
+    //   transformerTests: {
+    //     "object values with string referencedTransformer": {
+    //       transformerTestType: "transformerTest",
+    //       transformerTestLabel: "object values with string referencedTransformer",
+    //       transformerName: "objectEntries",
+    //       transformer: {
+    //         transformerType: "objectValues",
+    //         interpolation: "runtime",
+    //         applyTo: {
+    //           referenceType: "referencedTransformer",
+    //           reference: {
+    //             transformerType: "parameterReference",
+    //             interpolation: "runtime",
+    //             referenceName: "testObject",
+    //           }
+    //         }
+    //         // referencedTransformer: {
+    //         //   transformerType: "parameterReference",
+    //         //   referenceName: "testObject",
+    //         // },
+    //       },
+    //       transformerParams: {
+    //         testObject: { a: "testA", b: "testB" },
+    //       },
+    //       expectedValue: [ "testA", "testB" ],
+    //     },
+    //     "failed object values for string parameter": {
+    //       transformerTestType: "transformerTest",
+    //       transformerTestLabel: "failed object values for string parameter",
+    //       transformerName: "objectValuesFailed",
+    //       transformer: {
+    //         transformerType: "objectValues",
+    //         interpolation: "runtime",
+    //         applyTo: {
+    //           referenceType: "referencedTransformer",
+    //           reference: {
+    //             transformerType: "constant",
+    //             interpolation: "runtime",
+    //             constantValue: "nonExistingTestObject",
+    //           }
+    //         }
+    //       },
+    //       transformerParams: {
+    //       },
+    //       ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+    //       expectedValue:  {
+    //         "queryFailure": "QueryNotExecutable",
+    //       },
+    //     },
+    //   },
+    // },
     // mustache: {
     //   transformerTestType: "transformerTestSuite",
     //   transformerTestLabel: "mustache",
@@ -410,8 +424,8 @@ export const transformerTests: TransformerTestSuite = {
     //       transformerName: "mustache",
     //       transformer: {
     //         transformerType: "mustacheStringTemplate",
+    //         interpolation: "runtime",
     //         definition: "a{{newApplication.name}}_{{newApplication.suffix}} example",
-    //         // definition: "{{newApplication.name}}",
     //       },
     //       transformerParams: {
     //         newApplication: { name: "Test", suffix: "Z"},
@@ -425,6 +439,7 @@ export const transformerTests: TransformerTestSuite = {
     //       transformerName: "mustacheStringTemplateFailed",
     //       transformer: {
     //         transformerType: "mustacheStringTemplate",
+    //         interpolation: "runtime",
     //         definition: "{{newApplicationName}SelfApplication",
     //       },
     //       transformerParams: {},
@@ -435,6 +450,76 @@ export const transformerTests: TransformerTestSuite = {
     //     },
     //   },
     // },
+    listPickElement: {
+      transformerTestType: "transformerTestSuite",
+      transformerTestLabel: "listPickElement",
+      transformerTests: {
+        "listPickElement selects wanted element from a list": {
+          transformerTestType: "transformerTest",
+          transformerTestLabel: "listPickElement selects wanted element from a list",
+          transformerName: "listPickElementForString",
+          transformer: {
+            transformerType: "listPickElement",
+            interpolation: "runtime",
+            applyTo: {
+              referenceType: "referencedTransformer",
+              reference: {
+                transformerType: "parameterReference",
+                interpolation: "runtime",
+                referenceName: "testList",
+              },
+            },
+            index: 1,
+          },
+          transformerParams: {
+            testList: ["testA", "testB", "testC"],
+          },
+          expectedValue: "testB",
+        },
+        "listPickElement selects wanted object from a sorted list": {
+          transformerTestType: "transformerTest",
+          transformerTestLabel: "listPickElement selects wanted object from a sorted list",
+          transformerName: "listPickElementForObject",
+          transformer: {
+            transformerType: "listPickElement",
+            interpolation: "runtime",
+            applyTo: {
+              referenceType: "referencedTransformer",
+              reference: {
+                transformerType: "parameterReference",
+                interpolation: "runtime",
+                referenceName: "testList",
+              },
+            },
+            orderBy: "test",
+            index: 1,
+          },
+          transformerParams: {
+            testList: [{ test: "testA" }, { test: "testB" }, { test: "testC" }],
+          },
+          expectedValue: {test: "testB"},
+        },
+        // "failed object values for string parameter": {
+        //   transformerTestType: "transformerTest",
+        //   transformerTestLabel: "failed object values for string parameter",
+        //   transformerName: "objectValuesFailed",
+        //   transformer: {
+        //     transformerType: "objectValues",
+        //     interpolation: "runtime",
+        //     referencedTransformer: {
+        //       transformerType: "constant",
+        //       constantValue: "testObject",
+        //     },
+        //   },
+        //   transformerParams: {
+        //   },
+        //   ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+        //   expectedValue:  {
+        //     "queryFailure": "QueryNotExecutable",
+        //   },
+        // },
+      },
+    },
   },
 };
 

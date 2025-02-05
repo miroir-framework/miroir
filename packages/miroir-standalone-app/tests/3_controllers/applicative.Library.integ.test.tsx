@@ -508,7 +508,7 @@ const testTemplateSuites: Record<string, TestActionParams> = {
                 //   // {
                 //     transformerType: "listPickElement",
                 //     interpolation: "runtime",
-                //     referencedExtractor: "fileData",
+                //     referencedTransformer: "fileData",
                 //     index: 0
                 //   // }
                 //   // uuid: {

@@ -484,7 +484,7 @@ export const ToolsPage: React.FC<any> = (
           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
           configuration: {
             transformerType: "object_fullTemplate",
-            referencedExtractor: "NOT_RELEVANT",
+            referencedTransformer: "NOT_RELEVANT",
             definition: [
               {
                 attributeKey: {

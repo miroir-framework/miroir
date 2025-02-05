@@ -461,7 +461,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
               uniqueAuthors: {
                 transformerType: "unique",
                 interpolation: "runtime",
-                referencedExtractor: "books",
+                referencedTransformer: "books",
                 attribute: "author",
                 orderBy: "author",
               },
@@ -515,7 +515,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
             },
             runtimeTransformers: {
               uniqueAuthors: {
-                referencedExtractor: "books",
+                referencedTransformer: "books",
                 interpolation: "runtime",
                 transformerType: "count",
               },
@@ -564,7 +564,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
             },
             runtimeTransformers: {
               countBooksByAuthors: {
-                referencedExtractor: "books",
+                referencedTransformer: "books",
                 transformerType: "count",
                 interpolation: "runtime",
                 groupBy: "author",
@@ -625,7 +625,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
   //             countries: {
   //               transformerType: "mapperListToList",
   //               interpolation: "runtime",
-  //               referencedExtractor: "books",
+  //               referencedTransformer: "books",
   //               orderBy: "name",
   //               elementTransformer: {
   //                 transformerType: "innerFullObjectTemplate",

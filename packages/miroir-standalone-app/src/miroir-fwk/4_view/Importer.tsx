@@ -674,12 +674,12 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                 // menuList: {
                 //   transformerType: "objectValues",
                 //   interpolation: "runtime",
-                //   referencedExtractor: "menuUuidIndex",
+                //   referencedTransformer: "menuUuidIndex",
                 // },
                 menu: {
                   transformerType: "listPickElement",
                   interpolation: "runtime",
-                  referencedExtractor: "menuList",
+                  referencedTransformer: "menuList",
                   index: 1,
                 },
                 menuItem: {
@@ -1335,12 +1335,12 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                 menuList: {
                   transformerType: "objectValues",
                   interpolation: "runtime",
-                  referencedExtractor: "menuUuidIndex",
+                  referencedTransformer: "menuUuidIndex",
                 },
                 menu: {
                   transformerType: "listPickElement",
                   interpolation: "runtime",
-                  referencedExtractor: "menuList",
+                  referencedTransformer: "menuList",
                   index: 1,
                 },
                 menuItem: {
@@ -1501,7 +1501,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                   definition: {
                     transformerType: "unique",
                     interpolation: "runtime",
-                    referencedExtractor: "splittedEntityUuidIndex",
+                    referencedTransformer: "splittedEntityUuidIndex",
                     attribute: {
                       transformerType: "parameterReference",
                       referenceName: "splittedEntityAttribute",
@@ -1511,14 +1511,14 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                 splittedEntityInstances: {
                   transformerType: "objectValues",
                   interpolation: "runtime",
-                  referencedExtractor: "splittedEntityUuidIndex",
+                  referencedTransformer: "splittedEntityUuidIndex",
                 },
                 municipalities: {
                   transformerType: "freeObjectTemplate",
                   definition: {
                     transformerType: "mapperListToList",
                     interpolation: "runtime",
-                    referencedExtractor: "uniqueSplittedEntityInstancesSplitAttributeValues",
+                    referencedTransformer: "uniqueSplittedEntityInstancesSplitAttributeValues",
                     elementTransformer: {
                       transformerType: "freeObjectTemplate",
                       definition: {
@@ -1568,19 +1568,19 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                 municipalitiesIndexedByUuid: {
                   transformerType: "listReducerToIndexObject",
                   interpolation: "runtime",
-                  referencedExtractor: "municipalities",
+                  referencedTransformer: "municipalities",
                   indexAttribute: "uuid",
                 },
                 municipalitiesIndexedByName: {
                   transformerType: "listReducerToIndexObject",
                   interpolation: "runtime",
-                  referencedExtractor: "municipalities",
+                  referencedTransformer: "municipalities",
                   indexAttribute: "name",
                 },
                 updatedSplittedEntityInstances: {
                   transformerType: "mapperListToList",
                   interpolation: "runtime",
-                  referencedExtractor: "splittedEntityInstances",
+                  referencedTransformer: "splittedEntityInstances",
                   elementTransformer: {
                     transformerType: "objectAlter",
                     interpolation: "runtime",
@@ -1955,7 +1955,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
           configuration: {
             transformerType: "object_fullTemplate",
-            referencedExtractor: "NOT_RELEVANT",
+            referencedTransformer: "NOT_RELEVANT",
             definition: [
               {
                 attributeKey: {

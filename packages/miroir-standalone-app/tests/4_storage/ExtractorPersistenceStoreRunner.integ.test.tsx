@@ -749,7 +749,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
               uniqueAuthors: {
                 transformerType: "unique",
                 interpolation: "runtime",
-                referencedExtractor: "books",
+                referencedTransformer: "books",
                 attribute: "author",
                 orderBy: "author",
               },
@@ -800,9 +800,9 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
             },
             runtimeTransformers: {
               uniqueAuthors: {
-                referencedExtractor: "books",
                 interpolation: "runtime",
                 transformerType: "count",
+                referencedTransformer: "books",
               },
             },
           },
@@ -850,7 +850,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
             },
             runtimeTransformers: {
               countBooksByAuthors: {
-                referencedExtractor: "books",
+                referencedTransformer: "books",
                 transformerType: "count",
                 interpolation: "runtime",
                 groupBy: "author",
@@ -907,7 +907,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
               newBook: {
                 transformerType: "object_fullTemplate",
                 interpolation: "runtime",
-                referencedExtractor: "book",
+                referencedTransformer: "book",
                 definition: [
                   {
                     attributeKey: {
@@ -1094,7 +1094,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
   //             countries: {
   //               transformerType: "mapperListToList",
   //               interpolation: "runtime",
-  //               referencedExtractor: "books",
+  //               referencedTransformer: "books",
   //               orderBy: "name",
   //               elementTransformer: {
   //                 transformerType: "innerFullObjectTemplate",
@@ -1279,7 +1279,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
               firstBook: {
                 transformerType: "listPickElement",
                 interpolation: "runtime",
-                referencedExtractor: "books",
+                referencedTransformer: "books",
                 index: 0,
                 orderBy: "name",
               },

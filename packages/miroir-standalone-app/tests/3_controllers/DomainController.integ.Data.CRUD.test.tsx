@@ -294,7 +294,7 @@ const testActions: Record<string, TestActionParams> = {
                   resultTransformer: {
                     transformerType: "count",
                     interpolation: "runtime",
-                    referencedExtractor: {
+                    referencedTransformer: {
                       transformerType: "contextReference",
                       interpolation: "runtime",
                       referencePath: ["entityBookList", "books"],
@@ -413,7 +413,7 @@ const testActions: Record<string, TestActionParams> = {
                   resultTransformer: {
                     transformerType: "count",
                     interpolation: "runtime",
-                    referencedExtractor: {
+                    referencedTransformer: {
                       transformerType: "contextReference",
                       interpolation: "runtime",
                       referencePath: ["entityBookList", "books"],
@@ -525,7 +525,7 @@ const testActions: Record<string, TestActionParams> = {
                   resultTransformer: {
                     transformerType: "count",
                     interpolation: "runtime",
-                    referencedExtractor: {
+                    referencedTransformer: {
                       transformerType: "contextReference",
                       interpolation: "runtime",
                       referencePath: ["entityBookList", "books"],
@@ -637,7 +637,7 @@ const testActions: Record<string, TestActionParams> = {
                   resultTransformer: {
                     transformerType: "count",
                     interpolation: "runtime",
-                    referencedExtractor: {
+                    referencedTransformer: {
                       transformerType: "contextReference",
                       interpolation: "runtime",
                       referencePath: ["entityBookList", "books"],
@@ -763,7 +763,7 @@ const testActions: Record<string, TestActionParams> = {
                   resultTransformer: {
                     transformerType: "count",
                     interpolation: "runtime",
-                    referencedExtractor: {
+                    referencedTransformer: {
                       transformerType: "contextReference",
                       interpolation: "runtime",
                       referencePath: ["entityBookList", "books"],
@@ -887,7 +887,7 @@ const testActions: Record<string, TestActionParams> = {
                   resultTransformer: {
                     transformerType: "count",
                     interpolation: "runtime",
-                    referencedExtractor: {
+                    referencedTransformer: {
                       transformerType: "contextReference",
                       interpolation: "runtime",
                       referencePath: ["entityBookList", "books"],

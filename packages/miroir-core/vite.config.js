@@ -43,5 +43,10 @@ export default defineConfig({
     watch: false,
     environment: 'happy-dom',
     // setupFiles: ['./setup.ts'],
+    poolOptions: {
+      threads: {
+        singleThread: true,
+      },
+    },
   },
 });

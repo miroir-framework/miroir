@@ -138,7 +138,8 @@ async function runTransformerTest(vitest: any, testSuiteNamePath: string[], tran
 
   // const rawResult: Domain2QueryReturnType<any> = transformer_apply(
   const rawResult: Domain2QueryReturnType<any> = transformer_apply_wrapper(
-    "build",
+    // "build",
+    "runtime",
     undefined,
     transformer,
     transformerTest.transformerParams,
@@ -207,7 +208,7 @@ if (RUN_TEST == testSuiteName) {
   //       {
   //         transformerType: "unique",
   //         interpolation: "runtime",
-  //         referencedExtractor: "books",
+  //         referencedTransformer: "books",
   //         attribute: "author",
   //         orderBy: "author",
   //       },
@@ -259,7 +260,7 @@ if (RUN_TEST == testSuiteName) {
   //     const uniqueRuntimeTemplate:TransformerForRuntime = {
   //       transformerType: "count",
   //       interpolation: "runtime",
-  //       referencedExtractor: "books",
+  //       referencedTransformer: "books",
   //       groupBy: "author",
   //       orderBy: "author",
   //     }
@@ -303,7 +304,7 @@ if (RUN_TEST == testSuiteName) {
   //     const uniqueRuntimeTemplate:TransformerForRuntime = {
   //       transformerType: "count",
   //       interpolation: "runtime",
-  //       referencedExtractor: "books",
+  //       referencedTransformer: "books",
   //       groupBy: "author",
   //       orderBy: "author",
   //     }
@@ -355,7 +356,7 @@ if (RUN_TEST == testSuiteName) {
   //     const uniqueRuntimeTemplate:TransformerForRuntime = {
   //       transformerType: "object_fullTemplate",
   //       interpolation: "runtime",
-  //       referencedExtractor: "country",
+  //       referencedTransformer: "country",
   //       definition: [
   //         {
   //           attributeKey: {
@@ -411,12 +412,12 @@ if (RUN_TEST == testSuiteName) {
   //     const uniqueRuntimeTemplate:TransformerForRuntime = {
   //       transformerType: "mapperListToList",
   //       interpolation: "runtime",
-  //       referencedExtractor: "countries",
+  //       referencedTransformer: "countries",
   //       referenceToOuterObject: "country",
   //       elementTransformer: {
   //         transformerType: "object_fullTemplate",
   //         interpolation: "runtime",
-  //         referencedExtractor: "country",
+  //         referencedTransformer: "country",
   //         definition: [
   //           {
   //             attributeKey: {
@@ -497,7 +498,7 @@ if (RUN_TEST == testSuiteName) {
   //     const uniqueRuntimeTemplate:TransformerForRuntime = {
   //       transformerType: "listReducerToIndexObject",
   //       interpolation: "runtime",
-  //       referencedExtractor: "countries",
+  //       referencedTransformer: "countries",
   //       indexAttribute: "uuid",
   //     }
 
@@ -644,7 +645,7 @@ if (RUN_TEST == testSuiteName) {
   //   const uniqueRuntimeTemplate:TransformerForRuntime = {
   //     transformerType: "mapperListToList",
   //     interpolation: "runtime",
-  //     referencedExtractor: "countries",
+  //     referencedTransformer: "countries",
   //     referenceToOuterObject: "country",
   //     elementTransformer: {
   //       transformerType: "objectAlter",
@@ -848,7 +849,7 @@ if (RUN_TEST == testSuiteName) {
   //   const uniqueBuildTemplate: TransformerForRuntime = {
   //     transformerType: "mapperListToList",
   //     interpolation: "runtime",
-  //     referencedExtractor: "fountains",
+  //     referencedTransformer: "fountains",
   //     referenceToOuterObject: "fountain",
   //     elementTransformer: {
   //       transformerType: "objectAlter",
@@ -1019,7 +1020,7 @@ if (RUN_TEST == testSuiteName) {
   //   const uniqueRuntimeTemplate: TransformerForRuntime = {
   //     transformerType: "listPickElement",
   //     interpolation: "runtime",
-  //     referencedExtractor: "Fountains",
+  //     referencedTransformer: "Fountains",
   //     index: 0,
   //   };
 
@@ -1225,7 +1226,7 @@ if (RUN_TEST == testSuiteName) {
   //   // const extractColumnDefinitionRow:TransformerForRuntime = {
   //   //   transformerType: "listPickElement",
   //   //   interpolation: "runtime",
-  //   //   referencedExtractor: "fileData",
+  //   //   referencedTransformer: "fileData",
   //   //   index: 0
   //   // }
   //   const fileData:any[] = [
@@ -1241,7 +1242,7 @@ if (RUN_TEST == testSuiteName) {
   //   //   {
   //   //     transformerType: "listPickElement",
   //   //     interpolation: "runtime",
-  //   //     referencedExtractor: "fileData",
+  //   //     referencedTransformer: "fileData",
   //   //     index: 0
   //   //   },
   //   //   {
@@ -1269,13 +1270,13 @@ if (RUN_TEST == testSuiteName) {
   //           columnDefinitionRowObject: {
   //             transformerType: "listPickElement",
   //             label: "selectColumnDefinitionRowFromSpreadsheet",
-  //             referencedExtractor: "fileData",
+  //             referencedTransformer: "fileData",
   //             index: 0,
   //           },
   //           columnDefinitionRowEntries: {
   //             transformerType: "objectEntries",
   //             label: "extractEntriesForColumnDefinitionObject",
-  //             referencedExtractor: {
+  //             referencedTransformer: {
   //               transformerType: "contextReference",
   //               referencePath: ["columns", "columnDefinitionRowObject"],
   //             },
@@ -1283,7 +1284,7 @@ if (RUN_TEST == testSuiteName) {
   //           columnDefinitionRowNames: {
   //             transformerType: "mapperListToList",
   //             label: "selectColumnNamesAsStrings",
-  //             referencedExtractor: {
+  //             referencedTransformer: {
   //               transformerType: "contextReference",
   //               referencePath: ["columns", "columnDefinitionRowEntries"],
   //             },
@@ -1291,7 +1292,7 @@ if (RUN_TEST == testSuiteName) {
   //             elementTransformer: {
   //               transformerType: "listPickElement",
   //               label: "selectColumnNamesAsString",
-  //               referencedExtractor: "columnDefinitionRowEntry",
+  //               referencedTransformer: "columnDefinitionRowEntry",
   //               index: 1,
   //             },
   //           }
@@ -1307,14 +1308,14 @@ if (RUN_TEST == testSuiteName) {
   //           arrayOfArrayAttributeDefinitions: {
   //             transformerType: "mapperListToList",
   //             label: "mapColumnNamesToAttributes",
-  //             referencedExtractor: {
+  //             referencedTransformer: {
   //               transformerType: "contextReference",
   //               referencePath: ["columns", "columnDefinitionRowNames"],
   //             },
   //             referenceToOuterObject: "attributeName",
   //             elementTransformer: {
   //               transformerType: "object_fullTemplate",
-  //               referencedExtractor: "attributeName",
+  //               referencedTransformer: "attributeName",
   //               definition: [
   //                 {
   //                   attributeKey: {
@@ -1343,7 +1344,7 @@ if (RUN_TEST == testSuiteName) {
   //           arrayOfAttributeDefinitions: {
   //             transformerType: "mapperListToList",
   //             label: "extractAttributeDefinitions",
-  //             referencedExtractor: {
+  //             referencedTransformer: {
   //               transformerType: "contextReference",
   //               referencePath: ["schema", "arrayOfArrayAttributeDefinitions"],
   //             },
@@ -1351,14 +1352,14 @@ if (RUN_TEST == testSuiteName) {
   //             elementTransformer: {
   //               transformerType: "listPickElement",
   //               label: "selectAttributeDefinition",
-  //               referencedExtractor: "attributeDefinitionArray",
+  //               referencedTransformer: "attributeDefinitionArray",
   //               index: 0,
   //             },
   //           },
   //           // objectAttributeDefinitions: {
   //           //   transformerType: "listReducerToIndexObject",
   //           //   label: "mapAttributeDefinitionsToObject",
-  //           //   referencedExtractor: {
+  //           //   referencedTransformer: {
   //           //     transformerType: "contextReference",
   //           //     referencePath: ["schema", "arrayOfAttributeDefinitions"],
   //           //   },
@@ -1380,15 +1381,15 @@ if (RUN_TEST == testSuiteName) {
   //   };
   //   // {
   //   //   transformerType: "mapperListToList",
-  //   //   referencedExtractor: {
+  //   //   referencedTransformer: {
   //   //     transformerType: "mapperListToList",
-  //   //     referencedExtractor: {
+  //   //     referencedTransformer: {
   //   //       transformerType: "objectEntries",
   //   //       label: "extractEntriesForColumnDefinitionObject",
-  //   //       referencedExtractor: {
+  //   //       referencedTransformer: {
   //   //         transformerType: "listPickElement",
   //   //         label: "selectColumnDefinitionRowFromSpreadsheet",
-  //   //         referencedExtractor: "fileData",
+  //   //         referencedTransformer: "fileData",
   //   //         index: 0,
   //   //       },
   //   //     },
@@ -1396,14 +1397,14 @@ if (RUN_TEST == testSuiteName) {
   //   //     elementTransformer: {
   //   //       transformerType: "listPickElement",
   //   //       label: "selectColumnNamesAsStrings",
-  //   //       referencedExtractor: "columnDefinition",
+  //   //       referencedTransformer: "columnDefinition",
   //   //       index: 1,
   //   //     },
   //   //   },
   //   //   referenceToOuterObject: "attributeName",
   //   //   elementTransformer: {
   //   //     transformerType: "object_fullTemplate",
-  //   //     referencedExtractor: "attributeName",
+  //   //     referencedTransformer: "attributeName",
   //   //     definition: [
   //   //       {
   //   //         attributeKey: {
@@ -1661,7 +1662,7 @@ if (RUN_TEST == testSuiteName) {
   //     {
   //       transformerType: "listPickElement",
   //       interpolation: "runtime",
-  //       referencedExtractor: "Fountains",
+  //       referencedTransformer: "Fountains",
   //       index: 0,
   //     }
   //     // {}, // queryParams

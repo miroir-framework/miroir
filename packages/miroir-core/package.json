@@ -9,7 +9,7 @@
   "types": "dist/index.d.ts",
   "type": "module",
   "scripts": {
-    "build": "npm run copy-files && tsup",
+    "build": "npm run copy-files && cross-env NODE_OPTIONS='--max-old-space-size=8192' tsup",
     "build1": "npm run devBuild",
     "build2": "npm run devBuild",
     "build3": "npm run devBuild",
@@ -22,6 +22,7 @@
     "generate-ts-types": "node --experimental-json-modules --experimental-specifier-resolution=node ./tmp/src/buildTools/generate-ts-types.js",
     "fixTmpImports": "ts-add-js-extension --dir=./tmp",
     "testDEFUNCT": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --verbose --silent=false --debug -t",
+    "vitestByFile": "cross-env NODE_ENV=test NODE_OPTIONS='--max-old-space-size=4096' vitest run --poolOptions.forks.singleFork --passWithNoTests",
     "vitest": "vitest run --poolOptions.threads.singleThread --passWithNoTests -t",
     "preTestNodeNextDEFUNCT": "tsc --rootDir . --baseUrl . --strict --target ESNext --module ESNext --moduleResolution node --allowSyntheticDefaultImports --resolveJsonModule --outdir ./tmp/",
     "preTestCjsDEFUNCT": "tsc --rootDir . --baseUrl . --strict --target ESNext --module commonJs --allowSyntheticDefaultImports --resolveJsonModule --outdir ./tmp/",

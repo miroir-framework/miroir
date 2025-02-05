@@ -371,12 +371,12 @@ const adminConfigurationDeploymentParis = {
 //   //               // menuList: {
 //   //               //   transformerType: "objectValues",
 //   //               //   interpolation: "runtime",
-//   //               //   referencedExtractor: "menuUuidIndex",
+//   //               //   referencedTransformer: "menuUuidIndex",
 //   //               // },
 //   //               menu: {
 //   //                 transformerType: "listPickElement",
 //   //                 interpolation: "runtime",
-//   //                 referencedExtractor: "menuList",
+//   //                 referencedTransformer: "menuList",
 //   //                 index: 1
 //   //               },
 //   //               menuItem: {
@@ -777,7 +777,7 @@ const adminConfigurationDeploymentParis = {
 //   //             menu: {
 //   //               transformerType: "listPickElement",
 //   //               interpolation: "runtime",
-//   //               referencedExtractor: "menuList",
+//   //               referencedTransformer: "menuList",
 //   //               index: 1,
 //   //             },
 //   //             menuItem: {
@@ -995,7 +995,7 @@ const adminConfigurationDeploymentParis = {
 //                   definition: {
 //                     transformerType: "unique",
 //                     interpolation: "runtime",
-//                     referencedExtractor: splittedEntityName + "UuidIndex",
+//                     referencedTransformer: splittedEntityName + "UuidIndex",
 //                     attribute: {
 //                       transformerType: "parameterReference",
 //                       referenceName: "splittedEntityAttribute",
@@ -1049,7 +1049,7 @@ const adminConfigurationDeploymentParis = {
 //                 uniqueSplittedEntityInstancesSplitAttributeValues: {
 //                   transformerType: "unique",
 //                   interpolation: "runtime",
-//                   referencedExtractor: "TestUuidIndex",
+//                   referencedTransformer: "TestUuidIndex",
 //                   attribute: "TestAttribute",
 //                 },
 //               },
