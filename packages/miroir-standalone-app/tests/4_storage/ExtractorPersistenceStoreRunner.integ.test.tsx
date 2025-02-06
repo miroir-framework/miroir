@@ -749,7 +749,15 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
               uniqueAuthors: {
                 transformerType: "unique",
                 interpolation: "runtime",
-                referencedTransformer: "books",
+                applyTo: {
+                  referenceType: "referencedTransformer",
+                  reference: {
+                    transformerType: "contextReference",
+                    interpolation: "runtime",
+                    referenceName: "books",
+                  }
+                },
+                // referencedTransformer: "books",
                 attribute: "author",
                 orderBy: "author",
               },
@@ -802,7 +810,15 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
               uniqueAuthors: {
                 interpolation: "runtime",
                 transformerType: "count",
-                referencedTransformer: "books",
+                applyTo: {
+                  referenceType: "referencedTransformer",
+                  reference: {
+                    transformerType: "contextReference",
+                    interpolation: "runtime",
+                    referenceName: "books",
+                  }
+                },
+                // referencedTransformer: "books",
               },
             },
           },
@@ -850,7 +866,14 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
             },
             runtimeTransformers: {
               countBooksByAuthors: {
-                referencedTransformer: "books",
+                applyTo: {
+                  referenceType: "referencedTransformer",
+                  reference: {
+                    transformerType: "contextReference",
+                    interpolation: "runtime",
+                    referenceName: "books",
+                  }
+                },
                 transformerType: "count",
                 interpolation: "runtime",
                 groupBy: "author",
@@ -907,13 +930,20 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
               newBook: {
                 transformerType: "object_fullTemplate",
                 interpolation: "runtime",
-                referencedTransformer: "book",
+                applyTo: {
+                  referenceType: "referencedTransformer",
+                  reference: {
+                    transformerType: "contextReference",
+                    interpolation: "runtime",
+                    referenceName: "books",
+                  }
+                },
                 definition: [
                   {
                     attributeKey: {
                       interpolation: "runtime",
                       transformerType: "constantString",
-                      constantStringValue: "uuid",
+                      value: "uuid",
                     },
                     attributeValue: {
                       interpolation: "runtime",
@@ -924,7 +954,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
                     attributeKey: {
                       interpolation: "runtime",
                       transformerType: "constantString",
-                      constantStringValue: "name",
+                      value: "name",
                     },
                     attributeValue: {
                       interpolation: "runtime",
@@ -1279,7 +1309,15 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
               firstBook: {
                 transformerType: "listPickElement",
                 interpolation: "runtime",
-                referencedTransformer: "books",
+                applyTo: {
+                  referenceType: "referencedTransformer",
+                  reference: {
+                    transformerType: "contextReference",
+                    interpolation: "runtime",
+                    referenceName: "books",
+                  }
+                },
+                // referencedTransformer: "books",
                 index: 0,
                 orderBy: "name",
               },

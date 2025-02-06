@@ -512,7 +512,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                   transformerType: "freeObjectTemplate",
                   definition: {
                     transformerType: "constantString",
-                    constantStringValue: {
+                    value: {
                       transformerType: "mustacheStringTemplate",
                       definition: "{{createEntity_newEntity.uuid}}",
                     },
@@ -520,7 +520,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                 },
                 instanceUuid: {
                   transformerType: "constantObject",
-                  constantObjectValue: {
+                  value: {
                     transformerType: "parameterReference",
                     referenceName: "instanceUuid",
                   },
@@ -660,7 +660,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                     definition: {
                       transformerType: {
                         transformerType: "constantString",
-                        constantStringValue: "constantUuid",
+                        value: "constantUuid",
                       },
                       constantUuidValue: {
                         transformerType: "mustacheStringTemplate",
@@ -679,7 +679,15 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                 menu: {
                   transformerType: "listPickElement",
                   interpolation: "runtime",
-                  referencedTransformer: "menuList",
+                  applyTo: {
+                    referenceType: "referencedTransformer",
+                    reference: {
+                      transformerType: "contextReference",
+                      interpolation: "runtime",
+                      referenceName: "menuList",
+                    }
+                  },
+                  // referencedTransformer: "menuList",
                   index: 1,
                 },
                 menuItem: {
@@ -1027,7 +1035,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                   transformerType: "freeObjectTemplate",
                   definition: {
                     transformerType: "constantString",
-                    constantStringValue: {
+                    value: {
                       transformerType: "parameterReference",
                       referenceName: "splitEntity_newEntityUuid",
                     },
@@ -1039,10 +1047,10 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                 // },
                 instanceUuid: {
                   transformerType: "constantObject",
-                  constantObjectValue: {
+                  value: {
                     transformerType: "constantObject",
                     interpolation: "runtime",
-                    constantObjectValue: {
+                    value: {
                       transformerType: "parameterReference",
                       referenceName: "instanceUuid",
                     },
@@ -1058,10 +1066,10 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                 },
                 objectReference: {
                   transformerType: "constantObject",
-                  constantObjectValue: {
+                  value: {
                     transformerType: "constantObject",
                     interpolation: "runtime",
-                    constantObjectValue: {
+                    value: {
                       transformerType: "contextReference",
                       interpolation: "runtime",
                       referenceName: "elementToDisplay",
@@ -1070,7 +1078,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                 },
                 AttributeOfListObjectToCompareToReferenceUuid: {
                   transformerType: "constantObject",
-                  constantObjectValue: {
+                  value: {
                     transformerType: "parameterReference",
                     interpolation: "runtime",
                     referenceName: "splitEntity_newEntityName",
@@ -1317,7 +1325,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                     definition: {
                       transformerType: {
                         transformerType: "constantString",
-                        constantStringValue: "constantUuid",
+                        value: "constantUuid",
                       },
                       constantUuidValue: {
                         transformerType: "mustacheStringTemplate",
@@ -1335,12 +1343,28 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                 menuList: {
                   transformerType: "objectValues",
                   interpolation: "runtime",
-                  referencedTransformer: "menuUuidIndex",
+                  applyTo: {
+                    referenceType: "referencedTransformer",
+                    reference: {
+                      transformerType: "contextReference",
+                      interpolation: "runtime",
+                      referenceName: "menuUuidIndex",
+                    }
+                  },
+                  // referencedTransformer: "menuUuidIndex",
                 },
                 menu: {
                   transformerType: "listPickElement",
                   interpolation: "runtime",
-                  referencedTransformer: "menuList",
+                  applyTo: {
+                    referenceType: "referencedTransformer",
+                    reference: {
+                      transformerType: "contextReference",
+                      interpolation: "runtime",
+                      referenceName: "menuList",
+                    }
+                  },
+                  // referencedTransformer: "menuList",
                   index: 1,
                 },
                 menuItem: {
@@ -1350,10 +1374,8 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                       transformerType: "mustacheStringTemplate",
                       definition: "List of {{splitEntity_newEntityName}}s",
                     },
-                    // "label": "List of " + newEntityName,
                     section: "data",
                     selfApplication: {
-                      // transformerType: "constantObject",
                       transformerType: "mustacheStringTemplate",
                       definition: "{{adminConfigurationDeploymentParis.uuid}}",
                     }, // TODO: replace with selfApplication uuid, this is a deployment at the moment
@@ -1486,7 +1508,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                     transformerType: "freeObjectTemplate",
                     definition: {
                       transformerType: "constantString",
-                      constantStringValue: {
+                      value: {
                         transformerType: "mustacheStringTemplate",
                         definition: "{{splittedEntityUuid}}",
                         // definition: "{{splittedEntityDefinition.entityUuid}}",
@@ -1501,7 +1523,15 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                   definition: {
                     transformerType: "unique",
                     interpolation: "runtime",
-                    referencedTransformer: "splittedEntityUuidIndex",
+                    applyTo: {
+                      referenceType: "referencedTransformer",
+                      reference: {
+                        transformerType: "contextReference",
+                        interpolation: "runtime",
+                        referenceName: "SplittedEntityInstances",
+                      }
+                    },
+                      // referencedTransformer: "splittedEntityUuidIndex",
                     attribute: {
                       transformerType: "parameterReference",
                       referenceName: "splittedEntityAttribute",
@@ -1511,14 +1541,30 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                 splittedEntityInstances: {
                   transformerType: "objectValues",
                   interpolation: "runtime",
-                  referencedTransformer: "splittedEntityUuidIndex",
+                  applyTo: {
+                    referenceType: "referencedTransformer",
+                    reference: {
+                      transformerType: "contextReference",
+                      interpolation: "runtime",
+                      referenceName: "splittedEntityUuidIndex",
+                    }
+                  },
+                  // referencedTransformer: "splittedEntityUuidIndex",
                 },
                 municipalities: {
                   transformerType: "freeObjectTemplate",
                   definition: {
                     transformerType: "mapperListToList",
                     interpolation: "runtime",
-                    referencedTransformer: "uniqueSplittedEntityInstancesSplitAttributeValues",
+                    applyTo: {
+                      referenceType: "referencedTransformer",
+                      reference: {
+                        transformerType: "contextReference",
+                        interpolation: "runtime",
+                        referenceName: "uniqueSplittedEntityInstancesSplitAttributeValues",
+                      }
+                    },
+                    // referencedTransformer: "uniqueSplittedEntityInstancesSplitAttributeValues",
                     elementTransformer: {
                       transformerType: "freeObjectTemplate",
                       definition: {
@@ -1530,7 +1576,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                             attributeKey: {
                               interpolation: "runtime",
                               transformerType: "constantString",
-                              constantStringValue: "parentUuid",
+                              value: "parentUuid",
                             },
                             attributeValue: {
                               transformerType: "parameterReference",
@@ -1541,7 +1587,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                             attributeKey: {
                               interpolation: "runtime",
                               transformerType: "constantString",
-                              constantStringValue: "uuid",
+                              value: "uuid",
                             },
                             attributeValue: {
                               interpolation: "runtime",
@@ -1552,7 +1598,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                             attributeKey: {
                               interpolation: "runtime",
                               transformerType: "constantString",
-                              constantStringValue: "name",
+                              value: "name",
                             },
                             attributeValue: {
                               interpolation: "runtime",
@@ -1568,19 +1614,43 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                 municipalitiesIndexedByUuid: {
                   transformerType: "listReducerToIndexObject",
                   interpolation: "runtime",
-                  referencedTransformer: "municipalities",
+                  applyTo: {
+                    referenceType: "referencedTransformer",
+                    reference: {
+                      transformerType: "contextReference",
+                      interpolation: "runtime",
+                      referenceName: "municipalities",
+                    }
+                  },
+                  // referencedTransformer: "municipalities",
                   indexAttribute: "uuid",
                 },
                 municipalitiesIndexedByName: {
                   transformerType: "listReducerToIndexObject",
                   interpolation: "runtime",
-                  referencedTransformer: "municipalities",
+                  applyTo: {
+                    referenceType: "referencedTransformer",
+                    reference: {
+                      transformerType: "contextReference",
+                      interpolation: "runtime",
+                      referenceName: "municipalities",
+                    }
+                  },
+                  // referencedTransformer: "municipalities",
                   indexAttribute: "name",
                 },
                 updatedSplittedEntityInstances: {
                   transformerType: "mapperListToList",
                   interpolation: "runtime",
-                  referencedTransformer: "splittedEntityInstances",
+                  applyTo: {
+                    referenceType: "referencedTransformer",
+                    reference: {
+                      transformerType: "contextReference",
+                      interpolation: "runtime",
+                      referenceName: "splittedEntityInstances",
+                    }
+                  },
+                  // referencedTransformer: "splittedEntityInstances",
                   elementTransformer: {
                     transformerType: "objectAlter",
                     interpolation: "runtime",
@@ -1955,7 +2025,15 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
           configuration: {
             transformerType: "object_fullTemplate",
-            referencedTransformer: "NOT_RELEVANT",
+            applyTo: {
+              referenceType: "referencedTransformer",
+              reference: {
+                transformerType: "contextReference",
+                interpolation: "runtime",
+                referenceName: "NOT_RELEVANT",
+              }
+            },
+            // referencedTransformer: "NOT_RELEVANT",
             definition: [
               {
                 attributeKey: {

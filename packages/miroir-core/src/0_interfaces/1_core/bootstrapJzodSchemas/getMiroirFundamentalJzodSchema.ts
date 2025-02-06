@@ -2474,8 +2474,8 @@ export function getMiroirFundamentalJzodSchema(
 
   // console.log("################## domainActionDefinitions", JSON.stringify(domainActionDefinitions, null, 2))
   console.log("################## miroirFundamentalJzodSchema", JSON.stringify(Object.keys(miroirFundamentalJzodSchema.definition.context), null, 2))
-  console.log("################## testAssertion", JSON.stringify((miroirFundamentalJzodSchema as any).definition.context.testAssertion, null, 2))
-  console.log("################## testAction_runTestCase", JSON.stringify((miroirFundamentalJzodSchema as any).definition.context.testAction_runTestCase, null, 2))
+  // console.log("################## testAssertion", JSON.stringify((miroirFundamentalJzodSchema as any).definition.context.testAssertion, null, 2))
+  // console.log("################## testAction_runTestCase", JSON.stringify((miroirFundamentalJzodSchema as any).definition.context.testAction_runTestCase, null, 2))
 
   // const innerResolutionStore: Record<string, JzodReference> = {
   const innerResolutionStore: Record<string, any> = {
@@ -2680,11 +2680,15 @@ export function getMiroirFundamentalJzodSchema(
         transformer_label: (miroirFundamentalJzodSchema as any).definition.context.transformer_label,
         transformer_orderBy: (miroirFundamentalJzodSchema as any).definition.context.transformer_orderBy,
         transformer_constant: (transformerJzodSchema as any).definition.context.transformer_constant,
-        transformer_constantUuid: (transformerJzodSchema as any).definition.context.transformer_constantUuid,
+        transformer_constantArray: (transformerJzodSchema as any).definition.context.transformer_constantArray,
+        transformer_constantBoolean: (transformerJzodSchema as any).definition.context.transformer_constantBoolean,
+        transformer_constantBigint: (transformerJzodSchema as any).definition.context.transformer_constantBigint,
         transformer_constantObject: (transformerJzodSchema as any).definition.context.transformer_constantObject,
-        transformer_constantListAsExtractor: (transformerJzodSchema as any).definition.context.transformer_constantListAsExtractor,
+        transformer_constantNumber: (transformerJzodSchema as any).definition.context.transformer_constantNumber,
         transformer_constantString: (transformerJzodSchema as any).definition.context.transformer_constantString,
+        transformer_constantUuid: (transformerJzodSchema as any).definition.context.transformer_constantUuid,
         transformer_constants: (transformerJzodSchema as any).definition.context.transformer_constants,
+        transformer_constantListAsExtractor: (transformerJzodSchema as any).definition.context.transformer_constantListAsExtractor,
         transformer_extractors: (transformerJzodSchema as any).definition.context.transformer_extractors,
         transformer_newUuid: (transformerJzodSchema as any).definition.context.transformer_newUuid,
         transformer_parameterReference: (transformerJzodSchema as any).definition.context.transformer_parameterReference,
@@ -2745,9 +2749,13 @@ export function getMiroirFundamentalJzodSchema(
         transformerForRuntime_reference: (miroirFundamentalJzodSchema as any).definition.context.transformerForRuntime_reference,
         transformerForRuntime_count: (transformerJzodSchema as any).definition.context.transformerForRuntime_count,
         transformerForRuntime_constant: (transformerJzodSchema as any).definition.context.transformerForRuntime_constant,
-        transformerForRuntime_constantUuid: (transformerJzodSchema as any).definition.context.transformerForRuntime_constantUuid,
+        transformerForRuntime_constantArray: (transformerJzodSchema as any).definition.context.transformerForRuntime_constantArray,
+        transformerForRuntime_constantBigint: (transformerJzodSchema as any).definition.context.transformerForRuntime_constantBigint,
+        transformerForRuntime_constantBoolean: (transformerJzodSchema as any).definition.context.transformerForRuntime_constantBoolean,
+        transformerForRuntime_constantNumber: (transformerJzodSchema as any).definition.context.transformerForRuntime_constantNumber,
         transformerForRuntime_constantObject: (transformerJzodSchema as any).definition.context.transformerForRuntime_constantObject,
         transformerForRuntime_constantString: (transformerJzodSchema as any).definition.context.transformer_constantString,
+        transformerForRuntime_constantUuid: (transformerJzodSchema as any).definition.context.transformerForRuntime_constantUuid,
         transformerForRuntime_contextReference: (transformerJzodSchema as any).definition.context.transformer_contextReference,
         transformerForRuntime_constants: (transformerJzodSchema as any).definition.context.transformer_constants,
         transformerForRuntime_contextOrParameterReference: (transformerJzodSchema as any).definition.context.transformer_contextOrParameterReference,

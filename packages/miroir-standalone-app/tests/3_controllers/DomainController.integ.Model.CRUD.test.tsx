@@ -297,11 +297,19 @@ const testActions: Record<string, TestActionParams> = {
                   resultTransformer: {
                     transformerType: "count",
                     interpolation: "runtime",
-                    referencedTransformer: {
-                      transformerType: "contextReference",
-                      interpolation: "runtime",
-                      referencePath: ["libraryEntityList", "entities"],
+                    applyTo: {
+                      referenceType: "referencedTransformer",
+                      reference: {
+                        transformerType: "contextReference",
+                        interpolation: "runtime",
+                        referencePath: ["libraryEntityList", "entities"],
+                      }
                     },
+                    // referencedTransformer: {
+                    //   transformerType: "contextReference",
+                    //   interpolation: "runtime",
+                    //   referencePath: ["libraryEntityList", "entities"],
+                    // },
                   },
                   expectedValue: { count: 1 },
                 },
@@ -401,11 +409,19 @@ const testActions: Record<string, TestActionParams> = {
                   resultTransformer: {
                     transformerType: "count",
                     interpolation: "runtime",
-                    referencedTransformer: {
-                      transformerType: "contextReference",
-                      interpolation: "runtime",
-                      referencePath: ["libraryEntityList", "entities"],
+                    applyTo: {
+                      referenceType: "referencedTransformer",
+                      reference: {
+                        transformerType: "contextReference",
+                        interpolation: "runtime",
+                        referencePath: ["libraryEntityList", "entities"],
+                      }
                     },
+                    // referencedTransformer: {
+                    //   transformerType: "contextReference",
+                    //   interpolation: "runtime",
+                    //   referencePath: ["libraryEntityList", "entities"],
+                    // },
                   },
                   expectedValue: { count: 2 },
                 },
@@ -518,11 +534,19 @@ const testActions: Record<string, TestActionParams> = {
                   resultTransformer: {
                     transformerType: "count",
                     interpolation: "runtime",
-                    referencedTransformer: {
-                      transformerType: "contextReference",
-                      interpolation: "runtime",
-                      referencePath: ["libraryEntityList", "entities"],
+                    applyTo: {
+                      referenceType: "referencedTransformer",
+                      reference: {
+                        transformerType: "contextReference",
+                        interpolation: "runtime",
+                        referencePath: ["libraryEntityList", "entities"],
+                      }
                     },
+                  //   referencedTransformer: {
+                  //     transformerType: "contextReference",
+                  //     interpolation: "runtime",
+                  //     referencePath: ["libraryEntityList", "entities"],
+                  //   },
                   },
                   expectedValue: { count: 1 },
                 },
@@ -649,11 +673,19 @@ const testActions: Record<string, TestActionParams> = {
                   resultTransformer: {
                     transformerType: "count",
                     interpolation: "runtime",
-                    referencedTransformer: {
-                      transformerType: "contextReference",
-                      interpolation: "runtime",
-                      referencePath: ["libraryEntityListFromLocalCache", "entities"],
+                    applyTo: {
+                      referenceType: "referencedTransformer",
+                      reference: {
+                        transformerType: "contextReference",
+                        interpolation: "runtime",
+                        referencePath: ["libraryEntityListFromLocalCache", "entities"],
+                      }
                     },
+                    // referencedTransformer: {
+                    //   transformerType: "contextReference",
+                    //   interpolation: "runtime",
+                    //   referencePath: ["libraryEntityListFromLocalCache", "entities"],
+                    // },
                   },
                   expectedValue: { count: 2 },
                 },
@@ -685,11 +717,19 @@ const testActions: Record<string, TestActionParams> = {
                   resultTransformer: {
                     transformerType: "count",
                     interpolation: "runtime",
-                    referencedTransformer: {
-                      transformerType: "contextReference",
-                      interpolation: "runtime",
-                      referencePath: ["libraryEntityListFromPersistentStore", "entities"],
+                    applyTo: {
+                      referenceType: "referencedTransformer",
+                      reference: {
+                        transformerType: "contextReference",
+                        interpolation: "runtime",
+                        referencePath: ["libraryEntityListFromPersistentStore", "entities"],
+                      }
                     },
+                    // referencedTransformer: {
+                    //   transformerType: "contextReference",
+                    //   interpolation: "runtime",
+                    //   referencePath: ["libraryEntityListFromPersistentStore", "entities"],
+                    // },
                   },
                   expectedValue: { count: 1 },
                 },
@@ -800,11 +840,19 @@ const testActions: Record<string, TestActionParams> = {
                   resultTransformer: {
                     transformerType: "count",
                     interpolation: "runtime",
-                    referencedTransformer: {
-                      transformerType: "contextReference",
-                      interpolation: "runtime",
-                      referencePath: ["libraryEntityList", "entities"],
+                    applyTo: {
+                      referenceType: "referencedTransformer",
+                      reference: {
+                        transformerType: "contextReference",
+                        interpolation: "runtime",
+                        referencePath: ["libraryEntityList", "entities"],
+                      }
                     },
+                    // referencedTransformer: {
+                    //   transformerType: "contextReference",
+                    //   interpolation: "runtime",
+                    //   referencePath: ["libraryEntityList", "entities"],
+                    // },
                   },
                   expectedValue: { count: 0 },
                 },
@@ -921,11 +969,19 @@ const testActions: Record<string, TestActionParams> = {
                   resultTransformer: {
                     transformerType: "count",
                     interpolation: "runtime",
-                    referencedTransformer: {
-                      transformerType: "contextReference",
-                      interpolation: "runtime",
-                      referencePath: ["libraryEntityList", "entities"],
+                    applyTo: {
+                      referenceType: "referencedTransformer",
+                      reference: {
+                        transformerType: "contextReference",
+                        interpolation: "runtime",
+                        referencePath: ["libraryEntityList", "entities"],
+                      }
                     },
+                    // referencedTransformer: {
+                    //   transformerType: "contextReference",
+                    //   interpolation: "runtime",
+                    //   referencePath: ["libraryEntityList", "entities"],
+                    // },
                   },
                   expectedValue: { count: 1 },
                 },
@@ -1078,11 +1134,19 @@ const testActions: Record<string, TestActionParams> = {
                   resultTransformer: {
                     transformerType: "count",
                     interpolation: "runtime",
-                    referencedTransformer: {
-                      transformerType: "contextReference",
-                      interpolation: "runtime",
-                      referencePath: ["libraryEntityDefinitionListFromPersistentStore", "entityDefinitions"],
+                    applyTo: {
+                      referenceType: "referencedTransformer",
+                      reference: {
+                        transformerType: "contextReference",
+                        interpolation: "runtime",
+                        referencePath: ["libraryEntityDefinitionListFormPersistentStore", "entityDefinitions"],
+                      }
                     },
+                    // referencedTransformer: {
+                    //   transformerType: "contextReference",
+                    //   interpolation: "runtime",
+                    //   referencePath: ["libraryEntityDefinitionListFromPersistentStore", "entityDefinitions"],
+                    // },
                   },
                   expectedValue: { count: 1 },
                 },
@@ -1100,11 +1164,19 @@ const testActions: Record<string, TestActionParams> = {
                   resultTransformer: {
                     transformerType: "count",
                     interpolation: "runtime",
-                    referencedTransformer: {
-                      transformerType: "contextReference",
-                      interpolation: "runtime",
-                      referencePath: ["libraryEntityDefinitionListFromLocalCache", "entityDefinitions"],
+                    applyTo: {
+                      referenceType: "referencedTransformer",
+                      reference: {
+                        transformerType: "contextReference",
+                        interpolation: "runtime",
+                        referencePath: ["libraryEntityDefinitionListFromLocalCache", "entityDefinitions"],
+                      }
                     },
+                    // referencedTransformer: {
+                    //   transformerType: "contextReference",
+                    //   interpolation: "runtime",
+                    //   referencePath: ["libraryEntityDefinitionListFromLocalCache", "entityDefinitions"],
+                    // },
                   },
                   expectedValue: { count: 1 },
                 },

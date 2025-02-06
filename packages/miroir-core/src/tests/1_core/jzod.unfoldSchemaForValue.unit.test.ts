@@ -1376,7 +1376,7 @@ describe("jzod.unfoldSchemaForValue", () => {
                   type: "literal",
                   definition: "constantString",
                 },
-                constantStringValue: {
+                value: {
                   type: "string",
                 },
               },

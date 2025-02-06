@@ -38,7 +38,7 @@ export default defineConfig({
     }),
   ],
   test: {
-    root: "src/tests",
+    root: "./src/tests",
     globals: true,
     watch: false,
     environment: 'happy-dom',

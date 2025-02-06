@@ -101,7 +101,6 @@ export function resolveInnerTransformer(
   contextResults: Record<string, any> | undefined,
   label: string | undefined
 ) {
-  // const transformerReference = transformer.referencedTransformer ?? transformer.referencedExtractor;
   if (transformer.applyTo.referenceType == "referencedExtractor") {
     throw new Error("resolveInnerTransformer can not handle referencedExtractor");
   }
@@ -539,16 +538,19 @@ export function transformer_InnerReference_resolve  (
   }
 
   switch (transformerInnerReference.transformerType) {
+    case "constant": {
+      return transformerInnerReference.value
+    }
     case "constantUuid": {
-      return transformerInnerReference.constantUuidValue // new object
+      return transformerInnerReference.value // new object
       break;
     }
     case "constantObject": {
-      return transformerInnerReference.constantObjectValue
+      return transformerInnerReference.value
       break;
     }
     case "constantString": {
-      return transformerInnerReference.constantStringValue;
+      return transformerInnerReference.value;
       break;
     }
     case "newUuid": {
@@ -1050,20 +1052,81 @@ export function innerTransformer_apply(
       return result;
       break;
     }
+    case "constantArray": {
+      if (Array.isArray(transformer.value)) {
+        return transformer.value;
+      } else {
+        return transformer.value;
+        // return JSON.stringify(transformer.value)
+        // return new Domain2ElementFailed({
+        //   queryFailure: "FailedTransformer_constantArray",
+        //   failureOrigin: ["transformer_apply"],
+        //   queryContext: "constantArrayValue is not an array",
+        // });
+      }
+    }
+    case "constantBigint": {
+      if (typeof transformer.value == "number") {
+      // if (typeof transformer.constantBigintValue == "bigint") {
+        return transformer.value;
+      } else {
+        return new Domain2ElementFailed({
+          queryFailure: "FailedTransformer_constantBigint",
+          failureOrigin: ["transformer_apply"],
+          queryContext: "constantBigintValue is not a number (but it should actually be a bigint)",
+        });
+      }
+    }
+    case "constantBoolean": {
+      if (typeof transformer.value == "boolean") {
+        return transformer.value;
+      } else {
+        return new Domain2ElementFailed({
+          queryFailure: "FailedTransformer_constantBoolean",
+          failureOrigin: ["transformer_apply"],
+          queryContext: "constantBooleanValue is not a boolean",
+        });
+      }
+    }
     case "constantObject": {
-      log.info("innerTransformer_apply constantObject", transformer.constantObjectValue);
-      // log.error("innerTransformer_apply called with constantObject", transformer.constantObjectValue);
-      return transformer.constantObjectValue;
-      break;
+      if (typeof transformer.value == "object") {
+        return transformer.value;
+      } else {
+        return new Domain2ElementFailed({
+          queryFailure: "FailedTransformer_constantObject",
+          failureOrigin: ["transformer_apply"],
+          queryContext: "constantObjectValue is not an object",
+        });
+      }
+    }
+    case "constantNumber": {
+      if (typeof transformer.value == "number") {
+        return transformer.value;
+      } else {
+        return new Domain2ElementFailed({
+          queryFailure: "FailedTransformer_constantNumber",
+          failureOrigin: ["transformer_apply"],
+          queryContext: "constantNumberValue is not a number",
+        });
+      }
     }
     case "constantString": {
-      return transformer.constantStringValue;
+      if (typeof transformer.value == "string") {
+        return transformer.value;
+      } else {
+        return JSON.stringify((transformer as any).value);
+        // return new Domain2ElementFailed({
+        //   queryFailure: "FailedTransformer_constantString",
+        //   failureOrigin: ["transformer_apply"],
+        //   queryContext: "constantStringValue is not a string",
+        // });
+      }
     }
     case "constantUuid": {
-      return transformer.constantUuidValue;
+      return transformer.value;
     }
     case "constant": {
-      return transformer.constantValue;
+      return transformer.value;
     }
     case "dataflowObject": {
       const resultObject: Record<string,any> = {};

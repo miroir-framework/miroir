@@ -1159,7 +1159,7 @@ if (RUN_TEST == testSuiteName) {
   //       definition: {
   //         name: {
   //           transformerType: "constantString",
-  //           constantStringValue: "testName",
+  //           value: "testName",
   //         },
   //         uuid: {
   //           transformerType: "newUuid",
@@ -1303,7 +1303,7 @@ if (RUN_TEST == testSuiteName) {
   //         definition: {
   //           // type: {
   //           //   transformerType: "constantString",
-  //           //   constantStringValue: "object",
+  //           //   value: "object",
   //           // },
   //           arrayOfArrayAttributeDefinitions: {
   //             transformerType: "mapperListToList",

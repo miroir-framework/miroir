@@ -200,7 +200,7 @@ const adminConfigurationDeploymentParis = {
 //   //                 transformerType: "freeObjectTemplate",
 //   //                 definition: {
 //   //                   transformerType: "constantString",
-//   //                   constantStringValue: {
+//   //                   value: {
 //   //                     transformerType: "mustacheStringTemplate",
 //   //                     definition: "{{createEntity_newEntity.uuid}}",
 //   //                   },
@@ -208,7 +208,7 @@ const adminConfigurationDeploymentParis = {
 //   //               },
 //   //               instanceUuid: {
 //   //                 transformerType: "constantObject",
-//   //                 constantObjectValue: {
+//   //                 value: {
 //   //                   transformerType: "parameterReference",
 //   //                   referenceName: "instanceUuid",
 //   //                 },
@@ -357,7 +357,7 @@ const adminConfigurationDeploymentParis = {
 //   //                   definition: {
 //   //                     transformerType: {
 //   //                       transformerType: "constantString",
-//   //                       constantStringValue: "constantUuid"
+//   //                       value: "constantUuid"
 //   //                     },
 //   //                     constantUuidValue: {
 //   //                       transformerType: "mustacheStringTemplate",
@@ -708,7 +708,7 @@ const adminConfigurationDeploymentParis = {
 //   //                         parentName: "newEntityName",
 //   //                         parentUuid: {
 //   //                           transformerType: "constantString",
-//   //                           constantStringValue: "c4b3b3b3-7b3b-4b3b-8b3b-3b3b3b3b3b3b",
+//   //                           value: "c4b3b3b3-7b3b-4b3b-8b3b-3b3b3b3b3b3b",
 //   //                         },
 //   //                         instanceUuid: {
 //   //                           transformerType: "parameterReference",

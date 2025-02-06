@@ -75,33 +75,8 @@
             "type": "literal",
             "definition": "constant"
           },
-          "constantValue": {
+          "value": {
             "type": "any"
-          }
-        }
-      },
-      "transformer_constantUuid": {
-        "type": "object",
-        "definition": {
-          "transformerType": {
-            "type": "literal",
-            "definition": "constantUuid"
-          },
-          "constantUuidValue": {
-            "type": "string"
-          }
-        }
-      },
-      "transformer_constantObject":{
-        "type": "object",
-        "definition": {
-          "transformerType": {
-            "type": "literal",
-            "definition": "constantObject"
-          },
-          "constantObjectValue": {
-            "type": "record",
-            "definition": { "type": "any" }
           }
         }
       },
@@ -112,8 +87,70 @@
             "type": "literal",
             "definition": "constantListAsExtractor"
           },
-          "constantObjectValue": {
+          "value": {
             "type": "array",
+            "definition": { "type": "any" }
+          }
+        }
+      },
+      "transformer_constantArray":{
+        "type": "object",
+        "definition": {
+          "transformerType": {
+            "type": "literal",
+            "definition": "constantArray"
+          },
+          "value": {
+            "type": "array",
+            "definition": { "type": "any" }
+          }
+        }
+      },
+      "transformer_constantBigint":{
+        "type": "object",
+        "definition": {
+          "transformerType": {
+            "type": "literal",
+            "definition": "constantBigint"
+          },
+          "value": {
+            "type": "number"
+          }
+        }
+      },
+      "transformer_constantBoolean":{
+        "type": "object",
+        "definition": {
+          "transformerType": {
+            "type": "literal",
+            "definition": "constantBoolean"
+          },
+          "value": {
+            "type": "boolean"
+          }
+        }
+      },
+      "transformer_constantNumber":{
+        "type": "object",
+        "definition": {
+          "transformerType": {
+            "type": "literal",
+            "definition": "constantNumber"
+          },
+          "value": {
+            "type": "number"
+          }
+        }
+      },
+      "transformer_constantObject":{
+        "type": "object",
+        "definition": {
+          "transformerType": {
+            "type": "literal",
+            "definition": "constantObject"
+          },
+          "value": {
+            "type": "record",
             "definition": { "type": "any" }
           }
         }
@@ -125,7 +162,19 @@
             "type": "literal",
             "definition": "constantString"
           },
-          "constantStringValue": {
+          "value": {
+            "type": "string"
+          }
+        }
+      },
+      "transformer_constantUuid": {
+        "type": "object",
+        "definition": {
+          "transformerType": {
+            "type": "literal",
+            "definition": "constantUuid"
+          },
+          "value": {
             "type": "string"
           }
         }
@@ -242,6 +291,24 @@
           {
             "type": "schemaReference",
             "definition": {
+              "relativePath": "transformer_constantArray"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformer_constantBigint"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformer_constantBoolean"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
               "relativePath": "transformer_constant"
             }
           },
@@ -255,6 +322,12 @@
             "type": "schemaReference",
             "definition": {
               "relativePath": "transformer_constantObject"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformer_constantNumber"
             }
           },
           {
@@ -494,14 +567,23 @@
       },
       "transformerForBuild_innerFullObjectTemplate": {
         "type": "object",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "relativePath": "transformer_orderBy"
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformerForBuild_reference"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformer_orderBy"
+            }
           }
-        },
+        ],
         "definition": {
           "transformerType": {
             "type": "literal",
@@ -1185,6 +1267,86 @@
         ],
         "definition": {}
       },
+      "transformerForRuntime_constantArray":{
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformerForRuntime_Abstract"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformer_constantArray"
+            }
+          }
+        ],
+        "definition": {}
+      },
+      "transformerForRuntime_constantBigint":{
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformerForRuntime_Abstract"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformer_constantBigint"
+            }
+          }
+        ],
+        "definition": {}
+      },
+      "transformerForRuntime_constantBoolean":{
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformerForRuntime_Abstract"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformer_constantBoolean"
+            }
+          }
+        ],
+        "definition": {}
+      },
+      "transformerForRuntime_constantNumber":{
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformerForRuntime_Abstract"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformer_constantNumber"
+            }
+          }
+        ],
+        "definition": {}
+      },
       "transformerForRuntime_constantObject":{
         "type": "object",
         "extend": [
@@ -1356,6 +1518,30 @@
             "type": "schemaReference",
             "definition": {
               "relativePath": "transformerForRuntime_constant"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformerForRuntime_constantArray"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformerForRuntime_constantBigint"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformerForRuntime_constantBoolean"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformerForRuntime_constantNumber"
             }
           },
           {
@@ -1584,20 +1770,26 @@
       },
       "transformerForRuntime_innerFullObjectTemplate": {
         "type": "object",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "relativePath": "transformerForRuntime_orderedTransformer"
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformerForRuntime_reference"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformerForRuntime_orderedTransformer"
+            }
           }
-        },
+        ],
         "definition": {
           "transformerType": {
             "type": "literal",
             "definition": "innerFullObjectTemplate"
-          },
-          "referenceToOuterObject": {
-            "type": "string"
           },
           "definition": {
             "type": "array",

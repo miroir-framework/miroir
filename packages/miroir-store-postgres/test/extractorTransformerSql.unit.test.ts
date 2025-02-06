@@ -16,7 +16,7 @@ describe("extractorTransformerSql.unit.test", () => {
         {
           transformerType: "constantString",
           interpolation: "runtime",
-          constantStringValue: "test",
+          value: "test",
         },
         // {}, // queryParams
         // {}, // newFetchedData
@@ -97,7 +97,7 @@ describe("extractorTransformerSql.unit.test", () => {
   //             attributeKey: {
   //               interpolation: "runtime",
   //               transformerType: "constantString",
-  //               constantStringValue: "uuid",
+  //               value: "uuid",
   //             },
   //             attributeValue: {
   //               interpolation: "runtime",
@@ -108,7 +108,7 @@ describe("extractorTransformerSql.unit.test", () => {
   //             attributeKey: {
   //               interpolation: "runtime",
   //               transformerType: "constantString",
-  //               constantStringValue: "name",
+  //               value: "name",
   //             },
   //             attributeValue: {
   //               interpolation: "runtime",

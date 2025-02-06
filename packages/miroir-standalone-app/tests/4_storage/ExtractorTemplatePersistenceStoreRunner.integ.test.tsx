@@ -401,8 +401,8 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                     attributeName: "name",
                     value: {
                       transformerType: "constantString",
-                      // constantStringValue: "or",
-                      constantStringValue: "en",
+                      // value: "or",
+                      value: "en",
                     },
                   },
                 },

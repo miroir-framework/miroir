@@ -125,11 +125,11 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           parentName: "Book",
           parentUuid: {
             transformerType: "constantUuid",
-            constantUuidValue: "XXXXXX",
+            value: "XXXXXX",
           },
           instanceUuid: {
             transformerType: "constantUuid",
-            constantUuidValue: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+            value: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
           },
         },
       },
@@ -176,11 +176,11 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           parentName: "Book",
           parentUuid: {
             transformerType: "constantUuid",
-            constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+            value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
           },
           instanceUuid: {
             transformerType: "constantUuid",
-            constantUuidValue: "XXXXXXXXX",
+            value: "XXXXXXXXX",
           },
         },
       },
@@ -540,7 +540,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
   //           attributeName: "name",
   //           value: {
   //             transformerType: "constantString",
-  //             constantStringValue: "or",
+  //             value: "or",
   //           },
   //         },
   //       },

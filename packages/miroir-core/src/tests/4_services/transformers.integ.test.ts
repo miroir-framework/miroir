@@ -1891,7 +1891,7 @@ if (RUN_TEST == testSuiteName) {
   //       transformerType: "objectEntries",
   //       referencedTransformer: {
   //         transformerType: "constantObject",
-  //         constantObjectValue: {
+  //         value: {
   //           "a849eda6-6f80-4178-8ea1-4f2d6c0e8c08": {
   //             Voie: "BOULEVARD DE BELLEVILLE",
   //             uuid: "a849eda6-6f80-4178-8ea1-4f2d6c0e8c08",
@@ -2335,7 +2335,7 @@ if (RUN_TEST == testSuiteName) {
   //       definition: {
   //         name: {
   //           transformerType: "constantString",
-  //           constantStringValue: "testName",
+  //           value: "testName",
   //         },
   //         uuid: {
   //           transformerType: "newUuid",
@@ -2383,7 +2383,7 @@ if (RUN_TEST == testSuiteName) {
     //       definition: {
     //         name: {
     //           transformerType: 'constantString',
-    //           constantStringValue: 'testName'
+    //           value: 'testName'
     //         },
     //         uuid: {
     //           transformerType: 'newUuid'
@@ -2499,7 +2499,7 @@ if (RUN_TEST == testSuiteName) {
   //         definition: {
   //           // type: {
   //           //   transformerType: "constantString",
-  //           //   constantStringValue: "object",
+  //           //   value: "object",
   //           // },
   //           arrayOfArrayAttributeDefinitions: {
   //             transformerType: "mapperListToList",

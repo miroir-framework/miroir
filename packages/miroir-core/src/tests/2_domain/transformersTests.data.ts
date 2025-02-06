@@ -48,6 +48,42 @@ export const transformerTests: TransformerTestSuite = {
       transformerTestType: "transformerTestSuite",
       transformerTestLabel: "constants",
       transformerTests: {
+        constantArray: {
+          transformerTestType: "transformerTestSuite",
+          transformerTestLabel: "constantArray",
+          transformerTests: {
+            "resolve basic transformer constantArray": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel: "resolve basic transformer constantArray",
+              transformerName: "constantArray",
+              transformer: {
+                transformerType: "constantArray",
+                interpolation: "runtime",
+                value: ["testA", "testB"],
+              },
+              transformerParams: {},
+              expectedValue: ["testA", "testB"],
+            },
+            // TODO: this should return an error, both in the in-memory and in the database case
+            // when the parsing of the parameter fails, the transformer should return a QueryNotExecutable, but returns the stringified value of the parameter instead
+            "failed constantArray transformer for non-array value": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel: "failed constantArray transformer for non-array value",
+              transformerName: "constantArrayFailed",
+              transformer: {
+                transformerType: "constantArray",
+                interpolation: "runtime",
+                value: "{]" as any,
+              },
+              transformerParams: {},
+              ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+              expectedValue: "{]",
+              // expectedValue: {
+              //   queryFailure: "QueryNotExecutable",
+              // },
+            },
+          },
+        },
         constantUuid: {
           transformerTestType: "transformerTestSuite",
           transformerTestLabel: "constantUuid",
@@ -59,7 +95,7 @@ export const transformerTests: TransformerTestSuite = {
               transformer: {
                 transformerType: "constantUuid",
                 interpolation: "runtime",
-                constantUuidValue: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                value: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
               },
               transformerParams: {},
               expectedValue: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
@@ -81,6 +117,74 @@ export const transformerTests: TransformerTestSuite = {
             },
           },
         },
+        constantNumber: {
+          transformerTestType: "transformerTestSuite",
+          transformerTestLabel: "constantNumber",
+          transformerTests: {
+            "resolve basic transformer constantNumber": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel: "resolve basic transformer constantNumber",
+              transformerName: "constantNumber",
+              transformer: {
+                transformerType: "constantNumber",
+                interpolation: "runtime",
+                value: 42,
+              },
+              transformerParams: {},
+              expectedValue: 42,
+            },
+            "failed constantNumber transformer for non-number value": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel: "failed constantNumber transformer for non-number value",
+              transformerName: "constantNumberFailed",
+              transformer: {
+                transformerType: "constantNumber",
+                interpolation: "runtime",
+                value: "test" as any,
+              },
+              transformerParams: {},
+              ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+              expectedValue: {
+                queryFailure: "QueryNotExecutable",
+              },
+            },
+          },
+        },
+        constantBigint: {
+          transformerTestType: "transformerTestSuite",
+          transformerTestLabel: "constantBigint",
+          transformerTests: {
+            "resolve basic transformer constantBigint": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel: "resolve basic transformer constantBigint",
+              transformerName: "constantBigint",
+              transformer: {
+                transformerType: "constantBigint",
+                interpolation: "runtime",
+                // constantBigintValue: 42n,
+                value: 42, // TODO: ensure actual value is bigint, not number
+              },
+              transformerParams: {},
+              expectedValue: 42,
+              // expectedValue: 42n,
+            },
+            "failed constantBigint transformer for non-bigint value": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel: "failed constantBigint transformer for non-bigint value",
+              transformerName: "constantBigintFailed",
+              transformer: {
+                transformerType: "constantBigint",
+                interpolation: "runtime",
+                value: "test" as any,
+              },
+              transformerParams: {},
+              ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+              expectedValue: {
+                queryFailure: "QueryNotExecutable",
+              },
+            },
+          },
+        },
         constantString: {
           transformerTestType: "transformerTestSuite",
           transformerTestLabel: "constantString",
@@ -92,10 +196,26 @@ export const transformerTests: TransformerTestSuite = {
               transformer: {
                 transformerType: "constantString",
                 interpolation: "runtime",
-                constantStringValue: "test",
+                value: "test",
               },
               transformerParams: {},
               expectedValue: "test",
+            },
+            "constantString transformer for non-string value": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel: "failed constantString transformer for non-string value",
+              transformerName: "constantStringFailed",
+              transformer: {
+                transformerType: "constantString",
+                interpolation: "runtime",
+                value: { test: "objectInsteadOfString" } as any,
+              },
+              transformerParams: {},
+              expectedValue: "{\"test\":\"objectInsteadOfString\"}"
+              // ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+              // expectedValue: {
+              //   queryFailure: "QueryNotExecutable",
+              // },
             },
           },
         },
@@ -110,11 +230,59 @@ export const transformerTests: TransformerTestSuite = {
               transformer: {
                 transformerType: "constantObject",
                 interpolation: "runtime",
-                constantObjectValue: { test: "test" },
+                value: { test: "test" },
               },
               transformerParams: {},
               expectedValue: { test: "test" },
             },
+            // "failed constantObject transformer for non-object value": {
+            //   transformerTestType: "transformerTest",
+            //   transformerTestLabel: "failed constantObject transformer for non-object value",
+            //   transformerName: "constantObjectFailed",
+            //   transformer: {
+            //     transformerType: "constantObject",
+            //     interpolation: "runtime",
+            //     value: "test" as any,
+            //   },
+            //   transformerParams: {},
+            //   ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+            //   expectedValue: {
+            //     queryFailure: "QueryNotExecutable",
+            //   },
+            // }
+          },
+        },
+        constantBoolean: {
+          transformerTestType: "transformerTestSuite",
+          transformerTestLabel: "constantBoolean",
+          transformerTests: {
+            "resolve basic transformer constantBoolean": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel: "resolve basic transformer constantBoolean",
+              transformerName: "constantBoolean",
+              transformer: {
+                transformerType: "constantBoolean",
+                interpolation: "runtime",
+                value: true,
+              },
+              transformerParams: {},
+              expectedValue: true,
+            },
+            "failed constantBoolean transformer for non-boolean value": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel: "failed constantBoolean transformer for non-boolean value",
+              transformerName: "constantBooleanFailed",
+              transformer: {
+                transformerType: "constantBoolean",
+                interpolation: "runtime",
+                value: "test" as any,
+              },
+              transformerParams: {},
+              ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+              expectedValue: {
+                queryFailure: "QueryNotExecutable",
+              },
+            }
           },
         },
       },
@@ -347,7 +515,7 @@ export const transformerTests: TransformerTestSuite = {
               reference: {
                 transformerType: "constant",
                 interpolation: "runtime",
-                constantValue: "nonExistingTestObject",
+                value: "nonExistingTestObject",
               }
             }
           },
@@ -401,7 +569,7 @@ export const transformerTests: TransformerTestSuite = {
               reference: {
                 transformerType: "constant",
                 interpolation: "runtime",
-                constantValue: "nonExistingTestObject",
+                value: "nonExistingTestObject",
               }
             }
           },
@@ -454,28 +622,28 @@ export const transformerTests: TransformerTestSuite = {
       transformerTestType: "transformerTestSuite",
       transformerTestLabel: "listPickElement",
       transformerTests: {
-        // "listPickElement selects wanted element from a string list": {
-        //   transformerTestType: "transformerTest",
-        //   transformerTestLabel: "listPickElement selects wanted element from a string list",
-        //   transformerName: "listPickElementForString",
-        //   transformer: {
-        //     transformerType: "listPickElement",
-        //     interpolation: "runtime",
-        //     applyTo: {
-        //       referenceType: "referencedTransformer",
-        //       reference: {
-        //         transformerType: "parameterReference",
-        //         interpolation: "runtime",
-        //         referenceName: "testList",
-        //       },
-        //     },
-        //     index: 1,
-        //   },
-        //   transformerParams: {
-        //     testList: ["testA", "testB", "testC"],
-        //   },
-        //   expectedValue: "testB",
-        // },
+        "listPickElement selects wanted element from a string list": {
+          transformerTestType: "transformerTest",
+          transformerTestLabel: "listPickElement selects wanted element from a string list",
+          transformerName: "listPickElementForString",
+          transformer: {
+            transformerType: "listPickElement",
+            interpolation: "runtime",
+            applyTo: {
+              referenceType: "referencedTransformer",
+              reference: {
+                transformerType: "parameterReference",
+                interpolation: "runtime",
+                referenceName: "testList",
+              },
+            },
+            index: 1,
+          },
+          transformerParams: {
+            testList: ["testA", "testB", "testC"],
+          },
+          expectedValue: "testB",
+        },
         "listPickElement selects wanted object from a pre-sorted object list": {
           transformerTestType: "transformerTest",
           transformerTestLabel: "listPickElement selects wanted object from a pre-sorted object list",
@@ -499,29 +667,29 @@ export const transformerTests: TransformerTestSuite = {
           },
           expectedValue: {test: "testB"},
         },
-        // "failed object values for string parameter": {
-        //   transformerTestType: "transformerTest",
-        //   transformerTestLabel: "failed object values for string parameter",
-        //   transformerName: "objectValuesFailed",
-        //   transformer: {
-        //     transformerType: "objectValues",
-        //     interpolation: "runtime",
-        //     applyTo: {
-        //       referenceType: "referencedTransformer",
-        //       reference: {
-        //         transformerType: "constant",
-        //         interpolation: "runtime",
-        //         constantValue: "nonExistingTestObject",
-        //       },
-        //     },
-        //   },
-        //   transformerParams: {
-        //   },
-        //   ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-        //   expectedValue:  {
-        //     "queryFailure": "QueryNotExecutable",
-        //   },
-        // },
+        "failed object values for string parameter": {
+          transformerTestType: "transformerTest",
+          transformerTestLabel: "failed object values for string parameter",
+          transformerName: "objectValuesFailed",
+          transformer: {
+            transformerType: "objectValues",
+            interpolation: "runtime",
+            applyTo: {
+              referenceType: "referencedTransformer",
+              reference: {
+                transformerType: "constant",
+                interpolation: "runtime",
+                value: "nonExistingTestObject",
+              },
+            },
+          },
+          transformerParams: {
+          },
+          ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+          expectedValue:  {
+            "queryFailure": "QueryNotExecutable",
+          },
+        },
       },
     },
   },

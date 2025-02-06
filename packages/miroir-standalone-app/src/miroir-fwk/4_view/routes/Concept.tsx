@@ -514,7 +514,7 @@ export const ConceptPage: React.FC<any> = (
                       transformerType: "freeObjectTemplate",
                       definition: {
                         transformerType: "constantString",
-                        constantStringValue: {
+                        value: {
                           transformerType: "mustacheStringTemplate",
                           definition: "{{createEntity_newEntity.uuid}}",
                         },
@@ -522,7 +522,7 @@ export const ConceptPage: React.FC<any> = (
                     },
                     instanceUuid: {
                       transformerType: "constantObject",
-                      constantObjectValue: {
+                      value: {
                         transformerType: "parameterReference",
                         referenceName: "instanceUuid",
                       },

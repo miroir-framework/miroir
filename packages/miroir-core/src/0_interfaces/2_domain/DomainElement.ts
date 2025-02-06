@@ -11,6 +11,13 @@ import {
 export type QueryFailureType =
   | "FailedTransformer_mustache"
   | "FailedTransformer_objectEntries"
+  | "FailedTransformer_constantArray"
+  | "FailedTransformer_constantBigint"
+  | "FailedTransformer_constantNumber"
+  | "FailedTransformer_constantString"
+  | "FailedTransformer_constantBoolean"
+  | "FailedTransformer_constantObject"
+  | "FailedTransformer_constant"
   | "FailedExtractor"
   | "QueryNotExecutable"
   | "DomainStateNotLoaded"

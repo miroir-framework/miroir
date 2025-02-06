@@ -351,6 +351,15 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                 {
                   transformerType: "objectValues",
                   interpolation: "runtime",
+                  // TODO: replace referenceTransformer by applyTo
+                  // applyTo: {
+                  //   referenceType: "referencedTransformer",
+                  //   reference: {
+                  //     transformerType: "contextReference",
+                  //     interpolation: "runtime",
+                  //     referenceName: "menuList",
+                  //   }
+                  // },
                   referencedTransformer: e[1].tag?.value?.targetEntity + "_extractor",
                 },
               ])
@@ -361,6 +370,15 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                 {
                   transformerType: "listReducerToIndexObject",
                   interpolation: "runtime",
+                  // TODO: replace referenceTransformer by applyTo
+                  // applyTo: {
+                  //   referenceType: "referencedTransformer",
+                  //   reference: {
+                  //     transformerType: "contextReference",
+                  //     interpolation: "runtime",
+                  //     referenceName: "menuList",
+                  //   }
+                  // },
                   referencedTransformer: e[1].tag?.value?.targetEntity + "_array",
                   indexAttribute: "uuid"
                 },
