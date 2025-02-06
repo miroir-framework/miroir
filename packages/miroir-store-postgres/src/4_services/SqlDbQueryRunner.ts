@@ -134,7 +134,8 @@ export class SqlDbQueryRunner {
   
     const sqlQueryParams = sqlStringForQuery(
       selectorParams,
-      this.schema
+      this.schema,
+      [],
     );
     if (sqlQueryParams instanceof Domain2ElementFailed) {
       return Promise.resolve(
@@ -146,10 +147,18 @@ export class SqlDbQueryRunner {
         }))
     }
     
-    const { query, transformerRawQueriesObject, endResultName, combinerRawQueriesObject } = sqlQueryParams
+    const {
+      query,
+      transformerRawQueriesObject,
+      endResultName,
+      combinerRawQueriesObject,
+      queryParameters,
+      preparedStatementParameters,
+    } = sqlQueryParams;
 
     try {
-      const rawResult = await this.persistenceStoreController.executeRawQuery(query);
+      log.info("asyncExtractWithQuery calling QUERY", query, "with parameters", JSON.stringify(preparedStatementParameters));
+      const rawResult = await this.persistenceStoreController.executeRawQuery(query, preparedStatementParameters);
       log.info("asyncExtractWithQuery innerFullObjectTemplate #####RAWRESULT", JSON.stringify(rawResult));
   
       if (rawResult instanceof Action2Error || rawResult.returnedDomainElement instanceof Domain2ElementFailed) {
