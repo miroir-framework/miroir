@@ -34,6 +34,8 @@ MiroirLoggerFactory.registerLoggerToStart(
   log = logger;
 });
 
+export type PostgresDataTypes = "boolean" | "double precision" | "varchar" | "text" | "jsonb";
+
 export interface SqlStringForCombinerReturnType {
   sqlString: string;
   resultAccessPath?: (string | number)[];
@@ -127,13 +129,11 @@ export function sqlStringForExtractor(extractor: ExtractorOrCombiner, schema: st
 }
 
 export type SqlStringForTransformerElementValue = {
-  // sqlStringOrObject: string | Record<string, string>;
   sqlStringOrObject: string;
   resultAccessPath?: (string | number)[];
   encloseEndResultInArray?: boolean;
   extraWith?: { name: string; sql: string }[];
   type: "json" | "table" | "scalar";
-  // queryParameters?: Record<string, { index: number; value: any }>;
   preparedStatementParameters?: any[];
 };
 
@@ -187,33 +187,39 @@ function resolveApplyTo(
   return referenceQuery;
 
 }
+
+// ################################################################################################
+const getConstantSql = (
+  transformer: any,
+  preparedStatementParametersIndex: number,
+  topLevelTransformer: boolean,
+  targetType: "json" | "scalar",
+  sqlTargetType: PostgresDataTypes,
+  label: string,
+): Domain2QueryReturnType<SqlStringForTransformerElementValue> => {
+  const paramIndex = preparedStatementParametersIndex + 1;
+  return {
+    type: targetType,
+    sqlStringOrObject: topLevelTransformer
+      ? `select $${paramIndex}::${sqlTargetType} as "${label}"`
+      : `$${paramIndex}::${sqlTargetType}`,
+    preparedStatementParameters: [targetType == "json" ? JSON.stringify(transformer.value) : transformer.value],
+    resultAccessPath: topLevelTransformer ? [0, label] : undefined,
+  };
+};
+
 // ################################################################################################
 export function sqlStringForTransformer(
-  actionRuntimeTransformer: TransformerForRuntime  | TransformerForRuntime_innerFullObjectTemplate,
+  actionRuntimeTransformer: TransformerForRuntime | TransformerForRuntime_innerFullObjectTemplate,
   preparedStatementParametersIndex: number,
   queryParams: Record<string, any> = {},
   newFetchedData: Record<string, any> = {},
   topLevelTransformer: boolean = true
 ): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
-  // TODO: DomainElement should be dependent type, the real type is hidden here
   log.info(
     "extractorTransformerSql called with actionRuntimeTransformer",
     JSON.stringify(actionRuntimeTransformer, null, 2)
   );
-
-  // const resolvedReference = transformer_InnerReference_resolve( // TODO: REMOVE resolveContextReferenceDEFUNCT!!
-  //   "build",
-  //   { transformerType: "contextReference", referenceName },
-  //   queryParams,
-  //   newFetchedData
-  // );
-
-
-  // const extractorRawQueries = Object.entries(extractors).map(([key, value]) => {
-  //   return [key, this.persistenceStoreController.sqlForExtractor(value)];
-  // });
-
-  // log.info("extractorTransformerSql extractorRawQueries", extractorRawQueries);
 
   // TODO: use referenceName and dotted notation for the attribute
   const orderBy = (actionRuntimeTransformer as any).orderBy
@@ -250,7 +256,7 @@ export function sqlStringForTransformer(
         actionRuntimeTransformer,
         queryParams,
         newFetchedData
-      )
+      );
       if (resolvedReference instanceof Domain2ElementFailed) {
         return resolvedReference;
       }
@@ -263,9 +269,6 @@ export function sqlStringForTransformer(
     }
     case "innerFullObjectTemplate":
     case "object_fullTemplate": {
-      // const referenceName: string =
-      //   (actionRuntimeTransformer as any).referenceToOuterObject ??
-      //   (actionRuntimeTransformer as any).referencedTransformer;
       const referenceQuery = resolveApplyTo(
         actionRuntimeTransformer,
         preparedStatementParametersIndex,
@@ -276,27 +279,39 @@ export function sqlStringForTransformer(
       if (referenceQuery instanceof Domain2ElementFailed) {
         return referenceQuery;
       }
-  
-      const selectFields = actionRuntimeTransformer.definition
-        .map(
-          (f) => {
-            const attributeValue = sqlStringForTransformer(f.attributeValue, preparedStatementParametersIndex, queryParams, newFetchedData, false);
-            if (attributeValue instanceof Domain2ElementFailed) {
-              return attributeValue;
-            }
-            
-            const attributeKey = sqlStringForTransformer(f.attributeKey, preparedStatementParametersIndex, queryParams, newFetchedData, false);
-            if (attributeKey instanceof Domain2ElementFailed) {
-              return attributeKey;
-            }
 
-            return  attributeValue.sqlStringOrObject + // TODO: check for actual type of sqlStringOrObject
+      const selectFields = actionRuntimeTransformer.definition
+        .map((f) => {
+          const attributeValue = sqlStringForTransformer(
+            f.attributeValue,
+            preparedStatementParametersIndex,
+            queryParams,
+            newFetchedData,
+            false
+          );
+          if (attributeValue instanceof Domain2ElementFailed) {
+            return attributeValue;
+          }
+
+          const attributeKey = sqlStringForTransformer(
+            f.attributeKey,
+            preparedStatementParametersIndex,
+            queryParams,
+            newFetchedData,
+            false
+          );
+          if (attributeKey instanceof Domain2ElementFailed) {
+            return attributeKey;
+          }
+
+          return (
+            attributeValue.sqlStringOrObject + // TODO: check for actual type of sqlStringOrObject
             " AS " +
             tokenQuote +
             attributeKey.sqlStringOrObject +
             tokenQuote
-          }
-        )
+          );
+        })
         .join(tokenSeparatorForSelect);
 
       const sqlResult = `SELECT row_to_json(t) AS "innerFullObjectTemplate" FROM ( SELECT ${selectFields} FROM "${referenceQuery.sqlStringOrObject}" ) t
@@ -399,8 +414,7 @@ export function sqlStringForTransformer(
       const limit = actionRuntimeTransformer.index;
       let sqlResult;
       if (actionRuntimeTransformer.orderBy) {
-        sqlResult = 
-`
+        sqlResult = `
 SELECT (
   jsonb_agg(
     "listPickElement_applyTo_array" ORDER BY (
@@ -410,212 +424,133 @@ SELECT (
 )::jsonb AS "listPickElement" 
 FROM
   (${referenceQuery.sqlStringOrObject}) AS "listPickElement_applyTo", 
-  LATERAL jsonb_array_elements("listPickElement_applyTo"."${(referenceQuery as any).resultAccessPath[1]}") AS "listPickElement_applyTo_array"
+  LATERAL jsonb_array_elements("listPickElement_applyTo"."${
+    (referenceQuery as any).resultAccessPath[1]
+  }") AS "listPickElement_applyTo_array"
 `;
       } else {
-      sqlResult = 
-`SELECT "listPickElement_applyTo"."${(referenceQuery as any).resultAccessPath[1]}" ->> ${limit} AS "listPickElement" 
+        sqlResult = `SELECT "listPickElement_applyTo"."${
+          (referenceQuery as any).resultAccessPath[1]
+        }" ->> ${limit} AS "listPickElement" 
 FROM (${referenceQuery.sqlStringOrObject}) AS "listPickElement_applyTo"
 `;
-    }
-    return {
-      type: "json",
-      sqlStringOrObject: sqlResult,
-      preparedStatementParameters: referenceQuery.preparedStatementParameters,
-      resultAccessPath: [0, "listPickElement"],
-    };
+      }
+      return {
+        type: "json",
+        sqlStringOrObject: sqlResult,
+        preparedStatementParameters: referenceQuery.preparedStatementParameters,
+        resultAccessPath: [0, "listPickElement"],
+      };
       break;
     }
     case "constantArray": {
-      const paramIndex = preparedStatementParametersIndex + 1;
-      const resultSqlString = topLevelTransformer
-        ? `select $${paramIndex}::jsonb as "constantArray"`
-        : `$${paramIndex}::jsonb`;
-      return {
-        type: "json",
-        sqlStringOrObject: resultSqlString,
-        preparedStatementParameters: [JSON.stringify(actionRuntimeTransformer.value)],
-        resultAccessPath: topLevelTransformer ? [0, "constantArray"] : undefined,
-      };
+      return getConstantSql(
+        actionRuntimeTransformer,
+        preparedStatementParametersIndex,
+        topLevelTransformer,
+        "json",
+        "jsonb",
+        "constantArray"
+      );
       break;
     }
     case "constantUuid": {
-      return {
-        type: "scalar",
-        sqlStringOrObject: topLevelTransformer
-          ? `select '${actionRuntimeTransformer.value}' as "constantUuid"`
-          : `'${actionRuntimeTransformer.value}'`,
-        preparedStatementParameters: [],
-        resultAccessPath: topLevelTransformer ? [0, "constantUuid"] : undefined,
-      };
+      return getConstantSql(
+        actionRuntimeTransformer,
+        preparedStatementParametersIndex,
+        topLevelTransformer,
+        "scalar",
+        "varchar",
+        "constantUuid"
+      );
       break;
     }
     case "constantBoolean": {
-      const paramIndex = preparedStatementParametersIndex + 1;
-      return {
-        type: "scalar",
-        sqlStringOrObject: topLevelTransformer
-          ? `select $${paramIndex}::boolean as "constantBoolean"`
-          : `$${paramIndex}::boolean`,
-        preparedStatementParameters: [actionRuntimeTransformer.value],
-        resultAccessPath: topLevelTransformer ? [0, "constantBoolean"] : undefined,
-      };
+      return getConstantSql(
+        actionRuntimeTransformer,
+        preparedStatementParametersIndex,
+        topLevelTransformer,
+        "scalar",
+        "boolean",
+        "constantBoolean"
+      );
       break;
     }
-    case "constantBigint": {
-      const paramIndex = preparedStatementParametersIndex + 1;
-      return {
-        type: "scalar",
-        sqlStringOrObject: topLevelTransformer
-          ? `select $${paramIndex}::double precision as "constantBigint"`
-          : `$${paramIndex}::double precision`,
-        preparedStatementParameters: [actionRuntimeTransformer.value],
-        resultAccessPath: topLevelTransformer ? [0, "constantBigint"] : undefined,
-      };
-      // return {
-      //   type: "scalar",
-      //   sqlStringOrObject: topLevelTransformer
-      //     ? `select $${paramIndex}::bigint as "constantBigint"`
-      //     : `$${paramIndex}::bigint`,
-      //   preparedStatementParameters: [actionRuntimeTransformer.value],
-      //   resultAccessPath: topLevelTransformer ? [0, "constantBigint"] : undefined,
-      // };
-      break;
-    }
-    case "constantNumber": {
-      const paramIndex = preparedStatementParametersIndex + 1;
-      return {
-        type: "scalar",
-        sqlStringOrObject: topLevelTransformer
-          ? `select $${paramIndex}::double precision as "constantNumber"`
-          : `$${paramIndex}::double precision`,
-        preparedStatementParameters: [actionRuntimeTransformer.value],
-        resultAccessPath: topLevelTransformer ? [0, "constantNumber"] : undefined,
-      };
-      break;
-    }
-    case "constantString": {
-      const paramIndex = preparedStatementParametersIndex + 1;
-      return {
-        type: "scalar",
-        sqlStringOrObject: topLevelTransformer
-          ? `select $${paramIndex}::varchar as "constantString"`
-          : `$${paramIndex}::varchar`,
-        preparedStatementParameters: [actionRuntimeTransformer.value],
-        resultAccessPath: topLevelTransformer ? [0, "constantString"] : undefined,
-      };
-      break;
-    }
-    case "constantObject": {
-      const paramIndex = preparedStatementParametersIndex + 1;
-      const resultSqlString =
-        topLevelTransformer
-        ? `select $${paramIndex}::jsonb as "constantObject"`
-        : `$${paramIndex}::jsonb`;
-      return {
-        type: "json",
-        sqlStringOrObject: resultSqlString,
-        preparedStatementParameters: [JSON.stringify(actionRuntimeTransformer.value)],
-        resultAccessPath: [0, "constantObject"],
-      };
-      break;
-    }
+    case "constantBigint":
+      return getConstantSql(
+        actionRuntimeTransformer,
+        preparedStatementParametersIndex,
+        topLevelTransformer,
+        "scalar",
+        "double precision",
+        "constantBigint"
+      );
+    case "constantNumber":
+      return getConstantSql(
+        actionRuntimeTransformer,
+        preparedStatementParametersIndex,
+        topLevelTransformer,
+        "scalar",
+        "double precision",
+        "constantNumber"
+      );
+    case "constantString":
+      return getConstantSql(
+        actionRuntimeTransformer,
+        preparedStatementParametersIndex,
+        topLevelTransformer,
+        "scalar",
+        "text",
+        "constantString"
+      );
+    case "constantObject":
+      return getConstantSql(
+        actionRuntimeTransformer,
+        preparedStatementParametersIndex,
+        topLevelTransformer,
+        "json",
+        "jsonb",
+        "constantObject"
+      );
     case "constant": {
+      const targetSqlType = typeof actionRuntimeTransformer.value === "object" ? "json" : "scalar";
+      let sqlTargetType: PostgresDataTypes;
       switch (typeof actionRuntimeTransformer.value) {
         case "string": {
-          const paramIndex = preparedStatementParametersIndex + 1;
-          return {
-            type: "scalar",
-            sqlStringOrObject: topLevelTransformer
-              ? `select $${paramIndex}::varchar as "constantString"`
-              : `$${paramIndex}::varchar`,
-            preparedStatementParameters: [actionRuntimeTransformer.value],
-            resultAccessPath: topLevelTransformer ? [0, "constantString"] : undefined,
-          };
-    
-          // return {
-          //   type: "json",
-          //   sqlStringOrObject: topLevelTransformer
-          //     ? `select '${actionRuntimeTransformer.constantValue}' as constantstring`
-          //     : `'${actionRuntimeTransformer.constantValue}'`,
-          //   preparedStatementParameters: [],
-          //   resultAccessPath: topLevelTransformer ? [0, "constantstring"] : undefined,
-          // };
+          sqlTargetType = "text";
+          break;
         }
-        case "number": {
-          const paramIndex = preparedStatementParametersIndex + 1;
-          return {
-            type: "scalar",
-            sqlStringOrObject: topLevelTransformer
-              ? `select $${paramIndex}::double precision as "constantNumber"`
-              : `$${paramIndex}::double precision`,
-            preparedStatementParameters: [actionRuntimeTransformer.value],
-            resultAccessPath: topLevelTransformer ? [0, "constantNumber"] : undefined,
-          };
-        }
+        case "number":
         case "bigint": {
-          const paramIndex = preparedStatementParametersIndex + 1;
-          return {
-            type: "scalar",
-            sqlStringOrObject: topLevelTransformer
-              ? `select $${paramIndex}::double precision as "constantBigint"`
-              : `$${paramIndex}::double precision`,
-            preparedStatementParameters: [actionRuntimeTransformer.value],
-            resultAccessPath: topLevelTransformer ? [0, "constantBigint"] : undefined,
-          };
-          // return {
-          //   type: "scalar",
-          //   sqlStringOrObject: topLevelTransformer
-          //     ? `select $${paramIndex}::bigint as "constantBigint"`
-          //     : `$${paramIndex}::bigint`,
-          //   preparedStatementParameters: [actionRuntimeTransformer.value],
-          //   resultAccessPath: topLevelTransformer ? [0, "constantBigint"] : undefined,
-          // };
-        }
-        case "object": {
-          const paramIndex = preparedStatementParametersIndex + 1;
-          if (Array.isArray(actionRuntimeTransformer.value)) {
-            return {
-              type: "json",
-              sqlStringOrObject: topLevelTransformer
-                ? `select $${paramIndex}::jsonb as "constantArray"`
-                : `$${paramIndex}::jsonb`,
-              preparedStatementParameters: [JSON.stringify(actionRuntimeTransformer.value)],
-              resultAccessPath: topLevelTransformer ? [0, "constantArray"] : undefined,
-            };
-          } else {
-            return {
-              type: "json",
-              sqlStringOrObject: topLevelTransformer
-                ? `select $${paramIndex}::jsonb as "constantObject"`
-                : `$${paramIndex}::jsonb`,
-              preparedStatementParameters: [JSON.stringify(actionRuntimeTransformer.value)],
-              resultAccessPath: topLevelTransformer ? [0, "constantObject"] : undefined,
-            };
-          }
+          sqlTargetType = "double precision";
+          break;
         }
         case "boolean": {
-          const paramIndex = preparedStatementParametersIndex + 1;
-          return {
-            type: "scalar",
-            sqlStringOrObject: topLevelTransformer
-              ? `select $${paramIndex}::boolean as "constantBoolean"`
-              : `$${paramIndex}::boolean`,
-            preparedStatementParameters: [actionRuntimeTransformer.value],
-            resultAccessPath: topLevelTransformer ? [0, "constantBoolean"] : undefined,
-          };
+          sqlTargetType = "boolean";
+          break;
+        }
+        case "object": {
+          sqlTargetType = "jsonb";
+          break;
         }
         case "symbol":
         case "undefined":
-        case "function": {
-          throw new Error("sqlStringForTransformer constantValue not implemented: " + typeof actionRuntimeTransformer.value);
-          break;
-        }
+        case "function":
         default: {
-          throw new Error("sqlStringForTransformer constantValue not implemented: " + typeof actionRuntimeTransformer.value);
+          throw new Error(
+            "Unsupported constant type in 'constant' transformer: " + typeof actionRuntimeTransformer.value
+          );
           break;
         }
       }
+      return getConstantSql(
+        actionRuntimeTransformer,
+        preparedStatementParametersIndex,
+        topLevelTransformer,
+        targetSqlType,
+        sqlTargetType,
+        "constantParam"
+      );
     }
     case "parameterReference":
     case "contextReference": {
@@ -626,7 +561,7 @@ FROM (${referenceQuery.sqlStringOrObject}) AS "listPickElement_applyTo"
         actionRuntimeTransformer.transformerType == "contextReference" ? "context" : "param",
         queryParams,
         newFetchedData
-      )
+      );
       if (resolvedReference instanceof Domain2ElementFailed) {
         return resolvedReference;
       }
@@ -657,11 +592,15 @@ FROM (${referenceQuery.sqlStringOrObject}) AS "listPickElement_applyTo"
         return referenceQuery;
       }
 
-      const extraWith:{ name: string; sql: string }[] = [{
-        name: "innerQuery",
-        sql: referenceQuery.sqlStringOrObject,
-      }]
-      const sqlResult = `SELECT json_agg(json_build_array(key, value)) AS "objectEntries" FROM "innerQuery", jsonb_each("innerQuery"."${(referenceQuery as any).resultAccessPath[1]}")`
+      const extraWith: { name: string; sql: string }[] = [
+        {
+          name: "innerQuery",
+          sql: referenceQuery.sqlStringOrObject,
+        },
+      ];
+      const sqlResult = `SELECT json_agg(json_build_array(key, value)) AS "objectEntries" FROM "innerQuery", jsonb_each("innerQuery"."${
+        (referenceQuery as any).resultAccessPath[1]
+      }")`;
 
       return {
         type: "json",
@@ -684,11 +623,15 @@ FROM (${referenceQuery.sqlStringOrObject}) AS "listPickElement_applyTo"
         return referenceQuery;
       }
 
-      const extraWith:{ name: string; sql: string }[] = [{
-        name: "innerQuery",
-        sql: referenceQuery.sqlStringOrObject,
-      }]
-      const sqlResult = `SELECT json_agg(value) AS "objectValues" FROM "innerQuery", jsonb_each("innerQuery"."${(referenceQuery as any).resultAccessPath[1]}")`
+      const extraWith: { name: string; sql: string }[] = [
+        {
+          name: "innerQuery",
+          sql: referenceQuery.sqlStringOrObject,
+        },
+      ];
+      const sqlResult = `SELECT json_agg(value) AS "objectValues" FROM "innerQuery", jsonb_each("innerQuery"."${
+        (referenceQuery as any).resultAccessPath[1]
+      }")`;
 
       return {
         type: "json",
@@ -706,17 +649,9 @@ FROM (${referenceQuery.sqlStringOrObject}) AS "listPickElement_applyTo"
       return new Domain2ElementFailed({
         queryFailure: "QueryNotExecutable",
         query: JSON.stringify(actionRuntimeTransformer),
-        failureMessage: "sqlStringForTransformer transformerType not implemented: " + actionRuntimeTransformer.transformerType,
+        failureMessage:
+          "sqlStringForTransformer transformerType not implemented: " + actionRuntimeTransformer.transformerType,
       });
-      // return {
-      //   elementType: "failure",
-      //   elementValue: {
-      //     queryFailure: "QueryNotExecutable",
-      //     query: JSON.stringify(actionRuntimeTransformer),
-      //     failureMessage:
-      //       "sqlStringForTransformer transformerType not implemented: " + actionRuntimeTransformer.transformerType,
-      //   },
-      // };
       break;
     }
     case "unique": {
@@ -729,19 +664,12 @@ FROM (${referenceQuery.sqlStringOrObject}) AS "listPickElement_applyTo"
       );
       if (referenceQuery instanceof Domain2ElementFailed) {
         return referenceQuery;
-        
       }
-      // const referenceName: string = (actionRuntimeTransformer as any).referencedTransformer;
-      // if (!(actionRuntimeTransformer as any).referencedTransformer) {
-      //   throw new Error("extractorTransformerSql unique missing referencedTransformer");
-      // }
-      log.info("extractorTransformerSql actionRuntimeTransformer.attribute", actionRuntimeTransformer.attribute);
-      // TODO: resolve query.referencedTransformer.referenceName properly
-      // WITH ${extractorRawQueries.map((q) => '"' + q[0] + '" AS (' + q[1] + " )").join(", ")}
+      // log.info("extractorTransformerSql actionRuntimeTransformer.attribute", actionRuntimeTransformer.attribute);
       const transformerSqlQuery = `SELECT DISTINCT ON ("${actionRuntimeTransformer.attribute}") "${actionRuntimeTransformer.attribute}" FROM "${referenceQuery.sqlStringOrObject}"
         ${orderBy}
       `;
-      log.info("sqlStringForTransformer unique transformerRawQuery", JSON.stringify(transformerSqlQuery));
+      // log.info("sqlStringForTransformer unique transformerRawQuery", JSON.stringify(transformerSqlQuery));
       return {
         type: "table",
         sqlStringOrObject: transformerSqlQuery,
@@ -761,10 +689,6 @@ FROM (${referenceQuery.sqlStringOrObject}) AS "listPickElement_applyTo"
       if (referenceQuery instanceof Domain2ElementFailed) {
         return referenceQuery;
       }
-      // const referenceName: string = (actionRuntimeTransformer as any).referencedTransformer;
-      // if (!(actionRuntimeTransformer as any).referencedTransformer) {
-      //   throw new Error("sqlStringForTransformer count missing referencedTransformer");
-      // }
       log.info("sqlStringForTransformer count actionRuntimeTransformer.groupBy", actionRuntimeTransformer.groupBy);
       const transformerSqlQuery = actionRuntimeTransformer.groupBy
         ? `SELECT "${actionRuntimeTransformer.groupBy}", COUNT("uuid")::int FROM ${referenceQuery.sqlStringOrObject}
@@ -775,7 +699,8 @@ FROM (${referenceQuery.sqlStringOrObject}) AS "listPickElement_applyTo"
       log.info("sqlStringForTransformer count transformerSqlQuery", transformerSqlQuery);
       return {
         type: "table",
-        sqlStringOrObject: transformerSqlQuery, resultAccessPath: undefined,
+        sqlStringOrObject: transformerSqlQuery,
+        resultAccessPath: undefined,
         preparedStatementParameters: referenceQuery.preparedStatementParameters,
       };
       break;
@@ -790,15 +715,6 @@ FROM (${referenceQuery.sqlStringOrObject}) AS "listPickElement_applyTo"
     query: actionRuntimeTransformer as any,
     failureMessage: "could not handle transformer",
   });
-  // return {
-  //   elementType: "failure",
-  //   elementValue: {
-  //     queryFailure: "QueryNotExecutable",
-  //     failureOrigin: ["sqlStringForTransformer"],
-  //     query: actionRuntimeTransformer,
-  //     failureMessage: "could not handle transformer",
-  //   },
-  // };
 }
 
 // ################################################################################################
