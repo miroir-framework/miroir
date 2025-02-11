@@ -80,6 +80,30 @@
           }
         }
       },
+      "transformer_constantAsExtractor": {
+        "type": "object",
+        "definition": {
+          "transformerType": {
+            "type": "literal",
+            "definition": "constantAsExtractor"
+          },
+          "valueType": {
+            "type": "enum",
+            "optional": true,
+            "definition": ["string", "number", "boolean", "bigint", "object", "array"]
+          },
+          "valueJzodSchema": {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+              "relativePath": "jzodElement"
+            }
+          },
+          "value": {
+            "type": "any"
+          }
+        }
+      },
       "transformer_constantListAsExtractor":{
         "type": "object",
         "definition": {
@@ -291,6 +315,18 @@
           {
             "type": "schemaReference",
             "definition": {
+              "relativePath": "transformer_constant"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformer_constantAsExtractor"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
               "relativePath": "transformer_constantArray"
             }
           },
@@ -304,12 +340,6 @@
             "type": "schemaReference",
             "definition": {
               "relativePath": "transformer_constantBoolean"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "relativePath": "transformer_constant"
             }
           },
           {
@@ -1227,6 +1257,26 @@
           }
         }
       },
+      "transformerForRuntime_constantAsExtractor": {
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformerForRuntime_Abstract"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformer_constantAsExtractor"
+            }
+          }
+        ],
+        "definition": {}
+      },
       "transformerForRuntime_constant": {
         "type": "object",
         "extend": [
@@ -1518,6 +1568,12 @@
             "type": "schemaReference",
             "definition": {
               "relativePath": "transformerForRuntime_constant"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformerForRuntime_constantAsExtractor"
             }
           },
           {

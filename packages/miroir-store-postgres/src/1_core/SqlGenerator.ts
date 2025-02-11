@@ -20,6 +20,8 @@ import {
 import { RecursiveStringRecords } from "../4_services/SqlDbQueryTemplateRunner";
 import { cleanLevel } from "../4_services/constants";
 import { packageName } from "../constants";
+import { PostgresDataTypes } from "./Postgres";
+import { getAttributeTypesFromJzodSchema } from "./jzodSchema";
 
 export const stringQuote = "'";
 export const tokenQuote = '"';
@@ -34,7 +36,6 @@ MiroirLoggerFactory.registerLoggerToStart(
   log = logger;
 });
 
-export type PostgresDataTypes = "boolean" | "double precision" | "varchar" | "text" | "jsonb";
 
 export interface SqlStringForCombinerReturnType {
   sqlString: string;
@@ -206,6 +207,46 @@ const getConstantSql = (
     preparedStatementParameters: [targetType == "json" ? JSON.stringify(transformer.value) : transformer.value],
     resultAccessPath: topLevelTransformer ? [0, label] : undefined,
   };
+};
+
+const getConstantSqlTypeMap: Record<string, {targetType: "json" | "scalar",
+  sqlTargetType: PostgresDataTypes,
+  label: string,}> = {
+  "constantUuid": {
+    targetType: "scalar",
+    sqlTargetType: "varchar",
+    label: "constantUuid",
+  },
+  "constantArray": {
+    targetType: "json",
+    sqlTargetType: "jsonb",
+    label: "constantArray",
+  },
+  "constantString": {
+    targetType: "scalar",
+    sqlTargetType: "text",
+    label: "constantString",
+  },
+  "constantNumber": {
+    targetType: "scalar",
+    sqlTargetType: "double precision",
+    label: "constantNumber",
+  },
+  "constantBigint": {
+    targetType: "scalar",
+    sqlTargetType: "double precision",
+    label: "constantBigint",
+  },
+  "constantBoolean": {
+    targetType: "scalar",
+    sqlTargetType: "boolean",
+    label: "constantBoolean",
+  },
+  "constantObject": {
+    targetType: "json",
+    sqlTargetType: "jsonb",
+    label: "constantObject",
+  },
 };
 
 // ################################################################################################
@@ -443,75 +484,89 @@ FROM (${referenceQuery.sqlStringOrObject}) AS "listPickElement_applyTo"
       };
       break;
     }
-    case "constantArray": {
-      return getConstantSql(
-        actionRuntimeTransformer,
-        preparedStatementParametersIndex,
-        topLevelTransformer,
-        "json",
-        "jsonb",
-        "constantArray"
-      );
-      break;
-    }
-    case "constantUuid": {
-      return getConstantSql(
-        actionRuntimeTransformer,
-        preparedStatementParametersIndex,
-        topLevelTransformer,
-        "scalar",
-        "varchar",
-        "constantUuid"
-      );
-      break;
-    }
-    case "constantBoolean": {
-      return getConstantSql(
-        actionRuntimeTransformer,
-        preparedStatementParametersIndex,
-        topLevelTransformer,
-        "scalar",
-        "boolean",
-        "constantBoolean"
-      );
-      break;
-    }
+    case "constantArray":
+    case "constantUuid":
+    case "constantBoolean":
     case "constantBigint":
-      return getConstantSql(
-        actionRuntimeTransformer,
-        preparedStatementParametersIndex,
-        topLevelTransformer,
-        "scalar",
-        "double precision",
-        "constantBigint"
-      );
     case "constantNumber":
-      return getConstantSql(
-        actionRuntimeTransformer,
-        preparedStatementParametersIndex,
-        topLevelTransformer,
-        "scalar",
-        "double precision",
-        "constantNumber"
-      );
     case "constantString":
+    case "constantObject": {
+      const getSqlParams = getConstantSqlTypeMap[actionRuntimeTransformer.transformerType];
       return getConstantSql(
         actionRuntimeTransformer,
         preparedStatementParametersIndex,
         topLevelTransformer,
-        "scalar",
-        "text",
-        "constantString"
+        getSqlParams.targetType,
+        getSqlParams.sqlTargetType,
+        getSqlParams.label
       );
-    case "constantObject":
-      return getConstantSql(
-        actionRuntimeTransformer,
-        preparedStatementParametersIndex,
-        topLevelTransformer,
-        "json",
-        "jsonb",
-        "constantObject"
-      );
+      break;
+    }
+    case "constantAsExtractor": {
+      const jsTypeToConstantType: Record<string, string> = {
+        string: "constantString",
+        number: "constantNumber",
+        bigint: "constantBigint",
+        boolean: "constantBoolean",
+        object: "constantObject",
+      };
+      switch (typeof actionRuntimeTransformer.value) {
+        case "string":
+        case "number":
+        case "bigint":
+        case "boolean": {
+          const getSqlParams = getConstantSqlTypeMap[jsTypeToConstantType[actionRuntimeTransformer.transformerType]];
+          return getConstantSql(
+            actionRuntimeTransformer,
+            preparedStatementParametersIndex,
+            topLevelTransformer,
+            getSqlParams.targetType,
+            getSqlParams.sqlTargetType,
+            getSqlParams.label
+          );
+          break;
+        }
+        case "object": {
+          const paramIndex = preparedStatementParametersIndex + 1;
+          const attributeTypes = getAttributeTypesFromJzodSchema(actionRuntimeTransformer.valueJzodSchema);
+          const selectFields = Object.entries(attributeTypes)
+            .map(([key, value]) => {
+              return `"${key}" ${value}`;
+            })
+            .join(tokenSeparatorForSelect);
+          if (Array.isArray(actionRuntimeTransformer.value)) {
+            return {
+              type: "table",
+              sqlStringOrObject: `SELECT * FROM jsonb_to_recordset($${paramIndex}::jsonb) AS x(${selectFields})`,
+              preparedStatementParameters: [JSON.stringify(actionRuntimeTransformer.value)],
+            };
+          } else {
+            return {
+              type: "table",
+              sqlStringOrObject: `SELECT * FROM jsonb_to_record($${paramIndex}::jsonb) AS x(${selectFields})`,
+              preparedStatementParameters: [JSON.stringify(actionRuntimeTransformer.value)],
+            };
+          }
+        }
+        case "symbol":
+        case "undefined":
+        case "function": 
+        default: {
+          return new Domain2ElementFailed({
+            queryFailure: "QueryNotExecutable",
+            query: actionRuntimeTransformer as any,
+            failureMessage: "sqlStringForTransformer constantAsExtractor not implemented",
+          });
+          break;
+        }
+      }
+      return new Domain2ElementFailed({
+        queryFailure: "QueryNotExecutable",
+        query: actionRuntimeTransformer as any,
+        failureMessage: "sqlStringForTransformer constantAsExtractor not implemented",
+      });
+      break;
+    }
     case "constant": {
       const targetSqlType = typeof actionRuntimeTransformer.value === "object" ? "json" : "scalar";
       let sqlTargetType: PostgresDataTypes;

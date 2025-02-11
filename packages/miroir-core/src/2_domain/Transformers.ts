@@ -1125,8 +1125,44 @@ export function innerTransformer_apply(
     case "constantUuid": {
       return transformer.value;
     }
+    case "constantAsExtractor":
     case "constant": {
-      return transformer.value;
+      switch (typeof transformer.value) {
+        case "string":
+        case "number":
+        case "bigint":
+        case "boolean":
+        case "object": {
+          if (Array.isArray(transformer.value)) {
+            return transformer.value
+          } else {
+            return [transformer.value];
+          }
+        }
+        case "symbol":
+        case "undefined":
+        case "function": {
+          return new Domain2ElementFailed(
+            {
+              queryFailure: "FailedTransformer_constant",
+              failureOrigin: ["transformer_apply"],
+              queryContext: "constantValue is not a string, number, bigint, boolean, or object",
+            }
+          )
+          break;
+        }
+        default: {
+          return new Domain2ElementFailed(
+            {
+              queryFailure: "FailedTransformer_constant",
+              failureOrigin: ["transformer_apply"],
+              queryContext: "constantValue could not be handled",
+            }
+          );
+          break;
+        }
+      }
+      // return transformer.value;
     }
     case "dataflowObject": {
       const resultObject: Record<string,any> = {};

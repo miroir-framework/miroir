@@ -166,10 +166,12 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
             ));
           }
           if (entityDefinitions.returnedDomainElement instanceof Domain2ElementFailed) {
-            return Promise.resolve(new Action2Error(
-              "FailedToDeleteStore",
-              `dropEntity failed for section: data, entityUuid ${entityUuid}, error: ${entityDefinitions.returnedDomainElement.elementValue.queryFailure}, ${entityDefinitions.returnedDomainElement.elementValue.failureMessage}`
-            ));
+            return Promise.resolve(
+              new Action2Error(
+                "FailedToDeleteStore",
+                `dropEntity failed for section: data, entityUuid ${entityUuid}, error: ${entityDefinitions.returnedDomainElement.queryFailure}, ${entityDefinitions.returnedDomainElement.failureMessage}`
+              )
+            );
           }
   
           for (const entityDefinition of entityDefinitions.returnedDomainElement.instances.filter(
@@ -209,7 +211,7 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
       if (currentEntity.returnedDomainElement instanceof Domain2ElementFailed) {
         return Promise.resolve(new Action2Error(
           "FailedToDeployModule",
-          currentEntity.returnedDomainElement.elementValue.failureMessage
+          currentEntity.returnedDomainElement.failureMessage
         ));
       }
 
@@ -224,7 +226,7 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
       if (currentEntityDefinition.returnedDomainElement instanceof Domain2ElementFailed) {
         return Promise.resolve(new Action2Error(
           "FailedToDeployModule",
-          currentEntityDefinition.returnedDomainElement.elementValue.failureMessage
+          currentEntityDefinition.returnedDomainElement.failureMessage
         ));
       }
       const modifiedEntity:EntityInstanceWithName = Object.assign({},currentEntity.returnedDomainElement,{name:update.targetValue});
@@ -256,7 +258,7 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
       if (currentEntity.returnedDomainElement instanceof Domain2ElementFailed) {
         return Promise.resolve(new Action2Error(
           "FailedToDeployModule",
-          currentEntity.returnedDomainElement.elementValue.failureMessage
+          currentEntity.returnedDomainElement.failureMessage
         ));
       }
       const currentEntityDefinition: Action2EntityInstanceReturnType = await this.getInstance(
@@ -270,7 +272,7 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
       if (currentEntityDefinition.returnedDomainElement instanceof Domain2ElementFailed) {
         return Promise.resolve(new Action2Error(
           "FailedToDeployModule",
-          currentEntityDefinition.returnedDomainElement.elementValue.failureMessage
+          currentEntityDefinition.returnedDomainElement.failureMessage
         ));
       }
       const localEntityDefinition: EntityDefinition = currentEntityDefinition.returnedDomainElement as EntityDefinition;
