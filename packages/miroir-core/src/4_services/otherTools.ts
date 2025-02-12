@@ -22,7 +22,7 @@ export function ignorePostgresExtraAttributesOnObject(instance: EntityInstance, 
 export function ignorePostgresExtraAttributes(instance: any, furtherIgnore: string[] = []):any{
   const ignore = ["createdAt", "updatedAt", ...furtherIgnore]
   // return Object.fromEntries(Object.entries(instance).filter(e=>!ignore.includes(e[0])))
-  return typeof instance == "object"
+  return typeof instance == "object" && instance !== null
     ? Array.isArray(instance)
       ? ignorePostgresExtraAttributesOnList(instance, ignore)
       : ignorePostgresExtraAttributesOnObject(instance, ignore)

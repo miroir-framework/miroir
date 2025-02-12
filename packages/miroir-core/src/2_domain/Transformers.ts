@@ -946,17 +946,38 @@ export function innerTransformer_apply(
           )
       : (a: any[]) => a;
 
-      const sortedResultArray = sortByAttribute(resolvedReference);
-      const result = sortedResultArray[transformer.index];
-      log.info(
-        "innerTransformer_apply extractorTransformer listPickElement sorted resolvedReference",
-        sortedResultArray,
-        "index",
-        transformer.index,
-        "result",
-        result
-      );
-      return result;
+      // try {
+        const sortedResultArray = sortByAttribute(resolvedReference);
+        if (transformer.index < 0 || sortedResultArray.length < transformer.index) {
+          return undefined;
+          // return new Domain2ElementFailed({
+          //   queryFailure: "FailedTransformer_listPickElement",
+          //   failureOrigin: ["transformer_apply"],
+          //   queryContext: "listPickElement index out of bounds",
+          // });
+        } else {
+          const result = sortedResultArray[transformer.index];
+          log.info(
+            "innerTransformer_apply extractorTransformer listPickElement sorted resolvedReference",
+            sortedResultArray,
+            "index",
+            transformer.index,
+            "result",
+            result
+          );
+          return result;
+        }
+      // } catch (error) {
+      //   log.error(
+      //     "innerTransformer_apply extractorTransformer listPickElement failed",
+      //     error
+      //   )
+      //   return new Domain2ElementFailed({
+      //     queryFailure: "FailedTransformer_listPickElement",
+      //     failureOrigin: ["transformer_apply"],
+      //     queryContext: "listPickElement failed: " + error,
+      //   });
+      // }
       break;
     }
     case "objectDynamicAccess": {

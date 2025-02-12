@@ -186,13 +186,14 @@ export class SqlDbQueryRunner {
           "transformerRawQueriesObject", JSON.stringify(transformerRawQueriesObject, null, 2),
           "endResultPath", endResultPath, endResultPath!==undefined, !!selectorParams.extractor.runtimeTransformers
       );
-      const sqlResult =
+      const preSqlResult =
         endResultPath !== undefined
           ? encloseEndResultInArray
             ? [resolvePathOnObject(rawResult.returnedDomainElement, endResultPath??[])] // TODO: HACK! HACK!
             : resolvePathOnObject(rawResult.returnedDomainElement, endResultPath)
           : rawResult.returnedDomainElement;
-      log.info("asyncExtractWithQuery sqlResult", JSON.stringify(sqlResult));
+      log.info("asyncExtractWithQuery preSqlResult", JSON.stringify(preSqlResult));
+      const sqlResult = preSqlResult == null ? undefined : preSqlResult;
       // const result: Domain2QueryReturnType<DomainElementSuccess> = { elementType: "object", elementValue: {[endResultName]:sqlResult} }
       const result: Domain2QueryReturnType<any> = {[endResultName]:sqlResult}
       log.info("asyncExtractWithQuery returning result", JSON.stringify(result));

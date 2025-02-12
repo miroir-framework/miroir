@@ -21,7 +21,7 @@ import { RecursiveStringRecords } from "../4_services/SqlDbQueryTemplateRunner";
 import { cleanLevel } from "../4_services/constants";
 import { packageName } from "../constants";
 import { PostgresDataTypes } from "./Postgres";
-import { getAttributeTypesFromJzodSchema } from "./jzodSchema";
+import { getAttributeTypesFromJzodSchema, jzodToPostgresTypeMap } from "./jzodSchema";
 
 export const stringQuote = "'";
 export const tokenQuote = '"';
@@ -141,16 +141,9 @@ export type SqlStringForTransformerElementValue = {
 // ################################################################################################
 function resolveApplyTo(
   actionRuntimeTransformer: 
-  // | TransformerForRuntime_constants
-  // | TransformerForRuntime_InnerReference
   | TransformerForRuntime_object_fullTemplate
-  // | TransformerForRuntime_freeObjectTemplate
-  // | TransformerForRuntime_object_alter
   | TransformerForRuntime_count
   | TransformerForRuntime_list_listPickElement
-  // | TransformerForRuntime_list_listMapperToList
-  // | TransformerForRuntime_mapper_listToObject
-  // | TransformerForRuntime_mustacheStringTemplate
   | TransformerForRuntime_objectValues
   | TransformerForRuntime_objectEntries
   | TransformerForRuntime_unique
@@ -444,18 +437,13 @@ export function sqlStringForTransformer(
       if (referenceQuery instanceof Domain2ElementFailed) {
         return referenceQuery;
       }
-
-      if (referenceQuery.type != "json") {
-        return new Domain2ElementFailed({
-          queryFailure: "QueryNotExecutable",
-          query: actionRuntimeTransformer as any,
-          failureMessage: "sqlStringForTransformer listPickElement referenceQuery not json",
-        });
-      }
+      
       const limit = actionRuntimeTransformer.index;
       let sqlResult;
-      if (actionRuntimeTransformer.orderBy) {
-        sqlResult = `
+      switch (referenceQuery.type) {
+        case "json": {
+          if (actionRuntimeTransformer.orderBy) {
+            sqlResult = `
 SELECT (
   jsonb_agg(
     "listPickElement_applyTo_array" ORDER BY (
@@ -475,6 +463,40 @@ FROM
         }" ->> ${limit} AS "listPickElement" 
 FROM (${referenceQuery.sqlStringOrObject}) AS "listPickElement_applyTo"
 `;
+          }
+          break;
+        }
+        case "table": {
+          // const column = referenceQuery.resultAccessPath?"." + referenceQuery.resultAccessPath.join("."): "";
+          if (actionRuntimeTransformer.orderBy) {
+            sqlResult = `SELECT * FROM (${referenceQuery.sqlStringOrObject}) AS "listPickElement" ORDER BY ${actionRuntimeTransformer.orderBy} LIMIT 1 OFFSET ${limit}`;
+          } else {
+            sqlResult = `SELECT * FROM (${referenceQuery.sqlStringOrObject}) AS "listPickElement" LIMIT 1 OFFSET ${limit}`;
+          }
+          return {
+            type: "json",
+            sqlStringOrObject: sqlResult,
+            preparedStatementParameters: referenceQuery.preparedStatementParameters,
+            resultAccessPath: [0, ...referenceQuery.resultAccessPath??[]],
+          };
+          break;
+        }
+        case "scalar": {
+          return new Domain2ElementFailed({
+            queryFailure: "QueryNotExecutable",
+            query: actionRuntimeTransformer as any,
+            failureMessage: "sqlStringForTransformer listPickElement referenceQuery result is scalar, not json",
+          });
+          break;
+        }
+        default: {
+          return new Domain2ElementFailed({
+            queryFailure: "QueryNotExecutable",
+            query: actionRuntimeTransformer as any,
+            failureMessage: "sqlStringForTransformer listPickElement referenceQuery not json",
+          });
+          break;
+        }
       }
       return {
         type: "json",
@@ -503,6 +525,7 @@ FROM (${referenceQuery.sqlStringOrObject}) AS "listPickElement_applyTo"
       break;
     }
     case "constantAsExtractor": {
+      // TODO: deal with whole set of transformers, not just constant values.
       const jsTypeToConstantType: Record<string, string> = {
         string: "constantString",
         number: "constantNumber",
@@ -528,25 +551,62 @@ FROM (${referenceQuery.sqlStringOrObject}) AS "listPickElement_applyTo"
         }
         case "object": {
           const paramIndex = preparedStatementParametersIndex + 1;
-          const attributeTypes = getAttributeTypesFromJzodSchema(actionRuntimeTransformer.valueJzodSchema);
-          const selectFields = Object.entries(attributeTypes)
-            .map(([key, value]) => {
-              return `"${key}" ${value}`;
-            })
-            .join(tokenSeparatorForSelect);
-          if (Array.isArray(actionRuntimeTransformer.value)) {
-            return {
-              type: "table",
-              sqlStringOrObject: `SELECT * FROM jsonb_to_recordset($${paramIndex}::jsonb) AS x(${selectFields})`,
-              preparedStatementParameters: [JSON.stringify(actionRuntimeTransformer.value)],
-            };
-          } else {
-            return {
-              type: "table",
-              sqlStringOrObject: `SELECT * FROM jsonb_to_record($${paramIndex}::jsonb) AS x(${selectFields})`,
-              preparedStatementParameters: [JSON.stringify(actionRuntimeTransformer.value)],
-            };
-          }
+          // if (Array.isArray(actionRuntimeTransformer.value)) {
+            // array of objects or array of scalars
+            if (!actionRuntimeTransformer.valueJzodSchema) {
+              return new Domain2ElementFailed({
+                queryFailure: "QueryNotExecutable",
+                query: actionRuntimeTransformer as any,
+                failureMessage: "sqlStringForTransformer constantAsExtractor no schema for array",
+              });
+            }
+            if (actionRuntimeTransformer.valueJzodSchema.type == "object") {
+              // object which attributes are returned as columns on a single row, or array of objects which attributes are returned as columns on many rows (one row per object)
+              const recordFunction = Array.isArray(actionRuntimeTransformer.value)?"jsonb_to_recordset": "jsonb_to_record";
+              const attributeTypes = getAttributeTypesFromJzodSchema(actionRuntimeTransformer.valueJzodSchema);
+              const selectFields = Object.entries(attributeTypes)
+                .map(([key, value]) => {
+                  return `"${key}" ${value}`;
+                })
+                .join(tokenSeparatorForSelect)
+              ;
+              return {
+                type: "table",
+                sqlStringOrObject: `SELECT * FROM ${recordFunction}($${paramIndex}::jsonb) AS x(${selectFields})`,
+                preparedStatementParameters: [JSON.stringify(actionRuntimeTransformer.value)],
+              };
+            } else {
+              // scalar or array of scalars
+              if (!Object.hasOwn(jzodToPostgresTypeMap,actionRuntimeTransformer.valueJzodSchema.type)) {
+                return new Domain2ElementFailed({
+                  queryFailure: "QueryNotExecutable",
+                  query: actionRuntimeTransformer as any,
+                  failureMessage: "sqlStringForTransformer constantAsExtractor no sql type corresponding go elements of array with scalar type:"+ actionRuntimeTransformer.valueJzodSchema.type,
+                });
+              }
+              // const sqlTargetType = (jzodToPostgresTypeMap as any)[actionRuntimeTransformer.valueJzodSchema.type].sqlTargetType;
+              if (Array.isArray(actionRuntimeTransformer.value)) {
+                return {
+                  type: "table",
+                  sqlStringOrObject: `SELECT * FROM jsonb_array_elements($${paramIndex}::jsonb) AS ${actionRuntimeTransformer.transformerType}`,
+                  preparedStatementParameters: [JSON.stringify(actionRuntimeTransformer.value)],
+                  resultAccessPath: ["value"]
+                };
+              } else {
+                return {
+                  type: "table",
+                  sqlStringOrObject: `SELECT $${paramIndex} AS ${actionRuntimeTransformer.transformerType}`,
+                  preparedStatementParameters: [JSON.stringify(actionRuntimeTransformer.value)],
+                };
+              }
+            }
+          // } else {
+          //   return {
+          //     type: "table",
+          //     sqlStringOrObject: `SELECT * FROM jsonb_to_record($${paramIndex}::jsonb) AS x(${selectFields})`,
+          //     preparedStatementParameters: [JSON.stringify(actionRuntimeTransformer.value)],
+          //   };
+          // }
         }
         case "symbol":
         case "undefined":
@@ -560,11 +620,11 @@ FROM (${referenceQuery.sqlStringOrObject}) AS "listPickElement_applyTo"
           break;
         }
       }
-      return new Domain2ElementFailed({
-        queryFailure: "QueryNotExecutable",
-        query: actionRuntimeTransformer as any,
-        failureMessage: "sqlStringForTransformer constantAsExtractor not implemented",
-      });
+      // return new Domain2ElementFailed({
+      //   queryFailure: "QueryNotExecutable",
+      //   query: actionRuntimeTransformer as any,
+      //   failureMessage: "sqlStringForTransformer constantAsExtractor not implemented",
+      // });
       break;
     }
     case "constant": {
