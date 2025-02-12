@@ -79,7 +79,7 @@ import transformerJzodSchema from "../../assets/miroir_data/5e81e1b9-38be-487c-b
 import instanceConfigurationReference from '../../assets/miroir_data/7990c0c9-86c3-40a1-a121-036c91b55ed7/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json' assert { type: "json" };
 import menuDefaultMiroir from '../../assets/miroir_data/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/eaac459c-6c2b-475c-8ae4-c6c3032dae00.json' assert { type: "json" };
 
-import { getMiroirFundamentalJzodSchema} from "../../0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema"
+import { getMiroirFundamentalJzodSchema} from "../../0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema.js";
 
 import entityDefinitionBundleV1 from "../../assets/miroirAdmin/model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/01a051d8-d43c-430d-a98e-739048f54942.json" assert { type: "json" };
 // import entityDefinitionCommit from "../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/b17d5e9e-12f2-4ed8-abdb-2576c01514a4.json" assert { type: "json" };
@@ -105,7 +105,8 @@ import entityDefinitionReportV1 from "../../assets/miroir_model/54b9c72f-d4f3-4d
 
 // import entityDefinitionDeployment from "../../src/assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/c50240e7-c451-46c2-b60a-07b3172a5ef9.json" assert { type: "json" };
 import entityDefinitionDeployment from "../../assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/c50240e7-c451-46c2-b60a-07b3172a5ef9.json" assert { type: "json" };
-import { entityDefinitionTest, transformerMenuV1 } from "../../index.js";
+import entityDefinitionTest from '../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/d2842a84-3e66-43ee-ac58-7e13b95b01e8.json' assert { type: "json" };
+import transformerMenuV1 from "../../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/685440be-7f3f-4774-b90d-bafa82d6832b.json" assert { type: "json" };
 
 export const defaultMiroirMetaModel: MetaModel = {
   // configuration: [instanceConfigurationReference],

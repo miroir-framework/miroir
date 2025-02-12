@@ -60,7 +60,7 @@ import { LoggerInterface } from '../0_interfaces/4-services/LoggerInterface.js';
 import { PersistenceStoreControllerInterface } from '../0_interfaces/4-services/PersistenceStoreControllerInterface.js';
 import { MiroirLoggerFactory } from '../4_services/LoggerFactory.js';
 import { packageName } from '../constants.js';
-import { menuDefaultLibrary } from '../index.js';
+import menuDefaultLibrary from "../assets/library_model/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/dd168e5a-2a21-4d2d-a443-032c6d15eb22.json" assert { type: "json" };
 import { cleanLevel } from './constants.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;

@@ -57,16 +57,12 @@ import { transformer_extended_apply } from "../2_domain/Transformers.js";
 import { LoggerGlobalContext } from '../4_services/LoggerContext.js';
 import { MiroirLoggerFactory } from "../4_services/LoggerFactory.js";
 import { packageName } from "../constants.js";
-import {
-  ConfigurationService,
-  ignorePostgresExtraAttributesOnList,
-  ignorePostgresExtraAttributesOnObject,
-  selfApplicationMiroir,
-  selfApplicationModelBranchMiroirMasterBranch,
-  selfApplicationStoreBasedConfigurationMiroir,
-  selfApplicationVersionInitialMiroirVersion,
-  TestResult
-} from "../index.js";
+import selfApplicationMiroir from '../assets/miroir_data/a659d350-dd97-4da9-91de-524fa01745dc/21840247-b5b1-4344-baec-f818f4797d92.json' assert { type: "json" };
+import selfApplicationDeploymentMiroir from '../assets/miroir_data/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json' assert { type: "json" };
+import selfApplicationModelBranchMiroirMasterBranch from '../assets/miroir_data/cdb0aec6-b848-43ac-a058-fe2dbe5811f1/ad1ddc4e-556e-4598-9cff-706a2bde0be7.json' assert { type: "json" };
+import selfApplicationVersionInitialMiroirVersion from '../assets/miroir_data/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/695826c2-aefa-4f5f-a131-dee46fe21c1.json' assert { type: "json" };
+import selfApplicationStoreBasedConfigurationMiroir from '../assets/miroir_data/7990c0c9-86c3-40a1-a121-036c91b55ed7/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json' assert { type: "json" };
+
 import { resolvePathOnObject } from "../tools.js";
 import { cleanLevel } from "./constants.js";
 import { Endpoint } from "./Endpoint.js";
@@ -74,6 +70,9 @@ import { CallUtils } from "./ErrorHandling/CallUtils.js";
 import { TestSuiteContext } from '../4_services/TestSuiteContext.js';
 import { resolveTestCompositeActionTemplateSuite } from '../2_domain/TestSuiteTemplate.js';
 import { Action2Error, Action2ReturnType, Action2VoidReturnType, Domain2ElementFailed } from '../0_interfaces/2_domain/DomainElement.js';
+import { TestResult } from '../0_interfaces/4-services/TestInterface.js';
+import { ignorePostgresExtraAttributesOnList, ignorePostgresExtraAttributesOnObject } from '../4_services/otherTools.js';
+import { ConfigurationService } from './ConfigurationService.js';
 
 
 

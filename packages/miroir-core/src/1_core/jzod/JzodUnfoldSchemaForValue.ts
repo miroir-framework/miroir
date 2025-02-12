@@ -8,13 +8,6 @@ import {
   JzodUnion,
   MetaModel
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-// import {miroirFundamentalJzodSchema} from "../0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema.js";
-// import miroirFundamentalJzodSchema from "../../dist/index.js";
-// import { miroirFundamentalJzodSchema } from "miroir-core";
-// import { miroirFundamentalJzodSchema } from "../../tmp/src/0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema.js";
-// import miroirFundamentalJzodSchema from "../../tmp/src/0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema.js";
-// import * as f from "../../tmp/src/0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema.js";
-// import {miroirFundamentalJzodSchema} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema.js";
 import { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface.js";
 import { MiroirLoggerFactory } from "../../4_services/LoggerFactory.js";
 import { packageName } from "../../constants.js";

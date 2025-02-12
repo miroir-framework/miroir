@@ -1,4 +1,3 @@
-// import { describe, expect } from 'vitest';
 import * as vitest from 'vitest';
 
 import {
@@ -6,7 +5,6 @@ import {
   SqlDbDataStoreSection,
   SqlDbModelStoreSection,
 } from "miroir-store-postgres";
-import { PersistenceStoreAdminSectionInterface } from "../../../dist/index.js";
 import {
   EntityDefinition,
   EntityInstance,
@@ -14,38 +12,79 @@ import {
   StoreUnitConfiguration,
   TransformerForRuntime
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import {
-  Action2Error,
-  Action2Success,
-  author1,
-  author2,
-  author3,
-  book1,
-  book2,
-  book4,
-  book5,
-  book6,
-  defaultMiroirMetaModel,
-  entityAuthor,
-  entityBook,
-  entityDefinitionAuthor,
-  entityDefinitionBook,
-  entityDefinitionPublisher,
-  entityPublisher,
-  getBasicApplicationConfiguration,
-  getBasicStoreUnitConfiguration,
-  ignorePostgresExtraAttributes,
-  InitApplicationParameters,
-  MetaEntity,
-  PersistenceStoreController,
-  publisher1,
-  publisher2,
-  publisher3,
-  TestSuiteContext,
-  displayTestSuiteResults,
-  Uuid,
-} from "miroir-core";
-// } from "../../index.js";
+
+import entityPublisher from "../../assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a027c379-8468-43a5-ba4d-bf618be25cab.json" assert { type: "json" };
+import entityAuthor from "../../assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/d7a144ff-d1b9-4135-800c-a7cfc1f38733.json" assert { type: "json" };
+import entityBook from "../../assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e8ba151b-d68e-4cc3-9a83-3459d309ccf5.json" assert { type: "json" };
+import entityCountry from "../../assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/d3139a6d-0486-4ec8-bded-2a83a3c3cee4.json" assert { type: "json" };
+import reportAuthorList from "../../assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/66a09068-52c3-48bc-b8dd-76575bbc8e72.json" assert { type: "json" };
+import reportBookList from "../../assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/74b010b6-afee-44e7-8590-5f0849e4a5c9.json" assert { type: "json" };
+import reportBookInstance from "../../assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/c3503412-3d8a-43ef-a168-aa36e975e606.json" assert { type: "json" };
+import reportPublisherList from "../../assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/a77aa662-006d-46cd-9176-01f02a1a12dc.json" assert { type: "json" };
+import entityDefinitionBook from "../../assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/797dd185-0155-43fd-b23f-f6d0af8cae06.json" assert { type: "json" };
+import entityDefinitionPublisher from "../../assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/7a939fe8-d119-4e7f-ab94-95b2aae30db9.json" assert { type: "json" };
+import entityDefinitionAuthor from "../../assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/b30b7180-f7dc-4cca-b4e8-e476b77fe61d.json" assert { type: "json" };
+import entityDefinitionCountry from "../../assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/56628e31-3db5-4c5c-9328-4ff7ce54c36a.json" assert { type: "json" };
+
+import menuDefaultLibrary from "../../assets/library_model/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/dd168e5a-2a21-4d2d-a443-032c6d15eb22.json" assert { type: "json" };
+
+import reportAuthorDetails from "../../assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/6d9faa54-643c-4aec-87c3-32635ad95902.json" assert { type: "json" };
+import reportBookDetails from "../../assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/c3503412-3d8a-43ef-a168-aa36e975e606.json" assert { type: "json" };
+import reportCountryList from "../../assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/08176cc7-43ae-4fca-91b7-bf869d19e4b9.json" assert { type: "json" };
+
+import folio from "../../assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/1f550a2a-33f5-4a56-83ee-302701039494.json" assert { type: "json" };
+import penguin from "../../assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/516a7366-39e7-4998-82cb-80199a7fa667.json" assert { type: "json" };
+import springer from "../../assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/c1c97d54-aba8-4599-883a-7fe8f3874095.json" assert { type: "json" };
+import author1 from "../../assets/library_data/d7a144ff-d1b9-4135-800c-a7cfc1f38733/4441169e-0c22-4fbc-81b2-28c87cf48ab2.json" assert { type: "json" };
+import author2 from "../../assets/library_data/d7a144ff-d1b9-4135-800c-a7cfc1f38733/ce7b601d-be5f-4bc6-a5af-14091594046a.json" assert { type: "json" };
+import author3 from "../../assets/library_data/d7a144ff-d1b9-4135-800c-a7cfc1f38733/d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17.json" assert { type: "json" };
+import author4 from "../../assets/library_data/d7a144ff-d1b9-4135-800c-a7cfc1f38733/e4376314-d197-457c-aa5e-d2da5f8d5977.json" assert { type: "json" };
+import book1 from "../../assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/caef8a59-39eb-48b5-ad59-a7642d3a1e8f.json" assert { type: "json" };
+import book2 from "../../assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/e20e276b-619d-4e16-8816-b7ec37b53439.json" assert { type: "json" };
+import book3 from "../../assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/4cb917b3-3c53-4f9b-b000-b0e4c07a81f7.json" assert { type: "json" };
+import book4 from "../../assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/6fefa647-7ecf-4f83-b617-69d7d5094c37.json" assert { type: "json" };
+import book5 from "../../assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/c97be567-bd70-449f-843e-cd1d64ac1ddd.json" assert { type: "json" };
+import book6 from "../../assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/c6852e89-3c3c-447f-b827-4b5b9d830975.json" assert { type: "json" };
+// import test1 from "../../assets/library_data/9ad64893-5f8f-4eaf-91aa-ffae110f88c8/150bacfd-06d0-4ecb-828d-f5275494448a.json" assert { type: "json" };
+import Country1 from "../../assets/library_data/d3139a6d-0486-4ec8-bded-2a83a3c3cee4/2eda1207-4dcc-4af9-a3ba-ef75e7f12c11.json" assert { type: "json" };
+import Country2 from "../../assets/library_data/d3139a6d-0486-4ec8-bded-2a83a3c3cee4/30b8e7c6-b75d-4db0-906f-fa81fa5c4cc0.json" assert { type: "json" };
+import Country3 from "../../assets/library_data/d3139a6d-0486-4ec8-bded-2a83a3c3cee4/b62fc20b-dcf5-4e3b-a247-62d0475cf60f.json" assert { type: "json" };
+import Country4 from "../../assets/library_data/d3139a6d-0486-4ec8-bded-2a83a3c3cee4/b6ddfb89-4301-48bf-9ed9-4ed6ee9261fe.json" assert { type: "json" };
+
+import publisher1 from "../../assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/1f550a2a-33f5-4a56-83ee-302701039494.json" assert { type: "json" };
+import publisher2 from "../../assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/516a7366-39e7-4998-82cb-80199a7fa667.json" assert { type: "json" };
+import publisher3 from "../../assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/c1c97d54-aba8-4599-883a-7fe8f3874095.json" assert { type: "json" };
+// import {
+//   Action2Error,
+//   Action2Success,
+//   author1,
+//   author2,
+//   author3,
+//   book1,
+//   book2,
+//   book4,
+//   book5,
+//   book6,
+//   defaultMiroirMetaModel,
+//   entityAuthor,
+//   entityBook,
+//   entityDefinitionAuthor,
+//   entityDefinitionBook,
+//   entityDefinitionPublisher,
+//   entityPublisher,
+//   getBasicApplicationConfiguration,
+//   getBasicStoreUnitConfiguration,
+//   ignorePostgresExtraAttributes,
+//   InitApplicationParameters,
+//   MetaEntity,
+//   PersistenceStoreController,
+//   publisher1,
+//   publisher2,
+//   publisher3,
+//   TestSuiteContext,
+//   displayTestSuiteResults,
+//   Uuid,
+// } from "miroir-core";
 import {
   runTransformerTestSuite,
   transformerTestsDisplayResults,
@@ -53,6 +92,14 @@ import {
   TransformerTest,
   transformerTests,
 } from "../2_domain/transformersTests.data.js";
+import { MetaEntity, Uuid } from '../../0_interfaces/1_core/EntityDefinition.js';
+import { InitApplicationParameters, PersistenceStoreAdminSectionInterface } from '../../0_interfaces/4-services/PersistenceStoreControllerInterface.js';
+import { PersistenceStoreController } from '../../4_services/PersistenceStoreController.js';
+import { getBasicApplicationConfiguration, getBasicStoreUnitConfiguration } from '../../2_domain/Deployment.js';
+import { defaultMiroirMetaModel } from '../../1_core/Model.js';
+import { TestSuiteContext } from '../../4_services/TestSuiteContext.js';
+import { Action2Error, Action2Success } from '../../0_interfaces/2_domain/DomainElement.js';
+import { ignorePostgresExtraAttributes } from '../../4_services/otherTools.js';
 // const env:any = (import.meta as any).env
 // console.log("@@@@@@@@@@@@@@@@@@ env", env);
 const RUN_TEST= process.env.RUN_TEST

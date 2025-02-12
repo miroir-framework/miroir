@@ -27,14 +27,6 @@ import { defaultMiroirMetaModel } from "../../1_core/Model.js";
 import { EntityDefinitionEntityDefinition } from '../../0_interfaces/1_core/writtenByHandSchema.js';
 // import { act } from 'react';
 
-// import {
-//   entityEntity,
-//   entityEntityDefinition,
-//   entityMenu,
-//   entityReport,
-//   MetaEntity,
-//   Uuid
-// } from "../../index.js";
 // const env:any = (import.meta as any).env
 // console.log("@@@@@@@@@@@@@@@@@@ env", env);
 

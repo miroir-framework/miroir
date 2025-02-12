@@ -11,29 +11,38 @@ import {
   TransformerForRuntime
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { transformer_apply, transformer_apply_wrapper } from "../../2_domain/Transformers.js";
+// import {
+//   author1,
+//   author2,
+//   author3,
+//   author4,
+//   book1,
+//   book2,
+//   book3,
+//   book4,
+//   book5,
+//   book6,
+//   Country1,
+//   Country2,
+//   Country3,
+//   Country4,
+//   displayTestSuiteResults,
+//   Domain2QueryReturnType,
+//   ignorePostgresExtraAttributes,
+//   ignorePostgresExtraAttributesOnList,
+//   ignorePostgresExtraAttributesOnObject,
+//   TestSuiteContext
+// } from "miroir-core";
+import { Domain2QueryReturnType } from "../../0_interfaces/2_domain/DomainElement.js";
+import { ignorePostgresExtraAttributes } from "../../4_services/otherTools.js";
+import { TestSuiteContext } from "../../4_services/TestSuiteContext.js";
 import {
-  author1,
-  author2,
-  author3,
-  author4,
-  book1,
-  book2,
-  book3,
-  book4,
-  book5,
-  book6,
-  Country1,
-  Country2,
-  Country3,
-  Country4,
-  displayTestSuiteResults,
-  Domain2QueryReturnType,
-  ignorePostgresExtraAttributes,
-  ignorePostgresExtraAttributesOnList,
-  ignorePostgresExtraAttributesOnObject,
-  TestSuiteContext
-} from "miroir-core";
-import { runTransformerTestSuite, transformerTestsDisplayResults, testSuites, TransformerTest, transformerTests } from "./transformersTests.data.js";
+  runTransformerTestSuite,
+  transformerTestsDisplayResults,
+  testSuites,
+  TransformerTest,
+  transformerTests,
+} from "./transformersTests.data.js";
 
 
 // const env:any = (import.meta as any).env

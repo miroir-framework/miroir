@@ -41,7 +41,7 @@ import {
   TransformerForRuntime_objectValues,
   TransformerForRuntime_unique
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { Domain2ElementFailed, Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement.js";
+import { Action2Error, Domain2ElementFailed, Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { transformer_menu_AddItem } from "../1_core/Menu.js";
 import { MiroirLoggerFactory } from "../4_services/LoggerFactory.js";
@@ -49,7 +49,6 @@ import { packageName } from "../constants.js";
 import { resolvePathOnObject } from "../tools.js";
 import { cleanLevel } from "./constants.js";
 import { b } from "vitest/dist/chunks/suite.B2jumIFP.js";
-import { Action2Error } from "../../dist/index.js";
 import { D } from "vitest/dist/chunks/reporters.D7Jzd9GS.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;

@@ -1,4 +1,3 @@
-import { DomainElementSuccess, EntityInstance } from "../../../dist/index.js";
 import {
   BoxedExtractorOrCombinerReturningObject,
   BoxedExtractorOrCombinerReturningObjectList,
@@ -22,7 +21,9 @@ import {
   RunBoxedQueryTemplateAction,
   RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
   DomainElementInstanceUuidIndex,
-  EntityInstancesUuidIndex
+  EntityInstancesUuidIndex,
+  DomainElementSuccess,
+  EntityInstance
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 import { Action2ReturnType, Domain2QueryReturnType } from "./DomainElement.js";
 

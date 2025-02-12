@@ -33,7 +33,7 @@ import entityJzodSchema from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a
 import entityStoreBasedConfiguration from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/7990c0c9-86c3-40a1-a121-036c91b55ed7.json' assert { type: "json" };
 import entitySelfApplicationVersion from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json' assert { type: "json" };
 import { packageName } from "../constants.js";
-import { entityMenu } from "../index.js";
+import entityMenu from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/dde4c883-ae6d-47c3-b6df-26bc6e3c1842.json' assert { type: "json" };
 import { cleanLevel } from "./constants.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;

@@ -1,5 +1,5 @@
 // Originally from Definitely Typed via log-level / logLevelNext see:
-// https://github.com/DefinitelyTyped/DefinitelyTyped/blob/b4683d7/types/loglevel/index.d.ts
+// https://github.com/DefinitelyTyped/DefinitelyTyped/blob/b4683d7/types/loglevel/
 // Original definitions by: Stefan Profanter <https://github.com/Pro>
 //                          Gabor Szmetanko <https://github.com/szmeti>
 //                          Christian Rackerseder <https://github.com/screendriver>
