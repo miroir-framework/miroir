@@ -45,9 +45,9 @@ const evaluateExpression = (
   ) => {
   const parts = expression?.split(".");
   const object =
-    Array.isArray(parts) && parts.length > 0 && domainElementObject.elementValue
-      ? (domainElementObject.elementValue as any)[parts[0]]
-      // ? (domainElementObject.elementValue as any)[parts[0]].elementValue
+    // Array.isArray(parts) && parts.length > 0 && domainElementObject.elementValue
+    Array.isArray(parts) && parts.length > 0 && domainElementObject
+      ? (domainElementObject as any)[parts[0]]
       : undefined;
   const result = object && Array.isArray(parts) && parts.length > 1 ? (object as any)[parts[1]] : undefined;
   // log.info("evaluateExpression", expression, parts, props.domainElementObject, "object", object, "result", result);
@@ -114,12 +114,18 @@ export const ReportSectionView = (props: ReportSectionViewProps) => {
   const currentListReportTargetEntityDefinition: EntityDefinition | undefined =
     entityDefinitions?.find((e:EntityDefinition) => e?.entityUuid === currentListReportTargetEntity?.uuid);
 
-  const entityInstance = props.queryResults.elementValue && props.reportSection.type == "objectInstanceReportSection"
-  ? (props.queryResults.elementValue as any)[
+  const entityInstance = props.queryResults && props.reportSection.type == "objectInstanceReportSection"
+  ? (props.queryResults as any)[
       props.reportSection.definition.fetchedDataReference ?? ""
     ]
     // ]?.elementValue
   : undefined
+  // const entityInstance = props.queryResults.elementValue && props.reportSection.type == "objectInstanceReportSection"
+  // ? (props.queryResults.elementValue as any)[
+  //     props.reportSection.definition.fetchedDataReference ?? ""
+  //   ]
+  //   // ]?.elementValue
+  // : undefined
 
   log.info(
     "entityInstance",

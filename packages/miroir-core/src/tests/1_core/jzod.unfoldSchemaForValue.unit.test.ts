@@ -1365,7 +1365,7 @@ describe("jzod.unfoldSchemaForValue", () => {
                   type: "literal",
                   definition: "constantUuid",
                 },
-                constantUuidValue: {
+                value: {
                   type: "string",
                 },
               },
@@ -1672,7 +1672,7 @@ describe("jzod.unfoldSchemaForValue", () => {
                   type: "literal",
                   definition: "constantUuid",
                 },
-                constantUuidValue: {
+                value: {
                   type: "string",
                 },
               },
@@ -1697,7 +1697,7 @@ describe("jzod.unfoldSchemaForValue", () => {
           parentName: "Report",
           parentUuid: {
             transformerType: "constantUuid",
-            constantUuidValue: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+            value: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
           },
           instanceUuid: {
             transformerType: "parameterReference",

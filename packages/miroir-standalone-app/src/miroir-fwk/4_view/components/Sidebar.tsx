@@ -125,13 +125,13 @@ export const Sidebar:FC<{open:boolean, setOpen: (v:boolean)=>void}> = (props: {o
   const theme = useTheme();
 
   // log.info("deploymentEntityStateDomainElementObject",miroirMenusDomainElementObject)
-  // // const defaultMiroirMenu = (domainElementObject?.elementValue?.menus?.elementValue as any)?.definition;
+  // // const defaultMiroirMenu = (domainElementObject?.menus as any)?.definition;
   // console.log(
   //   "Sidebar refresh",
   //   count++,
   //   "found miroir menu:",
   //   miroirMenusDomainElementObject,
-  //   miroirMenusDomainElementObject?.elementValue?.menus?.elementValue
+  //   miroirMenusDomainElementObject?.menus
   // );
   const drawerSx = useMemo(()=>({flexDirection:'column'}),[])
   const styledDrawerSx = useMemo(()=>({alignItems: "end"}),[])
@@ -206,11 +206,11 @@ export const Sidebar:FC<{open:boolean, setOpen: (v:boolean)=>void}> = (props: {o
         {/* {sideBarDefaultItems.map((i: any, index: number) => ( */}
         {/* TODO: DRY the menuSection display!*/}
         {/* {
-          !(miroirMenusDomainElementObject?.elementValue?.menus?.elementValue as any)?.definition?.menuType ||
-          (miroirMenusDomainElementObject?.elementValue?.menus?.elementValue as any)?.definition?.menuType == "simpleMenu"?
+          !(miroirMenusDomainElementObject?.menus as any)?.definition?.menuType ||
+          (miroirMenusDomainElementObject?.menus as any)?.definition?.menuType == "simpleMenu"?
           <List disablePadding dense>
             {(
-              (miroirMenusDomainElementObject?.elementValue?.menus?.elementValue as any)?.definition?.definition ?? sideBarDefaultItems
+              (miroirMenusDomainElementObject?.menus as any)?.definition?.definition ?? sideBarDefaultItems
               ).map((i: any, index: number) => (
               <ListItem key={i.label} disablePadding>
                 <ListItemButton sx={{padding: 0}} component={Link} to={`/report/${i.selfApplication}/${i.section}/${i.reportUuid}/xxxxxx`}>
@@ -225,7 +225,7 @@ export const Sidebar:FC<{open:boolean, setOpen: (v:boolean)=>void}> = (props: {o
           :
           <List disablePadding dense>
             {(
-              (miroirMenusDomainElementObject?.elementValue?.menus?.elementValue as any)?.definition?.definition ?? []
+              (miroirMenusDomainElementObject?.menus as any)?.definition?.definition ?? []
               ).flatMap((menuSection: any, index: number) => (
                 menuSection.items.map(
                   (curr:any, index: number) => (

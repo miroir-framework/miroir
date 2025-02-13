@@ -173,13 +173,12 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
   );
 
   log.info("deploymentEntityStateDomainElementObject",miroirMenusDomainElementObject)
-  // const defaultMiroirMenu = (domainElementObject?.elementValue?.menus?.elementValue as any)?.definition;
   console.log(
     "SidebarSection refresh",
     count++,
     "found miroir menu:",
     miroirMenusDomainElementObject,
-    miroirMenusDomainElementObject?.elementValue
+    // miroirMenusDomainElementObject?.elementValue
   );
   const drawerSx = useMemo(()=>({flexDirection:'column'}),[])
   const styledDrawerSx = useMemo(()=>({alignItems: "end"}),[])
@@ -219,11 +218,11 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
         :
         <>
           {
-          !(miroirMenusDomainElementObject?.elementValue?.menus as any)?.definition?.menuType ||
-          (miroirMenusDomainElementObject?.elementValue?.menus as any)?.definition?.menuType == "simpleMenu"?
+          !((miroirMenusDomainElementObject as any)?.menus as any)?.definition?.menuType ||
+          ((miroirMenusDomainElementObject as any)?.menus as any)?.definition?.menuType == "simpleMenu"?
           <MatList disablePadding dense>
             {(
-              (miroirMenusDomainElementObject?.elementValue?.menus as any)?.definition?.definition ?? sideBarDefaultItems
+              ((miroirMenusDomainElementObject as any)?.menus as any)?.definition?.definition ?? sideBarDefaultItems
               ).map((i: any, index: number) => (
               <MatListItem key={i.label} disablePadding>
                 <MatListItemButton sx={{padding: 0}} component={Link} to={`/report/${i.selfApplication}/${i.section}/${i.reportUuid}/xxxxxx`}>
@@ -239,7 +238,7 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
           :
           <MatList disablePadding dense>
             {(
-              (miroirMenusDomainElementObject?.elementValue?.menus as any)?.definition?.definition ?? []
+              ((miroirMenusDomainElementObject as any)?.menus as any)?.definition?.definition ?? []
               ).flatMap((menuSection: any, index: number) => (
                 menuSection.items.map(
                   (curr:any, index: number) => (

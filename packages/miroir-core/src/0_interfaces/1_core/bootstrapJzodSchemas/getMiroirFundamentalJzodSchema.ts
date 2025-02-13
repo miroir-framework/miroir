@@ -2472,12 +2472,8 @@ export function getMiroirFundamentalJzodSchema(
     ).actionParameters,
   };
 
-  // console.log("################## domainActionDefinitions", JSON.stringify(domainActionDefinitions, null, 2))
   console.log("################## miroirFundamentalJzodSchema", JSON.stringify(Object.keys(miroirFundamentalJzodSchema.definition.context), null, 2))
-  // console.log("################## testAssertion", JSON.stringify((miroirFundamentalJzodSchema as any).definition.context.testAssertion, null, 2))
-  // console.log("################## testAction_runTestCase", JSON.stringify((miroirFundamentalJzodSchema as any).definition.context.testAction_runTestCase, null, 2))
 
-  // const innerResolutionStore: Record<string, JzodReference> = {
   const innerResolutionStore: Record<string, any> = {
     // TODO: transform all inner references in jzodSchemajzodMiroirBootstrapSchema into innerResolutionStoreReferences
     [miroirFundamentalJzodSchemaUuid]: {
@@ -2500,71 +2496,6 @@ export function getMiroirFundamentalJzodSchema(
         deployment: (miroirFundamentalJzodSchema as any).definition.context.deployment,
         selfApplicationDeploymentConfiguration: (miroirFundamentalJzodSchema as any).definition.context.selfApplicationDeploymentConfiguration,
         // domain elements  ###########################################################
-        // definition: [
-        //   },
-        //   {
-        //     type: "object",
-        //     definition: {
-        //       elementType: {
-        //         type: "literal",
-        //         definition: "instanceUuidIndexUuidIndex",
-        //       },
-        //       elementValue: {
-        //         type: "schemaReference",
-        //         definition: {
-        //           absolutePath: miroirFundamentalJzodSchemaUuid,
-        //           relativePath: "entityInstancesUuidIndex",
-        //         },
-        //       },
-        //     },
-        //   },
-        //   {
-        //     type: "object",
-        //     definition: {
-        //       elementType: {
-        //         type: "literal",
-        //         definition: "failure",
-        //       },
-        //       elementValue: {
-        //         type: "schemaReference",
-        //         definition: {
-        //           absolutePath: miroirFundamentalJzodSchemaUuid,
-        //           relativePath: "queryFailed",
-        //         },
-        //       },
-        //     },
-        //   },
-        //   {
-        //     type: "object",
-        //     definition: {
-        //       elementType: {
-        //         type: "literal",
-        //         definition: "string",
-        //       },
-        //       elementValue: {
-        //         type: "string",
-        //       },
-        //     },
-        //   },
-        //   {
-        //     type: "object",
-        //     definition: {
-        //       elementType: {
-        //         type: "literal",
-        //         definition: "array",
-        //       },
-        //       elementValue: {
-        //         type: "array",
-        //         definition: {
-        //           type: "schemaReference",
-        //           definition: {
-        //             relativePath: "domainElement",
-        //           },
-        //         },
-        //       },
-        //     },
-        //   },
-        // ],
         domainElementSuccess: (miroirFundamentalJzodSchema as any).definition.context.domainElementSuccess,
         domainElementVoid: (miroirFundamentalJzodSchema as any).definition.context.domainElementVoid,
         domainElementAny: (miroirFundamentalJzodSchema as any).definition.context.domainElementAny,
@@ -2894,7 +2825,8 @@ export function getMiroirFundamentalJzodSchema(
         applyCarryOnSchemaOnLevel(
           f[1] as any,
           carryOnSchemaReference as any,
-          false, // applyOnFirstLevel
+          // false, // applyOnFirstLevel
+          true, // applyOnFirstLevel
           undefined,
           undefined,
           resolveReferencesWithCarryOn

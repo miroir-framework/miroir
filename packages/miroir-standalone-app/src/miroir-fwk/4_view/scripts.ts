@@ -118,7 +118,7 @@ export const deleteCascade = async (p: {
             parentName: "",
             parentUuid: {
               transformerType: "constantUuid",
-              constantUuidValue: entityUuid,
+              value: entityUuid,
             },
           },
         ])

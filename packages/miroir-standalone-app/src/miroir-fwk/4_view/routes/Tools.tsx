@@ -795,9 +795,6 @@ export const ToolsPage: React.FC<any> = (
           "paramsForTemplates",
           paramsForTemplates
         );
-        //   elementType: "object",
-        //   elementValue: actionCreateSchemaParamValues
-        // }
 
         const createNewApplicationResult = await domainController.handleCompositeActionTemplate(
           createNewApplication,

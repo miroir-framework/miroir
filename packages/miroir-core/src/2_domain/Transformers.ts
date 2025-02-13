@@ -48,8 +48,6 @@ import { MiroirLoggerFactory } from "../4_services/LoggerFactory.js";
 import { packageName } from "../constants.js";
 import { resolvePathOnObject } from "../tools.js";
 import { cleanLevel } from "./constants.js";
-import { b } from "vitest/dist/chunks/suite.B2jumIFP.js";
-import { D } from "vitest/dist/chunks/reporters.D7Jzd9GS.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -100,6 +98,8 @@ export function resolveInnerTransformer(
   contextResults: Record<string, any> | undefined,
   label: string | undefined
 ) {
+  log.info("resolveInnerTransformer called for transformer", transformer, "step", step, "label", label);
+  
   if (transformer.applyTo.referenceType == "referencedExtractor") {
     throw new Error("resolveInnerTransformer can not handle referencedExtractor");
   }
@@ -711,6 +711,7 @@ export function transformer_dynamicObjectAccess_apply(
   return result;
 
 }
+
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
@@ -753,26 +754,28 @@ export function innerTransformer_apply(
       const resolvedReference = resolveInnerTransformer(transformer, step, queryParams, contextResults, label);
       if (resolvedReference instanceof Domain2ElementFailed) {
         log.error(
-          "innerTransformer_apply extractorTransformer count can not apply to resolvedReference",
+          "innerTransformer_apply extractorTransformer count can not apply to failed resolvedReference",
           resolvedReference
         );
         return new Domain2ElementFailed({
           queryFailure: "QueryNotExecutable",
           failureOrigin: ["transformer_apply"],
-          queryContext: "count can not apply to resolvedReference",
+          queryContext: "count can not apply to failed resolvedReference",
+          innerError: resolvedReference
         });
       }
 
       if ( typeof resolvedReference != "object" || !Array.isArray(resolvedReference)) {
       // if ( typeof resolvedReference != "object" || !Array.isArray(resolvedReference)) {
         log.error(
-          "innerTransformer_apply extractorTransformer count can not apply to resolvedReference",
+          "innerTransformer_apply extractorTransformer count can not apply to resolvedReference of wrong type",
           resolvedReference
         );
         return new Domain2ElementFailed({
           queryFailure: "QueryNotExecutable",
           failureOrigin: ["transformer_apply"],
-          queryContext: "count can not apply to resolvedReference",
+          queryContext: "count can not apply to resolvedReference of wrong type",
+          innerError: resolvedReference
         });
       }
 
@@ -1032,6 +1035,15 @@ export function innerTransformer_apply(
             )
         : (a: any[]) => a;
       const result = new Set<string>();
+      // if(transformer.attribute) {
+      //   for (const entry of resolvedReference) {
+      //     result.add(entry[transformer.attribute]);
+      //   }
+      // } else {
+      //   for (const entry of resolvedReference) {
+      //     result.add(entry);
+      //   }
+      // }
       for (const entry of Object.entries(resolvedReference)) {
         result.add((entry[1] as any)[transformer.attribute]);
       }
@@ -1087,13 +1099,13 @@ export function innerTransformer_apply(
     }
     case "constantBigint": {
       if (typeof transformer.value == "number") {
-      // if (typeof transformer.constantBigintValue == "bigint") {
+      // if (typeof transformer.value == "bigint") {
         return transformer.value;
       } else {
         return new Domain2ElementFailed({
           queryFailure: "FailedTransformer_constantBigint",
           failureOrigin: ["transformer_apply"],
-          queryContext: "constantBigintValue is not a number (but it should actually be a bigint)",
+          queryContext: "value is not a number (but it should actually be a bigint)",
         });
       }
     }
@@ -1104,7 +1116,7 @@ export function innerTransformer_apply(
         return new Domain2ElementFailed({
           queryFailure: "FailedTransformer_constantBoolean",
           failureOrigin: ["transformer_apply"],
-          queryContext: "constantBooleanValue is not a boolean",
+          queryContext: "value is not a boolean",
         });
       }
     }
@@ -1115,7 +1127,7 @@ export function innerTransformer_apply(
         return new Domain2ElementFailed({
           queryFailure: "FailedTransformer_constantObject",
           failureOrigin: ["transformer_apply"],
-          queryContext: "constantObjectValue is not an object",
+          queryContext: "value is not an object",
         });
       }
     }
@@ -1126,7 +1138,7 @@ export function innerTransformer_apply(
         return new Domain2ElementFailed({
           queryFailure: "FailedTransformer_constantNumber",
           failureOrigin: ["transformer_apply"],
-          queryContext: "constantNumberValue is not a number",
+          queryContext: "value is not a number",
         });
       }
     }
@@ -1138,7 +1150,7 @@ export function innerTransformer_apply(
         // return new Domain2ElementFailed({
         //   queryFailure: "FailedTransformer_constantString",
         //   failureOrigin: ["transformer_apply"],
-        //   queryContext: "constantStringValue is not a string",
+        //   queryContext: "value is not a string",
         // });
       }
     }
@@ -1538,6 +1550,7 @@ export function transformer_extended_apply(
   // return result
 }
 
+// ################################################################################################
 export function transformer_apply_wrapper(  step: Step,
   label: string | undefined,
   // transformer: TransformerForBuild | TransformerForRuntime | ExtendedTransformerForRuntime,

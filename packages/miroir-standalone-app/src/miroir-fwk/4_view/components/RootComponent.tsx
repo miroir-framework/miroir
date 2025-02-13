@@ -348,7 +348,6 @@ export const RootComponent = (props: RootComponentProps) => {
                         deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
                         pageParams: {},
                         queryParams: {},
-                        // contextResults: { elementType: "object", elementValue: {} },
                         contextResults: {},
                         extractorTemplates: {
                           [subQueryName]: {
@@ -357,7 +356,7 @@ export const RootComponent = (props: RootComponentProps) => {
                             parentName: "Deployment",
                             parentUuid: {
                               transformerType: "constantUuid",
-                              constantUuidValue: entityDeployment.uuid,
+                              value: entityDeployment.uuid,
                             },
                           },
                         },
@@ -389,10 +388,6 @@ export const RootComponent = (props: RootComponentProps) => {
                       if ( !adminDeployments.returnedDomainElement[subQueryName] ) {
                         throw new Error("found adminDeployments query result object does not have attribute " + subQueryName + " as expected " + adminDeployments.returnedDomainElement);
                       }
-                     
-                      // if (adminDeployments.returnedDomainElement.elementValue[subQueryName].elementType != "instanceUuidIndex") {
-                      //   throw new Error("found adminDeployments query result object attribute " + subQueryName + " is not an instanceUuidIndex as expected " + adminDeployments.returnedDomainElement);
-                      // }
                      
                       const foundDeployments = adminDeployments.returnedDomainElement[subQueryName];
 
@@ -615,7 +610,7 @@ export const RootComponent = (props: RootComponentProps) => {
                               "parentName": "Author",
                               "parentUuid": {
                                 "transformerType": "constantUuid",
-                                "constantUuidValue": "d7a144ff-d1b9-4135-800c-a7cfc1f38733"
+                                "value": "d7a144ff-d1b9-4135-800c-a7cfc1f38733"
                               }
                             }
                           }

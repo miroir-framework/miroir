@@ -13,7 +13,7 @@
         "parentName": "Deployment",
         "parentUuid": {
           "transformerType": "constantUuid",
-          "constantUuidValue": "7959d814-400c-4e80-988f-a00fe582ab98"
+          "value": "7959d814-400c-4e80-988f-a00fe582ab98"
         }
       }
     },

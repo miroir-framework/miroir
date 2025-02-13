@@ -55,15 +55,16 @@ let count = 0
 export const ReportView = (props: ReportViewProps) => {
   count++;
 
-  const paramsAsdomainElements: Domain2QueryReturnType<Record<string,any>> = useMemo(
-    () => ({
-      elementType: "object",
-      elementValue: Object.fromEntries(
-        Object.entries(props.pageParams).map((e) => [e[0], { elementType: "string", elementValue: e[1] ?? "" }])
-      ),
-    }),
-    [props.pageParams]
-  );
+  const paramsAsdomainElements: Domain2QueryReturnType<Record<string,any>> = props.pageParams;
+  // const paramsAsdomainElements: Domain2QueryReturnType<Record<string,any>> = useMemo(
+  //   () => ({
+  //     elementType: "object",
+  //     elementValue: Object.fromEntries(
+  //       Object.entries(props.pageParams).map((e) => [e[0], { elementType: "string", elementValue: e[1] ?? "" }])
+  //     ),
+  //   }),
+  //   [props.pageParams]
+  // );
   // log.info("########################## ReportView rendering", count, "props", JSON.stringify(props, null, 2));
   log.info("########################## ReportView rendering", count, "props", props);
 

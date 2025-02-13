@@ -532,7 +532,7 @@ if (RUN_TEST == testSuiteName) {
   //   //     undefined,
   //   //     {
   //   //       transformerType: "constantUuid",
-  //   //       constantUuidValue: "test",
+  //   //       value: "test",
   //   //     },
   //   //     {},
   //   //     undefined
@@ -943,7 +943,7 @@ if (RUN_TEST == testSuiteName) {
   //           attributeKey: {
   //             interpolation: "runtime",
   //             transformerType: "constantUuid",
-  //             constantUuidValue: "uuid"
+  //             value: "uuid"
   //           },
   //           attributeValue: {
   //             interpolation: "runtime",
@@ -955,7 +955,7 @@ if (RUN_TEST == testSuiteName) {
   //           attributeKey: {
   //             interpolation: "runtime",
   //             transformerType: "constantUuid",
-  //             constantUuidValue: "name"
+  //             value: "name"
   //           },
   //           attributeValue: {
   //             transformerType: "mustacheStringTemplate",
@@ -1003,7 +1003,7 @@ if (RUN_TEST == testSuiteName) {
   //             attributeKey: {
   //               interpolation: "runtime",
   //               transformerType: "constantUuid",
-  //               constantUuidValue: "uuid"
+  //               value: "uuid"
   //             },
   //             attributeValue: {
   //               interpolation: "runtime",
@@ -1014,7 +1014,7 @@ if (RUN_TEST == testSuiteName) {
   //             attributeKey: {
   //               interpolation: "runtime",
   //               transformerType: "constantUuid",
-  //               constantUuidValue: "name"
+  //               value: "name"
   //             },
   //             attributeValue: {
   //               transformerType: "mustacheStringTemplate",

@@ -9,7 +9,7 @@
   "types": "dist/index.d.ts",
   "type": "module",
   "scripts": {
-    "build": "npm run copy-files && cross-env NODE_OPTIONS='--max-old-space-size=8192' tsup",
+    "build": "npm run copy-files && cross-env NODE_OPTIONS='--max-old-space-size=4096' tsup",
     "build1": "npm run devBuild",
     "build2": "npm run devBuild",
     "build3": "npm run devBuild",

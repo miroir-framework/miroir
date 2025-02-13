@@ -13,7 +13,7 @@
         "parentName": "Endpoint",
         "parentUuid": {
           "transformerType": "constantUuid",
-          "constantUuidValue": "3d8da4d4-8f76-4bb4-9212-14869d81c00c"
+          "value": "3d8da4d4-8f76-4bb4-9212-14869d81c00c"
         }
       }
     },

@@ -13,7 +13,7 @@
         "parentName": "Query",
         "parentUuid": {
           "transformerType": "constantUuid",
-          "constantUuidValue": "e4320b9e-ab45-4abe-85d8-359604b3c62f"
+          "value": "e4320b9e-ab45-4abe-85d8-359604b3c62f"
         }
       }
     },

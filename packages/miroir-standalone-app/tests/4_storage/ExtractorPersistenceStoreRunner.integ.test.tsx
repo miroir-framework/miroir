@@ -1135,7 +1135,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
   //                     attributeKey: {
   //                       interpolation: "runtime",
   //                       transformerType: "constantUuid",
-  //                       constantUuidValue: "uuid",
+  //                       value: "uuid",
   //                     },
   //                     attributeValue: {
   //                       interpolation: "runtime",
@@ -1146,7 +1146,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
   //                     attributeKey: {
   //                       interpolation: "runtime",
   //                       transformerType: "constantUuid",
-  //                       constantUuidValue: "name",
+  //                       value: "name",
   //                     },
   //                     attributeValue: {
   //                       interpolation: "runtime",

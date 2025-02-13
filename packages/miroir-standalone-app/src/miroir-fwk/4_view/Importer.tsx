@@ -249,7 +249,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
-  // #######################################################################################################################################
+  // ##############################################################################################
   // ##############################################################################################
   // const createEntity = async (
   const createEntity = (
@@ -662,7 +662,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                         transformerType: "constantString",
                         value: "constantUuid",
                       },
-                      constantUuidValue: {
+                      value: {
                         transformerType: "mustacheStringTemplate",
                         definition: "{{entityMenu.uuid}}",
                       },
@@ -1327,7 +1327,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                         transformerType: "constantString",
                         value: "constantUuid",
                       },
-                      constantUuidValue: {
+                      value: {
                         transformerType: "mustacheStringTemplate",
                         definition: "{{entityMenu.uuid}}",
                       },

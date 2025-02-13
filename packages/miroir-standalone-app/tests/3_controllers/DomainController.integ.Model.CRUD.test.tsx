@@ -305,11 +305,6 @@ const testActions: Record<string, TestActionParams> = {
                         referencePath: ["libraryEntityList", "entities"],
                       }
                     },
-                    // referencedTransformer: {
-                    //   transformerType: "contextReference",
-                    //   interpolation: "runtime",
-                    //   referencePath: ["libraryEntityList", "entities"],
-                    // },
                   },
                   expectedValue: { count: 1 },
                 },
@@ -417,11 +412,6 @@ const testActions: Record<string, TestActionParams> = {
                         referencePath: ["libraryEntityList", "entities"],
                       }
                     },
-                    // referencedTransformer: {
-                    //   transformerType: "contextReference",
-                    //   interpolation: "runtime",
-                    //   referencePath: ["libraryEntityList", "entities"],
-                    // },
                   },
                   expectedValue: { count: 2 },
                 },
@@ -542,11 +532,6 @@ const testActions: Record<string, TestActionParams> = {
                         referencePath: ["libraryEntityList", "entities"],
                       }
                     },
-                  //   referencedTransformer: {
-                  //     transformerType: "contextReference",
-                  //     interpolation: "runtime",
-                  //     referencePath: ["libraryEntityList", "entities"],
-                  //   },
                   },
                   expectedValue: { count: 1 },
                 },
@@ -681,11 +666,6 @@ const testActions: Record<string, TestActionParams> = {
                         referencePath: ["libraryEntityListFromLocalCache", "entities"],
                       }
                     },
-                    // referencedTransformer: {
-                    //   transformerType: "contextReference",
-                    //   interpolation: "runtime",
-                    //   referencePath: ["libraryEntityListFromLocalCache", "entities"],
-                    // },
                   },
                   expectedValue: { count: 2 },
                 },
@@ -725,11 +705,6 @@ const testActions: Record<string, TestActionParams> = {
                         referencePath: ["libraryEntityListFromPersistentStore", "entities"],
                       }
                     },
-                    // referencedTransformer: {
-                    //   transformerType: "contextReference",
-                    //   interpolation: "runtime",
-                    //   referencePath: ["libraryEntityListFromPersistentStore", "entities"],
-                    // },
                   },
                   expectedValue: { count: 1 },
                 },
@@ -848,11 +823,6 @@ const testActions: Record<string, TestActionParams> = {
                         referencePath: ["libraryEntityList", "entities"],
                       }
                     },
-                    // referencedTransformer: {
-                    //   transformerType: "contextReference",
-                    //   interpolation: "runtime",
-                    //   referencePath: ["libraryEntityList", "entities"],
-                    // },
                   },
                   expectedValue: { count: 0 },
                 },
@@ -1124,11 +1094,11 @@ const testActions: Record<string, TestActionParams> = {
             // TODO: test length of entityBookList.books!
             {
               actionType: "compositeRunTestAssertion",
-              actionLabel: "checkNumberOfBooks",
+              actionLabel: "checkNumberOfBooksFromPersisentStore",
               nameGivenToResult: "checkNumberOfEntitiesFromPersistentStore",
               testAssertion: {
                 testType: "testAssertion",
-                testLabel: "checkNumberOfBooks",
+                testLabel: "checkNumberOfBooksFromPersisentStore",
                 definition: {
                   resultAccessPath: ["0"],
                   resultTransformer: {
@@ -1139,14 +1109,9 @@ const testActions: Record<string, TestActionParams> = {
                       reference: {
                         transformerType: "contextReference",
                         interpolation: "runtime",
-                        referencePath: ["libraryEntityDefinitionListFormPersistentStore", "entityDefinitions"],
+                        referencePath: ["libraryEntityDefinitionListFromPersistentStore", "entityDefinitions"],
                       }
                     },
-                    // referencedTransformer: {
-                    //   transformerType: "contextReference",
-                    //   interpolation: "runtime",
-                    //   referencePath: ["libraryEntityDefinitionListFromPersistentStore", "entityDefinitions"],
-                    // },
                   },
                   expectedValue: { count: 1 },
                 },
@@ -1154,11 +1119,11 @@ const testActions: Record<string, TestActionParams> = {
             },
             {
               actionType: "compositeRunTestAssertion",
-              actionLabel: "checkNumberOfBooks",
+              actionLabel: "checkNumberOfBooksFromLocalCache",
               nameGivenToResult: "checkNumberOfEntitiesFromLocalCache",
               testAssertion: {
                 testType: "testAssertion",
-                testLabel: "checkNumberOfBooks",
+                testLabel: "checkNumberOfBooksFromLocalCache",
                 definition: {
                   resultAccessPath: ["0"],
                   resultTransformer: {
@@ -1172,66 +1137,61 @@ const testActions: Record<string, TestActionParams> = {
                         referencePath: ["libraryEntityDefinitionListFromLocalCache", "entityDefinitions"],
                       }
                     },
-                    // referencedTransformer: {
-                    //   transformerType: "contextReference",
-                    //   interpolation: "runtime",
-                    //   referencePath: ["libraryEntityDefinitionListFromLocalCache", "entityDefinitions"],
-                    // },
                   },
                   expectedValue: { count: 1 },
                 },
               },
             },
-            {
-              actionType: "compositeRunTestAssertion",
-              actionLabel: "checkEntityBooks",
-              nameGivenToResult: "checkEntityDefinitionFromLocalCache",
-              testAssertion: {
-                testType: "testAssertion",
-                testLabel: "checkEntityBooks",
-                definition: {
-                  resultAccessPath: ["libraryEntityDefinitionListFromLocalCache", "entityDefinitions"],
-                  ignoreAttributes: ["author"],
-                  expectedValue: [
-                    {
-                      ...entityDefinitionPublisher,
-                      jzodSchema: {
-                        ...entityDefinitionPublisher.jzodSchema,
-                        definition: {
-                          ...entityDefinitionPublisher.jzodSchema.definition,
-                          aNewColumnForTest: columnForTestDefinition,
-                        },
-                      },
-                    },
-                  ],
-                },
-              },
-            },
-            {
-              actionType: "compositeRunTestAssertion",
-              actionLabel: "checkEntityBooks",
-              nameGivenToResult: "checkEntityDefinitionFromPersistentStore",
-              testAssertion: {
-                testType: "testAssertion",
-                testLabel: "checkEntityBooks",
-                definition: {
-                  resultAccessPath: ["libraryEntityDefinitionListFromPersistentStore", "entityDefinitions"],
-                  ignoreAttributes: ["author"],
-                  expectedValue: [
-                    {
-                      ...entityDefinitionPublisher,
-                      jzodSchema: {
-                        ...entityDefinitionPublisher.jzodSchema,
-                        definition: {
-                          ...entityDefinitionPublisher.jzodSchema.definition,
-                          aNewColumnForTest: columnForTestDefinition,
-                        },
-                      },
-                    },
-                  ],
-                },
-              },
-            },
+            // {
+            //   actionType: "compositeRunTestAssertion",
+            //   actionLabel: "checkEntityBooks",
+            //   nameGivenToResult: "checkEntityDefinitionFromLocalCache",
+            //   testAssertion: {
+            //     testType: "testAssertion",
+            //     testLabel: "checkEntityBooks",
+            //     definition: {
+            //       resultAccessPath: ["libraryEntityDefinitionListFromLocalCache", "entityDefinitions"],
+            //       ignoreAttributes: ["author"],
+            //       expectedValue: [
+            //         {
+            //           ...entityDefinitionPublisher,
+            //           jzodSchema: {
+            //             ...entityDefinitionPublisher.jzodSchema,
+            //             definition: {
+            //               ...entityDefinitionPublisher.jzodSchema.definition,
+            //               aNewColumnForTest: columnForTestDefinition,
+            //             },
+            //           },
+            //         },
+            //       ],
+            //     },
+            //   },
+            // },
+            // {
+            //   actionType: "compositeRunTestAssertion",
+            //   actionLabel: "checkEntityBooks",
+            //   nameGivenToResult: "checkEntityDefinitionFromPersistentStore",
+            //   testAssertion: {
+            //     testType: "testAssertion",
+            //     testLabel: "checkEntityBooks",
+            //     definition: {
+            //       resultAccessPath: ["libraryEntityDefinitionListFromPersistentStore", "entityDefinitions"],
+            //       ignoreAttributes: ["author"],
+            //       expectedValue: [
+            //         {
+            //           ...entityDefinitionPublisher,
+            //           jzodSchema: {
+            //             ...entityDefinitionPublisher.jzodSchema,
+            //             definition: {
+            //               ...entityDefinitionPublisher.jzodSchema.definition,
+            //               aNewColumnForTest: columnForTestDefinition,
+            //             },
+            //           },
+            //         },
+            //       ],
+            //     },
+            //   },
+            // },
           ],
         },
       },

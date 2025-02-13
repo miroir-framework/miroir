@@ -32,7 +32,7 @@ describe("resolveQueryTemplates.unit.test", () => {
   //         parentName: "Book",
   //         parentUuid: {
   //           transformerType: "constantUuid",
-  //           constantUuidValue: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+  //           value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
   //         },
   //         instanceUuid: {
   //           transformerType: "parameterReference",

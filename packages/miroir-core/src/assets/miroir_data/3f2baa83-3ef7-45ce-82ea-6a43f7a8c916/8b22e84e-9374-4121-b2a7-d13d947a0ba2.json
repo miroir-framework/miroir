@@ -13,7 +13,7 @@
         "parentName": "JzodSchema",
         "parentUuid": {
           "transformerType": "constantUuid",
-          "constantUuidValue": "5e81e1b9-38be-487c-b3e5-53796c57fccf"
+          "value": "5e81e1b9-38be-487c-b3e5-53796c57fccf"
         }
       }
     },

@@ -13,7 +13,7 @@
         "parentName": "Country",
         "parentUuid": {
           "transformerType": "constantUuid",
-          "constantUuidValue": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4"
+          "value": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4"
         },
         "instanceUuid": {
           "transformerType": "parameterReference",
@@ -27,7 +27,7 @@
         "parentName": "Publisher",
         "parentUuid": {
           "transformerType": "constantUuid",
-          "constantUuidValue": "a027c379-8468-43a5-ba4d-bf618be25cab"
+          "value": "a027c379-8468-43a5-ba4d-bf618be25cab"
         },
         "objectReference": {
           "transformerType": "contextReference",

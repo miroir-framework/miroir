@@ -223,8 +223,8 @@ export class LocalCache implements LocalCacheInterface {
       return {
         status: "error",
         errorType: "FailedToDeployModule", // TODO: correct errorType
-        errorMessage: queryResult.elementValue.failureMessage,
-        errorStack: queryResult.elementValue.errorStack
+        errorMessage: queryResult.failureMessage,
+        errorStack: queryResult.errorStack
       }
      } else {
        const result:Action2ReturnType = {

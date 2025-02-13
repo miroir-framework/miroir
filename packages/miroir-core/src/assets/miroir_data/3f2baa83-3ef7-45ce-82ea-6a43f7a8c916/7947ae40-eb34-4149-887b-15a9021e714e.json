@@ -14,7 +14,7 @@
         "parentName": "Commit",
         "parentUuid": {
           "transformerType": "constantUuid",
-          "constantUuidValue": "73bb0c69-e636-4e3b-a230-51f25469c089"
+          "value": "73bb0c69-e636-4e3b-a230-51f25469c089"
         }
       }
     },

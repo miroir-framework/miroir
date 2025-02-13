@@ -351,7 +351,7 @@ const adminConfigurationDeploymentParis = {
 //   //                       transformerType: "constantString",
 //   //                       value: "constantUuid"
 //   //                     },
-//   //                     constantUuidValue: {
+//   //                     value: {
 //   //                       transformerType: "mustacheStringTemplate",
 //   //                       definition: "{{entityMenu.uuid}}",
 //   //                     },
@@ -761,7 +761,7 @@ const adminConfigurationDeploymentParis = {
 //   //               parentName: "Menu",
 //   //               parentUuid: {
 //   //                 transformerType: "constantUuid",
-//   //                 constantUuidValue: "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
+//   //                 value: "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
 //   //               },
 //   //             },
 //   //           },
