@@ -780,17 +780,68 @@ FROM (${referenceQuery.sqlStringOrObject}) AS "listPickElement_applyTo"
       if (referenceQuery instanceof Domain2ElementFailed) {
         return referenceQuery;
       }
+      switch (referenceQuery.type) {
+        case "json": {
+          // return new Domain2ElementFailed({
+          //   queryFailure: "QueryNotExecutable",
+          //   query: actionRuntimeTransformer as any,
+          //   failureMessage: "sqlStringForTransformer unique referenceQuery result is json",
+          // });
+          return {
+            type: "json",
+            sqlStringOrObject: `
+SELECT jsonb_agg(t."unique_applyTo_array") AS "unique_objects"
+FROM (
+  SELECT DISTINCT ON ("unique_applyTo_array"->>'${actionRuntimeTransformer.attribute}') "unique_applyTo_array"
+  FROM (${referenceQuery.sqlStringOrObject}) AS "unique_applyTo", 
+  LATERAL jsonb_array_elements("unique_applyTo"."${
+    (referenceQuery as any).resultAccessPath[1]
+  }") AS "unique_applyTo_array"
+  ORDER BY "unique_applyTo_array"->>'${actionRuntimeTransformer.attribute}'
+) t
+`,
+            preparedStatementParameters: referenceQuery.preparedStatementParameters,
+            resultAccessPath: [0, "unique_objects"],
+          }
+          break;
+        }
+        case "table": {
+          const transformerSqlQuery = 
+`
+SELECT DISTINCT ON ("unique_applyTo"."${actionRuntimeTransformer.attribute}") "${actionRuntimeTransformer.attribute}" 
+FROM (${referenceQuery.sqlStringOrObject}) AS "unique_applyTo"
+${orderBy}
+`;
+          return {
+            type: "table",
+            sqlStringOrObject: transformerSqlQuery,
+            preparedStatementParameters: referenceQuery.preparedStatementParameters,
+            resultAccessPath: undefined,
+          };
+          break;
+        }
+        case "scalar": {
+          return new Domain2ElementFailed({
+            queryFailure: "QueryNotExecutable",
+            query: actionRuntimeTransformer as any,
+            failureMessage: "sqlStringForTransformer unique referenceQuery result is scalar, not json",
+          });
+          break;
+        }
+        default:
+          break;
+      }
+      // if(referenceQuery.type == "table") {
+      // }
       // log.info("extractorTransformerSql actionRuntimeTransformer.attribute", actionRuntimeTransformer.attribute);
-      const transformerSqlQuery = `SELECT DISTINCT ON ("${actionRuntimeTransformer.attribute}") "${actionRuntimeTransformer.attribute}" FROM "${referenceQuery.sqlStringOrObject}"
-        ${orderBy}
-      `;
       // log.info("sqlStringForTransformer unique transformerRawQuery", JSON.stringify(transformerSqlQuery));
-      return {
-        type: "table",
-        sqlStringOrObject: transformerSqlQuery,
-        preparedStatementParameters: referenceQuery.preparedStatementParameters,
-        resultAccessPath: undefined,
-      };
+
+      // return {
+      //   type: "table",
+      //   sqlStringOrObject: transformerSqlQuery,
+      //   preparedStatementParameters: referenceQuery.preparedStatementParameters,
+      //   resultAccessPath: undefined,
+      // };
       break;
     }
     case "count": {
