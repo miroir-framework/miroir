@@ -461,7 +461,14 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
               uniqueAuthors: {
                 transformerType: "unique",
                 interpolation: "runtime",
-                referencedTransformer: "books",
+                applyTo: {
+                  referenceType: "referencedTransformer",
+                  reference: {
+                    transformerType: "contextReference",
+                    interpolation: "runtime",
+                    referenceName: "books",
+                  },
+                },
                 attribute: "author",
                 orderBy: "author",
               },
@@ -515,9 +522,16 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
             },
             runtimeTransformers: {
               uniqueAuthors: {
-                referencedTransformer: "books",
                 interpolation: "runtime",
                 transformerType: "count",
+                applyTo: {
+                  referenceType: "referencedTransformer",
+                  reference: {
+                    transformerType: "contextReference",
+                    interpolation: "runtime",
+                    referenceName: "books",
+                  },
+                },
               },
             },
           },
@@ -564,11 +578,18 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
             },
             runtimeTransformers: {
               countBooksByAuthors: {
-                referencedTransformer: "books",
                 transformerType: "count",
                 interpolation: "runtime",
                 groupBy: "author",
-                orderBy: "author",
+                applyTo: {
+                  referenceType: "referencedTransformer",
+                  reference: {
+                    transformerType: "contextReference",
+                    interpolation: "runtime",
+                    referenceName: "books",
+                  },
+                },
+                // orderBy: "author",
               },
             },
           },
@@ -580,19 +601,18 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
       undefined, // name to give to result
       undefined,
       [
-        { "4441169e-0c22-4fbc-81b2-28c87cf48ab2": 1 },
-        { "ce7b601d-be5f-4bc6-a5af-14091594046a": 2 },
-        { "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17": 2 },
-        { "e4376314-d197-457c-aa5e-d2da5f8d5977": 1 },
-        // { author: "4441169e-0c22-4fbc-81b2-28c87cf48ab2", count: 1 },
-        // { author: "ce7b601d-be5f-4bc6-a5af-14091594046a", count: 2 },
-        // { author: "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17", count: 2 },
-        // { author: "e4376314-d197-457c-aa5e-d2da5f8d5977", count: 1 },
+        {
+          "4441169e-0c22-4fbc-81b2-28c87cf48ab2": 1,
+          "ce7b601d-be5f-4bc6-a5af-14091594046a": 2,
+          "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17": 2,
+          "e4376314-d197-457c-aa5e-d2da5f8d5977": 1,
+        },
       ]
     );
   });
   
   // // ################################################################################################
+  // // TODO: migrate to new action format
   // it("get country list with new uuids with actionRuntimeTransformer", async () => {
   //   await chainVitestSteps(
   //     "ExtractorTemplatePersistenceStoreRunner_selectUniqueEntityApplication",

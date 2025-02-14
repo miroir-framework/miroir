@@ -30,6 +30,7 @@ import {
   entityPublisher,
   entityReport,
   entityStoreBasedConfiguration,
+  ignorePostgresExtraAttributes,
   ignorePostgresExtraAttributesOnObject,
   LoggerInterface,
   MetaEntity,
@@ -872,12 +873,12 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
                     transformerType: "contextReference",
                     interpolation: "runtime",
                     referenceName: "books",
-                  }
+                  },
                 },
                 transformerType: "count",
                 interpolation: "runtime",
                 groupBy: "author",
-                orderBy: "author",
+                // orderBy: "author",
               },
             },
           },
@@ -890,10 +891,12 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
       undefined, // name to give to result
       undefined,
       [
-        { "4441169e-0c22-4fbc-81b2-28c87cf48ab2": 1 },
-        { "ce7b601d-be5f-4bc6-a5af-14091594046a": 2 },
-        { "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17": 2 },
-        { "e4376314-d197-457c-aa5e-d2da5f8d5977": 1 },
+        {
+          "4441169e-0c22-4fbc-81b2-28c87cf48ab2": 1,
+          "ce7b601d-be5f-4bc6-a5af-14091594046a": 2,
+          "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17": 2,
+          "e4376314-d197-457c-aa5e-d2da5f8d5977": 1,
+        },
         // { author: "4441169e-0c22-4fbc-81b2-28c87cf48ab2", count: 1 },
         // { author: "ce7b601d-be5f-4bc6-a5af-14091594046a", count: 2 },
         // { author: "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17", count: 2 },
@@ -974,14 +977,12 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
         console.log(expect.getState().currentTestName, "queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult;
       },
-      (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.newBook, ["uuid"]),
+      (a) => ignorePostgresExtraAttributes((a as any).returnedDomainElement.newBook, ["uuid"]),
       undefined, // name to give to result
       undefined,
-      [
         {
           name: book2.name,
         },
-      ]
     );
   });
 
