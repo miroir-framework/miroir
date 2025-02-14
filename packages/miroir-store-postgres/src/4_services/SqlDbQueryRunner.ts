@@ -199,10 +199,13 @@ export class SqlDbQueryRunner {
       log.info("asyncExtractWithQuery returning result", JSON.stringify(result));
       return Promise.resolve(result);
     } catch (error) {
-      return new Domain2ElementFailed({
-        queryFailure: "QueryNotExecutable",
-        failureMessage: error as any,
-      });
+      log.error("asyncExtractWithQuery query FAILED with error", JSON.stringify(error, null, 2));
+      return Promise.resolve(
+        new Domain2ElementFailed({
+          queryFailure: "QueryNotExecutable",
+          failureMessage: error as any,
+        })
+      );
     }
   };
   
@@ -381,6 +384,7 @@ export class SqlDbQueryRunner {
       return Promise.resolve(new Action2Error("FailedToGetInstances", JSON.stringify(queryResult), undefined, queryResult));
     } else {
       const result: Action2ReturnType = { status: "ok", returnedDomainElement: queryResult };
+      // const result: Action2ReturnType = new Action2Error({ status: "ok", returnedDomainElement: queryResult });
       log.info(
         this.logHeader,
         "handleBoxedQueryAction",

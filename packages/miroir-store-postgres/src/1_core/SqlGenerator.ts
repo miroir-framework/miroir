@@ -782,11 +782,6 @@ FROM (${referenceQuery.sqlStringOrObject}) AS "listPickElement_applyTo"
       }
       switch (referenceQuery.type) {
         case "json": {
-          // return new Domain2ElementFailed({
-          //   queryFailure: "QueryNotExecutable",
-          //   query: actionRuntimeTransformer as any,
-          //   failureMessage: "sqlStringForTransformer unique referenceQuery result is json",
-          // });
           return {
             type: "json",
             sqlStringOrObject: `
@@ -855,20 +850,71 @@ ${orderBy}
       if (referenceQuery instanceof Domain2ElementFailed) {
         return referenceQuery;
       }
-      log.info("sqlStringForTransformer count actionRuntimeTransformer.groupBy", actionRuntimeTransformer.groupBy);
-      const transformerSqlQuery = actionRuntimeTransformer.groupBy
-        ? `SELECT "${actionRuntimeTransformer.groupBy}", COUNT("uuid")::int FROM ${referenceQuery.sqlStringOrObject}
-          GROUP BY "${actionRuntimeTransformer.groupBy}"
-          ${orderBy}`
-        : `SELECT COUNT("uuid")::int FROM "${referenceQuery.sqlStringOrObject}"
-          ${orderBy}`;
-      log.info("sqlStringForTransformer count transformerSqlQuery", transformerSqlQuery);
-      return {
-        type: "table",
-        sqlStringOrObject: transformerSqlQuery,
-        resultAccessPath: undefined,
-        preparedStatementParameters: referenceQuery.preparedStatementParameters,
-      };
+      switch (referenceQuery.type) {
+        case "json": {
+            return {
+              type: "json",
+              sqlStringOrObject: actionRuntimeTransformer.groupBy
+                ? `
+SELECT json_object_agg(key, cnt) AS "count_object"
+FROM (
+  SELECT value ->> '${actionRuntimeTransformer.groupBy}' AS key, COUNT(value ->> '${
+                    actionRuntimeTransformer.groupBy
+                  }')::int AS cnt
+  FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo",
+      LATERAL jsonb_array_elements("count_applyTo"."${
+        (referenceQuery as any).resultAccessPath[1]
+      }") AS "count_applyTo_array"
+  GROUP BY value ->> '${actionRuntimeTransformer.groupBy}'
+) t
+`
+: `
+SELECT json_build_object('count', COUNT(*)::int) AS "count_object"
+FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo",
+    LATERAL jsonb_array_elements("count_applyTo"."${
+      (referenceQuery as any).resultAccessPath[1]
+    }") AS "count_applyTo_array"
+`,
+              preparedStatementParameters: referenceQuery.preparedStatementParameters,
+              resultAccessPath: [0, "count_object"],
+              encloseEndResultInArray: true,
+            };
+          break;
+        }
+        case "table": {
+          const transformerSqlQuery = actionRuntimeTransformer.groupBy
+            ? `SELECT "${actionRuntimeTransformer.groupBy}", COUNT(*)::int FROM ${referenceQuery.sqlStringOrObject}
+            GROUP BY "${actionRuntimeTransformer.groupBy}"
+`
+            : `SELECT COUNT(*)::int FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo"
+`;
+          log.info("sqlStringForTransformer count transformerSqlQuery", transformerSqlQuery);
+          return {
+            type: "table",
+            sqlStringOrObject: transformerSqlQuery,
+            resultAccessPath: undefined,
+            preparedStatementParameters: referenceQuery.preparedStatementParameters,
+          };
+          break;
+        }
+        case "scalar": {
+          return new Domain2ElementFailed({
+            queryFailure: "QueryNotExecutable",
+            query: actionRuntimeTransformer as any,
+            failureMessage: "sqlStringForTransformer count referenceQuery result is scalar",
+          });
+          break;
+        }
+        default: {
+          return new Domain2ElementFailed({
+            queryFailure: "QueryNotExecutable",
+            query: actionRuntimeTransformer as any,
+            failureMessage: "sqlStringForTransformer count referenceQuery result is not determined",
+          });
+          break;
+        }
+      }
+      // log.info("sqlStringForTransformer count actionRuntimeTransformer.groupBy", actionRuntimeTransformer.groupBy);
       break;
     }
     default:

@@ -302,18 +302,16 @@ async function runTransformerTest(vitest: any, testNameArray: string[], transfor
   const testSuitePathName = TestSuiteContext.testSuitePathName(testNameArray);
   // console.log(testSuitePathName, "WWWWWWWWWWWWWWWWWW queryResult", JSON.stringify(queryResult, null, 2));
   console.log(testSuitePathName, "WWWWWWWWWWWWWWWWWW queryResult", JSON.stringify(queryResult, null, 2));
-  console.log(testSuitePathName, "WWWWWWWWWWWWWWWWWW queryResult is error", queryResult instanceof Action2Error);
+  console.log(testSuitePathName, "WWWWWWWWWWWWWWWWWW queryResult cannot use 'instanceof' to determine error", queryResult instanceof Action2Error, Object.hasOwn(queryResult,"errorType"));
   let resultToCompare: any
   try {
-    if (queryResult instanceof Action2Error) {
-      resultToCompare = ignorePostgresExtraAttributes(queryResult.innerError, transformerTest.ignoreAttributes);
-      // resultToCompare = queryResult.innerError
+    if (Object.hasOwn(queryResult, "errorType")) {
+      resultToCompare = ignorePostgresExtraAttributes((queryResult as any).innerError, transformerTest.ignoreAttributes);
       console.log(testSuitePathName, "WWWWWWWWWWWWWWWWWW queryResult", JSON.stringify(resultToCompare, null, 2));
 
       vitest.expect(resultToCompare, testSuitePathName + "comparing received query error to expected result").toEqual(transformerTest.expectedValue);
     } else {
       resultToCompare = (queryResult as Action2Success).returnedDomainElement.transformer;
-      // const testResult = queryResult.returnedDomainElement.transformer;
       console.log(testSuitePathName, "testResult", JSON.stringify(resultToCompare, null, 2));
       console.log(testSuitePathName, "expectedValue", transformerTest.expectedValue);
       vitest.expect(resultToCompare, testSuitePathName).toEqual(transformerTest.expectedValue);

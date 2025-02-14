@@ -1601,21 +1601,14 @@ export const miroirFundamentalJzodSchema = {
       },
       "transformerForBuild_count_root": {
         "type": "object",
-        "extend": [
-          {
-            "type": "schemaReference",
-            "definition": {
-              "eager": true,
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformer_orderBy"
-            },
-            "context": {}
-          }
-        ],
         "definition": {
           "transformerType": {
             "type": "literal",
             "definition": "count"
+          },
+          "attribute": {
+            "type": "string",
+            "optional": true
           },
           "groupBy": {
             "type": "string",
@@ -1650,6 +1643,15 @@ export const miroirFundamentalJzodSchema = {
       "transformerForBuild_unique_root": {
         "type": "object",
         "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformerForBuild_reference",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            },
+            "context": {}
+          },
           {
             "type": "schemaReference",
             "definition": {
@@ -13885,16 +13887,6 @@ export const miroirFundamentalJzodSchema = {
       },
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_count_root_extend": {
         "type": "object",
-        "extend": [
-          {
-            "type": "schemaReference",
-            "definition": {
-              "eager": true,
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_orderBy_extend"
-            }
-          }
-        ],
         "definition": {
           "transformerType": {
             "type": "union",
@@ -13902,6 +13894,22 @@ export const miroirFundamentalJzodSchema = {
               {
                 "type": "literal",
                 "definition": "count"
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "carryOnObject"
+                }
+              }
+            ]
+          },
+          "attribute": {
+            "type": "union",
+            "optional": true,
+            "definition": [
+              {
+                "type": "string",
+                "optional": true
               },
               {
                 "type": "schemaReference",
@@ -14154,6 +14162,14 @@ export const miroirFundamentalJzodSchema = {
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_unique_root_extend": {
         "type": "object",
         "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_reference_extend",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            }
+          },
           {
             "type": "schemaReference",
             "definition": {
@@ -33745,16 +33761,6 @@ export const miroirFundamentalJzodSchema = {
           },
           {
             "type": "object",
-            "extend": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "eager": true,
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_orderBy"
-                }
-              }
-            ],
             "definition": {
               "transformerType": {
                 "type": "union",
@@ -33762,6 +33768,22 @@ export const miroirFundamentalJzodSchema = {
                   {
                     "type": "literal",
                     "definition": "count"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "attribute": {
+                "type": "union",
+                "optional": true,
+                "definition": [
+                  {
+                    "type": "string",
+                    "optional": true
                   },
                   {
                     "type": "schemaReference",
@@ -34838,6 +34860,14 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "object",
             "extend": [
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "eager": true,
+                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_reference",
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                }
+              },
               {
                 "type": "schemaReference",
                 "definition": {

@@ -145,15 +145,12 @@ async function runTransformerTest(vitest: any, testSuiteNamePath: string[], tran
   );
   const transformer: TransformerForBuild | TransformerForRuntime = transformerTest.transformer;
 
-  // const rawResult: Domain2QueryReturnType<any> = transformer_apply(
   const rawResult: Domain2QueryReturnType<any> = transformer_apply_wrapper(
-    // "build",
     "runtime",
     undefined,
     transformer,
     transformerTest.transformerParams,
     transformerTest.transformerRuntimeContext??{}
-    // Object.hasOwn(transformerTest,"transformerRuntimeContext")?transformerTest.transformerRuntimeContext:{}
   );
 
 

@@ -66,15 +66,15 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     }
 
     async executeRawQuery(query: string, values?: any[]): Promise<Action2ReturnType> {
-      log.info(this.logHeader, "executeRawQuery", "query", query, "values", values);
+      log.info(this.logHeader, "######## executeRawQuery", "query", query, "values", values);
       // const rawResult = await this.sequelize.query({query, values: values??[]});
-      const rawResult = await this.sequelize.query(query, {bind: values ?? []});
-      log.info(this.logHeader, "executeRawQuery", "query", query, "rawResult", rawResult);
+      const rawResult = await this.sequelize.query(query, {bind: Array.isArray(values) ? values: []});
+      log.info(this.logHeader, "######## executeRawQuery", "query", query, "rawResult", rawResult);
       const result: Action2ReturnType = {
         status: "ok",
         returnedDomainElement: rawResult[0],
       };
-      log.info(this.logHeader, "executeRawQuery", "query", query, "result", JSON.stringify(result));
+      log.info(this.logHeader, "######## executeRawQuery", "query", query, "result", JSON.stringify(result));
       return Promise.resolve(result);
     }
 
@@ -225,7 +225,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
 
       const result: Action2ReturnType = await this.extractorRunner.handleBoxedQueryAction(query);
 
-      log.info(this.logHeader, "handleBoxedQueryAction done for query", query, "result", result);
+      log.info(this.logHeader, "handleBoxedQueryAction done for query", query, "result", JSON.stringify(result, null, 2));
       return result;
     }
 

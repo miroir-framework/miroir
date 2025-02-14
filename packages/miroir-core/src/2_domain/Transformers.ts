@@ -780,14 +780,14 @@ export function innerTransformer_apply(
       }
 
       log.info("innerTransformer_apply extractorTransformer count resolvedReference", resolvedReference.length);
-      const sortByAttribute = transformer.orderBy
-        ? (a: any[]) =>
-            a.sort((a, b) =>
-              a[transformer.orderBy ?? ""].localeCompare(b[transformer.orderBy ?? ""], "en", {
-                sensitivity: "base",
-              })
-            )
-        : (a: any[]) => a;
+      // const sortByAttribute = transformer.orderBy
+      //   ? (a: any[]) =>
+      //       a.sort((a, b) =>
+      //         a[transformer.orderBy ?? ""].localeCompare(b[transformer.orderBy ?? ""], "en", {
+      //           sensitivity: "base",
+      //         })
+      //       )
+      //   : (a: any[]) => a;
 
       if (transformer.groupBy) {
         const result = new Map<string, number>();
@@ -799,9 +799,7 @@ export function innerTransformer_apply(
             result.set(key, 1);
           }
         }
-        return sortByAttribute(
-          [...result.entries()].map((e) => ({ [transformer.groupBy as any]: e[0], count: e[1] }))
-        );
+        return [Object.fromEntries(result.entries())];
       } else {
         log.info("innerTransformer_apply extractorTransformer count without groupBy resolvedReference", resolvedReference.length);
         return [{ count: resolvedReference.length }]
