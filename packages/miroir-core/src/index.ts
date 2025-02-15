@@ -98,6 +98,8 @@ export {
   // miroirCustomQueryParams,
   MiroirFundamentalType,
   MiroirAllFundamentalTypesUnion,
+  ExtendedTransformerForRuntime,
+  ExtractorOrCombinerRecord,
   ExtractorOrCombinerTemplate,
   ExtractorOrCombinerTemplateRecord,
   ModelAction,

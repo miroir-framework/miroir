@@ -9,18 +9,18 @@ This is the monorepo for the Miroir Framework
 Clone git repository
 
 ```sh
-$ git clone https://github.com/miroir-framework/miroir.git
+git clone https://github.com/miroir-framework/miroir.git
 ```
 
 go to the created directory, and download dependencies:
 
 ```sh
-$ npm install
+npm install
 ```
 
 For local dependencies on Jzod:
 ```sh
-$ npm link @miroir-framework/jzod-ts @miroir-framework/jzod
+npm link @miroir-framework/jzod-ts @miroir-framework/jzod
 ```
 
 build the client and server (shell):

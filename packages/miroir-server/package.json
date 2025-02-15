@@ -9,7 +9,7 @@
     "copy-config": "copyfiles -u 1 config/**/*.json dist/config",
     "copy-all": "npm run copy-files && npm run copy-config",
     "help": "vite-node -h",
-    "build-tsup": "npm run copy-all && tsup --watch --target=node20 --format esm src/server.ts",
+    "build-tsup": "npm run copy-all && tsup --target=node20 --format esm src/server.ts",
     "dev": "nodemon ./dist/server.js localhost 3080",
     "build": "npm run build-tsup",
     "build5": "npm run copy-all && webpack",

@@ -11,13 +11,15 @@ import {
   ApplicationSection,
   applicationSection,
   DeploymentEntityState,
-  DomainControllerInterface,
-  domainElementObject,
-  DomainElementSuccess,
+  domain2ElementObjectZodSchema,
   Domain2QueryReturnType,
+  DomainControllerInterface,
+  DomainElementSuccess,
   Entity,
   EntityDefinition,
   EntityInstancesUuidIndex,
+  ExtendedTransformerForRuntime,
+  ExtractorOrCombinerRecord,
   getApplicationSection,
   getQueryRunnerParamsForDeploymentEntityState,
   InstanceAction,
@@ -32,8 +34,7 @@ import {
   selfApplicationDeploymentConfiguration,
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunner,
-  SyncQueryRunnerParams,
-  domain2ElementObjectZodSchema
+  SyncQueryRunnerParams
 } from "miroir-core";
 
 import { Button } from "@mui/material";
@@ -319,75 +320,65 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     ]
   );
 
+  log.info(
+    "ReportSectionListDisplay foreignKeyObjectsAttributeDefinition",
+    foreignKeyObjectsAttributeDefinition,
+    foreignKeyObjectsAttributeDefinition.map((e) => e[1].tag?.value?.defaultLabel)
+  );
   const foreignKeyObjectsFetchQueryParams: SyncQueryRunnerParams<
     DeploymentEntityState
   > = useMemo(
-    () =>
-      getQueryRunnerParamsForDeploymentEntityState(
+    () => {
+      const extractors: ExtractorOrCombinerRecord = Object.fromEntries(
+        foreignKeyObjectsAttributeDefinition.map((e) => [
+          e[1].tag?.value?.targetEntity + "_extractor",
+          {
+            extractorOrCombinerType: "extractorByEntityReturningObjectList",
+            label: "extractorForForeignKey_" + e[0],
+            applicationSection: getApplicationSection(
+              props.deploymentUuid,
+              e[1].tag?.value?.targetEntity ?? "undefined"
+            ),
+            parentName: "",
+            parentUuid: e[1].tag?.value?.targetEntity??"ERROR NO TARGET ENTITY FOR ATTRIBUTE " + e[0], // does not happen because of filter in foreignKeyObjectsAttributeDefinition
+          },
+        ])
+      );
+      const runtimeTransformers: {
+        [x: string]: ExtendedTransformerForRuntime
+      } = {
+        ...Object.fromEntries(
+          foreignKeyObjectsAttributeDefinition.map((e) => [
+            e[1].tag?.value?.targetEntity,
+            {
+              transformerType: "listReducerToIndexObject",
+              interpolation: "runtime",
+              applyTo: {
+                referenceType: "referencedTransformer",
+                reference: {
+                  transformerType: "contextReference",
+                  interpolation: "runtime",
+                  referenceName: e[1].tag?.value?.targetEntity + "_extractor",
+                },
+              },
+              indexAttribute: "uuid",
+            },
+          ])
+        ),
+      };
+      return getQueryRunnerParamsForDeploymentEntityState(
         {
           queryType: "boxedQueryWithExtractorCombinerTransformer",
           deploymentUuid: props.deploymentUuid,
           pageParams: props.paramsAsdomainElements,
           queryParams: {},
           contextResults: {},
-          extractors: Object.fromEntries(
-            foreignKeyObjectsAttributeDefinition.map((e) => [
-              e[1].tag?.value?.targetEntity + "_extractor",
-              {
-                extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                applicationSection: getApplicationSection(
-                  props.deploymentUuid,
-                  e[1].tag?.value?.targetEntity ?? "undefined"
-                ),
-                parentName: "",
-                parentUuid: e[1].tag?.value?.targetEntity,
-              },
-            ])
-          ) as any,
-          runtimeTransformers: {
-            ...Object.fromEntries(
-              foreignKeyObjectsAttributeDefinition.map((e) => [
-                e[1].tag?.value?.targetEntity + "_array",
-                {
-                  transformerType: "objectValues",
-                  interpolation: "runtime",
-                  // TODO: replace referenceTransformer by applyTo
-                  // applyTo: {
-                  //   referenceType: "referencedTransformer",
-                  //   reference: {
-                  //     transformerType: "contextReference",
-                  //     interpolation: "runtime",
-                  //     referenceName: "menuList",
-                  //   }
-                  // },
-                  referencedTransformer: e[1].tag?.value?.targetEntity + "_extractor",
-                },
-              ])
-            ),
-            ...Object.fromEntries(
-              foreignKeyObjectsAttributeDefinition.map((e) => [
-                e[1].tag?.value?.targetEntity,
-                {
-                  transformerType: "listReducerToIndexObject",
-                  interpolation: "runtime",
-                  // TODO: replace referenceTransformer by applyTo
-                  // applyTo: {
-                  //   referenceType: "referencedTransformer",
-                  //   reference: {
-                  //     transformerType: "contextReference",
-                  //     interpolation: "runtime",
-                  //     referenceName: "menuList",
-                  //   }
-                  // },
-                  referencedTransformer: e[1].tag?.value?.targetEntity + "_array",
-                  indexAttribute: "uuid"
-                },
-              ])
-            ),
-          } as any,
+          extractors,
+          runtimeTransformers
         },
         deploymentEntityStateSelectorMap
-      ),
+      )
+    },
     [
       deploymentEntityStateSelectorMap,
       props.deploymentUuid,

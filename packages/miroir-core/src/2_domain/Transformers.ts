@@ -877,7 +877,8 @@ export function innerTransformer_apply(
         return new Domain2ElementFailed({
           queryFailure: "QueryNotExecutable",
           failureOrigin: ["transformer_apply"],
-          queryContext: "objectValues can not apply to resolvedReference",
+          queryContext: "objectValues failed ro resolve resolvedReference",
+          innerError: resolvedReference
         });
       }
 
@@ -889,7 +890,8 @@ export function innerTransformer_apply(
         return new Domain2ElementFailed({
           queryFailure: "QueryNotExecutable",
           failureOrigin: ["transformer_apply"],
-          queryContext: "objectValues can not apply to resolvedReference",
+          queryContext: "objectValues resolvedReference is not an object: " + typeof resolvedReference,
+          queryReference: resolvedReference
         });
       }
       log.info(
