@@ -1,8 +1,32 @@
-// import { displayTestSuiteResults, TestSuiteContext, TransformerForBuild, TransformerForRuntime } from "miroir-core";
-
-import { TransformerForBuild, TransformerForRuntime } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { EntityInstance, JzodElement, TransformerForBuild, TransformerForRuntime } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { displayTestSuiteResults } from "../../4_services/otherTools.js";
 import { TestSuiteContext } from "../../4_services/TestSuiteContext.js";
+
+import entityDefinitionCountry from "../../assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/56628e31-3db5-4c5c-9328-4ff7ce54c36a.json" assert { type: "json" };
+
+import folio from "../../assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/1f550a2a-33f5-4a56-83ee-302701039494.json" assert { type: "json" };
+import penguin from "../../assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/516a7366-39e7-4998-82cb-80199a7fa667.json" assert { type: "json" };
+import springer from "../../assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/c1c97d54-aba8-4599-883a-7fe8f3874095.json" assert { type: "json" };
+import author1 from "../../assets/library_data/d7a144ff-d1b9-4135-800c-a7cfc1f38733/4441169e-0c22-4fbc-81b2-28c87cf48ab2.json" assert { type: "json" };
+import author2 from "../../assets/library_data/d7a144ff-d1b9-4135-800c-a7cfc1f38733/ce7b601d-be5f-4bc6-a5af-14091594046a.json" assert { type: "json" };
+import author3 from "../../assets/library_data/d7a144ff-d1b9-4135-800c-a7cfc1f38733/d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17.json" assert { type: "json" };
+import author4 from "../../assets/library_data/d7a144ff-d1b9-4135-800c-a7cfc1f38733/e4376314-d197-457c-aa5e-d2da5f8d5977.json" assert { type: "json" };
+import book1 from "../../assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/caef8a59-39eb-48b5-ad59-a7642d3a1e8f.json" assert { type: "json" };
+import book2 from "../../assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/e20e276b-619d-4e16-8816-b7ec37b53439.json" assert { type: "json" };
+import book3 from "../../assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/4cb917b3-3c53-4f9b-b000-b0e4c07a81f7.json" assert { type: "json" };
+import book4 from "../../assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/6fefa647-7ecf-4f83-b617-69d7d5094c37.json" assert { type: "json" };
+import book5 from "../../assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/c97be567-bd70-449f-843e-cd1d64ac1ddd.json" assert { type: "json" };
+import book6 from "../../assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/c6852e89-3c3c-447f-b827-4b5b9d830975.json" assert { type: "json" };
+// import test1 from "../../assets/library_data/9ad64893-5f8f-4eaf-91aa-ffae110f88c8/150bacfd-06d0-4ecb-828d-f5275494448a.json" assert { type: "json" };
+import Country1 from "../../assets/library_data/d3139a6d-0486-4ec8-bded-2a83a3c3cee4/2eda1207-4dcc-4af9-a3ba-ef75e7f12c11.json" assert { type: "json" };
+import Country2 from "../../assets/library_data/d3139a6d-0486-4ec8-bded-2a83a3c3cee4/30b8e7c6-b75d-4db0-906f-fa81fa5c4cc0.json" assert { type: "json" };
+import Country3 from "../../assets/library_data/d3139a6d-0486-4ec8-bded-2a83a3c3cee4/b62fc20b-dcf5-4e3b-a247-62d0475cf60f.json" assert { type: "json" };
+import Country4 from "../../assets/library_data/d3139a6d-0486-4ec8-bded-2a83a3c3cee4/b6ddfb89-4301-48bf-9ed9-4ed6ee9261fe.json" assert { type: "json" };
+
+import publisher1 from "../../assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/1f550a2a-33f5-4a56-83ee-302701039494.json" assert { type: "json" };
+import publisher2 from "../../assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/516a7366-39e7-4998-82cb-80199a7fa667.json" assert { type: "json" };
+import publisher3 from "../../assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/c1c97d54-aba8-4599-883a-7fe8f3874095.json" assert { type: "json" };
+
 
 // ################################################################################################
 // export interface TransformerTestParams {
@@ -42,7 +66,7 @@ export const ignoreFailureAttributes:string[] = [
   "query",
 ];
 
-// export const transformerTests: Record<string, TransformerTestSuite | Record<string, TransformerTestSuite>> = {
+
 export const transformerTests: TransformerTestSuite = {
   transformerTestType: "transformerTestSuite",
   transformerTestLabel: "transformers",
@@ -304,6 +328,20 @@ export const transformerTests: TransformerTestSuite = {
               transformerParams: {},
               expectedValue: [{"test": "a"}], // an extractor is always a table (that is a list of rows)
             },
+            "resolve basic transformer constantAsExtractor for Country object": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel: "resolve basic transformer constantAsExtractor for Country object",
+              transformerName: "constantAsExtractor",
+              transformer: {
+                transformerType: "constantAsExtractor",
+                interpolation: "runtime",
+                valueJzodSchema: entityDefinitionCountry.jzodSchema as JzodElement,
+                value: Country1 as EntityInstance,
+              },
+              transformerParams: {},
+              ignoreAttributes: ["conceptLevel", "icon"],
+              expectedValue: [Country1], // an extractor is always a table (that is a list of rows)
+            },
             "resolve basic transformer constantAsExtractor for array of simple objects": {
               transformerTestType: "transformerTest",
               transformerTestLabel: "resolve basic transformer constantAsExtractor for array of simple objects",
@@ -322,23 +360,23 @@ export const transformerTests: TransformerTestSuite = {
               transformerParams: {},
               expectedValue: [{"test": "a"}, { "test" : "b"}], // an extractor is always a table (that is a list of rows)
             },
-            // TODO: constantAsExtractor should fail when the value does not follow the given jzod schema
-            // "failed constantAsExtractor transformer for 'never' value": {
-            //   transformerTestType: "transformerTest",
-            //   transformerTestLabel: "failed constantAsExtractor transformer for 'never' value",
-            //   transformerName: "constantAsExtractorFailed",
-            //   transformer: {
-            //     transformerType: "constantAsExtractor",
-            //     interpolation: "runtime",
-            //     valueJzodSchema: { type: "never" },
-            //     value: { test: "objectInsteadOfString" } as any,
-            //   },
-            //   transformerParams: {},
-            //   ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-            //   expectedValue: {
-            //     queryFailure: "QueryNotExecutable",
-            //   },
-            // },
+            // // TODO: constantAsExtractor should fail when the value does not follow the given jzod schema
+            // // "failed constantAsExtractor transformer for 'never' value": {
+            // //   transformerTestType: "transformerTest",
+            // //   transformerTestLabel: "failed constantAsExtractor transformer for 'never' value",
+            // //   transformerName: "constantAsExtractorFailed",
+            // //   transformer: {
+            // //     transformerType: "constantAsExtractor",
+            // //     interpolation: "runtime",
+            // //     valueJzodSchema: { type: "never" },
+            // //     value: { test: "objectInsteadOfString" } as any,
+            // //   },
+            // //   transformerParams: {},
+            // //   ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+            // //   expectedValue: {
+            // //     queryFailure: "QueryNotExecutable",
+            // //   },
+            // // },
           },
         }
       },
@@ -603,10 +641,6 @@ export const transformerTests: TransformerTestSuite = {
                 referenceName: "testObject",
               }
             }
-            // referencedTransformer: {
-            //   transformerType: "parameterReference",
-            //   referenceName: "testObject",
-            // },
           },
           transformerParams: {
             testObject: { a: "testA", b: "testB" },
@@ -999,6 +1033,110 @@ export const transformerTests: TransformerTestSuite = {
         }
       },
     },
+    object_fullTemplate: {
+      transformerTestType: "transformerTestSuite",
+      transformerTestLabel: "object_fullTemplate",
+      transformerTests: {
+        "object_fullTemplate allows to dynamically build an object (unknown kebys, unknown values)": {
+          transformerTestType: "transformerTest",
+          transformerTestLabel: "object_fullTemplate allows to dynamically build an object (unknown kebys, unknown values)",
+          transformerName: "fullTemplate",
+          transformer: {
+            transformerType: "object_fullTemplate",
+            interpolation: "runtime",
+            applyTo: {
+              referenceType: "referencedTransformer",
+              reference: {
+                transformerType: "parameterReference",
+                interpolation: "runtime",
+                referenceName: "country",
+              },
+            },
+            definition: [
+              {
+                attributeKey: {
+                  interpolation: "runtime",
+                  transformerType: "constantUuid",
+                  value: "uuid"
+                },
+                attributeValue: {
+                  interpolation: "runtime",
+                  transformerType: "parameterReference",
+                  referenceName: "newUuid"
+                }
+              },
+              {
+                attributeKey: {
+                  interpolation: "runtime",
+                  transformerType: "constantUuid",
+                  value: "name"
+                },
+                attributeValue: {
+                  transformerType: "mustacheStringTemplate",
+                  interpolation: "runtime",
+                  definition: "{{country.iso3166-1Alpha-2}}"
+                }
+              }
+            ]
+          },
+          transformerParams: {
+            newUuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+            country: Country1 as EntityInstance,
+          },
+          expectedValue: { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", name: "US"  },
+
+        },
+        "object_fullTemplate allows to dynamically build an object using an extractor": {
+          transformerTestType: "transformerTest",
+          transformerTestLabel: "object_fullTemplate allows to dynamically build an object using an extractor",
+          transformerName: "fullTemplate",
+          transformer: {
+            transformerType: "object_fullTemplate",
+            interpolation: "runtime",
+            applyTo: {
+              referenceType: "referencedTransformer",
+              reference: {
+                transformerType: "constantAsExtractor",
+                interpolation: "runtime",
+                valueJzodSchema: entityDefinitionCountry.jzodSchema as JzodElement,
+                value: Country1 as EntityInstance,
+              },
+            },
+            definition: [
+              {
+                attributeKey: {
+                  interpolation: "runtime",
+                  transformerType: "constantString",
+                  value: "uuid"
+                },
+                attributeValue: {
+                  transformerType: "parameterReference",
+                  interpolation: "runtime",
+                  referenceName: "newUuid"
+                }
+              },
+              {
+                attributeKey: {
+                  transformerType: "constantString",
+                  interpolation: "runtime",
+                  value: "name"
+                },
+                attributeValue: {
+                  transformerType: "mustacheStringTemplate",
+                  interpolation: "runtime",
+                  definition: "{{country.iso3166-1Alpha-2}}"
+                }
+              }
+            ]
+          },
+          transformerParams: {
+            newUuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+            country: Country1 as EntityInstance,
+          },
+          expectedValue: { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", name: "US"  },
+        },
+      },
+    }
   },
 };
 

@@ -26,6 +26,14 @@ export const jzodToPostgresTypeMap: Record<
     targetType: "scalar",
     sqlTargetType: "text",
   },
+  "uuid": {
+    targetType: "scalar",
+    sqlTargetType: "text",
+  },
+  "enum": {
+    targetType: "scalar",
+    sqlTargetType: "text",
+  },
   // ...
 } as any; // TODO: consider all cases!
 

@@ -311,7 +311,7 @@ async function runTransformerTest(vitest: any, testNameArray: string[], transfor
 
       vitest.expect(resultToCompare, testSuitePathName + "comparing received query error to expected result").toEqual(transformerTest.expectedValue);
     } else {
-      resultToCompare = (queryResult as Action2Success).returnedDomainElement.transformer;
+      resultToCompare = ignorePostgresExtraAttributes((queryResult as Action2Success).returnedDomainElement.transformer, transformerTest.ignoreAttributes);
       console.log(testSuitePathName, "testResult", JSON.stringify(resultToCompare, null, 2));
       console.log(testSuitePathName, "expectedValue", transformerTest.expectedValue);
       vitest.expect(resultToCompare, testSuitePathName).toEqual(transformerTest.expectedValue);

@@ -139,10 +139,7 @@ async function runTransformerTest(vitest: any, testSuiteNamePath: string[], tran
   if (!transformerTests) {
     throw new Error("transformerTests is undefined");
   }
-  console.log(
-    "################################ transformerTestParams",
-    JSON.stringify(transformerTest, null, 2)
-  );
+  console.log("################################ transformerTestParams", JSON.stringify(transformerTest, null, 2));
   const transformer: TransformerForBuild | TransformerForRuntime = transformerTest.transformer;
 
   const rawResult: Domain2QueryReturnType<any> = transformer_apply_wrapper(
@@ -150,9 +147,8 @@ async function runTransformerTest(vitest: any, testSuiteNamePath: string[], tran
     undefined,
     transformer,
     transformerTest.transformerParams,
-    transformerTest.transformerRuntimeContext??{}
+    transformerTest.transformerRuntimeContext ?? {}
   );
-
 
   console.log("################################ raw result", JSON.stringify(rawResult, null, 2));
   console.log(
@@ -163,10 +159,7 @@ async function runTransformerTest(vitest: any, testSuiteNamePath: string[], tran
   console.log("################################ result", JSON.stringify(result, null, 2));
   const testSuiteNamePathAsString = TestSuiteContext.testSuitePathName(testSuiteNamePath);
   try {
-    vitest.expect(
-      result,
-      `${testSuiteNamePathAsString} > ${assertionName}`
-    ).toEqual(transformerTest.expectedValue);
+    vitest.expect(result, `${testSuiteNamePathAsString} > ${assertionName}`).toEqual(transformerTest.expectedValue);
     TestSuiteContext.setTestAssertionResult({
       assertionName,
       assertionResult: "ok",
@@ -193,162 +186,6 @@ if (RUN_TEST == testSuiteName) {
 } else {
   console.log("################################ skipping test suite:", testSuiteName);
 }
-
-
-
-
-
-
-
-
-
-  // // ################################################################################################
-  // it("unique authors from books transformer", async () => { // TODO: test failure cases!
-  //     // if (miroirConfig.client.emulateServer) {
-  //     console.log(expect.getState().currentTestName, "START")
-  //     const newApplicationName = "test";
-
-  //     const testResult: string = transformer_apply(
-  //       "runtime",
-  //       undefined,
-  //       {
-  //         transformerType: "unique",
-  //         interpolation: "runtime",
-  //         referencedTransformer: "books",
-  //         attribute: "author",
-  //         orderBy: "author",
-  //       },
-  //       { }, // queryParams
-  //       {
-  //         books: [
-  //             book1 as EntityInstance,
-  //             book2 as EntityInstance,
-  //             book3 as EntityInstance,
-  //             book4 as EntityInstance,
-  //             book5 as EntityInstance,
-  //             book6 as EntityInstance,
-  //         ], // expected value
-  //         // books: Object.fromEntries(
-  //         //   [
-  //         //     book1 as EntityInstance,
-  //         //     book2 as EntityInstance,
-  //         //     book3 as EntityInstance,
-  //         //     book4 as EntityInstance,
-  //         //     book5 as EntityInstance,
-  //         //     book6 as EntityInstance,
-  //         //   ].map((book: EntityInstance) => {
-  //         //     return [book.uuid, book];
-  //         //   })
-  //         // ), // expected value
-  //       }, // context
-  //     );
-
-  //     console.log("################################ converted template", testResult)
-  //     expect(testResult).toEqual(
-  //       [
-  //         { author: "4441169e-0c22-4fbc-81b2-28c87cf48ab2" },
-  //         { author: "ce7b601d-be5f-4bc6-a5af-14091594046a" },
-  //         { author: "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17" },
-  //         { author: "e4376314-d197-457c-aa5e-d2da5f8d5977" },
-  //       ]
-  //     );
-  //     console.log(expect.getState().currentTestName, "END")
-  //   }
-  // );
-
-  // // ################################################################################################
-  // // TODO: allow count for build transformers
-  // it("count books by author build template", async () => { // TODO: test failure cases!
-  //     // if (miroirConfig.client.emulateServer) {
-  //     console.log(expect.getState().currentTestName, "START")
-  //     const newApplicationName = "test";
-
-  //     const uniqueRuntimeTemplate:TransformerForRuntime = {
-  //       transformerType: "count",
-  //       interpolation: "runtime",
-  //       referencedTransformer: "books",
-  //       groupBy: "author",
-  //       orderBy: "author",
-  //     }
-
-  //     const testResult: string = transformer_apply(
-  //       "runtime",
-  //       undefined,
-  //       uniqueRuntimeTemplate,
-  //       { }, // queryParams
-  //       {
-  //         books: [
-  //           book1 as EntityInstance,
-  //           book2 as EntityInstance,
-  //           book3 as EntityInstance,
-  //           book4 as EntityInstance,
-  //           book5 as EntityInstance,
-  //           book6 as EntityInstance,
-  //         ]
-  //       } // context
-  //     );
-
-  //     console.log("################################ count books by author runtime transformer", testResult)
-  //     expect(testResult).toEqual(
-  //       [
-  //         { author: "4441169e-0c22-4fbc-81b2-28c87cf48ab2", count: 1 },
-  //         { author: "ce7b601d-be5f-4bc6-a5af-14091594046a", count: 2 },
-  //         { author: "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17", count: 2 },
-  //         { author: "e4376314-d197-457c-aa5e-d2da5f8d5977", count: 1 },
-  //       ]
-  //     );
-  //     console.log(expect.getState().currentTestName, "END")
-  //   }
-  // );
-
-  // // ################################################################################################
-  // it("count books by author runtime transformer", async () => { // TODO: test failure cases!
-  //     // if (miroirConfig.client.emulateServer) {
-  //     console.log("count books by author runtime transformer START")
-  //     const newApplicationName = "test";
-
-  //     const uniqueRuntimeTemplate:TransformerForRuntime = {
-  //       transformerType: "count",
-  //       interpolation: "runtime",
-  //       referencedTransformer: "books",
-  //       groupBy: "author",
-  //       orderBy: "author",
-  //     }
-
-  //     const testResult: string = transformer_apply(
-  //       "runtime",
-  //       undefined,
-  //       uniqueRuntimeTemplate,
-  //       { }, // queryParams
-  //       {
-  //         books: [
-  //           book1 as EntityInstance,
-  //           book2 as EntityInstance,
-  //           book3 as EntityInstance,
-  //           book4 as EntityInstance,
-  //           book5 as EntityInstance,
-  //           book6 as EntityInstance,
-  //         ],
-  //       } // context
-  //       // undefined
-  //     );
-
-  //     console.log("################################ count books by author runtime transformer", testResult)
-  //     expect(testResult).toEqual(
-  //       [
-  //         { author: author1.uuid, count: 1 },
-  //         { author: author2.uuid, count: 2 },
-  //         { author: author3.uuid, count: 2 },
-  //         { author: author4.uuid, count: 1 },
-  //         // { author: "4441169e-0c22-4fbc-81b2-28c87cf48ab2", count: 1 },
-  //         // { author: "ce7b601d-be5f-4bc6-a5af-14091594046a", count: 2 },
-  //         // { author: "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17", count: 2 },
-  //         // { author: "e4376314-d197-457c-aa5e-d2da5f8d5977", count: 1 },
-  //       ]
-  //     );
-  //     console.log(expect.getState().currentTestName, "END")
-  //   }
-  // );
 
   // // ################################################################################################
   // it("built custom object with runtime transformer object_fullTemplate", async () => { // TODO: test failure cases!

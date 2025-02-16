@@ -20,7 +20,7 @@ import {
 import { RecursiveStringRecords } from "../4_services/SqlDbQueryTemplateRunner";
 import { cleanLevel } from "../4_services/constants";
 import { packageName } from "../constants";
-import { PostgresDataTypes } from "./Postgres";
+import { getConstantSqlTypeMap, PostgresDataTypes } from "./Postgres";
 import { getAttributeTypesFromJzodSchema, jzodToPostgresTypeMap } from "./jzodSchema";
 
 export const stringQuote = "'";
@@ -159,25 +159,27 @@ function resolveApplyTo(
       query: actionRuntimeTransformer as any,
       failureMessage: "sqlStringForTransformer listPickElement not implemented for referencedExtractor",
     });
-    
   }
-  const referenceQuery = typeof actionRuntimeTransformer.applyTo.reference == "string"?sqlStringForTransformer(
-    {
-      transformerType: "constant",
-      interpolation: "runtime",
-      value: actionRuntimeTransformer.applyTo.reference as any,
-    },
-    preparedStatementParametersIndex,
-    queryParams,
-    newFetchedData,
-    true
-  ):sqlStringForTransformer(
-    actionRuntimeTransformer.applyTo.reference,
-    preparedStatementParametersIndex,
-    queryParams,
-    newFetchedData,
-    true
-  );
+  const referenceQuery =
+    typeof actionRuntimeTransformer.applyTo.reference == "string"
+      ? sqlStringForTransformer(
+          {
+            transformerType: "constant",
+            interpolation: "runtime",
+            value: actionRuntimeTransformer.applyTo.reference as any,
+          },
+          preparedStatementParametersIndex,
+          queryParams,
+          newFetchedData,
+          true
+        )
+      : sqlStringForTransformer(
+          actionRuntimeTransformer.applyTo.reference,
+          preparedStatementParametersIndex,
+          queryParams,
+          newFetchedData,
+          true
+        );
   return referenceQuery;
 
 }
@@ -200,46 +202,6 @@ const getConstantSql = (
     preparedStatementParameters: [targetType == "json" ? JSON.stringify(transformer.value) : transformer.value],
     resultAccessPath: topLevelTransformer ? [0, label] : undefined,
   };
-};
-
-const getConstantSqlTypeMap: Record<string, {targetType: "json" | "scalar",
-  sqlTargetType: PostgresDataTypes,
-  label: string,}> = {
-  "constantUuid": {
-    targetType: "scalar",
-    sqlTargetType: "varchar",
-    label: "constantUuid",
-  },
-  "constantArray": {
-    targetType: "json",
-    sqlTargetType: "jsonb",
-    label: "constantArray",
-  },
-  "constantString": {
-    targetType: "scalar",
-    sqlTargetType: "text",
-    label: "constantString",
-  },
-  "constantNumber": {
-    targetType: "scalar",
-    sqlTargetType: "double precision",
-    label: "constantNumber",
-  },
-  "constantBigint": {
-    targetType: "scalar",
-    sqlTargetType: "double precision",
-    label: "constantBigint",
-  },
-  "constantBoolean": {
-    targetType: "scalar",
-    sqlTargetType: "boolean",
-    label: "constantBoolean",
-  },
-  "constantObject": {
-    targetType: "json",
-    sqlTargetType: "jsonb",
-    label: "constantObject",
-  },
 };
 
 // ################################################################################################
@@ -269,22 +231,6 @@ export function sqlStringForTransformer(
       };
     }
     case "mustacheStringTemplate": {
-      // const renderSqlTemplate = (template: string): string =>{
-      //   return template.replace(/{{\s*([^}]+?)\s*}}/g, (match, ...splits: any):string => {
-      //     // Split the placeholder content by dot.
-      //     log.info("sqlStringForTransformer mustacheStringTemplate match", JSON.stringify(match, null, 2));
-      //     log.info("sqlStringForTransformer mustacheStringTemplate splits", JSON.stringify(splits, null, 2));
-      //     const parts = splits[0].split('.').map((p:string) => p.trim());
-      //     const result = parts.reduce((acc: string, part: string) => {
-      //       if (acc === "") {
-      //         return `"${part}"`;
-      //       } else {
-      //         return `${acc}->>"${part}"`; // using json object access. TODO: enable table.column access
-      //       }
-      //     }, "");
-      //     return result;
-      //   });
-      // }
       const resolvedReference = transformer_mustacheStringTemplate_apply(
         "build",
         actionRuntimeTransformer,
@@ -297,66 +243,103 @@ export function sqlStringForTransformer(
       // log.info("sqlStringForTransformer mustacheStringTemplate sqlQuery", sqlQuery);
       return {
         type: "scalar",
-        sqlStringOrObject: `SELECT '${resolvedReference}' as "mustacheStringTemplate"`,
+        // sqlStringOrObject: `SELECT '${resolvedReference}'::text as "mustacheStringTemplate"`, // TODO: determine type
+        sqlStringOrObject: `SELECT '${resolvedReference}' as "mustacheStringTemplate"`, // TODO: determine type
         resultAccessPath: topLevelTransformer ? [0, "mustacheStringTemplate"] : undefined,
       };
     }
     case "innerFullObjectTemplate":
     case "object_fullTemplate": {
-      const referenceQuery = resolveApplyTo(
+      const resolvedApplyTo = resolveApplyTo(
         actionRuntimeTransformer,
         preparedStatementParametersIndex,
         queryParams,
         newFetchedData,
         topLevelTransformer
       );
-      if (referenceQuery instanceof Domain2ElementFailed) {
-        return referenceQuery;
+      if (resolvedApplyTo instanceof Domain2ElementFailed) {
+        return resolvedApplyTo;
       }
 
-      const selectFields = actionRuntimeTransformer.definition
-        .map((f) => {
-          const attributeValue = sqlStringForTransformer(
-            f.attributeValue,
-            preparedStatementParametersIndex,
-            queryParams,
-            newFetchedData,
-            false
-          );
-          if (attributeValue instanceof Domain2ElementFailed) {
-            return attributeValue;
-          }
+      let preparedStatementParameters: any[] = resolvedApplyTo.preparedStatementParameters ?? [];
+      const extraWith: { name: string; sql: string }[] = [
+        {
+          name: "applyTo",
+          sql: resolvedApplyTo.sqlStringOrObject,
+        },
+        ...(resolvedApplyTo.extraWith ?? [])
+      ];
+      preparedStatementParametersIndex += preparedStatementParameters.length;
+      actionRuntimeTransformer.definition.forEach((f, index) => {
+        const attributeValue = sqlStringForTransformer(
+          f.attributeValue,
+          preparedStatementParametersIndex,
+          queryParams,
+          newFetchedData,
+          true
+        );
+        if (attributeValue instanceof Domain2ElementFailed) {
+          return attributeValue;
+        }
+        if (attributeValue.preparedStatementParameters) {
+          preparedStatementParameters = [
+        ...preparedStatementParameters,
+        ...attributeValue.preparedStatementParameters,
+          ];
+          preparedStatementParametersIndex += attributeValue.preparedStatementParameters.length;
+        }
 
-          const attributeKey = sqlStringForTransformer(
-            f.attributeKey,
-            preparedStatementParametersIndex,
-            queryParams,
-            newFetchedData,
-            false
-          );
-          if (attributeKey instanceof Domain2ElementFailed) {
-            return attributeKey;
-          }
-
-          return (
-            attributeValue.sqlStringOrObject + // TODO: check for actual type of sqlStringOrObject
-            " AS " +
-            tokenQuote +
-            attributeKey.sqlStringOrObject +
-            tokenQuote
-          );
-        })
-        .join(tokenSeparatorForSelect);
-
-      const sqlResult = `SELECT row_to_json(t) AS "innerFullObjectTemplate" FROM ( SELECT ${selectFields} FROM "${referenceQuery.sqlStringOrObject}" ) t
-      ${orderBy}`;
+        const attributeKey = sqlStringForTransformer(
+          f.attributeKey,
+          preparedStatementParametersIndex,
+          queryParams,
+          newFetchedData,
+          true
+        );
+        if (attributeKey instanceof Domain2ElementFailed) {
+          return attributeKey;
+        }
+        if (attributeKey.preparedStatementParameters) {
+          preparedStatementParameters = [
+        ...preparedStatementParameters,
+        ...attributeKey.preparedStatementParameters,
+          ];
+          preparedStatementParametersIndex += attributeKey.preparedStatementParameters.length;
+        }
+        
+        extraWith.push({
+          name: "attributeKey" + index,
+          sql: attributeKey.sqlStringOrObject,
+        });
+        extraWith.push({
+          name: "attributeValue" + index,
+          sql: attributeValue.sqlStringOrObject,
+        });
+      });
+      
+      // Build a new object with keys and corresponding values from the definition.
+      const objectAttributes = actionRuntimeTransformer.definition
+        .map(
+          (e, index) =>
+            `"attributeKey${index}"."${
+              ["parameterReference", "contextReference"].includes(e.attributeKey.transformerType)?"constantParam":e.attributeKey.transformerType
+            }", "attributeValue${index}"."${
+              ["parameterReference", "contextReference"].includes(e.attributeValue.transformerType)?"constantParam":e.attributeValue.transformerType
+            }"`
+        )
+        .join(", ");
+      ;
+      const objectAttributes_With_references = actionRuntimeTransformer.definition.map((e, index) => {
+        return `"attributeKey${index}", "attributeValue${index}"`;
+      }).join(", ");
+      const sqlResult = `SELECT jsonb_build_object(${objectAttributes}) AS "innerFullObjectTemplate" FROM ${objectAttributes_With_references} GROUP BY ${objectAttributes} ${orderBy}`;
       log.info("sqlStringForTransformer innerFullObjectTemplate sqlResult", JSON.stringify(sqlResult));
       return {
         type: "json",
         sqlStringOrObject: sqlResult,
-        preparedStatementParameters: [],
+        preparedStatementParameters,
         resultAccessPath: [0, "innerFullObjectTemplate"],
-        encloseEndResultInArray: true,
+        extraWith,
       };
       break;
     }
@@ -1013,8 +996,8 @@ export function sqlStringForQuery(
           typeof transformerRawQuery[1] == "string"
             ? '"' + transformerRawQuery[0] + '" AS (' + transformerRawQuery[1] + " )"
             : (transformerRawQuery[1].extraWith
-                ? transformerRawQuery[1].extraWith.map((extra: any) => '"' + extra.name + '" AS (' + extra.sql + " )").join(tokenSeparatorForWith) +
-                  tokenSeparatorForWith
+                ? transformerRawQuery[1].extraWith.map((extra: any) => '"' + extra.name + '" AS (' + extra.sql + " )").join(tokenSeparatorForWith + "\n") +
+                  tokenSeparatorForWith + "\n"
                 : "") +
               '"' +
               transformerRawQuery[0] +
@@ -1022,7 +1005,7 @@ export function sqlStringForQuery(
               transformerRawQuery[1].sqlStringOrObject +
               " )"
         )
-        .join(tokenSeparatorForWith)
+        .join(tokenSeparatorForWith + "\n")
     );
     // (transformerRawQueries as any as [string, SqlStringForTransformerElementValue][]).forEach(([index, value]) => {
     //   if (value.preparedStatementParameters) {
@@ -1033,7 +1016,7 @@ export function sqlStringForQuery(
   const query =
     `WITH
     ` +
-    queryParts.join(tokenSeparatorForWith) +
+    queryParts.join(tokenSeparatorForWith + "\n") +
     // [
     //   (extractorRawQueries.length > 0
     //     ? extractorRawQueries.map((q) => '"' + q[0] + '" AS (' + q[1] + " )").join(tokenSeparatorForWith)
