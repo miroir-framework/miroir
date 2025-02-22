@@ -41,7 +41,7 @@ export interface IDomain2ElementFailed {
   queryContext?: string | undefined;
   deploymentUuid?: string | undefined;
   errorStack?: string[] | undefined;
-  innerError?: QueryFailed | Domain2ElementFailed | Action2Error | undefined;
+  innerError?: QueryFailed | Domain2ElementFailed | Action2Error | Error | undefined;
   applicationSection?: ApplicationSection | undefined;
   entityUuid?: string | undefined;
   instanceUuid?: string | undefined;
@@ -61,7 +61,7 @@ export class Domain2ElementFailed implements IDomain2ElementFailed {
   public queryContext?: string | undefined;
   public deploymentUuid?: string | undefined;
   public errorStack?: string[] | undefined;
-  public innerError?: QueryFailed | Domain2ElementFailed | Action2Error | undefined;
+  public innerError?: QueryFailed | Domain2ElementFailed | Action2Error | Error | undefined;
   public applicationSection?: ApplicationSection | undefined;
   public entityUuid?: string | undefined;
   public instanceUuid?: string | undefined;

@@ -45,7 +45,8 @@ export function domainStateToDeploymentEntityState(
 export function resolvePathOnObject(valueObject:any, path: (string | number)[]) {
   // console.info("resolvePathOnObject called with", valueObject, "path", path)
   return path.reduce((acc, curr, index) => {
-    if (index == path.length && (acc == undefined || acc[curr] == undefined)) {
+    // if (index == path.length && (acc == undefined || acc[curr] == undefined)) {
+    if (!Object.hasOwn(acc, curr)) {
       throw new Error(
         "resolvePathOnObject value object=" +
           valueObject +

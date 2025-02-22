@@ -131,7 +131,7 @@ afterAll(async () => {
 });
 
 // ################################################################################################
-async function runTransformerTest(vitest: any, testSuiteNamePath: string[], transformerTest: TransformerTest) {
+async function runTransformerTestInMemory(vitest: any, testSuiteNamePath: string[], transformerTest: TransformerTest) {
   const assertionName = transformerTest.transformerTestLabel ?? transformerTest.transformerName;
   console.log("#################################### test", assertionName, "START");
   // TestSuiteContext.setTest(transformerTest.transformerTestLabel);
@@ -143,7 +143,7 @@ async function runTransformerTest(vitest: any, testSuiteNamePath: string[], tran
   const transformer: TransformerForBuild | TransformerForRuntime = transformerTest.transformer;
 
   const rawResult: Domain2QueryReturnType<any> = transformer_apply_wrapper(
-    "runtime",
+    (transformerTest.transformer as any).interpolation ?? "build",
     undefined,
     transformer,
     transformerTest.transformerParams,
@@ -181,7 +181,7 @@ async function runTransformerTest(vitest: any, testSuiteNamePath: string[], tran
 const testSuiteName = "transformers.unit.test";
 if (RUN_TEST == testSuiteName) {
   // await runTransformerTestSuite(vitest, [transformerTests.transformerTestLabel ?? transformerTests.transformerTestType], transformerTests, runTransformerTest);
-  await runTransformerTestSuite(vitest, [], transformerTests, runTransformerTest);
+  await runTransformerTestSuite(vitest, [], transformerTests, runTransformerTestInMemory);
   
 } else {
   console.log("################################ skipping test suite:", testSuiteName);

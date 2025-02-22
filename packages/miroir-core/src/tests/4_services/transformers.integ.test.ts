@@ -98,8 +98,9 @@ import { PersistenceStoreController } from '../../4_services/PersistenceStoreCon
 import { getBasicApplicationConfiguration, getBasicStoreUnitConfiguration } from '../../2_domain/Deployment.js';
 import { defaultMiroirMetaModel } from '../../1_core/Model.js';
 import { TestSuiteContext } from '../../4_services/TestSuiteContext.js';
-import { Action2Error, Action2Success } from '../../0_interfaces/2_domain/DomainElement.js';
+import { Action2Error, Action2Success, Domain2ElementFailed, Domain2QueryReturnType } from '../../0_interfaces/2_domain/DomainElement.js';
 import { ignorePostgresExtraAttributes } from '../../4_services/otherTools.js';
+import { transformer_apply_wrapper } from '../../2_domain/Transformers.js';
 // const env:any = (import.meta as any).env
 // console.log("@@@@@@@@@@@@@@@@@@ env", env);
 const RUN_TEST= process.env.RUN_TEST
@@ -268,36 +269,76 @@ const extractors: ExtractorOrCombinerRecord = {
 };
 
 // ################################################################################################
-async function runTransformerTest(vitest: any, testNameArray: string[], transformerTest: TransformerTest) {
-  console.log("runTransformerTest called for", testNameArray, "START");
+async function runTransformerIntegrationTest(vitest: any, testNameArray: string[], transformerTest: TransformerTest) {
+  console.log("runTransformerIntegrationTest called for", testNameArray, "START");
 
-  const transformer: TransformerForRuntime = {
-    ...transformerTest.transformer,
-    interpolation: "runtime",
-  } as any; // TODO: fix typing
+  // const transformer: TransformerForRuntime = {
+  //   ...transformerTest.transformer,
+  //   // interpolation: "runtime",
+  //   interpolation: (transformerTest as any).interpolation ?? "build",
+  // } as any; // TODO: fix typing
 
-  // console.log(expect.getState().currentTestName, "transformerTest", transformerTest);
-  console.log(testNameArray, "transformerTest", transformerTest);
+  let queryResult
+  if ((transformerTest.transformer as any).interpolation == "runtime") {
+    // console.log(expect.getState().currentTestName, "transformerTest", transformerTest);
+    console.log("runTransformerIntegrationTest", testNameArray, "running runtime on sql transformerTest", transformerTest);
 
-  const queryResult = await sqlDbDataStore.handleBoxedQueryAction({
-    actionType: "runBoxedQueryAction",
-    actionName: "runQuery",
-    deploymentUuid: "",
-    endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-    applicationSection: "data",
-    query: {
-      queryType: "boxedQueryWithExtractorCombinerTransformer",
-      runAsSql: true,
-      pageParams: {},
-      queryParams: transformerTest.transformerParams,
-      contextResults: transformerTest.transformerRuntimeContext??{},
+    queryResult = await sqlDbDataStore.handleBoxedQueryAction({
+      actionType: "runBoxedQueryAction",
+      actionName: "runQuery",
       deploymentUuid: "",
-      // extractors,
-      runtimeTransformers: {
-        transformer,
+      endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+      applicationSection: "data",
+      query: {
+        queryType: "boxedQueryWithExtractorCombinerTransformer",
+        runAsSql: true,
+        pageParams: {},
+        queryParams: { ...transformerTest.transformerParams, ...transformerTest.transformerRuntimeContext },
+        contextResults: Object.fromEntries(
+          Object.entries(transformerTest.transformerRuntimeContext ?? {}).map((e: [string, any]) => [[e[0]], "json"])
+        ),
+        // contextResults: transformerTest.transformerRuntimeContext??{},
+        deploymentUuid: "",
+        // extractors,
+        runtimeTransformers: {
+          transformer: (transformerTest as any).transformer,
+        },
       },
-    },
-  });
+    });
+  } else {
+    console.log("runTransformerIntegrationTest", testNameArray, "running in-memory transformerTest", transformerTest);
+
+    // before runtime transformer
+    const rawResult: Domain2QueryReturnType<any> = transformer_apply_wrapper(
+      (transformerTest.transformer as any).interpolation ?? "build",
+      undefined,
+      transformerTest.transformer,
+      transformerTest.transformerParams,
+      transformerTest.transformerRuntimeContext ?? {}
+    );
+    
+    if (!rawResult) {
+      queryResult = {
+        status: "error",
+        innerError: {
+          queryFailure: "transformer returned undefined",
+        },
+      };
+    } else {
+      if (Object.hasOwn(rawResult, "queryFailure")) {
+        queryResult = {
+          status: "error",
+          innerError: rawResult,
+        };
+      } else {
+        queryResult = {
+          status: "ok",
+          // returnedDomainElement: rawResult,
+          returnedDomainElement: {transformer: rawResult},
+        };
+      }
+    }
+  }
 
   const testSuitePathName = TestSuiteContext.testSuitePathName(testNameArray);
   // console.log(testSuitePathName, "WWWWWWWWWWWWWWWWWW queryResult", JSON.stringify(queryResult, null, 2));
@@ -335,723 +376,26 @@ async function runTransformerTest(vitest: any, testNameArray: string[], transfor
 const testSuiteName = "transformers.integ.test";
 if (RUN_TEST == testSuiteName) {
   await beforeAll();
-  await runTransformerTestSuite(vitest, [], transformerTests, runTransformerTest);
+  await runTransformerTestSuite(vitest, [], transformerTests, runTransformerIntegrationTest);
   // await afterAll();
 } else {
   console.log("################################ skipping test suite:", testSuiteName);
 }
 
-// await runTransformerTestSuite(vitest, "transformers.integ.test", transformerTests, runTransformerTest);
+// await runTransformerTestSuite(vitest, "transformers.integ.test", transformerTests, runTransformerIntegrationTest);
 
 // vitest.describe("transformers.integ.test", async () => {
 //   // await beforeAll();
 //   // it("should run transformer tests", async () => {
 //     // });
-//     await runTransformerTestSuite(vitest, "transformers.integ.test", transformerTests, runTransformerTest);
+//     await runTransformerTestSuite(vitest, "transformers.integ.test", transformerTests, runTransformerIntegrationTest);
   
   
-  // await runTransformerTestSuite(transformerTests, runTransformerTest);
+  // await runTransformerTestSuite(transformerTests, runTransformerIntegrationTest);
 
 
 
   // await afterAll();
-  // // ################################################################################################
-  // describe("listPickElement", () => {
-  //   it("select first book", async () => {
-  //     // TODO: test failure cases!
-  //     console.log(expect.getState().currentTestName, "START");
-  //     const testResult = await sqlDbDataStore.handleBoxedQueryAction({
-  //       actionType: "runBoxedQueryAction",
-  //       actionName: "runQuery",
-  //       deploymentUuid: "",
-  //       endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-  //       applicationSection: "data",
-  //       query: {
-  //         queryType: "boxedQueryWithExtractorCombinerTransformer",
-  //         runAsSql: true,
-  //         pageParams: {},
-  //         queryParams: {},
-  //         contextResults: {},
-  //         deploymentUuid: "",
-  //         extractors: {
-  //           books: {
-  //             extractorOrCombinerType: "extractorByEntityReturningObjectList",
-  //             applicationSection: "data",
-  //             parentName: "Book",
-  //             parentUuid: entityBook.uuid,
-  //           },
-  //         },
-  //         runtimeTransformers: {
-  //           firstBook: {
-  //             transformerType: "listPickElement",
-  //             interpolation: "runtime",
-  //             referencedTransformer: "books",
-  //             index: 0,
-  //           },
-  //         },
-  //       },
-  //     });
-
-  //     console.log(expect.getState().currentTestName, "testResult", JSON.stringify(testResult, null, 2));
-  //     const expectedBooks = libraryEntitesAndInstances.find((e) => e.entity.uuid === entityBook.uuid)?.instances;
-
-  //     console.log(expect.getState().currentTestName, "expectedBooks", expectedBooks);
-  //     expect(testResult.status).toEqual("ok");
-  //     if (testResult.status === "ok") {
-  //       expect(ignorePostgresExtraAttributesOnObject(testResult.returnedDomainElement.firstBook)).toEqual(
-  //         expectedBooks ? expectedBooks[0] : undefined
-  //       );
-  //     }
-  //   });
-  // });
-
-  // it.each(Object.entries(transformerTests))(
-  //   "test %s",
-  //   async (currentTestSuiteName, transformerTestParam: TransformerTestSuite | Record<string, TransformerTestSuite>) => {
-
-  //     if (transformerTestParam.transformerTestType === "transformerTest") {
-  //       console.log(expect.getState().currentTestName, "START");
-  
-  //       const transformerTest: TransformerForRuntime = {
-  //         ...transformerTestParam.transformer,
-  //         interpolation: "runtime",
-  //       } as any; // TODO: fix typing
-  
-  //       console.log(expect.getState().currentTestName, "transformerTest", transformerTest);
-  
-  //       const testResult = await sqlDbDataStore.handleBoxedQueryAction({
-  //         actionType: "runBoxedQueryAction",
-  //         actionName: "runQuery",
-  //         deploymentUuid: "",
-  //         endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-  //         applicationSection: "data",
-  //         query: {
-  //           queryType: "boxedQueryWithExtractorCombinerTransformer",
-  //           runAsSql: true,
-  //           pageParams: {},
-  //           queryParams: {},
-  //           contextResults: {},
-  //           deploymentUuid: "",
-  //           extractors,
-  //           runtimeTransformers: {
-  //             transformerTest,
-  //           },
-  //         },
-  //       });
-  
-  //       console.log(expect.getState().currentTestName, "testResult", JSON.stringify(testResult, null, 2));
-  //       console.log(expect.getState().currentTestName, "expectedValue", transformerTestParam.expectedValue);
-  //       expect(testResult).toEqual(transformerTestParam.expectedValue);
-  
-  //       console.log(expect.getState().currentTestName, "END");
-  //     // });
-  
-  //     } else {
-  //     }
-  //     // const testSuiteResults = await runTestOrTestSuite(localCache, domainController, testAction);
-  //     // if (testSuiteResults.status !== "ok") {
-  //     //   expect(testSuiteResults.status, `${currentTestSuiteName} failed!`).toBe("ok");
-  //     // }
-  //   },
-  //   globalTimeOut
-  // );
-
-  // // TODO: test failure cases!
-  // // ################################################################################################
-  // describe("constants", () => {
-  //   it("resolve_basic_transformer_constantUuid", async () => {
-  //     // TODO: test failure cases!
-  //     const currentTestName = "resolve_basic_transformer_constantUuid";
-  //     console.log(expect.getState().currentTestName, "START");
-
-  //     if (!transformerTests) {
-  //       throw new Error("transformerTests is undefined");
-  //     }
-  //     const transformerTestParams = transformerTests[currentTestName];
-
-  //     if (!transformerTestParams) {
-  //       throw new Error(
-  //         `could not find current test name "${currentTestName}" in transformerTests: ${Object.keys(transformerTests)}`
-  //       );
-  //     }
-
-  //     const transformerTest: TransformerForRuntime = {
-  //       ...transformerTests[currentTestName].transformer,
-  //       interpolation: "runtime",
-  //     } as any; // TODO: fix typing
-
-  //     console.log(expect.getState().currentTestName, "transformerTest", transformerTest);
-
-  //     const testResult = await sqlDbDataStore.handleBoxedQueryAction({
-  //       actionType: "runBoxedQueryAction",
-  //       actionName: "runQuery",
-  //       deploymentUuid: "",
-  //       endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-  //       applicationSection: "data",
-  //       query: {
-  //         queryType: "boxedQueryWithExtractorCombinerTransformer",
-  //         runAsSql: true,
-  //         pageParams: {},
-  //         queryParams: {},
-  //         contextResults: {},
-  //         deploymentUuid: "",
-  //         extractors: {
-  //           books: {
-  //             extractorOrCombinerType: "extractorByEntityReturningObjectList",
-  //             applicationSection: "data",
-  //             parentName: "Book",
-  //             parentUuid: entityBook.uuid,
-  //           },
-  //         },
-  //         runtimeTransformers: {
-  //           transformerTest,
-  //         },
-  //       },
-  //     });
-
-  //     console.log(expect.getState().currentTestName, "testResult", JSON.stringify(testResult, null, 2));
-  //     // const expectedBooks = libraryEntitesAndInstances.find((e) => e.entity.uuid === entityBook.uuid)?.instances;
-
-  //     console.log(expect.getState().currentTestName, "testResult", testResult);
-  //     // console.log(expect.getState().currentTestName, "expectedBooks", expectedBooks);
-  //     expect(testResult.status).toEqual("ok");
-  //     // if (testResult.status === "ok") {
-  //     //   expect(ignorePostgresExtraAttributesOnObject(testResult.returnedDomainElement.firstBook)).toEqual(
-  //     //     expectedBooks ? expectedBooks[0] : undefined
-  //     //   );
-  //     // }
-  //   });
-
-  //   // it("resolve basic transformer constantUuid", async () => {
-  //   //   console.log("resolve basic transformer constantUuid START");
-
-  //   //   const result: Domain2QueryReturnType<DomainElementSuccess> = transformer_apply(
-  //   //     "build",
-  //   //     undefined,
-  //   //     {
-  //   //       transformerType: "constantUuid",
-  //   //       value: "test",
-  //   //     },
-  //   //     {},
-  //   //     undefined
-  //   //   );
-
-  //   //   const expectedResult: Domain2QueryReturnType<DomainElementSuccess> = {
-  //   //     elementType: "instanceUuid",
-  //   //     // elementType: "string",
-  //   //     elementValue: "test",
-  //   //   };
-
-  //   //   console.log("################################ result", JSON.stringify(result, null, 2));
-  //   //   console.log("################################ expectedResult", JSON.stringify(expectedResult, null, 2));
-  //   //   expect(result).toEqual(expectedResult);
-
-  //   //   console.log(expect.getState().currentTestName, "END");
-  //   // });
-  // });
-
-  // // ################################################################################################
-  // it("resolve basic transformer path reference for string", async () => { // TODO: test failure cases!
-  //     console.log("resolve basic transformer path reference for string START")
-
-  //     const result: Domain2QueryReturnType<DomainElementSuccess> = transformer_apply(
-  //       "runtime",
-  //       undefined,
-  //       {
-  //         transformerType: "contextReference",
-  //         interpolation: "runtime",
-  //         referencePath: ["Municipality", "municipalities"],
-  //       },
-  //       {},
-  //       {
-  //         Municipality: {
-  //           municipalities: "test"
-  //         },
-  //       },
-  //     );
-
-  //     const expectedResult: Domain2QueryReturnType<DomainElementSuccess> = {
-  //       elementType: "string",
-  //       elementValue: "test",
-  //     };
-
-  //     console.log("################################ result", JSON.stringify(result,null,2))
-  //     console.log("################################ expectedResult", JSON.stringify(expectedResult,null,2))
-  //     expect(result).toEqual(expectedResult);
-
-  //     console.log(expect.getState().currentTestName, "END")
-  //   }
-  // );
-
-  // // ################################################################################################
-  // it("resolve basic transformer path reference for number", async () => { // TODO: test failure cases!
-  //     console.log("resolve basic transformer path reference for string START")
-
-  //     const result: Domain2QueryReturnType<DomainElementSuccess> = transformer_apply(
-  //       "runtime",
-  //       undefined,
-  //       {
-  //         transformerType: "contextReference",
-  //         interpolation: "runtime",
-  //         referencePath: ["Municipality", "municipalities"],
-  //       },
-  //       {},
-  //       {
-  //         Municipality: {
-  //           municipalities: 1
-  //         },
-  //       },
-  //     );
-
-  //     const expectedResult: Domain2QueryReturnType<DomainElementSuccess> = {
-  //       elementType: "number",
-  //       elementValue: 1,
-  //     };
-
-  //     console.log("################################ result", JSON.stringify(result,null,2))
-  //     console.log("################################ expectedResult", JSON.stringify(expectedResult,null,2))
-  //     expect(result).toEqual(expectedResult);
-
-  //     console.log(expect.getState().currentTestName, "END")
-  //   }
-  // );
-
-  // // ################################################################################################
-  // it("resolve basic transformer path reference for object", async () => { // TODO: test failure cases!
-  //     console.log("resolve basic transformer path reference for object START")
-
-  //     const result: Domain2QueryReturnType<DomainElementSuccess> = transformer_apply(
-  //       "runtime",
-  //       undefined,
-  //       {
-  //         transformerType: "contextReference",
-  //         interpolation: "runtime",
-  //         referencePath: ["Municipality", "municipalities"],
-  //       },
-  //       {},
-  //       {
-  //         Municipality: {
-  //           municipalities: {
-  //             "1": {
-  //               name: "test",
-  //             },
-  //           },
-  //         },
-  //       },
-  //     );
-
-  //     const expectedResult: Domain2QueryReturnType<DomainElementSuccess> = {
-  //       elementType: "object",
-  //       elementValue: {
-  //         "1": {
-  //           name: "test",
-  //         } as any, // TODO: redefine "object" Domain2QueryReturnType<DomainElementSuccess>, so as to be non-recursive
-  //       }
-  //     };
-
-  //     console.log("################################ result", JSON.stringify(result,null,2))
-  //     console.log("################################ expectedResult", JSON.stringify(expectedResult,null,2))
-  //     expect(result).toEqual(expectedResult);
-
-  //     console.log(expect.getState().currentTestName, "END")
-  //   }
-  // );
-
-  // // ################################################################################################
-  // it("convert basic transformer", async () => { // TODO: test failure cases!
-  //     console.log("convert basic transformer START")
-  //     const newApplicationName = "test";
-  //     const newAdminAppApplicationUuid = uuidv4();
-  //     const newSelfApplicationUuid = uuidv4();
-  //     const newDeploymentUuid = uuidv4();
-
-  //     const newDeploymentStoreConfigurationTemplate = {
-  //       admin: {
-  //         emulatedServerType: "sql",
-  //         connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
-  //         schema: "miroirAdmin",
-  //       },
-  //       model: {
-  //         emulatedServerType: "sql",
-  //         connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
-  //         schema: {
-  //           transformerType: "parameterReference",
-  //           referenceName: "newApplicationName",
-  //           applyFunction: (a: string) => a + "Model",
-  //         },
-  //       },
-  //       data: {
-  //         emulatedServerType: "sql",
-  //         connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
-  //         schema: {
-  //           transformerType: "parameterReference",
-  //           referenceName: "newApplicationName",
-  //           applyFunction: (a: string) => a + "Data",
-  //         },
-  //         // "schema": newApplicationName + "Data"
-  //       },
-  //     };
-
-  //     const newDeploymentStoreConfiguration: StoreUnitConfiguration = transformer_apply(
-  //       "build",
-  //       undefined,
-  //       newDeploymentStoreConfigurationTemplate as any,
-  //       { newApplicationName },
-  //       undefined
-  //     ) as StoreUnitConfiguration;
-
-  //     const actionParams: Record<string, any> = {
-  //       newApplicationName,
-  //       newAdminAppApplicationUuid,
-  //       newSelfApplicationUuid,
-  //       newDeploymentUuid,
-  //     }
-
-  //     const testAction /*: TransformerForBuild */ = {
-  //       actionType: "storeManagementAction",
-  //       actionName: "openStore",
-  //       endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-  //       configuration: {
-  //         transformerType: "innerFullObjectTemplate",
-  //         definition: [
-  //           {
-  //             attributeKey: {
-  //               transformerType: "parameterReference",
-  //               referenceName: "newDeploymentUuid"
-  //             },
-  //             attributeValue: newDeploymentStoreConfigurationTemplate
-  //           }
-  //         ]
-  //       },
-  //       deploymentUuid: {
-  //         transformerType: "parameterReference",
-  //         referenceName: "newDeploymentUuid"
-  //       }
-  //     }
-  //     const convertedAction: DomainAction = transformer_apply(
-  //       "build",
-  //       undefined,
-  //       testAction as any,
-  //       actionParams,
-  //       undefined
-  //     ) as DomainAction;
-
-  //     const expectedAction: DomainAction = {
-  //       "actionType": "storeManagementAction",
-  //       "actionName": "openStore",
-  //       "endpoint": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-  //       "configuration": {
-  //         [newDeploymentUuid]: newDeploymentStoreConfiguration
-  //       },
-  //       deploymentUuid: newDeploymentUuid
-  //     };
-
-  //     console.log("################################ expectedAction", JSON.stringify(expectedAction,null,2))
-  //     console.log("################################ convertedAction", JSON.stringify(convertedAction,null,2))
-  //     expect(convertedAction).toEqual(expectedAction
-  //     )
-  //   ;
-
-  //   console.log(expect.getState().currentTestName, "END")
-  //   }
-  // );
-
-  // // ################################################################################################
-  // it("convert mustache string transformer", async () => { // TODO: test failure cases!
-  //     // if (miroirConfig.client.emulateServer) {
-  //     console.log("convert mustache string transformer START")
-  //     const newApplicationName = "test";
-
-  //     const mustacheTemplate:TransformerForBuild = {
-  //       transformerType: "mustacheStringTemplate",
-  //       definition: "{{newApplicationName}}SelfApplication"
-  //     }
-
-  //     const testResult: string = transformer_apply(
-  //       "build",
-  //       undefined,
-  //       mustacheTemplate,
-  //       { newApplicationName },
-  //       undefined
-  //     ) as string;
-
-  //     console.log("################################ converted transformer", testResult)
-  //     expect(testResult).toEqual("testSelfApplication");
-  //     console.log(expect.getState().currentTestName, "END")
-  //   }
-  // );
-
-  // // ################################################################################################
-  // it("unique authors from books transformer", async () => { // TODO: test failure cases!
-  //     // if (miroirConfig.client.emulateServer) {
-  //     console.log(expect.getState().currentTestName, "START")
-  //     const newApplicationName = "test";
-
-  //     const uniqueRuntimeTemplate:TransformerForRuntime = {
-  //       transformerType: "unique",
-  //       interpolation: "runtime",
-  //       referencedTransformer: "books",
-  //       attribute: "author",
-  //       orderBy: "author",
-  //     }
-
-  //     const testResult: string = transformer_apply(
-  //       "runtime",
-  //       undefined,
-  //       uniqueRuntimeTemplate,
-  //       { }, // queryParams
-  //       {
-  //         books: Object.fromEntries(
-  //           [
-  //             book1 as EntityInstance,
-  //             book2 as EntityInstance,
-  //             book3 as EntityInstance,
-  //             book4 as EntityInstance,
-  //             book5 as EntityInstance,
-  //             book6 as EntityInstance,
-  //           ].map((book: EntityInstance) => {
-  //             return [book.uuid, book];
-  //           })
-  //         ),
-  //       }, // context
-  //     ) as string;
-
-  //     console.log("################################ converted template", testResult)
-  //     expect(testResult).toEqual(
-  //       [
-  //         { author: "4441169e-0c22-4fbc-81b2-28c87cf48ab2" },
-  //         { author: "ce7b601d-be5f-4bc6-a5af-14091594046a" },
-  //         { author: "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17" },
-  //         { author: "e4376314-d197-457c-aa5e-d2da5f8d5977" },
-  //       ]
-  //     );
-  //     console.log(expect.getState().currentTestName, "END")
-  //   }
-  // );
-
-  // // ################################################################################################
-  // // TODO: allow count for build transformers
-  // it("count books by author build template", async () => { // TODO: test failure cases!
-  //     // if (miroirConfig.client.emulateServer) {
-  //     console.log(expect.getState().currentTestName, "START")
-  //     const newApplicationName = "test";
-
-  //     const uniqueRuntimeTemplate:TransformerForRuntime = {
-  //       transformerType: "count",
-  //       interpolation: "runtime",
-  //       referencedTransformer: "books",
-  //       groupBy: "author",
-  //       orderBy: "author",
-  //     }
-
-  //     const testResult: string = transformer_apply(
-  //       "runtime",
-  //       undefined,
-  //       uniqueRuntimeTemplate,
-  //       { }, // queryParams
-  //       {
-  //         books: [
-  //           book1 as EntityInstance,
-  //           book2 as EntityInstance,
-  //           book3 as EntityInstance,
-  //           book4 as EntityInstance,
-  //           book5 as EntityInstance,
-  //           book6 as EntityInstance,
-  //         ]
-  //       } // context
-  //     ) as string;
-
-  //     console.log("################################ count books by author runtime transformer", testResult)
-  //     expect(testResult).toEqual(
-  //       [
-  //         { author: "4441169e-0c22-4fbc-81b2-28c87cf48ab2", count: 1 },
-  //         { author: "ce7b601d-be5f-4bc6-a5af-14091594046a", count: 2 },
-  //         { author: "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17", count: 2 },
-  //         { author: "e4376314-d197-457c-aa5e-d2da5f8d5977", count: 1 },
-  //       ]
-  //     );
-  //     console.log(expect.getState().currentTestName, "END")
-  //   }
-  // );
-
-  // // ################################################################################################
-  // it("count books by author runtime transformer", async () => { // TODO: test failure cases!
-  //     // if (miroirConfig.client.emulateServer) {
-  //     console.log("count books by author runtime transformer START")
-  //     const newApplicationName = "test";
-
-  //     const uniqueRuntimeTemplate:TransformerForRuntime = {
-  //       transformerType: "count",
-  //       interpolation: "runtime",
-  //       referencedTransformer: "books",
-  //       groupBy: "author",
-  //       orderBy: "author",
-  //     }
-
-  //     const testResult: string = transformer_apply(
-  //       "runtime",
-  //       undefined,
-  //       uniqueRuntimeTemplate,
-  //       { }, // queryParams
-  //       {
-  //         books: [
-  //           book1 as EntityInstance,
-  //           book2 as EntityInstance,
-  //           book3 as EntityInstance,
-  //           book4 as EntityInstance,
-  //           book5 as EntityInstance,
-  //           book6 as EntityInstance,
-  //         ],
-  //       } // context
-  //       // undefined
-  //     ) as string;
-
-  //     console.log("################################ count books by author runtime transformer", testResult)
-  //     expect(testResult).toEqual(
-  //       [
-  //         { author: author1.uuid, count: 1 },
-  //         { author: author2.uuid, count: 2 },
-  //         { author: author3.uuid, count: 2 },
-  //         { author: author4.uuid, count: 1 },
-  //         // { author: "4441169e-0c22-4fbc-81b2-28c87cf48ab2", count: 1 },
-  //         // { author: "ce7b601d-be5f-4bc6-a5af-14091594046a", count: 2 },
-  //         // { author: "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17", count: 2 },
-  //         // { author: "e4376314-d197-457c-aa5e-d2da5f8d5977", count: 1 },
-  //       ]
-  //     );
-  //     console.log(expect.getState().currentTestName, "END")
-  //   }
-  // );
-
-  // // ################################################################################################
-  // it("built custom object with runtime transformer object_fullTemplate", async () => { // TODO: test failure cases!
-  //     // if (miroirConfig.client.emulateServer) {
-  //     // console.log("built custom object with runtime transformer START")
-  //     console.log(expect.getState().currentTestName, "START")
-
-  //     const newApplicationName = "test";
-  //     const newUuid = uuidv4();
-
-  //     const uniqueRuntimeTemplate:TransformerForRuntime = {
-  //       transformerType: "object_fullTemplate",
-  //       interpolation: "runtime",
-  //       referencedTransformer: "country",
-  //       definition: [
-  //         {
-  //           attributeKey: {
-  //             interpolation: "runtime",
-  //             transformerType: "constantUuid",
-  //             value: "uuid"
-  //           },
-  //           attributeValue: {
-  //             interpolation: "runtime",
-  //             transformerType: "parameterReference",
-  //             referenceName: "newUuid"
-  //           }
-  //         },
-  //         {
-  //           attributeKey: {
-  //             interpolation: "runtime",
-  //             transformerType: "constantUuid",
-  //             value: "name"
-  //           },
-  //           attributeValue: {
-  //             transformerType: "mustacheStringTemplate",
-  //             interpolation: "runtime",
-  //             definition: "{{country.iso3166-1Alpha-2}}"
-  //           }
-  //         }
-  //       ]
-  //     }
-
-  //     const testResult: string = transformer_apply(
-  //       "runtime",
-  //       undefined,
-  //       uniqueRuntimeTemplate,
-  //       { newUuid },
-  //       {
-  //         country: Country1 as EntityInstance,
-  //       } // context
-  //     ) as string;
-
-  //     console.log("################################ count books by author runtime transformer", testResult)
-  //     expect(testResult).toEqual(
-  //       [{ uuid: newUuid, name: "US"  }],
-  //     );
-  //     console.log(expect.getState().currentTestName, "END")
-  //   }
-  // );
-
-  // // ################################################################################################
-  // it("build custom object list with runtime transformer", async () => { // TODO: test failure cases!
-  //     console.log("build custom object list with runtime transformer START")
-  //     const newApplicationName = "test";
-  //     const newUuid = uuidv4();
-
-  //     const uniqueRuntimeTemplate:TransformerForRuntime = {
-  //       transformerType: "mapperListToList",
-  //       interpolation: "runtime",
-  //       referencedTransformer: "countries",
-  //         referenceToOuterObject: "country",
-  //       elementTransformer: {
-  //         transformerType: "innerFullObjectTemplate",
-  //         interpolation: "runtime",
-  //         definition: [
-  //           {
-  //             attributeKey: {
-  //               interpolation: "runtime",
-  //               transformerType: "constantUuid",
-  //               value: "uuid"
-  //             },
-  //             attributeValue: {
-  //               interpolation: "runtime",
-  //               transformerType: "newUuid",
-  //             }
-  //           },
-  //           {
-  //             attributeKey: {
-  //               interpolation: "runtime",
-  //               transformerType: "constantUuid",
-  //               value: "name"
-  //             },
-  //             attributeValue: {
-  //               transformerType: "mustacheStringTemplate",
-  //               interpolation: "runtime",
-  //               definition: "{{country.iso3166-1Alpha-2}}"
-  //             }
-  //           }
-  //         ]
-  //       }
-  //     }
-
-  //     // const preTestResult: {[k: string]: {[l:string]: any}} = transformer_apply(
-  //     const preTestResult: {[k: string]: {[l:string]: any}} = transformer_apply(
-  //       "runtime",
-  //       undefined,
-  //       // uniqueRuntimeTemplate,
-  //       uniqueRuntimeTemplate as any,
-  //       {
-  //         newUuid: newUuid ,
-  //       }, // queryParams
-  //       {
-  //         countries: [
-  //             Country1 as EntityInstance,
-  //             Country2 as EntityInstance,
-  //             Country3 as EntityInstance,
-  //             Country4 as EntityInstance,
-  //         ],
-  //       } // context
-  //     );
-
-  // console.log("################################", expect.getState().currentTestName, "preTestResult", preTestResult)
-  //         { name: 'DE' },
-  //         { name: 'FR' },
-  //         { name: 'GB' },
-  //       ]
-  //     );
-  //     console.log(expect.getState().currentTestName, "END")
-  //   }
-  // );
 
   // // ################################################################################################
   // it("build custom UuidIndex object from object list with runtime transformer", async () => { // TODO: test failure cases!
