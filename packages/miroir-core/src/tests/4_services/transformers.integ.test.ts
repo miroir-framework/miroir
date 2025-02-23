@@ -319,12 +319,10 @@ async function runTransformerIntegrationTest(vitest: any, testNameArray: string[
     
     if (!rawResult) {
       queryResult = {
-        status: "error",
-        innerError: {
-          queryFailure: "transformer returned undefined",
-        },
+        status: "ok",
+        returnedDomainElement: {transformer: undefined},
       };
-    } else {
+  } else {
       if (Object.hasOwn(rawResult, "queryFailure")) {
         queryResult = {
           status: "error",
@@ -343,10 +341,11 @@ async function runTransformerIntegrationTest(vitest: any, testNameArray: string[
   const testSuitePathName = TestSuiteContext.testSuitePathName(testNameArray);
   // console.log(testSuitePathName, "WWWWWWWWWWWWWWWWWW queryResult", JSON.stringify(queryResult, null, 2));
   console.log(testSuitePathName, "WWWWWWWWWWWWWWWWWW queryResult", JSON.stringify(queryResult, null, 2));
-  console.log(testSuitePathName, "WWWWWWWWWWWWWWWWWW queryResult cannot use 'instanceof' to determine error", queryResult instanceof Action2Error, Object.hasOwn(queryResult,"errorType"));
+  // console.log(testSuitePathName, "WWWWWWWWWWWWWWWWWW queryResult cannot use 'instanceof' to determine error", queryResult instanceof Action2Error, Object.hasOwn(queryResult,"errorType"));
   let resultToCompare: any
   try {
-    if (Object.hasOwn(queryResult, "errorType")) {
+    // if (Object.hasOwn(queryResult, "errorType")) {
+    if (queryResult["status"] == "error") {
       resultToCompare = ignorePostgresExtraAttributes((queryResult as any).innerError, transformerTest.ignoreAttributes);
       console.log(testSuitePathName, "WWWWWWWWWWWWWWWWWW queryResult", JSON.stringify(resultToCompare, null, 2));
 

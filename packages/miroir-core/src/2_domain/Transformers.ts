@@ -594,14 +594,14 @@ export function transformer_mustacheStringTemplate_apply(
     const result = Mustache.render(transformer.definition, (transformer as any)["interpolation"] == "runtime"?contextResults: queryParams);
     return result;
   } catch (error: any) {
-    log.info(
-      "transformer_mustacheStringTemplate_apply for",
+    log.error(
+      "transformer_mustacheStringTemplate_apply error for",
       transformer,
       "queryParams",
       JSON.stringify(queryParams, null, 2),
       "contextResults",
       JSON.stringify(contextResults, null, 2),
-      "error",
+      "error:",
       error
     );
     return new Domain2ElementFailed({

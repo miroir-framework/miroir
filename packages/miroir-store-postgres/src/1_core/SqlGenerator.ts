@@ -321,12 +321,7 @@ export function sqlStringForTransformer(
       }
 
       let preparedStatementParameters: any[] = resolvedApplyTo.preparedStatementParameters ?? [];
-      const extraWith: { name: string; sql: string }[] = [
-        {
-          name: "applyTo",
-          sql: resolvedApplyTo.sqlStringOrObject,
-        },
-        ...(resolvedApplyTo.extraWith ?? []),
+      const extraWith: { name: string; sql: string; sqlResultAccessPath?: (string | number)[] }[] = [
       ];
       newPreparedStatementParametersCount += preparedStatementParameters.length;
       actionRuntimeTransformer.definition.forEach((f, index) => {
@@ -366,39 +361,35 @@ export function sqlStringForTransformer(
         extraWith.push({
           name: "attributeKey" + index,
           sql: attributeKey.sqlStringOrObject,
+          sqlResultAccessPath: attributeKey.resultAccessPath,
         });
         extraWith.push({
           name: "attributeValue" + index,
           sql: attributeValue.sqlStringOrObject,
+          sqlResultAccessPath: attributeValue.resultAccessPath,
         });
       });
 
-      // const { sqlTargetType, label } = getSqlTypeForValue(actionRuntimeTransformer.value);
+      const resultExtraWith: { name: string; sql: string; sqlResultAccessPath?: (string | number)[] }[] = [
+        {
+          name: "applyTo",
+          sql: resolvedApplyTo.sqlStringOrObject,
+          sqlResultAccessPath: resolvedApplyTo.resultAccessPath,
+        },
+        ...(resolvedApplyTo.extraWith ?? []),
+        ...extraWith
+      ];
 
       // Build a new object with keys and corresponding values from the definition.
-      const objectAttributes = actionRuntimeTransformer.definition
-        .map(
-          (e, index) =>
-            `"attributeKey${index}"."attributeKey${index
-              // ["constantUuid"].includes(e.attributeKey.transformerType)
-              //   ? "constantParam"
-              //   // : (e.attributeKey as any).referenceName
-              //   : 
-                // e.attributeKey.transformerType
-            }", "attributeValue${index}".attributeValue"${index
-              // ["constantUuid"].includes(e.attributeValue.transformerType)
-              //   ? "constantParam"
-              //   // : (e.attributeValue as any).referenceName
-              //   : 
-                // e.attributeValue.transformerType
-            }"`
-        )
+      const objectAttributes = extraWith
+        .map((e, index) => `"${e.name}"."${(e.sqlResultAccessPath as any)[1]}"`)
         .join(", ");
-      const objectAttributes_With_references = actionRuntimeTransformer.definition
+      const objectAttributes_With_references = extraWith
         .map((e, index) => {
-          return `"attributeKey${index}", "attributeValue${index}"`;
+          return `"${e.name}"`;
         })
         .join(", ");
+      log.info("sqlStringForTransformer object_fullTemplate extraWidth", JSON.stringify(extraWith,null,2));
       const sqlResult = `
 SELECT jsonb_build_object(${objectAttributes}) AS "innerFullObjectTemplate"
 FROM ${objectAttributes_With_references}

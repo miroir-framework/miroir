@@ -398,7 +398,7 @@ const testActions: Record<string, TestActionParams> = {
               nameGivenToResult: "checkNumberOfEntities",
               testAssertion: {
                 testType: "testAssertion",
-                testLabel: "checkNumberOfBooks",
+                testLabel: "checkNumberOfEntities",
                 definition: {
                   resultAccessPath: ["0"],
                   resultTransformer: {
