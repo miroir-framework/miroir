@@ -1103,67 +1103,59 @@ export const transformerTests: TransformerTestSuite = {
       transformerTestType: "transformerTestSuite",
       transformerTestLabel: "object_fullTemplate",
       transformerTests: {
-        // "object_fullTemplate allows to dynamically build an object before runtime (unknown keys, unknown values)": {
-        //   transformerTestType: "transformerTest",
-        //   transformerTestLabel: "object_fullTemplate allows to dynamically build an object (unknown keys, unknown values)",
-        //   transformerName: "fullTemplate",
-        //   transformer: {
-        //     transformerType: "object_fullTemplate",
-        //     // interpolation: "runtime",
-        //     applyTo: {
-        //       referenceType: "referencedTransformer",
-        //       reference: {
-        //         transformerType: "parameterReference",
-        //         // interpolation: "runtime",
-        //         referenceName: "country",
-        //       },
-        //     },
-        //     definition: [
-        //       {
-        //         attributeKey: {
-        //           transformerType: "constantUuid",
-        //           // interpolation: "runtime",
-        //           value: "uuid"
-        //         },
-        //         attributeValue: {
-        //           transformerType: "parameterReference",
-        //           // interpolation: "runtime",
-        //           referenceName: "newUuid"
-        //         }
-        //       },
-        //       {
-        //         attributeKey: {
-        //           transformerType: "constantUuid",
-        //           // interpolation: "runtime",
-        //           value: "name"
-        //         },
-        //         attributeValue: {
-        //           transformerType: "mustacheStringTemplate",
-        //           // interpolation: "runtime",
-        //           definition: "{{country.iso3166-1Alpha-2}}"
-        //         }
-        //       }
-        //     ]
-        //   },
-        //   transformerParams: {
-        //     newUuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-        //     country: Country1 as EntityInstance,
-        //   },
-        //   expectedValue: { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", name: "US"  },
+        "object_fullTemplate allows to dynamically build an object before runtime (unknown keys, unknown values)": {
+          transformerTestType: "transformerTest",
+          transformerTestLabel: "object_fullTemplate allows to dynamically build an object (unknown keys, unknown values)",
+          transformerName: "fullTemplate",
+          transformer: {
+            transformerType: "object_fullTemplate",
+            applyTo: {
+              referenceType: "referencedTransformer",
+              reference: {
+                transformerType: "parameterReference",
+                referenceName: "country",
+              },
+            },
+            definition: [
+              {
+                attributeKey: {
+                  transformerType: "constantUuid",
+                  value: "uuid"
+                },
+                attributeValue: {
+                  transformerType: "parameterReference",
+                  referenceName: "newUuid"
+                }
+              },
+              {
+                attributeKey: {
+                  transformerType: "constantUuid",
+                  value: "name"
+                },
+                attributeValue: {
+                  transformerType: "mustacheStringTemplate",
+                  definition: "{{country.iso3166-1Alpha-2}}"
+                }
+              }
+            ]
+          },
+          transformerParams: {
+            newUuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+            country: Country1 as EntityInstance,
+          },
+          expectedValue: { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", name: "US"  },
 
-        // },
+        },
         "object_fullTemplate allows to dynamically build an object during runtime (unknown keys, unknown values)": {
           transformerTestType: "transformerTest",
           transformerTestLabel: "object_fullTemplate allows to dynamically build an object during runtime (unknown keys, unknown values)",
           transformerName: "fullTemplate",
           transformer: {
             transformerType: "object_fullTemplate",
-            // interpolation: "runtime",
             applyTo: {
               referenceType: "referencedTransformer",
               reference: {
                 transformerType: "contextReference",
-                // interpolation: "runtime",
                 referenceName: "country",
               },
             },
@@ -1171,26 +1163,20 @@ export const transformerTests: TransformerTestSuite = {
               {
                 attributeKey: {
                   transformerType: "constantString",
-                  // transformerLabel: "uuid",
-                  // interpolation: "runtime",
                   value: "uuid"
                 },
                 attributeValue: {
-                  // transformerType: "contextReference",
                   transformerType: "parameterReference",
-                  // interpolation: "runtime",
                   referenceName: "newUuid"
                 }
               },
               {
                 attributeKey: {
                   transformerType: "constantString",
-                  // interpolation: "runtime",
                   value: "name"
                 },
                 attributeValue: {
                   transformerType: "mustacheStringTemplate",
-                  // interpolation: "runtime",
                   definition: "{{country.iso3166-1Alpha-2}}"
                 }
               }
@@ -1205,58 +1191,57 @@ export const transformerTests: TransformerTestSuite = {
             // country: Country1 as EntityInstance,
           },
           expectedValue: { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", name: "US"  },
-
         },
-        // "object_fullTemplate allows to dynamically build an object using an extractor": {
-        //   transformerTestType: "transformerTest",
-        //   transformerTestLabel: "object_fullTemplate allows to dynamically build an object using an extractor",
-        //   transformerName: "fullTemplate",
-        //   transformer: {
-        //     transformerType: "object_fullTemplate",
-        //     interpolation: "runtime",
-        //     applyTo: {
-        //       referenceType: "referencedTransformer",
-        //       reference: {
-        //         transformerType: "constantAsExtractor",
-        //         interpolation: "runtime",
-        //         valueJzodSchema: entityDefinitionCountry.jzodSchema as JzodElement,
-        //         value: Country1 as EntityInstance,
-        //       },
-        //     },
-        //     definition: [
-        //       {
-        //         attributeKey: {
-        //           interpolation: "runtime",
-        //           transformerType: "constantString",
-        //           value: "uuid"
-        //         },
-        //         attributeValue: {
-        //           transformerType: "contextReference",
-        //           interpolation: "runtime",
-        //           referenceName: "newUuid"
-        //         }
-        //       },
-        //       {
-        //         attributeKey: {
-        //           transformerType: "constantString",
-        //           interpolation: "runtime",
-        //           value: "name"
-        //         },
-        //         attributeValue: {
-        //           transformerType: "mustacheStringTemplate",
-        //           interpolation: "runtime",
-        //           definition: "{{country.iso3166-1Alpha-2}}"
-        //         }
-        //       }
-        //     ]
-        //   },
-        //   transformerParams: {},
-        //   transformerRuntimeContext: {
-        //     newUuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-        //     country: Country1 as EntityInstance,
-        //   },
-        //   expectedValue: { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", name: "US"  },
-        // },
+        "object_fullTemplate allows to dynamically build an object using an extractor": {
+          transformerTestType: "transformerTest",
+          transformerTestLabel: "object_fullTemplate allows to dynamically build an object using an extractor",
+          transformerName: "fullTemplate",
+          transformer: {
+            transformerType: "object_fullTemplate",
+            interpolation: "runtime",
+            applyTo: {
+              referenceType: "referencedTransformer",
+              reference: {
+                transformerType: "constantAsExtractor",
+                interpolation: "runtime",
+                valueJzodSchema: entityDefinitionCountry.jzodSchema as JzodElement,
+                value: Country1 as EntityInstance,
+              },
+            },
+            definition: [
+              {
+                attributeKey: {
+                  interpolation: "runtime",
+                  transformerType: "constantString",
+                  value: "uuid"
+                },
+                attributeValue: {
+                  transformerType: "contextReference",
+                  interpolation: "runtime",
+                  referenceName: "newUuid"
+                }
+              },
+              {
+                attributeKey: {
+                  transformerType: "constantString",
+                  interpolation: "runtime",
+                  value: "name"
+                },
+                attributeValue: {
+                  transformerType: "contextReference",
+                  interpolation: "runtime",
+                  referencePath: ["country","iso3166-1Alpha-2"]
+                }
+              }
+            ]
+          },
+          transformerParams: {},
+          transformerRuntimeContext: {
+            newUuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+            country: Country1 as EntityInstance,
+          },
+          expectedValue: { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", name: "US"  },
+        },
       },
     },
     // mapperListToList: {
@@ -1269,62 +1254,69 @@ export const transformerTests: TransformerTestSuite = {
     //       transformerName: "mapperListToList",
     //       transformer: {
     //         transformerType: "mapperListToList",
-    //         interpolation: "runtime",
+    //         // interpolation: "runtime",
     //         applyTo: {
     //           referenceType: "referencedTransformer",
     //           reference: {
-    //             transformerType: "parameterReference",
-    //             interpolation: "runtime",
+    //             transformerType: "contextReference",
+    //             // interpolation: "runtime",
     //             referenceName: "countryList",
     //           },
     //         },
     //         referenceToOuterObject: "country",
     //         elementTransformer: {
     //           transformerType: "object_fullTemplate",
-    //           interpolation: "runtime",
+    //           // interpolation: "runtime",
     //           applyTo: {
     //             referenceType: "referencedTransformer",
     //             reference: {
     //               transformerType: "contextReference",
-    //               interpolation: "runtime",
+    //               // interpolation: "runtime",
     //               referenceName: "country",
     //             },
     //           },
     //           definition: [
     //             {
     //               attributeKey: {
-    //                 interpolation: "runtime",
-    //                 transformerType: "constantUuid",
+    //                 // transformerType: "constantUuid",
+    //                 transformerType: "constantString",
+    //                 // interpolation: "runtime",
     //                 value: "uuid"
     //               },
     //               attributeValue: {
-    //                 interpolation: "runtime",
-    //                 transformerType: "parameterReference",
-    //                 referenceName: "newUuid"
+    //                 // transformerType: "contextReference",
+    //                 // referenceName: "newUuid"
+    //                 transformerType: "constantString",
+    //                 // interpolation: "runtime",
+    //                 value: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
     //               }
     //             },
-    //             {
-    //               attributeKey: {
-    //                 interpolation: "runtime",
-    //                 transformerType: "constantUuid",
-    //                 value: "name"
-    //               },
-    //               attributeValue: {
-    //                 transformerType: "mustacheStringTemplate",
-    //                 interpolation: "runtime",
-    //                 definition: "{{country.iso3166-1Alpha-2}}"
-    //               }
-    //             }
+    //             // {
+    //             //   attributeKey: {
+    //             //     interpolation: "runtime",
+    //             //     transformerType: "constantUuid",
+    //             //     value: "name"
+    //             //   },
+    //             //   attributeValue: {
+    //             //     transformerType: "mustacheStringTemplate",
+    //             //     interpolation: "runtime",
+    //             //     definition: "{{country.iso3166-1Alpha-2}}"
+    //             //   }
+    //             // }
     //           ]
     //         }
     //       },
     //       transformerParams: {
     //         newUuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-    //         countryList: [Country1 as EntityInstance, Country2 as EntityInstance],
+    //         countryList: [
+    //           Country1 as EntityInstance,
+    //           // Country2 as EntityInstance
+    //         ],
     //       },
     //       expectedValue: [
-    //         { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", name: "US" },
-    //         { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", name: "DE" },
+    //         { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"},
+    //         // { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", name: "US" },
+    //         // { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", name: "DE" },
     //       ],
     //     },
     //   },

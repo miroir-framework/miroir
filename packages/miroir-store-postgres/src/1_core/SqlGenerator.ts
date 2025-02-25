@@ -289,22 +289,57 @@ export function sqlStringForTransformer(
       };
     }
     case "mustacheStringTemplate": {
-      const resolvedReference = transformer_mustacheStringTemplate_apply(
-        "build",
-        actionRuntimeTransformer,
-        queryParams,
-        definedContextEntries
-      );
-      if (resolvedReference instanceof Domain2ElementFailed) {
-        return resolvedReference;
+      if (actionRuntimeTransformer.interpolation == "runtime") {
+        throw new Error("sqlStringForTransformer mustacheStringTemplate interpolation not implemented: runtime");
+        // const resolvedReference = sqlStringForTransformer(
+        //   f.attributeKey,
+        //   newPreparedStatementParametersCount,
+        //   queryParams,
+        //   definedContextEntries,
+        //   true,
+        //   `attributeKey${index}`, 
+
+        // )
+        // // const resolvedReference = transformer_resolveReference(
+        // //   "runtime",
+        // //   actionRuntimeTransformer,
+        // //   "param",
+        // //   queryParams,
+        // //   definedContextEntries
+        // // );
+        // if (resolvedReference instanceof Domain2ElementFailed) {
+        //   return resolvedReference;
+        // }
+        // const referenceQuery = sqlStringForTransformer(
+        //   {
+        //     transformerType: "constant",
+        //     interpolation: "runtime",
+        //     value: resolvedReference as any,
+        //   },
+        //   preparedStatementParametersCount,
+        //   queryParams,
+        //   definedContextEntries,
+        //   true
+        // );
+        // return referenceQuery;
+      } else {
+        const resolvedReference = transformer_mustacheStringTemplate_apply(
+          actionRuntimeTransformer.interpolation??"build",
+          actionRuntimeTransformer,
+          queryParams,
+          definedContextEntries
+        );
+        if (resolvedReference instanceof Domain2ElementFailed) {
+          return resolvedReference;
+        }
+        // log.info("sqlStringForTransformer mustacheStringTemplate sqlQuery", sqlQuery);
+        return {
+          type: "scalar",
+          // sqlStringOrObject: `SELECT '${resolvedReference}'::text as "mustacheStringTemplate"`, // TODO: determine type
+          sqlStringOrObject: `SELECT '${resolvedReference}' as "mustacheStringTemplate"`, // TODO: determine type
+          resultAccessPath: topLevelTransformer ? [0, "mustacheStringTemplate"] : undefined,
+        };
       }
-      // log.info("sqlStringForTransformer mustacheStringTemplate sqlQuery", sqlQuery);
-      return {
-        type: "scalar",
-        // sqlStringOrObject: `SELECT '${resolvedReference}'::text as "mustacheStringTemplate"`, // TODO: determine type
-        sqlStringOrObject: `SELECT '${resolvedReference}' as "mustacheStringTemplate"`, // TODO: determine type
-        resultAccessPath: topLevelTransformer ? [0, "mustacheStringTemplate"] : undefined,
-      };
     }
     case "innerFullObjectTemplate":
     case "object_fullTemplate": {
@@ -348,7 +383,6 @@ export function sqlStringForTransformer(
           definedContextEntries,
           true,
           `attributeKey${index}`, 
-
         );
         if (attributeKey instanceof Domain2ElementFailed) {
           return attributeKey;
@@ -402,7 +436,7 @@ ${orderBy}
         sqlStringOrObject: sqlResult,
         preparedStatementParameters,
         resultAccessPath: [0, "innerFullObjectTemplate"],
-        extraWith,
+        extraWith: resultExtraWith,
       };
       break;
     }
@@ -816,6 +850,7 @@ FROM (${referenceQuery.sqlStringOrObject}) AS "listPickElement_applyTo"
         ...(actionRuntimeTransformer?.referencePath?.slice(1) ?? []),
       ];
       // const resultAccessPathString = resultAccessPath.map((e) => `"${e}"`).join(".");
+      log.info("sqlStringForTransformer contextReference",actionRuntimeTransformer.referencePath,"resultAccessPath", resultAccessPath);
       const resultAccessPathString = resultAccessPath.map((e,index) => `${index==0?'"'+ e + '"': "'" + e + "'"}`).join(" -> ");
       if (topLevelTransformer) {
         return {

@@ -451,7 +451,7 @@
           }
         }
       },
-      "transformerForBuild_reference": {
+      "transformerForBuild_applyTo": {
         "type": "object",
         "definition": {
           "applyTo": {
@@ -532,7 +532,7 @@
             "type": "schemaReference",
             "definition": {
               "eager": true,
-              "relativePath": "transformerForBuild_reference"
+              "relativePath": "transformerForBuild_applyTo"
             }
           },
           {
@@ -553,7 +553,7 @@
             "type": "schemaReference",
             "definition": {
               "eager": true,
-              "relativePath": "transformerForBuild_reference"
+              "relativePath": "transformerForBuild_applyTo"
             }
           },
           {
@@ -582,7 +582,7 @@
             "type": "schemaReference",
             "definition": {
               "eager": true,
-              "relativePath": "transformerForBuild_reference"
+              "relativePath": "transformerForBuild_applyTo"
             }
           },
           {
@@ -603,7 +603,7 @@
             "type": "schemaReference",
             "definition": {
               "eager": true,
-              "relativePath": "transformerForBuild_reference"
+              "relativePath": "transformerForBuild_applyTo"
             }
           },
           {
@@ -652,6 +652,13 @@
             "type": "schemaReference",
             "definition": {
               "eager": true,
+              "relativePath": "transformerForBuild_applyTo"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "transformer_orderBy"
             }
@@ -691,7 +698,7 @@
             "type": "schemaReference",
             "definition": {
               "eager": true,
-              "relativePath": "transformerForBuild_reference"
+              "relativePath": "transformerForBuild_applyTo"
             }
           },
           {
@@ -783,7 +790,7 @@
             "type": "schemaReference",
             "definition": {
               "eager": true,
-              "relativePath": "transformerForBuild_reference"
+              "relativePath": "transformerForBuild_applyTo"
             }
           },
           {
@@ -840,7 +847,7 @@
             "type": "schemaReference",
             "definition": {
               "eager": true,
-              "relativePath": "transformerForBuild_reference"
+              "relativePath": "transformerForBuild_applyTo"
             }
           },
           {
@@ -861,7 +868,7 @@
             "type": "schemaReference",
             "definition": {
               "eager": true,
-              "relativePath": "transformerForBuild_reference"
+              "relativePath": "transformerForBuild_applyTo"
             }
           },
           {
@@ -908,7 +915,7 @@
             "type": "schemaReference",
             "definition": {
               "eager": true,
-              "relativePath": "transformerForBuild_reference"
+              "relativePath": "transformerForBuild_applyTo"
             }
           },
           {
@@ -948,7 +955,7 @@
             "type": "schemaReference",
             "definition": {
               "eager": true,
-              "relativePath": "transformerForBuild_reference"
+              "relativePath": "transformerForBuild_applyTo"
             }
           },
           {
@@ -993,7 +1000,7 @@
             "type": "schemaReference",
             "definition": {
               "eager": true,
-              "relativePath": "transformerForBuild_reference"
+              "relativePath": "transformerForBuild_applyTo"
             }
           },
           {

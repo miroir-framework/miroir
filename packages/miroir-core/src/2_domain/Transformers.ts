@@ -591,6 +591,14 @@ export function transformer_mustacheStringTemplate_apply(
 ): Domain2QueryReturnType<any> {
   try {
     // const result = Mustache.render(transformer.definition, {...queryParams, ...contextResults});
+    log.info(
+      "transformer_mustacheStringTemplate_apply called for transformer",
+      transformer,
+      "queryParams",
+      JSON.stringify(queryParams, null, 2),
+      "contextResults",
+      JSON.stringify(contextResults, null, 2)
+    );
     const result = Mustache.render(transformer.definition, (transformer as any)["interpolation"] == "runtime"?contextResults: queryParams);
     return result;
   } catch (error: any) {
