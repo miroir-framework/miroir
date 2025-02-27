@@ -749,9 +749,9 @@ export const transformerTests: TransformerTestSuite = {
       transformerTestType: "transformerTestSuite",
       transformerTestLabel: "listPickElement",
       transformerTests: {
-        "listPickElement selects wanted element from a string list before runtime": {
+        "listPickElement selects wanted element from a string list parameter reference before runtime": {
           transformerTestType: "transformerTest",
-          transformerTestLabel: "listPickElement selects wanted element from a string list before runtime",
+          transformerTestLabel: "listPickElement selects wanted element from a string list parameter reference before runtime",
           transformerName: "listPickElementForString",
           transformer: {
             transformerType: "listPickElement",
@@ -794,9 +794,9 @@ export const transformerTests: TransformerTestSuite = {
           },
           expectedValue: {test: "testB"},
         },
-        "listPickElement from extractor selects wanted element from string list at runtime": {
+        "listPickElement from extractor selects wanted element from string list context reference at runtime": {
           transformerTestType: "transformerTest",
-          transformerTestLabel: "listPickElement from extractor selects wanted element from string list at runtime",
+          transformerTestLabel: "listPickElement from extractor selects wanted element from string list context reference at runtime",
           transformerName: "listPickElementForString",
           transformer: {
             transformerType: "listPickElement",
@@ -1244,83 +1244,99 @@ export const transformerTests: TransformerTestSuite = {
         },
       },
     },
-    // mapperListToList: {
-    //   transformerTestType: "transformerTestSuite",
-    //   transformerTestLabel: "mapperListToList",
-    //   transformerTests: {
-    //     "mapperListToList maps a list of objects to another list of objects": {
-    //       transformerTestType: "transformerTest",
-    //       transformerTestLabel: "mapperListToList maps a list of objects to another list of objects",
-    //       transformerName: "mapperListToList",
-    //       transformer: {
-    //         transformerType: "mapperListToList",
-    //         // interpolation: "runtime",
-    //         applyTo: {
-    //           referenceType: "referencedTransformer",
-    //           reference: {
-    //             transformerType: "contextReference",
-    //             // interpolation: "runtime",
-    //             referenceName: "countryList",
-    //           },
-    //         },
-    //         referenceToOuterObject: "country",
-    //         elementTransformer: {
-    //           transformerType: "object_fullTemplate",
-    //           // interpolation: "runtime",
-    //           applyTo: {
-    //             referenceType: "referencedTransformer",
-    //             reference: {
-    //               transformerType: "contextReference",
-    //               // interpolation: "runtime",
-    //               referenceName: "country",
-    //             },
-    //           },
-    //           definition: [
-    //             {
-    //               attributeKey: {
-    //                 // transformerType: "constantUuid",
-    //                 transformerType: "constantString",
-    //                 // interpolation: "runtime",
-    //                 value: "uuid"
-    //               },
-    //               attributeValue: {
-    //                 // transformerType: "contextReference",
-    //                 // referenceName: "newUuid"
-    //                 transformerType: "constantString",
-    //                 // interpolation: "runtime",
-    //                 value: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-    //               }
-    //             },
-    //             // {
-    //             //   attributeKey: {
-    //             //     interpolation: "runtime",
-    //             //     transformerType: "constantUuid",
-    //             //     value: "name"
-    //             //   },
-    //             //   attributeValue: {
-    //             //     transformerType: "mustacheStringTemplate",
-    //             //     interpolation: "runtime",
-    //             //     definition: "{{country.iso3166-1Alpha-2}}"
-    //             //   }
-    //             // }
-    //           ]
-    //         }
-    //       },
-    //       transformerParams: {
-    //         newUuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-    //         countryList: [
-    //           Country1 as EntityInstance,
-    //           // Country2 as EntityInstance
-    //         ],
-    //       },
-    //       expectedValue: [
-    //         { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"},
-    //         // { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", name: "US" },
-    //         // { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", name: "DE" },
-    //       ],
-    //     },
-    //   },
-    // }
+    mapperListToList: {
+      transformerTestType: "transformerTestSuite",
+      transformerTestLabel: "mapperListToList",
+      transformerTests: {
+        "mapperListToList maps a list of objects to another list of objects": {
+          transformerTestType: "transformerTest",
+          transformerTestLabel: "mapperListToList maps a list of objects to another list of objects",
+          transformerName: "mapperListToList",
+          transformer: {
+            transformerType: "mapperListToList",
+            interpolation: "runtime",
+            applyTo: {
+              referenceType: "referencedTransformer",
+              reference: {
+                // transformerType: "parameterReference",
+                transformerType: "contextReference",
+                interpolation: "runtime", // TODO: remove, as this parameter is resolved before runtime. Or have only context references in applyTo?
+                referenceName: "countryList",
+              },
+            },
+            referenceToOuterObject: "country",
+            elementTransformer: {
+              transformerType: "object_fullTemplate",
+              interpolation: "runtime",
+              applyTo: {
+                referenceType: "referencedTransformer",
+                reference: {
+                  transformerType: "contextReference",
+                  interpolation: "runtime",
+                  // referenceName: "country",
+                  referencePath: ["country"],
+                },
+              },
+              definition: [
+                {
+                  attributeKey: {
+                    // transformerType: "constantUuid",
+                    // transformerType: "constantString",
+                    transformerType: "constant",
+                    interpolation: "runtime",
+                    value: "uuid"
+                    // value: "toto"
+                  },
+                  attributeValue: {
+                    // transformerType: "contextReference",
+                    // referenceName: "newUuid"
+                    // transformerType: "constantString",
+                    transformerType: "constant",
+                    interpolation: "runtime",
+                    value: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                    // value: "totoValue"
+                  }
+                },
+                {
+                  attributeKey: {
+                    interpolation: "runtime",
+                    transformerType: "constantUuid",
+                    value: "name"
+                  },
+                  attributeValue: {
+                    // transformerType: "mustacheStringTemplate",
+                    // definition: "{{country.iso3166-1Alpha-2}}"
+                    transformerType: "contextReference",
+                    interpolation: "runtime",
+                    referencePath: ["country","iso3166-1Alpha-2"]
+                  }
+                }
+              ]
+            }
+          },
+          transformerRuntimeContext: {
+            newUuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+            countryList: [
+              Country1 as EntityInstance,
+              Country2 as EntityInstance
+            ],
+          },
+          transformerParams: {
+            // newUuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+            // countryList: [
+            //   Country1 as EntityInstance,
+            //   Country2 as EntityInstance
+            // ],
+          },
+          expectedValue: [
+            // { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"},
+            // { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"},
+            { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", name: "US" },
+            { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", name: "DE" },
+          ],
+        },
+      },
+    }
   },
 };
 

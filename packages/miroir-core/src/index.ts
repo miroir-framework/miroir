@@ -785,7 +785,7 @@ export {
   ignorePostgresExtraAttributes,
 } from './4_services/otherTools.js';
 export { miroirCoreStartup } from './startup.js';
-export { stringTuple, circularReplacer, resolvePathOnObject, domainStateToDeploymentEntityState } from "./tools.js";
+export { stringTuple, circularReplacer, resolvePathOnObject, ResultAccessPath, domainStateToDeploymentEntityState } from "./tools.js";
 
 console.log("miroir-core: DONE exports");
 

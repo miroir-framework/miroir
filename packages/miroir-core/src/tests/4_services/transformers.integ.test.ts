@@ -279,7 +279,7 @@ async function runTransformerIntegrationTest(vitest: any, testNameArray: string[
   // } as any; // TODO: fix typing
 
   let queryResult
-  if ((transformerTest.transformer as any).interpolation == "runtime") {
+  // if ((transformerTest.transformer as any).interpolation == "runtime") {
     // console.log(expect.getState().currentTestName, "transformerTest", transformerTest);
     console.log("runTransformerIntegrationTest", testNameArray, "running runtime on sql transformerTest", transformerTest);
 
@@ -295,7 +295,8 @@ async function runTransformerIntegrationTest(vitest: any, testNameArray: string[
         pageParams: {},
         queryParams: { ...transformerTest.transformerParams, ...transformerTest.transformerRuntimeContext },
         contextResults: Object.fromEntries(
-          Object.entries(transformerTest.transformerRuntimeContext ?? {}).map((e: [string, any]) => [[e[0]], "json"])
+          // Object.entries(transformerTest.transformerRuntimeContext ?? {}).map((e: [string, any]) => [[e[0]], "json"])
+          Object.entries(transformerTest.transformerRuntimeContext ?? {}).map((e: [string, any]) => [e[0], "json"])
         ),
         // contextResults: transformerTest.transformerRuntimeContext??{},
         deploymentUuid: "",
@@ -305,38 +306,38 @@ async function runTransformerIntegrationTest(vitest: any, testNameArray: string[
         },
       },
     });
-  } else {
-    console.log("runTransformerIntegrationTest", testNameArray, "running in-memory transformerTest", transformerTest);
+  // } else {
+  //   console.log("runTransformerIntegrationTest", testNameArray, "running in-memory transformerTest", transformerTest);
 
-    // before runtime transformer
-    const rawResult: Domain2QueryReturnType<any> = transformer_apply_wrapper(
-      (transformerTest.transformer as any).interpolation ?? "build",
-      undefined,
-      transformerTest.transformer,
-      transformerTest.transformerParams,
-      transformerTest.transformerRuntimeContext ?? {}
-    );
+  //   // before runtime transformer
+  //   const rawResult: Domain2QueryReturnType<any> = transformer_apply_wrapper(
+  //     (transformerTest.transformer as any).interpolation ?? "build",
+  //     undefined,
+  //     transformerTest.transformer,
+  //     transformerTest.transformerParams,
+  //     transformerTest.transformerRuntimeContext ?? {}
+  //   );
     
-    if (!rawResult) {
-      queryResult = {
-        status: "ok",
-        returnedDomainElement: {transformer: undefined},
-      };
-  } else {
-      if (Object.hasOwn(rawResult, "queryFailure")) {
-        queryResult = {
-          status: "error",
-          innerError: rawResult,
-        };
-      } else {
-        queryResult = {
-          status: "ok",
-          // returnedDomainElement: rawResult,
-          returnedDomainElement: {transformer: rawResult},
-        };
-      }
-    }
-  }
+  //   if (!rawResult) {
+  //     queryResult = {
+  //       status: "ok",
+  //       returnedDomainElement: {transformer: undefined},
+  //     };
+  // } else {
+  //     if (Object.hasOwn(rawResult, "queryFailure")) {
+  //       queryResult = {
+  //         status: "error",
+  //         innerError: rawResult,
+  //       };
+  //     } else {
+  //       queryResult = {
+  //         status: "ok",
+  //         // returnedDomainElement: rawResult,
+  //         returnedDomainElement: {transformer: rawResult},
+  //       };
+  //     }
+  //   }
+  // }
 
   const testSuitePathName = TestSuiteContext.testSuitePathName(testNameArray);
   // console.log(testSuitePathName, "WWWWWWWWWWWWWWWWWW queryResult", JSON.stringify(queryResult, null, 2));

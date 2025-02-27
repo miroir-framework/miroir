@@ -127,6 +127,18 @@ function transformerForBuild_list_listMapperToList_apply(
   contextResults?: Record<string, any>,
 ): Domain2QueryReturnType<any[]> {
   const resolvedApplyTo = resolveInnerTransformer(transformer, step, queryParams, contextResults, label);
+  if (resolvedApplyTo instanceof Domain2ElementFailed) {
+    log.error(
+      "transformerForBuild_list_listMapperToList_apply extractorTransformer can not apply to failed resolvedReference",
+      resolvedApplyTo
+    );
+    return new Domain2ElementFailed({
+      queryFailure: "QueryNotExecutable",
+      failureOrigin: ["transformerForBuild_list_listMapperToList_apply"],
+      queryContext: "transformerForBuild_list_listMapperToList_apply can not apply to failed resolvedReference",
+      innerError: resolvedApplyTo
+    });
+  }
   log.info(
     "transformerForBuild_list_listMapperToList_apply",
     "step",
@@ -134,8 +146,8 @@ function transformerForBuild_list_listMapperToList_apply(
     "extractorTransformer resolvedReference",
     resolvedApplyTo
   );
-
   const resultArray:any[] = [];
+
   if (Array.isArray(resolvedApplyTo)) {
     for (const element of resolvedApplyTo) {
       resultArray.push(
@@ -261,15 +273,15 @@ function transformer_object_fullTemplate(
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>
 ): Domain2QueryReturnType<DomainElementString | DomainElementInstanceArray> {
-  // log.info(
-  //   "transformer_apply transformer_object_fullTemplate objectName=",
-  //   objectName,
-  //   "transformerForBuild=",
-  //   // transformerForBuild,
-  //   JSON.stringify(transformerForBuild, null, 2)
-  //   // "innerEntry",
-  //   // JSON.stringify(innerEntry, null, 2)
-  // );
+  log.info(
+    "transformer_apply transformer_object_fullTemplate called with objectName=",
+    objectName,
+    // "transformerForBuild=",
+    // // transformerForBuild,
+    // JSON.stringify(transformerForBuild, null, 2)
+    // // "innerEntry",
+    // // JSON.stringify(innerEntry, null, 2)
+  );
   const attributeEntries = transformerForBuild.definition.map(
     (innerEntry: {
       attributeKey: TransformerForBuild | TransformerForRuntime;
@@ -322,8 +334,14 @@ function transformer_object_fullTemplate(
       log.info(
         "transformer_apply transformer_object_fullTemplate",
         step,
-        "innerEntry.attributeKey",
-        innerEntry.attributeValue,
+        "innerEntry",
+        JSON.stringify(innerEntry, null, 2),
+        // "innerEntry.attributeKey",
+        // JSON.stringify(innerEntry.attributeKey, null, 2),
+        "leftValue",
+        JSON.stringify(leftValue, null, 2),
+        "renderedRightValue",
+        JSON.stringify(renderedRightValue, null, 2),
         "rightValue",
         JSON.stringify(rightValue, null, 2),
         "contextResults",
@@ -814,6 +832,7 @@ export function innerTransformer_apply(
         queryParams,
         contextResults
       );
+      break;
     }
     case "object_fullTemplate": {
       return defaultTransformers.transformer_object_fullTemplate(
@@ -1167,12 +1186,16 @@ export function innerTransformer_apply(
         case "string":
         case "number":
         case "bigint":
-        case "boolean":
+        case "boolean": {
+          return transformer.value;
+        }
         case "object": {
           if (Array.isArray(transformer.value)) {
             return transformer.value
           } else {
-            return [transformer.value];
+            // TODO: questionable, should "runtime" transformers only return arrays of objects, not objects directly? 
+            // This is likely done to get an identical result to the postgres implementation, where all runtime transformer executions return arrays (of objects or other types).
+            return [transformer.value]; 
           }
         }
         case "symbol":

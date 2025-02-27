@@ -159,10 +159,10 @@ export class SqlDbQueryRunner {
     try {
       log.info("asyncExtractWithQuery calling QUERY", query, "with parameters", JSON.stringify(preparedStatementParameters));
       const rawResult = await this.persistenceStoreController.executeRawQuery(query, preparedStatementParameters);
-      log.info("asyncExtractWithQuery innerFullObjectTemplate #####RAWRESULT", JSON.stringify(rawResult));
+      log.info("asyncExtractWithQuery innerFullObjectTemplate #####RAWRESULT", JSON.stringify(rawResult, null, 2));
   
       if (rawResult instanceof Action2Error || rawResult.returnedDomainElement instanceof Domain2ElementFailed) {
-        log.error("asyncExtractWithQuery rawResult", JSON.stringify(rawResult));
+        // log.error("asyncExtractWithQuery rawResult", JSON.stringify(rawResult));
         return Promise.resolve({ elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } });
       }
   

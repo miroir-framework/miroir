@@ -42,26 +42,51 @@ export function domainStateToDeploymentEntityState(
 }
 
 // ################################################################################################
-export function resolvePathOnObject(valueObject:any, path: (string | number)[]) {
-  // console.info("resolvePathOnObject called with", valueObject, "path", path)
+export type ResultAccessPath = (string | number | {
+  type: "map",
+  key: string | number
+})[];
+
+
+// ################################################################################################
+// export function resolvePathOnObject(valueObject:any, path: (string | number)[]) {
+export function resolvePathOnObject(valueObject:any, path: ResultAccessPath) {
   return path.reduce((acc, curr, index) => {
-    // if (index == path.length && (acc == undefined || acc[curr] == undefined)) {
-    if (!Object.hasOwn(acc, curr)) {
-      throw new Error(
-        "resolvePathOnObject value object=" +
-          valueObject +
-          ", path=" +
-          path +
-          " either attribute " +
-          curr +
-          " not found in " +
-          acc +
-          " or not last in path but leading to undefined " +
-          (curr as any)[acc]
-      );
+    if (typeof curr === "object") {
+      if (typeof acc !== "object" || !Array.isArray(acc)) {
+        throw new Error(
+          "resolvePathOnObject value object=" +
+            valueObject +
+            ", path=" +
+            path +
+            " either attribute " +
+            curr +
+            " not found in " +
+            acc +
+            " or not last in path but leading to undefined " +
+            (curr as any)[acc]
+        );
+      } else {
+        return acc.map((item: any) => item[curr.key]);
+      }
     } else {
-      console.info("resolvePathOnObject called with", valueObject, "path", path, "result", acc[curr])
-      return acc[curr];
+      if (!Object.hasOwn(acc, curr)) {
+        throw new Error(
+          "resolvePathOnObject value object=" +
+            valueObject +
+            ", path=" +
+            path +
+            " either attribute " +
+            curr +
+            " not found in " +
+            acc +
+            " or not last in path but leading to undefined " +
+            (curr as any)[acc]
+        );
+      } else {
+        console.info("resolvePathOnObject called with", valueObject, "path", path, "result", acc[curr])
+        return acc[curr];
+      }
     }
   }, valueObject);
 }

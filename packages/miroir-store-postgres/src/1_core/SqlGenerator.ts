@@ -6,11 +6,13 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   resolveInnerTransformer,
+  ResultAccessPath,
   transformer_mustacheStringTemplate_apply,
   transformer_resolveReference,
   TransformerForRuntime,
   TransformerForRuntime_count,
   TransformerForRuntime_innerFullObjectTemplate,
+  TransformerForRuntime_list_listMapperToList,
   TransformerForRuntime_list_listPickElement,
   TransformerForRuntime_object_fullTemplate,
   TransformerForRuntime_objectEntries,
@@ -23,9 +25,11 @@ import { packageName } from "../constants";
 import { getConstantSqlTypeMap, PostgresDataTypes } from "./Postgres";
 import { getAttributeTypesFromJzodSchema, jzodToPostgresTypeMap } from "./jzodSchema";
 
-export const stringQuote = "'";
-export const tokenQuote = '"';
+export const tokenStringQuote = "'";
+export const tokenNameQuote = '"';
 export const tokenComma = ",";
+export const tokenSeparatorForTableColumn = ".";
+export const tokenSeparatorForJsonAttributeAccess = " -> ";
 export const tokenSeparatorForSelect = tokenComma + " ";
 export const tokenSeparatorForWith = tokenComma + " ";
 export const tokenSeparatorForWithRtn = tokenSeparatorForWith + "\n";
@@ -39,13 +43,17 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 // ################################################################################################
 export interface SqlContextEntry {
-  type: "json" | "scalar" | "table"; resultAccessPath?: (string | number)[]
+  // type: "json" | "scalar" | "table"; resultAccessPath?: (string | number)[]
+  type: "json" | "scalar" | "table";
+  attributeResultAccessPath?: (string | number)[];
+  // tableResultAccessPath?: ResultAccessPath;
 }
 
 // ################################################################################################
 export interface SqlStringForCombinerReturnType {
   sqlString: string;
-  resultAccessPath?: (string | number)[];
+  // resultAccessPath?: (string | number)[];
+  resultAccessPath?: ResultAccessPath;
 }
 
 function getSqlTypeForValue(
@@ -188,7 +196,8 @@ export function sqlStringForExtractor(extractor: ExtractorOrCombiner, schema: st
 
 export type SqlStringForTransformerElementValue = {
   sqlStringOrObject: string;
-  resultAccessPath?: (string | number)[];
+  // resultAccessPath?: (string | number)[];
+  resultAccessPath?: ResultAccessPath;
   encloseEndResultInArray?: boolean;
   extraWith?: { name: string; sql: string }[];
   type: "json" | "table" | "scalar";
@@ -196,18 +205,21 @@ export type SqlStringForTransformerElementValue = {
 };
 
 // ################################################################################################
-function resolveApplyTo(
+function sqlStringForApplyTo(
   actionRuntimeTransformer:
     | TransformerForRuntime_object_fullTemplate
     | TransformerForRuntime_count
     | TransformerForRuntime_list_listPickElement
+    | TransformerForRuntime_list_listMapperToList
     | TransformerForRuntime_objectValues
     | TransformerForRuntime_objectEntries
     | TransformerForRuntime_unique
     | TransformerForRuntime_innerFullObjectTemplate,
   preparedStatementParametersIndex: number,
   queryParams: Record<string, any> = {},
-  newFetchedData: Record<string, any> = {},
+  // newFetchedData: Record<string, any> = {},
+  definedContextEntries: Record<string, any> = {},
+  useAccessPathForContextReference: boolean = true,
   topLevelTransformer: boolean = true
 ): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
   if (actionRuntimeTransformer.applyTo.referenceType == "referencedExtractor") {
@@ -219,7 +231,7 @@ function resolveApplyTo(
   }
   const referenceQuery =
     typeof actionRuntimeTransformer.applyTo.reference == "string"
-      ? sqlStringForTransformer(
+      ? sqlStringForTransformer( // shouldn't this be a contextReference instead?
           {
             transformerType: "constant",
             interpolation: "runtime",
@@ -227,15 +239,17 @@ function resolveApplyTo(
           },
           preparedStatementParametersIndex,
           queryParams,
-          newFetchedData,
-          true
+          definedContextEntries,
+          useAccessPathForContextReference,
+          topLevelTransformer,
         )
       : sqlStringForTransformer(
           actionRuntimeTransformer.applyTo.reference,
           preparedStatementParametersIndex,
           queryParams,
-          newFetchedData,
-          true
+          definedContextEntries,
+          useAccessPathForContextReference,
+          topLevelTransformer,
         );
   return referenceQuery;
 }
@@ -267,6 +281,7 @@ export function sqlStringForTransformer(
   preparedStatementParametersCount: number,
   queryParams: Record<string, any> = {},
   definedContextEntries: Record<string, SqlContextEntry> = {},
+  useAccessPathForContextReference: boolean = true,
   topLevelTransformer: boolean = true,
   withClauseColumnName?: string,
 ): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
@@ -343,101 +358,196 @@ export function sqlStringForTransformer(
     }
     case "innerFullObjectTemplate":
     case "object_fullTemplate": {
-      let newPreparedStatementParametersCount = preparedStatementParametersCount;
-      const resolvedApplyTo = resolveApplyTo(
-        actionRuntimeTransformer,
-        newPreparedStatementParametersCount,
-        queryParams,
-        definedContextEntries,
-        topLevelTransformer
-      );
-      if (resolvedApplyTo instanceof Domain2ElementFailed) {
-        return resolvedApplyTo;
+      if (topLevelTransformer) {
+        let newPreparedStatementParametersCount = preparedStatementParametersCount;
+        const resolvedApplyTo = sqlStringForApplyTo(
+          actionRuntimeTransformer,
+          newPreparedStatementParametersCount,
+          queryParams,
+          definedContextEntries,
+          useAccessPathForContextReference,
+          topLevelTransformer,
+        );
+        if (resolvedApplyTo instanceof Domain2ElementFailed) {
+          return resolvedApplyTo;
+        }
+
+        let preparedStatementParameters: any[] = resolvedApplyTo.preparedStatementParameters ?? [];
+        // const extraWith: { name: string; sql: string; sqlResultAccessPath?: (string | number)[] }[] = [
+        const extraWith: { name: string; sql: string; sqlResultAccessPath?: ResultAccessPath }[] = [
+        ];
+        newPreparedStatementParametersCount += preparedStatementParameters.length;
+        actionRuntimeTransformer.definition.forEach((f, index) => {
+          const attributeValue = sqlStringForTransformer(
+            f.attributeValue,
+            newPreparedStatementParametersCount,
+            queryParams,
+            definedContextEntries,
+            useAccessPathForContextReference,
+            true,
+            `attributeValue${index}`, 
+          );
+          if (attributeValue instanceof Domain2ElementFailed) {
+            return attributeValue;
+          }
+          if (attributeValue.preparedStatementParameters) {
+            preparedStatementParameters = [...preparedStatementParameters, ...attributeValue.preparedStatementParameters];
+            newPreparedStatementParametersCount += attributeValue.preparedStatementParameters.length;
+          }
+
+          const attributeKey = sqlStringForTransformer(
+            f.attributeKey,
+            newPreparedStatementParametersCount,
+            queryParams,
+            definedContextEntries,
+            useAccessPathForContextReference,
+            true,
+            `attributeKey${index}`, 
+          );
+          if (attributeKey instanceof Domain2ElementFailed) {
+            return attributeKey;
+          }
+          if (attributeKey.preparedStatementParameters) {
+            preparedStatementParameters = [...preparedStatementParameters, ...attributeKey.preparedStatementParameters];
+            newPreparedStatementParametersCount += attributeKey.preparedStatementParameters.length;
+          }
+
+          extraWith.push({
+            name: "attributeKey" + index,
+            sql: attributeKey.sqlStringOrObject,
+            sqlResultAccessPath: attributeKey.resultAccessPath,
+          });
+          extraWith.push({
+            name: "attributeValue" + index,
+            sql: attributeValue.sqlStringOrObject,
+            sqlResultAccessPath: attributeValue.resultAccessPath,
+          });
+        });
+
+        const resultExtraWith: { name: string; sql: string; sqlResultAccessPath?: (string | number)[] }[] = [
+          {
+            name: "applyTo",
+            sql: resolvedApplyTo.sqlStringOrObject,
+            sqlResultAccessPath: resolvedApplyTo.resultAccessPath,
+          },
+          ...(resolvedApplyTo.extraWith ?? []),
+          ...extraWith
+        ];
+
+        // Build a new object with keys and corresponding values from the definition.
+        const objectAttributes = extraWith
+          .map((e, index) => `"${e.name}"."${(e.sqlResultAccessPath as any)[1]}"`)
+          .join(", ");
+        const objectAttributes_With_references = extraWith
+          .map((e, index) => {
+            return `"${e.name}"`;
+          })
+          .join(", ");
+        log.info("sqlStringForTransformer object_fullTemplate extraWidth", JSON.stringify(extraWith,null,2));
+        const sqlResult = `
+  SELECT jsonb_build_object(${objectAttributes}) AS "object_fullTemplate"
+  FROM ${objectAttributes_With_references}
+  ${orderBy}
+  `;
+        // const sqlResult = `SELECT jsonb_build_object(${objectAttributes}) AS "innerFullObjectTemplate" FROM ${objectAttributes_With_references} GROUP BY ${objectAttributes} ${orderBy}`;
+        log.info("sqlStringForTransformer object_fullTemplate sqlResult", JSON.stringify(sqlResult));
+        return {
+          type: "json",
+          sqlStringOrObject: sqlResult,
+          preparedStatementParameters,
+          resultAccessPath: [0, "object_fullTemplate"],
+          extraWith: resultExtraWith,
+        };
+      } else { // topLevelTransformer == false
+        let newPreparedStatementParametersCount = preparedStatementParametersCount;
+        const resolvedApplyTo = sqlStringForApplyTo(
+          actionRuntimeTransformer,
+          newPreparedStatementParametersCount,
+          queryParams,
+          definedContextEntries, // undefined, // undefined, since the result will always be taken from this "WITH" clause.
+          false,//useAccessPathForContextReference, // useAccessPathForContextReference,
+          topLevelTransformer,
+        );
+        if (resolvedApplyTo instanceof Domain2ElementFailed) {
+          return resolvedApplyTo;
+        }
+        log.info("sqlStringForTransformer object_fullTemplate resolvedApplyTo", JSON.stringify(resolvedApplyTo, null, 2));
+
+        let preparedStatementParameters: any[] = resolvedApplyTo.preparedStatementParameters ?? [];
+        newPreparedStatementParametersCount += preparedStatementParameters.length;
+
+        const objectAttributes = actionRuntimeTransformer.definition
+          .map((f, index) => {
+            const attributeValue = sqlStringForTransformer(
+              f.attributeValue,
+              newPreparedStatementParametersCount,
+              queryParams,
+              definedContextEntries,
+              useAccessPathForContextReference,
+              false,
+            );
+            if (attributeValue instanceof Domain2ElementFailed) {
+              return {attributeValue};
+            }
+            if (attributeValue.preparedStatementParameters) {
+              preparedStatementParameters = [...preparedStatementParameters, ...attributeValue.preparedStatementParameters];
+              newPreparedStatementParametersCount += attributeValue.preparedStatementParameters.length;
+            }
+            const attributeKey = sqlStringForTransformer(
+              f.attributeKey,
+              newPreparedStatementParametersCount,
+              queryParams,
+              definedContextEntries,
+              useAccessPathForContextReference,
+              false,
+            );
+            if (attributeKey instanceof Domain2ElementFailed) {
+              return {attributeValue, attributeKey};
+            }
+            if (attributeKey.preparedStatementParameters) {
+              preparedStatementParameters = [...preparedStatementParameters, ...attributeKey.preparedStatementParameters];
+              newPreparedStatementParametersCount += attributeKey.preparedStatementParameters.length;
+            }
+            return {
+              attributeKey,
+              attributeValue
+            }
+          })
+        ;
+
+        const foundError = objectAttributes.find((e: any) => e.attributeKey instanceof Domain2ElementFailed || e.attributeKey instanceof Domain2ElementFailed);
+        if (foundError) {
+          return new Domain2ElementFailed({
+            queryFailure: "QueryNotExecutable",
+            query: actionRuntimeTransformer as any,
+            failureMessage: "sqlStringForTransformer object_fullTemplate attributeKey or attributeValue failed: " + JSON.stringify(foundError, null, 2),
+          });
+        }
+        console.log(
+          "sqlStringForTransformer object_fullTemplate objectAttributes",
+          JSON.stringify(objectAttributes, null, 2)
+        );
+        console.log(
+          "sqlStringForTransformer object_fullTemplate preparedStatementParameters",
+          JSON.stringify(preparedStatementParameters, null, 2)
+        );
+        const create_object = `jsonb_build_object(
+            ${objectAttributes
+              .map((e: any, index) => `${e.attributeKey.sqlStringOrObject}, ${e.attributeValue.sqlStringOrObject}`)
+              .join(tokenSeparatorForSelect)}
+          )`;
+        // const objectAttributesString = objectAttributes.map((e: any, index) => `${e.attributeValue.sqlStringOrObject} AS "uuid"`).join(tokenSeparatorForSelect);
+        // const objectAttributesString = objectAttributes.map((e: any, index) => `${e.attributeValue.sqlStringOrObject} AS ${e.attributeKey.name}`).join(tokenSeparatorForSelect);
+        const sqlResult = `SELECT ${create_object} AS "object_fullTemplate" FROM ${resolvedApplyTo.sqlStringOrObject}`;
+        // const sqlResult = `SELECT ${objectAttributesString} FROM ${resolvedApplyTo.sqlStringOrObject}`;
+        log.info("sqlStringForTransformer object_fullTemplate sqlResult", sqlResult);
+        return {
+          type: "json",
+          sqlStringOrObject: sqlResult,
+          resultAccessPath: undefined,
+          preparedStatementParameters,
+        };
       }
-
-      let preparedStatementParameters: any[] = resolvedApplyTo.preparedStatementParameters ?? [];
-      const extraWith: { name: string; sql: string; sqlResultAccessPath?: (string | number)[] }[] = [
-      ];
-      newPreparedStatementParametersCount += preparedStatementParameters.length;
-      actionRuntimeTransformer.definition.forEach((f, index) => {
-        const attributeValue = sqlStringForTransformer(
-          f.attributeValue,
-          newPreparedStatementParametersCount,
-          queryParams,
-          definedContextEntries,
-          true,
-          `attributeValue${index}`, 
-        );
-        if (attributeValue instanceof Domain2ElementFailed) {
-          return attributeValue;
-        }
-        if (attributeValue.preparedStatementParameters) {
-          preparedStatementParameters = [...preparedStatementParameters, ...attributeValue.preparedStatementParameters];
-          newPreparedStatementParametersCount += attributeValue.preparedStatementParameters.length;
-        }
-
-        const attributeKey = sqlStringForTransformer(
-          f.attributeKey,
-          newPreparedStatementParametersCount,
-          queryParams,
-          definedContextEntries,
-          true,
-          `attributeKey${index}`, 
-        );
-        if (attributeKey instanceof Domain2ElementFailed) {
-          return attributeKey;
-        }
-        if (attributeKey.preparedStatementParameters) {
-          preparedStatementParameters = [...preparedStatementParameters, ...attributeKey.preparedStatementParameters];
-          newPreparedStatementParametersCount += attributeKey.preparedStatementParameters.length;
-        }
-
-        extraWith.push({
-          name: "attributeKey" + index,
-          sql: attributeKey.sqlStringOrObject,
-          sqlResultAccessPath: attributeKey.resultAccessPath,
-        });
-        extraWith.push({
-          name: "attributeValue" + index,
-          sql: attributeValue.sqlStringOrObject,
-          sqlResultAccessPath: attributeValue.resultAccessPath,
-        });
-      });
-
-      const resultExtraWith: { name: string; sql: string; sqlResultAccessPath?: (string | number)[] }[] = [
-        {
-          name: "applyTo",
-          sql: resolvedApplyTo.sqlStringOrObject,
-          sqlResultAccessPath: resolvedApplyTo.resultAccessPath,
-        },
-        ...(resolvedApplyTo.extraWith ?? []),
-        ...extraWith
-      ];
-
-      // Build a new object with keys and corresponding values from the definition.
-      const objectAttributes = extraWith
-        .map((e, index) => `"${e.name}"."${(e.sqlResultAccessPath as any)[1]}"`)
-        .join(", ");
-      const objectAttributes_With_references = extraWith
-        .map((e, index) => {
-          return `"${e.name}"`;
-        })
-        .join(", ");
-      log.info("sqlStringForTransformer object_fullTemplate extraWidth", JSON.stringify(extraWith,null,2));
-      const sqlResult = `
-SELECT jsonb_build_object(${objectAttributes}) AS "innerFullObjectTemplate"
-FROM ${objectAttributes_With_references}
-${orderBy}
-`;
-      // const sqlResult = `SELECT jsonb_build_object(${objectAttributes}) AS "innerFullObjectTemplate" FROM ${objectAttributes_With_references} GROUP BY ${objectAttributes} ${orderBy}`;
-      log.info("sqlStringForTransformer innerFullObjectTemplate sqlResult", JSON.stringify(sqlResult));
-      return {
-        type: "json",
-        sqlStringOrObject: sqlResult,
-        preparedStatementParameters,
-        resultAccessPath: [0, "innerFullObjectTemplate"],
-        extraWith: resultExtraWith,
-      };
       break;
     }
     case "mapperListToList": {
@@ -446,78 +556,114 @@ ${orderBy}
        * each element of the list and return the sorted list of transformed elements
        */
       // throw new Error("sqlStringForTransformer mapperListToList not implemented");
-      const referenceName: string = (actionRuntimeTransformer as any).referencedTransformer;
+      let newPreparedStatementParametersCount = preparedStatementParametersCount;
+
+      // const referenceName: string = (actionRuntimeTransformer as any).referencedTransformer;
       const sqlStringForElementTransformer = sqlStringForTransformer(
         actionRuntimeTransformer.elementTransformer,
-        preparedStatementParametersCount,
+        newPreparedStatementParametersCount,
         queryParams,
-        definedContextEntries,
-        false
+        {...definedContextEntries, [actionRuntimeTransformer.referenceToOuterObject]: { type: "json", attributeResultAccessPath: ["element"] } },
+        useAccessPathForContextReference,
+        false, // topLevelTransformer
       );
 
       log.info(
-        "sqlStringForTransformer mapperListToList found applyTo",
+        "sqlStringForTransformer mapperListToList found elementTransformer",
         JSON.stringify(sqlStringForElementTransformer, null, 2)
       );
       if (sqlStringForElementTransformer instanceof Domain2ElementFailed) {
         return sqlStringForElementTransformer;
       }
+      if (sqlStringForElementTransformer.type != "json") {
+        return new Domain2ElementFailed({
+          queryFailure: "QueryNotExecutable",
+          query: actionRuntimeTransformer as any,
+          failureMessage: "sqlStringForTransformer mapperListToList elementTransformer not json",
+        });
+      }
 
-      switch (sqlStringForElementTransformer.type) {
+      let preparedStatementParameters: any[] = sqlStringForElementTransformer.preparedStatementParameters ?? [];
+      newPreparedStatementParametersCount += preparedStatementParameters.length;
+
+      const applyTo = sqlStringForApplyTo(
+        actionRuntimeTransformer,
+        newPreparedStatementParametersCount,
+        queryParams,
+        definedContextEntries,
+        useAccessPathForContextReference,// false, // useAccessPathForContextReference,
+        topLevelTransformer
+      );
+      log.info("sqlStringForTransformer mapperListToList found applyTo", JSON.stringify(applyTo, null, 2));
+      if (applyTo instanceof Domain2ElementFailed) {
+        return applyTo;
+      }
+      if (applyTo.preparedStatementParameters) {
+        preparedStatementParameters = [...preparedStatementParameters, ...applyTo.preparedStatementParameters];
+        newPreparedStatementParametersCount += applyTo.preparedStatementParameters.length;
+      }
+
+      if (applyTo.type != "json") {
+        return new Domain2ElementFailed({
+          queryFailure: "QueryNotExecutable",
+          query: actionRuntimeTransformer as any,
+          failureMessage: "sqlStringForTransformer mapperListToList referenceQuery result is not json:" + applyTo.type,
+        });
+      }
+      switch (applyTo.type) {
         case "json": {
-          //   const subQueryColumnName = sqlStringForElementTransformer.resultAccessPath
-          //     ? sqlStringForElementTransformer.resultAccessPath.slice(1).join(".")
-          //     : "*";
-          //   const resultColumns = actionRuntimeTransformer.elementTransformer.definition.map(
-          //     (f:any) =>
-          //       tokenQuote +  subQueryColumnName + tokenQuote + // TODO: check for actual type of sqlStringOrObject
-          //       " -> " +
-          //       stringQuote + sqlStringForTransformer(f.attributeKey, false).sqlStringOrObject + stringQuote +
-          //       " AS " +
-          //       tokenQuote + sqlStringForTransformer(f.attributeKey, false).sqlStringOrObject + tokenQuote
-          //   ).join(tokenSeparatorForSelect);
-          // const sqlResult = `SELECT jsonb_agg(json_build_object(${resultColumns})) AS "mapperListToList" FROM "${referenceName}" ${orderBy}`;
-          const sqlResult = `SELECT * AS "mapperListToList" FROM sqlStringForElementTransformer.sqlStringOrObject`;
+
+          const extraWith: { name: string; sql: string }[] = [
+            {
+              name: actionRuntimeTransformer.referenceToOuterObject,
+              sql:`
+SELECT "mapperListToList_oneElementPerRow"."element" FROM (
+  SELECT
+    jsonb_array_elements("applyTo"."${(applyTo as any).resultAccessPath[1]}") AS "element"
+    FROM (${applyTo.sqlStringOrObject}) AS "applyTo"
+) AS "mapperListToList_oneElementPerRow"
+`           },
+            {
+              name: "mapperListToList_elementTransformer",
+              sql: sqlStringForElementTransformer.sqlStringOrObject,
+            }
+          ]
+          const sqlResult = `
+SELECT * FROM "mapperListToList_elementTransformer"
+`;
+
           return {
             type: "json",
             sqlStringOrObject: sqlResult,
-            extraWith: [
-              {
-                name: referenceName,
-                sql: `SELECT "${referenceName}".* FROM "${referenceName}"`,
-              },
-            ],
-            resultAccessPath: [0, "mapperListToList"],
+            preparedStatementParameters,
+            extraWith,
+            resultAccessPath: [{
+              type: "map",  key: "object_fullTemplate"
+            }]
           };
           break;
         }
-        case "table": {
-          // throw new Error("sqlStringForTransformer mapperListToList not implemented for table");
-          return new Domain2ElementFailed({
-            queryFailure: "QueryNotExecutable",
-            query: actionRuntimeTransformer as any,
-            failureMessage: "sqlStringForTransformer mapperListToList not implemented for table",
-          });
-
-          // const column = sqlStringForElementTransformer.resultAccessPath?"." + sqlStringForElementTransformer.resultAccessPath.join("."): "";
-          // const sqlResult = `SELECT * FROM (${sqlStringForElementTransformer.sqlStringOrObject}) AS "mapperListToList" ORDER BY ${column}`;
-          // return {
-          //   elementType: "any",
-          //   elementValue: {
-          //     sqlStringOrObject: sqlResult,
-          //     resultAccessPath: undefined,
-          //   },
-          // };
-          break;
-        }
-        case "scalar": {
-          return new Domain2ElementFailed({
-            queryFailure: "QueryNotExecutable",
-            query: actionRuntimeTransformer as any,
-            failureMessage: "sqlStringForTransformer mapperListToList referenceQuery result is scalar, not json",
-          });
-          break;
-        }
+        // case "table": {
+        //   // const column = applyTo.resultAccessPath ? "." + applyTo.resultAccessPath.join(".") : "";
+        //   // const sqlResult = `SELECT * FROM (${applyTo.sqlStringOrObject}) AS "mapperListToList" ORDER BY ${column}`;
+        //   const sqlResult = `SELECT * FROM (${applyTo.sqlStringOrObject}) AS "mapperListToList"`;
+        //   return {
+        //     // type: "json",
+        //     type: "table",
+        //     sqlStringOrObject: sqlResult,
+        //     preparedStatementParameters: applyTo.preparedStatementParameters,
+        //     resultAccessPath: [0, "mapperListToList"],
+        //   };
+        //   break;
+        // }
+        // case "scalar": {
+        //   return new Domain2ElementFailed({
+        //     queryFailure: "QueryNotExecutable",
+        //     query: actionRuntimeTransformer as any,
+        //     failureMessage: "sqlStringForTransformer mapperListToList referenceQuery result is scalar, not json",
+        //   });
+        //   break;
+        // }
         default: {
           return new Domain2ElementFailed({
             queryFailure: "QueryNotExecutable",
@@ -527,145 +673,102 @@ ${orderBy}
           break;
         }
       }
-      // const sqlResult = `SELECT array_agg(${sqlStringForElementTransformer.sqlString}) AS "mapperListToList" FROM "${referenceName}" ${orderBy}`;
-      // log.info("extractorTransformerSql mapperListToList actionRuntimeTransformer.elementTransformer", actionRuntimeTransformer.elementTransformer);
-      log.info(
-        "extractorTransformerSql mapperListToList sqlStringForElementTransformer",
-        JSON.stringify(sqlStringForElementTransformer, null, 2)
-      );
-      // const sqlResult = sqlStringForElementTransformer.sqlStringOrObject;
-
-      // we suppose we have an innerFullObjectTemplate inside the elementTransformer
-      // if (actionRuntimeTransformer.elementTransformer.transformerType != "innerFullObjectTemplate") {
-      //   throw new Error("extractorTransformerSql mapperListToList elementTransformer not innerFullObjectTemplate");
-      // }
-
-      // const innerQueryName = "inner_" + actionRuntimeTransformer.referenceToOuterObject;
-      // // const sqlResult = `SELECT "${innerQueryName}".* FROM "${innerQueryName}"`
-      // // const sqlResult = `SELECT "${innerQueryName}"."${
-      // const subQueryColumnName = sqlStringForElementTransformer.resultAccessPath
-      // ? sqlStringForElementTransformer.resultAccessPath.slice(1).join(".") : "*";
-      // const resultColumns = actionRuntimeTransformer.elementTransformer.definition.map(
-      //   (f:any) =>
-      //     tokenQuote +  subQueryColumnName + tokenQuote + // TODO: check for actual type of sqlStringOrObject
-      //     " -> " +
-      //     stringQuote + sqlStringForTransformer(f.attributeKey, false).sqlStringOrObject + stringQuote +
-      //     " AS " +
-      //     tokenQuote + sqlStringForTransformer(f.attributeKey, false).sqlStringOrObject + tokenQuote
-      // ).join(tokenSeparatorForSelect);
-
-      // const sqlResult = `SELECT ${resultColumns} FROM "${innerQueryName}"`
-      // return {
-      //   elementType: "any",
-      //   elementValue: {
-      //     // sqlStringOrObject: sqlStringForElementTransformer.sqlStringOrObject,
-      //     sqlStringOrObject: sqlResult,
-      //     extraWith: [
-      //       {
-      //         name: actionRuntimeTransformer.referenceToOuterObject,
-      //         sql: `SELECT "${referenceName}".* FROM "${referenceName}"`,
-      //       },
-      //       {
-      //         name: innerQueryName,
-      //         sql: sqlStringForElementTransformer.sqlStringOrObject,
-      //       }
-      //       // {
-      //       //   name: actionRuntimeTransformer.elementTransformer.referenceToOuterObject,
-      //       //   sql: `SELECT "${referenceName}"."${
-      //       //     sqlStringForElementTransformer.resultAccessPath
-      //       //       ? sqlStringForElementTransformer.resultAccessPath.slice(1).join(".") // TODO: HACK! HACK!
-      //       //       : "*"
-      //       //   }" FROM "${referenceName}"`,
-      //       // },
-      //     ],
-      //     // {
-      //     //   [actionRuntimeTransformer.] :sqlStringForElementTransformer
-      //     //   sqlResult
-      //     // },
-      //     // resultAccessPath: undefined,
-      //   },
-      // };
     }
     case "listPickElement": {
-      const referenceQuery = resolveApplyTo(
-        actionRuntimeTransformer,
-        preparedStatementParametersCount,
-        queryParams,
-        definedContextEntries,
-        topLevelTransformer
+      log.info(
+        "sqlStringForTransformer listPickElement called for",
+        JSON.stringify(actionRuntimeTransformer, null, 2),
+        "topLevelTransformer",
+        topLevelTransformer,
+        "useAccessPathForContextReference",
+        useAccessPathForContextReference,
+        "definedContextEntries",
+        JSON.stringify(definedContextEntries, null, 2)
       );
-
-      log.info("sqlStringForTransformer listPickElement found applyTo", JSON.stringify(referenceQuery, null, 2));
-      if (referenceQuery instanceof Domain2ElementFailed) {
-        return referenceQuery;
-      }
-
-      const limit = actionRuntimeTransformer.index;
-      let sqlResult;
-      switch (referenceQuery.type) {
-        case "json": {
-          if (actionRuntimeTransformer.orderBy) {
-            sqlResult = `
-SELECT (
-  jsonb_agg(
-    "listPickElement_applyTo_array" ORDER BY (
-      "listPickElement_applyTo_array" ->> '${actionRuntimeTransformer.orderBy}'
-    )::"any"
-  ) ->> ${limit}
-)::jsonb AS "listPickElement" 
-FROM
-  (${referenceQuery.sqlStringOrObject}) AS "listPickElement_applyTo", 
-  LATERAL jsonb_array_elements("listPickElement_applyTo"."${
-    (referenceQuery as any).resultAccessPath[1]
-  }") AS "listPickElement_applyTo_array"
-`;
-          } else {
-            sqlResult = `SELECT "listPickElement_applyTo"."${
-              (referenceQuery as any).resultAccessPath[1]
-            }" ->> ${limit} AS "listPickElement" 
-FROM (${referenceQuery.sqlStringOrObject}) AS "listPickElement_applyTo"
-`;
+      if (topLevelTransformer) {
+        const sqlForApplyTo = sqlStringForApplyTo(
+          actionRuntimeTransformer,
+          preparedStatementParametersCount,
+          queryParams,
+          definedContextEntries,
+          useAccessPathForContextReference,
+          topLevelTransformer
+        );
+  
+        log.info("sqlStringForTransformer listPickElement found applyTo", JSON.stringify(sqlForApplyTo, null, 2));
+        if (sqlForApplyTo instanceof Domain2ElementFailed) {
+          return sqlForApplyTo;
+        }
+  
+        const limit = actionRuntimeTransformer.index;
+        let sqlResult;
+        switch (sqlForApplyTo.type) {
+          case "json": {
+            if (actionRuntimeTransformer.orderBy) {
+              sqlResult = `
+  SELECT (
+    jsonb_agg(
+      "listPickElement_applyTo_array" ORDER BY (
+        "listPickElement_applyTo_array" ->> '${actionRuntimeTransformer.orderBy}'
+      )::"any"
+    ) ->> ${limit}
+  )::jsonb AS "listPickElement" 
+  FROM
+    (${sqlForApplyTo.sqlStringOrObject}) AS "listPickElement_applyTo", 
+    LATERAL jsonb_array_elements("listPickElement_applyTo"."${
+      (sqlForApplyTo as any).resultAccessPath[1]
+    }") AS "listPickElement_applyTo_array"
+  `;
+            } else { // no orderBy
+              sqlResult = `SELECT "listPickElement_applyTo"."${
+                (sqlForApplyTo as any).resultAccessPath[1]
+              }" ->> ${limit} AS "listPickElement" 
+  FROM (${sqlForApplyTo.sqlStringOrObject}) AS "listPickElement_applyTo"
+  `;
+            }
+            break;
           }
-          break;
-        }
-        case "table": {
-          // const column = referenceQuery.resultAccessPath?"." + referenceQuery.resultAccessPath.join("."): "";
-          if (actionRuntimeTransformer.orderBy) {
-            sqlResult = `SELECT * FROM (${referenceQuery.sqlStringOrObject}) AS "listPickElement" ORDER BY ${actionRuntimeTransformer.orderBy} LIMIT 1 OFFSET ${limit}`;
-          } else {
-            sqlResult = `SELECT * FROM (${referenceQuery.sqlStringOrObject}) AS "listPickElement" LIMIT 1 OFFSET ${limit}`;
+          case "table": {
+            // const column = referenceQuery.resultAccessPath?"." + referenceQuery.resultAccessPath.join("."): "";
+            if (actionRuntimeTransformer.orderBy) {
+              sqlResult = `SELECT * FROM (${sqlForApplyTo.sqlStringOrObject}) AS "listPickElement" ORDER BY ${actionRuntimeTransformer.orderBy} LIMIT 1 OFFSET ${limit}`;
+            } else {
+              sqlResult = `SELECT * FROM (${sqlForApplyTo.sqlStringOrObject}) AS "listPickElement" LIMIT 1 OFFSET ${limit}`;
+            }
+            return {
+              type: "json",
+              sqlStringOrObject: sqlResult,
+              preparedStatementParameters: sqlForApplyTo.preparedStatementParameters,
+              resultAccessPath: [0, ...(sqlForApplyTo.resultAccessPath ?? [])],
+            };
+            break;
           }
-          return {
-            type: "json",
-            sqlStringOrObject: sqlResult,
-            preparedStatementParameters: referenceQuery.preparedStatementParameters,
-            resultAccessPath: [0, ...(referenceQuery.resultAccessPath ?? [])],
-          };
-          break;
+          case "scalar": {
+            return new Domain2ElementFailed({
+              queryFailure: "QueryNotExecutable",
+              query: actionRuntimeTransformer as any,
+              failureMessage: "sqlStringForTransformer listPickElement referenceQuery result is scalar, not json",
+            });
+            break;
+          }
+          default: {
+            return new Domain2ElementFailed({
+              queryFailure: "QueryNotExecutable",
+              query: actionRuntimeTransformer as any,
+              failureMessage: "sqlStringForTransformer listPickElement referenceQuery not json",
+            });
+            break;
+          }
         }
-        case "scalar": {
-          return new Domain2ElementFailed({
-            queryFailure: "QueryNotExecutable",
-            query: actionRuntimeTransformer as any,
-            failureMessage: "sqlStringForTransformer listPickElement referenceQuery result is scalar, not json",
-          });
-          break;
-        }
-        default: {
-          return new Domain2ElementFailed({
-            queryFailure: "QueryNotExecutable",
-            query: actionRuntimeTransformer as any,
-            failureMessage: "sqlStringForTransformer listPickElement referenceQuery not json",
-          });
-          break;
-        }
+        return {
+          type: "json",
+          sqlStringOrObject: sqlResult,
+          preparedStatementParameters: sqlForApplyTo.preparedStatementParameters,
+          resultAccessPath: [0, "listPickElement"],
+        };
+      } else {
+        throw new Error("sqlStringForTransformer listPickElement not implemented for (non-topLevel) inner transformer");
       }
-      return {
-        type: "json",
-        sqlStringOrObject: sqlResult,
-        preparedStatementParameters: referenceQuery.preparedStatementParameters,
-        resultAccessPath: [0, "listPickElement"],
-      };
       break;
     }
     case "constantArray":
@@ -842,60 +945,66 @@ FROM (${referenceQuery.sqlStringOrObject}) AS "listPickElement_applyTo"
         return new Domain2ElementFailed({
           queryFailure: "QueryNotExecutable",
           query: actionRuntimeTransformer as any,
-          failureMessage: "sqlStringForTransformer contextReference not found in definedContextEntries",
+          failureMessage:
+            "sqlStringForTransformer contextReference not found in definedContextEntries: " +
+            JSON.stringify(Object.keys(definedContextEntries)),
         });
       }
       const resultAccessPath = [
-        ...(definedContextEntry.resultAccessPath ?? []),
-        ...(actionRuntimeTransformer?.referencePath?.slice(1) ?? []),
+        ...(useAccessPathForContextReference?(definedContextEntry.attributeResultAccessPath ?? []):[]),
+        ...(actionRuntimeTransformer?.referencePath?.slice(1) ?? []), // not consistent, works only because used referencePath has only 1 element
       ];
       // const resultAccessPathString = resultAccessPath.map((e) => `"${e}"`).join(".");
-      log.info("sqlStringForTransformer contextReference",actionRuntimeTransformer.referencePath,"resultAccessPath", resultAccessPath);
-      const resultAccessPathString = resultAccessPath.map((e,index) => `${index==0?'"'+ e + '"': "'" + e + "'"}`).join(" -> ");
+      log.info(
+        "sqlStringForTransformer contextReference called with",
+        JSON.stringify(actionRuntimeTransformer, null, 2),
+        "topLevelTransformer",
+        topLevelTransformer,
+        "useAccessPathForContextReference",
+        useAccessPathForContextReference,
+        "referenceName",
+        referenceName,
+        "definedContextEntry",
+        JSON.stringify(definedContextEntry, null, 2),
+        "resultAccessPath",
+        JSON.stringify(resultAccessPath, null, 2)
+      );
+      // log.info("sqlStringForTransformer contextReference",actionRuntimeTransformer.referencePath,"resultAccessPath", resultAccessPath);
+      const resultAccessPathStringForTable = resultAccessPath
+        .map((e, index) => `${index == 0 ? tokenNameQuote + e + tokenNameQuote : tokenStringQuote + e + tokenStringQuote}`)
+        .join(tokenSeparatorForTableColumn);
+
+      const resultAccessPathStringForJson = resultAccessPath
+        .map(
+          (e, index) => `${index == 0 ? tokenNameQuote + e + tokenNameQuote : tokenStringQuote + e + tokenStringQuote}`
+        )
+        .join(tokenSeparatorForJsonAttributeAccess);
+      
       if (topLevelTransformer) {
-        return {
+        const result = {
           type: definedContextEntry.type,
+          // SELECT ${resultAccessPathStringForJson.length>0?resultAccessPathStringForJson:"*"} AS "${referenceName}"
           sqlStringOrObject: `
-SELECT ${resultAccessPathString.length>0?resultAccessPathString:"*"} AS "${referenceName}"
+SELECT ${resultAccessPathStringForJson.length>0?resultAccessPathStringForJson:"*"} AS "${referenceName}"
 FROM "${referenceName}"`,
           resultAccessPath:[0, referenceName],
-        };
-      } else {
-        return {
+        }
+        log.info("sqlStringForTransformer contextReference topLevelTransformer=true", JSON.stringify(result, null, 2));
+        return result;
+      } else { // topLevelTransformer == false
+        const result = {
           type: definedContextEntry.type,
-          sqlStringOrObject: `"${referenceName}"${
-            resultAccessPathString.length > 0 ? "." + resultAccessPathString : ""
-          }`,
+          sqlStringOrObject: definedContextEntry.type == "table" ?
+          `"${referenceName}"${resultAccessPathStringForTable.length > 0 ? "." + resultAccessPathStringForTable : ""}`:
+          `"${referenceName}"${resultAccessPathStringForJson.length > 0 ? tokenSeparatorForTableColumn + resultAccessPathStringForJson : ""}`,
         };
+        log.info("sqlStringForTransformer contextReference topLevelTransformer=false", JSON.stringify(result, null, 2));
+        return result;
       }
-      // TODO: only resolves references to static values, not to values obtained during the execution of the query
-      // const resolvedReference = transformer_resolveReference(
-      //   "runtime",
-      //   actionRuntimeTransformer,
-      //   actionRuntimeTransformer.transformerType == "contextReference" ? "context" : "param",
-      //   queryParams,
-      //   newFetchedData
-      // );
-      // if (resolvedReference instanceof Domain2ElementFailed) {
-      //   return resolvedReference;
-      // }
-      // const referenceQuery = sqlStringForTransformer(
-      //   {
-      //     transformerType: "constant",
-      //     interpolation: "runtime",
-      //     value: resolvedReference as any,
-      //   },
-      //   preparedStatementParametersIndex,
-      //   queryParams,
-      //   newFetchedData,
-      //   true
-      // );
-
-      // return referenceQuery;
       break;
     }
     case "objectEntries": {
-      const applyTo = resolveApplyTo(
+      const applyTo = sqlStringForApplyTo(
         actionRuntimeTransformer,
         preparedStatementParametersCount,
         queryParams,
@@ -926,7 +1035,7 @@ FROM "${referenceName}"`,
       break;
     }
     case "objectValues": {
-      const applyTo = resolveApplyTo(
+      const applyTo = sqlStringForApplyTo(
         actionRuntimeTransformer,
         preparedStatementParametersCount,
         queryParams,
@@ -969,12 +1078,13 @@ FROM "${referenceName}"`,
       break;
     }
     case "unique": {
-      const referenceQuery = resolveApplyTo(
+      const referenceQuery = sqlStringForApplyTo(
         actionRuntimeTransformer,
         preparedStatementParametersCount,
         queryParams,
         definedContextEntries,
-        topLevelTransformer
+        useAccessPathForContextReference,
+        topLevelTransformer,
       );
       if (referenceQuery instanceof Domain2ElementFailed) {
         return referenceQuery;
@@ -1038,12 +1148,13 @@ ${orderBy}
       break;
     }
     case "count": {
-      const referenceQuery = resolveApplyTo(
+      const referenceQuery = sqlStringForApplyTo(
         actionRuntimeTransformer,
         preparedStatementParametersCount,
         queryParams,
         definedContextEntries,
-        topLevelTransformer
+        useAccessPathForContextReference,
+        topLevelTransformer,
       );
       if (referenceQuery instanceof Domain2ElementFailed) {
         return referenceQuery;
@@ -1194,13 +1305,18 @@ export function sqlStringForQuery(
   });
 
   const convertedParams: Record<string, SqlContextEntry> = Object.fromEntries(
-    queryParamsWithClauses.map((q) => [
-      q.name,
-      { 
-        type: q.convertedParam.type, 
-        resultAccessPath: q.convertedParam.resultAccessPath?.slice(1) // because resultAccessPath returns the path viewed from the end user, for which the result is always an array
-      },
-    ])
+    queryParamsWithClauses.map((q) => {
+      const notMapResultAccessPath = q.convertedParam.resultAccessPath?.find((e) => typeof e == "object");
+      if (notMapResultAccessPath) {
+        throw new Error("sqlStringForQuery queryParamsWithClauses convertedParam not string or number: " + JSON.stringify(notMapResultAccessPath, null, 2));
+      }
+      return [
+        q.name,
+        {
+          type: q.convertedParam.type,
+          attributeResultAccessPath: (q.convertedParam.resultAccessPath as any)?.slice(1), // because resultAccessPath returns the path viewed from the end user, for which the result is always an array
+        },
+      ];})
   );
 
   log.info("sqlStringForQuery found queryParamsWithClauses", JSON.stringify(queryParamsWithClauses, null, 2));
@@ -1268,21 +1384,21 @@ export function sqlStringForQuery(
       queryParamsWithClauses.map((q) => '"' + q.name + '" AS (' + q.sql + " )").join(tokenSeparatorForWithRtn)
     );
   }
-  if (transformerRawQueries.length > 0) {
+  if (cleanTransformerRawQueries.length > 0) {
     queryParts.push(
       cleanTransformerRawQueries
         .flatMap((transformerRawQuery) =>
           typeof transformerRawQuery[1] == "string"
-            ? '"' + transformerRawQuery[0] + '" AS (' + transformerRawQuery[1] + " )"
+            ? '"' + transformerRawQuery[0] + '" AS (\n' + transformerRawQuery[1] + " )"
             : (transformerRawQuery[1].extraWith
                 ? transformerRawQuery[1].extraWith
-                    .map((extra: any) => '"' + extra.name + '" AS (' + extra.sql + " )")
+                    .map((extra: any) => '"' + extra.name + '" AS (\n' + extra.sql + " )")
                     .join(tokenSeparatorForWithRtn) +
                   tokenSeparatorForWithRtn
                 : "") +
               '"' +
               transformerRawQuery[0] +
-              '" AS (' +
+              '" AS (\n' +
               transformerRawQuery[1].sqlStringOrObject +
               " )"
         )
