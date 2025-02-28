@@ -45,6 +45,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 export interface SqlContextEntry {
   // type: "json" | "scalar" | "table"; resultAccessPath?: (string | number)[]
   type: "json" | "scalar" | "table";
+  renameTo?: string;
   attributeResultAccessPath?: (string | number)[];
   // tableResultAccessPath?: ResultAccessPath;
 }
@@ -585,14 +586,25 @@ export function sqlStringForTransformer(
       let newPreparedStatementParametersCount = preparedStatementParametersCount;
 
       // const referenceName: string = (actionRuntimeTransformer as any).referencedTransformer;
+      const transformerLabel: string = (actionRuntimeTransformer as any).label ?? actionRuntimeTransformer.transformerType;
+      const referenceToOuterObjectRenamed: string =
+        transformerLabel + "_" + actionRuntimeTransformer.referenceToOuterObject;
+      
       const sqlStringForElementTransformer = sqlStringForTransformer(
         actionRuntimeTransformer.elementTransformer,
         newPreparedStatementParametersCount,
         indentLevel,
         queryParams,
-        {...definedContextEntries, [actionRuntimeTransformer.referenceToOuterObject]: { type: "json", attributeResultAccessPath: ["element"] } },
+        {
+          ...definedContextEntries,
+          [actionRuntimeTransformer.referenceToOuterObject]: {
+            type: "json",
+            renameTo: referenceToOuterObjectRenamed,
+            attributeResultAccessPath: ["element"],
+          },
+        },
         useAccessPathForContextReference,
-        false, // topLevelTransformer
+        false // topLevelTransformer
       );
 
       log.info(
@@ -640,29 +652,29 @@ export function sqlStringForTransformer(
       }
       switch (applyTo.type) {
         case "json": {
-            const extraWith: { name: string; sql: string }[] = [
-              {
-                name: actionRuntimeTransformer.referenceToOuterObject,
-                sql:
-                  // flushAndIndent(indentLevel) +
-                  'SELECT "mapperListToList_oneElementPerRow"."element" FROM (' +
-                  flushAndIndent(indentLevel + 1) +
-                  'SELECT jsonb_array_elements("applyTo"."' +
-                  (applyTo as any).resultAccessPath[1] +
-                  '") AS "element" FROM (' +
-                  flushAndIndent(indentLevel + 2) +
-                  applyTo.sqlStringOrObject +
-                  flushAndIndent(indentLevel + 1) +
-                  ') AS "applyTo"' +
-                  flushAndIndent(indentLevel) +
-                  ') AS "mapperListToList_oneElementPerRow"',
-              },
-              {
-                name: "mapperListToList_elementTransformer",
-                sql: sqlStringForElementTransformer.sqlStringOrObject,
-              },
-            ];
-          const sqlResult = `SELECT * FROM "mapperListToList_elementTransformer"`;
+          const extraWith: { name: string; sql: string }[] = [
+            {
+              name: referenceToOuterObjectRenamed,
+              sql:
+                // flushAndIndent(indentLevel) +
+                'SELECT "' + transformerLabel + '_oneElementPerRow"."element" FROM (' +
+                flushAndIndent(indentLevel + 1) +
+                'SELECT jsonb_array_elements("' + transformerLabel + '_applyTo"."' +
+                (applyTo as any).resultAccessPath[1] +
+                '") AS "element" FROM (' +
+                flushAndIndent(indentLevel + 2) +
+                applyTo.sqlStringOrObject +
+                flushAndIndent(indentLevel + 1) +
+                ') AS "' + transformerLabel + '_applyTo"' +
+                flushAndIndent(indentLevel) +
+                ') AS "' + transformerLabel + '_oneElementPerRow"',
+            },
+            {
+              name: transformerLabel + "_elementTransformer",
+              sql: sqlStringForElementTransformer.sqlStringOrObject,
+            },
+          ];
+          const sqlResult = `SELECT * FROM "${transformerLabel}_elementTransformer"`;
 
           return {
             type: "json",
@@ -1021,11 +1033,11 @@ export function sqlStringForTransformer(
             "SELECT " +
             (resultAccessPathStringForJson.length > 0 ? resultAccessPathStringForJson : "*") +
             ' AS "' +
-            referenceName +
+            (definedContextEntry.renameTo??referenceName) +
             '"' +
             flushAndIndent(indentLevel) +
             'FROM "' +
-            referenceName +
+            (definedContextEntry.renameTo??referenceName) +
             '"',
           resultAccessPath: [0, referenceName],
         };
@@ -1035,8 +1047,8 @@ export function sqlStringForTransformer(
         const result = {
           type: definedContextEntry.type,
           sqlStringOrObject: definedContextEntry.type == "table" ?
-          `"${referenceName}"${resultAccessPathStringForTable.length > 0 ? "." + resultAccessPathStringForTable : ""}`:
-          `"${referenceName}"${resultAccessPathStringForJson.length > 0 ? tokenSeparatorForTableColumn + resultAccessPathStringForJson : ""}`,
+          `"${definedContextEntry.renameTo??referenceName}"${resultAccessPathStringForTable.length > 0 ? "." + resultAccessPathStringForTable : ""}`:
+          `"${definedContextEntry.renameTo??referenceName}"${resultAccessPathStringForJson.length > 0 ? tokenSeparatorForTableColumn + resultAccessPathStringForJson : ""}`,
         };
         log.info("sqlStringForTransformer contextReference topLevelTransformer=false", JSON.stringify(result, null, 2));
         return result;
