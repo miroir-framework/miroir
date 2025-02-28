@@ -216,6 +216,7 @@ function sqlStringForApplyTo(
     | TransformerForRuntime_unique
     | TransformerForRuntime_innerFullObjectTemplate,
   preparedStatementParametersIndex: number,
+  indentLevel: number,
   queryParams: Record<string, any> = {},
   // newFetchedData: Record<string, any> = {},
   definedContextEntries: Record<string, any> = {},
@@ -238,6 +239,7 @@ function sqlStringForApplyTo(
             value: actionRuntimeTransformer.applyTo.reference as any,
           },
           preparedStatementParametersIndex,
+          indentLevel,
           queryParams,
           definedContextEntries,
           useAccessPathForContextReference,
@@ -246,6 +248,7 @@ function sqlStringForApplyTo(
       : sqlStringForTransformer(
           actionRuntimeTransformer.applyTo.reference,
           preparedStatementParametersIndex,
+          indentLevel,
           queryParams,
           definedContextEntries,
           useAccessPathForContextReference,
@@ -274,11 +277,15 @@ const getConstantSql = (
   };
 };
 
+function flushAndIndent(indentLevel: number) {
+  return "\n" + "  ".repeat(indentLevel);
+}
 
 // ################################################################################################
 export function sqlStringForTransformer(
   actionRuntimeTransformer: TransformerForRuntime | TransformerForRuntime_innerFullObjectTemplate,
   preparedStatementParametersCount: number,
+  indentLevel: number,
   queryParams: Record<string, any> = {},
   definedContextEntries: Record<string, SqlContextEntry> = {},
   useAccessPathForContextReference: boolean = true,
@@ -290,6 +297,9 @@ export function sqlStringForTransformer(
     JSON.stringify(actionRuntimeTransformer, null, 2)
   );
 
+  // const flushAndIndent = "\n" + "  ".repeat(indentLevel);
+  // const flushAndIndent1 = "\n" + "  ".repeat(indentLevel + 1);
+  // const flushAndIndent2 = "\n" + "  ".repeat(indentLevel + 1);
   // TODO: use referenceName and dotted notation for the attribute
   const orderBy = (actionRuntimeTransformer as any).orderBy
     ? `ORDER BY "${(actionRuntimeTransformer as any).orderBy}"`
@@ -363,6 +373,7 @@ export function sqlStringForTransformer(
         const resolvedApplyTo = sqlStringForApplyTo(
           actionRuntimeTransformer,
           newPreparedStatementParametersCount,
+          indentLevel,
           queryParams,
           definedContextEntries,
           useAccessPathForContextReference,
@@ -373,14 +384,13 @@ export function sqlStringForTransformer(
         }
 
         let preparedStatementParameters: any[] = resolvedApplyTo.preparedStatementParameters ?? [];
-        // const extraWith: { name: string; sql: string; sqlResultAccessPath?: (string | number)[] }[] = [
-        const extraWith: { name: string; sql: string; sqlResultAccessPath?: ResultAccessPath }[] = [
-        ];
+        const extraWith: { name: string; sql: string; sqlResultAccessPath?: ResultAccessPath }[] = [];
         newPreparedStatementParametersCount += preparedStatementParameters.length;
         actionRuntimeTransformer.definition.forEach((f, index) => {
           const attributeValue = sqlStringForTransformer(
             f.attributeValue,
             newPreparedStatementParametersCount,
+            indentLevel,
             queryParams,
             definedContextEntries,
             useAccessPathForContextReference,
@@ -398,6 +408,7 @@ export function sqlStringForTransformer(
           const attributeKey = sqlStringForTransformer(
             f.attributeKey,
             newPreparedStatementParametersCount,
+            indentLevel,
             queryParams,
             definedContextEntries,
             useAccessPathForContextReference,
@@ -444,11 +455,16 @@ export function sqlStringForTransformer(
           })
           .join(", ");
         log.info("sqlStringForTransformer object_fullTemplate extraWidth", JSON.stringify(extraWith,null,2));
-        const sqlResult = `
-  SELECT jsonb_build_object(${objectAttributes}) AS "object_fullTemplate"
-  FROM ${objectAttributes_With_references}
-  ${orderBy}
-  `;
+        const sqlResult =
+          // flushAndIndent(indentLevel) +
+          "SELECT jsonb_build_object(" +
+          objectAttributes +
+          ') AS "object_fullTemplate" ' +
+          flushAndIndent(indentLevel) +
+          "FROM " +
+          objectAttributes_With_references +
+          flushAndIndent(indentLevel) +
+          orderBy;
         // const sqlResult = `SELECT jsonb_build_object(${objectAttributes}) AS "innerFullObjectTemplate" FROM ${objectAttributes_With_references} GROUP BY ${objectAttributes} ${orderBy}`;
         log.info("sqlStringForTransformer object_fullTemplate sqlResult", JSON.stringify(sqlResult));
         return {
@@ -463,6 +479,7 @@ export function sqlStringForTransformer(
         const resolvedApplyTo = sqlStringForApplyTo(
           actionRuntimeTransformer,
           newPreparedStatementParametersCount,
+          indentLevel,
           queryParams,
           definedContextEntries, // undefined, // undefined, since the result will always be taken from this "WITH" clause.
           false,//useAccessPathForContextReference, // useAccessPathForContextReference,
@@ -481,6 +498,7 @@ export function sqlStringForTransformer(
             const attributeValue = sqlStringForTransformer(
               f.attributeValue,
               newPreparedStatementParametersCount,
+              indentLevel,
               queryParams,
               definedContextEntries,
               useAccessPathForContextReference,
@@ -496,6 +514,7 @@ export function sqlStringForTransformer(
             const attributeKey = sqlStringForTransformer(
               f.attributeKey,
               newPreparedStatementParametersCount,
+              indentLevel,
               queryParams,
               definedContextEntries,
               useAccessPathForContextReference,
@@ -531,14 +550,21 @@ export function sqlStringForTransformer(
           "sqlStringForTransformer object_fullTemplate preparedStatementParameters",
           JSON.stringify(preparedStatementParameters, null, 2)
         );
-        const create_object = `jsonb_build_object(
-            ${objectAttributes
-              .map((e: any, index) => `${e.attributeKey.sqlStringOrObject}, ${e.attributeValue.sqlStringOrObject}`)
-              .join(tokenSeparatorForSelect)}
-          )`;
+        const create_object =
+          "jsonb_build_object(" +
+          flushAndIndent(indentLevel + 1) +
+          objectAttributes
+            .map((e: any, index) => `${e.attributeKey.sqlStringOrObject}, ${e.attributeValue.sqlStringOrObject}`)
+            .join(tokenSeparatorForSelect) 
+          + flushAndIndent(indentLevel)
+          + ")";
         // const objectAttributesString = objectAttributes.map((e: any, index) => `${e.attributeValue.sqlStringOrObject} AS "uuid"`).join(tokenSeparatorForSelect);
         // const objectAttributesString = objectAttributes.map((e: any, index) => `${e.attributeValue.sqlStringOrObject} AS ${e.attributeKey.name}`).join(tokenSeparatorForSelect);
-        const sqlResult = `SELECT ${create_object} AS "object_fullTemplate" FROM ${resolvedApplyTo.sqlStringOrObject}`;
+        const sqlResult = ""
+          // + flushAndIndent(indentLevel)
+          + "SELECT " + create_object + " AS \"object_fullTemplate\""
+          + flushAndIndent(indentLevel)
+          + "FROM " + resolvedApplyTo.sqlStringOrObject;
         // const sqlResult = `SELECT ${objectAttributesString} FROM ${resolvedApplyTo.sqlStringOrObject}`;
         log.info("sqlStringForTransformer object_fullTemplate sqlResult", sqlResult);
         return {
@@ -562,6 +588,7 @@ export function sqlStringForTransformer(
       const sqlStringForElementTransformer = sqlStringForTransformer(
         actionRuntimeTransformer.elementTransformer,
         newPreparedStatementParametersCount,
+        indentLevel,
         queryParams,
         {...definedContextEntries, [actionRuntimeTransformer.referenceToOuterObject]: { type: "json", attributeResultAccessPath: ["element"] } },
         useAccessPathForContextReference,
@@ -589,6 +616,7 @@ export function sqlStringForTransformer(
       const applyTo = sqlStringForApplyTo(
         actionRuntimeTransformer,
         newPreparedStatementParametersCount,
+        indentLevel + 2,
         queryParams,
         definedContextEntries,
         useAccessPathForContextReference,// false, // useAccessPathForContextReference,
@@ -612,25 +640,29 @@ export function sqlStringForTransformer(
       }
       switch (applyTo.type) {
         case "json": {
-
-          const extraWith: { name: string; sql: string }[] = [
-            {
-              name: actionRuntimeTransformer.referenceToOuterObject,
-              sql:`
-SELECT "mapperListToList_oneElementPerRow"."element" FROM (
-  SELECT
-    jsonb_array_elements("applyTo"."${(applyTo as any).resultAccessPath[1]}") AS "element"
-    FROM (${applyTo.sqlStringOrObject}) AS "applyTo"
-) AS "mapperListToList_oneElementPerRow"
-`           },
-            {
-              name: "mapperListToList_elementTransformer",
-              sql: sqlStringForElementTransformer.sqlStringOrObject,
-            }
-          ]
-          const sqlResult = `
-SELECT * FROM "mapperListToList_elementTransformer"
-`;
+            const extraWith: { name: string; sql: string }[] = [
+              {
+                name: actionRuntimeTransformer.referenceToOuterObject,
+                sql:
+                  // flushAndIndent(indentLevel) +
+                  'SELECT "mapperListToList_oneElementPerRow"."element" FROM (' +
+                  flushAndIndent(indentLevel + 1) +
+                  'SELECT jsonb_array_elements("applyTo"."' +
+                  (applyTo as any).resultAccessPath[1] +
+                  '") AS "element" FROM (' +
+                  flushAndIndent(indentLevel + 2) +
+                  applyTo.sqlStringOrObject +
+                  flushAndIndent(indentLevel + 1) +
+                  ') AS "applyTo"' +
+                  flushAndIndent(indentLevel) +
+                  ') AS "mapperListToList_oneElementPerRow"',
+              },
+              {
+                name: "mapperListToList_elementTransformer",
+                sql: sqlStringForElementTransformer.sqlStringOrObject,
+              },
+            ];
+          const sqlResult = `SELECT * FROM "mapperListToList_elementTransformer"`;
 
           return {
             type: "json",
@@ -689,6 +721,7 @@ SELECT * FROM "mapperListToList_elementTransformer"
         const sqlForApplyTo = sqlStringForApplyTo(
           actionRuntimeTransformer,
           preparedStatementParametersCount,
+          indentLevel,
           queryParams,
           definedContextEntries,
           useAccessPathForContextReference,
@@ -930,6 +963,7 @@ SELECT * FROM "mapperListToList_elementTransformer"
           value: resolvedReference as any,
         },
         preparedStatementParametersCount,
+        indentLevel,
         queryParams,
         definedContextEntries,
         true
@@ -983,12 +1017,18 @@ SELECT * FROM "mapperListToList_elementTransformer"
       if (topLevelTransformer) {
         const result = {
           type: definedContextEntry.type,
-          // SELECT ${resultAccessPathStringForJson.length>0?resultAccessPathStringForJson:"*"} AS "${referenceName}"
-          sqlStringOrObject: `
-SELECT ${resultAccessPathStringForJson.length>0?resultAccessPathStringForJson:"*"} AS "${referenceName}"
-FROM "${referenceName}"`,
-          resultAccessPath:[0, referenceName],
-        }
+          sqlStringOrObject:
+            "SELECT " +
+            (resultAccessPathStringForJson.length > 0 ? resultAccessPathStringForJson : "*") +
+            ' AS "' +
+            referenceName +
+            '"' +
+            flushAndIndent(indentLevel) +
+            'FROM "' +
+            referenceName +
+            '"',
+          resultAccessPath: [0, referenceName],
+        };
         log.info("sqlStringForTransformer contextReference topLevelTransformer=true", JSON.stringify(result, null, 2));
         return result;
       } else { // topLevelTransformer == false
@@ -1007,6 +1047,7 @@ FROM "${referenceName}"`,
       const applyTo = sqlStringForApplyTo(
         actionRuntimeTransformer,
         preparedStatementParametersCount,
+        indentLevel,
         queryParams,
         definedContextEntries,
         topLevelTransformer
@@ -1038,6 +1079,7 @@ FROM "${referenceName}"`,
       const applyTo = sqlStringForApplyTo(
         actionRuntimeTransformer,
         preparedStatementParametersCount,
+        indentLevel,
         queryParams,
         definedContextEntries,
         topLevelTransformer
@@ -1081,6 +1123,7 @@ FROM "${referenceName}"`,
       const referenceQuery = sqlStringForApplyTo(
         actionRuntimeTransformer,
         preparedStatementParametersCount,
+        indentLevel,
         queryParams,
         definedContextEntries,
         useAccessPathForContextReference,
@@ -1151,6 +1194,7 @@ ${orderBy}
       const referenceQuery = sqlStringForApplyTo(
         actionRuntimeTransformer,
         preparedStatementParametersCount,
+        indentLevel,
         queryParams,
         definedContextEntries,
         useAccessPathForContextReference,
@@ -1285,6 +1329,7 @@ export function sqlStringForQuery(
         value: value,
       },
       newPreparedStatementParameters.length,
+      0, //indentLevel,
       selectorParams.extractor.queryParams,
       {}
     );
@@ -1330,6 +1375,7 @@ export function sqlStringForQuery(
     const transformerRawQuery = sqlStringForTransformer(
       value as TransformerForRuntime,
       newPreparedStatementParameters.length,
+      1, // indentLevel,
       selectorParams.extractor.queryParams,
       // selectorParams.extractor.contextResults
       convertedParams
@@ -1374,14 +1420,14 @@ export function sqlStringForQuery(
   const queryParts: string[] = [];
   const queryParameters: any[] = [];
   if (extractorRawQueries.length > 0) {
-    queryParts.push(extractorRawQueries.map((q) => '"' + q[0] + '" AS (' + q[1] + " )").join(tokenSeparatorForWith));
+    queryParts.push(extractorRawQueries.map((q) => '"' + q[0] + '" AS (' + flushAndIndent(1) + q[1] + flushAndIndent(0) + ")").join(tokenSeparatorForWithRtn));
   }
   if (combinerRawQueries.length > 0) {
-    queryParts.push(combinerRawQueries.map((q) => '"' + q[0] + '" AS (' + q[1] + " )").join(tokenSeparatorForWith));
+    queryParts.push(combinerRawQueries.map((q) => '"' + q[0] + '" AS (' + flushAndIndent(1) + q[1] + flushAndIndent(0) + ")").join(tokenSeparatorForWithRtn));
   }
   if (queryParamsWithClauses.length > 0) {
     queryParts.push(
-      queryParamsWithClauses.map((q) => '"' + q.name + '" AS (' + q.sql + " )").join(tokenSeparatorForWithRtn)
+      queryParamsWithClauses.map((q) => '"' + q.name + '" AS (' + flushAndIndent(1) + q.sql + flushAndIndent(0) + ")").join(tokenSeparatorForWithRtn)
     );
   }
   if (cleanTransformerRawQueries.length > 0) {
@@ -1389,20 +1435,22 @@ export function sqlStringForQuery(
       cleanTransformerRawQueries
         .flatMap((transformerRawQuery) =>
           typeof transformerRawQuery[1] == "string"
-            ? '"' + transformerRawQuery[0] + '" AS (\n' + transformerRawQuery[1] + " )"
+            ? '"' + transformerRawQuery[0] + '" AS (' + transformerRawQuery[1] + " )"
             : (transformerRawQuery[1].extraWith
                 ? transformerRawQuery[1].extraWith
-                    .map((extra: any) => '"' + extra.name + '" AS (\n' + extra.sql + " )")
+                    .map((extra: any) => '"' + extra.name + '" AS (' + flushAndIndent(1) + extra.sql + flushAndIndent(0) + ")")
                     .join(tokenSeparatorForWithRtn) +
                   tokenSeparatorForWithRtn
                 : "") +
               '"' +
               transformerRawQuery[0] +
-              '" AS (\n' +
-              transformerRawQuery[1].sqlStringOrObject +
-              " )"
+              '" AS (' 
+              +
+              flushAndIndent(1) +
+              transformerRawQuery[1].sqlStringOrObject + flushAndIndent(0)
+              + ")"
         )
-        .join(tokenSeparatorForWith + "\n")
+        .join(tokenSeparatorForWithRtn)
     );
     // (transformerRawQueries as any as [string, SqlStringForTransformerElementValue][]).forEach(([index, value]) => {
     //   if (value.preparedStatementParameters) {
@@ -1411,11 +1459,11 @@ export function sqlStringForQuery(
     // });
   }
   const query =
-    `WITH
-` +
-    queryParts.join(tokenSeparatorForWith + "\n") +
-    `
-SELECT * FROM "${endResultName}"`;
+    `WITH` +
+    flushAndIndent(0) +
+    queryParts.join(tokenSeparatorForWithRtn) +
+    flushAndIndent(0) +
+    `SELECT * FROM "${endResultName}"`;
   log.info("sqlStringForQuery innerFullObjectTemplate aggregateRawQuery", query);
   return {
     query,
