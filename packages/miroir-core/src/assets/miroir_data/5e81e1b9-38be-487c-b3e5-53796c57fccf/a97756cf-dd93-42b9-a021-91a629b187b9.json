@@ -1087,8 +1087,29 @@
             "type": "literal",
             "definition": "dataflowObject"
           },
+          "target": {
+            "type": "string"
+          },
           "definition": {
             "type": "record",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "relativePath": "transformerForBuild"
+              }
+            }
+          }
+        }
+      },
+      "transformerForBuild_dataflowSequence": {
+        "type": "object",
+        "definition": {
+          "transformerType": {
+            "type": "literal",
+            "definition": "dataflowSequence"
+          },
+          "definition": {
+            "type": "array",
             "definition": {
               "type": "schemaReference",
               "definition": {
@@ -1118,6 +1139,12 @@
             "type": "schemaReference",
             "definition": {
               "relativePath": "transformerForBuild_dataflowObject"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformerForBuild_dataflowSequence"
             }
           },
           {
@@ -1678,6 +1705,63 @@
         ],
         "definition": {}
       },
+      "transformerForRuntime_dataflowObject": {
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformerForRuntime_Abstract"
+            }
+          }
+        ],
+        "definition": {
+          "transformerType": {
+            "type": "literal",
+            "definition": "dataflowObject"
+          },
+          "target": {
+            "type": "string"
+          },
+          "definition": {
+            "type": "record",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "relativePath": "transformerForRuntime"
+              }
+            }
+          }
+        }
+      },
+      "transformerForRuntime_dataflowSequence": {
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformerForRuntime_Abstract"
+            }
+          }
+        ],
+        "definition": {
+          "transformerType": {
+            "type": "literal",
+            "definition": "dataflowSequence"
+          },
+          "definition": {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "relativePath": "transformerForRuntime"
+              }
+            }
+          }
+        }
+      },
       "transformerForRuntime_count":{
         "type": "object",
         "extend": [
@@ -2043,6 +2127,18 @@
             "type": "schemaReference",
             "definition": {
               "relativePath": "transformerForRuntime_constants"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformerForRuntime_dataflowObject"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformerForRuntime_dataflowSequence"
             }
           },
           {

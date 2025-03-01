@@ -577,6 +577,54 @@ export function sqlStringForTransformer(
       }
       break;
     }
+    case "dataflowObject": {
+      // throw new Error("sqlStringForTransformer dataflowObject not implemented");
+      let newPreparedStatementParametersCount = preparedStatementParametersCount;
+      let preparedStatementParameters: any[] = [];
+      // newPreparedStatementParametersCount += preparedStatementParameters.length;
+
+      const definitionSql = Object.entries(actionRuntimeTransformer.definition).map(
+        (f, index): [string, Domain2QueryReturnType<SqlStringForTransformerElementValue>] => {
+          const itemSql = sqlStringForTransformer(
+            f[1],
+            newPreparedStatementParametersCount,
+            indentLevel,
+            queryParams,
+            definedContextEntries,
+            useAccessPathForContextReference,
+            topLevelTransformer,
+          );
+          if (itemSql instanceof Domain2ElementFailed) {
+            // return {attributeValue: itemSql};
+            return [f[0], itemSql];
+          }
+          if (itemSql.preparedStatementParameters) {
+            preparedStatementParameters = [...preparedStatementParameters, ...itemSql.preparedStatementParameters];
+            newPreparedStatementParametersCount += itemSql.preparedStatementParameters.length;
+          }
+          return [f[0], itemSql];
+        }
+      );
+
+      const foundError = definitionSql.find(
+        (e: any) => e.attributeKey instanceof Domain2ElementFailed || e.attributeKey instanceof Domain2ElementFailed
+      );
+      if (foundError) {
+        return new Domain2ElementFailed({
+          queryFailure: "QueryNotExecutable",
+          query: actionRuntimeTransformer as any,
+          failureMessage:
+            "sqlStringForTransformer object_fullTemplate attributeKey or attributeValue failed: " +
+            JSON.stringify(foundError, null, 2),
+        });
+      }
+      return Object.fromEntries(definitionSql)[actionRuntimeTransformer.target];
+      break;
+    }
+    case "dataflowSequence": {
+      throw new Error("sqlStringForTransformer dataflowSequence not implemented");
+      break;
+    }
     case "mapperListToList": {
       /**
        * must take the rerferencedExtractor result and make it avaialable to elementTransformer, apply the elementTransformer to

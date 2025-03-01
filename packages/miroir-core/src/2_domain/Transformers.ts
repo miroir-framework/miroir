@@ -1243,8 +1243,12 @@ export function innerTransformer_apply(
           currentContext
         );
       }
-      return resultObject
+      // return resultObject
+      return resultObject[transformer.target];
       break;
+    }
+    case "dataflowSequence": {
+      throw new Error("transformer_apply dataflowSequence not implemented");
     }
     case "newUuid":
     case "contextReference":

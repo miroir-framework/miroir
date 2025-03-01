@@ -1146,9 +1146,9 @@ export const transformerTests: TransformerTestSuite = {
           expectedValue: { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", name: "US"  },
 
         },
-        "object_fullTemplate allows to dynamically build an object during runtime (unknown keys, unknown values)": {
+        "object_fullTemplate allows to dynamically build an object during runtime using parameterReference (unknown keys, unknown values)": {
           transformerTestType: "transformerTest",
-          transformerTestLabel: "object_fullTemplate allows to dynamically build an object during runtime (unknown keys, unknown values)",
+          transformerTestLabel: "object_fullTemplate allows to dynamically build an object during runtime using parameterReference (unknown keys, unknown values)",
           transformerName: "fullTemplate",
           transformer: {
             transformerType: "object_fullTemplate",
@@ -1187,8 +1187,6 @@ export const transformerTests: TransformerTestSuite = {
             country: Country1 as EntityInstance,
           },
           transformerRuntimeContext: {
-            // newUuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-            // country: Country1 as EntityInstance,
           },
           expectedValue: { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", name: "US"  },
         },
@@ -1260,7 +1258,7 @@ export const transformerTests: TransformerTestSuite = {
               referenceType: "referencedTransformer",
               reference: {
                 transformerType: "contextReference",
-                interpolation: "runtime", // TODO: remove, as this parameter is resolved before runtime. Or have only context references in applyTo?
+                interpolation: "runtime", // TODO: test with parameter to be resolved before runtime. Or have only context references in applyTo?
                 referenceName: "countryList",
               },
             },
@@ -1273,7 +1271,7 @@ export const transformerTests: TransformerTestSuite = {
                 reference: {
                   transformerType: "contextReference",
                   interpolation: "runtime",
-                  referencePath: ["country"],
+                  referenceName: "country",
                 },
               },
               definition: [
@@ -1312,21 +1310,69 @@ export const transformerTests: TransformerTestSuite = {
             ],
           },
           transformerParams: {
-            // newUuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-            // countryList: [
-            //   Country1 as EntityInstance,
-            //   Country2 as EntityInstance
-            // ],
           },
           expectedValue: [
-            // { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"},
-            // { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"},
             { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", name: "US" },
             { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", name: "DE" },
           ],
         },
       },
-    }
+    },
+    dataflowObject: {
+      transformerTestType: "transformerTestSuite",
+      transformerTestLabel: "dataflowObject",
+      transformerTests: {
+        "dataflowObject allows to build an object with dynamic keys and values": {
+          transformerTestType: "transformerTest",
+          transformerTestLabel: "dataflowObject allows to build an object with dynamic keys and values",
+          transformerName: "dataflowObject",
+          transformer: {
+            transformerType: "dataflowObject",
+            target: "newObject",
+            definition: {
+              newObject: {
+                transformerType: "object_fullTemplate",
+                applyTo: {
+                  referenceType: "referencedTransformer",
+                  reference: {
+                    transformerType: "parameterReference",
+                    referenceName: "country",
+                  },
+                },
+                definition: [
+                  {
+                    attributeKey: {
+                      transformerType: "constantUuid",
+                      value: "uuid",
+                    },
+                    attributeValue: {
+                      transformerType: "parameterReference",
+                      referenceName: "newUuid",
+                    },
+                  },
+                  {
+                    attributeKey: {
+                      transformerType: "constantUuid",
+                      value: "name",
+                    },
+                    attributeValue: {
+                      transformerType: "parameterReference",
+                      referencePath: ["country", "iso3166-1Alpha-2"],
+                    },
+                  },
+                ],
+              },
+            },
+          },
+          transformerParams: {
+            newUuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+            country: Country1 as EntityInstance,
+          },
+          // expectedValue: { newObject: { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", name: "US" } },
+          expectedValue: { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", name: "US" },
+        },
+      },
+    },
   },
 };
 
