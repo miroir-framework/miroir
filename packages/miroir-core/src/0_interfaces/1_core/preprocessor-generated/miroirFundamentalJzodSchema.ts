@@ -1779,6 +1779,9 @@ export const miroirFundamentalJzodSchema = {
             "type": "literal",
             "definition": "object_fullTemplate"
           },
+          "referenceToOuterObject": {
+            "type": "string"
+          },
           "definition": {
             "type": "array",
             "definition": {
@@ -3325,6 +3328,9 @@ export const miroirFundamentalJzodSchema = {
           "transformerType": {
             "type": "literal",
             "definition": "object_fullTemplate"
+          },
+          "referenceToOuterObject": {
+            "type": "string"
           },
           "definition": {
             "type": "array",
@@ -14129,6 +14135,20 @@ export const miroirFundamentalJzodSchema = {
               {
                 "type": "literal",
                 "definition": "object_fullTemplate"
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "carryOnObject"
+                }
+              }
+            ]
+          },
+          "referenceToOuterObject": {
+            "type": "union",
+            "definition": [
+              {
+                "type": "string"
               },
               {
                 "type": "schemaReference",
@@ -34718,6 +34738,20 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
+              "referenceToOuterObject": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
               "definition": {
                 "type": "union",
                 "definition": [
@@ -36261,6 +36295,20 @@ export const miroirFundamentalJzodSchema = {
                   {
                     "type": "literal",
                     "definition": "object_fullTemplate"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "carryOnObject"
+                    }
+                  }
+                ]
+              },
+              "referenceToOuterObject": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "string"
                   },
                   {
                     "type": "schemaReference",

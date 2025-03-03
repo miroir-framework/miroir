@@ -49,7 +49,7 @@ export type ResultAccessPath = (string | number | {
 
 
 // ################################################################################################
-// export function resolvePathOnObject(valueObject:any, path: (string | number)[]) {
+// TODO: unit tests!
 export function resolvePathOnObject(valueObject:any, path: ResultAccessPath) {
   return path.reduce((acc, curr, index) => {
     if (typeof curr === "object") {

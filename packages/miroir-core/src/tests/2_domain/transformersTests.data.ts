@@ -341,7 +341,7 @@ export const transformerTests: TransformerTestSuite = {
                 value: {"test": "a"},
               },
               transformerParams: {},
-              expectedValue: [{"test": "a"}], // an extractor is always a table (that is a list of rows)
+              expectedValue: {"test": "a"}, // should an extractor always be a table (that is a list of rows)?
             },
             "resolve basic transformer constantAsExtractor for Country object": {
               transformerTestType: "transformerTest",
@@ -355,7 +355,7 @@ export const transformerTests: TransformerTestSuite = {
               },
               transformerParams: {},
               ignoreAttributes: ["conceptLevel", "icon"],
-              expectedValue: [Country1], // an extractor is always a table (that is a list of rows)
+              expectedValue: Country1, // should an extractor always be a table (that is a list of rows)?
             },
             "resolve basic transformer constantAsExtractor for array of simple objects": {
               transformerTestType: "transformerTest",
@@ -365,10 +365,13 @@ export const transformerTests: TransformerTestSuite = {
                 transformerType: "constantAsExtractor",
                 interpolation: "runtime",
                 valueJzodSchema: {
-                  type: "object",
+                  type: "array",
                   definition: {
-                    test: { type: "string" },
-                  },
+                    type: "object",
+                    definition: {
+                      test: { type: "string" },
+                    },
+                  }
                 },
                 value: [{"test": "a"}, { "test": "b" }],
               },
@@ -807,7 +810,10 @@ export const transformerTests: TransformerTestSuite = {
                 transformerType: "constantAsExtractor",
                 interpolation: "runtime",
                 valueJzodSchema: {
-                  type: "string",
+                  type: "array",
+                  definition: {
+                    type: "string",
+                  }
                 },
                 value: [ "testA", "testB", "testC" ],
               },
@@ -832,10 +838,13 @@ export const transformerTests: TransformerTestSuite = {
                 transformerType: "constantAsExtractor",
                 interpolation: "runtime",
                 valueJzodSchema: {
-                  type: "object",
+                  type: "array",
                   definition: {
-                    test: { type: "string" },
-                  },
+                    type: "object",
+                    definition: {
+                      test: { type: "string" },
+                    },
+                  }
                 },
                 value: [{ test: "testA" }, { test: "testB" }, { test: "testC" }],
               },
@@ -962,9 +971,12 @@ export const transformerTests: TransformerTestSuite = {
                 transformerType: "constantAsExtractor",
                 interpolation: "runtime",
                 valueJzodSchema: {
-                  type: "object",
+                  type: "array",
                   definition: {
-                    a: { type: "string" },
+                    type: "object",
+                    definition: {
+                      a: { type: "string" },
+                    },
                   },
                 },
                 value: [ { a: "testA" }, { a: "testB" }, { a: "testA" }, { a: "testC" } ],
@@ -1038,7 +1050,10 @@ export const transformerTests: TransformerTestSuite = {
                 transformerType: "constantAsExtractor",
                 interpolation: "runtime",
                 valueJzodSchema: {
-                  type: "string",
+                  type: "array",
+                  definition: {
+                    type: "string",
+                  }
                 },
                 value: ["testA", "testB", "testC"],
               },
@@ -1061,9 +1076,12 @@ export const transformerTests: TransformerTestSuite = {
                 transformerType: "constantAsExtractor",
                 interpolation: "runtime",
                 valueJzodSchema: {
-                  type: "object",
+                  type: "array",
                   definition: {
-                    test: { type: "string" },
+                    type: "object",
+                    definition: {
+                      test: { type: "string" },
+                    },
                   },
                 },
                 value: [{ test: "testA" }, { test: "testB" }, { test: "testC" }],
@@ -1116,6 +1134,7 @@ export const transformerTests: TransformerTestSuite = {
                 referenceName: "country",
               },
             },
+            referenceToOuterObject: "country",
             definition: [
               {
                 attributeKey: {
@@ -1155,10 +1174,11 @@ export const transformerTests: TransformerTestSuite = {
             applyTo: {
               referenceType: "referencedTransformer",
               reference: {
-                transformerType: "contextReference",
+                transformerType: "parameterReference",
                 referenceName: "country",
               },
             },
+            referenceToOuterObject: "country",
             definition: [
               {
                 attributeKey: {
@@ -1176,8 +1196,9 @@ export const transformerTests: TransformerTestSuite = {
                   value: "name"
                 },
                 attributeValue: {
-                  transformerType: "mustacheStringTemplate",
-                  definition: "{{country.iso3166-1Alpha-2}}"
+                  transformerType: "contextReference",
+                  interpolation: "runtime",
+                  referencePath: ["country","iso3166-1Alpha-2"]
                 }
               }
             ]
@@ -1206,23 +1227,23 @@ export const transformerTests: TransformerTestSuite = {
                 value: Country1 as EntityInstance,
               },
             },
+            referenceToOuterObject: "country",
             definition: [
               {
                 attributeKey: {
-                  interpolation: "runtime",
                   transformerType: "constantString",
+                  // interpolation: "runtime",
                   value: "uuid"
                 },
                 attributeValue: {
-                  transformerType: "contextReference",
-                  interpolation: "runtime",
+                  transformerType: "parameterReference",
                   referenceName: "newUuid"
                 }
               },
               {
                 attributeKey: {
                   transformerType: "constantString",
-                  interpolation: "runtime",
+                  // interpolation: "runtime",
                   value: "name"
                 },
                 attributeValue: {
@@ -1233,10 +1254,13 @@ export const transformerTests: TransformerTestSuite = {
               }
             ]
           },
-          transformerParams: {},
-          transformerRuntimeContext: {
+          transformerParams: {
             newUuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
             country: Country1 as EntityInstance,
+          },
+          transformerRuntimeContext: {
+            // newUuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+            // country: Country1 as EntityInstance,
           },
           expectedValue: { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", name: "US"  },
         },
@@ -1322,9 +1346,9 @@ export const transformerTests: TransformerTestSuite = {
       transformerTestType: "transformerTestSuite",
       transformerTestLabel: "dataflowObject",
       transformerTests: {
-        "dataflowObject allows to build an object with dynamic keys and values": {
+        "dataflowObject with single entry allows to build an object with dynamic keys and values": {
           transformerTestType: "transformerTest",
-          transformerTestLabel: "dataflowObject allows to build an object with dynamic keys and values",
+          transformerTestLabel: "dataflowObject with single entry allows to build an object with dynamic keys and values",
           transformerName: "dataflowObject",
           transformer: {
             transformerType: "dataflowObject",
@@ -1339,6 +1363,7 @@ export const transformerTests: TransformerTestSuite = {
                     referenceName: "country",
                   },
                 },
+                referenceToOuterObject: "country2",
                 definition: [
                   {
                     attributeKey: {
@@ -1356,8 +1381,10 @@ export const transformerTests: TransformerTestSuite = {
                       value: "name",
                     },
                     attributeValue: {
-                      transformerType: "parameterReference",
-                      referencePath: ["country", "iso3166-1Alpha-2"],
+                      // transformerType: "parameterReference",
+                      transformerType: "contextReference",
+                      interpolation: "runtime",
+                      referencePath: ["country2", "iso3166-1Alpha-2"],
                     },
                   },
                 ],
@@ -1371,6 +1398,98 @@ export const transformerTests: TransformerTestSuite = {
           // expectedValue: { newObject: { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", name: "US" } },
           expectedValue: { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", name: "US" },
         },
+        "dataflowObject with two entries allows to build an object with dynamic keys and values": {
+          transformerTestType: "transformerTest",
+          transformerTestLabel: "dataflowObject with two entries allows to build an object with dynamic keys and values",
+          transformerName: "dataflowObject",
+          transformer: {
+            transformerType: "dataflowObject",
+            target: "newObject2",
+            definition: {
+              newObject: {
+                transformerType: "object_fullTemplate",
+                label: "newObject",
+                applyTo: {
+                  referenceType: "referencedTransformer",
+                  reference: {
+                    transformerType: "parameterReference",
+                    referenceName: "country",
+                  },
+                },
+                referenceToOuterObject: "country",
+                definition: [
+                  {
+                    attributeKey: {
+                      transformerType: "constantUuid",
+                      value: "uuid",
+                    },
+                    attributeValue: {
+                      transformerType: "parameterReference",
+                      referenceName: "newUuid",
+                    },
+                  },
+                  {
+                    attributeKey: {
+                      transformerType: "constantUuid",
+                      value: "name",
+                    },
+                    attributeValue: {
+                      transformerType: "contextReference",
+                      interpolation: "runtime",
+                      referencePath: ["country", "iso3166-1Alpha-2"],
+                    },
+                  },
+                ],
+              },
+              newObject2: {
+                transformerType: "object_fullTemplate",
+                label: "newObject2",
+                applyTo: {
+                  referenceType: "referencedTransformer",
+                  reference: {
+                    transformerType: "contextReference",
+                    referenceName: "newObject",
+                  },
+                },
+                referenceToOuterObject: "newObject",
+                definition: [
+                  {
+                    attributeKey: {
+                      transformerType: "constantUuid",
+                      value: "uuid",
+                    },
+                    attributeValue: {
+                      transformerType: "parameterReference",
+                      referenceName: "newUuid2",
+                    },
+                  },
+                  {
+                    attributeKey: {
+                      transformerType: "constantUuid",
+                      value: "name",
+                    },
+                    attributeValue: {
+                      transformerType: "contextReference",
+                      interpolation: "runtime",
+                      referencePath: ["newObject", "name"],
+                    },
+                  },
+                ],
+              },
+            },
+          },
+          transformerParams: {
+            newUuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+            newUuid2: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+            country: Country1 as EntityInstance,
+          },
+          expectedValue: {
+            // uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+            // name: "US",
+            uuid: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+            name: "US",
+          },
+        }
       },
     },
   },

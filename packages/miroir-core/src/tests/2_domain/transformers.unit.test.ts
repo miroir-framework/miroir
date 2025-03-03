@@ -141,9 +141,10 @@ async function runTransformerTestInMemory(vitest: any, testSuiteNamePath: string
   }
   console.log("################################ transformerTestParams", JSON.stringify(transformerTest, null, 2));
   const transformer: TransformerForBuild | TransformerForRuntime = transformerTest.transformer;
-
+  // const interpolation = (transformerTest.transformer as any).interpolation ?? "build"
+  const interpolation = (transformerTest.transformer as any).interpolation ?? "runtime"
   const rawResult: Domain2QueryReturnType<any> = transformer_apply_wrapper(
-    (transformerTest.transformer as any).interpolation ?? "build",
+    interpolation,
     undefined,
     transformer,
     transformerTest.transformerParams,
