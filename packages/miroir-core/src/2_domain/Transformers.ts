@@ -463,6 +463,18 @@ function transformer_objectAlter(
     }
   );
 
+  if (overrideObject instanceof Domain2ElementFailed) {
+    log.error(
+      "transformer_objectAlter can not apply to failed overrideObject",
+      overrideObject
+    );
+    return new Domain2ElementFailed({
+      queryFailure: "QueryNotExecutable",
+      failureOrigin: ["transformer_objectAlter"],
+      queryContext: "transformer_objectAlter can not apply to failed overrideObject",
+      innerError: overrideObject
+    });
+  }
   log.info(
     "transformer_objectAlter resolvedApplyTo",
     resolvedApplyTo,
@@ -1171,6 +1183,19 @@ export function innerTransformer_apply(
           ];
         })
       );
+      const hasFailures = Object.values(result).find((e) => e instanceof Domain2ElementFailed);
+      if (hasFailures) {
+        log.error(
+          "innerTransformer_apply freeObjectTemplate hasFailures",
+          hasFailures
+        );
+        return new Domain2ElementFailed({
+          queryFailure: "QueryNotExecutable",
+          failureOrigin: ["transformer_apply"],
+          queryContext: "freeObjectTemplate hasFailures",
+          innerError: hasFailures
+        });
+      }
       log.info(
         "innerTransformer_apply freeObjectTemplate for",
         label,

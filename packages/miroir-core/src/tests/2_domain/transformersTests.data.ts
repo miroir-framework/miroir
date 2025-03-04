@@ -1556,7 +1556,32 @@ export const transformerTests: TransformerTestSuite = {
             name: "US",
             country: { uuid: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy", name: "US" },
           },
-        }
+        },
+        "freeObjectTemplate should fail when definition fails to resolve correctly": {
+          transformerTestType: "transformerTest",
+          transformerTestLabel: "freeObjectTemplate should fail when definition fails to resolve correctly",
+          transformerName: "freeObjectTemplate",
+          transformer: {
+            transformerType: "freeObjectTemplate",
+            definition: {
+              uuid: {
+                transformerType: "constantUuid",
+                value: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+              },
+              name: {
+                transformerType: "parameterReference",
+                referencePath: ["country", "nonExistingAttribute"],
+              },
+            },
+          },
+          transformerParams: {
+            country: Country1 as EntityInstance,
+          },
+          ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+          expectedValue: {
+            queryFailure: "QueryNotExecutable",
+          },
+        },
       },
     },
     objectAlter: {
@@ -1592,6 +1617,68 @@ export const transformerTests: TransformerTestSuite = {
           },
           expectedValue: { ...Country1, "iso3166-1Alpha-2": "DE" },
         },
+        "objectAlter should fail when applyTo fails to resolve correctly": {
+          transformerTestType: "transformerTest",
+          transformerTestLabel: "objectAlter should fail when applyTo fails to resolve correctly",
+          transformerName: "objectAlter",
+          transformer: {
+            transformerType: "objectAlter",
+            applyTo: {
+              referenceType: "referencedTransformer",
+              reference: {
+                transformerType: "parameterReference",
+                referenceName: "nonExistingCountry",
+              },
+            },
+            definition: {
+              transformerType: "freeObjectTemplate",
+              definition: {
+                "iso3166-1Alpha-2": {
+                  transformerType: "constantString",
+                  value: "DE",
+                },
+              }
+            }
+          },
+          transformerParams: {
+            country: Country1 as EntityInstance,
+          },
+          ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+          expectedValue: {
+            queryFailure: "QueryNotExecutable",
+          },
+        },
+        "objectAlter should fail when definition fails to resolve correctly": {
+          transformerTestType: "transformerTest",
+          transformerTestLabel: "objectAlter should fail when definition fails to resolve correctly",
+          transformerName: "objectAlter",
+          transformer: {
+            transformerType: "objectAlter",
+            applyTo: {
+              referenceType: "referencedTransformer",
+              reference: {
+                transformerType: "parameterReference",
+                referenceName: "country",
+              },
+            },
+            definition: {
+              transformerType: "freeObjectTemplate",
+              definition: {
+                "iso3166-1Alpha-2": {
+                  transformerType: "parameterReference",
+                  referencePath: ["country", "nonExistingAttribute"],
+                },
+              }
+            }
+          },
+          transformerParams: {
+            country: Country1 as EntityInstance,
+          },
+          ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+          expectedValue: {
+            queryFailure: "QueryNotExecutable",
+          },
+        }
       },
     }
   },
