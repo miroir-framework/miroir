@@ -192,58 +192,6 @@ if (RUN_TEST == testSuiteName) {
 
 
   // // ################################################################################################
-  // it("build custom UuidIndex object from object list with runtime transformer", async () => { // TODO: test failure cases!
-  //     console.log("build custom UuidIndex object from object list with runtime transformer START")
-  //     // const newApplicationName = "test";
-  //     // const newUuid = uuidv4();
-
-  //     const uniqueRuntimeTemplate:TransformerForRuntime = {
-  //       transformerType: "listReducerToIndexObject",
-  //       interpolation: "runtime",
-  //       referencedTransformer: "countries",
-  //       indexAttribute: "uuid",
-  //     }
-
-  //     // const preTestResult: {[k: string]: {[l:string]: any}} = transformer_apply(
-  //     const preTestResult: {[k: string]: {[l:string]: any}} = transformer_apply(
-  //       "runtime",
-  //       undefined,
-  //       // uniqueRuntimeTemplate,
-  //       uniqueRuntimeTemplate as any,
-  //       {
-  //         // newUuid: newUuid ,
-  //       }, // queryParams
-  //       {
-  //         countries: [
-  //             Country1 as EntityInstance,
-  //             Country2 as EntityInstance,
-  //             Country3 as EntityInstance,
-  //             Country4 as EntityInstance,
-  //         ],
-  //       } // context
-  //     );
-
-  //     console.log("################################", expect.getState().currentTestName, "preTestResult", preTestResult)
-  //     const testResult = ignorePostgresExtraAttributesOnObject(preTestResult as any,["uuid"]); // uuid value is ignored
-  //     expect(testResult).toEqual(
-  //       {
-  //         [Country1.uuid]: Country1 as EntityInstance,
-  //         [Country2.uuid]: Country2 as EntityInstance,
-  //         [Country3.uuid]: Country3 as EntityInstance,
-  //         [Country4.uuid]: Country4 as EntityInstance,
-  //       }
-  //       // [
-  //       //   { name: 'US' },
-  //       //   { name: 'DE' },
-  //       //   { name: 'FR' },
-  //       //   { name: 'GB' },
-  //       // ]
-  //     );
-  //     console.log(expect.getState().currentTestName, "END")
-  //   }
-  // );
-
-  // // ################################################################################################
   // it("build freeObject with build transformer", async () => { // TODO: test failure cases!
   //   console.log(expect.getState().currentTestName, "START")
   //   const newApplicationName = "test";
@@ -714,60 +662,6 @@ if (RUN_TEST == testSuiteName) {
 
 
 
-  // // ################################################################################################
-  // describe("dataflowObject transformer", () => {
-  //   it("should apply dataflowObject transformer correctly", () => {
-  //     const transformer: TransformerForBuild_dataflowObject = {
-  //       transformerType: "dataflowObject",
-  //       definition: {
-  //         name: {
-  //           transformerType: "constantString",
-  //           value: "testName",
-  //         },
-  //         uuid: {
-  //           transformerType: "newUuid",
-  //         },
-  //         doubleName: {
-  //           transformerType: "mustacheStringTemplate",
-  //           definition: "{{name}}-{{name}}",
-  //         },
-  //         object: {
-  //           transformerType: "dataflowObject",
-  //           definition: {
-  //             reDoubleName: {
-  //               transformerType: "contextReference",
-  //               referenceName: "doubleName",
-  //             },
-  //             reReDoubleName: {
-  //               transformerType: "contextReference",
-  //               referencePath: ["object", "reDoubleName"],
-  //             },
-  //           },
-  //         },
-  //       },
-  //     };
-
-  //     const queryParams = {};
-  //     const contextResults = {};
-
-  //     const result: Domain2QueryReturnType<any> = transformer_apply(
-  //       "build",
-  //       undefined,
-  //       transformer,
-  //       queryParams,
-  //       contextResults
-  //     );
-
-  //     expect(result.name).toBe("testName");
-  //     expect(result.uuid).toMatch(
-  //       /^[0-9a-f]{8}-[0-9a-f]{4}-[4][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
-  //     );
-  //     expect(result.doubleName).toBe("testName-testName");
-  //     expect(result.object.reDoubleName).toEqual("testName-testName");
-  //     expect(result.object.reReDoubleName).toEqual("testName-testName");
-  //   });
-  // });
-    
 
 
 
@@ -1238,3 +1132,56 @@ if (RUN_TEST == testSuiteName) {
   // );
 
 // });
+
+  // // ################################################################################################
+  // it("build custom UuidIndex object from object list with runtime transformer", async () => { // TODO: test failure cases!
+  //     console.log("build custom UuidIndex object from object list with runtime transformer START")
+  //     // const newApplicationName = "test";
+  //     // const newUuid = uuidv4();
+
+  //     const uniqueRuntimeTemplate:TransformerForRuntime = {
+  //       transformerType: "listReducerToIndexObject",
+  //       interpolation: "runtime",
+  //       referencedTransformer: "countries",
+  //       indexAttribute: "uuid",
+  //     }
+
+  //     // const preTestResult: {[k: string]: {[l:string]: any}} = transformer_apply(
+  //     const preTestResult: {[k: string]: {[l:string]: any}} = transformer_apply(
+  //       "runtime",
+  //       undefined,
+  //       // uniqueRuntimeTemplate,
+  //       uniqueRuntimeTemplate as any,
+  //       {
+  //         // newUuid: newUuid ,
+  //       }, // queryParams
+  //       {
+  //         countries: [
+  //             Country1 as EntityInstance,
+  //             Country2 as EntityInstance,
+  //             Country3 as EntityInstance,
+  //             Country4 as EntityInstance,
+  //         ],
+  //       } // context
+  //     );
+
+  //     console.log("################################", expect.getState().currentTestName, "preTestResult", preTestResult)
+  //     const testResult = ignorePostgresExtraAttributesOnObject(preTestResult as any,["uuid"]); // uuid value is ignored
+  //     expect(testResult).toEqual(
+  //       {
+  //         [Country1.uuid]: Country1 as EntityInstance,
+  //         [Country2.uuid]: Country2 as EntityInstance,
+  //         [Country3.uuid]: Country3 as EntityInstance,
+  //         [Country4.uuid]: Country4 as EntityInstance,
+  //       }
+  //       // [
+  //       //   { name: 'US' },
+  //       //   { name: 'DE' },
+  //       //   { name: 'FR' },
+  //       //   { name: 'GB' },
+  //       // ]
+  //     );
+  //     console.log(expect.getState().currentTestName, "END")
+  //   }
+  // );
+

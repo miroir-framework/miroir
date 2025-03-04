@@ -1492,6 +1492,73 @@ export const transformerTests: TransformerTestSuite = {
         }
       },
     },
+    freeObjectTemplate: {
+      transformerTestType: "transformerTestSuite",
+      transformerTestLabel: "freeObjectTemplate",
+      transformerTests: {
+        "freeObjectTemplate allows to build a simple object with dynamic values": {
+          transformerTestType: "transformerTest",
+          transformerTestLabel: "freeObjectTemplate allows to build a simple object with dynamic values",
+          transformerName: "freeObjectTemplate",
+          transformer: {
+            transformerType: "freeObjectTemplate",
+            definition: {
+              uuid: {
+                transformerType: "constantUuid",
+                value: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+              },
+              name: {
+                transformerType: "parameterReference",
+                referencePath: ["country", "iso3166-1Alpha-2"],
+              },
+            },
+          },
+          transformerParams: {
+            country: Country1 as EntityInstance,
+          },
+          expectedValue: { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", name: "US" },
+        },
+        "freeObjectTemplate allows to build a 2-level object with dynamic values": {
+          transformerTestType: "transformerTest",
+          transformerTestLabel: "freeObjectTemplate allows to build a 2-level object with dynamic values",
+          transformerName: "freeObjectTemplate",
+          transformer: {
+            transformerType: "freeObjectTemplate",
+            definition: {
+              uuid: {
+                transformerType: "constantUuid",
+                value: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+              },
+              name: {
+                transformerType: "parameterReference",
+                referencePath: ["country", "iso3166-1Alpha-2"],
+              },
+              country: {
+                transformerType: "freeObjectTemplate",
+                definition: {
+                  uuid: {
+                    transformerType: "constantUuid",
+                    value: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+                  },
+                  name: {
+                    transformerType: "parameterReference",
+                    referencePath: ["country", "iso3166-1Alpha-2"],
+                  },
+                },
+              },
+            },
+          },
+          transformerParams: {
+            country: Country1 as EntityInstance,
+          },
+          expectedValue: {
+            uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+            name: "US",
+            country: { uuid: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy", name: "US" },
+          },
+        }
+      },
+    }
   },
 };
 
