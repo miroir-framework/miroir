@@ -5,7 +5,6 @@ import {
   ExtractorOrCombiner,
   LoggerInterface,
   MiroirLoggerFactory,
-  resolveInnerTransformer,
   ResultAccessPath,
   transformer_mustacheStringTemplate_apply,
   transformer_resolveReference,
@@ -14,10 +13,11 @@ import {
   TransformerForRuntime_innerFullObjectTemplate,
   TransformerForRuntime_list_listMapperToList,
   TransformerForRuntime_list_listPickElement,
+  TransformerForRuntime_object_alter,
   TransformerForRuntime_object_fullTemplate,
   TransformerForRuntime_objectEntries,
   TransformerForRuntime_objectValues,
-  TransformerForRuntime_unique,
+  TransformerForRuntime_unique
 } from "miroir-core";
 import { RecursiveStringRecords } from "../4_services/SqlDbQueryTemplateRunner";
 import { cleanLevel } from "../4_services/constants";
@@ -212,6 +212,7 @@ function sqlStringForApplyTo(
     | TransformerForRuntime_count
     | TransformerForRuntime_list_listPickElement
     | TransformerForRuntime_list_listMapperToList
+    | TransformerForRuntime_object_alter
     | TransformerForRuntime_objectValues
     | TransformerForRuntime_objectEntries
     | TransformerForRuntime_unique
@@ -278,9 +279,15 @@ const getConstantSql = (
   };
 };
 
-function flushAndIndent(indentLevel: number) {
-  return "\n" + "  ".repeat(indentLevel);
+// ################################################################################################
+function indent(indentLevel: number) {
+  return "  ".repeat(indentLevel);
 }
+// ################################################################################################
+function flushAndIndent(indentLevel: number) {
+  return "\n" + indent(indentLevel);
+}
+
 
 // ################################################################################################
 export function sqlStringForTransformer(
@@ -1394,8 +1401,104 @@ FROM ${selectFrom}`
       }
       break;
     }
+    case "objectAlter": {
+      let newPreparedStatementParametersCount = preparedStatementParametersCount;
+      const applyToName: string =
+        ((actionRuntimeTransformer as any).label
+          ? (actionRuntimeTransformer as any).label
+          : actionRuntimeTransformer.transformerType) +
+        "_" +
+        actionRuntimeTransformer.referenceToOuterObject;
+
+      const applyToSql = sqlStringForApplyTo(
+        actionRuntimeTransformer,
+        newPreparedStatementParametersCount,
+        indentLevel,
+        queryParams,
+        definedContextEntries,
+        useAccessPathForContextReference,
+        topLevelTransformer
+      );
+      if (applyToSql instanceof Domain2ElementFailed) {
+        return applyToSql;
+      }
+      if (applyToSql.type != "json") {
+        return new Domain2ElementFailed({
+          queryFailure: "QueryNotExecutable",
+          query: actionRuntimeTransformer as any,
+          failureMessage: "sqlStringForTransformer objectAlter referenceQuery not json",
+        });
+      }
+      const accessPathHasMap = applyToSql.resultAccessPath?.find((e: any) => typeof e == "object" && e.type == "map");
+      if (accessPathHasMap) {
+        return new Domain2ElementFailed({
+          queryFailure: "QueryNotExecutable",
+          query: actionRuntimeTransformer as any,
+          failureMessage: "sqlStringForTransformer object_fullTemplate resultAccessPath has map: " + JSON.stringify(applyToSql.resultAccessPath, null, 2),
+        });
+      }
+
+      newPreparedStatementParametersCount += (applyToSql.preparedStatementParameters ?? []).length;
+
+      let newDefinedContextEntries = { ...definedContextEntries };
+      newDefinedContextEntries[actionRuntimeTransformer.referenceToOuterObject] = {
+        type: "json",
+        renameTo: applyToName,
+        attributeResultAccessPath: applyToSql.resultAccessPath?.slice(1) as any, // correct since resolvedApplyTo has no "map" (object) item
+      };
+
+      const resolvedDefinition = sqlStringForTransformer(
+        actionRuntimeTransformer.definition,
+        newPreparedStatementParametersCount,
+        indentLevel,
+        queryParams,
+        newDefinedContextEntries,
+        useAccessPathForContextReference,
+        false// topLevelTransformer,
+      );
+
+      if (resolvedDefinition instanceof Domain2ElementFailed) {
+        return resolvedDefinition;
+      }
+      if (resolvedDefinition.type != "json") {
+        return new Domain2ElementFailed({
+          queryFailure: "QueryNotExecutable",
+          query: actionRuntimeTransformer as any,
+          failureMessage: "sqlStringForTransformer objectAlter definition not json",
+        });
+      }
+
+      const extraWith: { name: string; sql: string; sqlResultAccessPath?: ResultAccessPath }[] = [
+        ...resolvedDefinition.extraWith ?? [],
+        {
+          name: applyToName,
+          sql: applyToSql.sqlStringOrObject,
+          sqlResultAccessPath: applyToSql.resultAccessPath?.slice(1), // checked for map above
+        },
+      ];
+
+      if (topLevelTransformer) {
+      const sqlResult = `SELECT (
+${indent(indentLevel+ 1)}"${applyToName}".${applyToSql.resultAccessPath?.slice(1).map(e=>tokenNameQuote+e+tokenNameQuote).join('->')}
+${indent(indentLevel+ 1)}||
+${indent(indentLevel+ 1)}${resolvedDefinition.sqlStringOrObject}.${resolvedDefinition.resultAccessPath?.slice(1).map(e=>tokenNameQuote+e+tokenNameQuote).join('->')}
+${indent(indentLevel)}) AS "objectAlter"
+${indent(indentLevel)}FROM "${applyToName}", ${resolvedDefinition.sqlStringOrObject}`;
+        return {
+          type: "json",
+          sqlStringOrObject: sqlResult,
+          preparedStatementParameters: [
+            ...applyToSql.preparedStatementParameters ?? [],
+            ...resolvedDefinition.preparedStatementParameters ?? [],
+          ],
+          resultAccessPath: [0, "objectAlter"],
+          extraWith,
+        };
+      } else {
+        throw new Error("sqlStringForTransformer objectAlter not implemented for (non-topLevel) inner transformer");
+      }
+    }
     case "objectDynamicAccess":
-    case "objectAlter":
     case "listReducerToIndexObject": {
       return new Domain2ElementFailed({
         queryFailure: "QueryNotExecutable",

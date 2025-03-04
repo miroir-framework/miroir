@@ -758,6 +758,15 @@
       },
       "transformerForBuild_inner_object_alter": {
         "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformerForBuild_applyTo"
+            }
+          }
+        ],
         "definition": {
           "transformerType": {
             "type": "literal",
@@ -2014,13 +2023,15 @@
       },
       "transformerForRuntime_object_alter": {
         "type": "object",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "relativePath": "transformerForRuntime_orderedTransformer"
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformerForRuntime_reference"
+            }
           }
-        },
+        ],
         "definition": {
           "transformerType": {
             "type": "literal",

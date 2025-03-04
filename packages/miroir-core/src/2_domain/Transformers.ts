@@ -255,15 +255,18 @@ function transformer_object_listReducerToIndexObject_apply(
 }
 
 // ################################################################################################
-function resolveApplyTo (
+function resolveApplyTo(
   step: Step,
   objectName: string | undefined,
   // transformer: TransformerForBuild_object_fullTemplate | TransformerForRuntime_object_fullTemplate,
-  transformer: TransformerForBuild_object_fullTemplate | TransformerForRuntime_object_fullTemplate,
+  transformer:
+    | TransformerForBuild_object_fullTemplate
+    | TransformerForRuntime_object_fullTemplate
+    | TransformerForBuild_inner_object_alter
+    | TransformerForRuntime_object_alter,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>
 ) {
-
   if (transformer.applyTo.referenceType == "referencedExtractor") {
     throw new Error("resolveApplyTo can not handle referencedExtractor");
   }
@@ -278,7 +281,13 @@ function resolveApplyTo (
           queryParams,
           contextResults
         )
-      : defaultTransformers.transformer_extended_apply(step, objectName, transformerReference, queryParams, contextResults);
+      : defaultTransformers.transformer_extended_apply(
+          step,
+          objectName,
+          transformerReference,
+          queryParams,
+          contextResults
+        );
   return resolvedReference;
 }
 /**
@@ -429,30 +438,40 @@ function transformer_objectAlter(
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
 ): Domain2QueryReturnType<any> {
-  const resolvedReference = defaultTransformers.transformer_InnerReference_resolve(
-    step,
-    { transformerType: "contextReference", referenceName:transformer.referenceToOuterObject },
-    queryParams,
-    contextResults
-  );
+  const resolvedApplyTo = resolveApplyTo(step, objectName, transformer, queryParams, contextResults);
+  if (resolvedApplyTo instanceof Domain2ElementFailed) {
+    log.error(
+      "transformer_objectAlter can not apply to failed resolvedApplyTo",
+      resolvedApplyTo
+    );
+    return new Domain2ElementFailed({
+      queryFailure: "QueryNotExecutable",
+      failureOrigin: ["transformer_objectAlter"],
+      queryContext: "transformer_objectAlter can not apply to failed resolvedApplyTo",
+      innerError: resolvedApplyTo
+    });
+  }
   // TODO: test if resolvedReference is an object
   const overrideObject = defaultTransformers.transformer_apply(
     step,
     "NO NAME",
     transformer.definition,
     queryParams,
-    contextResults
+    {
+      ...contextResults,
+      [transformer.referenceToOuterObject]: resolvedApplyTo,
+    }
   );
 
   log.info(
-    "transformer_objectAlter resolvedReference",
-    resolvedReference,
+    "transformer_objectAlter resolvedApplyTo",
+    resolvedApplyTo,
     "overrideObject",
     overrideObject
   );
   // TODO: check for failures!
   return {
-    ...resolvedReference,
+    ...resolvedApplyTo,
     ...overrideObject,
   };
 }

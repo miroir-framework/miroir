@@ -1558,6 +1558,41 @@ export const transformerTests: TransformerTestSuite = {
           },
         }
       },
+    },
+    objectAlter: {
+      transformerTestType: "transformerTestSuite",
+      transformerTestLabel: "object_alter",
+      transformerTests: {
+        "objectAlter allows to change an object attribute value": {
+          transformerTestType: "transformerTest",
+          transformerTestLabel: "objectAlter allows to change an object attribute value",
+          transformerName: "objectAlter",
+          transformer: {
+            transformerType: "objectAlter",
+            applyTo: {
+              referenceType: "referencedTransformer",
+              reference: {
+                transformerType: "parameterReference",
+                referenceName: "country",
+              },
+            },
+            referenceToOuterObject: "country",
+            definition: {
+              transformerType: "freeObjectTemplate",
+              definition: {
+                "iso3166-1Alpha-2": {
+                  transformerType: "constantString",
+                  value: "DE",
+                },
+              }
+            }
+          },
+          transformerParams: {
+            country: Country1 as EntityInstance,
+          },
+          expectedValue: { ...Country1, "iso3166-1Alpha-2": "DE" },
+        },
+      },
     }
   },
 };

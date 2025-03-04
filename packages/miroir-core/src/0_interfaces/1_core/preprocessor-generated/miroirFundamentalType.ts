@@ -647,6 +647,13 @@ export type TransformerForBuild_freeObjectTemplate = {
     };
 };
 export type TransformerForBuild_inner_object_alter = {
+    applyTo: {
+        referenceType: "referencedExtractor";
+        reference: string | Transformer_extractors;
+    } | {
+        referenceType: "referencedTransformer";
+        reference: string | TransformerForBuild;
+    };
     transformerType: "objectAlter";
     referenceToOuterObject: string;
     definition: TransformerForBuild_freeObjectTemplate;
@@ -969,8 +976,13 @@ export type TransformerForRuntime_object_fullTemplate = {
     }[];
 };
 export type TransformerForRuntime_object_alter = {
-    interpolation: "runtime";
-    orderBy?: string | undefined;
+    applyTo: {
+        referenceType: "referencedExtractor";
+        reference: string | Transformer_extractors;
+    } | {
+        referenceType: "referencedTransformer";
+        reference: string | TransformerForRuntime;
+    };
     transformerType: "objectAlter";
     referenceToOuterObject: string;
     definition: TransformerForRuntime_freeObjectTemplate;
@@ -4212,7 +4224,7 @@ export const transformerForBuild_innerFullObjectTemplate: z.ZodType<TransformerF
 export const transformerForBuild_object_fullTemplate_root: z.ZodType<TransformerForBuild_object_fullTemplate_root> = z.object({label:z.string().optional(), orderBy:z.string().optional(), applyTo:z.union([z.object({referenceType:z.literal("referencedExtractor"), reference:z.union([z.string(), z.lazy(() =>transformer_extractors)])}).strict(), z.object({referenceType:z.literal("referencedTransformer"), reference:z.union([z.string(), z.lazy(() =>transformerForBuild)])}).strict()]), transformerType:z.literal("object_fullTemplate"), referenceToOuterObject:z.string(), definition:z.array(z.object({attributeKey:z.lazy(() =>transformer_InnerReference), attributeValue:z.lazy(() =>transformerForBuild)}).strict())}).strict();
 export const transformerForBuild_object_fullTemplate: z.ZodType<TransformerForBuild_object_fullTemplate> = z.object({label:z.string().optional(), orderBy:z.string().optional(), applyTo:z.union([z.object({referenceType:z.literal("referencedExtractor"), reference:z.union([z.string(), z.lazy(() =>transformer_extractors)])}).strict(), z.object({referenceType:z.literal("referencedTransformer"), reference:z.union([z.string(), z.lazy(() =>transformerForBuild)])}).strict()]), transformerType:z.literal("object_fullTemplate"), referenceToOuterObject:z.string(), definition:z.array(z.object({attributeKey:z.lazy(() =>transformer_InnerReference), attributeValue:z.lazy(() =>transformerForBuild)}).strict())}).strict();
 export const transformerForBuild_freeObjectTemplate: z.ZodType<TransformerForBuild_freeObjectTemplate> = z.object({transformerType:z.literal("freeObjectTemplate"), definition:z.record(z.string(),z.union([z.lazy(() =>transformerForBuild), z.record(z.string(),z.lazy(() =>transformerForBuild)), z.string(), z.number(), z.boolean()]))}).strict();
-export const transformerForBuild_inner_object_alter: z.ZodType<TransformerForBuild_inner_object_alter> = z.object({transformerType:z.literal("objectAlter"), referenceToOuterObject:z.string(), definition:z.lazy(() =>transformerForBuild_freeObjectTemplate)}).strict();
+export const transformerForBuild_inner_object_alter: z.ZodType<TransformerForBuild_inner_object_alter> = z.object({applyTo:z.union([z.object({referenceType:z.literal("referencedExtractor"), reference:z.union([z.string(), z.lazy(() =>transformer_extractors)])}).strict(), z.object({referenceType:z.literal("referencedTransformer"), reference:z.union([z.string(), z.lazy(() =>transformerForBuild)])}).strict()]), transformerType:z.literal("objectAlter"), referenceToOuterObject:z.string(), definition:z.lazy(() =>transformerForBuild_freeObjectTemplate)}).strict();
 export const transformerForBuild_mustacheStringTemplate: z.ZodType<TransformerForBuild_mustacheStringTemplate> = z.object({transformerType:z.literal("mustacheStringTemplate"), definition:z.string()}).strict();
 export const transformerForBuild_list_listMapperToList: z.ZodType<TransformerForBuild_list_listMapperToList> = z.object({label:z.string().optional(), orderBy:z.string().optional(), applyTo:z.union([z.object({referenceType:z.literal("referencedExtractor"), reference:z.union([z.string(), z.lazy(() =>transformer_extractors)])}).strict(), z.object({referenceType:z.literal("referencedTransformer"), reference:z.union([z.string(), z.lazy(() =>transformerForBuild)])}).strict()]), transformerType:z.literal("mapperListToList"), referenceToOuterObject:z.string(), elementTransformer:z.lazy(() =>transformerForBuild)}).strict();
 export const transformerForBuild_object_listReducerToIndexObject_root: z.ZodType<TransformerForBuild_object_listReducerToIndexObject_root> = z.object({label:z.string().optional(), orderBy:z.string().optional(), transformerType:z.literal("listReducerToIndexObject"), indexAttribute:z.string()}).strict();
@@ -4259,7 +4271,7 @@ export const transformerForRuntime_objectValues: z.ZodType<TransformerForRuntime
 export const transformerForRuntime_freeObjectTemplate: z.ZodType<TransformerForRuntime_freeObjectTemplate> = z.object({interpolation:z.literal("runtime"), transformerType:z.literal("freeObjectTemplate"), definition:z.record(z.string(),z.union([z.lazy(() =>transformerForRuntime), z.record(z.string(),z.lazy(() =>transformerForRuntime)), z.string(), z.number()]))}).strict();
 export const transformerForRuntime_innerFullObjectTemplate: z.ZodType<TransformerForRuntime_innerFullObjectTemplate> = z.object({interpolation:z.literal("runtime"), orderBy:z.string().optional(), applyTo:z.union([z.object({referenceType:z.literal("referencedExtractor"), reference:z.union([z.string(), z.lazy(() =>transformer_extractors)])}).strict(), z.object({referenceType:z.literal("referencedTransformer"), reference:z.union([z.string(), z.lazy(() =>transformerForRuntime)])}).strict()]), transformerType:z.literal("innerFullObjectTemplate"), definition:z.array(z.object({attributeKey:z.lazy(() =>transformerForRuntime), attributeValue:z.lazy(() =>transformerForRuntime)}).strict())}).strict();
 export const transformerForRuntime_object_fullTemplate: z.ZodType<TransformerForRuntime_object_fullTemplate> = z.object({interpolation:z.literal("runtime"), applyTo:z.union([z.object({referenceType:z.literal("referencedExtractor"), reference:z.union([z.string(), z.lazy(() =>transformer_extractors)])}).strict(), z.object({referenceType:z.literal("referencedTransformer"), reference:z.union([z.string(), z.lazy(() =>transformerForRuntime)])}).strict()]), transformerType:z.literal("object_fullTemplate"), referenceToOuterObject:z.string(), definition:z.array(z.object({attributeKey:z.lazy(() =>transformerForRuntime), attributeValue:z.lazy(() =>transformerForRuntime)}).strict())}).strict();
-export const transformerForRuntime_object_alter: z.ZodType<TransformerForRuntime_object_alter> = z.object({interpolation:z.literal("runtime"), orderBy:z.string().optional(), transformerType:z.literal("objectAlter"), referenceToOuterObject:z.string(), definition:z.lazy(() =>transformerForRuntime_freeObjectTemplate)}).strict();
+export const transformerForRuntime_object_alter: z.ZodType<TransformerForRuntime_object_alter> = z.object({applyTo:z.union([z.object({referenceType:z.literal("referencedExtractor"), reference:z.union([z.string(), z.lazy(() =>transformer_extractors)])}).strict(), z.object({referenceType:z.literal("referencedTransformer"), reference:z.union([z.string(), z.lazy(() =>transformerForRuntime)])}).strict()]), transformerType:z.literal("objectAlter"), referenceToOuterObject:z.string(), definition:z.lazy(() =>transformerForRuntime_freeObjectTemplate)}).strict();
 export const transformerForRuntime_list_listMapperToList: z.ZodType<TransformerForRuntime_list_listMapperToList> = z.object({interpolation:z.literal("runtime"), orderBy:z.string().optional(), applyTo:z.union([z.object({referenceType:z.literal("referencedExtractor"), reference:z.union([z.string(), z.lazy(() =>transformer_extractors)])}).strict(), z.object({referenceType:z.literal("referencedTransformer"), reference:z.union([z.string(), z.lazy(() =>transformerForRuntime)])}).strict()]), transformerType:z.literal("mapperListToList"), referenceToOuterObject:z.string(), elementTransformer:z.lazy(() =>transformerForRuntime)}).strict();
 export const transformerForRuntime_mapper_listToObject: z.ZodType<TransformerForRuntime_mapper_listToObject> = z.object({interpolation:z.literal("runtime"), label:z.string().optional(), orderBy:z.string().optional(), transformerType:z.literal("listReducerToIndexObject"), indexAttribute:z.string(), applyTo:z.union([z.object({referenceType:z.literal("referencedExtractor"), reference:z.union([z.string(), z.lazy(() =>transformer_extractors)])}).strict(), z.object({referenceType:z.literal("referencedTransformer"), reference:z.union([z.string(), z.lazy(() =>transformerForRuntime)])}).strict()])}).strict();
 export const transformerForRuntime_list_listPickElement: z.ZodType<TransformerForRuntime_list_listPickElement> = z.object({interpolation:z.literal("runtime"), label:z.string().optional(), orderBy:z.string().optional(), transformerType:z.literal("listPickElement"), index:z.number(), applyTo:z.union([z.object({referenceType:z.literal("referencedExtractor"), reference:z.union([z.string(), z.lazy(() =>transformer_extractors)])}).strict(), z.object({referenceType:z.literal("referencedTransformer"), reference:z.union([z.string(), z.lazy(() =>transformerForRuntime)])}).strict()])}).strict();
