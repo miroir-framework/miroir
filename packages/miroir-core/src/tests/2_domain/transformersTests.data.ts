@@ -1270,7 +1270,7 @@ export const transformerTests: TransformerTestSuite = {
       transformerTestType: "transformerTestSuite",
       transformerTestLabel: "mapperListToList",
       transformerTests: {
-        "mapperListToList maps a list of objects to another list of objects": {
+        "mapperListToList maps a list of objects to another list of objects using object_fullTemplate": {
           transformerTestType: "transformerTest",
           transformerTestLabel: "mapperListToList maps a list of objects to another list of objects",
           transformerName: "mapperListToList",
@@ -1298,6 +1298,7 @@ export const transformerTests: TransformerTestSuite = {
                   referenceName: "country",
                 },
               },
+              referenceToOuterObject: "country",
               definition: [
                 {
                   attributeKey: {
@@ -1340,6 +1341,66 @@ export const transformerTests: TransformerTestSuite = {
             { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", name: "DE" },
           ],
         },
+        "mapperListToList maps a list of objects to a list of altered objects using objectAlter": {
+          transformerTestType: "transformerTest",
+          transformerTestLabel: "mapperListToList maps a list of objects to a list of altered objects",
+          transformerName: "mapperListToList",
+          transformer: {
+            transformerType: "mapperListToList",
+            label: "countryListMapperToObjectList",
+            interpolation: "runtime",
+            applyTo: {
+              referenceType: "referencedTransformer",
+              reference: {
+                transformerType: "contextReference",
+                interpolation: "runtime",
+                referenceName: "countryList",
+              },
+            },
+            referenceToOuterObject: "country2",
+            elementTransformer: {
+              transformerType: "objectAlter",
+              interpolation: "runtime",
+              applyTo: {
+                referenceType: "referencedTransformer",
+                reference: {
+                  transformerType: "contextReference",
+                  interpolation: "runtime",
+                  referenceName: "country2",
+                },
+              },
+              referenceToOuterObject: "country3",
+              definition: {
+                transformerType: "freeObjectTemplate",
+                definition: {
+                  uuid: {
+                    transformerType: "constant",
+                    interpolation: "runtime",
+                    value: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                  },
+                  name: {
+                    transformerType: "contextReference",
+                    interpolation: "runtime",
+                    referencePath: ["country3","iso3166-1Alpha-2"]
+                  }
+                }
+              }
+            }
+          },
+          transformerRuntimeContext: {
+            newUuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+            countryList: [
+              Country1 as EntityInstance,
+              Country2 as EntityInstance
+            ],
+          },
+          transformerParams: {
+          },
+          expectedValue: [
+            { ...Country1, uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", name: "US" },
+            { ...Country2, uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", name: "DE" },
+          ],
+        }
       },
     },
     dataflowObject: {
@@ -1488,6 +1549,59 @@ export const transformerTests: TransformerTestSuite = {
             // name: "US",
             uuid: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
             name: "US",
+          },
+        },
+        "dataflowObject shall fail when an entry fails": {
+          transformerTestType: "transformerTest",
+          transformerTestLabel: "dataflowObject shall fail when an entry fails",
+          transformerName: "dataflowObject",
+          transformer: {
+            transformerType: "dataflowObject",
+            target: "newObject",
+            definition: {
+              newObject: {
+                transformerType: "object_fullTemplate",
+                applyTo: {
+                  referenceType: "referencedTransformer",
+                  reference: {
+                    transformerType: "parameterReference",
+                    referenceName: "country",
+                  },
+                },
+                referenceToOuterObject: "country2",
+                definition: [
+                  {
+                    attributeKey: {
+                      transformerType: "constantUuid",
+                      value: "uuid",
+                    },
+                    attributeValue: {
+                      transformerType: "parameterReference",
+                      referenceName: "newUuid",
+                    },
+                  },
+                  {
+                    attributeKey: {
+                      transformerType: "constantUuid",
+                      value: "name",
+                    },
+                    attributeValue: {
+                      transformerType: "contextReference",
+                      interpolation: "runtime",
+                      referencePath: ["country3", "nonExistingAttribute"],
+                    },
+                  },
+                ],
+              },
+            },
+          },
+          transformerParams: {
+            newUuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+            country: Country1 as EntityInstance,
+          },
+          ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+          expectedValue: {
+            queryFailure: "QueryNotExecutable",
           },
         }
       },

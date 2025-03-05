@@ -1145,15 +1145,6 @@ export function innerTransformer_apply(
             )
         : (a: any[]) => a;
       const result = new Set<string>();
-      // if(transformer.attribute) {
-      //   for (const entry of resolvedReference) {
-      //     result.add(entry[transformer.attribute]);
-      //   }
-      // } else {
-      //   for (const entry of resolvedReference) {
-      //     result.add(entry);
-      //   }
-      // }
       for (const entry of Object.entries(resolvedReference)) {
         result.add((entry[1] as any)[transformer.attribute]);
       }
