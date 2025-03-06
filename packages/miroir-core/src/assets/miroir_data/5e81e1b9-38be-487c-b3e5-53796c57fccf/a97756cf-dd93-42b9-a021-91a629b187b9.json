@@ -1180,6 +1180,12 @@
           {
             "type": "schemaReference",
             "definition": {
+              "relativePath": "transformerForBuild_object_listReducerToSpreadObject"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
               "relativePath": "transformerForBuild_objectEntries"
             }
           },
@@ -1199,12 +1205,6 @@
             "type": "schemaReference",
             "definition": {
               "relativePath": "transformerForBuild_object_listReducerToIndexObject"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "relativePath": "transformerForBuild_object_listReducerToSpreadObject"
             }
           },
           {
@@ -1247,7 +1247,7 @@
           }
         }
       },
-      "transformerForRuntime_reference": {
+      "transformerForRuntime_applyTo": {
         "type": "object",
         "definition": {
           "applyTo": {
@@ -1781,7 +1781,7 @@
             "type": "schemaReference",
             "definition": {
               "eager": true,
-              "relativePath": "transformerForRuntime_reference"
+              "relativePath": "transformerForRuntime_applyTo"
             }
           },
           {
@@ -1809,7 +1809,7 @@
             "type": "schemaReference",
             "definition": {
               "eager": true,
-              "relativePath": "transformerForRuntime_reference"
+              "relativePath": "transformerForRuntime_applyTo"
             }
           },
           {
@@ -1836,7 +1836,7 @@
             "type": "schemaReference",
             "definition": {
               "eager": true,
-              "relativePath": "transformerForRuntime_reference"
+              "relativePath": "transformerForRuntime_applyTo"
             }
           },
           {
@@ -1863,7 +1863,7 @@
             "type": "schemaReference",
             "definition": {
               "eager": true,
-              "relativePath": "transformerForRuntime_reference"
+              "relativePath": "transformerForRuntime_applyTo"
             }
           },
           {
@@ -1935,7 +1935,7 @@
             "type": "schemaReference",
             "definition": {
               "eager": true,
-              "relativePath": "transformerForRuntime_reference"
+              "relativePath": "transformerForRuntime_applyTo"
             }
           },
           {
@@ -1980,7 +1980,7 @@
             "type": "schemaReference",
             "definition": {
               "eager": true,
-              "relativePath": "transformerForRuntime_reference"
+              "relativePath": "transformerForRuntime_applyTo"
             }
           },
           {
@@ -2028,7 +2028,7 @@
             "type": "schemaReference",
             "definition": {
               "eager": true,
-              "relativePath": "transformerForRuntime_reference"
+              "relativePath": "transformerForRuntime_applyTo"
             }
           }
         ],
@@ -2055,7 +2055,7 @@
             "type": "schemaReference",
             "definition": {
               "eager": true,
-              "relativePath": "transformerForRuntime_reference"
+              "relativePath": "transformerForRuntime_applyTo"
             }
           },
           {
@@ -2082,6 +2082,31 @@
           }
         }
       },
+      "transformerForRuntime_object_listReducerToSpreadObject": {
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformerForRuntime_applyTo"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformer_label"
+            }
+          }
+        ],
+        "definition": {
+          "transformerType": {
+            "type": "literal",
+            "definition": "listReducerToSpreadObject"
+          }
+        }
+      },
       "transformerForRuntime_mapper_listToObject": {
         "type": "object",
         "extend": [
@@ -2089,7 +2114,7 @@
             "type": "schemaReference",
             "definition": {
               "eager": true,
-              "relativePath": "transformerForRuntime_reference"
+              "relativePath": "transformerForRuntime_applyTo"
             }
           },
           {
@@ -2116,7 +2141,7 @@
             "type": "schemaReference",
             "definition": {
               "eager": true,
-              "relativePath": "transformerForRuntime_reference"
+              "relativePath": "transformerForRuntime_applyTo"
             }
           },
           {
@@ -2204,6 +2229,12 @@
             "type": "schemaReference",
             "definition": {
               "relativePath": "transformerForRuntime_mapper_listToObject"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformerForRuntime_object_listReducerToSpreadObject"
             }
           },
           {

@@ -47,7 +47,7 @@ export function displayTestSuiteResults(
           expect(
             testAssertionResult.assertionActualValue,
             `${currentTestSuiteName} > ${testResult.testLabel} > ${testAssertionLabel} failed!`
-          ).toBe(testAssertionResult.assertionExpectedValue);
+          ).toEqual(testAssertionResult.assertionExpectedValue);
         }
       }
     } else {

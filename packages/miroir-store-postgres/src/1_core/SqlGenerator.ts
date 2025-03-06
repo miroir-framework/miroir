@@ -15,6 +15,7 @@ import {
   TransformerForRuntime_list_listPickElement,
   TransformerForRuntime_object_alter,
   TransformerForRuntime_object_fullTemplate,
+  TransformerForRuntime_object_listReducerToSpreadObject,
   TransformerForRuntime_objectEntries,
   TransformerForRuntime_objectValues,
   TransformerForRuntime_unique
@@ -195,16 +196,23 @@ export function sqlStringForExtractor(extractor: ExtractorOrCombiner, schema: st
   }
 }
 
+export type SqlStringForTransformerElementValueType = "json" | "scalar" | "table" | "json_array" | "tableOf1JsonColumn";
 export type SqlStringForTransformerElementValue = {
   sqlStringOrObject: string;
   // resultAccessPath?: (string | number)[];
   resultAccessPath?: ResultAccessPath;
+  columnNameContainingJsonValue?: string;
   encloseEndResultInArray?: boolean;
   extraWith?: { name: string; sql: string; sqlResultAccessPath?: ResultAccessPath }[];
   usedContextEntries?: string[];
-  type: "json" | "table" | "scalar";
+  type: SqlStringForTransformerElementValueType;
+  // type: "json" | "tableOf1JsonColumn"| "json_array" | "table" | "scalar";
   preparedStatementParameters?: any[];
 };
+
+function isJson(t:SqlStringForTransformerElementValueType) {
+  return t == "json" || t == "json_array" || t == "tableOf1JsonColumn";
+}
 
 // ################################################################################################
 function sqlStringForApplyTo(
@@ -216,6 +224,7 @@ function sqlStringForApplyTo(
     | TransformerForRuntime_object_alter
     | TransformerForRuntime_objectValues
     | TransformerForRuntime_objectEntries
+    | TransformerForRuntime_object_listReducerToSpreadObject
     | TransformerForRuntime_unique
     | TransformerForRuntime_innerFullObjectTemplate,
   preparedStatementParametersIndex: number,
@@ -265,18 +274,27 @@ const getConstantSql = (
   transformer: any,
   preparedStatementParametersCount: number,
   topLevelTransformer: boolean,
-  targetType: "json" | "scalar",
+  // targetType: "json" | "scalar",
+  targetType: SqlStringForTransformerElementValueType,
   sqlTargetType: PostgresDataTypes,
   label: string
 ): Domain2QueryReturnType<SqlStringForTransformerElementValue> => {
   const paramIndex = preparedStatementParametersCount + 1;
+  if (targetType == "table") {
+    return new Domain2ElementFailed({
+      queryFailure: "QueryNotExecutable",
+      query: transformer as any,
+      failureMessage: "getConstantSql targetType is table: " + JSON.stringify(transformer, null, 2),
+    });
+  }
   return {
     type: targetType,
     sqlStringOrObject: topLevelTransformer
       ? `select $${paramIndex}::${sqlTargetType} AS "${label}"`
       : `$${paramIndex}::${sqlTargetType}`,
-    preparedStatementParameters: [targetType == "json" ? JSON.stringify(transformer.value) : transformer.value],
+    preparedStatementParameters: [isJson(targetType) ? JSON.stringify(transformer.value) : transformer.value],
     resultAccessPath: topLevelTransformer ? [0, label] : undefined,
+    columnNameContainingJsonValue: isJson(targetType) && topLevelTransformer ? label : undefined,
   };
 };
 
@@ -306,10 +324,6 @@ export function sqlStringForTransformer(
     JSON.stringify(actionRuntimeTransformer, null, 2)
   );
 
-  // const flushAndIndent = "\n" + "  ".repeat(indentLevel);
-  // const flushAndIndent1 = "\n" + "  ".repeat(indentLevel + 1);
-  // const flushAndIndent2 = "\n" + "  ".repeat(indentLevel + 1);
-  // TODO: use referenceName and dotted notation for the attribute
   const orderBy = (actionRuntimeTransformer as any).orderBy
     ? `ORDER BY "${(actionRuntimeTransformer as any).orderBy}"`
     : "";
@@ -404,14 +418,23 @@ export function sqlStringForTransformer(
         }
 
         let preparedStatementParameters: any[] = resolvedApplyTo.preparedStatementParameters ?? [];
-        const baseName: string = (actionRuntimeTransformer as any).label?(actionRuntimeTransformer as any).label + "_": ""
-        const applyToName: string = ((actionRuntimeTransformer as any).label?(actionRuntimeTransformer as any).label: actionRuntimeTransformer.transformerType) + "_" + actionRuntimeTransformer.referenceToOuterObject;
+        const baseName: string = (actionRuntimeTransformer as any).label
+          ? (actionRuntimeTransformer as any).label + "_"
+          : "";
+        const applyToName: string =
+          ((actionRuntimeTransformer as any).label
+            ? (actionRuntimeTransformer as any).label
+            : actionRuntimeTransformer.transformerType) +
+          "_" +
+          actionRuntimeTransformer.referenceToOuterObject;
 
         newDefinedContextEntries[actionRuntimeTransformer.referenceToOuterObject] = {
           type: "json",
           renameTo: applyToName,
-          attributeResultAccessPath: resolvedApplyTo.resultAccessPath?.slice(1) as any, // correct since resolvedApplyTo has no "map" (object) item
-        }
+          attributeResultAccessPath: resolvedApplyTo.columnNameContainingJsonValue
+            ? [resolvedApplyTo.columnNameContainingJsonValue]
+            : (resolvedApplyTo.resultAccessPath?.slice(1) as any), // correct since resolvedApplyTo has no "map" (object) item
+        };
         newPreparedStatementParametersCount += preparedStatementParameters.length;
         const extraWith: (
           { name: string; sql: string; sqlResultAccessPath?: ResultAccessPath }
@@ -461,6 +484,20 @@ export function sqlStringForTransformer(
             if (attributeKey instanceof Domain2ElementFailed) {
               return [attributeKey];
             }
+            if (attributeKey.type == "table") {
+              return [new Domain2ElementFailed({
+                queryFailure: "QueryNotExecutable",
+                query: actionRuntimeTransformer as any,
+                failureMessage: "sqlStringForTransformer object_fullTemplate attributeKey is table",
+              })];
+            }
+            if (!attributeKey.resultAccessPath) {
+              return [new Domain2ElementFailed({
+                queryFailure: "QueryNotExecutable",
+                query: actionRuntimeTransformer as any,
+                failureMessage: "sqlStringForTransformer object_fullTemplate attributeKey has no resultAccessPath",
+              })];
+            }
             if (attributeKey.preparedStatementParameters) {
               preparedStatementParameters = [
                 ...preparedStatementParameters,
@@ -469,10 +506,23 @@ export function sqlStringForTransformer(
               newPreparedStatementParametersCount += attributeKey.preparedStatementParameters.length;
             }
 
+            const attributeKeyName = baseName + "attributeKey" + index;
+            let attributeKeySql: string;
+            if (attributeKey.type == "json") {
+              // attributeKeySql = `"${attributeKeyName}"."${(attributeKey.resultAccessPath as any)[1]}"`;
+              attributeKeySql =
+                `SELECT trim(both '"' from "${attributeKey.resultAccessPath[1]}"::text) as "${attributeKey.resultAccessPath[1]}"` +
+                flushAndIndent(indentLevel) +
+                `FROM (` + 
+                flushAndIndent(indentLevel + 1) +
+                `${attributeKey.sqlStringOrObject}) AS "${attributeKey.resultAccessPath[1]}"`;
+            } else {
+              attributeKeySql = attributeKey.sqlStringOrObject;
+            }
             return [
               {
-                name: baseName + "attributeKey" + index,
-                sql: attributeKey.sqlStringOrObject,
+                name: attributeKeyName,
+                sql: attributeKeySql,
                 sqlResultAccessPath: attributeKey.resultAccessPath,
               },
               {
@@ -500,10 +550,10 @@ export function sqlStringForTransformer(
         ];
 
         // Build a new object with keys and corresponding values from the definition.
-        const objectAttributes = castExtraWith
+        const objectKeyValues = castExtraWith
           .map((e, index) => `"${e.name}"."${(e.sqlResultAccessPath as any)[1]}"`)
           .join(", ");
-        const objectAttributes_With_references = castExtraWith
+        const objectKeyValues_With_references = castExtraWith
           .map((e, index) => {
             return `"${e.name}"`;
           })
@@ -512,11 +562,11 @@ export function sqlStringForTransformer(
         const sqlResult =
           // flushAndIndent(indentLevel) +
           "SELECT jsonb_build_object(" +
-          objectAttributes +
+          objectKeyValues +
           ') AS "object_fullTemplate" ' +
           flushAndIndent(indentLevel) +
           "FROM " +
-          objectAttributes_With_references +
+          objectKeyValues_With_references +
           flushAndIndent(indentLevel) +
           orderBy;
         // const sqlResult = `SELECT jsonb_build_object(${objectAttributes}) AS "innerFullObjectTemplate" FROM ${objectAttributes_With_references} GROUP BY ${objectAttributes} ${orderBy}`;
@@ -526,6 +576,7 @@ export function sqlStringForTransformer(
           sqlStringOrObject: sqlResult,
           preparedStatementParameters,
           resultAccessPath: [0, "object_fullTemplate"],
+          columnNameContainingJsonValue: "object_fullTemplate",
           extraWith: resultExtraWith,
         };
       } else { // topLevelTransformer == false
@@ -621,6 +672,7 @@ export function sqlStringForTransformer(
           type: "json",
           sqlStringOrObject: sqlResult,
           resultAccessPath: undefined,
+          columnNameContainingJsonValue: "object_fullTemplate",
           preparedStatementParameters,
         };
       }
@@ -651,17 +703,24 @@ export function sqlStringForTransformer(
             log.error("sqlStringForTransformer dataflowObject failed for transformer:",JSON.stringify(f[1], null, 2), "itemSql=", JSON.stringify(itemSql, null, 2));
             return [f[0], itemSql];
           }
-          const resultPathHasMap = itemSql.resultAccessPath?.find((e: any) => typeof e == "object" && e.type == "map")
-          ;
-          if (resultPathHasMap) {
-            return [
-              f[0],
-              new Domain2ElementFailed({
+          if (itemSql.type != "json") {
+            return [f[0], new Domain2ElementFailed({
               queryFailure: "QueryNotExecutable",
               query: actionRuntimeTransformer as any,
-              failureMessage: "sqlStringForTransformer dataflowObject resultAccessPath has map: " + JSON.stringify(itemSql.resultAccessPath, null, 2),
+              failureMessage: "sqlStringForTransformer dataflowObject itemSql not json",
             })];
           }
+          // const resultPathMapIndex = itemSql.resultAccessPath?.findIndex((e: any) => typeof e == "object" && e.type == "map")
+          // ;
+          // if (resultPathMapIndex) {
+          //   return [
+          //     f[0],
+          //     new Domain2ElementFailed({
+          //     queryFailure: "QueryNotExecutable",
+          //     query: actionRuntimeTransformer as any,
+          //     failureMessage: "sqlStringForTransformer dataflowObject resultAccessPath has map: " + JSON.stringify(itemSql.resultAccessPath, null, 2),
+          //   })];
+          // }
           if (itemSql.preparedStatementParameters) {
             preparedStatementParameters = [...preparedStatementParameters, ...itemSql.preparedStatementParameters];
             newPreparedStatementParametersCount += itemSql.preparedStatementParameters.length;
@@ -669,7 +728,8 @@ export function sqlStringForTransformer(
           newDefinedContextEntries[f[0]] = {
             type: "json",
             // renameTo: f[0],
-            attributeResultAccessPath: itemSql.resultAccessPath?.slice(1) as any,
+            // attributeResultAccessPath: itemSql.resultAccessPath?.slice(1,resultPathMapIndex == -1?itemSql.resultAccessPath.length: resultPathMapIndex) as any,
+            attributeResultAccessPath: itemSql.columnNameContainingJsonValue?[itemSql.columnNameContainingJsonValue]:itemSql.resultAccessPath?.slice(1) as any,
           };
           return [f[0], itemSql];
         }
@@ -687,7 +747,7 @@ export function sqlStringForTransformer(
             JSON.stringify(foundError, null, 2),
         });
       }
-      const definitionSqlObject = Object.fromEntries(definitionSql);
+      const definitionSqlObject: Record<string,SqlStringForTransformerElementValue>  = Object.fromEntries(definitionSql) as any;
       log.info("sqlStringForTransformer dataflowObject definitionSql", JSON.stringify(definitionSql, null, 2));
       if(!Object.hasOwn(definitionSqlObject,actionRuntimeTransformer.target)) {
         return new Domain2ElementFailed({
@@ -695,36 +755,57 @@ export function sqlStringForTransformer(
           query: actionRuntimeTransformer as any,
           failureMessage: "sqlStringForTransformer dataflowObject target not found in definitionSql",
         });
-      } else {
-        const extraWith = [
-          ...definitionSql
-            .flatMap((e, index) =>
-              (e[1] as any).extraWith
-                ? [
-                    ...((e[1] as any).extraWith ?? []).filter((e: any) => e),
-                    {
-                      name: e[0],
-                      sql: (e[1] as any).sqlStringOrObject,
-                    },
-                  ]
-                : [
-                    {
-                      name: e[0],
-                      sql: (e[1] as any).sqlStringOrObject,
-                    },
-                  ]
-            )
-            .filter((e: any) => e),
-        ];
-        log.info("sqlStringForTransformer dataflowObject extraWith", JSON.stringify(extraWith, null, 2));
-        return {
-          type: "json",
-          sqlStringOrObject: `SELECT * FROM "${actionRuntimeTransformer.target}"`,
-          preparedStatementParameters,
-          extraWith,
-          resultAccessPath: (definitionSqlObject[actionRuntimeTransformer.target] as any).resultAccessPath,
-        };
       }
+      if (definitionSqlObject[actionRuntimeTransformer.target].type != "json") {
+        return new Domain2ElementFailed({
+          queryFailure: "QueryNotExecutable",
+          query: actionRuntimeTransformer as any,
+          failureMessage: "sqlStringForTransformer dataflowObject target not json",
+        });
+      }
+      if (!definitionSqlObject[actionRuntimeTransformer.target].resultAccessPath) {
+        return new Domain2ElementFailed({
+          queryFailure: "QueryNotExecutable",
+          query: actionRuntimeTransformer as any,
+          failureMessage: "sqlStringForTransformer dataflowObject target has no resultAccessPath",
+        });
+      }
+      if (!definitionSqlObject[actionRuntimeTransformer.target].columnNameContainingJsonValue) {
+        return new Domain2ElementFailed({
+          queryFailure: "QueryNotExecutable",
+          query: actionRuntimeTransformer as any,
+          failureMessage: "sqlStringForTransformer dataflowObject target has no columnNameContainingJsonValue",
+        });
+      }
+      const extraWith = [
+        ...definitionSql
+          .flatMap((e, index) =>
+            (e[1] as any).extraWith
+              ? [
+                  ...((e[1] as any).extraWith ?? []).filter((e: any) => e),
+                  {
+                    name: e[0],
+                    sql: (e[1] as any).sqlStringOrObject,
+                  },
+                ]
+              : [
+                  {
+                    name: e[0],
+                    sql: (e[1] as any).sqlStringOrObject,
+                  },
+                ]
+          )
+          .filter((e: any) => e),
+      ];
+      log.info("sqlStringForTransformer dataflowObject extraWith", JSON.stringify(extraWith, null, 2));
+      return {
+        type: "json",
+        sqlStringOrObject: `SELECT "${definitionSqlObject[actionRuntimeTransformer.target].columnNameContainingJsonValue}" FROM "${actionRuntimeTransformer.target}"`,
+        preparedStatementParameters,
+        extraWith,
+        resultAccessPath: (definitionSqlObject[actionRuntimeTransformer.target] as any).resultAccessPath,
+        columnNameContainingJsonValue: definitionSqlObject[actionRuntimeTransformer.target].columnNameContainingJsonValue,
+      };
       break;
     }
     case "dataflowSequence": {
@@ -832,7 +913,7 @@ export function sqlStringForTransformer(
               sql: sqlStringForElementTransformer.sqlStringOrObject,
             },
           ];
-          const sqlResult = `SELECT * FROM "${transformerLabel}_elementTransformer"`;
+          const sqlResult = `SELECT "${sqlStringForElementTransformer.columnNameContainingJsonValue}" FROM "${transformerLabel}_elementTransformer"`;
 
           return {
             type: "json",
@@ -840,9 +921,9 @@ export function sqlStringForTransformer(
             preparedStatementParameters,
             extraWith,
             resultAccessPath: [{
-              // type: "map",  key: "object_fullTemplate"
               type: "map",  key: actionRuntimeTransformer.elementTransformer.transformerType
-            }]
+            }],
+            columnNameContainingJsonValue: sqlStringForElementTransformer.columnNameContainingJsonValue,
           };
           break;
         }
@@ -907,6 +988,14 @@ export function sqlStringForTransformer(
         const limit = actionRuntimeTransformer.index;
         let sqlResult;
         switch (sqlForApplyTo.type) {
+          case "tableOf1JsonColumn": {
+            return new Domain2ElementFailed({
+              queryFailure: "QueryNotExecutable",
+              query: actionRuntimeTransformer as any,
+              failureMessage: "sqlStringForTransformer listPickElement referenceQuery result is tableOf1JsonColumn",
+            });
+          }
+          case "json_array":
           case "json": {
             if (actionRuntimeTransformer.orderBy) {
               sqlResult = `
@@ -924,12 +1013,28 @@ export function sqlStringForTransformer(
     }") AS "listPickElement_applyTo_array"
   `;
             } else { // no orderBy
-              sqlResult = `SELECT "listPickElement_applyTo"."${
-                (sqlForApplyTo as any).resultAccessPath[1]
-              }" ->> ${limit} AS "listPickElement" 
-FROM (${sqlForApplyTo.sqlStringOrObject}) AS "listPickElement_applyTo"
+              // SELECT ("listPickElement_applyTo_array" ->> ${limit})::"any" AS "listPickElement" 
+              sqlResult = `
+SELECT "listPickElement_applyTo_array"."value" AS "listPickElement"
+FROM
+(${sqlForApplyTo.sqlStringOrObject}) AS "listPickElement_applyTo", 
+  LATERAL jsonb_array_elements("listPickElement_applyTo"."${
+    (sqlForApplyTo as any).resultAccessPath[1]
+  }") AS "listPickElement_applyTo_array" LIMIT 1 OFFSET ${limit}
 `;
+//               sqlResult = `SELECT ("listPickElement_applyTo"."${
+//                 (sqlForApplyTo as any).resultAccessPath[1]
+//               }" ->> ${limit}) AS "listPickElement" 
+// FROM (${sqlForApplyTo.sqlStringOrObject}) AS "listPickElement_applyTo"
+// `;
             }
+            return {
+              type: "json",
+              sqlStringOrObject: sqlResult,
+              preparedStatementParameters: sqlForApplyTo.preparedStatementParameters,
+              resultAccessPath: [0, "listPickElement"],
+              columnNameContainingJsonValue: "listPickElement",
+            };
             break;
           }
           case "table": {
@@ -944,6 +1049,7 @@ FROM (${sqlForApplyTo.sqlStringOrObject}) AS "listPickElement_applyTo"
               sqlStringOrObject: sqlResult,
               preparedStatementParameters: sqlForApplyTo.preparedStatementParameters,
               resultAccessPath: [0, ...(sqlForApplyTo.resultAccessPath ?? [])],
+              columnNameContainingJsonValue: "listPickElement",
             };
             break;
           }
@@ -964,12 +1070,6 @@ FROM (${sqlForApplyTo.sqlStringOrObject}) AS "listPickElement_applyTo"
             break;
           }
         }
-        return {
-          type: "json",
-          sqlStringOrObject: sqlResult,
-          preparedStatementParameters: sqlForApplyTo.preparedStatementParameters,
-          resultAccessPath: [0, "listPickElement"],
-        };
       } else {
         throw new Error("sqlStringForTransformer listPickElement not implemented for (non-topLevel) inner transformer");
       }
@@ -1115,7 +1215,12 @@ FROM (${sqlForApplyTo.sqlStringOrObject}) AS "listPickElement_applyTo"
       break;
     }
     case "constant": {
-      const targetSqlType = typeof actionRuntimeTransformer.value === "object" ? "json" : "scalar";
+      const targetSqlType =
+        typeof actionRuntimeTransformer.value === "object"
+          ? Array.isArray(actionRuntimeTransformer.value)
+            ? "json_array"
+            : "json"
+          : "scalar";
       // let sqlTargetType: PostgresDataTypes;
       // let label: string;
       const { sqlTargetType, label } = getSqlTypeForValue(actionRuntimeTransformer.value);
@@ -1207,16 +1312,19 @@ FROM (${sqlForApplyTo.sqlStringOrObject}) AS "listPickElement_applyTo"
           type: definedContextEntry.type,
           sqlStringOrObject:
             "SELECT " +
-            (resultAccessPathStringForJson.length > 0 ? resultAccessPathStringForJson : "*") +
-            ' AS "' +
-            (usedReferenceName) +
-            '"' +
+            (resultAccessPath.length > 0
+              ? (resultAccessPathStringForJson + ' AS "' + usedReferenceName + '"')
+              : "*") +
+            // (resultAccessPathStringForJson.length > 0
+            //   ? (resultAccessPathStringForJson + ' AS "' + usedReferenceName + '"')
+            //   : "*") +
             flushAndIndent(indentLevel) +
             'FROM "' +
-            (usedReferenceName) +
+            usedReferenceName +
             '"',
           usedContextEntries: [usedReferenceName],
           resultAccessPath: [0, usedReferenceName],
+          columnNameContainingJsonValue: definedContextEntry.type ==  "json"?usedReferenceName: undefined,
         };
         log.info("sqlStringForTransformer contextReference topLevelTransformer=true", JSON.stringify(result, null, 2));
         return result;
@@ -1229,6 +1337,7 @@ FROM (${sqlForApplyTo.sqlStringOrObject}) AS "listPickElement_applyTo"
           resultAccessPath: [0, usedReferenceName],
           // usedContextEntries: [referenceName],
           usedContextEntries: [usedReferenceName],
+          columnNameContainingJsonValue: definedContextEntry.type ==  "json"?usedReferenceName: undefined,
         };
         log.info("sqlStringForTransformer contextReference topLevelTransformer=false", JSON.stringify(result, null, 2));
         return result;
@@ -1255,7 +1364,7 @@ FROM (${sqlForApplyTo.sqlStringOrObject}) AS "listPickElement_applyTo"
           sql: applyTo.sqlStringOrObject,
         },
       ];
-      const sqlResult = `SELECT json_agg(json_build_array(key, value)) AS "objectEntries" FROM "innerQuery", jsonb_each("innerQuery"."${
+      const sqlResult = `SELECT jsonb_agg(json_build_array(key, value)) AS "objectEntries" FROM "innerQuery", jsonb_each("innerQuery"."${
         (applyTo as any).resultAccessPath[1]
       }")`;
 
@@ -1264,6 +1373,7 @@ FROM (${sqlForApplyTo.sqlStringOrObject}) AS "listPickElement_applyTo"
         sqlStringOrObject: sqlResult,
         preparedStatementParameters: applyTo.preparedStatementParameters,
         resultAccessPath: [0, "objectEntries"],
+        columnNameContainingJsonValue: "objectEntries",
         extraWith,
       };
       break;
@@ -1288,7 +1398,7 @@ FROM (${sqlForApplyTo.sqlStringOrObject}) AS "listPickElement_applyTo"
           sql: applyTo.sqlStringOrObject,
         },
       ];
-      const sqlResult = `SELECT json_agg(value) AS "objectValues" FROM "innerQuery", jsonb_each("innerQuery"."${
+      const sqlResult = `SELECT jsonb_agg(value) AS "objectValues" FROM "innerQuery", jsonb_each("innerQuery"."${
         (applyTo as any).resultAccessPath[1]
       }")`;
 
@@ -1297,6 +1407,7 @@ FROM (${sqlForApplyTo.sqlStringOrObject}) AS "listPickElement_applyTo"
         sqlStringOrObject: sqlResult,
         preparedStatementParameters: applyTo.preparedStatementParameters,
         resultAccessPath: [0, "objectValues"],
+        columnNameContainingJsonValue: "objectValues",
         extraWith,
       };
       break;
@@ -1411,6 +1522,7 @@ FROM ${selectFrom.join(tokenSeparatorForSelect)}`
           preparedStatementParameters,
           extraWith,
           resultAccessPath: [0, "object_freeObjectTemplate"],
+          columnNameContainingJsonValue: "object_freeObjectTemplate",
         };
       } else {
         return {
@@ -1431,6 +1543,7 @@ FROM ${selectFrom.join(tokenSeparatorForSelect)}`
           ],
           preparedStatementParameters,
           resultAccessPath: [0, "object_freeObjectTemplate"],
+          columnNameContainingJsonValue: "object_freeObjectTemplate",
         };
       }
       break;
@@ -1600,10 +1713,151 @@ ${indent(indentLevel)}FROM "${applyToName}"`;
           sqlStringOrObject: sqlResult,
           preparedStatementParameters,
           resultAccessPath: [0, "objectAlter"],
+          columnNameContainingJsonValue: "objectAlter",
           extraWith,
         }
         log.info("sqlStringForTransformer objectAlter returning result=", JSON.stringify(result, null, 2));
         return result;
+    }
+    case "listReducerToSpreadObject": {
+      // throw new Error("sqlStringForTransformer listReducerToSpreadObject not implemented");
+      const transformerLabel: string =
+        (actionRuntimeTransformer as any).label ?? actionRuntimeTransformer.transformerType;
+      let newPreparedStatementParametersCount = preparedStatementParametersCount;
+      let preparedStatementParameters: any[] = [];
+      // newPreparedStatementParametersCount += preparedStatementParameters.length;
+      // const newDefinedContextEntries = {
+      //   ...definedContextEntries
+      // }
+
+      const applyTo = sqlStringForApplyTo(
+        actionRuntimeTransformer,
+        preparedStatementParametersCount,
+        indentLevel,
+        queryParams,
+        definedContextEntries,
+        useAccessPathForContextReference,
+        topLevelTransformer
+      );
+      if (applyTo instanceof Domain2ElementFailed) {
+        return applyTo;
+      }
+      log.info("sqlStringForTransformer listReducerToSpreadObject found definedContextEntries", JSON.stringify(definedContextEntries, null, 2));
+      log.info("sqlStringForTransformer listReducerToSpreadObject found applyTo", JSON.stringify(applyTo, null, 2));
+      const applyToLabel = transformerLabel + "_applyTo";
+      const applyToLabelElements = applyToLabel + "_elements";
+      const applyToLabelPairs = applyToLabel + "_pairs";
+      const extraWith: { name: string; sql: string }[] = [
+        {
+          name: applyToLabel,
+          sql: applyTo.sqlStringOrObject,
+        },
+      ];
+      switch (applyTo.type) {
+        // case "json":
+        case "json_array": {
+          const sqlResult =
+            "SELECT " +
+            'json_object_agg("' +
+            applyToLabelPairs +
+            '"."key", ' +
+            '"' +
+            applyToLabelPairs +
+            '"."value")' +
+            ' AS "' +
+            transformerLabel +
+            '"' +
+            flushAndIndent(indentLevel) +
+            'FROM "' +
+            applyToLabel +
+            '"' +
+            ', jsonb_array_elements("' +
+            applyToLabel +
+            '"."' +
+            (applyTo as any).columnNameContainingJsonValue +
+            '") AS "' +
+            applyToLabelElements +
+            '"' +
+            ', jsonb_each("' +
+            applyToLabelElements +
+            '") AS "' +
+            applyToLabelPairs +
+            '"';
+          return {
+            type: "json",
+            sqlStringOrObject: sqlResult,
+            preparedStatementParameters: applyTo.preparedStatementParameters,
+            resultAccessPath: [0, transformerLabel],
+            columnNameContainingJsonValue: transformerLabel,
+            extraWith,
+          };
+        }
+        case "json":
+        case "tableOf1JsonColumn": {
+          // case "json": {
+          const sqlResult =
+            "SELECT " +
+            'json_object_agg("' +
+            applyToLabelPairs +
+            '"."key", ' +
+            '"' +
+            applyToLabelPairs +
+            '"."value")' +
+            ' AS "' +
+            transformerLabel +
+            '"' +
+            flushAndIndent(indentLevel) +
+            'FROM "' +
+            applyToLabel +
+            '"' +
+            ', jsonb_each("' +
+            applyToLabel +
+            '"."' +
+            (applyTo as any).columnNameContainingJsonValue +
+            '") AS "' +
+            applyToLabelPairs +
+            '"';
+          return {
+            type: "json",
+            sqlStringOrObject: sqlResult,
+            preparedStatementParameters: applyTo.preparedStatementParameters,
+            resultAccessPath: [0, transformerLabel],
+            columnNameContainingJsonValue: transformerLabel,
+            extraWith,
+          };
+          break;
+        }
+        case "table": {
+          // TODO: table of JSON objects, 1 per line, or table of split objects into columns?
+          // WITH json_objects AS (
+          //   SELECT '{"a": 1, "b": 2}'::jsonb AS obj
+          //   UNION ALL
+          //   SELECT '{"b": 3, "c": 4}'::jsonb AS obj
+          //   UNION ALL
+          //   SELECT '{"d": 5}'::jsonb AS obj
+          // )
+          // SELECT jsonb_object_agg(key, value) AS merged_object
+          // FROM (
+          //   SELECT key, value
+          //   FROM json_objects, jsonb_each(obj)
+          // ) AS key_value_pairs;
+          throw new Error(
+            "sqlStringForTransformer listReducerToSpreadObject not implemented for applyTo type:" + applyTo.type
+          );
+        }
+        case "scalar": {
+          throw new Error(
+            "sqlStringForTransformer listReducerToSpreadObject not implemented for applyTo type:" + applyTo.type
+          );
+          break;
+        }
+        default:
+          throw new Error(
+            "sqlStringForTransformer listReducerToSpreadObject not implemented for applyTo type:" + applyTo.type
+          );
+          break;
+      }
+      break;
     }
     case "objectDynamicAccess":
     case "listReducerToIndexObject": {
@@ -1645,6 +1899,7 @@ FROM (
 `,
             preparedStatementParameters: referenceQuery.preparedStatementParameters,
             resultAccessPath: [0, "unique_objects"],
+            columnNameContainingJsonValue: "unique_objects",
           };
           break;
         }
@@ -1726,6 +1981,7 @@ FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo",
 `,
             preparedStatementParameters: referenceQuery.preparedStatementParameters,
             resultAccessPath: [0, "count_object"],
+            columnNameContainingJsonValue: "count_object",
             encloseEndResultInArray: true,
           };
           break;
@@ -1854,7 +2110,7 @@ export function sqlStringForQuery(
       return [
         q.name,
         {
-          type: q.convertedParam.type,
+          type: isJson(q.convertedParam.type)  ? "json" : q.convertedParam.type as any,
           attributeResultAccessPath: (q.convertedParam.resultAccessPath as any)?.slice(1), // because resultAccessPath returns the path viewed from the end user, for which the result is always an array
         },
       ];})

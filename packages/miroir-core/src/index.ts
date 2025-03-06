@@ -176,6 +176,7 @@ export {
   TransformerForRuntime_mustacheStringTemplate,
   TransformerForRuntime_objectValues,
   TransformerForRuntime_objectEntries,
+  TransformerForRuntime_object_listReducerToSpreadObject,
   TransformerForRuntime_unique,
   TransformerForRuntime_innerFullObjectTemplate,
   TransformerForRuntime,
@@ -700,7 +701,7 @@ export {
 } from './2_domain/ModelEntityActionTransformer.js';
 export { 
   ActionTemplate,
-  resolveInnerTransformer,
+  resolveApplyTo_legacy,
   transformer_resolveReference,
   transformer_apply,
   transformer_extended_apply,
@@ -785,7 +786,14 @@ export {
   ignorePostgresExtraAttributes,
 } from './4_services/otherTools.js';
 export { miroirCoreStartup } from './startup.js';
-export { stringTuple, circularReplacer, resolvePathOnObject, ResultAccessPath, domainStateToDeploymentEntityState } from "./tools.js";
+export {
+  stringTuple,
+  circularReplacer,
+  safeResolvePathOnObject,
+  resolvePathOnObject,
+  ResultAccessPath,
+  domainStateToDeploymentEntityState,
+} from "./tools.js";
 
 console.log("miroir-core: DONE exports");
 

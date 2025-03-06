@@ -36,6 +36,7 @@ import {
   TransformerForRuntime_mustacheStringTemplate,
   TransformerForRuntime_object_alter,
   TransformerForRuntime_object_fullTemplate,
+  TransformerForRuntime_object_listReducerToSpreadObject,
   TransformerForRuntime_objectDynamicAccess,
   TransformerForRuntime_objectEntries,
   TransformerForRuntime_objectValues,
@@ -75,7 +76,45 @@ export const defaultTransformers = {
 }
 
 // ################################################################################################
-export function resolveInnerTransformer(
+function resolveApplyTo(
+  step: Step,
+  objectName: string | undefined,
+  // transformer: TransformerForBuild_object_fullTemplate | TransformerForRuntime_object_fullTemplate,
+  transformer:
+    | TransformerForBuild_object_fullTemplate
+    | TransformerForRuntime_object_fullTemplate
+    | TransformerForBuild_inner_object_alter
+    | TransformerForRuntime_object_alter,
+  queryParams: Record<string, any>,
+  contextResults?: Record<string, any>
+) {
+  if (transformer.applyTo.referenceType == "referencedExtractor") {
+    throw new Error("resolveApplyTo can not handle referencedExtractor");
+  }
+
+  const transformerReference = transformer.applyTo.reference;
+
+  const resolvedReference =
+    typeof transformerReference == "string"
+      ? defaultTransformers.transformer_InnerReference_resolve(
+          step,
+          { transformerType: "contextReference", referenceName: transformerReference }, // TODO: there's a bug, count can not be used at build time, although it should be usable at build time
+          queryParams,
+          contextResults
+        )
+      : defaultTransformers.transformer_extended_apply(
+          step,
+          objectName,
+          transformerReference,
+          queryParams,
+          contextResults
+        );
+  return resolvedReference;
+}
+
+// ################################################################################################
+// TODO: identical to resolveApplyTo, should be merged?
+export function resolveApplyTo_legacy(
   transformer: 
   | TransformerForBuild_count
   | TransformerForBuild_list_listMapperToList
@@ -89,6 +128,7 @@ export function resolveInnerTransformer(
   | TransformerForRuntime_list_listMapperToList 
   | TransformerForRuntime_list_listPickElement
   | TransformerForRuntime_mapper_listToObject 
+  | TransformerForRuntime_object_listReducerToSpreadObject
   | TransformerForRuntime_objectEntries
   | TransformerForRuntime_objectValues
   | TransformerForRuntime_unique
@@ -98,10 +138,10 @@ export function resolveInnerTransformer(
   contextResults: Record<string, any> | undefined,
   label: string | undefined
 ) {
-  log.info("resolveInnerTransformer called for transformer", transformer, "step", step, "label", label);
+  log.info("resolveApplyTo_legacy called for transformer", transformer, "step", step, "label", label);
   
   if (transformer.applyTo.referenceType == "referencedExtractor") {
-    throw new Error("resolveInnerTransformer can not handle referencedExtractor");
+    throw new Error("resolveApplyTo_legacy can not handle referencedExtractor");
   }
 
   const transformerReference = transformer.applyTo.reference;
@@ -126,7 +166,7 @@ function transformerForBuild_list_listMapperToList_apply(
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
 ): Domain2QueryReturnType<any[]> {
-  const resolvedApplyTo = resolveInnerTransformer(transformer, step, queryParams, contextResults, label);
+  const resolvedApplyTo = resolveApplyTo_legacy(transformer, step, queryParams, contextResults, label);
   if (resolvedApplyTo instanceof Domain2ElementFailed) {
     log.error(
       "transformerForBuild_list_listMapperToList_apply extractorTransformer can not apply to failed resolvedReference",
@@ -200,7 +240,7 @@ function transformerForBuild_list_listMapperToList_apply(
 function transformer_object_listReducerToSpreadObject_apply(
   step: Step,
   label: string | undefined,
-  transformer: TransformerForBuild_object_listReducerToSpreadObject,
+  transformer: TransformerForBuild_object_listReducerToSpreadObject | TransformerForRuntime_object_listReducerToSpreadObject,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
 ): Domain2QueryReturnType<any> {
@@ -212,9 +252,36 @@ function transformer_object_listReducerToSpreadObject_apply(
     "contextResults",
     JSON.stringify(contextResults, null, 2)
   );
-  const resolvedReference = resolveInnerTransformer(transformer, step, queryParams, contextResults, label);
+  const resolvedReference = resolveApplyTo_legacy(transformer, step, queryParams, contextResults, label);
 
-  // TODO: test if resolvedReference is a list
+  if (resolvedReference instanceof Domain2ElementFailed) {
+    log.error(
+      "transformer_object_listReducerToSpreadObject_apply can not apply to failed resolvedReference",
+      resolvedReference
+    );
+    return new Domain2ElementFailed({
+      queryFailure: "QueryNotExecutable",
+      failureOrigin: ["transformer_object_listReducerToSpreadObject_apply"],
+      queryContext: "transformer_object_listReducerToSpreadObject_apply can not apply to failed resolvedReference",
+      innerError: resolvedReference
+    });
+  }
+
+  const isListOfObjects = Array.isArray(resolvedReference) && resolvedReference.every((entry) => typeof entry == "object" && !Array.isArray(entry));
+
+  if (!isListOfObjects) {
+    log.error(
+      "transformer_object_listReducerToSpreadObject_apply can not apply to resolvedReference of wrong type",
+      resolvedReference
+    );
+    return new Domain2ElementFailed({
+      queryFailure: "QueryNotExecutable",
+      failureOrigin: ["transformer_object_listReducerToSpreadObject_apply"],
+      queryContext: "transformer_object_listReducerToSpreadObject_apply can not apply to resolvedReference of wrong type",
+      queryParameters: resolvedReference,
+    });
+  }
+  // TODO: test if resolvedReference is a list of objects
   const result = Object.fromEntries(
     resolvedReference.flatMap((entry: Record<string, any>) => {
       return Object.entries(entry);
@@ -239,7 +306,7 @@ function transformer_object_listReducerToIndexObject_apply(
     "contextResults",
     JSON.stringify(contextResults, null, 2)
   );
-  const resolvedReference = resolveInnerTransformer(transformer, step, queryParams, contextResults, label);
+  const resolvedReference = resolveApplyTo_legacy(transformer, step, queryParams, contextResults, label);
 
   // TODO: test if resolvedReference is a list
   const result = Object.fromEntries(
@@ -254,42 +321,6 @@ function transformer_object_listReducerToIndexObject_apply(
   return result;
 }
 
-// ################################################################################################
-function resolveApplyTo(
-  step: Step,
-  objectName: string | undefined,
-  // transformer: TransformerForBuild_object_fullTemplate | TransformerForRuntime_object_fullTemplate,
-  transformer:
-    | TransformerForBuild_object_fullTemplate
-    | TransformerForRuntime_object_fullTemplate
-    | TransformerForBuild_inner_object_alter
-    | TransformerForRuntime_object_alter,
-  queryParams: Record<string, any>,
-  contextResults?: Record<string, any>
-) {
-  if (transformer.applyTo.referenceType == "referencedExtractor") {
-    throw new Error("resolveApplyTo can not handle referencedExtractor");
-  }
-
-  const transformerReference = transformer.applyTo.reference;
-
-  const resolvedReference =
-    typeof transformerReference == "string"
-      ? defaultTransformers.transformer_InnerReference_resolve(
-          step,
-          { transformerType: "contextReference", referenceName: transformerReference }, // TODO: there's a bug, count can not be used at build time, although it should be usable at build time
-          queryParams,
-          contextResults
-        )
-      : defaultTransformers.transformer_extended_apply(
-          step,
-          objectName,
-          transformerReference,
-          queryParams,
-          contextResults
-        );
-  return resolvedReference;
-}
 /**
  * valid for both actions and queries??
  * For dynamic attributes the actual type of the attribute is not known, until runtime.
@@ -850,7 +881,7 @@ export function innerTransformer_apply(
   // );
   switch (transformer.transformerType) {
     case "count": {
-      const resolvedReference = resolveInnerTransformer(transformer, step, queryParams, contextResults, label);
+      const resolvedReference = resolveApplyTo_legacy(transformer, step, queryParams, contextResults, label);
       if (resolvedReference instanceof Domain2ElementFailed) {
         log.error(
           "innerTransformer_apply extractorTransformer count can not apply to failed resolvedReference",
@@ -936,7 +967,7 @@ export function innerTransformer_apply(
       break;
     }
     case "objectEntries": {
-      const resolvedReference = resolveInnerTransformer(transformer, step, queryParams, contextResults, label);
+      const resolvedReference = resolveApplyTo_legacy(transformer, step, queryParams, contextResults, label);
       log.info(
         "transformer_apply objectEntries referencedExtractor=",
         resolvedReference
@@ -975,7 +1006,7 @@ export function innerTransformer_apply(
       return Object.entries(resolvedReference);
     }
     case "objectValues": {
-      const resolvedReference = resolveInnerTransformer(transformer, step, queryParams, contextResults, label);
+      const resolvedReference = resolveApplyTo_legacy(transformer, step, queryParams, contextResults, label);
       if (resolvedReference instanceof Domain2ElementFailed) {
         log.error(
           "innerTransformer_apply extractorTransformer objectValues can not apply to resolvedReference",
@@ -1019,7 +1050,7 @@ export function innerTransformer_apply(
       break;
     }
     case "listPickElement": {
-      const resolvedReference = resolveInnerTransformer(transformer, step, queryParams, contextResults, label);
+      const resolvedReference = resolveApplyTo_legacy(transformer, step, queryParams, contextResults, label);
       if (resolvedReference instanceof Domain2ElementFailed) {
         log.error(
           "innerTransformer_apply extractorTransformer listPickElement can not apply to resolvedReference",
@@ -1104,7 +1135,7 @@ export function innerTransformer_apply(
       break;
     }
     case "unique": {
-      const resolvedReference = resolveInnerTransformer(transformer, step, queryParams, contextResults, label);
+      const resolvedReference = resolveApplyTo_legacy(transformer, step, queryParams, contextResults, label);
       log.info(
         "transformer_apply extractorTransformer unique", label, "resolvedReference",
         resolvedReference

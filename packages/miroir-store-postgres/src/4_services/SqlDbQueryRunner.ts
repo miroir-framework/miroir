@@ -24,9 +24,10 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   QueryRunnerMapForJzodSchema,
-  resolvePathOnObject,
+  // resolvePathOnObject,
   RunBoxedExtractorAction,
   RunBoxedQueryAction,
+  safeResolvePathOnObject,
   selectEntityJzodSchemaFromDomainStateNew,
   selectFetchQueryJzodSchemaFromDomainStateNew,
   selectJzodSchemaByDomainModelQueryFromDomainStateNew,
@@ -186,11 +187,17 @@ export class SqlDbQueryRunner {
           "transformerRawQueriesObject", JSON.stringify(transformerRawQueriesObject, null, 2),
           "endResultPath", endResultPath, endResultPath!==undefined, !!selectorParams.extractor.runtimeTransformers
       );
+      if (Array.isArray(rawResult.returnedDomainElement) && rawResult.returnedDomainElement.length === 0) {
+        log.warn("asyncExtractWithQuery query returned empty result", JSON.stringify(rawResult));
+        return Promise.resolve(rawResult.returnedDomainElement);
+      }
       const preSqlResult =
-        endResultPath !== undefined
+        endResultPath !== undefined && rawResult.returnedDomainElement !== undefined
           ? encloseEndResultInArray
-            ? [resolvePathOnObject(rawResult.returnedDomainElement, endResultPath??[])] // TODO: HACK! HACK!
-            : resolvePathOnObject(rawResult.returnedDomainElement, endResultPath)
+            ? [safeResolvePathOnObject(rawResult.returnedDomainElement, endResultPath??[])] // TODO: HACK! HACK!
+            : safeResolvePathOnObject(rawResult.returnedDomainElement, endResultPath)
+            // ? [resolvePathOnObject(rawResult.returnedDomainElement, endResultPath??[])] // TODO: HACK! HACK!
+            // : resolvePathOnObject(rawResult.returnedDomainElement, endResultPath)
           : rawResult.returnedDomainElement;
       log.info("asyncExtractWithQuery preSqlResult", JSON.stringify(preSqlResult));
       const sqlResult = preSqlResult == null ? undefined : preSqlResult;
@@ -203,6 +210,8 @@ export class SqlDbQueryRunner {
       return Promise.resolve(
         new Domain2ElementFailed({
           queryFailure: "QueryNotExecutable",
+          failureOrigin: ["asyncExtractWithQuery"],
+          query: JSON.stringify(selectorParams),
           failureMessage: error as any,
         })
       );

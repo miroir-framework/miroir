@@ -50,6 +50,52 @@ export type ResultAccessPath = (string | number | {
 
 // ################################################################################################
 // TODO: unit tests!
+export function safeResolvePathOnObject(valueObject:any, path: ResultAccessPath) {
+  if (path.length === 0 || valueObject === undefined) {
+    return valueObject;
+  }
+  return path.reduce((acc, curr, index) => {
+    if (typeof curr === "object") {
+      if (typeof acc !== "object" || !Array.isArray(acc)) {
+        return undefined;
+        // throw new Error(
+        //   "resolvePathOnObject value object=" +
+        //     valueObject +
+        //     ", path=" +
+        //     path +
+        //     " either attribute " +
+        //     curr +
+        //     " not found in " +
+        //     acc +
+        //     " or not last in path but leading to undefined " +
+        //     (curr as any)[acc]
+        // );
+      } else {
+        return acc.map((item: any) => item[curr.key]);
+      }
+    } else {
+      if (!Object.hasOwn(acc, curr)) {
+        // throw new Error(
+        //   "resolvePathOnObject value object=" +
+        //     valueObject +
+        //     ", path=" +
+        //     path +
+        //     " either attribute " +
+        //     curr +
+        //     " not found in " +
+        //     acc +
+        //     " or not last in path but leading to undefined " +
+        //     (curr as any)[acc]
+        // );
+        return undefined;
+      } else {
+        console.info("safeResolvePathOnObject called with", valueObject, "path", path, "result", acc[curr])
+        return acc[curr];
+      }
+    }
+  }, valueObject);
+}
+// ################################################################################################
 export function resolvePathOnObject(valueObject:any, path: ResultAccessPath) {
   return path.reduce((acc, curr, index) => {
     if (typeof curr === "object") {

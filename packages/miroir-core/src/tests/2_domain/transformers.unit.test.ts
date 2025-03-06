@@ -189,132 +189,6 @@ if (RUN_TEST == testSuiteName) {
 }
 
 
-  // // ################################################################################################
-  // it("objectDynamicAccess: object dynamic access runtime transformer", async () => {
-  //   // TODO: test failure cases!
-  //   console.log(expect.getState().currentTestName, "START")
-  //   const newApplicationName = "test";
-  //   const newUuid = uuidv4();
-
-  //   const uniqueBuildTemplate: TransformerForBuild = {
-  //     transformerType: "objectDynamicAccess",
-  //     objectAccessPath: [
-  //       {
-  //         transformerType: "contextReference",
-  //         referenceName: "municipalitiesIndexedByName",
-  //       },
-  //       {
-  //         transformerType: "objectDynamicAccess",
-  //         objectAccessPath: [
-  //           {
-  //             transformerType: "contextReference",
-  //             referenceName: "fountain",
-  //           },
-  //           "Commune",
-  //         ]
-  //       }
-  //     ]
-  //   };
-
-  //   const preTestResult: { [k: string]: { [l: string]: any } } = transformer_apply(
-  //     "build",
-  //     undefined,
-  //     uniqueBuildTemplate as any,
-  //     {
-  //       // newUuid: newUuid,
-  //     }, // queryParams
-  //     {
-  //       municipalitiesIndexedByName: {
-  //         "PARIS 20EME ARRONDISSEMENT": {
-  //           parentUuid: "f6de3d66-37ee-42ac-bb81-72973222f006",
-  //           uuid: "33f90390-cc41-4d7a-ab3a-0cfad11e428c",
-  //           name: "PARIS 20EME ARRONDISSEMENT",
-  //         },
-  //         "PARIS 12EME ARRONDISSEMENT": {
-  //           parentUuid: "f6de3d66-37ee-42ac-bb81-72973222f006",
-  //           uuid: "0ed8a80e-7d88-45bc-8323-b1387a0e88d6",
-  //           name: "PARIS 12EME ARRONDISSEMENT",
-  //         },
-  //         "PARIS 19EME ARRONDISSEMENT": {
-  //           parentUuid: "f6de3d66-37ee-42ac-bb81-72973222f006",
-  //           uuid: "be47e605-cafb-4ecb-b238-166ad38ba7f6",
-  //           name: "PARIS 19EME ARRONDISSEMENT",
-  //         },
-  //         "PARIS 10EME ARRONDISSEMENT": {
-  //           parentUuid: "f6de3d66-37ee-42ac-bb81-72973222f006",
-  //           uuid: "9e54eafe-566f-4104-a577-3377f2826f17",
-  //           name: "PARIS 10EME ARRONDISSEMENT",
-  //         },
-  //         "PARIS 5EME ARRONDISSEMENT": {
-  //           parentUuid: "f6de3d66-37ee-42ac-bb81-72973222f006",
-  //           uuid: "895d601f-77ad-4450-9eaa-8aba5adcbe7e",
-  //           name: "PARIS 5EME ARRONDISSEMENT",
-  //         },
-  //         "PARIS 15EME ARRONDISSEMENT": {
-  //           parentUuid: "f6de3d66-37ee-42ac-bb81-72973222f006",
-  //           uuid: "1e5f01a2-5e3b-4c7f-996e-6db79ca49585",
-  //           name: "PARIS 15EME ARRONDISSEMENT",
-  //         },
-  //         "PARIS 14EME ARRONDISSEMENT": {
-  //           parentUuid: "f6de3d66-37ee-42ac-bb81-72973222f006",
-  //           uuid: "987269be-829b-4cd1-96bb-33dffed9ad6b",
-  //           name: "PARIS 14EME ARRONDISSEMENT",
-  //         },
-  //         "PARIS 16EME ARRONDISSEMENT": {
-  //           parentUuid: "f6de3d66-37ee-42ac-bb81-72973222f006",
-  //           uuid: "cc725af0-df42-4293-84ca-14edafdf9147",
-  //           name: "PARIS 16EME ARRONDISSEMENT",
-  //         },
-  //         "PARIS 13EME ARRONDISSEMENT": {
-  //           parentUuid: "f6de3d66-37ee-42ac-bb81-72973222f006",
-  //           uuid: "50479755-c8a4-4dd9-b870-67ebb6a763ed",
-  //           name: "PARIS 13EME ARRONDISSEMENT",
-  //         },
-  //         "PARIS 18EME ARRONDISSEMENT": {
-  //           parentUuid: "f6de3d66-37ee-42ac-bb81-72973222f006",
-  //           uuid: "ec9f6fb8-7de4-4757-ae92-8e95b3bc2434",
-  //           name: "PARIS 18EME ARRONDISSEMENT",
-  //         },
-  //       },
-  //       fountain: {
-  //         Voie: "BOULEVARD DE BELLEVILLE",
-  //         uuid: "16bbf3cf-6550-4823-989a-a10f67c0f377",
-  //         Commune: "PARIS 20EME ARRONDISSEMENT",
-  //         Modèle: "GHM Ville de Paris",
-  //         geo_shape: '{"coordinates":[2.381807425006663,48.86840357208106],"type":"Point"}',
-  //         "Type Objet": "BORNE_FONTAINE",
-  //         parentName: "Fountain",
-  //         parentUuid: "26a8fdde-a70c-4f22-9d62-1f49ed09041e",
-  //         Identifiant: "450080676",
-  //         geo_point_2d: "48.86840357208106, 2.381807425006663",
-  //         "N° Voie Pair": "36",
-  //         Disponibilité: "OUI",
-  //         "N° Voie Impair": null,
-  //         "Fin Indisponibilité": null,
-  //         "Motif Indisponibilité": null,
-  //         "Début Indisponibilité": null,
-  //         Municipality: null,
-  //         createdAt: "2024-10-01T20:28:59.705Z",
-  //         updatedAt: "2024-10-01T20:28:59.705Z",
-  //       },
-  //     } // context
-  //   );
-
-  //   console.log(
-  //     "################################ object dynamic access runtime transformer preTestResult",
-  //     preTestResult
-  //   );
-  //   const testResult = preTestResult; // uuid value is ignored
-  //   console.log("################################ object dynamic access runtime transformer testResult", testResult);
-  //   expect(testResult).toEqual(
-  //     {
-  //       parentUuid: 'f6de3d66-37ee-42ac-bb81-72973222f006',
-  //       uuid: '33f90390-cc41-4d7a-ab3a-0cfad11e428c',
-  //       name: 'PARIS 20EME ARRONDISSEMENT'
-  //     }
-  //   );
-  //   console.log("object dynamic access runtime transformer END");
-  // });
 
 
 
@@ -840,3 +714,129 @@ if (RUN_TEST == testSuiteName) {
   //   }
   // );
 
+  // // ################################################################################################
+  // it("objectDynamicAccess: object dynamic access runtime transformer", async () => {
+  //   // TODO: test failure cases!
+  //   console.log(expect.getState().currentTestName, "START")
+  //   const newApplicationName = "test";
+  //   const newUuid = uuidv4();
+
+  //   const uniqueBuildTemplate: TransformerForBuild = {
+  //     transformerType: "objectDynamicAccess",
+  //     objectAccessPath: [
+  //       {
+  //         transformerType: "contextReference",
+  //         referenceName: "municipalitiesIndexedByName",
+  //       },
+  //       {
+  //         transformerType: "objectDynamicAccess",
+  //         objectAccessPath: [
+  //           {
+  //             transformerType: "contextReference",
+  //             referenceName: "fountain",
+  //           },
+  //           "Commune",
+  //         ]
+  //       }
+  //     ]
+  //   };
+
+  //   const preTestResult: { [k: string]: { [l: string]: any } } = transformer_apply(
+  //     "build",
+  //     undefined,
+  //     uniqueBuildTemplate as any,
+  //     {
+  //       // newUuid: newUuid,
+  //     }, // queryParams
+  //     {
+  //       municipalitiesIndexedByName: {
+  //         "PARIS 20EME ARRONDISSEMENT": {
+  //           parentUuid: "f6de3d66-37ee-42ac-bb81-72973222f006",
+  //           uuid: "33f90390-cc41-4d7a-ab3a-0cfad11e428c",
+  //           name: "PARIS 20EME ARRONDISSEMENT",
+  //         },
+  //         "PARIS 12EME ARRONDISSEMENT": {
+  //           parentUuid: "f6de3d66-37ee-42ac-bb81-72973222f006",
+  //           uuid: "0ed8a80e-7d88-45bc-8323-b1387a0e88d6",
+  //           name: "PARIS 12EME ARRONDISSEMENT",
+  //         },
+  //         "PARIS 19EME ARRONDISSEMENT": {
+  //           parentUuid: "f6de3d66-37ee-42ac-bb81-72973222f006",
+  //           uuid: "be47e605-cafb-4ecb-b238-166ad38ba7f6",
+  //           name: "PARIS 19EME ARRONDISSEMENT",
+  //         },
+  //         "PARIS 10EME ARRONDISSEMENT": {
+  //           parentUuid: "f6de3d66-37ee-42ac-bb81-72973222f006",
+  //           uuid: "9e54eafe-566f-4104-a577-3377f2826f17",
+  //           name: "PARIS 10EME ARRONDISSEMENT",
+  //         },
+  //         "PARIS 5EME ARRONDISSEMENT": {
+  //           parentUuid: "f6de3d66-37ee-42ac-bb81-72973222f006",
+  //           uuid: "895d601f-77ad-4450-9eaa-8aba5adcbe7e",
+  //           name: "PARIS 5EME ARRONDISSEMENT",
+  //         },
+  //         "PARIS 15EME ARRONDISSEMENT": {
+  //           parentUuid: "f6de3d66-37ee-42ac-bb81-72973222f006",
+  //           uuid: "1e5f01a2-5e3b-4c7f-996e-6db79ca49585",
+  //           name: "PARIS 15EME ARRONDISSEMENT",
+  //         },
+  //         "PARIS 14EME ARRONDISSEMENT": {
+  //           parentUuid: "f6de3d66-37ee-42ac-bb81-72973222f006",
+  //           uuid: "987269be-829b-4cd1-96bb-33dffed9ad6b",
+  //           name: "PARIS 14EME ARRONDISSEMENT",
+  //         },
+  //         "PARIS 16EME ARRONDISSEMENT": {
+  //           parentUuid: "f6de3d66-37ee-42ac-bb81-72973222f006",
+  //           uuid: "cc725af0-df42-4293-84ca-14edafdf9147",
+  //           name: "PARIS 16EME ARRONDISSEMENT",
+  //         },
+  //         "PARIS 13EME ARRONDISSEMENT": {
+  //           parentUuid: "f6de3d66-37ee-42ac-bb81-72973222f006",
+  //           uuid: "50479755-c8a4-4dd9-b870-67ebb6a763ed",
+  //           name: "PARIS 13EME ARRONDISSEMENT",
+  //         },
+  //         "PARIS 18EME ARRONDISSEMENT": {
+  //           parentUuid: "f6de3d66-37ee-42ac-bb81-72973222f006",
+  //           uuid: "ec9f6fb8-7de4-4757-ae92-8e95b3bc2434",
+  //           name: "PARIS 18EME ARRONDISSEMENT",
+  //         },
+  //       },
+  //       fountain: {
+  //         Voie: "BOULEVARD DE BELLEVILLE",
+  //         uuid: "16bbf3cf-6550-4823-989a-a10f67c0f377",
+  //         Commune: "PARIS 20EME ARRONDISSEMENT",
+  //         Modèle: "GHM Ville de Paris",
+  //         geo_shape: '{"coordinates":[2.381807425006663,48.86840357208106],"type":"Point"}',
+  //         "Type Objet": "BORNE_FONTAINE",
+  //         parentName: "Fountain",
+  //         parentUuid: "26a8fdde-a70c-4f22-9d62-1f49ed09041e",
+  //         Identifiant: "450080676",
+  //         geo_point_2d: "48.86840357208106, 2.381807425006663",
+  //         "N° Voie Pair": "36",
+  //         Disponibilité: "OUI",
+  //         "N° Voie Impair": null,
+  //         "Fin Indisponibilité": null,
+  //         "Motif Indisponibilité": null,
+  //         "Début Indisponibilité": null,
+  //         Municipality: null,
+  //         createdAt: "2024-10-01T20:28:59.705Z",
+  //         updatedAt: "2024-10-01T20:28:59.705Z",
+  //       },
+  //     } // context
+  //   );
+
+  //   console.log(
+  //     "################################ object dynamic access runtime transformer preTestResult",
+  //     preTestResult
+  //   );
+  //   const testResult = preTestResult; // uuid value is ignored
+  //   console.log("################################ object dynamic access runtime transformer testResult", testResult);
+  //   expect(testResult).toEqual(
+  //     {
+  //       parentUuid: 'f6de3d66-37ee-42ac-bb81-72973222f006',
+  //       uuid: '33f90390-cc41-4d7a-ab3a-0cfad11e428c',
+  //       name: 'PARIS 20EME ARRONDISSEMENT'
+  //     }
+  //   );
+  //   console.log("object dynamic access runtime transformer END");
+  // });
