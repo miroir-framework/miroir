@@ -27,36 +27,38 @@ export function transformer_menu_AddItem(
   contextResults?: Record<string, any>,
 ): Domain2QueryReturnType<Menu> {
 // ): Domain2QueryReturnType<DomainElementSuccess> {
-  const menu = typeof transformer.transformerDefinition.menuReference == "string"?transformers.transformer_InnerReference_resolve(
-    step,
-    { transformerType: "contextReference", referenceName:transformer.transformerDefinition.menuReference },
-    queryParams,
-    contextResults
-  ) as Menu
-  :
-  transformers.transformer_InnerReference_resolve(
-    step,
-    transformer.transformerDefinition.menuReference,
-    queryParams,
-    contextResults
-  ) as Menu
+  const menu =
+    typeof transformer.transformerDefinition.menuReference == "string"
+      ? (transformers.transformer_InnerReference_resolve(
+          step,
+          { transformerType: "contextReference", referenceName: transformer.transformerDefinition.menuReference },
+          queryParams,
+          contextResults
+        ) as Menu)
+      : (transformers.transformer_InnerReference_resolve(
+          step,
+          transformer.transformerDefinition.menuReference,
+          queryParams,
+          contextResults
+        ) as Menu);
   ;
 
   log.debug("transformer_menu_AddItem resolved menu", JSON.stringify(menu, null, 2));
 
-  const menuItem = typeof transformer.transformerDefinition.menuItemReference == "string"?transformers.transformer_InnerReference_resolve(
-    step,
-    { transformerType: "contextReference", referenceName:transformer.transformerDefinition.menuItemReference },
-    queryParams,
-    contextResults
-  ) as MiroirMenuItem
-  :
-  transformers.transformer_InnerReference_resolve(
-    step,
-    transformer.transformerDefinition.menuItemReference,
-    queryParams,
-    contextResults
-  ) as MiroirMenuItem
+  const menuItem =
+    typeof transformer.transformerDefinition.menuItemReference == "string"
+      ? (transformers.transformer_InnerReference_resolve(
+          step,
+          { transformerType: "contextReference", referenceName: transformer.transformerDefinition.menuItemReference },
+          queryParams,
+          contextResults
+        ) as MiroirMenuItem)
+      : (transformers.transformer_InnerReference_resolve(
+          step,
+          transformer.transformerDefinition.menuItemReference,
+          queryParams,
+          contextResults
+        ) as MiroirMenuItem);
   ;
 
   log.debug("transformer_menu_AddItem resolved menuItem", JSON.stringify(menuItem, null, 2));
@@ -64,7 +66,6 @@ export function transformer_menu_AddItem(
   if (menu.definition.menuType === "simpleMenu") {
     log.error("transformer_menu_AddItem not implemented for simpleMenu yet");
     return menu; // this is a free object, not a recursive DomainElement object
-    
   }
   const sectionIndex = transformer.transformerDefinition.menuSectionInsertionIndex??0;
   const itemIndex = transformer.transformerDefinition.menuSectionItemInsertionIndex??0;

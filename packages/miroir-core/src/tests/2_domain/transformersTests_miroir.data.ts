@@ -28,6 +28,7 @@ import publisher2 from "../../assets/library_data/a027c379-8468-43a5-ba4d-bf618b
 import publisher3 from "../../assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/c1c97d54-aba8-4599-883a-7fe8f3874095.json" assert { type: "json" };
 import { Step } from "../../2_domain/Transformers.js";
 import { json } from "sequelize";
+import { transformerTestSuite_spreadsheet } from "./transformersTests_spreadsheet.data.js";
 
 
 // ################################################################################################
@@ -78,7 +79,7 @@ const fileData:any[] = [
  * TODO:
  * - test for fullObjectTemplate that has a non-string key
  */
-export const transformerTests: TransformerTestSuite = {
+export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
   transformerTestType: "transformerTestSuite",
   transformerTestLabel: "transformers",
   transformerTests: {
@@ -1894,225 +1895,14 @@ export const transformerTests: TransformerTestSuite = {
         // }
       },
     },
-    importSpreadsheet: {
-      transformerTestType: "transformerTestSuite",
-      transformerTestLabel: "importSpreadsheet",
-      transformerTests: {
-        "inferSpreadsheetSchema allows to infer a schema from a spreadsheet step 1: infer jzod schema based on spreadsheet columns": {
-          transformerTestType: "transformerTest",
-          transformerTestLabel: "inferSpreadsheetSchema allows to infer a schema from a spreadsheet step 1: infer jzod schema based on spreadsheet columns",
-          transformerName: "inferSpreadsheetSchema",
-          transformer: {
-            transformerType: "dataflowObject",
-            target: "schema",
-            definition: {
-              firstLine: {
-                transformerType: "listPickElement",
-                applyTo: {
-                  referenceType: "referencedTransformer",
-                  reference: {
-                    transformerType: "parameterReference",
-                    referenceName: "spreadsheet",
-                  },
-                },
-                index: 0,
-              },
-              attributeNames: {
-                transformerType: "objectValues",
-                applyTo: {
-                  referenceType: "referencedTransformer",
-                  reference: {
-                    transformerType: "contextReference",
-                    referencePath: ["firstLine"],
-                  },
-                },
-              },
-              splitAttributeDefinitions: {
-                transformerType: "mapperListToList",
-                applyTo: {
-                  referenceType: "referencedTransformer",
-                  reference: {
-                    transformerType: "contextReference",
-                    referencePath: ["attributeNames"],
-                  },
-                },
-                referenceToOuterObject: "attributeName",
-                elementTransformer: {
-                  transformerType: "object_fullTemplate",
-                  applyTo: {
-                    referenceType: "referencedTransformer",
-                    reference: {
-                      transformerType: "contextReference",
-                      referencePath: ["attributeName"],
-                    },
-                  },
-                  referenceToOuterObject: "attributeName",
-                  definition: [
-                    {
-                      attributeKey: {
-                        transformerType: "contextReference",
-                        referencePath: ["attributeName"],
-                      },
-                      attributeValue: {
-                        transformerType: "constant",
-                        value: { type: "string"},
-                      },
-                    },
-                  ],
-                },
-              },
-              mergedAttributeDefinitions: {
-                transformerType: "listReducerToSpreadObject",
-                applyTo: {
-                  referenceType: "referencedTransformer",
-                  reference: {
-                    transformerType: "contextReference",
-                    referencePath: ["splitAttributeDefinitions"],
-                  },
-                },
-              },
-              schema: {
-                transformerType: "freeObjectTemplate",
-                definition: {
-                  type: {
-                    transformerType: "constant",
-                    value: "object",
-                  },
-                  definition: {
-                    transformerType: "contextReference",
-                    referencePath: ["mergedAttributeDefinitions"],
-                  },
-                },
-              }
-            }
-          },
-          transformerParams: {
-            spreadsheet: [
-              { "a": "iso3166-1Alpha-2", "b": "iso3166-1Alpha-3", c: "Name" },
-              { "a": "US", "b": "USA", c: "United States" },
-              { "a": "DE", "b": "DEU", c: "Germany" },
-            ],
-          },
-          expectedValue: {
-            type: "object",
-            definition: {
-              "iso3166-1Alpha-2": { type: "string" },
-              "iso3166-1Alpha-3": { type: "string" },
-              Name: { type: "string" },
-            },
-          },
-        },
-        // "inferSpreadsheetSchema allows to infer a schema from a spreadsheet": {
-        //   transformerTestType: "transformerTest",
-        //   transformerTestLabel: "inferSpreadsheetSchema allows to infer a schema from a spreadsheet",
-        //   transformerName: "inferSpreadsheetSchema",
-        //   transformer: {
-        //     transformerType: "dataflowObject",
-        //     // target: "mergedAttributeDefinitions",
-        //     target: "schema",
-        //     definition: {
-        //       firstLine: {
-        //         transformerType: "listPickElement",
-        //         applyTo: {
-        //           referenceType: "referencedTransformer",
-        //           reference: {
-        //             transformerType: "parameterReference",
-        //             referenceName: "spreadsheet",
-        //           },
-        //         },
-        //         index: 0,
-        //       },
-        //       attributeNames: {
-        //         transformerType: "objectValues",
-        //         applyTo: {
-        //           referenceType: "referencedTransformer",
-        //           reference: {
-        //             transformerType: "contextReference",
-        //             referencePath: ["firstLine"],
-        //           },
-        //         },
-        //       },
-        //       splitAttributeDefinitions: {
-        //         transformerType: "mapperListToList",
-        //         applyTo: {
-        //           referenceType: "referencedTransformer",
-        //           reference: {
-        //             transformerType: "contextReference",
-        //             referencePath: ["attributeNames"],
-        //           },
-        //         },
-        //         referenceToOuterObject: "attributeName",
-        //         elementTransformer: {
-        //           transformerType: "object_fullTemplate",
-        //           applyTo: {
-        //             referenceType: "referencedTransformer",
-        //             reference: {
-        //               transformerType: "contextReference",
-        //               referencePath: ["attributeName"],
-        //             },
-        //           },
-        //           referenceToOuterObject: "attributeName",
-        //           definition: [
-        //             {
-        //               attributeKey: {
-        //                 transformerType: "contextReference",
-        //                 referencePath: ["attributeName"],
-        //               },
-        //               attributeValue: {
-        //                 transformerType: "constant",
-        //                 value: { type: "string"},
-        //               },
-        //             },
-        //           ],
-        //         },
-        //       },
-        //       mergedAttributeDefinitions: {
-        //         transformerType: "listReducerToSpreadObject",
-        //         applyTo: {
-        //           referenceType: "referencedTransformer",
-        //           reference: {
-        //             transformerType: "contextReference",
-        //             referencePath: ["splitAttributeDefinitions"],
-        //           },
-        //         },
-        //       },
-        //       schema: {
-        //         transformerType: "freeObjectTemplate",
-        //         definition: {
-        //           type: {
-        //             transformerType: "constant",
-        //             value: "object",
-        //           },
-        //           definition: {
-        //             transformerType: "contextReference",
-        //             referencePath: ["mergedAttributeDefinitions"],
-        //           },
-        //         },
-        //       }
-        //     }
-        //   },
-        //   transformerParams: {
-        //     spreadsheet: [
-        //       { "a": "iso3166-1Alpha-2", "b": "iso3166-1Alpha-3", c: "Name" },
-        //       { "a": "US", "b": "USA", c: "United States" },
-        //       { "a": "DE", "b": "DEU", c: "Germany" },
-        //     ],
-        //   },
-        //   expectedValue: {
-        //     type: "object",
-        //     definition: {
-        //       "iso3166-1Alpha-2": { type: "string" },
-        //       "iso3166-1Alpha-3": { type: "string" },
-        //       Name: { type: "string" },
-        //     },
-        //   },
-        // },
-      },
-    },
   },
 };
 
 const globalTimeOut = 30000;
+export const currentTestSuite:TransformerTestSuite = transformerTestSuite_miroirTransformers;
+// export const currentTestSuite:TransformerTestSuite = transformerTestSuite_spreadsheet;
+
+
 
 // ################################################################################################
 export const testSuites = (transformerTestSuite: TransformerTestSuite):string[][] => {
@@ -2182,18 +1972,28 @@ export async function runTransformerTestSuite(
 }
 
 // ################################################################################################
-export const transformerTestsDisplayResults = (RUN_TEST: string,testSuiteName: string) => {
+export const transformerTestsDisplayResults = (
+  transformerTestSuite: TransformerTestSuite,
+  RUN_TEST: string,
+  testSuiteName: string
+) => {
   if (RUN_TEST == testSuiteName) {
-    console.log("#################################### afterAll", testSuiteName,"testResults", JSON.stringify(TestSuiteContext.testAssertionsResults, null, 2));
-    const testSuitesPaths = testSuites(transformerTests);
+    console.log(
+      "#################################### afterAll",
+      testSuiteName,
+      "testResults",
+      JSON.stringify(TestSuiteContext.testAssertionsResults, null, 2)
+    );
+    // const testSuitesPaths = testSuites(transformerTestSuite_miroirTransformers);
+    const testSuitesPaths = testSuites(transformerTestSuite);
     const testSuitesNames = testSuitesPaths.map(TestSuiteContext.testSuitePathName);
     // console.log("#################################### afterAll TestSuites:", testSuitesPaths);
-    console.log("#################################### afterAll", testSuiteName,"TestSuites names:", testSuitesNames);
-    console.log("#################################### afterAll", testSuiteName,"TestResults:");
+    console.log("#################################### afterAll", testSuiteName, "TestSuites names:", testSuitesNames);
+    console.log("#################################### afterAll", testSuiteName, "TestResults:");
     for (const testSuiteName of testSuitesNames) {
       displayTestSuiteResults(expect, testSuiteName);
       console.log("");
     }
     TestSuiteContext.resetResults();
   }
-}
+};

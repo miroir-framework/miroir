@@ -134,7 +134,7 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
       case "combinerForObjectByRelation": {
         // const referenceObject = querySelectorParams.objectReference;
         const referenceObject = transformer_InnerReference_resolve(
-          "build",
+          "runtime",
           { transformerType: "contextReference", referenceName: querySelectorParams.objectReference },
           selectorParams.extractor.queryParams,
           selectorParams.extractor.contextResults
@@ -147,12 +147,10 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
         ) {
           return {
             elementType: "failure",
-            elementValue: {
-              queryFailure: "IncorrectParameters",
-              failureOrigin: ["FileSystemExtractorRunner", "combinerForObjectByRelation"],
-              queryParameters: JSON.stringify(selectorParams.extractor.pageParams),
-              queryContext: JSON.stringify(selectorParams.extractor.contextResults),
-            },
+            queryFailure: "IncorrectParameters",
+            failureOrigin: ["FileSystemExtractorRunner", "combinerForObjectByRelation"],
+            queryParameters: JSON.stringify(selectorParams.extractor.pageParams),
+            queryContext: JSON.stringify(selectorParams.extractor.contextResults),
           };
         }
 
@@ -164,12 +162,10 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
         if (result instanceof Action2Error || result.returnedDomainElement instanceof Domain2ElementFailed) {
           return {
             elementType: "failure",
-            elementValue: {
-              queryFailure: "InstanceNotFound",
-              deploymentUuid,
-              applicationSection,
-              entityUuid: entityUuidReference,
-            },
+            queryFailure: "InstanceNotFound",
+            deploymentUuid,
+            applicationSection,
+            entityUuid: entityUuidReference,
           };
         }
         // log.info(
@@ -275,10 +271,8 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
       return {
         // new object
         elementType: "failure",
-        elementValue: {
-          queryFailure: "IncorrectParameters",
-          queryParameters: JSON.stringify(extractorRunnerParams),
-        },
+        queryFailure: "IncorrectParameters",
+        queryParameters: JSON.stringify(extractorRunnerParams),
       };
       // resolving by fetchDataReference, fetchDataReferenceAttribute
     }
@@ -290,12 +284,10 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
       // return data;
       return {
         elementType: "failure",
-        elementValue: {
-          queryFailure: "EntityNotFound", // TODO: find corresponding queryFailure from data.status
-          deploymentUuid,
-          applicationSection,
-          entityUuid: entityUuid,
-        },
+        queryFailure: "EntityNotFound", // TODO: find corresponding queryFailure from data.status
+        deploymentUuid,
+        applicationSection,
+        entityUuid: entityUuid,
       };
     }
     return entityInstanceCollection.returnedDomainElement.instances;

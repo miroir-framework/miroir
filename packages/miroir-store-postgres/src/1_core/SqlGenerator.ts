@@ -372,7 +372,7 @@ export function sqlStringForTransformer(
         // return referenceQuery;
       } else {
         const resolvedReference = transformer_mustacheStringTemplate_apply(
-          actionRuntimeTransformer.interpolation??"build",
+          "runtime",
           actionRuntimeTransformer,
           queryParams,
           definedContextEntries

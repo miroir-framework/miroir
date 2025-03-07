@@ -213,17 +213,13 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
   switch (querySelectorParams?.extractorOrCombinerType) {
     case "combinerForObjectByRelation": {
       const referenceObject = transformer_InnerReference_resolve(
-        "build",
+        "runtime",
         { transformerType: "contextReference", referenceName: querySelectorParams.objectReference },
         selectorParams.extractor.queryParams,
         selectorParams.extractor.contextResults
       );
 
-      if (
-        !querySelectorParams.AttributeOfObjectToCompareToReferenceUuid
-        // ||
-        // referenceObject.elementType != "instance"
-      ) {
+      if (!querySelectorParams.AttributeOfObjectToCompareToReferenceUuid) {
         return new Domain2ElementFailed({
           queryFailure: "IncorrectParameters",
           queryParameters: JSON.stringify(selectorParams.extractor.pageParams),
@@ -281,9 +277,15 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
       //   "######### contextResults",
       //   JSON.stringify(selectorParams.query.contextResults, undefined, 2)
       // );
-      return domainState[deploymentUuid][applicationSection][entityUuidReference][
-            referenceObject[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
-          ];
+      const targetObject = domainState[deploymentUuid][applicationSection][entityUuidReference];
+      const result = targetObject[
+        referenceObject[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
+      ];
+      log.info("selectEntityInstanceFromObjectQueryAndDomainState combinerForObjectByRelation referenceObject", referenceObject);
+      log.info("selectEntityInstanceFromObjectQueryAndDomainState combinerForObjectByRelation attribute of reference", querySelectorParams.AttributeOfObjectToCompareToReferenceUuid);
+      log.info("selectEntityInstanceFromObjectQueryAndDomainState combinerForObjectByRelation targetObject", targetObject);
+      log.info("selectEntityInstanceFromObjectQueryAndDomainState combinerForObjectByRelation result", result);
+      return result;
       break;
     }
     case "extractorForObjectByDirectReference": {
@@ -330,11 +332,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
           entityUuid: entityUuidReference,
         });
       }
-      if (
-        !domainState[deploymentUuid][applicationSection][entityUuidReference][
-          instanceUuidDomainElement
-        ]
-      ) {
+      if (!domainState[deploymentUuid][applicationSection][entityUuidReference][instanceUuidDomainElement]) {
         return new Domain2ElementFailed({
           queryFailure: "InstanceNotFound",
           deploymentUuid,

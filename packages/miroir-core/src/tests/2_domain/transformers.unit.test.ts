@@ -41,8 +41,9 @@ import {
   transformerTestsDisplayResults,
   testSuites,
   TransformerTest,
-  transformerTests,
-} from "./transformersTests.data.js";
+  transformerTestSuite_miroirTransformers,
+  currentTestSuite,
+} from "./transformersTests_miroir.data.js";
 
 
 // const env:any = (import.meta as any).env
@@ -126,7 +127,7 @@ const params = getCommandLineArgs();
 
 afterAll(async () => {
   if (RUN_TEST) {
-    transformerTestsDisplayResults(RUN_TEST, testSuiteName);
+    transformerTestsDisplayResults(currentTestSuite, RUN_TEST, testSuiteName);
   }
 });
 
@@ -136,12 +137,11 @@ async function runTransformerTestInMemory(vitest: any, testSuiteNamePath: string
   console.log("#################################### test", assertionName, "START");
   // TestSuiteContext.setTest(transformerTest.transformerTestLabel);
 
-  if (!transformerTests) {
+  if (!currentTestSuite) {
     throw new Error("transformerTests is undefined");
   }
   console.log("################################ transformerTestParams", JSON.stringify(transformerTest, null, 2));
   const transformer: TransformerForBuild | TransformerForRuntime = transformerTest.transformer;
-  // const interpolation = (transformerTest.transformer as any).interpolation ?? "build"
   const interpolation = (transformerTest.transformer as any).interpolation ?? "runtime"
   const rawResult: Domain2QueryReturnType<any> = transformer_apply_wrapper(
     interpolation,
@@ -182,7 +182,7 @@ async function runTransformerTestInMemory(vitest: any, testSuiteNamePath: string
 const testSuiteName = "transformers.unit.test";
 if (RUN_TEST == testSuiteName) {
   // await runTransformerTestSuite(vitest, [transformerTests.transformerTestLabel ?? transformerTests.transformerTestType], transformerTests, runTransformerTest);
-  await runTransformerTestSuite(vitest, [], transformerTests, runTransformerTestInMemory);
+  await runTransformerTestSuite(vitest, [], currentTestSuite, runTransformerTestInMemory);
   
 } else {
   console.log("################################ skipping test suite:", testSuiteName);
