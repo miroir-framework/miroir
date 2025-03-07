@@ -3898,7 +3898,7 @@ export const miroirFundamentalJzodSchema = {
                     "type": "schemaReference",
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "jzodElement"
+                      "relativePath": "jzodObject"
                     }
                   }
                 }
@@ -3915,6 +3915,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "transformerImplementation": {
             "type": "union",
+            "discriminator": "transformerImplementationType",
             "definition": [
               {
                 "type": "object",
@@ -3931,9 +3932,9 @@ export const miroirFundamentalJzodSchema = {
               {
                 "type": "object",
                 "definition": {
-                  "transformerType": {
+                  "transformerImplementationType": {
                     "type": "literal",
-                    "definition": "queryReturningJzodSchema"
+                    "definition": "transformer"
                   },
                   "definition": {
                     "type": "schemaReference",

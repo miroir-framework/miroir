@@ -700,6 +700,10 @@ export {
   ModelEntityActionTransformer
 } from './2_domain/ModelEntityActionTransformer.js';
 export { 
+  transformer_SpreadSheetToJzodSchema
+} from "./2_domain/Spreadsheet.js";
+export { 
+  applicationTransformerDefinitions,
   ActionTemplate,
   resolveApplyTo_legacy,
   transformer_resolveReference,

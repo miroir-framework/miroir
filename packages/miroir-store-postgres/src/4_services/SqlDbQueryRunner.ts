@@ -196,12 +196,9 @@ export class SqlDbQueryRunner {
           ? encloseEndResultInArray
             ? [safeResolvePathOnObject(rawResult.returnedDomainElement, endResultPath??[])] // TODO: HACK! HACK!
             : safeResolvePathOnObject(rawResult.returnedDomainElement, endResultPath)
-            // ? [resolvePathOnObject(rawResult.returnedDomainElement, endResultPath??[])] // TODO: HACK! HACK!
-            // : resolvePathOnObject(rawResult.returnedDomainElement, endResultPath)
           : rawResult.returnedDomainElement;
       log.info("asyncExtractWithQuery preSqlResult", JSON.stringify(preSqlResult));
       const sqlResult = preSqlResult == null ? undefined : preSqlResult;
-      // const result: Domain2QueryReturnType<DomainElementSuccess> = { elementType: "object", elementValue: {[endResultName]:sqlResult} }
       const result: Domain2QueryReturnType<any> = {[endResultName]:sqlResult}
       log.info("asyncExtractWithQuery returning result", JSON.stringify(result));
       return Promise.resolve(result);
@@ -228,19 +225,12 @@ export class SqlDbQueryRunner {
   public asyncSqlDbExtractEntityInstanceListWithObjectListExtractor = (
     selectorParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>
   ): Promise<Domain2QueryReturnType<EntityInstance[]>> => {
-    // (
-    //   state: any,
-    //   selectorParams: AsyncExtractorOrQueryTemplateRunnerParams<BoxedExtractorTemplateReturningObjectList, any>
-    // ): Promise<Domain2QueryReturnType<EntityInstancesUuidIndex>> {
-    let result: Promise<Domain2QueryReturnType<EntityInstance[]>>;
     switch (selectorParams.extractor.select.extractorOrCombinerType) {
       case "extractorByEntityReturningObjectList": {
         return this.extractEntityInstanceListWithFilter(selectorParams);
       }
       case "combinerByRelationReturningObjectList":
       case "combinerByManyToManyRelationReturningObjectList": {
-        // return this.extractorRunnerMap.extractEntityInstanceListWithObjectListExtractor({ // this is actually a recursive call
-        //   extractorRunnerMap: this.extractorRunnerMap,
         if (!selectorParams.extractorRunnerMap) {
           throw new Error("asyncSqlDbExtractEntityInstanceListWithObjectListExtractor missing extractorRunnerMap");
         }
@@ -267,13 +257,6 @@ export class SqlDbQueryRunner {
           queryFailure: "IncorrectParameters",
           queryParameters: JSON.stringify(selectorParams),
         }));
-        // return Promise.resolve({
-        //   elementType: "failure",
-        //   elementValue: {
-        //     queryFailure: "IncorrectParameters",
-        //     queryParameters: JSON.stringify(selectorParams),
-        //   },
-        // });
         break;
       }
     }
@@ -289,19 +272,13 @@ export class SqlDbQueryRunner {
   public asyncSqlDbExtractEntityInstanceUuidIndexWithObjectListExtractor = (
     selectorParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>
   ): Promise<Domain2QueryReturnType<EntityInstancesUuidIndex>> => {
-    // (
-    //   state: any,
-    //   selectorParams: AsyncExtractorOrQueryTemplateRunnerParams<BoxedExtractorTemplateReturningObjectList, any>
-    // ): Promise<Domain2QueryReturnType<EntityInstancesUuidIndex>> {
-    let result: Promise<Domain2QueryReturnType<EntityInstancesUuidIndex>>;
+    // let result: Promise<Domain2QueryReturnType<EntityInstancesUuidIndex>>;
     switch (selectorParams.extractor.select.extractorOrCombinerType) {
       case "extractorByEntityReturningObjectList": {
         return this.extractEntityInstanceUuidIndexWithFilter(selectorParams);
       }
       case "combinerByRelationReturningObjectList":
       case "combinerByManyToManyRelationReturningObjectList": {
-        // return this.extractorRunnerMap.extractEntityInstanceUuidIndexWithObjectListExtractor({ // this is actually a recursive call
-        //   extractorRunnerMap: this.extractorRunnerMap,
         if (!selectorParams.extractorRunnerMap) {
           throw new Error("asyncSqlDbExtractEntityInstanceUuidIndexWithObjectListExtractor missing extractorRunnerMap");
         }
@@ -328,13 +305,6 @@ export class SqlDbQueryRunner {
           queryFailure: "IncorrectParameters",
           queryParameters: JSON.stringify(selectorParams),
         }));
-        // return Promise.resolve({
-        //   elementType: "failure",
-        //   elementValue: {
-        //     queryFailure: "IncorrectParameters",
-        //     queryParameters: JSON.stringify(selectorParams),
-        //   },
-        // });
         break;
       }
     }
@@ -453,18 +423,6 @@ export class SqlDbQueryRunner {
             queryParameters: JSON.stringify(selectorParams.extractor.pageParams),
             queryContext: JSON.stringify(selectorParams.extractor.contextResults),
           });
-          // return {
-          //   elementType: "failure",
-          //   elementValue: {
-          //     queryFailure: "IncorrectParameters",
-          //     failureMessage:
-          //       "sqlDbExtractorRunner combinerForObjectByRelation objectReference not found:" +
-          //       JSON.stringify(querySelectorParams.objectReference),
-          //     query: JSON.stringify(querySelectorParams),
-          //     queryParameters: JSON.stringify(selectorParams.extractor.pageParams),
-          //     queryContext: JSON.stringify(selectorParams.extractor.contextResults),
-          //   },
-          // };
         }
 
         const result = await this.persistenceStoreController.getInstance(
@@ -479,15 +437,6 @@ export class SqlDbQueryRunner {
             applicationSection,
             entityUuid: entityUuidReference,
           });
-          // return {
-          //   elementType: "failure",
-          //   elementValue: {
-          //     queryFailure: "InstanceNotFound",
-          //     deploymentUuid,
-          //     applicationSection,
-          //     entityUuid: entityUuidReference,
-          //   },
-          // };
         }
         // log.info(
         //   "extractEntityInstance combinerForObjectByRelation, ############# reference",
@@ -527,16 +476,6 @@ export class SqlDbQueryRunner {
             entityUuid: entityUuidReference,
             instanceUuid: instanceDomainElement,
           });
-          // return {
-          //   elementType: "failure",
-          //   elementValue: {
-          //     queryFailure: "InstanceNotFound",
-          //     deploymentUuid,
-          //     applicationSection,
-          //     entityUuid: entityUuidReference,
-          //     instanceUuid: instanceDomainElement,
-          //   },
-          // };
         }
         log.info(
           "extractEntityInstance extractorForObjectByDirectReference, ############# reference",
@@ -612,15 +551,6 @@ export class SqlDbQueryRunner {
         applicationSection,
         entityUuid: entityUuid,
       });
-      // return {
-      //   elementType: "failure",
-      //   elementValue: {
-      //     queryFailure: "EntityNotFound", // TODO: find corresponding queryFailure from data.status
-      //     deploymentUuid,
-      //     applicationSection,
-      //     entityUuid: entityUuid,
-      //   },
-      // };
     }
     if (entityInstanceCollection.returnedDomainElement instanceof Domain2ElementFailed) {
       log.error("sqlDbQueryRunner extractEntityInstanceList failed for extractor", JSON.stringify(extractorRunnerParams.extractor, null, 2));
@@ -630,15 +560,6 @@ export class SqlDbQueryRunner {
         applicationSection,
         entityUuid: entityUuid,
       });
-      // return {
-      //   elementType: "failure",
-      //   elementValue: {
-      //     queryFailure: "EntityNotFound", // TODO: find corresponding queryFailure from data.status
-      //     deploymentUuid,
-      //     applicationSection,
-      //     entityUuid: entityUuid,
-      //   },
-      // };
     }
     return entityInstanceCollection.returnedDomainElement.instances;
   };
@@ -725,15 +646,6 @@ export class SqlDbQueryRunner {
         applicationSection,
         entityUuid: entityUuid,
       }));
-      // return {
-      //   elementType: "failure",
-      //   elementValue: {
-      //     queryFailure: "EntityNotFound", // TODO: find corresponding queryFailure from data.status
-      //     deploymentUuid,
-      //     applicationSection,
-      //     entityUuid: entityUuid,
-      //   },
-      // };
     }
     return Promise.resolve(entityInstanceCollection.returnedDomainElement.instances);
   };

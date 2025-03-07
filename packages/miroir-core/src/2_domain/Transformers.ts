@@ -12,6 +12,7 @@ import {
   Transformer_contextOrParameterReference,
   Transformer_InnerReference,
   Transformer_objectDynamicAccess,
+  TransformerDefinition,
   TransformerForBuild,
   TransformerForBuild_count,
   TransformerForBuild_inner_object_alter,
@@ -49,6 +50,8 @@ import { MiroirLoggerFactory } from "../4_services/LoggerFactory.js";
 import { packageName } from "../constants.js";
 import { resolvePathOnObject } from "../tools.js";
 import { cleanLevel } from "./constants.js";
+import { transformer } from "zod";
+import { transformer_SpreadSheetToJzodSchema } from "./Spreadsheet.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -533,6 +536,7 @@ export function transformer_resolveReference(
 ): Domain2QueryReturnType<any> {
   // ReferenceNotFound
   const bank: Record<string, any> = paramOrContext == "param" ? queryParams ?? {} : contextResults ?? {};
+  log.info("transformer_resolveReference called for", JSON.stringify(transformerInnerReference, null, 2), "bank", JSON.stringify(bank, null, 2));
   if (!bank) {
     log.error(
       "transformer_InnerReference_resolve failed, no contextResults for step",
@@ -1349,7 +1353,8 @@ export function innerTransformer_apply(
     case "dataflowObject": {
       const resultObject: Record<string,any> = {};
       for (const [key, value] of Object.entries(transformer.definition)) {
-        const currentContext = label ? { ...contextResults, [label]: resultObject } : { ...contextResults, ...resultObject }
+        // const currentContext = label ? { ...contextResults, [label]: resultObject } : { ...contextResults, ...resultObject }
+        const currentContext = { ...contextResults, ...resultObject }
         log.info(
           "innerTransformer_apply for dataflowObject labeled",
           label,
@@ -1580,36 +1585,11 @@ export function transformer_apply(
         } else {
           result = innerTransformer_apply(step, label, transformer, queryParams, contextResults);
         }
-        // if ((transformer as any)?.interpolation??"build" == step) {
-        //   result = innerTransformer_apply(step, label, transformer, queryParams, contextResults);
-        // } else {
-        //   result = innerTransformer_plainObject_apply(step, label, transformer, queryParams, contextResults);
-        // }
       } else {
         result = innerTransformer_plainObject_apply(step, label, transformer, queryParams, contextResults);
       }
     }
     return result
-    // if (result instanceof Domain2ElementFailed) {
-    //   log.error(
-    //     "transformer_apply failed for",
-    //     label,
-    //     "step",
-    //     step,
-    //     "transformer",
-    //     JSON.stringify(transformer, null, 2),
-    //     "result",
-    //     JSON.stringify(result, null, 2)
-    //   );
-    //   return new Domain2ElementFailed({
-    //     queryFailure: "QueryNotExecutable",
-    //     failureOrigin: ["transformer_apply"],
-    //     innerError: result,
-    //     queryContext: "failed to transform object attribute",
-    //   });
-    // } else {
-    //   return result;
-    // }
   } else {
     // plain value
     return transformer;
@@ -1617,6 +1597,10 @@ export function transformer_apply(
 }
 
 // ################################################################################################
+export const applicationTransformerDefinitions: Record<string, TransformerDefinition> = {
+  spreadSheetToJzodSchema: transformer_SpreadSheetToJzodSchema,
+}
+
 // <A>[] -> <A>[]
 // object -> object
 // innerFullObjectTemplate { a: A, b: B } -> object 
@@ -1646,7 +1630,6 @@ export function transformer_extended_apply(
   //   // Object.keys(contextResults??{})
   //   // // JSON.stringify(Object.keys(contextResults??{}), null, 2)
   // );
-  // let result: Domain2QueryReturnType<DomainElementSuccess> = undefined as any;
   let result: Domain2QueryReturnType<any> = undefined as any;
 
   if (typeof transformer == "object") {
@@ -1669,36 +1652,77 @@ export function transformer_extended_apply(
               );
               break;
             }
-            default: {
+            case "constantUuid":
+            case "constant":
+            case "constantAsExtractor":
+            case "constantArray":
+            case "constantBigint":
+            case "constantBoolean":
+            case "constantObject":
+            case "constantNumber":
+            case "constantString":
+            case "newUuid":
+            case "mustacheStringTemplate":
+            case "contextReference":
+            case "parameterReference":
+            case "objectDynamicAccess":
+            case "dataflowObject":
+            case "dataflowSequence":
+            case "freeObjectTemplate":
+            case "objectAlter":
+            case "object_fullTemplate":
+            case "listReducerToSpreadObject":
+            case "objectEntries":
+            case "objectValues":
+            case "listPickElement":
+            case "listReducerToIndexObject":
+            case "mapperListToList":
+            case "count":
+            case "unique": {
               result = innerTransformer_apply(step, label, transformer, queryParams, contextResults);
+              break;
+            }
+            default: {
+              const foundApplicationTransformer = applicationTransformerDefinitions[(transformer as any).transformerType];
+              if (!foundApplicationTransformer) {
+                log.error(
+                  "transformer_extended_apply failed for",
+                  label,
+                  "using to resolve build transformers for step:",
+                  step,
+                  "transformer",
+                  JSON.stringify(transformer, null, 2)
+                );
+                result = new Domain2ElementFailed({
+                  queryFailure: "QueryNotExecutable",
+                  failureOrigin: ["transformer_extended_apply"],
+                  queryContext: "transformer " + (transformer as any).transformerType + " not found",
+                  queryParameters: transformer,
+                });
+              }
+              if (foundApplicationTransformer.transformerImplementation.transformerImplementationType == "transformer") {
+                result = innerTransformer_apply(
+                  step,
+                  label,
+                  foundApplicationTransformer.transformerImplementation.definition,
+                  { ...queryParams, ...(transformer as any) },
+                  contextResults
+                );
+              }
             }
           }
         } else {
           // log.info("THERE");
+          log.warn(
+            "transformer_extended_apply called for",
+            label,
+            "using to resolve build transformers for step:",
+            step,
+            "transformer",
+            JSON.stringify(transformer, null, 2)
+          );
           result = innerTransformer_plainObject_apply(step, label, transformer, queryParams, contextResults);
         }
-        // if ((((transformer as any)?.interpolation??"build") == step)) {
-        //   // log.info("HERE");
-        //   switch (transformer.transformerType) {
-        //     case "transformer_menu_addItem": {
-        //       result = defaultTransformers.transformer_menu_AddItem(
-        //         defaultTransformers,
-        //         step,
-        //         label,
-        //         transformer,
-        //         queryParams,
-        //         contextResults
-        //       );
-        //       break;
-        //     }
-        //     default: {
-        //       result = innerTransformer_apply(step, label, transformer, queryParams, contextResults);
-        //     }
-        //   }
-        // } else {
-        //   // log.info("THERE");
-        //   result = innerTransformer_plainObject_apply(step, label, transformer, queryParams, contextResults);
-        // }
       } else {
         // log.info("THERE2");
         result = innerTransformer_plainObject_apply(step, label, transformer, queryParams, contextResults);

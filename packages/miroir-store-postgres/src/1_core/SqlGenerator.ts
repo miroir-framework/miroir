@@ -1,4 +1,5 @@
 import {
+  applicationTransformerDefinitions,
   AsyncQueryRunnerParams,
   Domain2ElementFailed,
   Domain2QueryReturnType,
@@ -2022,15 +2023,46 @@ FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo",
       // log.info("sqlStringForTransformer count actionRuntimeTransformer.groupBy", actionRuntimeTransformer.groupBy);
       break;
     }
-    default:
+    default: {
+      const castTransformer = actionRuntimeTransformer as any;
+      const foundApplicationTransformer = applicationTransformerDefinitions[castTransformer.transformerType];
+
+      if (!foundApplicationTransformer) {
+        return new Domain2ElementFailed({
+          queryFailure: "QueryNotExecutable",
+          query: actionRuntimeTransformer as any,
+          failureMessage: "sqlStringForTransformer transformerType not found in applicationTransformerDefinitions: " + castTransformer.transformerType,
+        });
+      }
+      if (foundApplicationTransformer.transformerImplementation.transformerImplementationType != "transformer") {
+        return new Domain2ElementFailed({
+          queryFailure: "QueryNotExecutable",
+          query: actionRuntimeTransformer as any,
+          failureMessage: "sqlStringForTransformer transformer is not implementated using transformers: " + (castTransformer.label??castTransformer.transformerType),
+        });
+      }
+      const applicationTransformerSql = sqlStringForTransformer(
+        foundApplicationTransformer.transformerImplementation.definition as TransformerForRuntime,
+        preparedStatementParametersCount,
+        indentLevel,
+        {
+          ...queryParams,
+          ...castTransformer,
+        },
+        definedContextEntries,
+        useAccessPathForContextReference,
+        topLevelTransformer
+      );
+      return applicationTransformerSql;
       break;
+    }
   }
 
   return new Domain2ElementFailed({
     queryFailure: "QueryNotExecutable",
     failureOrigin: ["sqlStringForTransformer"],
     query: actionRuntimeTransformer as any,
-    failureMessage: "could not handle transformer",
+    failureMessage: "could not handle transformer: " + JSON.stringify(actionRuntimeTransformer.label??actionRuntimeTransformer.transformerType, null, 2),
   });
 }
 
@@ -2105,15 +2137,19 @@ export function sqlStringForQuery(
     queryParamsWithClauses.map((q) => {
       const notMapResultAccessPath = q.convertedParam.resultAccessPath?.find((e) => typeof e == "object");
       if (notMapResultAccessPath) {
-        throw new Error("sqlStringForQuery queryParamsWithClauses convertedParam not string or number: " + JSON.stringify(notMapResultAccessPath, null, 2));
+        throw new Error(
+          "sqlStringForQuery queryParamsWithClauses convertedParam not string or number: " +
+            JSON.stringify(notMapResultAccessPath, null, 2)
+        );
       }
       return [
         q.name,
         {
-          type: isJson(q.convertedParam.type)  ? "json" : q.convertedParam.type as any,
+          type: isJson(q.convertedParam.type) ? "json" : (q.convertedParam.type as any),
           attributeResultAccessPath: (q.convertedParam.resultAccessPath as any)?.slice(1), // because resultAccessPath returns the path viewed from the end user, for which the result is always an array
         },
-      ];})
+      ];
+    })
   );
 
   log.info("sqlStringForQuery found queryParamsWithClauses", JSON.stringify(queryParamsWithClauses, null, 2));
@@ -2129,7 +2165,6 @@ export function sqlStringForQuery(
       newPreparedStatementParameters.length,
       1, // indentLevel,
       selectorParams.extractor.queryParams,
-      // selectorParams.extractor.contextResults
       convertedParams
     );
     if (!(transformerRawQuery instanceof Domain2ElementFailed) && transformerRawQuery.preparedStatementParameters) {

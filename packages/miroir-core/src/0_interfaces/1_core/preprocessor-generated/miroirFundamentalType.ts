@@ -1075,7 +1075,7 @@ export type TransformerDefinition = {
     transformerInterface?: {
         transformerParameterSchema: {
             transformerType: JzodLiteral;
-            transformerDefinition: JzodElement;
+            transformerDefinition: JzodObject;
         };
         transformerResultSchema?: JzodElement | undefined;
     } | undefined;
@@ -1083,7 +1083,7 @@ export type TransformerDefinition = {
         transformerImplementationType: "libraryImplementation";
         implementationFunctionName: string;
     } | {
-        transformerType: "queryReturningJzodSchema";
+        transformerImplementationType: "transformer";
         definition: TransformerForBuildOrRuntime;
     };
 };
@@ -4318,7 +4318,7 @@ export const transformerForBuildOrRuntime: z.ZodType<TransformerForBuildOrRuntim
 export const actionHandler: z.ZodType<ActionHandler> = z.object({interface:z.object({actionJzodObjectSchema:z.lazy(() =>jzodObject)}).strict(), implementation:z.object({templates:z.record(z.string(),z.any()).optional(), compositeActionTemplate:z.lazy(() =>compositeActionTemplate)}).strict()}).strict();
 export const transformer_menu_addItem: z.ZodType<Transformer_menu_addItem> = z.object({transformerType:z.literal("transformer_menu_addItem"), interpolation:z.literal("runtime"), transformerDefinition:z.object({menuReference:z.union([z.string(), z.lazy(() =>transformerForRuntime_InnerReference)]), menuItemReference:z.union([z.string(), z.lazy(() =>transformerForRuntime_InnerReference)]), menuSectionInsertionIndex:z.number().optional(), menuSectionItemInsertionIndex:z.number().optional()}).strict()}).strict();
 export const extendedTransformerForRuntime: z.ZodType<ExtendedTransformerForRuntime> = z.union([z.lazy(() =>transformerForRuntime), z.lazy(() =>transformer_menu_addItem)]);
-export const transformerDefinition: z.ZodType<TransformerDefinition> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), name:z.string(), defaultLabel:z.string(), description:z.string().optional(), transformerInterface:z.object({transformerParameterSchema:z.object({transformerType:z.lazy(() =>jzodLiteral), transformerDefinition:z.lazy(() =>jzodElement)}).strict(), transformerResultSchema:z.lazy(() =>jzodElement).optional()}).strict().optional(), transformerImplementation:z.union([z.object({transformerImplementationType:z.literal("libraryImplementation"), implementationFunctionName:z.string()}).strict(), z.object({transformerType:z.literal("queryReturningJzodSchema"), definition:z.lazy(() =>transformerForBuildOrRuntime)}).strict()])}).strict();
+export const transformerDefinition: z.ZodType<TransformerDefinition> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), name:z.string(), defaultLabel:z.string(), description:z.string().optional(), transformerInterface:z.object({transformerParameterSchema:z.object({transformerType:z.lazy(() =>jzodLiteral), transformerDefinition:z.lazy(() =>jzodObject)}).strict(), transformerResultSchema:z.lazy(() =>jzodElement).optional()}).strict().optional(), transformerImplementation:z.union([z.object({transformerImplementationType:z.literal("libraryImplementation"), implementationFunctionName:z.string()}).strict(), z.object({transformerImplementationType:z.literal("transformer"), definition:z.lazy(() =>transformerForBuildOrRuntime)}).strict()])}).strict();
 export const ______________________________________________miroirMetaModel_____________________________________________: z.ZodType<______________________________________________miroirMetaModel_____________________________________________> = z.never();
 export const entityAttributeExpandedType: z.ZodType<EntityAttributeExpandedType> = z.enum(["UUID","STRING","BOOLEAN","OBJECT"]);
 export const entityAttributeType: z.ZodType<EntityAttributeType> = z.union([z.lazy(() =>entityInstance), z.enum(["ENTITY_INSTANCE_UUID","ARRAY"])]);

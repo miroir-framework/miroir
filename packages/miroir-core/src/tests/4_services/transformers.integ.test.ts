@@ -272,6 +272,11 @@ const extractors: ExtractorOrCombinerRecord = {
   },
 };
 
+function isJson(t:any) {
+  // return t == "json" || t == "json_array" || t == "tableOf1JsonColumn";
+  return typeof t == "object" && t !== null;
+}
+
 // ################################################################################################
 async function runTransformerIntegrationTest(vitest: any, testNameArray: string[], transformerTest: TransformerTest) {
   console.log("runTransformerIntegrationTest called for", testNameArray, "START");
@@ -279,6 +284,8 @@ async function runTransformerIntegrationTest(vitest: any, testNameArray: string[
   let queryResult
   console.log("runTransformerIntegrationTest", testNameArray, "running runtime on sql transformerTest", transformerTest);
 
+  const runAsSql = true;
+  // const runAsSql = false;
   queryResult = await sqlDbDataStore.handleBoxedQueryAction({
     actionType: "runBoxedQueryAction",
     actionName: "runQuery",
@@ -287,12 +294,14 @@ async function runTransformerIntegrationTest(vitest: any, testNameArray: string[
     applicationSection: "data",
     query: {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
-      runAsSql: true,
+      runAsSql,
       pageParams: {},
       queryParams: { ...transformerTest.transformerParams, ...transformerTest.transformerRuntimeContext },
-      contextResults: Object.fromEntries(
-        Object.entries(transformerTest.transformerRuntimeContext ?? {}).map((e: [string, any]) => [e[0], "json"])
-      ),
+      contextResults: runAsSql?Object.fromEntries( // there's a trick for runAsSql in order to be able to test transformers taking context parameters
+          Object.entries(transformerTest.transformerRuntimeContext ?? {}).map((e: [string, any]) => [e[0], {
+            type: isJson(e[1]) ? "json" : typeof e[1],
+          }])
+        ):transformerTest.transformerRuntimeContext ?? {},
       deploymentUuid: "",
       runtimeTransformers: {
         transformer: (transformerTest as any).transformer,
