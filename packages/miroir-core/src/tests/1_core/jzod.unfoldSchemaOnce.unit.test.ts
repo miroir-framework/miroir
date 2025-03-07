@@ -106,7 +106,11 @@ import entityDefinitionReportV1 from "../../assets/miroir_model/54b9c72f-d4f3-4d
 // import entityDefinitionDeployment from "../../src/assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/c50240e7-c451-46c2-b60a-07b3172a5ef9.json" assert { type: "json" };
 import entityDefinitionDeployment from "../../assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/c50240e7-c451-46c2-b60a-07b3172a5ef9.json" assert { type: "json" };
 import entityDefinitionTest from '../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/d2842a84-3e66-43ee-ac58-7e13b95b01e8.json' assert { type: "json" };
+import entityDefinitionTransformerDefinition from "../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/54a16d69-c1f0-4dd7-aba4-a2cda883586c.json" assert { type: "json" };
+
+
 import transformerMenuV1 from "../../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/685440be-7f3f-4774-b90d-bafa82d6832b.json" assert { type: "json" };
+import { entity } from "../../../dist/index.js";
 
 export const defaultMiroirMetaModel: MetaModel = {
   // configuration: [instanceConfigurationReference],
@@ -248,6 +252,7 @@ describe(
           entityDefinitionReport as EntityDefinition,
           entityDefinitionSelfApplicationDeploymentConfiguration as EntityDefinition,
           entityDefinitionTest as EntityDefinition,
+          entityDefinitionTransformerDefinition as EntityDefinition,
           // jzodSchemajzodMiroirBootstrapSchema as any,
         );
         console.log(expect.getState().currentTestName, "called getMiroirFundamentalJzodSchema");

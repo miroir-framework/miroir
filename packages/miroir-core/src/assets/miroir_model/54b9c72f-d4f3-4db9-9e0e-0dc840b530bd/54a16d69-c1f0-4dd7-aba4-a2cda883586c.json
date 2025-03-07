@@ -75,13 +75,14 @@
             "optional": true,
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "jzodSchema"
+              "relativePath": "jzodElement"
             }
           }
         }
       },
       "transformerImplementation": {
         "type": "union",
+        "discriminator": "transformerImplementationType",
         "definition": [
           {
             "type": "object",
@@ -98,7 +99,7 @@
           {
             "type": "object",
             "definition": {
-              "transformerType": {
+              "transformerImplementationType": {
                 "type": "literal",
                 "definition": "queryReturningJzodSchema"
               },
@@ -106,7 +107,7 @@
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "transformerTemplateForRecordOfTransformers"
+                  "relativePath": "transformerForBuildOrRuntime"
                 }
               }
             }

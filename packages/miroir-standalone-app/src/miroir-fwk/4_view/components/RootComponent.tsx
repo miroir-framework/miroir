@@ -43,6 +43,7 @@ import {
   entityDefinitionSelfApplicationDeploymentConfiguration,
   entityDefinitionSelfApplicationVersion,
   entityDefinitionTest,
+  entityDefinitionTransformerDefinition,
   entityDeployment,
   getMiroirFundamentalJzodSchema,
   instanceEndpointVersionV1,
@@ -211,6 +212,7 @@ export const RootComponent = (props: RootComponentProps) => {
     entityDefinitionReport as EntityDefinition,
     entityDefinitionSelfApplicationDeploymentConfiguration as EntityDefinition,
     entityDefinitionTest as EntityDefinition,
+    entityDefinitionTransformerDefinition as EntityDefinition,
     // jzodSchemajzodMiroirBootstrapSchema as any,
   ),[]);
 

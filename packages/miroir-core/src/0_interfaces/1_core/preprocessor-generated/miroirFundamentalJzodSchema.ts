@@ -2406,14 +2406,6 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformerForBuild_object_listReducerToSpreadObject",
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
-            },
-            "context": {}
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
               "relativePath": "transformerForBuild_list_listMapperToList",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             },
@@ -3811,6 +3803,150 @@ export const miroirFundamentalJzodSchema = {
             }
           }
         ]
+      },
+      "transformerDefinition": {
+        "type": "object",
+        "definition": {
+          "uuid": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "id": 1,
+                "defaultLabel": "Uuid",
+                "editable": false
+              }
+            }
+          },
+          "parentName": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 2,
+                "defaultLabel": "Entity Name",
+                "editable": false
+              }
+            }
+          },
+          "parentUuid": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "id": 3,
+                "defaultLabel": "Entity Uuid",
+                "editable": false
+              }
+            }
+          },
+          "parentDefinitionVersionUuid": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 4,
+                "defaultLabel": "Entity Definition Version Uuid",
+                "editable": false
+              }
+            }
+          },
+          "name": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "id": 5,
+                "defaultLabel": "Name",
+                "editable": true
+              }
+            }
+          },
+          "defaultLabel": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "id": 6,
+                "defaultLabel": "Default Label",
+                "editable": true
+              }
+            }
+          },
+          "description": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 7,
+                "defaultLabel": "Description",
+                "editable": true
+              }
+            }
+          },
+          "transformerInterface": {
+            "type": "object",
+            "optional": true,
+            "definition": {
+              "transformerParameterSchema": {
+                "type": "object",
+                "definition": {
+                  "transformerType": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "jzodLiteral"
+                    }
+                  },
+                  "transformerDefinition": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "jzodElement"
+                    }
+                  }
+                }
+              },
+              "transformerResultSchema": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "jzodElement"
+                }
+              }
+            }
+          },
+          "transformerImplementation": {
+            "type": "union",
+            "definition": [
+              {
+                "type": "object",
+                "definition": {
+                  "transformerImplementationType": {
+                    "type": "literal",
+                    "definition": "libraryImplementation"
+                  },
+                  "implementationFunctionName": {
+                    "type": "string"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "definition": {
+                  "transformerType": {
+                    "type": "literal",
+                    "definition": "queryReturningJzodSchema"
+                  },
+                  "definition": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "transformerForBuildOrRuntime"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
       },
       "______________________________________________miroirMetaModel_____________________________________________": {
         "type": "never"
@@ -33829,13 +33965,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_object_listReducerToIndexObject",
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_object_listReducerToSpreadObject",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             }
           },

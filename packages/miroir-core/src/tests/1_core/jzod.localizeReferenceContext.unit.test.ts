@@ -104,6 +104,7 @@ import entityDefinitionJzodSchemaV1 from "../../assets/miroir_model/54b9c72f-d4f
 import entityDefinitionQueryVersionV1 from "../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/359f1f9b-7260-4d76-a864-72c839b9711b.json" assert { type: "json" };
 import entityDefinitionReportV1 from "../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/952d2c65-4da2-45c2-9394-a0920ceedfb6.json" assert { type: "json" };
 import entityDefinitionTest from '../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/d2842a84-3e66-43ee-ac58-7e13b95b01e8.json' assert { type: "json" };
+import entityDefinitionTransformerDefinition from "../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/54a16d69-c1f0-4dd7-aba4-a2cda883586c.json" assert { type: "json" };
 
 
 // import entityDefinitionDeployment from "../../src/assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/c50240e7-c451-46c2-b60a-07b3172a5ef9.json" assert { type: "json" };
@@ -245,6 +246,7 @@ describe(
           entityDefinitionReport as EntityDefinition,
           entityDefinitionSelfApplicationDeploymentConfiguration as EntityDefinition,
           entityDefinitionTest as EntityDefinition,
+          entityDefinitionTransformerDefinition as EntityDefinition,
           // jzodSchemajzodMiroirBootstrapSchema as any,
         );
         console.log(expect.getState().currentTestName, "called getMiroirFundamentalJzodSchema");

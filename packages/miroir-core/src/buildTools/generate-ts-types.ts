@@ -17,7 +17,7 @@ import queryEndpointVersionV1 from "../assets/miroir_data/3d8da4d4-8f76-4bb4-921
 import persistenceEndpointVersionV1 from "../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/a93598b3-19b6-42e8-828c-f02042d212d4.json" assert { type: "json" };
 import testEndpointVersionV1 from "../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/a9139e2d-a714-4c9c-bdee-c104488e2eaa.json" assert { type: "json" };
 import jzodSchemajzodMiroirBootstrapSchema from "../assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/1e8dab4b-65a3-4686-922e-ce89a2d62aa9.json" assert { type: "json" };
-import transformerJzodSchema from "../assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/a97756cf-dd93-42b9-a021-91a629b187b9.json" assert { type: "json" };
+import miroirTransformersJzodSchemas from "../assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/a97756cf-dd93-42b9-a021-91a629b187b9.json" assert { type: "json" };
 import entityDefinitionAdminApplication from "../assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/3fb6203e-f639-4b2a-afe1-e1fb45d6b2ea.json" assert { type: "json" };
 import entityDefinitionSelfApplicationV1 from "../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/9460420b-f176-4918-bd45-894ab195ffe9.json" assert { type: "json" };
 import entityDefinitionSelfApplicationVersionV1 from "../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/27046fce-742f-4cc4-bb95-76b271f490a5.json" assert { type: "json" };
@@ -29,6 +29,7 @@ import entityDefinitionMenu  from "../assets/miroir_model/54b9c72f-d4f3-4db9-9e0
 import entityDefinitionQueryVersionV1 from "../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/359f1f9b-7260-4d76-a864-72c839b9711b.json" assert { type: "json" };
 import entityDefinitionReportV1 from "../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/952d2c65-4da2-45c2-9394-a0920ceedfb6.json" assert { type: "json" };
 import entityDefinitionTest from "../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/d2842a84-3e66-43ee-ac58-7e13b95b01e8.json" assert { type: "json" };
+import entityDefinitionTransformerDefinition from "../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/54a16d69-c1f0-4dd7-aba4-a2cda883586c.json" assert { type: "json" };
 import transformerMenuV1 from "../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/685440be-7f3f-4774-b90d-bafa82d6832b.json" assert { type: "json" };
 import entityDefinitionSelfApplication from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/9460420b-f176-4918-bd45-894ab195ffe9.json' assert { type: "json" };
 import entityDefinitionSelfApplicationDeploymentConfiguration from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bd303ae8-6bce-4b44-a63c-815b9ebf728b.json' assert { type: "json" };
@@ -49,7 +50,7 @@ const miroirFundamentalJzodSchema =
     persistenceEndpointVersionV1,
     testEndpointVersionV1,
     jzodSchemajzodMiroirBootstrapSchema,
-    transformerJzodSchema,
+    miroirTransformersJzodSchemas,
     [transformerMenuV1],
     entityDefinitionAdminApplication,
     entityDefinitionSelfApplicationV1,
@@ -63,6 +64,7 @@ const miroirFundamentalJzodSchema =
     entityDefinitionReportV1,
     entityDefinitionSelfApplicationDeploymentConfiguration,
     entityDefinitionTest,
+    entityDefinitionTransformerDefinition,
   )
 ;
 

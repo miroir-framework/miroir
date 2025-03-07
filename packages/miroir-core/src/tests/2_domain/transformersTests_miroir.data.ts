@@ -1,4 +1,4 @@
-import { EntityInstance, JzodElement, TransformerForBuild, TransformerForRuntime } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { EntityInstance, JzodElement, TransformerForBuild, TransformerForBuildOrRuntime, TransformerForRuntime } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { displayTestSuiteResults } from "../../4_services/otherTools.js";
 import { TestSuiteContext } from "../../4_services/TestSuiteContext.js";
 
@@ -39,7 +39,8 @@ export type TransformerTest = {
   transformerTestLabel: string;
   // deploymentUuid: Uuid;
   transformerName: string;
-  transformer: TransformerForBuild | TransformerForRuntime;
+  // transformer: TransformerForBuild | TransformerForRuntime;
+  transformer: TransformerForBuildOrRuntime;
   transformerParams: Record<string, any>;
   transformerRuntimeContext?: Record<string, any>;
   expectedValue: any;
@@ -1899,8 +1900,8 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
 };
 
 const globalTimeOut = 30000;
-export const currentTestSuite:TransformerTestSuite = transformerTestSuite_miroirTransformers;
-// export const currentTestSuite:TransformerTestSuite = transformerTestSuite_spreadsheet;
+// export const currentTestSuite:TransformerTestSuite = transformerTestSuite_miroirTransformers;
+export const currentTestSuite:TransformerTestSuite = transformerTestSuite_spreadsheet;
 
 
 

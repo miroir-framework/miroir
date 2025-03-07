@@ -201,7 +201,7 @@ export function getMiroirFundamentalJzodSchema(
   testEndpointVersionV1: any,
   jzodSchemajzodMiroirBootstrapSchema: any,
   transformerJzodSchema: any,
-  dynamicTransformersJzodSchema: any[], // TransformerDefinition[]
+  miroirTransformersJzodSchemas: any[], // TransformerDefinition[]
   entityDefinitionAdminApplication: any,
   entityDefinitionSelfApplicationV1: any,
   entityDefinitionSelfApplicationVersionV1: any,
@@ -214,7 +214,8 @@ export function getMiroirFundamentalJzodSchema(
   entityDefinitionReportV1: any,
   // entityDefinitionSelfApplication: any,
   entityDefinitionSelfApplicationDeploymentConfiguration: any,
-  entityDefinitionTest: any
+  entityDefinitionTest: any,
+  entityDefinitionTransformerDefinition: any,
 ): any {
   // ): JzodSchema {
   const entityDefinitionQueryVersionV1WithAbsoluteReferences = makeReferencesAbsolute(
@@ -235,7 +236,7 @@ export function getMiroirFundamentalJzodSchema(
   // );
 
   // log.info("domainActionDefinitions", domainActionDefinitions)
-  log.info("dynamicTransformersJzodSchema", JSON.stringify(dynamicTransformersJzodSchema, null, 2));
+  log.info("dynamicTransformersJzodSchema", JSON.stringify(miroirTransformersJzodSchemas, null, 2));
   const localCompositeActionDefinition = domainEndpointVersionV1.definition.actions.find(
     (a: any) => a.actionParameters?.definition?.actionType?.definition == "compositeAction"
   )?.actionParameters.definition;
@@ -272,7 +273,7 @@ export function getMiroirFundamentalJzodSchema(
         ...makeReferencesAbsolute((transformerJzodSchema as any).definition, miroirFundamentalJzodSchemaUuid, true)
           .context, // gives "transformer_InnerReference", "transformerForBuild", "actionHandler"
         ...Object.fromEntries(
-          dynamicTransformersJzodSchema.map((e: any) => [
+          miroirTransformersJzodSchemas.map((e: any) => [
             e.name,
             { type: "object", definition: e.transformerInterface.transformerParameterSchema },
           ])
@@ -296,6 +297,7 @@ export function getMiroirFundamentalJzodSchema(
             },
           ],
         },
+        transformerDefinition: entityDefinitionTransformerDefinition.jzodSchema as any,
         ______________________________________________miroirMetaModel_____________________________________________: {
           type: "never",
         },
