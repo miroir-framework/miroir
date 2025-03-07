@@ -99,7 +99,7 @@ export class MiroirLoggerFactory implements LoggerFactoryAsyncInterface {
         : template ?? MiroirLoggerFactory.defaultTemplate;
 
     const result = templateLogLevelOptionsFactory(loggerName, resultlogLevel, resultTemplate);
-    // console.log("MiroirLoggerFactory getOptionsFromMap result",loggerName, resultlogLevel, resultTemplate);
+    console.log("MiroirLoggerFactory getOptionsFromMap result",loggerName, resultlogLevel, resultTemplate);
     return result;
   }
 
@@ -146,7 +146,7 @@ export class MiroirLoggerFactory implements LoggerFactoryAsyncInterface {
         l[0], "started with options:", JSON.stringify(logLevelOptions, null, 2)
       );
     }
-    // console.log("MiroirLoggerFactory.startRegisteredLoggers DONE!");
+    console.log("MiroirLoggerFactory.startRegisteredLoggers DONE!");
   }
 
   // ###################################

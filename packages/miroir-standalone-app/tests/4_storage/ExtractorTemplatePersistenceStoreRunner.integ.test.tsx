@@ -263,460 +263,460 @@ afterAll(
 
 describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => {
 
+  // ################################################################################################
+  it("get Entity Entity from Miroir", async () => {
+    await chainVitestSteps(
+      "ExtractorTemplatePersistenceStoreRunner_selectEntityInstance_selectObjectByDirectReference",
+      {},
+      async () => {
+        const applicationSection:ApplicationSection = "model";
+        const queryResult: Action2ReturnType =
+          await localMiroirPersistenceStoreController.handleBoxedExtractorTemplateActionForServerONLY({
+            actionType: "runBoxedExtractorTemplateAction",
+            actionName: "runQuery",
+            deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+            // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+            endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+            applicationSection: applicationSection,
+            query: {
+              queryType: "boxedExtractorTemplateReturningObject",
+              pageParams: {},
+              queryParams: {},
+              contextResults: {},
+              deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+              // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+              select: {
+                extractorTemplateType: "extractorForObjectByDirectReference",
+                applicationSection: "model",
+                parentName: "Entity",
+                parentUuid: {
+                  transformerType: "constantUuid",
+                  value: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                },
+                instanceUuid: {
+                  transformerType: "constantUuid",
+                  value: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                },
+              },
+            },
+          });
+        console.log("queryResult", JSON.stringify(queryResult, null, 2));
+        return queryResult;
+      },
+      (a) => ignorePostgresExtraAttributesOnObject((a as any).returnedDomainElement, ["author"]),
+      // undefined, // expected result transformation
+      undefined, // name to give to result
+      undefined,
+      {
+        uuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+        parentName: "Entity",
+        parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+        parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
+        name: "Entity",
+        selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+        conceptLevel: "MetaModel",
+        description: "The Metaclass for entities.",
+      }
+    );
+  });
+  
+  
+  // ################################################################################################
+  it("get Library Entities", async () => {
+    await chainVitestSteps(
+      "ExtractorTemplatePersistenceStoreRunner_selectEntityInstanceUuidIndex",
+      {},
+      async () => {
+        const applicationSection: ApplicationSection = "model";
+        const queryResult: Action2ReturnType =
+          await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY({
+            actionType: "runBoxedQueryTemplateAction",
+            actionName: "runQuery",
+            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+            endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+            applicationSection: applicationSection,
+            query: {
+              queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+              pageParams: {},
+              queryParams: {},
+              contextResults: {},
+              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+              extractorTemplates: {
+                entities: {
+                  extractorTemplateType: "extractorTemplateForObjectListByEntity",
+                  applicationSection: applicationSection,
+                  parentName: entityEntity.name,
+                  parentUuid: {
+                    transformerType: "constantUuid",
+                    value: entityEntity.uuid,
+                  },
+                },
+              },
+            },
+          });
+        console.log("queryResult", JSON.stringify(queryResult, null, 2));
+        return queryResult; // == "ok" ? queryResult : {status: "error", error: queryResult.error};
+      },
+      (a) =>
+        ignorePostgresExtraAttributesOnList(
+          (a as any).returnedDomainElement.entities.sort((a: any, b: any) => a.name.localeCompare(b.name)),
+          ["author"]
+        ),
+      undefined, // name to give to result
+      undefined,
+      [entityAuthor, entityBook, entityPublisher].sort((a, b) => a.name.localeCompare(b.name))
+    );
+  });
+  
+  // ################################################################################################
+  it("get Filtered Entity Entity from Miroir", async () => {
+    await chainVitestSteps(
+      "ExtractorTemplatePersistenceStoreRunner_selectObjectListByEntity_filtered",
+      {},
+      async () => {
+        const applicationSection: ApplicationSection = "model";
+        const queryResult =
+          await localMiroirPersistenceStoreController.handleQueryTemplateActionForServerONLY({
+            actionType: "runBoxedQueryTemplateAction",
+            actionName: "runQuery",
+            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+            endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+            applicationSection: applicationSection,
+            query: {
+              queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+              pageParams: {},
+              queryParams: {},
+              contextResults: {},
+              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+              extractorTemplates: {
+                entities: {
+                  extractorTemplateType: "extractorTemplateForObjectListByEntity",
+                  applicationSection: applicationSection,
+                  parentName: "Entity",
+                  parentUuid: {
+                    transformerType: "constantUuid",
+                    value: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                  },
+                  filter: {
+                    attributeName: "name",
+                    value: {
+                      transformerType: "constantString",
+                      // value: "or",
+                      value: "en",
+                    },
+                  },
+                },
+              },
+            },
+          });
+        console.log("queryResult", JSON.stringify(queryResult, null, 2));
+        return queryResult;
+      },
+      (a) =>
+        ignorePostgresExtraAttributesOnList(
+          (a as any).returnedDomainElement.entities.sort((a: any, b: any) => a.name.localeCompare(b.name)),
+          ["author"]
+        ),
+      undefined, // name to give to result
+      undefined,
+      [entityEndpointVersion, entityEntity, entityEntityDefinition, entityMenu].sort((a, b) =>
+        a.name.localeCompare(b.name)
+      )
+      // [entityReport, entityStoreBasedConfiguration].sort((a, b) => a.name.localeCompare(b.name))
+    );
+  });
+  
+  // ################################################################################################
+  it("get Unique Authors from Books in Library with actionRuntimeTransformer", async () => {
+    await chainVitestSteps(
+      "ExtractorTemplatePersistenceStoreRunner_selectUniqueEntityApplication",
+      {},
+      async () => {
+        const applicationSection: ApplicationSection = "data";
+        const queryResult = await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY({
+          actionType: "runBoxedQueryTemplateAction",
+          actionName: "runQuery",
+          deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+          endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+          applicationSection: applicationSection,
+          query: {
+            queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+            pageParams: {},
+            queryParams: {},
+            contextResults: {},
+            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+            extractorTemplates: {
+              books: {
+                extractorTemplateType: "extractorTemplateForObjectListByEntity",
+                applicationSection: applicationSection,
+                parentName: "Book",
+                parentUuid: {
+                  transformerType: "constantUuid",
+                  // value: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                  value: entityBook.uuid,
+                },
+              },
+            },
+            runtimeTransformers: {
+              uniqueAuthors: {
+                transformerType: "unique",
+                interpolation: "runtime",
+                applyTo: {
+                  referenceType: "referencedTransformer",
+                  reference: {
+                    transformerType: "contextReference",
+                    interpolation: "runtime",
+                    referenceName: "books",
+                  },
+                },
+                attribute: "author",
+                orderBy: "author",
+              },
+            },
+          },
+        });
+        console.log("queryResult", JSON.stringify(queryResult, null, 2));
+        return queryResult;
+      },
+      (a) => (a as any).returnedDomainElement.uniqueAuthors,
+      undefined, // name to give to result
+      undefined,
+      [
+        { author: "4441169e-0c22-4fbc-81b2-28c87cf48ab2" },
+        { author: "ce7b601d-be5f-4bc6-a5af-14091594046a" },
+        { author: "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17" },
+        { author: "e4376314-d197-457c-aa5e-d2da5f8d5977" },
+      ]
+    );
+  });
+  
+  // ################################################################################################
+  it("get count books with actionRuntimeTransformer", async () => {
+    await chainVitestSteps(
+      "ExtractorTemplatePersistenceStoreRunner_selectUniqueEntityApplication",
+      {},
+      async () => {
+        const applicationSection: ApplicationSection = "data";
+        const queryResult = await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY({
+          actionType: "runBoxedQueryTemplateAction",
+          actionName: "runQuery",
+          deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+          endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+          applicationSection: applicationSection,
+          query: {
+            queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+            pageParams: {},
+            queryParams: {},
+            contextResults: {},
+            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+            extractorTemplates: {
+              books: {
+                extractorTemplateType: "extractorTemplateForObjectListByEntity",
+                applicationSection: applicationSection,
+                parentName: "Book",
+                parentUuid: {
+                  transformerType: "constantUuid",
+                  value: entityBook.uuid,
+                },
+              },
+            },
+            runtimeTransformers: {
+              uniqueAuthors: {
+                interpolation: "runtime",
+                transformerType: "count",
+                applyTo: {
+                  referenceType: "referencedTransformer",
+                  reference: {
+                    transformerType: "contextReference",
+                    interpolation: "runtime",
+                    referenceName: "books",
+                  },
+                },
+              },
+            },
+          },
+        });
+        console.log("queryResult", JSON.stringify(queryResult, null, 2));
+        return queryResult;
+      },
+      (a) => (a as any).returnedDomainElement.uniqueAuthors,
+      undefined, // name to give to result
+      undefined,
+      [{count: 6}],
+    );
+  });
+  
+  // ################################################################################################
+  it("get count books by author uuid with actionRuntimeTransformer", async () => {
+    await chainVitestSteps(
+      "ExtractorTemplatePersistenceStoreRunner_selectUniqueEntityApplication",
+      {},
+      async () => {
+        const applicationSection: ApplicationSection = "data";
+        const queryResult = await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY({
+          actionType: "runBoxedQueryTemplateAction",
+          actionName: "runQuery",
+          deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+          endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+          applicationSection: applicationSection,
+          query: {
+            queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+            pageParams: {},
+            queryParams: {},
+            contextResults: {},
+            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+            extractorTemplates: {
+              books: {
+                extractorTemplateType: "extractorTemplateForObjectListByEntity",
+                applicationSection: applicationSection,
+                parentName: "Book",
+                parentUuid: {
+                  transformerType: "constantUuid",
+                  value: entityBook.uuid,
+                },
+              },
+            },
+            runtimeTransformers: {
+              countBooksByAuthors: {
+                transformerType: "count",
+                interpolation: "runtime",
+                groupBy: "author",
+                applyTo: {
+                  referenceType: "referencedTransformer",
+                  reference: {
+                    transformerType: "contextReference",
+                    interpolation: "runtime",
+                    referenceName: "books",
+                  },
+                },
+                // orderBy: "author",
+              },
+            },
+          },
+        });
+        console.log("queryResult", JSON.stringify(queryResult, null, 2));
+        return queryResult;
+      },
+      (a) => (a as any).returnedDomainElement.countBooksByAuthors,
+      undefined, // name to give to result
+      undefined,
+      [
+        {
+          "4441169e-0c22-4fbc-81b2-28c87cf48ab2": 1,
+          "ce7b601d-be5f-4bc6-a5af-14091594046a": 2,
+          "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17": 2,
+          "e4376314-d197-457c-aa5e-d2da5f8d5977": 1,
+        },
+      ]
+    );
+  });
+  
   // // ################################################################################################
-  // it("get Entity Entity from Miroir", async () => {
+  // // TODO: migrate to new action format
+  // it("get country list with new uuids with actionRuntimeTransformer", async () => {
   //   await chainVitestSteps(
-  //     "ExtractorTemplatePersistenceStoreRunner_selectEntityInstance_selectObjectByDirectReference",
+  //     "ExtractorTemplatePersistenceStoreRunner_selectUniqueEntityApplication",
   //     {},
   //     async () => {
-  //       const applicationSection:ApplicationSection = "model";
-  //       const queryResult: Action2ReturnType =
-  //         await localMiroirPersistenceStoreController.handleBoxedExtractorTemplateActionForServerONLY({
-  //           actionType: "runBoxedExtractorTemplateAction",
-  //           actionName: "runQuery",
-  //           deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-  //           // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-  //           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-  //           applicationSection: applicationSection,
-  //           query: {
-  //             queryType: "boxedExtractorTemplateReturningObject",
-  //             pageParams: {},
-  //             queryParams: {},
-  //             contextResults: {},
-  //             deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-  //             // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-  //             select: {
-  //               extractorTemplateType: "extractorForObjectByDirectReference",
-  //               applicationSection: "model",
-  //               parentName: "Entity",
+  //       const applicationSection: ApplicationSection = "data";
+  //       const queryResult = await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY({
+  //         actionType: "runBoxedQueryTemplateAction",
+  //         actionName: "runQuery",
+  //         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+  //         endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+  //         applicationSection: applicationSection,
+  //         query: {
+  //           queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+  //           pageParams: {},
+  //           queryParams: {},
+  //           contextResults: {},
+  //           // pageParams: { elementType: "object", elementValue: {} },
+  //           // queryParams: { elementType: "object", elementValue: {} },
+  //           // contextResults: { elementType: "object", elementValue: {} },
+  //           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+  //           extractorTemplates: {
+  //             books: {
+  //               extractorTemplateType: "extractorTemplateForObjectListByEntity",
+  //               applicationSection: applicationSection,
+  //               parentName: "Book",
   //               parentUuid: {
   //                 transformerType: "constantUuid",
-  //                 value: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-  //               },
-  //               instanceUuid: {
-  //                 transformerType: "constantUuid",
-  //                 value: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  //                 value: entityBook.uuid,
   //               },
   //             },
   //           },
-  //         });
-  //       console.log("queryResult", JSON.stringify(queryResult, null, 2));
-  //       return queryResult;
-  //     },
-  //     (a) => ignorePostgresExtraAttributesOnObject((a as any).returnedDomainElement, ["author"]),
-  //     // undefined, // expected result transformation
-  //     undefined, // name to give to result
-  //     undefined,
-  //     {
-  //       uuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-  //       parentName: "Entity",
-  //       parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-  //       parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
-  //       name: "Entity",
-  //       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-  //       conceptLevel: "MetaModel",
-  //       description: "The Metaclass for entities.",
-  //     }
-  //   );
-  // });
-  
-  
-  // // ################################################################################################
-  // it("get Library Entities", async () => {
-  //   await chainVitestSteps(
-  //     "ExtractorTemplatePersistenceStoreRunner_selectEntityInstanceUuidIndex",
-  //     {},
-  //     async () => {
-  //       const applicationSection: ApplicationSection = "model";
-  //       const queryResult: Action2ReturnType =
-  //         await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY({
-  //           actionType: "runBoxedQueryTemplateAction",
-  //           actionName: "runQuery",
-  //           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-  //           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-  //           applicationSection: applicationSection,
-  //           query: {
-  //             queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-  //             pageParams: {},
-  //             queryParams: {},
-  //             contextResults: {},
-  //             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-  //             extractorTemplates: {
-  //               entities: {
-  //                 extractorTemplateType: "extractorTemplateForObjectListByEntity",
-  //                 applicationSection: applicationSection,
-  //                 parentName: entityEntity.name,
-  //                 parentUuid: {
-  //                   transformerType: "constantUuid",
-  //                   value: entityEntity.uuid,
-  //                 },
-  //               },
-  //             },
-  //           },
-  //         });
-  //       console.log("queryResult", JSON.stringify(queryResult, null, 2));
-  //       return queryResult; // == "ok" ? queryResult : {status: "error", error: queryResult.error};
-  //     },
-  //     (a) =>
-  //       ignorePostgresExtraAttributesOnList(
-  //         (a as any).returnedDomainElement.entities.sort((a: any, b: any) => a.name.localeCompare(b.name)),
-  //         ["author"]
-  //       ),
-  //     undefined, // name to give to result
-  //     undefined,
-  //     [entityAuthor, entityBook, entityPublisher].sort((a, b) => a.name.localeCompare(b.name))
-  //   );
-  // });
-  
-  // // ################################################################################################
-  // it("get Filtered Entity Entity from Miroir", async () => {
-  //   await chainVitestSteps(
-  //     "ExtractorTemplatePersistenceStoreRunner_selectObjectListByEntity_filtered",
-  //     {},
-  //     async () => {
-  //       const applicationSection: ApplicationSection = "model";
-  //       const queryResult =
-  //         await localMiroirPersistenceStoreController.handleQueryTemplateActionForServerONLY({
-  //           actionType: "runBoxedQueryTemplateAction",
-  //           actionName: "runQuery",
-  //           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-  //           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-  //           applicationSection: applicationSection,
-  //           query: {
-  //             queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-  //             pageParams: {},
-  //             queryParams: {},
-  //             contextResults: {},
-  //             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-  //             extractorTemplates: {
-  //               entities: {
-  //                 extractorTemplateType: "extractorTemplateForObjectListByEntity",
-  //                 applicationSection: applicationSection,
-  //                 parentName: "Entity",
-  //                 parentUuid: {
-  //                   transformerType: "constantUuid",
-  //                   value: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-  //                 },
-  //                 filter: {
-  //                   attributeName: "name",
-  //                   value: {
-  //                     transformerType: "constantString",
-  //                     // value: "or",
-  //                     value: "en",
+  //           runtimeTransformers: {
+  //             countries: {
+  //               transformerType: "mapperListToList",
+  //               interpolation: "runtime",
+  //               referencedTransformer: "books",
+  //               orderBy: "name",
+  //               elementTransformer: {
+  //                 transformerType: "innerFullObjectTemplate",
+  //                 interpolation: "runtime",
+  //                 referenceToOuterObject: "book",
+  //                 definition: [
+  //                   {
+  //                     attributeKey: {
+  //                       interpolation: "runtime",
+  //                       transformerType: "constantUuid",
+  //                       value: "uuid",
+  //                     },
+  //                     attributeValue: {
+  //                       interpolation: "runtime",
+  //                       transformerType: "newUuid",
+  //                     },
   //                   },
-  //                 },
+  //                   {
+  //                     attributeKey: {
+  //                       interpolation: "runtime",
+  //                       transformerType: "constantUuid",
+  //                       value: "name",
+  //                     },
+  //                     attributeValue: {
+  //                       transformerType: "mustacheStringTemplate",
+  //                       interpolation: "runtime",
+  //                       definition: "{{book.name}}",
+  //                     },
+  //                   },
+  //                 ],
   //               },
   //             },
   //           },
-  //         });
+  //         },
+  //       });
   //       console.log("queryResult", JSON.stringify(queryResult, null, 2));
   //       return queryResult;
   //     },
   //     (a) =>
-  //       ignorePostgresExtraAttributesOnList(
-  //         (a as any).returnedDomainElement.entities.sort((a: any, b: any) => a.name.localeCompare(b.name)),
-  //         ["author"]
-  //       ),
-  //     undefined, // name to give to result
-  //     undefined,
-  //     [entityEndpointVersion, entityEntity, entityEntityDefinition, entityMenu].sort((a, b) =>
-  //       a.name.localeCompare(b.name)
-  //     )
-  //     // [entityReport, entityStoreBasedConfiguration].sort((a, b) => a.name.localeCompare(b.name))
-  //   );
-  // });
-  
-  // // ################################################################################################
-  // it("get Unique Authors from Books in Library with actionRuntimeTransformer", async () => {
-  //   await chainVitestSteps(
-  //     "ExtractorTemplatePersistenceStoreRunner_selectUniqueEntityApplication",
-  //     {},
-  //     async () => {
-  //       const applicationSection: ApplicationSection = "data";
-  //       const queryResult = await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY({
-  //         actionType: "runBoxedQueryTemplateAction",
-  //         actionName: "runQuery",
-  //         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-  //         endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-  //         applicationSection: applicationSection,
-  //         query: {
-  //           queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-  //           pageParams: {},
-  //           queryParams: {},
-  //           contextResults: {},
-  //           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-  //           extractorTemplates: {
-  //             books: {
-  //               extractorTemplateType: "extractorTemplateForObjectListByEntity",
-  //               applicationSection: applicationSection,
-  //               parentName: "Book",
-  //               parentUuid: {
-  //                 transformerType: "constantUuid",
-  //                 // value: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-  //                 value: entityBook.uuid,
-  //               },
-  //             },
-  //           },
-  //           runtimeTransformers: {
-  //             uniqueAuthors: {
-  //               transformerType: "unique",
-  //               interpolation: "runtime",
-  //               applyTo: {
-  //                 referenceType: "referencedTransformer",
-  //                 reference: {
-  //                   transformerType: "contextReference",
-  //                   interpolation: "runtime",
-  //                   referenceName: "books",
-  //                 },
-  //               },
-  //               attribute: "author",
-  //               orderBy: "author",
-  //             },
-  //           },
-  //         },
-  //       });
-  //       console.log("queryResult", JSON.stringify(queryResult, null, 2));
-  //       return queryResult;
-  //     },
-  //     (a) => (a as any).returnedDomainElement.uniqueAuthors,
-  //     undefined, // name to give to result
-  //     undefined,
-  //     [
-  //       { author: "4441169e-0c22-4fbc-81b2-28c87cf48ab2" },
-  //       { author: "ce7b601d-be5f-4bc6-a5af-14091594046a" },
-  //       { author: "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17" },
-  //       { author: "e4376314-d197-457c-aa5e-d2da5f8d5977" },
-  //     ]
-  //   );
-  // });
-  
-  // // ################################################################################################
-  // it("get count books with actionRuntimeTransformer", async () => {
-  //   await chainVitestSteps(
-  //     "ExtractorTemplatePersistenceStoreRunner_selectUniqueEntityApplication",
-  //     {},
-  //     async () => {
-  //       const applicationSection: ApplicationSection = "data";
-  //       const queryResult = await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY({
-  //         actionType: "runBoxedQueryTemplateAction",
-  //         actionName: "runQuery",
-  //         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-  //         endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-  //         applicationSection: applicationSection,
-  //         query: {
-  //           queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-  //           pageParams: {},
-  //           queryParams: {},
-  //           contextResults: {},
-  //           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-  //           extractorTemplates: {
-  //             books: {
-  //               extractorTemplateType: "extractorTemplateForObjectListByEntity",
-  //               applicationSection: applicationSection,
-  //               parentName: "Book",
-  //               parentUuid: {
-  //                 transformerType: "constantUuid",
-  //                 value: entityBook.uuid,
-  //               },
-  //             },
-  //           },
-  //           runtimeTransformers: {
-  //             uniqueAuthors: {
-  //               interpolation: "runtime",
-  //               transformerType: "count",
-  //               applyTo: {
-  //                 referenceType: "referencedTransformer",
-  //                 reference: {
-  //                   transformerType: "contextReference",
-  //                   interpolation: "runtime",
-  //                   referenceName: "books",
-  //                 },
-  //               },
-  //             },
-  //           },
-  //         },
-  //       });
-  //       console.log("queryResult", JSON.stringify(queryResult, null, 2));
-  //       return queryResult;
-  //     },
-  //     (a) => (a as any).returnedDomainElement.uniqueAuthors,
-  //     undefined, // name to give to result
-  //     undefined,
-  //     [{count: 6}],
-  //   );
-  // });
-  
-  // // ################################################################################################
-  // it("get count books by author uuid with actionRuntimeTransformer", async () => {
-  //   await chainVitestSteps(
-  //     "ExtractorTemplatePersistenceStoreRunner_selectUniqueEntityApplication",
-  //     {},
-  //     async () => {
-  //       const applicationSection: ApplicationSection = "data";
-  //       const queryResult = await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY({
-  //         actionType: "runBoxedQueryTemplateAction",
-  //         actionName: "runQuery",
-  //         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-  //         endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-  //         applicationSection: applicationSection,
-  //         query: {
-  //           queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-  //           pageParams: {},
-  //           queryParams: {},
-  //           contextResults: {},
-  //           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-  //           extractorTemplates: {
-  //             books: {
-  //               extractorTemplateType: "extractorTemplateForObjectListByEntity",
-  //               applicationSection: applicationSection,
-  //               parentName: "Book",
-  //               parentUuid: {
-  //                 transformerType: "constantUuid",
-  //                 value: entityBook.uuid,
-  //               },
-  //             },
-  //           },
-  //           runtimeTransformers: {
-  //             countBooksByAuthors: {
-  //               transformerType: "count",
-  //               interpolation: "runtime",
-  //               groupBy: "author",
-  //               applyTo: {
-  //                 referenceType: "referencedTransformer",
-  //                 reference: {
-  //                   transformerType: "contextReference",
-  //                   interpolation: "runtime",
-  //                   referenceName: "books",
-  //                 },
-  //               },
-  //               // orderBy: "author",
-  //             },
-  //           },
-  //         },
-  //       });
-  //       console.log("queryResult", JSON.stringify(queryResult, null, 2));
-  //       return queryResult;
-  //     },
-  //     (a) => (a as any).returnedDomainElement.countBooksByAuthors,
+  //       ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.countries, [
+  //       // ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.countries, [
+  //         "uuid",
+  //       ]),
   //     undefined, // name to give to result
   //     undefined,
   //     [
   //       {
-  //         "4441169e-0c22-4fbc-81b2-28c87cf48ab2": 1,
-  //         "ce7b601d-be5f-4bc6-a5af-14091594046a": 2,
-  //         "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17": 2,
-  //         "e4376314-d197-457c-aa5e-d2da5f8d5977": 1,
+  //         name: "Et dans l&#39;éternité je ne m&#39;ennuierai pas",
+  //       },
+  //       {
+  //         name: "Le Pain et le Cirque",
+  //       },
+  //       {
+  //         name: "Rear Window",
+  //       },
+  //       {
+  //         name: "Renata n&#39;importe quoi",
+  //       },
+  //       {
+  //         name: "The Bride Wore Black",
+  //       },
+  //       {
+  //         name: "The Design of Everyday Things",
   //       },
   //     ]
   //   );
   // });
-  
-  // // // ################################################################################################
-  // // // TODO: migrate to new action format
-  // // it("get country list with new uuids with actionRuntimeTransformer", async () => {
-  // //   await chainVitestSteps(
-  // //     "ExtractorTemplatePersistenceStoreRunner_selectUniqueEntityApplication",
-  // //     {},
-  // //     async () => {
-  // //       const applicationSection: ApplicationSection = "data";
-  // //       const queryResult = await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY({
-  // //         actionType: "runBoxedQueryTemplateAction",
-  // //         actionName: "runQuery",
-  // //         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-  // //         endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-  // //         applicationSection: applicationSection,
-  // //         query: {
-  // //           queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-  // //           pageParams: {},
-  // //           queryParams: {},
-  // //           contextResults: {},
-  // //           // pageParams: { elementType: "object", elementValue: {} },
-  // //           // queryParams: { elementType: "object", elementValue: {} },
-  // //           // contextResults: { elementType: "object", elementValue: {} },
-  // //           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-  // //           extractorTemplates: {
-  // //             books: {
-  // //               extractorTemplateType: "extractorTemplateForObjectListByEntity",
-  // //               applicationSection: applicationSection,
-  // //               parentName: "Book",
-  // //               parentUuid: {
-  // //                 transformerType: "constantUuid",
-  // //                 value: entityBook.uuid,
-  // //               },
-  // //             },
-  // //           },
-  // //           runtimeTransformers: {
-  // //             countries: {
-  // //               transformerType: "mapperListToList",
-  // //               interpolation: "runtime",
-  // //               referencedTransformer: "books",
-  // //               orderBy: "name",
-  // //               elementTransformer: {
-  // //                 transformerType: "innerFullObjectTemplate",
-  // //                 interpolation: "runtime",
-  // //                 referenceToOuterObject: "book",
-  // //                 definition: [
-  // //                   {
-  // //                     attributeKey: {
-  // //                       interpolation: "runtime",
-  // //                       transformerType: "constantUuid",
-  // //                       value: "uuid",
-  // //                     },
-  // //                     attributeValue: {
-  // //                       interpolation: "runtime",
-  // //                       transformerType: "newUuid",
-  // //                     },
-  // //                   },
-  // //                   {
-  // //                     attributeKey: {
-  // //                       interpolation: "runtime",
-  // //                       transformerType: "constantUuid",
-  // //                       value: "name",
-  // //                     },
-  // //                     attributeValue: {
-  // //                       transformerType: "mustacheStringTemplate",
-  // //                       interpolation: "runtime",
-  // //                       definition: "{{book.name}}",
-  // //                     },
-  // //                   },
-  // //                 ],
-  // //               },
-  // //             },
-  // //           },
-  // //         },
-  // //       });
-  // //       console.log("queryResult", JSON.stringify(queryResult, null, 2));
-  // //       return queryResult;
-  // //     },
-  // //     (a) =>
-  // //       ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.countries, [
-  // //       // ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.countries, [
-  // //         "uuid",
-  // //       ]),
-  // //     undefined, // name to give to result
-  // //     undefined,
-  // //     [
-  // //       {
-  // //         name: "Et dans l&#39;éternité je ne m&#39;ennuierai pas",
-  // //       },
-  // //       {
-  // //         name: "Le Pain et le Cirque",
-  // //       },
-  // //       {
-  // //         name: "Rear Window",
-  // //       },
-  // //       {
-  // //         name: "Renata n&#39;importe quoi",
-  // //       },
-  // //       {
-  // //         name: "The Bride Wore Black",
-  // //       },
-  // //       {
-  // //         name: "The Design of Everyday Things",
-  // //       },
-  // //     ]
-  // //   );
-  // // });
 
   // ################################################################################################
   it("get books of an author with combiner", async () => {

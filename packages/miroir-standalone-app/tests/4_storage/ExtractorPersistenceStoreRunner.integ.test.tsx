@@ -942,9 +942,10 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
                   reference: {
                     transformerType: "contextReference",
                     interpolation: "runtime",
-                    referenceName: "books",
+                    referenceName: "book",
                   }
                 },
+                referenceToOuterObject: "book",
                 definition: [
                   {
                     attributeKey: {

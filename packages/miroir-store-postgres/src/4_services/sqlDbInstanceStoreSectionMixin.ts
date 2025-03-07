@@ -277,7 +277,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
             where: { [filter.attribute]: { [Op.like]: "%" + filter.value + "%" } },
           })) as unknown as EntityInstance[];
           cleanResult = rawResult.map((i) => i["dataValues"]);
-          log.info("getInstancesWithFilter result", cleanResult);
+          log.info("getInstancesWithFilter result", JSON.stringify(cleanResult, null, 2));
         } else {
           log.warn(
             this.logHeader,
@@ -373,7 +373,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           const sequelizeModel = this.sqlSchemaTableAccess[parentUuid]?.sequelizeModel;
           rawResult = (await sequelizeModel?.findAll()) as unknown as EntityInstance[];
           cleanResult = rawResult.map((i) => i["dataValues"]);
-          // log.info("getInstances result", cleanResult);
+          log.info("getInstances result", JSON.stringify(cleanResult, null, 2));
         } else {
           log.warn(this.logHeader, "getInstances", "could not find entity in database: entityUuid", parentUuid);
           return Promise.resolve(new Action2Error("FailedToGetInstances", `could not find entity ${parentUuid}`));
@@ -419,7 +419,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
         );
         return Promise.resolve(new Action2Error(
           "FailedToUpdateInstance",
-          `failed to upsert instance ${instance.uuid} of entity ${instance.parentUuid}: ${errorText}`
+          `failed to upsert instance ${instance.uuid} of entity ${instance.parentUuid}`
         ));
       }
       return Promise.resolve(ACTION_OK);

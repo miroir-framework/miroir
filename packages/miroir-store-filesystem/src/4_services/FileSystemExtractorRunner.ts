@@ -201,13 +201,11 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
         if (result instanceof Action2Error || result.returnedDomainElement instanceof Domain2ElementFailed) {
           return {
             elementType: "failure",
-            elementValue: {
-              queryFailure: "InstanceNotFound",
-              deploymentUuid,
-              applicationSection,
-              entityUuid: entityUuidReference,
-              instanceUuid: instanceDomainElement,
-            },
+            queryFailure: "InstanceNotFound",
+            deploymentUuid,
+            applicationSection,
+            entityUuid: entityUuidReference,
+            instanceUuid: instanceDomainElement,
           };
         }
         log.info(

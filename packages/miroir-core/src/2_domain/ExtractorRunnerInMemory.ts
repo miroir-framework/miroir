@@ -98,7 +98,7 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
     const entityUuidReference = querySelectorParams.parentUuid // TODO: we assume this ia a constant here
 
     log.info(
-      "extractEntityInstance params",
+      "extractRunnerInMemory extractEntityInstance params",
       querySelectorParams,
       deploymentUuid,
       applicationSection,
@@ -176,7 +176,7 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
         // log.info("extractEntityInstance extractorForObjectByDirectReference found domainState", JSON.stringify(domainState))
 
         log.info(
-          "extractEntityInstance found instanceUuid",
+          "extractRunnerInMemory extractEntityInstance found instanceUuid",
           JSON.stringify(instanceUuid)
         );
 
@@ -186,13 +186,13 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
         );
 
         if (result instanceof Action2Error) {
-          const failureMessage = `could not find instance of Entity ${entityUuidReference} with uuid=${instanceUuid}`;
+          const failureMessage = `extractRunnerInMemory could not find instance of Entity ${entityUuidReference} with uuid=${instanceUuid}`;
           return new Domain2ElementFailed({
             queryFailure: "InstanceNotFound",
             deploymentUuid,
             applicationSection,
             entityUuid: entityUuidReference,
-            failureMessage: `could not find instance of Entity ${entityUuidReference} with uuid=${instanceUuid}`,
+            failureMessage: `extractRunnerInMemory could not find instance of Entity ${entityUuidReference} with uuid=${instanceUuid}`,
             errorStack:
               typeof result.errorStack == "string"
                 ? [failureMessage, result.errorStack]
@@ -213,7 +213,7 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
           });
         }
         log.info(
-          "extractEntityInstance extractorForObjectByDirectReference, ############# reference",
+          "extractRunnerInMemory extractEntityInstance extractorForObjectByDirectReference, ############# reference",
           querySelectorParams,
           "entityUuidReference",
           entityUuidReference,
@@ -229,7 +229,7 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
       }
       default: {
         throw new Error(
-          "extractEntityInstance can not handle ExtractorTemplateReturningObject query with extractorOrCombinerType=" +
+          "extractRunnerInMemory extractEntityInstance can not handle ExtractorTemplateReturningObject query with extractorOrCombinerType=" +
             selectorParams.extractor.select.extractorOrCombinerType
         );
         break;
@@ -277,7 +277,7 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
         // new object
         queryFailure: "IncorrectParameters",
         queryContext:
-          "extractEntityInstanceList wrong context as deploymentUuid, applicationSection, entityUuid not found, deploymentUuid=" +
+          "extractRunnerInMemory extractEntityInstanceList wrong context as deploymentUuid, applicationSection, entityUuid not found, deploymentUuid=" +
           deploymentUuid +
           ", applicationSection=" +
           applicationSection +

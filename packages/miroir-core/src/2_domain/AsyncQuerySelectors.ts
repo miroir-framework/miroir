@@ -126,7 +126,7 @@ export async function asyncApplyExtractorTransformerInMemory(
 }
 
 // ################################################################################################
-export function asyncInnerSelectElementFromQuery/*BoxedExtractorTemplateRunner*/(
+export async function asyncInnerSelectElementFromQuery/*BoxedExtractorTemplateRunner*/(
   newFetchedData: Record<string, any>,
   pageParams: Record<string, any>,
   queryParams: Record<string, any>,
@@ -146,7 +146,8 @@ export function asyncInnerSelectElementFromQuery/*BoxedExtractorTemplateRunner*/
     case "combinerByRelationReturningObjectList": 
     case "combinerByManyToManyRelationReturningObjectList": {
       // return extractorRunnerMap.extractEntityInstanceUuidIndexWithObjectListExtractor({
-      return extractorRunnerMap.extractEntityInstanceListWithObjectListExtractor({
+      log.info("############ asyncInnerSelectElementFromQuery", extractorOrCombiner.extractorOrCombinerType, "start");
+      const result = await extractorRunnerMap.extractEntityInstanceListWithObjectListExtractor({
         extractorRunnerMap,
         extractor: {
           queryType: "boxedExtractorOrCombinerReturningObjectList",
@@ -162,11 +163,14 @@ export function asyncInnerSelectElementFromQuery/*BoxedExtractorTemplateRunner*/
             },
         },
       });
+      log.info("############ asyncInnerSelectElementFromQuery", extractorOrCombiner.extractorOrCombinerType, "done");
+      return Promise.resolve(result);
       break;
     }
     case "combinerForObjectByRelation":
     case "extractorForObjectByDirectReference": {
-      return extractorRunnerMap.extractEntityInstance({
+      log.info("############ asyncInnerSelectElementFromQuery", extractorOrCombiner.extractorOrCombinerType, "start");
+      const result = await extractorRunnerMap.extractEntityInstance({
         extractorRunnerMap,
         extractor: {
           queryType: "boxedExtractorOrCombinerReturningObject",
@@ -182,32 +186,33 @@ export function asyncInnerSelectElementFromQuery/*BoxedExtractorTemplateRunner*/
             },
         }
       });
+      log.info("############ asyncInnerSelectElementFromQuery", extractorOrCombiner.extractorOrCombinerType, "done");
+      return Promise.resolve(result);
       break;
     }
     // ############################################################################################
     case "extractorWrapperReturningObject": { // build object
       const entries = Object.entries(extractorOrCombiner.definition);
-      const promises = entries.map((e: [string, ExtractorOrCombiner]) => {
-        return asyncInnerSelectElementFromQuery(
+      const results: Record<string, any> = {};
+      for (const [key, extractor] of entries) {
+        const result = await asyncInnerSelectElementFromQuery(
           newFetchedData,
           pageParams ?? {},
           queryParams ?? {},
           extractorRunnerMap,
           deploymentUuid,
           extractors,
-          e[1]
-        ).then((result) => {
-          return [e[0], result];
-        });
-      });
-      return Promise.all(promises).then((results) => {
-        return Promise.resolve(Object.fromEntries(results));
-      });
+          extractor
+        );
+        results[key] = result;
+      }
+      return results;
       break;
     }
     case "extractorWrapperReturningList": { // List map
-      const promises = extractorOrCombiner.definition.map((e) =>{
-        return asyncInnerSelectElementFromQuery(
+      const results = [];
+      for (const e of extractorOrCombiner.definition) {
+        const result = await asyncInnerSelectElementFromQuery(
           newFetchedData,
           pageParams ?? {},
           queryParams ?? {},
@@ -216,16 +221,15 @@ export function asyncInnerSelectElementFromQuery/*BoxedExtractorTemplateRunner*/
           extractors,
           e
         );
-      })
-      return Promise.all(promises).then((results) => {
-        return Promise.resolve(results);
-      });
+        results.push(result);
+      }
+      return results;
       break;
     }
     case "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList": { // join
       const rootQueryResults =
-        typeof extractorOrCombiner.rootExtractorOrReference == "string"
-          ? asyncInnerSelectElementFromQuery(
+        typeof extractorOrCombiner.rootExtractorOrReference === "string"
+          ? await asyncInnerSelectElementFromQuery(
               newFetchedData,
               pageParams,
               queryParams,
@@ -237,7 +241,7 @@ export function asyncInnerSelectElementFromQuery/*BoxedExtractorTemplateRunner*/
                 extractorOrCombinerContextReference: extractorOrCombiner.rootExtractorOrReference,
               }
             )
-          : asyncInnerSelectElementFromQuery(
+          : await asyncInnerSelectElementFromQuery(
               newFetchedData,
               pageParams,
               queryParams,
@@ -246,49 +250,45 @@ export function asyncInnerSelectElementFromQuery/*BoxedExtractorTemplateRunner*/
               extractors,
               extractorOrCombiner.rootExtractorOrReference
             );
-      return rootQueryResults.then((rootQueryResults) => {
-        if (typeof rootQueryResults == "object") {
-          const entries = Object.entries(rootQueryResults as Record<string, EntityInstance>);
-          const promises = entries.map((entry: [string, EntityInstance]) => {
-            const innerQueryParams = {
-              ...queryParams,
-              ...Object.fromEntries(
-                Object.entries(applyTransformer(extractorOrCombiner.subQueryTemplate.rootQueryObjectTransformer, entry[1]))
-              ),
-            };
 
-            // TODO: faking context results here! Should we send empty contextResults instead?
-            const resolvedQuery: ExtractorOrCombiner | QueryFailed = resolveExtractorTemplate(extractorOrCombiner.subQueryTemplate.query,innerQueryParams, innerQueryParams); 
-            if ("QueryFailure" in resolvedQuery) {
-              return [
-                (entry[1] as any).uuid??"no uuid found for entry " + entry[0],
-                resolvedQuery
-              ];
-            }
+      if (typeof rootQueryResults === "object") {
+        const entries = Object.entries(rootQueryResults as Record<string, EntityInstance>);
+        const results: [string, any][] = [];
+        for (const [key, instance] of entries) {
+          const innerQueryParams = {
+            ...queryParams,
+            ...Object.fromEntries(
+              Object.entries(applyTransformer(extractorOrCombiner.subQueryTemplate.rootQueryObjectTransformer, instance))
+            ),
+          };
 
-            return asyncInnerSelectElementFromQuery(
+          const resolvedQuery: ExtractorOrCombiner | QueryFailed = resolveExtractorTemplate(
+            extractorOrCombiner.subQueryTemplate.query,
+            innerQueryParams,
+            innerQueryParams
+          );
+          if ("QueryFailure" in resolvedQuery) {
+            results.push([(instance as any).uuid ?? "no uuid found for entry " + key, resolvedQuery]);
+          } else {
+            const result = await asyncInnerSelectElementFromQuery(
               newFetchedData,
               pageParams,
               innerQueryParams,
               extractorRunnerMap,
               deploymentUuid,
               extractors,
-              resolvedQuery as ExtractorOrCombiner,
-            ).then((result) => {
-              return [entry[1].uuid, result];
-            });
-          });
-
-          return Promise.all(promises).then((results) => {
-            return Object.fromEntries(results);
-          });
-        } else {
-          return new Domain2ElementFailed({
-            queryFailure: "IncorrectParameters",
-            query: JSON.stringify(extractorOrCombiner.rootExtractorOrReference),
-          });
+              resolvedQuery as ExtractorOrCombiner
+            );
+            results.push([instance.uuid, result]);
+          }
         }
-      });
+        return Object.fromEntries(results);
+      } else {
+        return new Domain2ElementFailed({
+          queryFailure: "IncorrectParameters",
+          query: JSON.stringify(extractorOrCombiner.rootExtractorOrReference),
+        });
+      }
 
       break;
     }
@@ -383,30 +383,22 @@ export const asyncRunQuery = async (
   const localSelectorMap: AsyncBoxedExtractorOrQueryRunnerMap =
     selectorParams?.extractorRunnerMap ?? emptyAsyncSelectorMap;
 
-  const extractorsPromises = Object.entries(selectorParams.extractor.extractors ?? {}).map(
-    (query: [string, ExtractorOrCombiner]) => {
-      return asyncInnerSelectElementFromQuery(
-        context,
-        selectorParams.extractor.pageParams,
-        {
-          ...selectorParams.extractor.pageParams,
-          ...selectorParams.extractor.queryParams,
-        },
-        localSelectorMap as any,
-        selectorParams.extractor.deploymentUuid,
-        selectorParams.extractor.extractors ?? ({} as any),
-        query[1]
-      ).then((result): [string, Domain2QueryReturnType<DomainElementSuccess>] => {
-        return [query[0], result]; // TODO: check for failure!
-      });
-    }
-  );
-
-  // TODO: remove await / side effect
-  for (const promise of extractorsPromises) {
-    const result = await promise;
-    log.info("asyncRunQuery for extractor", result[0], "result", JSON.stringify(result[1], null, 2));
-    context[result[0]] = result[1]; // does side effect!
+  // Sequentially execute each extractor and update the context
+  for (const [key, extractor] of Object.entries(selectorParams.extractor.extractors ?? {})) {
+    const result = await asyncInnerSelectElementFromQuery(
+      context,
+      selectorParams.extractor.pageParams,
+      {
+        ...selectorParams.extractor.pageParams,
+        ...selectorParams.extractor.queryParams,
+      },
+      localSelectorMap as any,
+      selectorParams.extractor.deploymentUuid,
+      selectorParams.extractor.extractors ?? {} as any,
+      extractor
+    );
+    log.info("asyncRunQuery for extractor", key, "result", JSON.stringify(result, null, 2));
+    context[key] = result; // sequential side-effect update
   }
 
   const extractorFailure = Object.values(context).find((e) => e instanceof Domain2ElementFailed);
@@ -417,9 +409,8 @@ export const asyncRunQuery = async (
       errorStack: extractorFailure as any,
     });
   }
-  const combinerPromises = Object.entries(selectorParams.extractor.combiners ?? {})
-  .map((query: [string, ExtractorOrCombiner]) => {
-    return asyncInnerSelectElementFromQuery(
+  for (const [key, combiner] of Object.entries(selectorParams.extractor.combiners ?? {})) {
+    const result = await asyncInnerSelectElementFromQuery(
       context,
       selectorParams.extractor.pageParams,
       {
@@ -429,16 +420,10 @@ export const asyncRunQuery = async (
       localSelectorMap as any,
       selectorParams.extractor.deploymentUuid,
       selectorParams.extractor.extractors ?? ({} as any),
-      query[1]
-    ).then((result): [string, Domain2QueryReturnType<DomainElementSuccess>] => {
-      return [query[0], result];
-    });
-  });
-
-  for (const promise of combinerPromises) {
-    const result = await promise;
-    log.info("asyncRunQuery for combiner", result[0], "result", JSON.stringify(result[1], null, 2));
-    context[result[0]] = result[1]; // does side effect!
+      combiner
+    );
+    log.info("asyncRunQuery for combiner", key, "result", JSON.stringify(result, null, 2));
+    context[key] = result;
   }
 
 

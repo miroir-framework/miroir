@@ -242,7 +242,7 @@ export class SqlDbQueryRunner {
         // return this.extractorRunnerMap.extractEntityInstanceListWithObjectListExtractor({ // this is actually a recursive call
         //   extractorRunnerMap: this.extractorRunnerMap,
         if (!selectorParams.extractorRunnerMap) {
-          throw new Error("extractEntityInstanceListWithObjectListExtractor missing extractorRunnerMap");
+          throw new Error("asyncSqlDbExtractEntityInstanceListWithObjectListExtractor missing extractorRunnerMap");
         }
         return selectorParams.extractorRunnerMap.extractEntityInstanceListWithObjectListExtractor({ // this is actually a recursive call
           extractorRunnerMap: selectorParams.extractorRunnerMap,
@@ -303,7 +303,7 @@ export class SqlDbQueryRunner {
         // return this.extractorRunnerMap.extractEntityInstanceUuidIndexWithObjectListExtractor({ // this is actually a recursive call
         //   extractorRunnerMap: this.extractorRunnerMap,
         if (!selectorParams.extractorRunnerMap) {
-          throw new Error("extractEntityInstanceListWithObjectListExtractor missing extractorRunnerMap");
+          throw new Error("asyncSqlDbExtractEntityInstanceUuidIndexWithObjectListExtractor missing extractorRunnerMap");
         }
         return selectorParams.extractorRunnerMap.extractEntityInstanceUuidIndexWithObjectListExtractor({ // this is actually a recursive call
           extractorRunnerMap: selectorParams.extractorRunnerMap,
@@ -433,7 +433,7 @@ export class SqlDbQueryRunner {
     switch (querySelectorParams?.extractorOrCombinerType) {
       case "combinerForObjectByRelation": {
         const referenceObject = transformer_InnerReference_resolve(
-          "build",
+          "runtime",
           { transformerType: "contextReference", referenceName: querySelectorParams.objectReference },
           selectorParams.extractor.queryParams,
           selectorParams.extractor.contextResults
@@ -549,6 +549,8 @@ export class SqlDbQueryRunner {
           JSON.stringify(selectorParams.extractor.queryParams, undefined, 2),
           "######### contextResults",
           JSON.stringify(selectorParams.extractor.contextResults, undefined, 2),
+          "######### result",
+          JSON.stringify(result, undefined, 2)
         );
         return result.returnedDomainElement;
         break;
@@ -675,11 +677,11 @@ export class SqlDbQueryRunner {
     // log.info("extractEntityInstanceUuidIndexWithFilter domainState", domainState);
 
     if (!deploymentUuid || !applicationSection || !entityUuid) {
-      return new Domain2ElementFailed({
+      return Promise.resolve(new Domain2ElementFailed({
         // new object
         queryFailure: "IncorrectParameters",
         queryParameters: JSON.stringify(extractorRunnerParams),
-      });
+      }));
       // return {
       //   // new object
       //   elementType: "failure",
@@ -717,12 +719,12 @@ export class SqlDbQueryRunner {
         "sqlDbQueryRunner extractEntityInstanceListWithFilter failed with EntityNotFound for extractor",
         JSON.stringify(extractorRunnerParams.extractor, null, 2)
       );
-      return new Domain2ElementFailed({
+      return Promise.resolve(new Domain2ElementFailed({
         queryFailure: "EntityNotFound",
         deploymentUuid,
         applicationSection,
         entityUuid: entityUuid,
-      });
+      }));
       // return {
       //   elementType: "failure",
       //   elementValue: {
@@ -733,7 +735,7 @@ export class SqlDbQueryRunner {
       //   },
       // };
     }
-    return entityInstanceCollection.returnedDomainElement.instances;
+    return Promise.resolve(entityInstanceCollection.returnedDomainElement.instances);
   };
 
   // ##############################################################################################
