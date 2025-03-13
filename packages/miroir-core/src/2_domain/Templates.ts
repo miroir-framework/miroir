@@ -50,10 +50,20 @@ export function resolveExtractorTemplate(
           parentUuid:
             typeof extractorOrCombinerTemplate.parentUuid == "string"
               ? extractorOrCombinerTemplate.parentUuid
-              : transformer_InnerReference_resolve("build", extractorOrCombinerTemplate.parentUuid, queryParams, contextResults), // TODO: check for failure!
+              : transformer_InnerReference_resolve(
+                  "build",
+                  extractorOrCombinerTemplate.parentUuid,
+                  queryParams,
+                  contextResults
+                ), // TODO: check for failure!
           filter: {
             attributeName: extractorOrCombinerTemplate.filter.attributeName,
-            value: transformer_InnerReference_resolve("build", extractorOrCombinerTemplate.filter.value, queryParams, contextResults), // TODO: check for failure!
+            value: transformer_InnerReference_resolve(
+              "build",
+              extractorOrCombinerTemplate.filter.value,
+              queryParams,
+              contextResults
+            ), // TODO: check for failure!
           },
         };
       } else {
@@ -63,7 +73,12 @@ export function resolveExtractorTemplate(
           parentUuid:
             typeof extractorOrCombinerTemplate.parentUuid == "string"
               ? extractorOrCombinerTemplate.parentUuid
-              : transformer_InnerReference_resolve("build", extractorOrCombinerTemplate.parentUuid, queryParams, contextResults), // TODO: check for failure!
+              : transformer_InnerReference_resolve(
+                  "build",
+                  extractorOrCombinerTemplate.parentUuid,
+                  queryParams,
+                  contextResults
+                ), // TODO: check for failure!
         };
       }
       break;
@@ -75,7 +90,12 @@ export function resolveExtractorTemplate(
         parentUuid:
           typeof extractorOrCombinerTemplate.parentUuid == "string"
             ? extractorOrCombinerTemplate.parentUuid
-            : transformer_InnerReference_resolve("build", extractorOrCombinerTemplate.parentUuid, queryParams, contextResults), // TODO: check for failure!
+            : transformer_InnerReference_resolve(
+                "build",
+                extractorOrCombinerTemplate.parentUuid,
+                queryParams,
+                contextResults
+              ), // TODO: check for failure!
         instanceUuid: transformer_InnerReference_resolve(
           "build",
           extractorOrCombinerTemplate.instanceUuid,
@@ -90,13 +110,15 @@ export function resolveExtractorTemplate(
         extractorOrCombinerType: "extractorWrapperReturningObject",
         ...cleanQueryTemplate,
         definition: Object.fromEntries(
-          Object.entries(extractorOrCombinerTemplate.definition).map((e: [string, Transformer_contextOrParameterReference]) => [
-            e[0],
-            {
-              extractorOrCombinerType: "extractorOrCombinerContextReference",
-              extractorOrCombinerContextReference: e[1].referenceName
-            } as ExtractorOrCombiner,
-          ])
+          Object.entries(extractorOrCombinerTemplate.definition).map(
+            (e: [string, Transformer_contextOrParameterReference]) => [
+              e[0],
+              {
+                extractorOrCombinerType: "extractorOrCombinerContextReference",
+                extractorOrCombinerContextReference: e[1].referenceName,
+              } as ExtractorOrCombiner,
+            ]
+          )
         ),
       };
       break;
@@ -106,10 +128,11 @@ export function resolveExtractorTemplate(
         extractorOrCombinerType: "extractorWrapperReturningList",
         ...cleanQueryTemplate,
         definition: extractorOrCombinerTemplate.definition.map(
-          (e: Transformer_contextOrParameterReference) => ({
+          (e: Transformer_contextOrParameterReference) =>
+            ({
               extractorOrCombinerType: "extractorOrCombinerContextReference",
-              extractorOrCombinerContextReference: e.referenceName
-            }) as ExtractorOrCombiner,
+              extractorOrCombinerContextReference: e.referenceName,
+            } as ExtractorOrCombiner)
         ),
       };
       break;
@@ -121,7 +144,12 @@ export function resolveExtractorTemplate(
         parentUuid:
           typeof extractorOrCombinerTemplate.parentUuid == "string"
             ? extractorOrCombinerTemplate.parentUuid
-            : transformer_InnerReference_resolve("build", extractorOrCombinerTemplate.parentUuid, queryParams, contextResults), // TODO: check for failure!
+            : transformer_InnerReference_resolve(
+                "build",
+                extractorOrCombinerTemplate.parentUuid,
+                queryParams,
+                contextResults
+              ), // TODO: check for failure!
         objectReference:
           extractorOrCombinerTemplate.objectReference.transformerType == "contextReference"
             ? extractorOrCombinerTemplate.objectReference.referenceName ??
@@ -137,7 +165,12 @@ export function resolveExtractorTemplate(
         parentUuid:
           typeof extractorOrCombinerTemplate.parentUuid == "string"
             ? extractorOrCombinerTemplate.parentUuid
-            : transformer_InnerReference_resolve("build", extractorOrCombinerTemplate.parentUuid, queryParams, contextResults), // TODO: check for failure!
+            : transformer_InnerReference_resolve(
+                "build",
+                extractorOrCombinerTemplate.parentUuid,
+                queryParams,
+                contextResults
+              ), // TODO: check for failure!
         objectListReference:
           extractorOrCombinerTemplate.objectListReference.transformerType == "contextReference"
             ? extractorOrCombinerTemplate.objectListReference.referenceName ??
@@ -153,7 +186,12 @@ export function resolveExtractorTemplate(
         parentUuid:
           typeof extractorOrCombinerTemplate.parentUuid == "string"
             ? extractorOrCombinerTemplate.parentUuid
-            : transformer_InnerReference_resolve("build", extractorOrCombinerTemplate.parentUuid, queryParams, contextResults), // TODO: check for failure!
+            : transformer_InnerReference_resolve(
+                "build",
+                extractorOrCombinerTemplate.parentUuid,
+                queryParams,
+                contextResults
+              ), // TODO: check for failure!
         objectReference:
           extractorOrCombinerTemplate.objectReference.transformerType == "contextReference"
             ? extractorOrCombinerTemplate.objectReference.referenceName ??

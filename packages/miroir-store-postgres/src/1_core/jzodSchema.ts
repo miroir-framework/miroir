@@ -49,7 +49,8 @@ export function getAttributeTypesFromJzodSchema(jzodElement: JzodElement): Recor
   const attributeTypes: Record<string, string> = {};
   for (const [key, value] of Object.entries(jzodElement.definition)) {
     // attributeTypes[key] = value._type;
-    if (!Object.hasOwn(jzodToPostgresTypeMap,value.type)) {
+    // if (!Object.hasOwn(jzodToPostgresTypeMap,value.type)) {
+    if (!(jzodToPostgresTypeMap as any)[value.type]) {
       throw new Error(`Jzod type ${value.type} not supported`);
     }
     attributeTypes[key] = (jzodToPostgresTypeMap as any)[value.type].sqlTargetType; // TODO: accomodate types

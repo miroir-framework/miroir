@@ -1,6 +1,6 @@
 import { TransformerDefinition } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 
-export const transformer_SpreadSheetToJzodSchema: TransformerDefinition = {
+export const transformer_spreadSheetToJzodSchema: TransformerDefinition = {
   uuid: "f1dc903c-19b5-4903-91dd-4f78ffa42929",
   name: "spreadSheetToJzodSchema",
   defaultLabel: "spreadSheetToJzodSchema",

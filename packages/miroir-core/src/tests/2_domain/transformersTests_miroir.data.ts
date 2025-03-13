@@ -1900,8 +1900,8 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
 };
 
 const globalTimeOut = 30000;
-export const currentTestSuite:TransformerTestSuite = transformerTestSuite_miroirTransformers;
-// export const currentTestSuite:TransformerTestSuite = transformerTestSuite_spreadsheet;
+// export const currentTestSuite:TransformerTestSuite = transformerTestSuite_miroirTransformers;
+export const currentTestSuite:TransformerTestSuite = transformerTestSuite_spreadsheet;
 
 
 

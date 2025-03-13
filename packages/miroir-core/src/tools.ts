@@ -74,7 +74,8 @@ export function safeResolvePathOnObject(valueObject:any, path: ResultAccessPath)
         return acc.map((item: any) => item[curr.key]);
       }
     } else {
-      if (!Object.hasOwn(acc, curr)) {
+      // if (!Object.hasOwn(acc, curr)) {
+      if (!acc[curr]) {
         // throw new Error(
         //   "resolvePathOnObject value object=" +
         //     valueObject +
@@ -116,7 +117,8 @@ export function resolvePathOnObject(valueObject:any, path: ResultAccessPath) {
         return acc.map((item: any) => item[curr.key]);
       }
     } else {
-      if (!Object.hasOwn(acc, curr)) {
+      // if (!Object.hasOwn(acc, curr)) {
+      if (!acc[curr]) {
         throw new Error(
           "resolvePathOnObject value object=" +
             valueObject +

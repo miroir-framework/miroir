@@ -750,7 +750,8 @@ export function sqlStringForTransformer(
       }
       const definitionSqlObject: Record<string,SqlStringForTransformerElementValue>  = Object.fromEntries(definitionSql) as any;
       log.info("sqlStringForTransformer dataflowObject definitionSql", JSON.stringify(definitionSql, null, 2));
-      if(!Object.hasOwn(definitionSqlObject,actionRuntimeTransformer.target)) {
+      // if(!Object.hasOwn(definitionSqlObject,actionRuntimeTransformer.target)) {
+      if(!definitionSqlObject[actionRuntimeTransformer.target]) {
         return new Domain2ElementFailed({
           queryFailure: "QueryNotExecutable",
           query: actionRuntimeTransformer as any,
@@ -1170,7 +1171,8 @@ FROM
             };
           } else {
             // scalar or array of scalars
-            if (!Object.hasOwn(jzodToPostgresTypeMap, (actionRuntimeTransformer.valueJzodSchema as any).definition.type)) {
+            // if (!Object.hasOwn(jzodToPostgresTypeMap, (actionRuntimeTransformer.valueJzodSchema as any).definition.type)) {
+            if (!(jzodToPostgresTypeMap as any)[(actionRuntimeTransformer.valueJzodSchema as any).definition.type]) {
               return new Domain2ElementFailed({
                 queryFailure: "QueryNotExecutable",
                 query: actionRuntimeTransformer as any,

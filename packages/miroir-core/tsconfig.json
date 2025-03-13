@@ -4,13 +4,25 @@
     "target": "ESNext",
     "module": "NodeNext",
     "moduleResolution": "nodenext",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "outDir": "dist/out-tsc",
     "declaration": true,
-    "declarationDir": "dist/out-tsc/dts",
     "rootDir": "./",
     "baseUrl": "./",
+    "types": ["node"],
+    "paths": {
+      "@miroir-framework/jzod-ts": ["../jzod-ts/src"],
+      "@miroir-framework/jzod": ["../jzod/src"]
+    }
   },
-  "exclude": [ "./node_modules/**","./src/**/*.spec.js", "./src/**/*.spec.jsx", "./src/**/*.spec.ts", "./src/**/*.spec.tsx" ],
-  "include": [ "./src/**/*.json", "./src/**/*.js", "./src/**/*.jsx", "./src/**/*.ts", "./src/**/*.tsx" ]
+  "exclude": [
+    "./node_modules/**",
+    "./src/**/*.spec.js",
+    "./src/**/*.spec.jsx",
+    "./src/**/*.spec.ts",
+    "./src/**/*.spec.tsx"
+  ],
+  "include": ["./src/**/*.json", "./src/**/*.js", "./src/**/*.jsx", "./src/**/*.ts", "./src/**/*.tsx"]
 }

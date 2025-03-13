@@ -10,7 +10,7 @@ import {
   TransformerForBuild_dataflowObject,
   TransformerForRuntime
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { transformer_extended_apply_wrapper } from "../../2_domain/Transformers.js";
+import { transformer_extended_apply_wrapper, transformer_InnerReference_resolve } from "../../2_domain/Transformers.js";
 // import {
 //   author1,
 //   author2,
@@ -142,7 +142,14 @@ async function runTransformerTestInMemory(vitest: any, testSuiteNamePath: string
   }
   console.log("################################ transformerTestParams", JSON.stringify(transformerTest, null, 2));
   const transformer: TransformerForBuild | TransformerForRuntime = transformerTest.transformer;
-  const interpolation = (transformerTest.transformer as any).interpolation ?? "runtime"
+  // const interpolation = (transformerTest.transformer as any).interpolation ?? "runtime"
+  const interpolation = "runtime"
+  // const resolvedTransformer = transformer_InnerReference_resolve(
+  //   "build",
+  //   transformer,
+  //   queryParams,
+  //   contextResults
+  // );
   const rawResult: Domain2QueryReturnType<any> = transformer_extended_apply_wrapper(
     interpolation,
     undefined,

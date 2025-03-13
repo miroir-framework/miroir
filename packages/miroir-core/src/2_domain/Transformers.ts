@@ -1,4 +1,5 @@
-import Mustache from "mustache";
+import mustache from 'mustache';
+// import Mustache from "mustache";
 import { v4 as uuidv4 } from 'uuid';
 import {
   DomainElementFailed,
@@ -51,7 +52,7 @@ import { packageName } from "../constants.js";
 import { resolvePathOnObject } from "../tools.js";
 import { cleanLevel } from "./constants.js";
 import { transformer } from "zod";
-import { transformer_SpreadSheetToJzodSchema } from "./Spreadsheet.js";
+import { transformer_spreadSheetToJzodSchema } from "./Spreadsheet.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -536,17 +537,22 @@ export function transformer_resolveReference(
 ): Domain2QueryReturnType<any> {
   // ReferenceNotFound
   const bank: Record<string, any> = paramOrContext == "param" ? queryParams ?? {} : contextResults ?? {};
-  log.info("transformer_resolveReference called for", JSON.stringify(transformerInnerReference, null, 2), "bank", JSON.stringify(bank, null, 2));
+  log.info(
+    "transformer_resolveReference called for",
+    JSON.stringify(transformerInnerReference, null, 2),
+    "bank",
+    JSON.stringify(bank, null, 2)
+  );
   if (!bank) {
     log.error(
-      "transformer_InnerReference_resolve failed, no contextResults for step",
+      "transformer_resolveReference failed, no contextResults for step",
       step,
       "transformerInnerReference=",
       transformerInnerReference
     );
     return new Domain2ElementFailed({
       queryFailure: "ReferenceNotFound",
-      failureOrigin: ["transformer_InnerReference_resolve"],
+      failureOrigin: ["transformer_resolveReference"],
       queryReference: transformerInnerReference.referenceName,
       failureMessage: "no contextResults",
       queryContext: "no contextResults",
@@ -556,9 +562,10 @@ export function transformer_resolveReference(
   // ReferenceNotFound
   if (transformerInnerReference.referenceName) {
     // ReferenceNotFound
-    if (!Object.hasOwn(bank, transformerInnerReference.referenceName)) {
+    // if (!Object.hasOwn(bank, transformerInnerReference.referenceName)) {
+    if (!bank[transformerInnerReference.referenceName]) {
       log.error(
-        "transformer_InnerReference_resolve failed, reference not found for step",
+        "transformer_resolveReference failed, reference not found for step",
         step,
         "transformerInnerReference=",
         transformerInnerReference,
@@ -569,7 +576,7 @@ export function transformer_resolveReference(
       );
       return new Domain2ElementFailed({
         queryFailure: "ReferenceNotFound",
-        failureOrigin: ["transformer_InnerReference_resolve"],
+        failureOrigin: ["transformer_resolveReference"],
         queryReference: transformerInnerReference.referenceName,
         failureMessage: "no referenceName " + transformerInnerReference.referenceName,
         queryContext: JSON.stringify(Object.keys(bank)),
@@ -585,7 +592,7 @@ export function transformer_resolveReference(
       return pathResult;
     } catch (error) {
       log.error(
-        "transformer_InnerReference_resolve failed, reference not found for step",
+        "transformer_resolveReference failed, reference not found for step",
         step,
         "transformerInnerReference=",
         transformerInnerReference,
@@ -596,7 +603,7 @@ export function transformer_resolveReference(
       );
       return new Domain2ElementFailed({
         queryFailure: "ReferenceNotFound",
-        failureOrigin: ["transformer_InnerReference_resolve"],
+        failureOrigin: ["transformer_resolveReference"],
         queryReference: JSON.stringify(transformerInnerReference.referencePath),
         failureMessage: "no referencePath " + transformerInnerReference.referencePath + " found in queryContext",
         queryContext: JSON.stringify(Object.keys(bank)),
@@ -733,7 +740,7 @@ export function transformer_mustacheStringTemplate_apply(
       "contextResults",
       JSON.stringify(contextResults, null, 2)
     );
-    const result = Mustache.render(transformer.definition, (transformer as any)["interpolation"] == "runtime"?contextResults: queryParams);
+    const result = mustache.render(transformer.definition, (transformer as any)["interpolation"] == "runtime"?contextResults: queryParams);
     return result;
   } catch (error: any) {
     log.error(
@@ -1598,7 +1605,7 @@ export function transformer_apply(
 
 // ################################################################################################
 export const applicationTransformerDefinitions: Record<string, TransformerDefinition> = {
-  spreadSheetToJzodSchema: transformer_SpreadSheetToJzodSchema,
+  spreadSheetToJzodSchema: transformer_spreadSheetToJzodSchema,
 }
 
 // <A>[] -> <A>[]
@@ -1758,12 +1765,13 @@ export function transformer_extended_apply(
 }
 
 // ################################################################################################
-export function transformer_apply_wrapper(  step: Step,
+export function transformer_apply_wrapper(
+  step: Step,
   label: string | undefined,
   // transformer: TransformerForBuild | TransformerForRuntime | ExtendedTransformerForRuntime,
   transformer: TransformerForBuild | TransformerForRuntime,
   queryParams: Record<string, any>,
-  contextResults?: Record<string, any>,
+  contextResults?: Record<string, any>
 ): Domain2QueryReturnType<any> {
   // const result = transformer_extended_apply(step, label, transformer, queryParams, contextResults);
   const result = transformer_apply(step, label, transformer, queryParams, contextResults);

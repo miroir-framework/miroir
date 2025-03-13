@@ -276,12 +276,15 @@ export const extractzodSchemaForSingleSelectQueryTemplate = <StateType>(
     );
   }
 
-  const entityUuidDomainElement = typeof selectorParams.query.select.parentUuid == "string"?selectorParams.query.select.parentUuid:transformer_InnerReference_resolve(
-    "build",
-    selectorParams.query.select.parentUuid,
-    selectorParams.query.queryParams,
-    selectorParams.query.contextResults
-  );
+  const entityUuidDomainElement =
+    typeof selectorParams.query.select.parentUuid == "string"
+      ? selectorParams.query.select.parentUuid
+      : transformer_InnerReference_resolve(
+          "build",
+          selectorParams.query.select.parentUuid,
+          selectorParams.query.queryParams,
+          selectorParams.query.contextResults
+        );
 
   log.info(
     "extractzodSchemaForSingleSelectQuery called",

@@ -11,7 +11,12 @@
     "noImplicitAny": true,
     "noImplicitThis": true,
     "strictNullChecks": true,
+    "outDir": "./dist",
     "plugins": [
-    ]
+    ],
+    "paths": {
+      "@miroir-framework/jzod-ts": ["../jzod-ts/src"],
+      "@miroir-framework/jzod": ["../jzod/src"]
+    }
   }
 }

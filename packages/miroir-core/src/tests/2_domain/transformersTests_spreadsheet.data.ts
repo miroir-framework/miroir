@@ -27,7 +27,7 @@ import { TestSuiteContext } from "../../4_services/TestSuiteContext.js";
 // import publisher2 from "../../assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/516a7366-39e7-4998-82cb-80199a7fa667.json" with { type: "json" };
 // import publisher3 from "../../assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/c1c97d54-aba8-4599-883a-7fe8f3874095.json" with { type: "json" };
 import { TransformerTestSuite } from "./transformersTests_miroir.data.js";
-import { transformer_SpreadSheetToJzodSchema } from "../../2_domain/Spreadsheet.js";
+import { transformer_spreadSheetToJzodSchema } from "../../2_domain/Spreadsheet.js";
 
 
 
@@ -83,21 +83,26 @@ export const transformerTestSuite_spreadsheet: TransformerTestSuite = {
           transformerTestType: "transformerTest",
           transformerTestLabel: "inferSpreadsheetSchema allows to infer a schema from a spreadsheet step 1: infer jzod schema based on spreadsheet columns",
           transformerName: "spreadSheetToJzodSchema",
-          transformer: (transformer_SpreadSheetToJzodSchema.transformerImplementation as any).definition,
-          // transformer: {
-          //   transformerType: "spreadSheetToJzodSchema",
-          //   spreadsheetContents: [
-          //     { "a": "iso3166-1Alpha-2", "b": "iso3166-1Alpha-3", c: "Name" },
-          //     { "a": "US", "b": "USA", c: "United States" },
-          //     { "a": "DE", "b": "DEU", c: "Germany" },
-          //   ],
-          // } as any,
-          transformerParams: {
-            spreadsheetContents: [
+          // transformer: (transformer_spreadSheetToJzodSchema.transformerImplementation as any).definition,
+          transformer: {
+            transformerType: "spreadSheetToJzodSchema",
+            // spreadsheetContents: {
+            //   type: "parameterReference",
+            //   referenceName: "spreadsheetContents",
+            // }
+            spreadsheetContents:
+            [
               { "a": "iso3166-1Alpha-2", "b": "iso3166-1Alpha-3", c: "Name" },
               { "a": "US", "b": "USA", c: "United States" },
               { "a": "DE", "b": "DEU", c: "Germany" },
             ],
+          } as any,
+          transformerParams: {
+            // spreadsheetContents: [
+            //   { "a": "iso3166-1Alpha-2", "b": "iso3166-1Alpha-3", c: "Name" },
+            //   { "a": "US", "b": "USA", c: "United States" },
+            //   { "a": "DE", "b": "DEU", c: "Germany" },
+            // ],
           },
           expectedValue: {
             type: "object",

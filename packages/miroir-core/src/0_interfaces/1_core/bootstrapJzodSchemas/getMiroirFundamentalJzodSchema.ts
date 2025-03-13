@@ -1,4 +1,4 @@
-import { applyCarryOnSchema, applyCarryOnSchemaOnLevel, forgeCarryOnReferenceName } from "@miroir-framework/jzod";
+// import { applyCarryOnSchema, applyCarryOnSchemaOnLevel, forgeCarryOnReferenceName } from "@miroir-framework/jzod";
 /**
  * BEWARE: since this file is involved in generating
  * "../preprocessor-generated/miroirFundamentalType.js"
@@ -16,6 +16,13 @@ import { applyCarryOnSchema, applyCarryOnSchemaOnLevel, forgeCarryOnReferenceNam
 //   miroirCrossJoinQuery,
 //   extractorOrCombinerTemplateRecord,
 // } from "../preprocessor-generated/miroirFundamentalType.js";
+
+// import { applyCarryOnSchema, applyCarryOnSchemaOnLevel, forgeCarryOnReferenceName } from "@miroir-framework/jzod";
+
+
+
+
+import { applyCarryOnSchema, applyCarryOnSchemaOnLevel, forgeCarryOnReferenceName } from "@miroir-framework/jzod";
 import { cleanLevel } from "../../../1_core/constants.js";
 import { MiroirLoggerFactory } from "../../../4_services/LoggerFactory.js";
 import { packageName } from "../../../constants.js";
@@ -186,6 +193,41 @@ function makeReferencesAbsolute(jzodSchema: any, absolutePath: string, force?: b
   }
 }
 
+export const extendedSchemas = [
+  // "jzodBaseObject",
+  "applicationSection",
+  "shippingBox",
+  "extractorTemplateRoot",
+  "extractorOrCombinerRoot",
+  "transformer_constantUuid",
+  "transformer_constantObject",
+  "transformer_constantString",
+  "transformer_newUuid",
+  "transformer_constant",
+  "transformer_contextReference",
+  "transformer_parameterReference",
+  "transformer_contextOrParameterReference",
+  "transformer_objectDynamicAccess",
+  "transformer_label",
+  "transformer_Abstract",
+  "transformer_orderBy",
+  "transformer_constantListAsExtractor",
+  "transformer_extractors",
+  "transformer_mustacheStringTemplate",
+  "transformer_InnerReference",
+  // "transformerForBuild_applyTo",
+  "transformerForBuild_count_root",
+  "transformerForBuild_unique_root",
+  "transformerForBuild_object_fullTemplate_root",
+  "transformerForBuild_object_listReducerToIndexObject_root",
+  "transformerForBuild_object_listPickElement_root",
+  "transformerForBuild_objectEntries_root",
+  "transformerForBuild_objectValues_root",
+  // "transformerForRuntime_applyTo",
+  "transformerForRuntime_Abstract",
+  "transformerForRuntime_orderedTransformer",
+];
+
 // ################################################################################################
 export function getMiroirFundamentalJzodSchema(
   entityDefinitionBundleV1: any,
@@ -235,16 +277,15 @@ export function getMiroirFundamentalJzodSchema(
   //     )
   // );
 
-  // log.info("domainActionDefinitions", domainActionDefinitions)
-  log.info("dynamicTransformersJzodSchema", JSON.stringify(miroirTransformersJzodSchemas, null, 2));
-  const localCompositeActionDefinition = domainEndpointVersionV1.definition.actions.find(
-    (a: any) => a.actionParameters?.definition?.actionType?.definition == "compositeAction"
-  )?.actionParameters.definition;
-  const localRunTestCaseAction = localCompositeActionDefinition.definition.definition.definition.find(
-    (a: any) => a.definition?.actionType?.definition == "compositeRunTestAssertion"
-  );
-  log.info("localCompositeActionDefinition", JSON.stringify(localCompositeActionDefinition, null, 2));
-  log.info("localRunTestCaseAction", JSON.stringify(localRunTestCaseAction, null, 2));
+  // log.info("miroirTransformersJzodSchemas", JSON.stringify(miroirTransformersJzodSchemas, null, 2));
+  // const localCompositeActionDefinition = domainEndpointVersionV1.definition.actions.find(
+  //   (a: any) => a.actionParameters?.definition?.actionType?.definition == "compositeAction"
+  // )?.actionParameters.definition;
+  // const localRunTestCaseAction = localCompositeActionDefinition.definition.definition.definition.find(
+  //   (a: any) => a.definition?.actionType?.definition == "compositeRunTestAssertion"
+  // );
+  // log.info("localCompositeActionDefinition", JSON.stringify(localCompositeActionDefinition, null, 2));
+  // log.info("localRunTestCaseAction", JSON.stringify(localRunTestCaseAction, null, 2));
   const miroirFundamentalJzodSchema: any = {
     // const miroirFundamentalJzodSchema: JzodSchema = {
     uuid: miroirFundamentalJzodSchemaUuid,
@@ -2474,7 +2515,7 @@ export function getMiroirFundamentalJzodSchema(
     ).actionParameters,
   };
 
-  console.log("################## miroirFundamentalJzodSchema", JSON.stringify(Object.keys(miroirFundamentalJzodSchema.definition.context), null, 2))
+  // console.log("################## miroirFundamentalJzodSchema", JSON.stringify(Object.keys(miroirFundamentalJzodSchema.definition.context), null, 2))
 
   const innerResolutionStore: Record<string, any> = {
     // TODO: transform all inner references in jzodSchemajzodMiroirBootstrapSchema into innerResolutionStoreReferences
@@ -2654,7 +2695,7 @@ export function getMiroirFundamentalJzodSchema(
         extractorOrCombinerTemplate: (miroirFundamentalJzodSchema as any).definition.context.extractorOrCombinerTemplate,
         extractorOrCombinerTemplateRecord: (miroirFundamentalJzodSchema as any).definition.context.extractorOrCombinerTemplateRecord,
         transformerForBuild: (transformerJzodSchema as any).definition.context.transformerForBuild,
-        transformerForBuild_applyTo: (transformerJzodSchema as any).definition.context.transformerForBuild_applyTo,
+        // transformerForBuild_applyTo: (transformerJzodSchema as any).definition.context.transformerForBuild_applyTo,
         transformerForBuild_count_root: (miroirFundamentalJzodSchema as any).definition.context.transformerForBuild_count_root,
         transformerForBuild_count: (miroirFundamentalJzodSchema as any).definition.context.transformerForBuild_count,
         transformerForBuild_dataflowObject: (transformerJzodSchema as any).definition.context.transformerForBuild_dataflowObject,
@@ -2681,7 +2722,7 @@ export function getMiroirFundamentalJzodSchema(
         transformerForBuild_unique_root: (miroirFundamentalJzodSchema as any).definition.context.transformerForBuild_unique_root,
         transformerForBuild_unique: (miroirFundamentalJzodSchema as any).definition.context.transformerForBuild_unique,
         transformerForRuntime_Abstract: (miroirFundamentalJzodSchema as any).definition.context.transformerForRuntime_Abstract,
-        transformerForRuntime_applyTo: (miroirFundamentalJzodSchema as any).definition.context.transformerForRuntime_applyTo,
+        // transformerForRuntime_applyTo: (miroirFundamentalJzodSchema as any).definition.context.transformerForRuntime_applyTo,
         transformerForRuntime_count: (transformerJzodSchema as any).definition.context.transformerForRuntime_count,
         transformerForRuntime_constant: (transformerJzodSchema as any).definition.context.transformerForRuntime_constant,
         transformerForRuntime_constantAsExtractor: (transformerJzodSchema as any).definition.context.transformerForRuntime_constantAsExtractor,
@@ -2757,26 +2798,6 @@ export function getMiroirFundamentalJzodSchema(
   // console.log("getMiroirFundamentalJzodSchema", "localizedResolutionStore", JSON.stringify(localizedResolutionStore, null, 2))
   // console.log("getMiroirFundamentalJzodSchema #######################################################")
   // const localizedInnerResolutionStoreReferences: Record<string, JzodReference> = Object.fromEntries(
-  const extendedSchemas = [
-    "jzodBaseObject",
-    "shippingBox",
-    "extractorTemplateRoot",
-    "extractorOrCombinerRoot",
-    "transformer_label",
-    "transformer_Abstract",
-    "transformer_orderBy",
-    "transformerForBuild_applyTo",
-    "transformerForBuild_count_root",
-    "transformerForBuild_unique_root",
-    "transformerForBuild_object_fullTemplate_root",
-    "transformerForBuild_object_listReducerToIndexObject_root",
-    "transformerForBuild_object_listPickElement_root",
-    "transformerForBuild_objectEntries_root",
-    "transformerForBuild_objectValues_root",
-    "transformerForRuntime_applyTo",
-    "transformerForRuntime_Abstract",
-    "transformerForRuntime_orderedTransformer",
-  ];
 
   const resolveReferencesWithCarryOn = ((ref: any): any | undefined => {
     const resolvedAbsolutePath = localizedResolutionStore[ref.definition?.absolutePath ?? ""];
