@@ -23,7 +23,8 @@
     "preBuild2": "tsc ./src/buildTools/generate-ts-types.ts --rootDir . --baseUrl . --target ESNext --module nodenext --moduleResolution nodenext --esModuleInterop --allowSyntheticDefaultImports --resolveJsonModule --strict --outdir ./dist/",
     "generate-ts-types": "node --experimental-specifier-resolution=node ./tmp/src/buildTools/generate-ts-types.js",
     "generate-ts-types2": "node --permission --allow-fs-read=* --allow-fs-write=* --experimental-specifier-resolution=node ./dist/src/buildTools/generate-ts-types.js",
-    "generate-ts-types3": "node --permission --allow-fs-read=* --allow-fs-write=* ./src/buildTools/generate-ts-types.mjs",
+    "generate-ts-types3": "ts-node ./scripts/generate-ts-types.ts",
+    "generate-ts-types4": "node --loader ts-node/esm ./scripts/generate-ts-types.ts",
     "fixTmpImports": "ts-add-js-extension --dir=./tmp",
     "testDEFUNCT": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --verbose --silent=false --debug -t",
     "vitestByFile": "cross-env NODE_ENV=test NODE_OPTIONS='--max-old-space-size=4096' vitest run --poolOptions.forks.singleFork --passWithNoTests",
@@ -31,25 +32,6 @@
     "preTestNodeNextDEFUNCT": "tsc --rootDir . --baseUrl . --strict --target ESNext --module ESNext --moduleResolution node --allowSyntheticDefaultImports --resolveJsonModule --outdir ./tmp/",
     "preTestCjsDEFUNCT": "tsc --rootDir . --baseUrl . --strict --target ESNext --module commonJs --allowSyntheticDefaultImports --resolveJsonModule --outdir ./tmp/",
     "testNodeDEFUNCT": "cross-env NODE_ENV=test node --experimental-vm-modules ../../node_modules/jest/bin/jest.js"
-  },
-  "tsup": {
-    "dts": true,
-    "clean": true,
-    "bundle": true,
-    "treeshake": true,
-    "target": "es6",
-    "module": "nodenext",
-    "moduleResolution": "nodenext",
-    "format": [
-      "esm"
-    ],
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "resolveJsonModule": true,
-    "strict": true,
-    "entry": [
-      "src/index.ts"
-    ]
   },
   "dependencies": {
     "@miroir-framework/jzod": "*",
@@ -71,6 +53,7 @@
     "tinyrainbow": "^1.2.0",
     "ts-add-js-extension": "^1.6.4",
     "tsup": "^8.0.1",
+    "tsx": "^4.19.3",
     "typescript": "5.8.2",
     "vitest": "2.1.8"
   }

@@ -1,9 +1,8 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "NodeNext",
-    "moduleResolution": "nodenext",
+    "target": "ES2020",
+    "module": "commonjs",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
@@ -12,10 +11,6 @@
     "rootDir": "./",
     "baseUrl": "./",
     "types": ["node"],
-    "paths": {
-      "@miroir-framework/jzod-ts": ["../jzod-ts/src"],
-      "@miroir-framework/jzod": ["../jzod/src"]
-    }
   },
   "exclude": [
     "./node_modules/**",
@@ -24,5 +19,12 @@
     "./src/**/*.spec.ts",
     "./src/**/*.spec.tsx"
   ],
-  "include": ["./src/**/*.json", "./src/**/*.js", "./src/**/*.jsx", "./src/**/*.ts", "./src/**/*.tsx"]
+  "include": [
+    "./src/**/*.json",
+    "./src/**/*.js",
+    "./src/**/*.jsx",
+    "./src/**/*.ts",
+    "./src/**/*.tsx",
+    "scripts/**/*"
+  ]
 }
