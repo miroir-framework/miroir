@@ -1,14 +1,14 @@
 
 // TODO: put in ConfigurationServiceInterface
 
-import { StorageType } from "../0_interfaces/1_core/StorageConfiguration.js";
-import { TestImplementation } from "../0_interfaces/1_core/TestImplementation.js";
-import { ApplicationSection } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
-import { AdminStoreFactoryRegister, PersistenceStoreAdminSectionFactory, PersistenceStoreSectionFactory, StoreSectionFactoryRegister } from "../0_interfaces/4-services/PersistenceStoreControllerInterface.js";
-import { MiroirLoggerFactory } from "../4_services/LoggerFactory.js";
-import { packageName } from "../constants.js";
-import { cleanLevel } from "./constants.js";
+import { StorageType } from "../0_interfaces/1_core/StorageConfiguration";
+import { TestImplementation } from "../0_interfaces/1_core/TestImplementation";
+import { ApplicationSection } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
+import { AdminStoreFactoryRegister, PersistenceStoreAdminSectionFactory, PersistenceStoreSectionFactory, StoreSectionFactoryRegister } from "../0_interfaces/4-services/PersistenceStoreControllerInterface";
+import { MiroirLoggerFactory } from "../4_services/LoggerFactory";
+import { packageName } from "../constants";
+import { cleanLevel } from "./constants";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

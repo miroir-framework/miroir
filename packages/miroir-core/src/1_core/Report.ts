@@ -1,8 +1,8 @@
-import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
-import { MiroirLoggerFactory } from "../4_services/LoggerFactory.js";
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
+import { MiroirLoggerFactory } from "../4_services/LoggerFactory";
 
-import { packageName } from "../constants.js";
-import { cleanLevel } from "./constants.js";
+import { packageName } from "../constants";
+import { cleanLevel } from "./constants";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

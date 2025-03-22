@@ -7,15 +7,15 @@ import {
   DomainControllerInterface,
   DomainState,
   LocalCacheInfo
-} from "../0_interfaces/2_domain/DomainControllerInterface.js";
+} from "../0_interfaces/2_domain/DomainControllerInterface";
 
-import { MiroirContextInterface } from "../0_interfaces/3_controllers/MiroirContextInterface.js";
+import { MiroirContextInterface } from "../0_interfaces/3_controllers/MiroirContextInterface";
 import {
   LocalCacheInterface
-} from "../0_interfaces/4-services/LocalCacheInterface.js";
+} from "../0_interfaces/4-services/LocalCacheInterface";
 import {
   PersistenceStoreLocalOrRemoteInterface
-} from "../0_interfaces/4-services/PersistenceInterface.js";
+} from "../0_interfaces/4-services/PersistenceInterface";
 
 
 const adminConfigurationDeploymentMiroir = require("../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json");
@@ -48,15 +48,15 @@ import {
   TransactionalInstanceAction,
   TransformerForRuntime,
   UndoRedoAction
-} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
-import { ACTION_OK } from "../1_core/constants.js";
-import { defaultMiroirMetaModel, metaModelEntities, miroirModelEntities } from "../1_core/Model.js";
-import { resolveCompositeActionTemplate } from "../2_domain/ResolveCompositeActionTemplate.js";
-import { transformer_extended_apply } from "../2_domain/Transformers.js";
+} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
+import { ACTION_OK } from "../1_core/constants";
+import { defaultMiroirMetaModel, metaModelEntities, miroirModelEntities } from "../1_core/Model";
+import { resolveCompositeActionTemplate } from "../2_domain/ResolveCompositeActionTemplate";
+import { transformer_extended_apply } from "../2_domain/Transformers";
 import { LoggerGlobalContext } from '../4_services/LoggerContext.js';
-import { MiroirLoggerFactory } from "../4_services/LoggerFactory.js";
-import { packageName } from "../constants.js";
+import { MiroirLoggerFactory } from "../4_services/LoggerFactory";
+import { packageName } from "../constants";
 
 const selfApplicationMiroir = require('../assets/miroir_data/a659d350-dd97-4da9-91de-524fa01745dc/21840247-b5b1-4344-baec-f818f4797d92.json');
 const selfApplicationDeploymentMiroir = require('../assets/miroir_data/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json');
@@ -64,10 +64,10 @@ const selfApplicationModelBranchMiroirMasterBranch = require('../assets/miroir_d
 const selfApplicationVersionInitialMiroirVersion = require('../assets/miroir_data/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/695826c2-aefa-4f5f-a131-dee46fe21c1.json');
 const selfApplicationStoreBasedConfigurationMiroir = require('../assets/miroir_data/7990c0c9-86c3-40a1-a121-036c91b55ed7/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json');
 
-import { resolvePathOnObject } from "../tools.js";
-import { cleanLevel } from "./constants.js";
-import { Endpoint } from "./Endpoint.js";
-import { CallUtils } from "./ErrorHandling/CallUtils.js";
+import { resolvePathOnObject } from "../tools";
+import { cleanLevel } from "./constants";
+import { Endpoint } from "./Endpoint";
+import { CallUtils } from "./ErrorHandling/CallUtils";
 import { TestSuiteContext } from '../4_services/TestSuiteContext.js';
 import { resolveTestCompositeActionTemplateSuite } from '../2_domain/TestSuiteTemplate.js';
 import { Action2Error, Action2ReturnType, Action2VoidReturnType, Domain2ElementFailed } from '../0_interfaces/2_domain/DomainElement.js';

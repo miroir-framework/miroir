@@ -1,11 +1,11 @@
 // A tiny wrapper around fetch(), borrowed from
 // https://kentcdodds.com/blog/replace-axios-with-a-simple-custom-fetch-wrapper
 
-import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
-import { RestClientCallReturnType, RestClientInterface } from "../0_interfaces/4-services/PersistenceInterface.js";
-import { packageName } from "../constants.js";
-import { MiroirLoggerFactory } from "./LoggerFactory.js";
-import { cleanLevel } from "./constants.js";
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
+import { RestClientCallReturnType, RestClientInterface } from "../0_interfaces/4-services/PersistenceInterface";
+import { packageName } from "../constants";
+import { MiroirLoggerFactory } from "./LoggerFactory";
+import { cleanLevel } from "./constants";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

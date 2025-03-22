@@ -2,7 +2,6 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "target": "ESNext",
-    "module": "NodeNext",
     "outDir": "dist/out-tsc",
     "declaration": true,
     "declarationDir": "dist/out-tsc/dts",

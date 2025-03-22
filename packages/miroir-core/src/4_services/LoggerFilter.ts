@@ -1,5 +1,5 @@
-import { FactoryLevels, LoggerInterface, SomeLevel } from "../0_interfaces/4-services/LoggerInterface.js";
-import { LoggerContextElement, LoggerGlobalContext } from "./LoggerContext.js";
+import { FactoryLevels, LoggerInterface, SomeLevel } from "../0_interfaces/4-services/LoggerInterface";
+import { LoggerContextElement, LoggerGlobalContext } from "./LoggerContext";
 
 export class LoggerFilter implements LoggerInterface {
   constructor(

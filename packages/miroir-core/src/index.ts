@@ -1,8 +1,7 @@
 export {
-  extendedSchemas,
   miroirFundamentalJzodSchemaUuid,
   getMiroirFundamentalJzodSchema,
-} from "../src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema.js"
+} from "../src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema"
 
 console.log("miroir-core: loading miroirFundamentalType.js");
 export {
@@ -194,21 +193,19 @@ export {
   TestCompositeActionTemplateSuite,
   TestCompositeActionTemplate,
   DomainElementInstanceUuidIndex,
-} from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js"
+} from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType"
 console.log("miroir-core: loading miroirFundamentalType.js DONE");
 export {
   ApplicationSection,
   applicationSection,
-  ExtendedTypes,
-  extendedTypes,
+  // ExtendedTypes,
+  // extendedTypes,
   ExtractorOrCombinerRoot,
   extractorOrCombinerRoot,
   ExtractorTemplateRoot,
   extractorTemplateRoot,
   ShippingBox,
   shippingBox,
-  TransformerForBuild_count_root,
-  transformerForBuild_count_root,
   TransformerForBuild_objectEntries_root,
   transformerForBuild_objectEntries_root,
   TransformerForBuild_objectValues_root,
@@ -255,7 +252,7 @@ export {
   transformer_orderBy,
   Transformer_parameterReference,
   transformer_parameterReference,
-} from "./0_interfaces/1_core/preprocessor-generated/extendedTypes.js"
+} from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType"
 export {
   actionError,
   actionEntityInstanceReturnType,
@@ -408,7 +405,7 @@ export {
   testCompositeActionSuite,
   testCompositeActionTemplateSuite,
   testCompositeActionTemplate,
-} from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js"
+} from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType"
 
 export {
   InstanceDictionaryNum,
@@ -444,6 +441,7 @@ export {
   ClientFileStorage,
   // SelfApplicationDeploymentConfigurationSchema,
   // SelfApplicationDeploymentConfiguration,
+  AdminApplicationDeploymentConfiguration,
   ApplicationModelLevelSchema,
   ApplicationModelLevel,
   DeploymentSide,
@@ -566,10 +564,10 @@ export {
   defaultLevels,
   SpecificLoggerOptionsMap,
   LoggerOptions,
-} from "./0_interfaces/4-services/LoggerInterface.js";
+} from "./0_interfaces/4-services/LoggerInterface";
 export {
   PersistenceStoreControllerManagerInterface
-} from "./0_interfaces/4-services/PersistenceStoreControllerManagerInterface.js";
+} from "./0_interfaces/4-services/PersistenceStoreControllerManagerInterface";
 export {
   LocalCacheInterface,
 } from './0_interfaces/4-services/LocalCacheInterface.js';
@@ -584,7 +582,7 @@ export {
   RestMethodHandler,
   RestServiceHandler,
   StoreInterface,
-} from "./0_interfaces/4-services/PersistenceInterface.js";
+} from "./0_interfaces/4-services/PersistenceInterface";
 export {
   AdminStoreFactoryRegister,
   InitApplicationParameters,
@@ -602,15 +600,15 @@ export {
   PersistenceStoreControllerAction,
   PersistenceStoreSectionFactory,
   StoreSectionFactoryRegister,
-} from "./0_interfaces/4-services/PersistenceStoreControllerInterface.js";
+} from "./0_interfaces/4-services/PersistenceStoreControllerInterface";
 export {
   TestResult,
   TestSuiteResult,
-} from "./0_interfaces/4-services/TestInterface.js";
+} from "./0_interfaces/4-services/TestInterface";
 export {
   getApplicationSection
 } from './1_core/AdminApplication.js';
-export { } from "./1_core/Report.js";
+export { } from "./1_core/Report";
 export { ACTION_OK } from './1_core/constants.js';
 export { DomainInstanceUuidIndexToArray } from './1_core/DomainState.js';
 export {
@@ -761,7 +759,7 @@ export {
 } from './2_domain/ModelEntityActionTransformer.js';
 export { 
   transformer_spreadSheetToJzodSchema
-} from "./2_domain/Spreadsheet.js";
+} from "./2_domain/Spreadsheet";
 export { 
   applicationTransformerDefinitions,
   ActionTemplate,
@@ -771,26 +769,26 @@ export {
   transformer_extended_apply,
   transformer_InnerReference_resolve,
   transformer_mustacheStringTemplate_apply,
-} from "./2_domain/Transformers.js";
+} from "./2_domain/Transformers";
 export {
   resolveExtractorTemplate,
   resolveQueryTemplateWithExtractorCombinerTransformer,
   resolveQueryTemplateSelectExtractorWrapper,
   resolveExtractorTemplateForExtractorOrCombinerReturningObjectOrObjectList,
   resolveExtractorOrQueryTemplate,
-} from "./2_domain/Templates.js";
+} from "./2_domain/Templates";
 export {
   cacheFetchPolicy,
   cacheInvalidationPolicy,
   ConfigurationService,
   PackageConfiguration,
   undoRedoHistorization,
-} from "./3_controllers/ConfigurationService.js";
+} from "./3_controllers/ConfigurationService";
 export {
   resetAndInitApplicationDeployment,
   DeploymentConfiguration,
   DomainController,
-} from "./3_controllers/DomainController.js";
+} from "./3_controllers/DomainController";
 export {
   Endpoint
 } from './3_controllers/Endpoint.js';
@@ -825,6 +823,9 @@ export {
   RestClient
 } from './4_services/RestClient.js';
 export {
+  RestClientStub
+} from './4_services/RestClientStub';
+export {
   restServerDefaultHandlers
 } from './4_services/RestServer.js';
 export {
@@ -857,7 +858,7 @@ export {
   resolvePathOnObject,
   ResultAccessPath,
   domainStateToDeploymentEntityState,
-} from "./tools.js";
+} from "./tools";
 
 console.log("miroir-core: DONE exports");
 

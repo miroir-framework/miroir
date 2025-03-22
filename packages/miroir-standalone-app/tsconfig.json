@@ -2,12 +2,11 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "target": "ESNext",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    "moduleResolution": "Node",
+    "resolveJsonModule": true,
     "outDir": "dist",
     "baseUrl": "./src/",
-    "rootDir": "./",
-    "resolveJsonModule": true
+    "rootDir": "./"
     // "traceResolution": true,
   },
   "exclude": ["./node_modules/**","./src/**/*.spec.js", "./src/**/*.spec.jsx", "./src/**/*.spec.ts", "./src/**/*.spec.tsx"],

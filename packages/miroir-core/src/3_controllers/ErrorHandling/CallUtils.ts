@@ -2,14 +2,14 @@ import {
   DomainElementType,
   LocalCacheAction,
   PersistenceAction,
-} from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { Action2ReturnType } from "../../0_interfaces/2_domain/DomainElement.js";
-import { ErrorLogServiceInterface, MError } from "../../0_interfaces/3_controllers/ErrorLogServiceInterface.js";
-import { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface.js";
-import { PersistenceStoreLocalOrRemoteInterface } from "../../0_interfaces/4-services/PersistenceInterface.js";
-import { MiroirLoggerFactory } from "../../4_services/LoggerFactory.js";
-import { packageName } from "../../constants.js";
-import { cleanLevel } from "../constants.js";
+} from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { Action2ReturnType } from "../../0_interfaces/2_domain/DomainElement";
+import { ErrorLogServiceInterface, MError } from "../../0_interfaces/3_controllers/ErrorLogServiceInterface";
+import { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface";
+import { PersistenceStoreLocalOrRemoteInterface } from "../../0_interfaces/4-services/PersistenceInterface";
+import { MiroirLoggerFactory } from "../../4_services/LoggerFactory";
+import { packageName } from "../../constants";
+import { cleanLevel } from "../constants";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

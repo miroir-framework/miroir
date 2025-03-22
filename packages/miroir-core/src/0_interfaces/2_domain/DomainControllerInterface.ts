@@ -16,10 +16,10 @@ import {
   TestCompositeActionSuite,
   TestCompositeActionTemplateSuite,
   TransactionalInstanceAction
-} from "../1_core/preprocessor-generated/miroirFundamentalType.js";
-import { LocalCacheInterface } from "../4-services/LocalCacheInterface.js";
-import { PersistenceStoreLocalOrRemoteInterface } from "../4-services/PersistenceInterface.js";
-import { Action2ReturnType, Action2VoidReturnType } from "./DomainElement.js";
+} from "../1_core/preprocessor-generated/miroirFundamentalType";
+import { LocalCacheInterface } from "../4-services/LocalCacheInterface";
+import { PersistenceStoreLocalOrRemoteInterface } from "../4-services/PersistenceInterface";
+import { Action2ReturnType, Action2VoidReturnType } from "./DomainElement";
 
 
 // #############################################################################################

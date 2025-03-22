@@ -1,13 +1,13 @@
 // import { describe, expect } from 'vitest';
 
-import { DomainState } from "../../0_interfaces/2_domain/DomainControllerInterface.js";
+import { DomainState } from "../../src/0_interfaces/2_domain/DomainControllerInterface";
 
 import domainStateImport from "./domainState.json" assert { type: "json" };
 
 const domainState: DomainState = domainStateImport as DomainState;
 
-import { DeploymentEntityState } from "../../0_interfaces/2_domain/DeploymentStateInterface.js";
-import { domainStateToDeploymentEntityState } from "../../tools.js";
+import { DeploymentEntityState } from "../../src/0_interfaces/2_domain/DeploymentStateInterface";
+import { domainStateToDeploymentEntityState } from "../../src/tools";
 // const env:any = (import.meta as any).env
 // console.log("@@@@@@@@@@@@@@@@@@ env", env);
 

@@ -1,31 +1,43 @@
-import adminConfigurationDeploymentLibrary from "../../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json" with { type: "json" };
+// import { describe, expect, it } from 'vitest';
 
-import { DomainState } from "../../0_interfaces/2_domain/DomainControllerInterface.js";
+import { DomainState } from "../../src/0_interfaces/2_domain/DomainControllerInterface";
 
-import {
-  BoxedQueryTemplateWithExtractorCombinerTransformer,
-  BoxedQueryWithExtractorCombinerTransformer,
-  DeploymentEntityState,
-  getQueryRunnerParamsForDeploymentEntityState,
-  GetQueryRunnerParamsForDeploymentEntityState,
-  runQueryFromDeploymentEntityState,
-  GetQueryTemplateRunnerParamsForDeploymentEntityState,
-  getQueryTemplateRunnerParamsForDeploymentEntityState,
-  runQueryTemplateFromDeploymentEntityState,
-  SyncQueryRunner,
-  SyncQueryTemplateRunner,
-  GetQueryRunnerParamsForDomainState,
-  getQueryRunnerParamsForDomainState,
-  runQueryFromDomainState,
-  getQueryTemplateRunnerParamsForDomainState,
-  GetSelectorParamsForQueryTemplateOnDomainStateType,
-  runQueryTemplateFromDomainState,
-  domainStateToDeploymentEntityState,
-   resolvePathOnObject,
-   Domain2ElementFailed, Domain2QueryReturnType,
-   ignorePostgresExtraAttributes,
-} from "miroir-core";
-import domainStateImport from "./domainState.json" with { type: "json" };
+// import {
+//   BoxedQueryTemplateWithExtractorCombinerTransformer,
+//   BoxedQueryWithExtractorCombinerTransformer,
+//   DeploymentEntityState,
+//   getQueryRunnerParamsForDeploymentEntityState,
+//   GetQueryRunnerParamsForDeploymentEntityState,
+//   runQueryFromDeploymentEntityState,
+//   GetQueryTemplateRunnerParamsForDeploymentEntityState,
+//   getQueryTemplateRunnerParamsForDeploymentEntityState,
+//   runQueryTemplateFromDeploymentEntityState,
+//   SyncQueryRunner,
+//   SyncQueryTemplateRunner,
+//   GetQueryRunnerParamsForDomainState,
+//   getQueryRunnerParamsForDomainState,
+//   runQueryFromDomainState,
+//   getQueryTemplateRunnerParamsForDomainState,
+//   GetSelectorParamsForQueryTemplateOnDomainStateType,
+//   runQueryTemplateFromDomainState,
+//   domainStateToDeploymentEntityState,
+//   resolvePathOnObject,
+//   Domain2ElementFailed, Domain2QueryReturnType,
+//   ignorePostgresExtraAttributes,
+// } from "miroir-core";
+
+// import domainStateImport from "./domainState.json" with { type: "json" };
+import domainStateImport from "./domainState.json";
+// import adminConfigurationDeploymentLibrary from "../../src/assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json" with { type: "json" };
+import adminConfigurationDeploymentLibrary from "../../src/assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json";
+import { DeploymentEntityState } from '../../src/0_interfaces/2_domain/DeploymentStateInterface.js';
+import { domainStateToDeploymentEntityState, resolvePathOnObject } from '../../src/tools.js';
+import { getQueryTemplateRunnerParamsForDomainState, runQueryTemplateFromDomainState } from '../../src/2_domain/DomainStateQueryTemplateSelector.js';
+import { getQueryRunnerParamsForDomainState, runQueryFromDomainState } from '../../src/2_domain/DomainStateQuerySelectors.js';
+import { getQueryTemplateRunnerParamsForDeploymentEntityState, runQueryTemplateFromDeploymentEntityState } from '../../src/2_domain/DeploymentEntityStateQueryTemplateSelectors.js';
+import { getQueryRunnerParamsForDeploymentEntityState, runQueryFromDeploymentEntityState } from '../../src/2_domain/DeploymentEntityStateQuerySelectors.js';
+import { Domain2ElementFailed } from '../../src/0_interfaces/2_domain/DomainElement.js';
+import { ignorePostgresExtraAttributes } from '../../src/4_services/otherTools.js';
 
 const domainState: DomainState = domainStateImport as DomainState;
 const deploymentEntityState: DeploymentEntityState = domainStateToDeploymentEntityState(domainState);

@@ -4,11 +4,11 @@ import { v4 as uuidv4 } from 'uuid';
 import {
   BoxedExtractorTemplateReturningObject,
   BoxedQueryTemplateWithExtractorCombinerTransformer
-} from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+} from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
   resolveBoxedExtractorOrCombinerTemplateReturningObjectOrObjectList,
   resolveQueryTemplateWithExtractorCombinerTransformer,
-} from "../../2_domain/Templates.js";
+} from "../../src/2_domain/Templates";
 describe("resolveQueryTemplates.unit.test", () => {
 
   // // ################################################################################################

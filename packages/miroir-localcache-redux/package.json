@@ -3,9 +3,16 @@
   "private": true,
   "version": "0.0.0",
   "description": "The Miroir implementation of Local Cache and Remote Access based on Redux.",
-  "main": "dist/bundle.js",
-  "types": "dist/bundle.d.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
   "scripts": {
     "watch": "lerna watch --scope='miroir-localcache-redux' --include-dependencies -- lerna run build --scope='miroir-localcache-redux'",
     "tsbuild": "tsc ./src/index.ts --rootDir . --baseUrl . --target ES2015 --module commonjs --skipLibCheck --strict --moduleResolution node --allowSyntheticDefaultImports --resolveJsonModule --outdir ./dist",
@@ -30,13 +37,6 @@
       "src/index.ts"
     ],
     "external": ["fs"]
-  },
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    },
-    "./package.json": "./package.json"
   },
   "dependencies": {
     "@reduxjs/toolkit": "2.2.1",

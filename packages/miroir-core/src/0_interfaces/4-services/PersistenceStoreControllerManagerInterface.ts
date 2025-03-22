@@ -1,10 +1,10 @@
-import { Uuid } from "../1_core/EntityDefinition.js";
-import { StoreUnitConfiguration } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
-import { DomainControllerInterface } from "../2_domain/DomainControllerInterface.js";
-import { Action2ReturnType } from "../2_domain/DomainElement.js";
-import { LocalCacheInterface } from "./LocalCacheInterface.js";
-import { PersistenceStoreLocalOrRemoteInterface } from "./PersistenceInterface.js";
-import { InitApplicationParameters, PersistenceStoreControllerInterface } from "./PersistenceStoreControllerInterface.js";
+import { Uuid } from "../1_core/EntityDefinition";
+import { StoreUnitConfiguration } from "../1_core/preprocessor-generated/miroirFundamentalType";
+import { DomainControllerInterface } from "../2_domain/DomainControllerInterface";
+import { Action2ReturnType } from "../2_domain/DomainElement";
+import { LocalCacheInterface } from "./LocalCacheInterface";
+import { PersistenceStoreLocalOrRemoteInterface } from "./PersistenceInterface";
+import { InitApplicationParameters, PersistenceStoreControllerInterface } from "./PersistenceStoreControllerInterface";
 
 /**
  * handles many persistence store controllers, that can be added / removed dynamically at runtime.

@@ -1,14 +1,14 @@
-import { MetaEntity, Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
+import { MetaEntity, Uuid } from "../0_interfaces/1_core/EntityDefinition";
 import {
   DomainState,
   DomainStateMetaModelSelector,
   EntitiesDomainState,
   EntitiesDomainStateEntityInstanceArraySelector,
   EntitiesDomainStateInstanceSelector,
-} from "../0_interfaces/2_domain/DomainControllerInterface.js";
-import { DomainInstanceUuidIndexToArray } from "../1_core/DomainState.js";
+} from "../0_interfaces/2_domain/DomainControllerInterface";
+import { DomainInstanceUuidIndexToArray } from "../1_core/DomainState";
 
-import { defaultMiroirMetaModel } from "../1_core/Model.js";
+import { defaultMiroirMetaModel } from "../1_core/Model";
 
 const adminConfigurationDeploymentMiroir = require("../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json");
 const entityReport = require("../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916.json");
@@ -30,12 +30,12 @@ import {
   MetaModel,
   Report,
   StoreBasedConfiguration,
-} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
-import { MiroirLoggerFactory } from "../4_services/LoggerFactory.js";
+} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
+import { MiroirLoggerFactory } from "../4_services/LoggerFactory";
 
-import { packageName } from "../constants.js";
-import { cleanLevel } from "./constants.js";
+import { packageName } from "../constants";
+import { cleanLevel } from "./constants";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

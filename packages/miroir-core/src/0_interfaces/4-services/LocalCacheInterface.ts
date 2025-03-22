@@ -1,7 +1,7 @@
 import {
   DomainState,
   LocalCacheInfo
-} from "../2_domain/DomainControllerInterface.js";
+} from "../2_domain/DomainControllerInterface";
 
 import {
   LocalCacheAction,
@@ -9,8 +9,8 @@ import {
   ModelActionReplayableAction,
   RunBoxedExtractorOrQueryAction,
   TransactionalInstanceAction
-} from "../1_core/preprocessor-generated/miroirFundamentalType.js";
-import { Action2ReturnType } from "../2_domain/DomainElement.js";
+} from "../1_core/preprocessor-generated/miroirFundamentalType";
+import { Action2ReturnType } from "../2_domain/DomainElement";
 
 // ################################################################################################
 /**

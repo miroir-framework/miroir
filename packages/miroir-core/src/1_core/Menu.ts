@@ -4,13 +4,13 @@ import {
   Menu,
   MiroirMenuItem,
   Transformer_menu_addItem,
-} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement.js";
-import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
-import { Step } from "../2_domain/Transformers.js";
-import { MiroirLoggerFactory } from "../4_services/LoggerFactory.js";
-import { packageName } from "../constants.js";
-import { cleanLevel } from "./constants.js";
+} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement";
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
+import { Step } from "../2_domain/Transformers";
+import { MiroirLoggerFactory } from "../4_services/LoggerFactory";
+import { packageName } from "../constants";
+import { cleanLevel } from "./constants";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

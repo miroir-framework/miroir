@@ -50,16 +50,16 @@ import {
   selfApplicationDeploymentLibrary,
   selfApplicationDeploymentMiroir
 } from "miroir-core";
-import { AdminApplicationDeploymentConfiguration } from "miroir-core/src/0_interfaces/1_core/StorageConfiguration";
-import { InitApplicationParameters } from "miroir-core/src/0_interfaces/4-services/PersistenceStoreControllerInterface";
-import { RestClientStub } from 'miroir-core/src/4_services/RestClientStub';
+import { AdminApplicationDeploymentConfiguration } from "miroir-core";
+import { InitApplicationParameters } from "miroir-core";
+import { RestClientStub } from 'miroir-core';
 import {
   LocalCache,
   ReduxStoreWithUndoRedo,
   setupMiroirDomainController
 } from "miroir-localcache-redux";
 import path from 'path';
-import { RestPersistenceClientAndRestClient } from '../../../miroir-localcache-redux/dist';
+import { RestPersistenceClientAndRestClient } from 'miroir-localcache-redux';
 import { packageName } from '../../src/constants';
 import { MiroirContextReactProvider } from '../../src/miroir-fwk/4_view/MiroirContextReactProvider';
 import { cleanLevel } from '../../src/miroir-fwk/4_view/constants';
@@ -821,7 +821,7 @@ export const chainVitestSteps = async (
     );
     expect(
       domainElement.status,
-      domainElement.errorType ?? "no errorType" + ": " + domainElement.errorMessage ?? "no errorMessage"
+      domainElement.errorType ?? "no errorType" + ": " + (domainElement.errorMessage ?? "no errorMessage")
     ).toEqual("ok");
   }
   log.info(

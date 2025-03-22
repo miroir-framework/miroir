@@ -1,4 +1,4 @@
-// import { describe, expect } from 'vitest';
+// import { describe, expect, it } from 'vitest';
 
 import { v4 as uuidv4 } from 'uuid';
 import { JzodObject } from "@miroir-framework/jzod-ts";
@@ -13,18 +13,18 @@ import {
   testCompositeActionTemplate,
   TestCompositeActionTemplate,
   TestCompositeActionTemplateSuite
-} from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { resolveCompositeActionTemplate } from "../../2_domain/ResolveCompositeActionTemplate.js";
+} from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { resolveCompositeActionTemplate } from "../../src/2_domain/ResolveCompositeActionTemplate";
 
-import entityEntity from '../../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json' assert { type: "json" };
-import entityEntityDefinition from '../../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json' assert { type: "json" };
-import entityMenu from '../../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/dde4c883-ae6d-47c3-b6df-26bc6e3c1842.json' assert { type: "json" };
-import entityReport from '../../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916.json' assert { type: "json" };
+import entityEntity from '../../src/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json' assert { type: "json" };
+import entityEntityDefinition from '../../src/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json' assert { type: "json" };
+import entityMenu from '../../src/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/dde4c883-ae6d-47c3-b6df-26bc6e3c1842.json' assert { type: "json" };
+import entityReport from '../../src/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916.json' assert { type: "json" };
 
-import { MetaEntity, Uuid } from "../../0_interfaces/1_core/EntityDefinition.js";
-import { resolveTestCompositeActionTemplate, resolveTestCompositeActionTemplateSuite } from "../../2_domain/TestSuiteTemplate.js";
-import { defaultMiroirMetaModel } from "../../1_core/Model.js";
-import { EntityDefinitionEntityDefinition } from '../../0_interfaces/1_core/writtenByHandSchema.js';
+import { MetaEntity, Uuid } from "../../src/0_interfaces/1_core/EntityDefinition";
+import { resolveTestCompositeActionTemplate, resolveTestCompositeActionTemplateSuite } from "../../src/2_domain/TestSuiteTemplate";
+import { defaultMiroirMetaModel } from "../../src/1_core/Model";
+import { EntityDefinitionEntityDefinition } from '../../src/0_interfaces/1_core/writtenByHandSchema.js';
 // import { act } from 'react';
 
 // const env:any = (import.meta as any).env

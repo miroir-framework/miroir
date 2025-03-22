@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { extractDoubleBracePatterns } from '../../1_core/mustache.js';
+// import { describe, it, expect } from 'vitest';
+import { extractDoubleBracePatterns } from '../../src/1_core/mustache.js';
 
 describe('mustache.unit', () => {
   describe("extractDoubleBracePatterns", () => {

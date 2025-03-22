@@ -7,11 +7,11 @@ import {
   EntityDefinition,
   JzodObject,
   QueryByEntityUuidGetEntityDefinition
-} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 const entityEntityDefinition = require('../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json');
 
-import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface.js";
-import { Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement.js";
+import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
+import { Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement";
 import {
   ExtractorTemplateRunnerParamsForJzodSchema,
   SyncBoxedExtractorOrQueryRunnerMap,
@@ -19,11 +19,11 @@ import {
   SyncBoxedExtractorTemplateRunnerParams,
   SyncQueryTemplateRunner,
   SyncQueryTemplateRunnerParams
-} from "../0_interfaces/2_domain/ExtractorRunnerInterface.js";
-import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
-import { MiroirLoggerFactory } from "../4_services/LoggerFactory.js";
-import { packageName } from "../constants.js";
-import { cleanLevel } from "./constants.js";
+} from "../0_interfaces/2_domain/ExtractorRunnerInterface";
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
+import { MiroirLoggerFactory } from "../4_services/LoggerFactory";
+import { packageName } from "../constants";
+import { cleanLevel } from "./constants";
 import {
   extractEntityInstanceListFromListQueryAndDomainState,
   extractEntityInstanceUuidIndexFromListQueryAndDomainState,
@@ -31,15 +31,15 @@ import {
   selectEntityInstanceFromObjectQueryAndDomainState,
   selectEntityInstanceListFromDomainState,
   selectEntityInstanceUuidIndexFromDomainState,
-} from "./DomainStateQuerySelectors.js";
-import { extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList } from "./QuerySelectors.js";
+} from "./DomainStateQuerySelectors";
+import { extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList } from "./QuerySelectors";
 import {
   extractFetchQueryTemplateJzodSchema,
   extractJzodSchemaForDomainModelQueryTemplate,
   extractWithBoxedExtractorTemplate,
   extractzodSchemaForSingleSelectQueryTemplate,
   runQueryTemplateWithExtractorCombinerTransformer
-} from "./QueryTemplateSelectors.js";
+} from "./QueryTemplateSelectors";
 
 
 let log: LoggerInterface = console as any as LoggerInterface;

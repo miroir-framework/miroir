@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
-import { describe, expect } from 'vitest';
-import * as vitest from 'vitest';
+// import { describe, expect } from 'vitest';
+// import * as vitest from 'vitest';
+import * as vitest from 'jest';
 
 import {
   DomainAction,
@@ -9,8 +10,8 @@ import {
   TransformerForBuild,
   TransformerForBuild_dataflowObject,
   TransformerForRuntime
-} from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { transformer_extended_apply_wrapper, transformer_InnerReference_resolve } from "../../2_domain/Transformers.js";
+} from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { transformer_extended_apply_wrapper, transformer_InnerReference_resolve } from "../../src/2_domain/Transformers";
 // import {
 //   author1,
 //   author2,
@@ -33,9 +34,9 @@ import { transformer_extended_apply_wrapper, transformer_InnerReference_resolve 
 //   ignorePostgresExtraAttributesOnObject,
 //   TestSuiteContext
 // } from "miroir-core";
-import { Domain2QueryReturnType } from "../../0_interfaces/2_domain/DomainElement.js";
-import { ignorePostgresExtraAttributes } from "../../4_services/otherTools.js";
-import { TestSuiteContext } from "../../4_services/TestSuiteContext.js";
+import { Domain2QueryReturnType } from "../../src/0_interfaces/2_domain/DomainElement";
+import { ignorePostgresExtraAttributes } from "../../src/4_services/otherTools";
+import { TestSuiteContext } from "../../src/4_services/TestSuiteContext";
 import {
   runTransformerTestSuite,
   transformerTestsDisplayResults,
@@ -43,7 +44,7 @@ import {
   TransformerTest,
   transformerTestSuite_miroirTransformers,
   currentTestSuite,
-} from "./transformersTests_miroir.data.js";
+} from "./transformersTests_miroir.data";
 
 
 // const env:any = (import.meta as any).env

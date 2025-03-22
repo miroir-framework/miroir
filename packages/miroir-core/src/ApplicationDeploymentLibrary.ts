@@ -1,4 +1,4 @@
-import { SelfApplicationDeploymentConfiguration } from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { SelfApplicationDeploymentConfiguration } from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 // duplicated from server!!!!!!!!
 export const applicationDeploymentLibrary: SelfApplicationDeploymentConfiguration = {

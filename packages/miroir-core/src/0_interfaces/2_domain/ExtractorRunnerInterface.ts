@@ -24,8 +24,8 @@ import {
   EntityInstancesUuidIndex,
   DomainElementSuccess,
   EntityInstance
-} from "../1_core/preprocessor-generated/miroirFundamentalType.js";
-import { Action2ReturnType, Domain2QueryReturnType } from "./DomainElement.js";
+} from "../1_core/preprocessor-generated/miroirFundamentalType";
+import { Action2ReturnType, Domain2QueryReturnType } from "./DomainElement";
 
 // ################################################################################################
 export type RecordOfJzodElement = Record<string, JzodElement | undefined>;

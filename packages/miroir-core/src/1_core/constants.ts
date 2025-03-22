@@ -1,4 +1,4 @@
-import { Action2VoidSuccess } from "../0_interfaces/2_domain/DomainElement.js";
+import { Action2VoidSuccess } from "../0_interfaces/2_domain/DomainElement";
 
 export const cleanLevel = "1";
 

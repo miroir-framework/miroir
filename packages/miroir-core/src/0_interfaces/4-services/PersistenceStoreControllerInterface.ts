@@ -1,4 +1,4 @@
-import { Uuid } from "../1_core/EntityDefinition.js";
+import { Uuid } from "../1_core/EntityDefinition";
 
 import {
   ApplicationSection,
@@ -19,14 +19,14 @@ import {
   RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
   SelfApplication,
   StoreSectionConfiguration
-} from "../1_core/preprocessor-generated/miroirFundamentalType.js";
+} from "../1_core/preprocessor-generated/miroirFundamentalType";
 import {
   Action2EntityInstanceCollectionOrFailure,
   Action2EntityInstanceReturnType,
   Action2ReturnType,
   Action2VoidReturnType
-} from "../2_domain/DomainElement.js";
-import { DataStoreApplicationType } from "../3_controllers/ApplicationControllerInterface.js";
+} from "../2_domain/DomainElement";
+import { DataStoreApplicationType } from "../3_controllers/ApplicationControllerInterface";
 
 export type PersistenceStoreControllerAction =
   | InstanceAction

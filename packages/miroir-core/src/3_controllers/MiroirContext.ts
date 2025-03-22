@@ -1,7 +1,7 @@
-import { MiroirContextInterface } from "../0_interfaces/3_controllers/MiroirContextInterface.js";
-import { ErrorLogServiceInterface } from "../0_interfaces/3_controllers/ErrorLogServiceInterface.js";
-import { ErrorLogService } from "./ErrorHandling/ErrorLogService.js";
-import { MiroirConfigClient, MiroirConfigServer } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { MiroirContextInterface } from "../0_interfaces/3_controllers/MiroirContextInterface";
+import { ErrorLogServiceInterface } from "../0_interfaces/3_controllers/ErrorLogServiceInterface";
+import { ErrorLogService } from "./ErrorHandling/ErrorLogService";
+import { MiroirConfigClient, MiroirConfigServer } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 
 export class MiroirContext implements MiroirContextInterface {

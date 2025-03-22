@@ -5,9 +5,9 @@ import {
   LoggerInterface,
   LoggerOptions,
   SpecificLoggerOptionsMap
-} from "../0_interfaces/4-services/LoggerInterface.js";
-import { defaultLoggerContextElement, LoggerGlobalContext } from "./LoggerContext.js";
-import { LoggerFilter } from "./LoggerFilter.js";
+} from "../0_interfaces/4-services/LoggerInterface";
+import { defaultLoggerContextElement, LoggerGlobalContext } from "./LoggerContext";
+import { LoggerFilter } from "./LoggerFilter";
 
 const testSeparator = "-";
 // ################################################################################################

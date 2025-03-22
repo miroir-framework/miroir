@@ -1,4 +1,4 @@
-import { Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
+import { Uuid } from "../0_interfaces/1_core/EntityDefinition";
 import {
   ApplicationSection,
   Entity,
@@ -17,9 +17,9 @@ import {
   RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
   SelfApplication,
   StoreSectionConfiguration
-} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { DataStoreApplicationType } from "../0_interfaces/3_controllers/ApplicationControllerInterface.js";
-import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
+} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { DataStoreApplicationType } from "../0_interfaces/3_controllers/ApplicationControllerInterface";
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import {
   PersistenceStoreAdminSectionInterface,
   PersistenceStoreControllerAction,
@@ -27,14 +27,14 @@ import {
   PersistenceStoreDataSectionInterface,
   PersistenceStoreModelSectionInterface,
   StoreSectionFactoryRegister,
-} from "../0_interfaces/4-services/PersistenceStoreControllerInterface.js";
-// import { applyModelEntityUpdate } from "../3_controllers/ActionRunner.js";
-import { modelInitialize } from "../3_controllers/ModelInitializer.js";
-import { packageName } from "../constants.js";
-import { MiroirLoggerFactory } from "./LoggerFactory.js";
-import { cleanLevel } from "./constants.js";
+} from "../0_interfaces/4-services/PersistenceStoreControllerInterface";
+// import { applyModelEntityUpdate } from "../3_controllers/ActionRunner";
+import { modelInitialize } from "../3_controllers/ModelInitializer";
+import { packageName } from "../constants";
+import { MiroirLoggerFactory } from "./LoggerFactory";
+import { cleanLevel } from "./constants";
 
-import { EntityInstanceWithName } from "../0_interfaces/1_core/Instance.js";
+import { EntityInstanceWithName } from "../0_interfaces/1_core/Instance";
 import {
   Action2EntityInstanceCollectionOrFailure,
   Action2EntityInstanceReturnType,
@@ -42,8 +42,8 @@ import {
   Action2ReturnType,
   Action2VoidReturnType,
   Domain2ElementFailed
-} from "../0_interfaces/2_domain/DomainElement.js";
-import { ACTION_OK } from "../1_core/constants.js";
+} from "../0_interfaces/2_domain/DomainElement";
+import { ACTION_OK } from "../1_core/constants";
 const entityEntity = require("../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json");
 const entityEntityDefinition = require("../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json");
 

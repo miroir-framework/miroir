@@ -4,7 +4,7 @@
 //                          Gabor Szmetanko <https://github.com/szmeti>
 //                          Christian Rackerseder <https://github.com/screendriver>
 
-import { LoggerContextElement, LoggerGlobalContext } from "../../4_services/LoggerContext.js";
+import { LoggerContextElement, LoggerGlobalContext } from "../../4_services/LoggerContext";
 
 // From LoglevelNext
 // export type FactoryLevels = Record<Uppercase<string>, number> & {

@@ -120,7 +120,8 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
         const fileContents = fs.readFileSync(entityInstancePath, { encoding: "utf-8"}).toString();
         return Promise.resolve({
           status: "ok",
-          returnedDomainElement: { elementType: "instance", elementValue: JSON.parse(fileContents) },
+          // returnedDomainElement: { elementType: "instance", elementValue: JSON.parse(fileContents) },
+          returnedDomainElement: JSON.parse(fileContents),
         });
       } catch (error) {
         return Promise.resolve(new Action2Error(

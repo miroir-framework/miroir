@@ -48,14 +48,14 @@ const miroirJzodSchemaBootstrap = require('../assets/miroir_data/5e81e1b9-38be-4
 const menuDefaultMiroir = require('../assets/miroir_data/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/eaac459c-6c2b-475c-8ae4-c6c3032dae00.json');
 const menuDefaultLibrary = require("../assets/library_model/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/dd168e5a-2a21-4d2d-a443-032c6d15eb22.json");
 
-import { MetaEntity } from "../0_interfaces/1_core/EntityDefinition.js";
+import { MetaEntity } from "../0_interfaces/1_core/EntityDefinition";
 import {
   EntityDefinition,
   EntityInstance,
   MetaModel,
   SelfApplication,
   SelfApplicationDeploymentConfiguration,
-} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { DataStoreApplicationType } from '../0_interfaces/3_controllers/ApplicationControllerInterface.js';
 import { LoggerInterface } from '../0_interfaces/4-services/LoggerInterface.js';
 import { PersistenceStoreControllerInterface } from '../0_interfaces/4-services/PersistenceStoreControllerInterface.js';

@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { TestAssertionResult } from '../../0_interfaces/4-services/TestInterface.js';
-import { LoggerGlobalContext } from '../../4_services/LoggerContext.js';
-import { TestSuiteContext } from '../../4_services/TestSuiteContext.js';
+// import { describe, it, expect, beforeEach } from 'vitest';
+import { TestAssertionResult } from '../../src/0_interfaces/4-services/TestInterface';
+import { LoggerGlobalContext } from '../../src/4_services/LoggerContext';
+import { TestSuiteContext } from '../../src/4_services/TestSuiteContext';
 
 describe('TestSuiteContext', () => {
   // beforeEach(() => {

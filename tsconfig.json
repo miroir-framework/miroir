@@ -1,22 +1,18 @@
 {
   "compilerOptions": {
     "types": ["node", "jest"],
+    "lib": ["es2022", "dom"],
     "removeComments": true,
     "jsx": "react-jsx",
     "esModuleInterop": true,
     "allowJs": true,
     "allowSyntheticDefaultImports":true,
-    "lib": ["es2022", "dom"],
     "strict": true,
     "noImplicitAny": true,
     "noImplicitThis": true,
     "strictNullChecks": true,
     "outDir": "./dist",
     "plugins": [
-    ],
-    "paths": {
-      "@miroir-framework/jzod-ts": ["../jzod-ts/src"],
-      "@miroir-framework/jzod": ["../jzod/src"]
-    }
+    ]
   }
 }

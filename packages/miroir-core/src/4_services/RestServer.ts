@@ -1,4 +1,4 @@
-import { HttpMethod } from "../0_interfaces/1_core/Http.js";
+import { HttpMethod } from "../0_interfaces/1_core/Http";
 import {
   ApplicationSection,
   DomainElementSuccess,
@@ -8,33 +8,33 @@ import {
   RunBoxedExtractorOrQueryAction,
   RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
   StoreOrBundleAction
-} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
+} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import {
   HttpRequestBodyFormat,
   HttpResponseBodyFormat,
   RestServiceHandler,
-} from "../0_interfaces/4-services/PersistenceInterface.js";
+} from "../0_interfaces/4-services/PersistenceInterface";
 import {
   storeActionOrBundleActionStoreRunner
-} from "../3_controllers/ActionRunner.js";
+} from "../3_controllers/ActionRunner";
 
-import { PersistenceStoreControllerManagerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerManagerInterface.js";
-import { packageName } from "../constants.js";
+import { PersistenceStoreControllerManagerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerManagerInterface";
+import { packageName } from "../constants";
 
-import { MiroirLoggerFactory } from "./LoggerFactory.js";
-import { generateRestServiceResponse } from "./RestTools.js";
-import { cleanLevel } from "./constants.js";
+import { MiroirLoggerFactory } from "./LoggerFactory";
+import { generateRestServiceResponse } from "./RestTools";
+import { cleanLevel } from "./constants";
 
-import { DomainControllerInterface, DomainState } from "../0_interfaces/2_domain/DomainControllerInterface.js";
-import { Action2Error, Action2ReturnType, Domain2ElementFailed, Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement.js";
-import { defaultMiroirMetaModel } from "../1_core/Model.js";
+import { DomainControllerInterface, DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
+import { Action2Error, Action2ReturnType, Domain2ElementFailed, Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement";
+import { defaultMiroirMetaModel } from "../1_core/Model";
 import {
   getExtractorTemplateRunnerParamsForDomainState,
   getQueryTemplateRunnerParamsForDomainState,
   getSelectorMapForTemplate
-} from "../2_domain/DomainStateQueryTemplateSelector.js";
-import { extractWithBoxedExtractorTemplate, runQueryTemplateWithExtractorCombinerTransformer } from "../2_domain/QueryTemplateSelectors.js";
+} from "../2_domain/DomainStateQueryTemplateSelector";
+import { extractWithBoxedExtractorTemplate, runQueryTemplateWithExtractorCombinerTransformer } from "../2_domain/QueryTemplateSelectors";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

@@ -53,7 +53,8 @@ import { miroirAppStartup } from "../../src/startup.js";
 import { LocalCache } from "miroir-localcache-redux";
 
 import { ConfigurationService, defaultMiroirMetaModel, Entity, entityEntity, JzodElement } from "miroir-core";
-import { packageName } from "miroir-core/src/constants.js";
+// import { packageName } from "miroir-core/src/constants.js";
+import { packageName } from "../../src/constants.js";
 import {
   ApplicationEntitiesAndInstances,
   testOnLibrary_deleteLibraryDeployment,

@@ -1,0 +1,58 @@
+{
+  "client": {
+    "emulateServer": false,
+    "serverConfig":{
+      "rootApiUrl":"http://localhost:3080",
+      "dataflowConfiguration": {
+        "type":"singleNode",
+        "metaModel": {
+          "location": {
+            "side":"server",
+            "type": "filesystem",
+            "location":"C:/Users/nono/Documents/devhome/miroir-app-dev/packages/miroir-core/src/assets"
+          }
+        }
+      },
+      "storeSectionConfiguration": {
+        "10ff36f2-50a3-48d8-b80f-e48e5d13af8e":{
+          "admin": {
+            "emulatedServerType": "sql",
+            "connectionString":"postgres://postgres:postgres@host.docker.internal:5432/postgres",
+            "schema": "miroirAdmin"
+          },
+          "model": {
+            "emulatedServerType": "sql",
+            "connectionString":"postgres://postgres:postgres@host.docker.internal:5432/postgres",
+            "schema": "miroir"
+          },
+          "data": {
+            "emulatedServerType": "sql",
+            "connectionString":"postgres://postgres:postgres@host.docker.internal:5432/postgres",
+            "schema": "miroir"
+          }
+        },
+        "f714bb2f-a12d-4e71-a03b-74dcedea6eb4": {
+          "admin": {
+            "emulatedServerType": "sql",
+            "connectionString":"postgres://postgres:postgres@host.docker.internal:5432/postgres",
+            "schema": "miroirAdmin"
+          },
+          "model": {
+            "emulatedServerType": "sql",
+            "connectionString":"postgres://postgres:postgres@host.docker.internal:5432/postgres",
+            "schema": "library"
+          },
+          "data": {
+            "emulatedServerType": "sql",
+            "connectionString":"postgres://postgres:postgres@host.docker.internal:5432/postgres",
+            "schema": "library"
+          }
+        }
+      }
+    },
+    "deploymentMode":"monoUser",
+    "monoUserAutentification": false,
+    "monoUserVersionControl": false,
+    "versionControlForDataConceptLevel": false
+  }
+}

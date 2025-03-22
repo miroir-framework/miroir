@@ -451,35 +451,8 @@
           }
         }
       },
-      "transformerForBuild_count_root": {
-        "type": "object",
-        "definition": {
-          "transformerType": {
-            "type": "literal",
-            "definition": "count"
-          },
-          "attribute": {
-            "type": "string",
-            "optional": true
-          },
-          "groupBy": {
-            "type": "string",
-            "optional": true
-          }
-        }
-      },
       "transformerForBuild_count": {
         "type": "object",
-        "extend": [
-          {
-            "type": "schemaReference",
-            "definition": {
-              "eager": true,
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForBuild_count_root"
-            }
-          }
-        ],
         "definition": {
           "applyTo": {
             "type": "union",
@@ -532,6 +505,18 @@
                 }
               }
             ]
+          },
+          "transformerType": {
+            "type": "literal",
+            "definition": "count"
+          },
+          "attribute": {
+            "type": "string",
+            "optional": true
+          },
+          "groupBy": {
+            "type": "string",
+            "optional": true
           }
         }
       },
@@ -2154,13 +2139,6 @@
               "eager": true,
               "relativePath": "transformerForRuntime_Abstract"
             }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "eager": true,
-              "relativePath": "transformerForBuild_count_root"
-            }
           }
         ],
         "definition": {
@@ -2215,6 +2193,18 @@
                 }
               }
             ]
+          },
+          "transformerType": {
+            "type": "literal",
+            "definition": "count"
+          },
+          "attribute": {
+            "type": "string",
+            "optional": true
+          },
+          "groupBy": {
+            "type": "string",
+            "optional": true
           }
         }
       },

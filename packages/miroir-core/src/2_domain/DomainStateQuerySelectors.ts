@@ -1,6 +1,6 @@
-import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface.js";
+import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
 
-import { Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
+import { Uuid } from "../0_interfaces/1_core/EntityDefinition";
 import {
   ApplicationSection,
   BoxedExtractorOrCombinerReturningObject,
@@ -15,12 +15,12 @@ import {
   JzodObject,
   QueryByEntityUuidGetEntityDefinition,
   QueryByTemplateGetParamJzodSchema
-} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
   Domain2Element,
   Domain2ElementFailed,
   Domain2QueryReturnType,
-} from "../0_interfaces/2_domain/DomainElement.js";
+} from "../0_interfaces/2_domain/DomainElement";
 import {
   ExtractorRunnerParamsForJzodSchema,
   QueryRunnerMapForJzodSchema,
@@ -29,13 +29,13 @@ import {
   SyncBoxedExtractorRunnerParams,
   SyncQueryRunner,
   SyncQueryRunnerParams
-} from "../0_interfaces/2_domain/ExtractorRunnerInterface.js";
-import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
-import { MiroirLoggerFactory } from "../4_services/LoggerFactory.js";
+} from "../0_interfaces/2_domain/ExtractorRunnerInterface";
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
+import { MiroirLoggerFactory } from "../4_services/LoggerFactory";
 const entityEntityDefinition = require("../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json") //assert { type: "json" };
-import { packageName } from "../constants.js";
-import { cleanLevel } from "./constants.js";
-import { runQueryTemplateFromDomainState } from "./DomainStateQueryTemplateSelector.js";
+import { packageName } from "../constants";
+import { cleanLevel } from "./constants";
+import { runQueryTemplateFromDomainState } from "./DomainStateQueryTemplateSelector";
 import {
   extractEntityInstanceListWithObjectListExtractorInMemory,
   extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
@@ -45,8 +45,8 @@ import {
   extractzodSchemaForSingleSelectQuery,
   innerSelectDomainElementFromExtractorOrCombiner,
   runQuery,
-} from "./QuerySelectors.js";
-import { transformer_InnerReference_resolve } from "./Transformers.js";
+} from "./QuerySelectors";
+import { transformer_InnerReference_resolve } from "./Transformers";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

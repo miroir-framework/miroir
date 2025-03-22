@@ -1,8 +1,8 @@
 import {
   StoreSectionConfiguration,
-} from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { Action2VoidReturnType } from "../../0_interfaces/2_domain/DomainElement.js";
-import { PersistenceStoreAdminSectionInterface } from "../../0_interfaces/4-services/PersistenceStoreControllerInterface.js";
+} from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { Action2VoidReturnType } from "../../0_interfaces/2_domain/DomainElement";
+import { PersistenceStoreAdminSectionInterface } from "../../0_interfaces/4-services/PersistenceStoreControllerInterface";
 
 export class ErrorAdminStore implements PersistenceStoreAdminSectionInterface {
   constructor() {}

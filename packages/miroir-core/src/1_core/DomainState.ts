@@ -1,7 +1,7 @@
 import {
   EntityInstance,
   EntityInstancesUuidIndex,
-} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 export function DomainInstanceUuidIndexToArray(instances: EntityInstancesUuidIndex): EntityInstance[] {
   return !!instances ? Object.values(instances) : [];

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { entityInstance } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
+import { entityInstance } from "../1_core/preprocessor-generated/miroirFundamentalType";
 
 export const ZEntityIdSchema = z.union([z.number(), z.string()]);
 export const ZDictionarySchema = z.record(z.string().uuid(), entityInstance);

@@ -6,7 +6,7 @@ import {
   EntityInstance,
   EntityInstanceCollection,
   QueryFailed,
-} from "../1_core/preprocessor-generated/miroirFundamentalType.js";
+} from "../1_core/preprocessor-generated/miroirFundamentalType";
 
 export type QueryFailureType =
   | "FailedTransformer_mustache"

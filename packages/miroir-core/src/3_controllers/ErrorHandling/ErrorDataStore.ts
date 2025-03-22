@@ -1,4 +1,4 @@
-import { MetaEntity } from "../../0_interfaces/1_core/EntityDefinition.js";
+import { MetaEntity } from "../../0_interfaces/1_core/EntityDefinition";
 import {
   EntityDefinition,
   EntityInstance,
@@ -8,14 +8,14 @@ import {
   RunBoxedQueryAction,
   RunBoxedQueryTemplateAction,
   RunBoxedQueryTemplateOrBoxedExtractorTemplateAction
-} from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+} from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
   Action2EntityInstanceCollection,
   Action2EntityInstanceSuccess,
   Action2ReturnType,
   Action2VoidReturnType,
-} from "../../0_interfaces/2_domain/DomainElement.js";
-import { PersistenceStoreDataSectionInterface } from "../../0_interfaces/4-services/PersistenceStoreControllerInterface.js";
+} from "../../0_interfaces/2_domain/DomainElement";
+import { PersistenceStoreDataSectionInterface } from "../../0_interfaces/4-services/PersistenceStoreControllerInterface";
 
 export class ErrorDataStore implements PersistenceStoreDataSectionInterface {
   constructor() {}

@@ -1,8 +1,8 @@
-import { Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
-import { GetBasicApplicationConfigurationParameters, StoreUnitConfiguration } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { AdminApplicationDeploymentConfiguration } from "../0_interfaces/1_core/StorageConfiguration.js";
-import { InitApplicationParameters } from "../0_interfaces/4-services/PersistenceStoreControllerInterface.js";
-import { defaultMiroirMetaModel } from "../1_core/Model.js";
+import { Uuid } from "../0_interfaces/1_core/EntityDefinition";
+import { GetBasicApplicationConfigurationParameters, StoreUnitConfiguration } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { AdminApplicationDeploymentConfiguration } from "../0_interfaces/1_core/StorageConfiguration";
+import { InitApplicationParameters } from "../0_interfaces/4-services/PersistenceStoreControllerInterface";
+import { defaultMiroirMetaModel } from "../1_core/Model";
 const menuDefaultAdmin = require("../assets/admin_model/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/dd168e5a-2a21-4d2d-a443-032c6d15eb22.json");
 const adminConfigurationDeploymentAdmin = require("../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/18db21bf-f8d3-4f6a-8296-84b69f6dc48b.json");
 const adminConfigurationDeploymentMiroir = require("../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json");

@@ -43,16 +43,16 @@ import {
   TransformerForRuntime_objectEntries,
   TransformerForRuntime_objectValues,
   TransformerForRuntime_unique
-} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { Action2Error, Domain2ElementFailed, Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement.js";
-import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
-import { transformer_menu_AddItem } from "../1_core/Menu.js";
-import { MiroirLoggerFactory } from "../4_services/LoggerFactory.js";
-import { packageName } from "../constants.js";
-import { resolvePathOnObject } from "../tools.js";
-import { cleanLevel } from "./constants.js";
+} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { Action2Error, Domain2ElementFailed, Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement";
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
+import { transformer_menu_AddItem } from "../1_core/Menu";
+import { MiroirLoggerFactory } from "../4_services/LoggerFactory";
+import { packageName } from "../constants";
+import { resolvePathOnObject } from "../tools";
+import { cleanLevel } from "./constants";
 import { transformer } from "zod";
-import { transformer_spreadSheetToJzodSchema } from "./Spreadsheet.js";
+import { transformer_spreadSheetToJzodSchema } from "./Spreadsheet";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

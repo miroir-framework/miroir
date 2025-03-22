@@ -47,7 +47,7 @@ const selfApplicationVersionInitialMiroirVersion = require('../assets/miroir_dat
 const instanceConfigurationReference = require('../assets/miroir_data/7990c0c9-86c3-40a1-a121-036c91b55ed7/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json');
 const adminConfigurationDeploymentMiroir = require('../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json');
 
-import { MetaEntity, Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
+import { MetaEntity, Uuid } from "../0_interfaces/1_core/EntityDefinition";
 
 import {
   Entity,
@@ -56,7 +56,7 @@ import {
   Menu,
   MetaModel,
   Report,
-} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 // TODO: REMOVE THIS!!!
 // FIRST: CENTRALIZE LOGIC TO DETERMINE MODEL ENTITIES

@@ -1,5 +1,5 @@
-import { Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
-import { ApplicationSection } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { Uuid } from "../0_interfaces/1_core/EntityDefinition";
+import { ApplicationSection } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 //#########################################################################################
 export function getDeploymentEntityStateIndex(

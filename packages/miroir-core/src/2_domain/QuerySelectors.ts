@@ -1,6 +1,6 @@
 // ################################################################################################
 
-import { Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
+import { Uuid } from "../0_interfaces/1_core/EntityDefinition";
 import {
   ApplicationSection,
   BoxedExtractorOrCombinerReturningObjectList,
@@ -26,13 +26,13 @@ import {
   QueryJzodSchemaParams,
   RunBoxedExtractorAction,
   RunBoxedQueryAction
-} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
   Action2Error,
   Action2ReturnType,
   Domain2ElementFailed,
   Domain2QueryReturnType,
-} from "../0_interfaces/2_domain/DomainElement.js";
+} from "../0_interfaces/2_domain/DomainElement";
 import {
   AsyncBoxedExtractorOrQueryRunnerMap,
   ExtractorRunnerParamsForJzodSchema,
@@ -42,13 +42,13 @@ import {
   SyncBoxedExtractorRunner,
   SyncBoxedExtractorRunnerParams,
   SyncQueryRunnerParams
-} from "../0_interfaces/2_domain/ExtractorRunnerInterface.js";
-import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
-import { MiroirLoggerFactory } from "../4_services/LoggerFactory.js";
-import { packageName } from "../constants.js";
-import { cleanLevel } from "./constants.js";
-import { resolveExtractorTemplate } from "./Templates.js";
-import { applyTransformer, transformer_extended_apply_wrapper } from "./Transformers.js";
+} from "../0_interfaces/2_domain/ExtractorRunnerInterface";
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
+import { MiroirLoggerFactory } from "../4_services/LoggerFactory";
+import { packageName } from "../constants";
+import { cleanLevel } from "./constants";
+import { resolveExtractorTemplate } from "./Templates";
+import { applyTransformer, transformer_extended_apply_wrapper } from "./Transformers";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

@@ -1,14 +1,14 @@
 // A tiny wrapper around fetch(), borrowed from
 // https://kentcdodds.com/blog/replace-axios-with-a-simple-custom-fetch-wrapper
 
-import { DomainControllerInterface } from "../0_interfaces/2_domain/DomainControllerInterface.js";
-import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
-import { RestClientCallReturnType, RestClientInterface } from "../0_interfaces/4-services/PersistenceInterface.js";
-import { PersistenceStoreControllerManagerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerManagerInterface.js";
-import { packageName } from "../constants.js";
-import { MiroirLoggerFactory } from "./LoggerFactory.js";
-import { restServerDefaultHandlers } from "./RestServer.js";
-import { cleanLevel } from "./constants.js";
+import { DomainControllerInterface } from "../0_interfaces/2_domain/DomainControllerInterface";
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
+import { RestClientCallReturnType, RestClientInterface } from "../0_interfaces/4-services/PersistenceInterface";
+import { PersistenceStoreControllerManagerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerManagerInterface";
+import { packageName } from "../constants";
+import { MiroirLoggerFactory } from "./LoggerFactory";
+import { restServerDefaultHandlers } from "./RestServer";
+import { cleanLevel } from "./constants";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

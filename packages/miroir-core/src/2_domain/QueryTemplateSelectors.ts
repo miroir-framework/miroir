@@ -17,8 +17,8 @@ import {
   RunBoxedExtractorTemplateAction,
   RunBoxedQueryTemplateAction,
   RunBoxedQueryTemplateOrBoxedExtractorTemplateAction
-} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { Action2ReturnType, Domain2ElementFailed, Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement.js";
+} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { Action2ReturnType, Domain2ElementFailed, Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement";
 import {
   AsyncBoxedExtractorOrQueryRunnerMap,
   ExtractorTemplateRunnerParamsForJzodSchema,
@@ -26,22 +26,22 @@ import {
   RecordOfJzodObject,
   SyncBoxedExtractorTemplateRunnerParams,
   SyncQueryTemplateRunnerParams
-} from "../0_interfaces/2_domain/ExtractorRunnerInterface.js";
-import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
-import { MiroirLoggerFactory } from "../4_services/LoggerFactory.js";
-import { packageName } from "../constants.js";
-import { cleanLevel } from "./constants.js";
+} from "../0_interfaces/2_domain/ExtractorRunnerInterface";
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
+import { MiroirLoggerFactory } from "../4_services/LoggerFactory";
+import { packageName } from "../constants";
+import { cleanLevel } from "./constants";
 import {
   extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList,
   handleBoxedExtractorAction,
   handleBoxedQueryAction,
   runQuery,
-} from "./QuerySelectors.js";
+} from "./QuerySelectors";
 import {
   resolveBoxedExtractorOrCombinerTemplateReturningObjectOrObjectList,
   resolveQueryTemplateWithExtractorCombinerTransformer
-} from "./Templates.js";
-import { transformer_InnerReference_resolve } from "./Transformers.js";
+} from "./Templates";
+import { transformer_InnerReference_resolve } from "./Transformers";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

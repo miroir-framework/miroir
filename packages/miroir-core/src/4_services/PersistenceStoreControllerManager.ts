@@ -1,4 +1,4 @@
-import { Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
+import { Uuid } from "../0_interfaces/1_core/EntityDefinition";
 import {
   AdminStoreFactoryRegister,
   InitApplicationParameters,
@@ -6,23 +6,23 @@ import {
   PersistenceStoreDataSectionInterface,
   PersistenceStoreModelSectionInterface,
   StoreSectionFactoryRegister,
-} from "../0_interfaces/4-services/PersistenceStoreControllerInterface.js";
-import { PersistenceStoreControllerManagerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerManagerInterface.js";
-import { PersistenceStoreController, storeSectionFactory } from "./PersistenceStoreController.js";
+} from "../0_interfaces/4-services/PersistenceStoreControllerInterface";
+import { PersistenceStoreControllerManagerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerManagerInterface";
+import { PersistenceStoreController, storeSectionFactory } from "./PersistenceStoreController";
 
 import {
   StoreUnitConfiguration
-} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { DomainControllerInterface } from "../0_interfaces/2_domain/DomainControllerInterface.js";
-import { LocalCacheInterface } from "../0_interfaces/4-services/LocalCacheInterface.js";
-import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
-import { PersistenceStoreLocalOrRemoteInterface } from "../0_interfaces/4-services/PersistenceInterface.js";
-import { ACTION_OK } from "../1_core/constants.js";
-import { DomainController } from "../3_controllers/DomainController.js";
-import { packageName } from "../constants.js";
-import { MiroirLoggerFactory } from "./LoggerFactory.js";
-import { cleanLevel } from "./constants.js";
-import { Action2Error, Action2VoidReturnType } from "../0_interfaces/2_domain/DomainElement.js";
+} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { DomainControllerInterface } from "../0_interfaces/2_domain/DomainControllerInterface";
+import { LocalCacheInterface } from "../0_interfaces/4-services/LocalCacheInterface";
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
+import { PersistenceStoreLocalOrRemoteInterface } from "../0_interfaces/4-services/PersistenceInterface";
+import { ACTION_OK } from "../1_core/constants";
+import { DomainController } from "../3_controllers/DomainController";
+import { packageName } from "../constants";
+import { MiroirLoggerFactory } from "./LoggerFactory";
+import { cleanLevel } from "./constants";
+import { Action2Error, Action2VoidReturnType } from "../0_interfaces/2_domain/DomainElement";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

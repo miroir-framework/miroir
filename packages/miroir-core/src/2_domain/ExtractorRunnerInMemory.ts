@@ -7,8 +7,8 @@ import {
   ExtractorOrCombinerReturningObject,
   RunBoxedExtractorAction,
   RunBoxedQueryAction
-} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface.js";
+} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
 import {
   Action2EntityInstanceCollection,
   Action2EntityInstanceCollectionOrFailure,
@@ -16,34 +16,34 @@ import {
   Action2ReturnType,
   Domain2ElementFailed,
   Domain2QueryReturnType,
-} from "../0_interfaces/2_domain/DomainElement.js";
+} from "../0_interfaces/2_domain/DomainElement";
 import {
   AsyncBoxedExtractorOrQueryRunnerMap,
   AsyncBoxedExtractorRunner,
   AsyncBoxedExtractorRunnerParams,
   ExtractorOrQueryPersistenceStoreRunner,
   QueryRunnerMapForJzodSchema
-} from "../0_interfaces/2_domain/ExtractorRunnerInterface.js";
-import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
-import { PersistenceStoreInstanceSectionAbstractInterface } from "../0_interfaces/4-services/PersistenceStoreControllerInterface.js";
-import { MiroirLoggerFactory } from "../4_services/LoggerFactory.js";
-import { packageName } from "../constants.js";
+} from "../0_interfaces/2_domain/ExtractorRunnerInterface";
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
+import { PersistenceStoreInstanceSectionAbstractInterface } from "../0_interfaces/4-services/PersistenceStoreControllerInterface";
+import { MiroirLoggerFactory } from "../4_services/LoggerFactory";
+import { packageName } from "../constants";
 import {
   asyncApplyExtractorTransformerInMemory,
   asyncExtractEntityInstanceListWithObjectListExtractor,
   asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
   asyncExtractWithExtractor,
   asyncRunQuery,
-} from "./AsyncQuerySelectors.js";
-import { cleanLevel } from "./constants.js";
+} from "./AsyncQuerySelectors";
+import { cleanLevel } from "./constants";
 import {
   selectEntityJzodSchemaFromDomainStateNew,
   selectFetchQueryJzodSchemaFromDomainStateNew,
   selectJzodSchemaByDomainModelQueryFromDomainStateNew,
   selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
-} from "./DomainStateQuerySelectors.js";
-import { handleBoxedExtractorAction, handleBoxedQueryAction } from "./QuerySelectors.js";
-import { transformer_InnerReference_resolve } from "./Transformers.js";
+} from "./DomainStateQuerySelectors";
+import { handleBoxedExtractorAction, handleBoxedQueryAction } from "./QuerySelectors";
+import { transformer_InnerReference_resolve } from "./Transformers";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

@@ -4,8 +4,8 @@ import {
   TestResult,
   TestsResults,
   TestSuiteResult
-} from "../0_interfaces/4-services/TestInterface.js";
-import { LoggerGlobalContext } from "./LoggerContext.js";
+} from "../0_interfaces/4-services/TestInterface";
+import { LoggerGlobalContext } from "./LoggerContext";
 
 export class TestSuiteContext {
   public static testAssertionsResults: { [testSuite: string]: { [test: string]: TestAssertionsResults } } = {};
