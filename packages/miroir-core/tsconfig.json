@@ -1,14 +1,7 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-		"target": "esnext",
-		"module": "esnext",
-		"moduleResolution": "node",
-    "resolveJsonModule": true,
-		"esModuleInterop": true,
 		"skipLibCheck": true,
-		"allowSyntheticDefaultImports": true,
-		"forceConsistentCasingInFileNames": true,
     "strict": true,
 		"noEmit": true,
     "outDir": "dist/out-tsc",

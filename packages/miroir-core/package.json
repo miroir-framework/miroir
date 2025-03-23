@@ -24,6 +24,7 @@
     "dist/src/worker.js"
   ],
   "scripts": {
+    "copy-files": "copyfiles -u 1 src/**/*.json src/**/*.css dist/src",
     "build": "npm run copy-files && tsup",
     "build1": "npm run devBuild",
     "build2": "npm run devBuild",
@@ -31,24 +32,9 @@
     "build4": "npm run devBuild",
     "build5": "npm run devBuild",
     "devBuild": "npm run generate-ts-types && echo DONE PRE-BUILD && npm run build",
-    "copy-files": "copyfiles -u 1 src/**/*.json src/**/*.css dist/src",
-    "fixTmpImports": "ts-add-js-extension --dir=./tmp",
     "generate-ts-types": "tsx  ./scripts/generate-ts-types.ts",
-    "generate-ts-types2": "ts-node --esm ./scripts/generate-ts-types.ts",
-    "generate-ts-types3": "node ./tmp/scripts/generate-ts-types.js",
-    "generate-ts-types4": "node --allow-fs-read=* --allow-fs-write=* --experimental-specifier-resolution=node ./tmp/scripts/buildTools/generate-ts-types.js",
-    "preBuild": "copyfiles -u 1 src/**/*.json tmp/ && tsc ./scripts/generate-ts-types.ts --rootDir . --baseUrl . --target ESNext --module esnext --moduleResolution node --strict --downlevelIteration --allowSyntheticDefaultImports --resolveJsonModule --outdir ./tmp/",
-    "preBuild2": "tsc ./src/buildTools/generate-ts-types.ts --rootDir . --baseUrl . --target ESNext --module nodenext --moduleResolution nodenext --esModuleInterop --allowSyntheticDefaultImports --resolveJsonModule --strict --outdir ./dist/",
-    "vitestByFile": "cross-env NODE_ENV=test NODE_OPTIONS='--max-old-space-size=4096' vitest run --poolOptions.forks.singleFork --passWithNoTests",
-    "vitestByFile2": "vitest run --poolOptions.forks.singleFork --passWithNoTests",
-    "vitest": "vitest run --poolOptions.threads.singleThread --passWithNoTests -t",
-    "jest": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js",
-    "jest2": "cross-env NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" npx jest",
-    "jest3": "jest"
-  },
-  "ts-node": {
-    "esm": true,
-    "experimentalSpecifierResolution": "node"
+    "vitestByFile": "vitest run --poolOptions.forks.singleFork --passWithNoTests",
+    "vitest": "vitest run --poolOptions.threads.singleThread --passWithNoTests -t"
   },
   "browser": {
     "os": false,

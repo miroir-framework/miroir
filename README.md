@@ -191,6 +191,17 @@ Using a real server running on nodejs, the "miroir" and "library" schemas are NO
 VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug npm run test -w miroir-standalone-app -- DomainController.integ
 ```
 
+#### automated unit / integration tests for Transformers
+
+```sh
+RUN_TEST=transformers.integ.test npm run vitestByFile -w miroir-core -- transformers.integ
+```
+or
+```sh
+RUN_TEST=transformers.unit.test npm run vitestByFile -w miroir-core -- transformers.unit
+```
+
+
 ## Organization
 
 TBW

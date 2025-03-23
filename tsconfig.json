@@ -1,16 +1,21 @@
 {
   "compilerOptions": {
-    "types": ["node", "jest"],
-    "lib": ["es2022", "dom"],
-    "removeComments": true,
-    "jsx": "react-jsx",
-    "esModuleInterop": true,
-    "allowJs": true,
-    "allowSyntheticDefaultImports":true,
+		"target": "esnext",
+		"module": "esnext",
+		"moduleResolution": "node",
     "strict": true,
     "noImplicitAny": true,
     "noImplicitThis": true,
     "strictNullChecks": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports":true,
+		"forceConsistentCasingInFileNames": true,
+    "types": ["node", "jest"],
+    "lib": ["es2022", "dom"],
+    "removeComments": true,
+    "jsx": "react-jsx",
+    "allowJs": true,
     "outDir": "./dist",
     "plugins": [
     ]
