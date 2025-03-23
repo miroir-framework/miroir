@@ -1,6 +1,6 @@
-// import * as vitest from 'vitest';
-// import { afterAll, describe, expect, it } from 'vitest';
-import * as vitest from 'jest';
+import * as vitest from 'vitest';
+import { afterAll, describe, expect, it } from 'vitest';
+// import * as vitest from 'jest';
 
 import {
   SqlDbAdminStore,
@@ -189,10 +189,21 @@ const beforeAll = async () => {
       applicationModelBranchUuid,
       selfApplicationVersionUuid
     );
+    // console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ testApplicationConfig", JSON.stringify(testApplicationConfig, null, 2));
+
+    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ createAdminStore", testStoreConfig.admin);
     await persistenceStoreController.createStore(testStoreConfig.admin);
+    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ createModelStore", testStoreConfig.model);
     await persistenceStoreController.createStore(testStoreConfig.model);
+    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ createDataStore", testStoreConfig.data);
     await persistenceStoreController.createStore(testStoreConfig.data);
+    
+    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ stores created, connecting...");
     await persistenceStoreController.open();
+    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ connected!");
+
+    // sqlDbDataStore = new SqlDbDataStoreSection("data", sqlDbStoreName, connectionString, schema);
+    // sqlDbModelStore = new SqlDbModelStoreSection("model", sqlDbStoreName, connectionString, schema, sqlDbDataStore);
 
     await persistenceStoreController.initApplication(
       defaultMiroirMetaModel,
@@ -253,6 +264,7 @@ const beforeAll = async () => {
 };
 
 afterAll(async () => {
+  console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ afterAll");
   if (RUN_TEST == testSuiteName) {
     await persistenceStoreController.deleteStore(testStoreConfig.data);
     await persistenceStoreController.deleteStore(testStoreConfig.model);
@@ -260,6 +272,7 @@ afterAll(async () => {
     await persistenceStoreController.close();
     transformerTestsDisplayResults(currentTestSuite, RUN_TEST, testSuiteName);
   }
+  console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ afterAll DONE");
 });
 
 
@@ -344,15 +357,15 @@ async function runTransformerIntegrationTest(vitest: any, testNameArray: string[
 }
 
 const testSuiteName = "transformers.integ.test";
-(async () => {
-  if (RUN_TEST == testSuiteName) {
-    await beforeAll(); // beforeAll is a function, not the call to the jest/vitest hook
-    // await runTransformerTestSuite(vitest, [], transformerTestSuite_miroirTransformers, runTransformerIntegrationTest);
-    await runTransformerTestSuite(vitest, [], currentTestSuite, runTransformerIntegrationTest);
-  } else {
-    console.log("################################ skipping test suite:", testSuiteName);
-  }
-})()
+// (async () => {
+if (RUN_TEST == testSuiteName) {
+  await beforeAll(); // beforeAll is a function, not the call to the jest/vitest hook
+  // await runTransformerTestSuite(vitest, [], transformerTestSuite_miroirTransformers, runTransformerIntegrationTest);
+  await runTransformerTestSuite(vitest, [], currentTestSuite, runTransformerIntegrationTest);
+} else {
+  console.log("################################ skipping test suite:", testSuiteName, "RUN_TEST=", RUN_TEST);
+}
+// })()
 
   // // ################################################################################################
   // it("build custom UuidIndex object from object list with runtime transformer", async () => { // TODO: test failure cases!

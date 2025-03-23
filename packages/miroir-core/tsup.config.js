@@ -3,7 +3,6 @@ import { defineConfig } from 'tsup';
 export default defineConfig({
 
   entry: ['src/index.ts'],
-  "target": "esNext",
   "strict": true,
   format: ['esm', 'cjs'],
   // sourcemap: true,
@@ -11,6 +10,7 @@ export default defineConfig({
   bundle: true,
   dts: true,
   esModuleInterop: true,
+  resolveJsModule: true,
   // splitting: true,
   // "esModuleInterop": true,
   // "allowSyntheticDefaultImports": true,

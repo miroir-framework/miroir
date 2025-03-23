@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 // import { describe, expect } from 'vitest';
-// import * as vitest from 'vitest';
-import * as vitest from 'jest';
+import * as vitest from 'vitest';
+// import * as vitest from 'jest';
 
 import {
   DomainAction,

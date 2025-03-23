@@ -35,28 +35,15 @@ export type ResolvedJzodSchemaReturnType = ResolvedJzodSchemaReturnTypeError | R
 // ################################################################################################
 export function localizeJzodSchemaReferenceContext<T extends JzodElement>(
   miroirFundamentalJzodSchema: JzodSchema,
-  // jzodReference: JzodReference,
   jzodElement: T,
   currentModel?: MetaModel,
   miroirMetaModel?: MetaModel,
   relativeReferenceJzodContext?: {[k:string]: JzodElement},
 ): T {
-// ): JzodElement {
-  const absoluteReferences = (currentModel
-    ? [miroirFundamentalJzodSchema, ...(currentModel as any).jzodSchemas, ...(miroirMetaModel as any).jzodSchemas] // very inefficient!
-    : [miroirFundamentalJzodSchema]
-  )
-  // const absoluteReferenceTargetJzodSchema: { [k: string]: JzodElement } = jzodReference?.definition.absolutePath
-  //   ? absoluteReferences.find((s: JzodSchema) => s.uuid == jzodReference?.definition.absolutePath)?.definition
-  //       .context ?? {}
-  //   : relativeReferenceJzodContext ?? jzodReference;
-
-  // const targetJzodSchema: JzodElement | undefined = jzodReference?.definition.absolutePath?
-  // jzodReference: jzodReference?.definition.relativePath
-  //   ? {
-  //     type: "schemaReference"
-  //   }jzodReference?.definition.relativePath]
-  //   : { type: "object", definition: {} }; //error case, no absolute path nor relativePath. IS IT POSSIBLE??
+  // const absoluteReferences = (currentModel
+  //   ? [miroirFundamentalJzodSchema, ...(currentModel as any).jzodSchemas, ...(miroirMetaModel as any).jzodSchemas] // very inefficient!
+  //   : [miroirFundamentalJzodSchema]
+  // )
 
   switch (jzodElement.type) {
     case "object": {

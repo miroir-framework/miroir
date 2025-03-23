@@ -3087,10 +3087,10 @@ export function getMiroirFundamentalJzodSchema(
       )
     );
 
-  console.log(
-    "getMiroirFundamentalJzodSchema localizedInnerResolutionStoreExtendedReferences",
-    JSON.stringify(Object.keys(localizedInnerResolutionStoreExtendedReferences), null, 2)
-  );
+  // console.log(
+  //   "getMiroirFundamentalJzodSchema localizedInnerResolutionStoreExtendedReferences",
+  //   JSON.stringify(Object.keys(localizedInnerResolutionStoreExtendedReferences), null, 2)
+  // );
 
   const localizedInnerResolutionStorePlainReferences = Object.fromEntries(
     Object.entries(localizedResolutionStore).flatMap((e) =>
@@ -3110,10 +3110,10 @@ export function getMiroirFundamentalJzodSchema(
   );
 
   // console.log("localizedInnerResolutionStorePlainReferences", JSON.stringify(localizedInnerResolutionStorePlainReferences, null, 2))
-  console.log(
-    "getMiroirFundamentalJzodSchema localizedInnerResolutionStorePlainReferences",
-    JSON.stringify(Object.keys(localizedInnerResolutionStorePlainReferences), null, 2)
-  );
+  // console.log(
+  //   "getMiroirFundamentalJzodSchema localizedInnerResolutionStorePlainReferences",
+  //   JSON.stringify(Object.keys(localizedInnerResolutionStorePlainReferences), null, 2)
+  // );
 
   const localizedInnerResolutionStoreReferences = Object.assign(
     {},

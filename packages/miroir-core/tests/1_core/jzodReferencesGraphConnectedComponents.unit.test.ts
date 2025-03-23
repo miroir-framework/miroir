@@ -163,50 +163,50 @@ const miroirFundamentalJzodSchema = getMiroirFundamentalJzodSchema(
 
 
 describe('jzodReferencesGraphConnectedComponents', () => {
-  // it('returns the element for a single element', () => {
-  //   const element: JzodElement = { type: 'literal', definition: 'testLiteral' };
-  //   const refs = jzodReferencesGraphConnectedComponents(
-  //     {"literal": element}
-  //   );
-  //   expect(refs).toEqual([["literal"]]);
-  // });
+  it('returns the element for a single element', () => {
+    const element: JzodElement = { type: 'literal', definition: 'testLiteral' };
+    const refs = jzodReferencesGraphConnectedComponents(
+      {"literal": element}
+    );
+    expect(refs).toEqual([["literal"]]);
+  });
 
-  // it('returns the elements for a multiple unrelated elements', () => {
-  //   const refs = jzodReferencesGraphConnectedComponents({
-  //     literal: { type: "literal", definition: "testLiteral" },
-  //     string: { type: "string" },
-  //     number: { type: "number" },
-  //   });
-  //   expect(refs).toEqual([["literal"], ["string"], ["number"]]);
-  // });
+  it('returns the elements for a multiple unrelated elements', () => {
+    const refs = jzodReferencesGraphConnectedComponents({
+      literal: { type: "literal", definition: "testLiteral" },
+      string: { type: "string" },
+      number: { type: "number" },
+    });
+    expect(refs).toEqual([["literal"], ["string"], ["number"]]);
+  });
 
-  // it('return depending (extend) objects in the same component', () => {
-  //   const refs = jzodReferencesGraphConnectedComponents({
-  //     obj1: { type: "object", definition: { a: { type: "string" } } },
-  //     obj2: { type: "object", definition: { b: { type: "number" } } },
-  //     obj3: { type: "object", extend: { type: "schemaReference", definition: { relativePath: "obj1" } }, definition: { c: { type: "bigint" } } },
-  //   });
-  //   expect(refs).toEqual([["obj1", "obj3"], ["obj2"]]);
-  // });
+  it('return depending (extend) objects in the same component', () => {
+    const refs = jzodReferencesGraphConnectedComponents({
+      obj1: { type: "object", definition: { a: { type: "string" } } },
+      obj2: { type: "object", definition: { b: { type: "number" } } },
+      obj3: { type: "object", extend: { type: "schemaReference", definition: { relativePath: "obj1" } }, definition: { c: { type: "bigint" } } },
+    });
+    expect(refs).toEqual([["obj1", "obj3"], ["obj2"]]);
+  });
 
-  // it('return cascading depending (extend) objects in the same component, in the right order', () => {
-  //   const refs = jzodReferencesGraphConnectedComponents({
-  //     obj1: { type: "object", definition: { a: { type: "string" } } },
-  //     obj2: { type: "object", definition: { b: { type: "number" } } },
-  //     obj3: { type: "object", extend: { type: "schemaReference", definition: { relativePath: "obj1" } }, definition: { c: { type: "bigint" } } },
-  //     obj4: { type: "object", extend: { type: "schemaReference", definition: { relativePath: "obj3" } }, definition: { d: { type: "boolean" } } },
-  //   });
-  //   expect(refs).toEqual([["obj1", "obj3", "obj4"], ["obj2"]]);
-  // });
+  it('return cascading depending (extend) objects in the same component, in the right order', () => {
+    const refs = jzodReferencesGraphConnectedComponents({
+      obj1: { type: "object", definition: { a: { type: "string" } } },
+      obj2: { type: "object", definition: { b: { type: "number" } } },
+      obj3: { type: "object", extend: { type: "schemaReference", definition: { relativePath: "obj1" } }, definition: { c: { type: "bigint" } } },
+      obj4: { type: "object", extend: { type: "schemaReference", definition: { relativePath: "obj3" } }, definition: { d: { type: "boolean" } } },
+    });
+    expect(refs).toEqual([["obj1", "obj3", "obj4"], ["obj2"]]);
+  });
 
-  // it('return depending (sub) objects in the same component', () => {
-  //   const refs = jzodReferencesGraphConnectedComponents({
-  //     obj1: { type: "object", definition: { a: { type: "string" } } },
-  //     obj2: { type: "object", definition: { b: { type: "number" } } },
-  //     obj3: { type: "object", definition: { c: { type: "bigint" }, d: { type: "schemaReference", definition: { relativePath: "obj1" } } } },
-  //   });
-  //   expect(refs).toEqual([["obj1", "obj3"], ["obj2"]]);
-  // });
+  it('return depending (sub) objects in the same component', () => {
+    const refs = jzodReferencesGraphConnectedComponents({
+      obj1: { type: "object", definition: { a: { type: "string" } } },
+      obj2: { type: "object", definition: { b: { type: "number" } } },
+      obj3: { type: "object", definition: { c: { type: "bigint" }, d: { type: "schemaReference", definition: { relativePath: "obj1" } } } },
+    });
+    expect(refs).toEqual([["obj1", "obj3"], ["obj2"]]);
+  });
 
   // it('connected components for jzod bootstrap', () => {
   //   const connectedComponents = jzodReferencesGraphConnectedComponents(
