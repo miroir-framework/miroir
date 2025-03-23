@@ -41,7 +41,6 @@
     "loglevelnext": "^6.0.0",
     "miroir-core": "*",
     "miroir-localcache-redux": "*",
-    "miroir-server-msw-stub": "*",
     "miroir-store-filesystem": "*",
     "miroir-store-indexedDb": "*",
     "miroir-store-postgres": "*"

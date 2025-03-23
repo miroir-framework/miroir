@@ -26,7 +26,7 @@ npm link @miroir-framework/jzod-ts @miroir-framework/jzod
 build the client and server (shell):
 
 ```sh
-npm run devBuild -w miroir-core && npm run build -w miroir-localcache-redux -w miroir-server-msw-stub -w miroir-store-filesystem -w miroir-store-indexedDb -w miroir-store-postgres
+npm run devBuild -w miroir-core && npm run build -w miroir-localcache-redux -w miroir-store-filesystem -w miroir-store-indexedDb -w miroir-store-postgres
 ```
 
 # From binary packages

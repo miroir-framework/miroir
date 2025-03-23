@@ -944,7 +944,7 @@ export function getMiroirFundamentalJzodSchema(
             },
           },
         },
-        miroirConfigForMswClient: {
+        miroirConfigForClientStub: {
           type: "object",
           definition: {
             emulateServer: {
@@ -993,7 +993,7 @@ export function getMiroirFundamentalJzodSchema(
                   type: "schemaReference",
                   definition: {
                     absolutePath: miroirFundamentalJzodSchemaUuid,
-                    relativePath: "miroirConfigForMswClient",
+                    relativePath: "miroirConfigForClientStub",
                   },
                 },
                 {

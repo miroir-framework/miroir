@@ -1,7 +1,6 @@
 import { createTheme, StyledEngineProvider, ThemeProvider } from "@mui/material";
 import { blue } from "@mui/material/colors";
 import 'material-icons/iconfont/material-icons.css';
-import { setupWorker } from 'msw/browser';
 import { StrictMode } from "react";
 import { createRoot, Root } from "react-dom/client";
 import { Provider } from "react-redux";
@@ -12,7 +11,6 @@ import {
 
 import {
   ConfigurationService,
-  defaultLevels,
   LoggerInterface,
   MiroirConfigClient,
   MiroirContext,
@@ -20,13 +18,9 @@ import {
   MiroirLoggerFactory,
   PersistenceStoreControllerManager,
   RestClient,
-  restServerDefaultHandlers,
-  SpecificLoggerOptionsMap,
-  StoreOrBundleAction,
-  StoreUnitConfiguration
+  SpecificLoggerOptionsMap
 } from "miroir-core";
 import { RestPersistenceClientAndRestClient, setupMiroirDomainController } from "miroir-localcache-redux";
-import { createMswRestServer } from "miroir-server-msw-stub";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 
 import { loglevelnext } from './loglevelnextImporter.js';

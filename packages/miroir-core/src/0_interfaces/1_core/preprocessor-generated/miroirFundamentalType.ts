@@ -2217,7 +2217,7 @@ export type ServerConfigForClientConfig = {
         [x: string]: StoreUnitConfiguration;
     };
 };;
-export type MiroirConfigForMswClient = {
+export type MiroirConfigForClientStub = {
     emulateServer: true;
     rootApiUrl: string;
     deploymentStorageConfig: DeploymentStorageConfig;
@@ -2228,7 +2228,7 @@ export type MiroirConfigForRestClient = {
 };;
 export type MiroirConfigClient = {
     miroirConfigType: "client";
-    client: MiroirConfigForMswClient | MiroirConfigForRestClient;
+    client: MiroirConfigForClientStub | MiroirConfigForRestClient;
 };;
 export type MiroirConfigServer = {
     miroirConfigType: "server";
@@ -5491,9 +5491,9 @@ export const storeSectionConfiguration: z.ZodType<StoreSectionConfiguration> = z
 export const storeUnitConfiguration: z.ZodType<StoreUnitConfiguration> = z.object({admin:z.lazy(() =>storeSectionConfiguration), model:z.lazy(() =>storeSectionConfiguration), data:z.lazy(() =>storeSectionConfiguration)}).strict();
 export const deploymentStorageConfig: z.ZodType<DeploymentStorageConfig> = z.record(z.string(),z.lazy(() =>storeUnitConfiguration));
 export const serverConfigForClientConfig: z.ZodType<ServerConfigForClientConfig> = z.object({rootApiUrl:z.string(), dataflowConfiguration:z.any(), storeSectionConfiguration:z.record(z.string(),z.lazy(() =>storeUnitConfiguration))}).strict();
-export const miroirConfigForMswClient: z.ZodType<MiroirConfigForMswClient> = z.object({emulateServer:z.literal(true), rootApiUrl:z.string(), deploymentStorageConfig:z.lazy(() =>deploymentStorageConfig)}).strict();
+export const miroirConfigForClientStub: z.ZodType<MiroirConfigForClientStub> = z.object({emulateServer:z.literal(true), rootApiUrl:z.string(), deploymentStorageConfig:z.lazy(() =>deploymentStorageConfig)}).strict();
 export const miroirConfigForRestClient: z.ZodType<MiroirConfigForRestClient> = z.object({emulateServer:z.literal(false), serverConfig:z.lazy(() =>serverConfigForClientConfig)}).strict();
-export const miroirConfigClient: z.ZodType<MiroirConfigClient> = z.object({miroirConfigType:z.literal("client"), client:z.union([z.lazy(() =>miroirConfigForMswClient), z.lazy(() =>miroirConfigForRestClient)])}).strict();
+export const miroirConfigClient: z.ZodType<MiroirConfigClient> = z.object({miroirConfigType:z.literal("client"), client:z.union([z.lazy(() =>miroirConfigForClientStub), z.lazy(() =>miroirConfigForRestClient)])}).strict();
 export const miroirConfigServer: z.ZodType<MiroirConfigServer> = z.object({miroirConfigType:z.literal("server"), server:z.object({rootApiUrl:z.string()}).strict()}).strict();
 export const miroirConfig: z.ZodType<MiroirConfig> = z.union([z.literal("miroirConfigClient"), z.literal("miroirConfigServer")]);
 export const commit: z.ZodType<Commit> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), date:z.date(), selfApplication:z.string().uuid().optional(), name:z.string(), preceding:z.string().uuid().optional(), branch:z.string().uuid().optional(), author:z.string().uuid().optional(), description:z.string().optional(), actions:z.array(z.object({endpoint:z.string().uuid(), actionArguments:z.lazy(() =>modelAction)}).strict()), patches:z.array(z.any())}).strict();
