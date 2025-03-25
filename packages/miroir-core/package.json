@@ -32,7 +32,7 @@
     "build4": "npm run devBuild",
     "build5": "npm run devBuild",
     "devBuild": "npm run generate-ts-types && echo DONE PRE-BUILD && npm run build",
-    "generate-ts-types": "tsx  ./scripts/generate-ts-types.ts",
+    "generate-ts-types": "tsx ./scripts/generate-ts-types.ts",
     "vitestByFile": "vitest run --poolOptions.forks.singleFork --passWithNoTests",
     "vitest": "vitest run --poolOptions.threads.singleThread --passWithNoTests -t"
   },
@@ -42,7 +42,7 @@
   },
   "dependencies": {
     "@dagrejs/graphlib": "^2.2.4",
-    "@miroir-framework/jzod": "*",
+    "@miroir-framework/jzod": "0.8.1",
     "mustache": "^4.2.0",
     "uuid": "^11.0.0",
     "zod": "^3.21.4"
@@ -50,7 +50,7 @@
   "devDependencies": {
     "@babel/plugin-syntax-import-attributes": "^7.23.3",
     "@babel/preset-typescript": "^7.25.7",
-    "@miroir-framework/jzod-ts": "*",
+    "@miroir-framework/jzod-ts": "0.8.0",
     "@rollup/plugin-commonjs": "^28.0.3",
     "@types/jest": "^29.5.14",
     "@types/mustache": "^4.2.5",

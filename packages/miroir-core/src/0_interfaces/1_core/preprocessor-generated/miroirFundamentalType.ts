@@ -1188,7 +1188,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_o
     interpolation: "runtime" | CarryOnObject;
     orderBy?: ((string | undefined) | CarryOnObject) | undefined;
 };
-export type MiroirFundamentalType = TransformerForRuntime_Abstract;
+export type ExtendedSchemasType = TransformerForRuntime_Abstract;
 
 export const jzodBaseObject: z.ZodType<JzodBaseObject> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), tag:z.object({value:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional(), schema:z.object({optional:z.boolean().optional(), metaSchema:z.lazy(() =>jzodElement).optional(), valueSchema:z.lazy(() =>jzodElement).optional()}).strict().optional(), optional:z.boolean().optional()}).strict().optional()}).strict();
 export const jzodArray: z.ZodType<JzodArray> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), tag:z.object({value:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional(), schema:z.object({optional:z.boolean().optional(), metaSchema:z.lazy(() =>jzodElement).optional(), valueSchema:z.lazy(() =>jzodElement).optional()}).strict().optional(), optional:z.boolean().optional()}).strict().optional(), type:z.literal("array"), definition:z.lazy(() =>jzodElement)}).strict();
@@ -1305,21 +1305,21 @@ export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_ob
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_unique_root_extend: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_unique_root_extend> = z.object({label:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), orderBy:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), transformerType:z.union([z.literal("unique"), z.lazy(() =>carryOnObject)]), attribute:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict();
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_Abstract_extend: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_Abstract_extend> = z.object({interpolation:z.union([z.literal("runtime"), z.lazy(() =>carryOnObject)])}).strict();
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_orderedTransformer_extend: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_orderedTransformer_extend> = z.object({interpolation:z.union([z.literal("runtime"), z.lazy(() =>carryOnObject)]), orderBy:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict();
+export const extendedSchemasType = z.lazy(() =>transformerForRuntime_Abstract);
 
 
-
-export type ______________________________________________transformers_____________________________________________ = never;;
+export type ______________________________________________transformers_____________________________________________ = never;
 export type RecordOfTransformers = {
     transformerType: "recordOfTransformers";
     definition: {
         [x: string]: Transformer;
     };
-};;
+};
 export type Transformer = {
     transformerType: "objectTransformer";
     attributeName: string;
-} | RecordOfTransformers;;
-export type Transformer_constants = Transformer_constant | Transformer_constantAsExtractor | Transformer_constantArray | Transformer_constantBigint | Transformer_constantBoolean | Transformer_constantUuid | Transformer_constantObject | Transformer_constantNumber | Transformer_constantString | Transformer_newUuid;;
+} | RecordOfTransformers;
+export type Transformer_constants = Transformer_constant | Transformer_constantAsExtractor | Transformer_constantArray | Transformer_constantBigint | Transformer_constantBoolean | Transformer_constantUuid | Transformer_constantObject | Transformer_constantNumber | Transformer_constantString | Transformer_newUuid;
 export type TransformerForBuild_count = {
     applyTo: {
         referenceType: "referencedExtractor";
@@ -1331,7 +1331,7 @@ export type TransformerForBuild_count = {
     transformerType: "count";
     attribute?: string | undefined;
     groupBy?: string | undefined;
-};;
+};
 export type TransformerForBuild_unique = {
     label?: string | undefined;
     orderBy?: string | undefined;
@@ -1344,7 +1344,7 @@ export type TransformerForBuild_unique = {
         referenceType: "referencedTransformer";
         reference: string | TransformerForBuild;
     };
-};;
+};
 export type TransformerForBuild_innerFullObjectTemplate = {
     label?: string | undefined;
     orderBy?: string | undefined;
@@ -1361,7 +1361,7 @@ export type TransformerForBuild_innerFullObjectTemplate = {
         attributeKey: Transformer_InnerReference;
         attributeValue: TransformerForBuild;
     }[];
-};;
+};
 export type TransformerForBuild_object_fullTemplate = {
     label?: string | undefined;
     orderBy?: string | undefined;
@@ -1378,7 +1378,7 @@ export type TransformerForBuild_object_fullTemplate = {
         attributeKey: Transformer_InnerReference;
         attributeValue: TransformerForBuild;
     }[];
-};;
+};
 export type TransformerForBuild_freeObjectTemplate = {
     transformerType: "freeObjectTemplate";
     definition: {
@@ -1386,7 +1386,7 @@ export type TransformerForBuild_freeObjectTemplate = {
             [x: string]: TransformerForBuild;
         } | string | number | boolean;
     };
-};;
+};
 export type TransformerForBuild_inner_object_alter = {
     transformerType: "objectAlter";
     applyTo: {
@@ -1398,11 +1398,11 @@ export type TransformerForBuild_inner_object_alter = {
     };
     referenceToOuterObject: string;
     definition: TransformerForBuild_freeObjectTemplate;
-};;
+};
 export type TransformerForBuild_mustacheStringTemplate = {
     transformerType: "mustacheStringTemplate";
     definition: string;
-};;
+};
 export type TransformerForBuild_list_listMapperToList = {
     label?: string | undefined;
     orderBy?: string | undefined;
@@ -1416,7 +1416,7 @@ export type TransformerForBuild_list_listMapperToList = {
     };
     referenceToOuterObject: string;
     elementTransformer: TransformerForBuild;
-};;
+};
 export type TransformerForBuild_object_listReducerToIndexObject = {
     label?: string | undefined;
     orderBy?: string | undefined;
@@ -1429,7 +1429,7 @@ export type TransformerForBuild_object_listReducerToIndexObject = {
         referenceType: "referencedTransformer";
         reference: string | TransformerForBuild;
     };
-};;
+};
 export type TransformerForBuild_object_listReducerToSpreadObject = {
     label?: string | undefined;
     transformerType: "listReducerToSpreadObject";
@@ -1440,7 +1440,7 @@ export type TransformerForBuild_object_listReducerToSpreadObject = {
         referenceType: "referencedTransformer";
         reference: string | TransformerForBuild;
     };
-};;
+};
 export type TransformerForBuild_object_listPickElement = {
     label?: string | undefined;
     orderBy?: string | undefined;
@@ -1453,7 +1453,7 @@ export type TransformerForBuild_object_listPickElement = {
         referenceType: "referencedTransformer";
         reference: string | TransformerForBuild;
     };
-};;
+};
 export type TransformerForBuild_objectEntries = {
     label?: string | undefined;
     orderBy?: string | undefined;
@@ -1465,7 +1465,7 @@ export type TransformerForBuild_objectEntries = {
         referenceType: "referencedTransformer";
         reference: string | TransformerForBuild;
     };
-};;
+};
 export type TransformerForBuild_objectValues = {
     label?: string | undefined;
     orderBy?: string | undefined;
@@ -1477,100 +1477,100 @@ export type TransformerForBuild_objectValues = {
         referenceType: "referencedTransformer";
         reference: string | TransformerForBuild;
     };
-};;
-export type TransformerForBuild_list = TransformerForBuild_objectEntries | TransformerForBuild_objectValues | TransformerForBuild_list_listMapperToList;;
-export type TransformerForBuild_string = TransformerForBuild_mustacheStringTemplate;;
-export type TransformerForBuild_object = TransformerForBuild_object_fullTemplate | TransformerForBuild_freeObjectTemplate | TransformerForBuild_inner_object_alter | TransformerForBuild_object_listPickElement | TransformerForBuild_object_listReducerToIndexObject;;
+};
+export type TransformerForBuild_list = TransformerForBuild_objectEntries | TransformerForBuild_objectValues | TransformerForBuild_list_listMapperToList;
+export type TransformerForBuild_string = TransformerForBuild_mustacheStringTemplate;
+export type TransformerForBuild_object = TransformerForBuild_object_fullTemplate | TransformerForBuild_freeObjectTemplate | TransformerForBuild_inner_object_alter | TransformerForBuild_object_listPickElement | TransformerForBuild_object_listReducerToIndexObject;
 export type TransformerForBuild_dataflowObject = {
     transformerType: "dataflowObject";
     target: string;
     definition: {
         [x: string]: TransformerForBuild;
     };
-};;
+};
 export type TransformerForBuild_dataflowSequence = {
     transformerType: "dataflowSequence";
     definition: TransformerForBuild[];
-};;
-export type TransformerForBuild = Transformer_constants | Transformer_InnerReference | TransformerForBuild_dataflowObject | TransformerForBuild_dataflowSequence | TransformerForBuild_freeObjectTemplate | TransformerForBuild_inner_object_alter | TransformerForBuild_object_fullTemplate | TransformerForBuild_object_listReducerToSpreadObject | TransformerForBuild_objectEntries | TransformerForBuild_objectValues | TransformerForBuild_object_listPickElement | TransformerForBuild_object_listReducerToIndexObject | TransformerForBuild_list_listMapperToList | TransformerForBuild_mustacheStringTemplate;;
+};
+export type TransformerForBuild = Transformer_constants | Transformer_InnerReference | TransformerForBuild_dataflowObject | TransformerForBuild_dataflowSequence | TransformerForBuild_freeObjectTemplate | TransformerForBuild_inner_object_alter | TransformerForBuild_object_fullTemplate | TransformerForBuild_object_listReducerToSpreadObject | TransformerForBuild_objectEntries | TransformerForBuild_objectValues | TransformerForBuild_object_listPickElement | TransformerForBuild_object_listReducerToIndexObject | TransformerForBuild_list_listMapperToList | TransformerForBuild_mustacheStringTemplate;
 export type TransformerForRuntime_constantAsExtractor = {
     transformerType: "constantAsExtractor";
     valueType?: ("string" | "number" | "boolean" | "bigint" | "object" | "array") | undefined;
     valueJzodSchema: JzodElement;
     value?: any;
     interpolation: "runtime";
-};;
+};
 export type TransformerForRuntime_constant = {
     transformerType: "constant";
     value?: any;
     interpolation: "runtime";
-};;
+};
 export type TransformerForRuntime_constantUuid = {
     transformerType: "constantUuid";
     value: string;
     interpolation: "runtime";
-};;
+};
 export type TransformerForRuntime_constantArray = {
     transformerType: "constantArray";
     value: any[];
     interpolation: "runtime";
-};;
+};
 export type TransformerForRuntime_constantBigint = {
     transformerType: "constantBigint";
     value: number;
     interpolation: "runtime";
-};;
+};
 export type TransformerForRuntime_constantBoolean = {
     transformerType: "constantBoolean";
     value: boolean;
     interpolation: "runtime";
-};;
+};
 export type TransformerForRuntime_constantNumber = {
     transformerType: "constantNumber";
     value: number;
     interpolation: "runtime";
-};;
+};
 export type TransformerForRuntime_constantObject = {
     transformerType: "constantObject";
     value: {
         [x: string]: any;
     };
     interpolation: "runtime";
-};;
+};
 export type TransformerForRuntime_constantString = {
     transformerType: "constantString";
     value: string;
     interpolation: "runtime";
-};;
+};
 export type TransformerForRuntime_newUuid = {
     transformerType: "newUuid";
     interpolation: "runtime";
-};;
+};
 export type TransformerForRuntime_contextReference = {
     transformerType: "contextReference";
     referenceName?: string | undefined;
     referencePath?: string[] | undefined;
     interpolation: "runtime";
-};;
+};
 export type TransformerForRuntime_parameterReference = {
     transformerType: "parameterReference";
     referenceName?: string | undefined;
     referencePath?: string[] | undefined;
     interpolation: "runtime";
-};;
-export type TransformerForRuntime_contextOrParameterReference = TransformerForRuntime_contextReference | TransformerForRuntime_parameterReference;;
+};
+export type TransformerForRuntime_contextOrParameterReference = TransformerForRuntime_contextReference | TransformerForRuntime_parameterReference;
 export type TransformerForRuntime_objectDynamicAccess = {
     interpolation: "runtime";
     transformerType: "objectDynamicAccess";
     objectAccessPath: (TransformerForRuntime_contextOrParameterReference | TransformerForRuntime_objectDynamicAccess | TransformerForRuntime_mustacheStringTemplate | string)[];
-};;
-export type TransformerForRuntime_constants = TransformerForRuntime_constant | TransformerForRuntime_constantAsExtractor | TransformerForRuntime_constantArray | TransformerForRuntime_constantBigint | TransformerForRuntime_constantBoolean | TransformerForRuntime_constantNumber | TransformerForRuntime_constantUuid | TransformerForRuntime_constantObject | TransformerForRuntime_constantString | TransformerForRuntime_newUuid;;
-export type TransformerForRuntime_InnerReference = TransformerForRuntime_mustacheStringTemplate | TransformerForRuntime_contextOrParameterReference | TransformerForRuntime_objectDynamicAccess;;
+};
+export type TransformerForRuntime_constants = TransformerForRuntime_constant | TransformerForRuntime_constantAsExtractor | TransformerForRuntime_constantArray | TransformerForRuntime_constantBigint | TransformerForRuntime_constantBoolean | TransformerForRuntime_constantNumber | TransformerForRuntime_constantUuid | TransformerForRuntime_constantObject | TransformerForRuntime_constantString | TransformerForRuntime_newUuid;
+export type TransformerForRuntime_InnerReference = TransformerForRuntime_mustacheStringTemplate | TransformerForRuntime_contextOrParameterReference | TransformerForRuntime_objectDynamicAccess;
 export type TransformerForRuntime_mustacheStringTemplate = {
     transformerType: "mustacheStringTemplate";
     definition: string;
     interpolation: "runtime";
-};;
+};
 export type TransformerForRuntime_dataflowObject = {
     interpolation: "runtime";
     transformerType: "dataflowObject";
@@ -1578,12 +1578,12 @@ export type TransformerForRuntime_dataflowObject = {
     definition: {
         [x: string]: TransformerForRuntime;
     };
-};;
+};
 export type TransformerForRuntime_dataflowSequence = {
     interpolation: "runtime";
     transformerType: "dataflowSequence";
     definition: TransformerForRuntime[];
-};;
+};
 export type TransformerForRuntime_count = {
     interpolation: "runtime";
     applyTo: {
@@ -1596,7 +1596,7 @@ export type TransformerForRuntime_count = {
     transformerType: "count";
     attribute?: string | undefined;
     groupBy?: string | undefined;
-};;
+};
 export type TransformerForRuntime_unique = {
     label?: string | undefined;
     orderBy?: string | undefined;
@@ -1610,7 +1610,7 @@ export type TransformerForRuntime_unique = {
         referenceType: "referencedTransformer";
         reference: string | TransformerForRuntime;
     };
-};;
+};
 export type TransformerForRuntime_objectEntries = {
     interpolation: "runtime";
     label?: string | undefined;
@@ -1623,7 +1623,7 @@ export type TransformerForRuntime_objectEntries = {
         referenceType: "referencedTransformer";
         reference: string | TransformerForRuntime;
     };
-};;
+};
 export type TransformerForRuntime_objectValues = {
     interpolation: "runtime";
     label?: string | undefined;
@@ -1636,7 +1636,7 @@ export type TransformerForRuntime_objectValues = {
         referenceType: "referencedTransformer";
         reference: string | TransformerForRuntime;
     };
-};;
+};
 export type TransformerForRuntime_freeObjectTemplate = {
     interpolation: "runtime";
     transformerType: "freeObjectTemplate";
@@ -1645,7 +1645,7 @@ export type TransformerForRuntime_freeObjectTemplate = {
             [x: string]: TransformerForRuntime;
         } | string | number;
     };
-};;
+};
 export type TransformerForRuntime_innerFullObjectTemplate = {
     interpolation: "runtime";
     orderBy?: string | undefined;
@@ -1661,7 +1661,7 @@ export type TransformerForRuntime_innerFullObjectTemplate = {
         attributeKey: TransformerForRuntime;
         attributeValue: TransformerForRuntime;
     }[];
-};;
+};
 export type TransformerForRuntime_object_fullTemplate = {
     interpolation: "runtime";
     transformerType: "object_fullTemplate";
@@ -1677,7 +1677,7 @@ export type TransformerForRuntime_object_fullTemplate = {
         attributeKey: TransformerForRuntime;
         attributeValue: TransformerForRuntime;
     }[];
-};;
+};
 export type TransformerForRuntime_object_alter = {
     transformerType: "objectAlter";
     applyTo: {
@@ -1689,7 +1689,7 @@ export type TransformerForRuntime_object_alter = {
     };
     referenceToOuterObject: string;
     definition: TransformerForRuntime_freeObjectTemplate;
-};;
+};
 export type TransformerForRuntime_list_listMapperToList = {
     interpolation: "runtime";
     orderBy?: string | undefined;
@@ -1703,7 +1703,7 @@ export type TransformerForRuntime_list_listMapperToList = {
     };
     referenceToOuterObject: string;
     elementTransformer: TransformerForRuntime;
-};;
+};
 export type TransformerForRuntime_object_listReducerToSpreadObject = {
     label?: string | undefined;
     transformerType: "listReducerToSpreadObject";
@@ -1714,7 +1714,7 @@ export type TransformerForRuntime_object_listReducerToSpreadObject = {
         referenceType: "referencedTransformer";
         reference: string | TransformerForRuntime;
     };
-};;
+};
 export type TransformerForRuntime_mapper_listToObject = {
     interpolation: "runtime";
     label?: string | undefined;
@@ -1728,7 +1728,7 @@ export type TransformerForRuntime_mapper_listToObject = {
         referenceType: "referencedTransformer";
         reference: string | TransformerForRuntime;
     };
-};;
+};
 export type TransformerForRuntime_list_listPickElement = {
     interpolation: "runtime";
     label?: string | undefined;
@@ -1742,9 +1742,9 @@ export type TransformerForRuntime_list_listPickElement = {
         referenceType: "referencedTransformer";
         reference: string | TransformerForRuntime;
     };
-};;
-export type TransformerForRuntime = TransformerForRuntime_constants | TransformerForRuntime_dataflowObject | TransformerForRuntime_dataflowSequence | TransformerForRuntime_InnerReference | TransformerForRuntime_object_fullTemplate | TransformerForRuntime_freeObjectTemplate | TransformerForRuntime_object_alter | TransformerForRuntime_count | TransformerForRuntime_list_listPickElement | TransformerForRuntime_list_listMapperToList | TransformerForRuntime_mapper_listToObject | TransformerForRuntime_object_listReducerToSpreadObject | TransformerForRuntime_mustacheStringTemplate | TransformerForRuntime_objectValues | TransformerForRuntime_objectEntries | TransformerForRuntime_unique;;
-export type TransformerForBuildOrRuntime = TransformerForBuild | TransformerForRuntime;;
+};
+export type TransformerForRuntime = TransformerForRuntime_constants | TransformerForRuntime_dataflowObject | TransformerForRuntime_dataflowSequence | TransformerForRuntime_InnerReference | TransformerForRuntime_object_fullTemplate | TransformerForRuntime_freeObjectTemplate | TransformerForRuntime_object_alter | TransformerForRuntime_count | TransformerForRuntime_list_listPickElement | TransformerForRuntime_list_listMapperToList | TransformerForRuntime_mapper_listToObject | TransformerForRuntime_object_listReducerToSpreadObject | TransformerForRuntime_mustacheStringTemplate | TransformerForRuntime_objectValues | TransformerForRuntime_objectEntries | TransformerForRuntime_unique;
+export type TransformerForBuildOrRuntime = TransformerForBuild | TransformerForRuntime;
 export type ActionHandler = {
     interface: {
         actionJzodObjectSchema: JzodObject;
@@ -1755,7 +1755,7 @@ export type ActionHandler = {
         } | undefined;
         compositeActionTemplate: CompositeActionTemplate;
     };
-};;
+};
 export type Transformer_menu_addItem = {
     transformerType: "transformer_menu_addItem";
     interpolation: "runtime";
@@ -1765,8 +1765,8 @@ export type Transformer_menu_addItem = {
         menuSectionInsertionIndex?: number | undefined;
         menuSectionItemInsertionIndex?: number | undefined;
     };
-};;
-export type ExtendedTransformerForRuntime = TransformerForRuntime | Transformer_menu_addItem;;
+};
+export type ExtendedTransformerForRuntime = TransformerForRuntime | Transformer_menu_addItem;
 export type TransformerDefinition = {
     uuid: string;
     parentName?: string | undefined;
@@ -1789,10 +1789,10 @@ export type TransformerDefinition = {
         transformerImplementationType: "transformer";
         definition: TransformerForBuildOrRuntime;
     };
-};;
-export type ______________________________________________miroirMetaModel_____________________________________________ = never;;
-export type EntityAttributeExpandedType = "UUID" | "STRING" | "BOOLEAN" | "OBJECT";;
-export type EntityAttributeType = EntityInstance | ("ENTITY_INSTANCE_UUID" | "ARRAY");;
+};
+export type ______________________________________________miroirMetaModel_____________________________________________ = never;
+export type EntityAttributeExpandedType = "UUID" | "STRING" | "BOOLEAN" | "OBJECT";
+export type EntityAttributeType = EntityInstance | ("ENTITY_INSTANCE_UUID" | "ARRAY");
 export type EntityAttributeCore = {
     id: number;
     name: string;
@@ -1801,7 +1801,7 @@ export type EntityAttributeCore = {
     editable: boolean;
     nullable: boolean;
     type: EntityAttributeExpandedType;
-};;
+};
 export type EntityArrayAttribute = {
     id: number;
     name: string;
@@ -1811,7 +1811,7 @@ export type EntityArrayAttribute = {
     nullable: boolean;
     type: "ARRAY";
     lineFormat: EntityAttributeCore[];
-};;
+};
 export type EntityForeignKeyAttribute = {
     id: number;
     name: string;
@@ -1822,10 +1822,10 @@ export type EntityForeignKeyAttribute = {
     type: "ENTITY_INSTANCE_UUID";
     applicationSection?: ApplicationSection | undefined;
     entityUuid: string;
-};;
-export type EntityAttribute = EntityForeignKeyAttribute | EntityArrayAttribute;;
-export type EntityAttributePartial = JzodArray | JzodPlainAttribute | JzodAttributePlainDateWithValidations | JzodAttributePlainNumberWithValidations | JzodAttributePlainStringWithValidations | JzodEnum | JzodFunction | JzodLazy | JzodLiteral | JzodIntersection | JzodMap | JzodObject | JzodPromise | JzodRecord | JzodReference | JzodSet | JzodTuple | JzodUnion;;
-export type DataStoreApplicationType = "miroir" | "app";;
+};
+export type EntityAttribute = EntityForeignKeyAttribute | EntityArrayAttribute;
+export type EntityAttributePartial = JzodArray | JzodPlainAttribute | JzodAttributePlainDateWithValidations | JzodAttributePlainNumberWithValidations | JzodAttributePlainStringWithValidations | JzodEnum | JzodFunction | JzodLazy | JzodLiteral | JzodIntersection | JzodMap | JzodObject | JzodPromise | JzodRecord | JzodReference | JzodSet | JzodTuple | JzodUnion;
+export type DataStoreApplicationType = "miroir" | "app";
 export type StoreBasedConfiguration = {
     uuid: string;
     parentName?: string | undefined;
@@ -1835,29 +1835,29 @@ export type StoreBasedConfiguration = {
     definition: {
         currentApplicationVersion: string;
     };
-};;
+};
 export type EntityInstance = {
     uuid: string;
     parentName?: string | undefined;
     parentUuid: string;
     conceptLevel?: ("MetaModel" | "Model" | "Data") | undefined;
-};;
+};
 export type EntityInstanceCollection = {
     parentName?: string | undefined;
     parentUuid: string;
     applicationSection: ApplicationSection;
     instances: EntityInstance[];
-};;
-export type ConceptLevel = "MetaModel" | "Model" | "Data";;
-export type DataStoreType = "miroir" | "app";;
-export type EntityInstanceUuid = string;;
+};
+export type ConceptLevel = "MetaModel" | "Model" | "Data";
+export type DataStoreType = "miroir" | "app";
+export type EntityInstanceUuid = string;
 export type EntityInstancesUuidIndex = {
     [x: string]: EntityInstance;
-};;
+};
 export type EntityInstancesUuidIndexUuidIndex = {
     [x: string]: EntityInstancesUuidIndex;
-};;
-export type ______________________________________________entities_____________________________________________ = never;;
+};
+export type ______________________________________________entities_____________________________________________ = never;
 export type AdminApplication = {
     uuid: string;
     parentName?: string | undefined;
@@ -1867,7 +1867,7 @@ export type AdminApplication = {
     defaultLabel: string;
     description?: string | undefined;
     selfApplication: string;
-};;
+};
 export type SelfApplication = {
     uuid: string;
     parentName?: string | undefined;
@@ -1876,7 +1876,7 @@ export type SelfApplication = {
     name: string;
     defaultLabel: string;
     description?: string | undefined;
-};;
+};
 export type ApplicationVersion = {
     uuid: string;
     parentName?: string | undefined;
@@ -1895,7 +1895,7 @@ export type ApplicationVersion = {
     modelCUDMigration?: {
         [x: string]: any;
     }[] | undefined;
-};;
+};
 export type Bundle = {
     uuid: string;
     parentName?: string | undefined;
@@ -1908,7 +1908,7 @@ export type Bundle = {
         type: "development";
         applicationVersion: ApplicationVersion;
     };
-};;
+};
 export type Deployment = {
     uuid: string;
     parentName?: string | undefined;
@@ -1922,7 +1922,7 @@ export type Deployment = {
     configuration?: StoreUnitConfiguration | undefined;
     model?: JzodObject | undefined;
     data?: JzodObject | undefined;
-};;
+};
 export type Entity = {
     uuid: string;
     parentName?: string | undefined;
@@ -1933,7 +1933,7 @@ export type Entity = {
     name: string;
     author?: string | undefined;
     description?: string | undefined;
-};;
+};
 export type EntityDefinition = {
     uuid: string;
     parentName: string;
@@ -1947,7 +1947,7 @@ export type EntityDefinition = {
     viewAttributes?: string[] | undefined;
     icon?: string | undefined;
     jzodSchema: JzodObject;
-};;
+};
 export type TestCompositeAction = {
     testType: "testCompositeAction";
     testLabel: string;
@@ -1955,7 +1955,7 @@ export type TestCompositeAction = {
     afterTestCleanupAction?: CompositeAction | undefined;
     compositeAction: CompositeAction;
     testCompositeActionAssertions: CompositeRunTestAssertion[];
-};;
+};
 export type TestCompositeActionSuite = {
     testType: "testCompositeActionSuite";
     testLabel: string;
@@ -1966,7 +1966,7 @@ export type TestCompositeActionSuite = {
     testCompositeActions: {
         [x: string]: TestCompositeAction;
     };
-};;
+};
 export type TestCompositeActionTemplate = {
     testType: "testCompositeActionTemplate";
     testLabel: string;
@@ -1974,7 +1974,7 @@ export type TestCompositeActionTemplate = {
     afterTestCleanupAction?: CompositeActionTemplate | undefined;
     compositeActionTemplate: CompositeActionTemplate;
     testCompositeActionAssertions: CompositeRunTestAssertion[];
-};;
+};
 export type TestCompositeActionTemplateSuite = {
     testType: "testCompositeActionTemplateSuite";
     testLabel: string;
@@ -1985,7 +1985,7 @@ export type TestCompositeActionTemplateSuite = {
     testCompositeActions: {
         [x: string]: TestCompositeActionTemplate;
     };
-};;
+};
 export type TestAssertion = {
     testType: "testAssertion";
     testLabel: string;
@@ -1995,7 +1995,7 @@ export type TestAssertion = {
         ignoreAttributes?: string[] | undefined;
         expectedValue?: any;
     };
-};;
+};
 export type Test = {
     uuid: string;
     parentName?: string | undefined;
@@ -2044,7 +2044,7 @@ export type Test = {
             expectedValue?: any;
         };
     };
-};;
+};
 export type SelfApplicationDeploymentConfiguration = {
     uuid: string;
     parentName?: string | undefined;
@@ -2054,7 +2054,7 @@ export type SelfApplicationDeploymentConfiguration = {
     defaultLabel: string;
     description?: string | undefined;
     selfApplication: string;
-};;
+};
 export type MiroirMenuItem = {
     label: string;
     section: ApplicationSection;
@@ -2062,22 +2062,22 @@ export type MiroirMenuItem = {
     reportUuid: string;
     instanceUuid?: string | undefined;
     icon: string;
-};;
-export type MenuItemArray = MiroirMenuItem[];;
+};
+export type MenuItemArray = MiroirMenuItem[];
 export type SectionOfMenu = {
     title: string;
     label: string;
     items: MenuItemArray;
-};;
+};
 export type SimpleMenu = {
     menuType: "simpleMenu";
     definition: MenuItemArray;
-};;
+};
 export type ComplexMenu = {
     menuType: "complexMenu";
     definition: SectionOfMenu[];
-};;
-export type MenuDefinition = SimpleMenu | ComplexMenu;;
+};
+export type MenuDefinition = SimpleMenu | ComplexMenu;
 export type Menu = {
     uuid: string;
     parentName?: string | undefined;
@@ -2087,7 +2087,7 @@ export type Menu = {
     defaultLabel: string;
     description?: string | undefined;
     definition: MenuDefinition;
-};;
+};
 export type ObjectInstanceReportSection = {
     type: "objectInstanceReportSection";
     combinerTemplates?: ExtractorOrCombinerTemplateRecord | undefined;
@@ -2100,7 +2100,7 @@ export type ObjectInstanceReportSection = {
         fetchedDataReference?: string | undefined;
         query?: ExtractorTemplateReturningObject | undefined;
     };
-};;
+};
 export type ObjectListReportSection = {
     type: "objectListReportSection";
     definition: {
@@ -2111,7 +2111,7 @@ export type ObjectListReportSection = {
         query?: ExtractorTemplateReturningObject | undefined;
         sortByAttribute?: string | undefined;
     };
-};;
+};
 export type GridReportSection = {
     type: "grid";
     combinerTemplates?: ExtractorOrCombinerTemplateRecord | undefined;
@@ -2120,7 +2120,7 @@ export type GridReportSection = {
     } | undefined;
     selectData?: ExtractorOrCombinerTemplateRecord | undefined;
     definition: ReportSection[][];
-};;
+};
 export type ListReportSection = {
     type: "list";
     combinerTemplates?: ExtractorOrCombinerTemplateRecord | undefined;
@@ -2129,8 +2129,8 @@ export type ListReportSection = {
     } | undefined;
     selectData?: ExtractorOrCombinerTemplateRecord | undefined;
     definition: (ObjectInstanceReportSection | ObjectListReportSection)[];
-};;
-export type ReportSection = GridReportSection | ListReportSection | ObjectListReportSection | ObjectInstanceReportSection;;
+};
+export type ReportSection = GridReportSection | ListReportSection | ObjectListReportSection | ObjectInstanceReportSection;
 export type RootReport = {
     reportParametersToFetchQueryParametersTransformer?: {
         [x: string]: string;
@@ -2146,8 +2146,8 @@ export type RootReport = {
         [x: string]: TransformerForRuntime;
     } | undefined;
     section: ReportSection;
-};;
-export type JzodObjectOrReference = JzodReference | JzodObject;;
+};
+export type JzodObjectOrReference = JzodReference | JzodObject;
 export type JzodSchema = {
     uuid: string;
     parentName: string;
@@ -2158,7 +2158,7 @@ export type JzodSchema = {
     defaultLabel?: string | undefined;
     description?: string | undefined;
     definition?: JzodObjectOrReference | undefined;
-};;
+};
 export type Report = {
     uuid: string;
     parentName?: string | undefined;
@@ -2170,7 +2170,7 @@ export type Report = {
     type?: ("list" | "grid") | undefined;
     selfApplication?: string | undefined;
     definition: RootReport;
-};;
+};
 export type MetaModel = {
     applicationVersions: ApplicationVersion[];
     applicationVersionCrossEntityDefinition: {
@@ -2186,57 +2186,57 @@ export type MetaModel = {
     jzodSchemas: JzodSchema[];
     menus: Menu[];
     reports: Report[];
-};;
-export type _________________________________configuration_and_bundles_________________________________ = never;;
+};
+export type _________________________________configuration_and_bundles_________________________________ = never;
 export type IndexedDbStoreSectionConfiguration = {
     emulatedServerType: "indexedDb";
     indexedDbName: string;
-};;
+};
 export type FilesystemDbStoreSectionConfiguration = {
     emulatedServerType: "filesystem";
     directory: string;
-};;
+};
 export type SqlDbStoreSectionConfiguration = {
     emulatedServerType: "sql";
     connectionString: string;
     schema: string;
-};;
-export type StoreSectionConfiguration = IndexedDbStoreSectionConfiguration | FilesystemDbStoreSectionConfiguration | SqlDbStoreSectionConfiguration;;
+};
+export type StoreSectionConfiguration = IndexedDbStoreSectionConfiguration | FilesystemDbStoreSectionConfiguration | SqlDbStoreSectionConfiguration;
 export type StoreUnitConfiguration = {
     admin: StoreSectionConfiguration;
     model: StoreSectionConfiguration;
     data: StoreSectionConfiguration;
-};;
+};
 export type DeploymentStorageConfig = {
     [x: string]: StoreUnitConfiguration;
-};;
+};
 export type ServerConfigForClientConfig = {
     rootApiUrl: string;
     dataflowConfiguration?: any;
     storeSectionConfiguration: {
         [x: string]: StoreUnitConfiguration;
     };
-};;
+};
 export type MiroirConfigForClientStub = {
     emulateServer: true;
     rootApiUrl: string;
     deploymentStorageConfig: DeploymentStorageConfig;
-};;
+};
 export type MiroirConfigForRestClient = {
     emulateServer: false;
     serverConfig: ServerConfigForClientConfig;
-};;
+};
 export type MiroirConfigClient = {
     miroirConfigType: "client";
     client: MiroirConfigForClientStub | MiroirConfigForRestClient;
-};;
+};
 export type MiroirConfigServer = {
     miroirConfigType: "server";
     server: {
         rootApiUrl: string;
     };
-};;
-export type MiroirConfig = "miroirConfigClient" | "miroirConfigServer";;
+};
+export type MiroirConfig = "miroirConfigClient" | "miroirConfigServer";
 export type Commit = {
     uuid: string;
     parentName?: string | undefined;
@@ -2254,9 +2254,9 @@ export type Commit = {
         actionArguments: ModelAction;
     }[];
     patches: any[];
-};;
-export type MiroirAllFundamentalTypesUnion = ApplicationSection | EntityInstance | EntityInstanceCollection | InstanceAction;;
-export type ______________________________________________queries_____________________________________________ = never;;
+};
+export type MiroirAllFundamentalTypesUnion = ApplicationSection | EntityInstance | EntityInstanceCollection | InstanceAction;
+export type ______________________________________________queries_____________________________________________ = never;
 export type QueryFailed = {
     queryFailure: "FailedTransformer_objectEntries" | "FailedExtractor" | "QueryNotExecutable" | "DomainStateNotLoaded" | "IncorrectParameters" | "DeploymentNotFound" | "ApplicationSectionNotFound" | "EntityNotFound" | "InstanceNotFound" | "ReferenceNotFound" | "ReferenceFoundButUndefined" | "ReferenceFoundButAttributeUndefinedOnFoundObject";
     query?: string | undefined;
@@ -2271,7 +2271,7 @@ export type QueryFailed = {
     applicationSection?: ApplicationSection | undefined;
     entityUuid?: string | undefined;
     instanceUuid?: string | undefined;
-};;
+};
 export type ExtractorTemplateCombinerForObjectByRelation = {
     label?: string | undefined;
     applicationSection?: ApplicationSection | undefined;
@@ -2280,7 +2280,7 @@ export type ExtractorTemplateCombinerForObjectByRelation = {
     extractorTemplateType: "combinerForObjectByRelation";
     objectReference: TransformerForRuntime_InnerReference;
     AttributeOfObjectToCompareToReferenceUuid: string;
-};;
+};
 export type ExtractorTemplateExtractorForObjectByDirectReference = {
     label?: string | undefined;
     applicationSection?: ApplicationSection | undefined;
@@ -2288,8 +2288,8 @@ export type ExtractorTemplateExtractorForObjectByDirectReference = {
     parentUuid: Transformer_InnerReference;
     extractorTemplateType: "extractorForObjectByDirectReference";
     instanceUuid: Transformer_InnerReference;
-};;
-export type ExtractorTemplateReturningObject = ExtractorTemplateCombinerForObjectByRelation | ExtractorTemplateExtractorForObjectByDirectReference;;
+};
+export type ExtractorTemplateReturningObject = ExtractorTemplateCombinerForObjectByRelation | ExtractorTemplateExtractorForObjectByDirectReference;
 export type ExtractorTemplateForObjectListByEntity = {
     label?: string | undefined;
     applicationSection?: ApplicationSection | undefined;
@@ -2304,7 +2304,7 @@ export type ExtractorTemplateForObjectListByEntity = {
         attributeName: string;
         value: Transformer_constantString;
     } | undefined;
-};;
+};
 export type ExtractorTemplateByRelationReturningObjectList = {
     label?: string | undefined;
     applicationSection?: ApplicationSection | undefined;
@@ -2318,7 +2318,7 @@ export type ExtractorTemplateByRelationReturningObjectList = {
     objectReference: TransformerForRuntime_InnerReference;
     objectReferenceAttribute?: string | undefined;
     AttributeOfListObjectToCompareToReferenceUuid: string;
-};;
+};
 export type ExtractorTemplateByManyToManyRelationReturningObjectList = {
     label?: string | undefined;
     applicationSection?: ApplicationSection | undefined;
@@ -2332,9 +2332,9 @@ export type ExtractorTemplateByManyToManyRelationReturningObjectList = {
     objectListReference: Transformer_contextReference;
     objectListReferenceAttribute?: string | undefined;
     AttributeOfRootListObjectToCompareToListReferenceUuid?: string | undefined;
-};;
-export type ExtractorTemplateReturningObjectList = ExtractorTemplateForObjectListByEntity | ExtractorTemplateByRelationReturningObjectList | ExtractorTemplateByManyToManyRelationReturningObjectList;;
-export type ExtractorTemplateReturningObjectOrObjectList = ExtractorTemplateReturningObject | ExtractorTemplateReturningObjectList;;
+};
+export type ExtractorTemplateReturningObjectList = ExtractorTemplateForObjectListByEntity | ExtractorTemplateByRelationReturningObjectList | ExtractorTemplateByManyToManyRelationReturningObjectList;
+export type ExtractorTemplateReturningObjectOrObjectList = ExtractorTemplateReturningObject | ExtractorTemplateReturningObjectList;
 export type ExtractorTemplateByExtractorCombiner = {
     extractorTemplateType: "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList";
     rootExtractorOrReference: ExtractorOrCombinerTemplate | string;
@@ -2342,29 +2342,29 @@ export type ExtractorTemplateByExtractorCombiner = {
         query: ExtractorOrCombinerTemplate;
         rootQueryObjectTransformer: RecordOfTransformers;
     };
-};;
+};
 export type ExtractorTemplateByExtractorWrapperReturningObject = {
     extractorTemplateType: "extractorTemplateByExtractorWrapperReturningObject";
     definition: {
         [x: string]: Transformer_contextOrParameterReference;
     };
-};;
+};
 export type ExtractorTemplateByExtractorWrapperReturningList = {
     extractorTemplateType: "extractorTemplateByExtractorWrapperReturningList";
     definition: Transformer_contextOrParameterReference[];
-};;
-export type ExtractorTemplateByExtractorWrapper = ExtractorTemplateByExtractorWrapperReturningObject | ExtractorTemplateByExtractorWrapperReturningList;;
+};
+export type ExtractorTemplateByExtractorWrapper = ExtractorTemplateByExtractorWrapperReturningObject | ExtractorTemplateByExtractorWrapperReturningList;
 export type ExtractorOrCombinerTemplate = ExtractorTemplateByExtractorWrapper | ExtractorTemplateExtractorForObjectByDirectReference | ExtractorTemplateReturningObjectList | ExtractorTemplateCombinerForObjectByRelation | ExtractorTemplateByRelationReturningObjectList | ExtractorTemplateByManyToManyRelationReturningObjectList | ExtractorTemplateByExtractorCombiner | {
     extractorTemplateType: "literal";
     definition: string;
-};;
+};
 export type ExtractorOrCombinerTemplateRecord = {
     [x: string]: ExtractorOrCombinerTemplate;
-};;
+};
 export type ExtractorOrCombinerContextReference = {
     extractorOrCombinerType: "extractorOrCombinerContextReference";
     extractorOrCombinerContextReference: string;
-};;
+};
 export type CombinerForObjectByRelation = {
     label?: string | undefined;
     applicationSection?: ApplicationSection | undefined;
@@ -2373,7 +2373,7 @@ export type CombinerForObjectByRelation = {
     extractorOrCombinerType: "combinerForObjectByRelation";
     objectReference: string;
     AttributeOfObjectToCompareToReferenceUuid: string;
-};;
+};
 export type ExtractorForObjectByDirectReference = {
     label?: string | undefined;
     applicationSection?: ApplicationSection | undefined;
@@ -2381,8 +2381,8 @@ export type ExtractorForObjectByDirectReference = {
     parentUuid: string;
     extractorOrCombinerType: "extractorForObjectByDirectReference";
     instanceUuid: string;
-};;
-export type ExtractorOrCombinerReturningObject = ExtractorForObjectByDirectReference | CombinerForObjectByRelation;;
+};
+export type ExtractorOrCombinerReturningObject = ExtractorForObjectByDirectReference | CombinerForObjectByRelation;
 export type ExtractorByEntityReturningObjectList = {
     label?: string | undefined;
     applicationSection?: ApplicationSection | undefined;
@@ -2397,8 +2397,8 @@ export type ExtractorByEntityReturningObjectList = {
         attributeName: string;
         value?: any;
     } | undefined;
-};;
-export type Extractor = ExtractorForObjectByDirectReference | ExtractorByEntityReturningObjectList;;
+};
+export type Extractor = ExtractorForObjectByDirectReference | ExtractorByEntityReturningObjectList;
 export type CombinerByRelationReturningObjectList = {
     label?: string | undefined;
     applicationSection?: ApplicationSection | undefined;
@@ -2412,7 +2412,7 @@ export type CombinerByRelationReturningObjectList = {
     objectReference: string;
     objectReferenceAttribute?: string | undefined;
     AttributeOfListObjectToCompareToReferenceUuid: string;
-};;
+};
 export type CombinerByManyToManyRelationReturningObjectList = {
     label?: string | undefined;
     applicationSection?: ApplicationSection | undefined;
@@ -2426,9 +2426,9 @@ export type CombinerByManyToManyRelationReturningObjectList = {
     objectListReference: string;
     objectListReferenceAttribute?: string | undefined;
     AttributeOfRootListObjectToCompareToListReferenceUuid?: string | undefined;
-};;
-export type ExtractorOrCombinerReturningObjectList = ExtractorByEntityReturningObjectList | CombinerByRelationReturningObjectList | CombinerByManyToManyRelationReturningObjectList;;
-export type ExtractorOrCombinerReturningObjectOrObjectList = ExtractorOrCombinerReturningObject | ExtractorOrCombinerReturningObjectList;;
+};
+export type ExtractorOrCombinerReturningObjectList = ExtractorByEntityReturningObjectList | CombinerByRelationReturningObjectList | CombinerByManyToManyRelationReturningObjectList;
+export type ExtractorOrCombinerReturningObjectOrObjectList = ExtractorOrCombinerReturningObject | ExtractorOrCombinerReturningObjectList;
 export type ExtractorCombinerByHeteronomousManyToManyReturningListOfObjectList = {
     extractorOrCombinerType: "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList";
     orderBy?: {
@@ -2440,83 +2440,83 @@ export type ExtractorCombinerByHeteronomousManyToManyReturningListOfObjectList =
         query: ExtractorOrCombinerTemplate;
         rootQueryObjectTransformer: RecordOfTransformers;
     };
-};;
+};
 export type ExtractorWrapperReturningObject = {
     extractorOrCombinerType: "extractorWrapperReturningObject";
     definition: {
         [x: string]: ExtractorOrCombinerContextReference | ExtractorOrCombiner;
     };
-};;
+};
 export type ExtractorWrapperReturningList = {
     extractorOrCombinerType: "extractorWrapperReturningList";
     definition: (ExtractorOrCombinerContextReference | ExtractorOrCombiner)[];
-};;
-export type ExtractorWrapper = ExtractorWrapperReturningObject | ExtractorWrapperReturningList;;
+};
+export type ExtractorWrapper = ExtractorWrapperReturningObject | ExtractorWrapperReturningList;
 export type ExtractorOrCombiner = ExtractorOrCombinerContextReference | ExtractorOrCombinerReturningObject | ExtractorOrCombinerReturningObjectList | ExtractorWrapper | ExtractorCombinerByHeteronomousManyToManyReturningListOfObjectList | {
     extractorOrCombinerType: "literal";
     definition: string;
-};;
+};
 export type ExtractorOrCombinerRecord = {
     [x: string]: ExtractorOrCombiner;
-};;
+};
 export type DomainElementVoid = {
     elementType: "void";
     elementValue?: void | undefined;
-};;
+};
 export type DomainElementAny = {
     elementType: "any";
     elementValue?: any;
-};;
+};
 export type DomainElementFailed = {
     elementType: "failure";
     elementValue: QueryFailed;
-};;
+};
 export type DomainElementObject = {
     elementType: "object";
     elementValue: {
         [x: string]: DomainElement;
     };
-};;
+};
 export type DomainElementArray = {
     elementType: "array";
     elementValue: DomainElement[];
-};;
+};
 export type DomainElementString = {
     elementType: "string";
     elementValue: string;
-};;
+};
 export type DomainElementNumber = {
     elementType: "number";
     elementValue: number;
-};;
-export type DomainElementObjectOrFailed = DomainElementObject | DomainElementFailed;;
+};
+export type DomainElementObjectOrFailed = DomainElementObject | DomainElementFailed;
 export type DomainElementInstanceUuidIndex = {
     elementType: "instanceUuidIndex";
     elementValue: EntityInstancesUuidIndex;
-};;
-export type DomainElementInstanceUuidIndexOrFailed = DomainElementInstanceUuidIndex | DomainElementFailed;;
+};
+export type DomainElementInstanceUuidIndexOrFailed = DomainElementInstanceUuidIndex | DomainElementFailed;
 export type DomainElementEntityInstance = {
     elementType: "instance";
     elementValue: EntityInstance;
-};;
-export type DomainElementEntityInstanceOrFailed = DomainElementEntityInstance | DomainElementFailed;;
+};
+export type DomainElementEntityInstanceOrFailed = DomainElementEntityInstance | DomainElementFailed;
 export type DomainElementEntityInstanceCollection = {
     elementType: "entityInstanceCollection";
     elementValue: EntityInstanceCollection;
-};;
-export type DomainElementEntityInstanceCollectionOrFailed = DomainElementEntityInstanceCollection | DomainElementFailed;;
+};
+export type DomainElementEntityInstanceCollectionOrFailed = DomainElementEntityInstanceCollection | DomainElementFailed;
 export type DomainElementInstanceArray = {
     elementType: "instanceArray";
     elementValue: EntityInstance[];
-};;
-export type DomainElementInstanceArrayOrFailed = DomainElementInstanceArray | DomainElementFailed;;
+};
+export type DomainElementInstanceArrayOrFailed = DomainElementInstanceArray | DomainElementFailed;
 export type DomainElementInstanceUuid = {
     elementType: "instanceUuid";
     elementValue: EntityInstanceUuid;
-};;
-export type DomainElementType = "any" | "object" | "instanceUuidIndex" | "entityInstanceCollection" | "instanceArray" | "instance" | "instanceUuid" | "instanceUuidIndexUuidIndex" | "void";;
-export type DomainElementSuccess = DomainElementVoid | DomainElementAny | DomainElementObject | DomainElementInstanceUuidIndex | DomainElementEntityInstanceCollection | DomainElementInstanceArray | DomainElementEntityInstance | DomainElementInstanceUuid | DomainElementString | DomainElementNumber | DomainElementArray;;
-export type DomainElement = DomainElementSuccess | DomainElementFailed;;
+};
+export type DomainElementType = "any" | "object" | "instanceUuidIndex" | "entityInstanceCollection" | "instanceArray" | "instance" | "instanceUuid" | "instanceUuidIndexUuidIndex" | "void";
+export type DomainElementSuccess = DomainElementVoid | DomainElementAny | DomainElementObject | DomainElementInstanceUuidIndex | DomainElementEntityInstanceCollection | DomainElementInstanceArray | DomainElementEntityInstance | DomainElementInstanceUuid | DomainElementString | DomainElementNumber | DomainElementArray;
+export type DomainElement = DomainElementSuccess | DomainElementFailed;
 export type LocalCacheExtractor = {
     queryType: "localCacheEntityInstancesExtractor";
     definition: {
@@ -2525,7 +2525,7 @@ export type LocalCacheExtractor = {
         entityUuid?: string | undefined;
         instanceUuid?: string | undefined;
     };
-};;
+};
 export type BoxedExtractorOrCombinerReturningObject = {
     deploymentUuid: string;
     pageParams: {
@@ -2539,7 +2539,7 @@ export type BoxedExtractorOrCombinerReturningObject = {
     };
     queryType: "boxedExtractorOrCombinerReturningObject";
     select: ExtractorOrCombinerReturningObject;
-};;
+};
 export type BoxedExtractorOrCombinerReturningObjectList = {
     deploymentUuid: string;
     pageParams: {
@@ -2553,8 +2553,8 @@ export type BoxedExtractorOrCombinerReturningObjectList = {
     };
     queryType: "boxedExtractorOrCombinerReturningObjectList";
     select: ExtractorOrCombinerReturningObjectList;
-};;
-export type BoxedExtractorOrCombinerReturningObjectOrObjectList = BoxedExtractorOrCombinerReturningObject | BoxedExtractorOrCombinerReturningObjectList;;
+};
+export type BoxedExtractorOrCombinerReturningObjectOrObjectList = BoxedExtractorOrCombinerReturningObject | BoxedExtractorOrCombinerReturningObjectList;
 export type BoxedQueryWithExtractorCombinerTransformer = {
     deploymentUuid: string;
     pageParams: {
@@ -2573,7 +2573,7 @@ export type BoxedQueryWithExtractorCombinerTransformer = {
     runtimeTransformers?: {
         [x: string]: ExtendedTransformerForRuntime;
     } | undefined;
-};;
+};
 export type BoxedExtractorTemplateReturningObject = {
     deploymentUuid: string;
     pageParams: {
@@ -2587,7 +2587,7 @@ export type BoxedExtractorTemplateReturningObject = {
     };
     queryType: "boxedExtractorTemplateReturningObject";
     select: ExtractorTemplateReturningObject;
-};;
+};
 export type BoxedExtractorTemplateReturningObjectList = {
     deploymentUuid: string;
     pageParams: {
@@ -2601,8 +2601,8 @@ export type BoxedExtractorTemplateReturningObjectList = {
     };
     queryType: "boxedExtractorTemplateReturningObjectList";
     select: ExtractorTemplateReturningObjectList;
-};;
-export type BoxedExtractorTemplateReturningObjectOrObjectList = BoxedExtractorTemplateReturningObject | BoxedExtractorTemplateReturningObjectList;;
+};
+export type BoxedExtractorTemplateReturningObjectOrObjectList = BoxedExtractorTemplateReturningObject | BoxedExtractorTemplateReturningObjectList;
 export type BoxedQueryTemplateWithExtractorCombinerTransformer = {
     deploymentUuid: string;
     pageParams: {
@@ -2621,7 +2621,7 @@ export type BoxedQueryTemplateWithExtractorCombinerTransformer = {
     runtimeTransformers?: {
         [x: string]: ExtendedTransformerForRuntime;
     } | undefined;
-};;
+};
 export type QueryByEntityUuidGetEntityDefinition = {
     deploymentUuid: string;
     pageParams: {
@@ -2635,7 +2635,7 @@ export type QueryByEntityUuidGetEntityDefinition = {
     };
     queryType: "getEntityDefinition";
     entityUuid: string;
-};;
+};
 export type QueryByTemplateGetParamJzodSchema = {
     deploymentUuid: string;
     pageParams: {
@@ -2649,7 +2649,7 @@ export type QueryByTemplateGetParamJzodSchema = {
     };
     queryType: "queryByTemplateGetParamJzodSchema";
     fetchParams: BoxedQueryTemplateWithExtractorCombinerTransformer;
-};;
+};
 export type QueryByQuery2GetParamJzodSchema = {
     deploymentUuid: string;
     pageParams: {
@@ -2663,7 +2663,7 @@ export type QueryByQuery2GetParamJzodSchema = {
     };
     queryType: "queryByTemplateGetParamJzodSchema";
     fetchParams: BoxedQueryWithExtractorCombinerTransformer;
-};;
+};
 export type QueryByQueryTemplateGetParamJzodSchema = {
     deploymentUuid: string;
     pageParams: {
@@ -2677,7 +2677,7 @@ export type QueryByQueryTemplateGetParamJzodSchema = {
     };
     queryType: "getQueryJzodSchema";
     select: ExtractorOrCombinerTemplate;
-};;
+};
 export type QueryByQueryGetParamJzodSchema = {
     deploymentUuid: string;
     pageParams: {
@@ -2691,60 +2691,60 @@ export type QueryByQueryGetParamJzodSchema = {
     };
     queryType: "getQueryJzodSchema";
     select: ExtractorOrCombiner;
-};;
-export type DomainModelQueryTemplateJzodSchemaParams = QueryByEntityUuidGetEntityDefinition | QueryByTemplateGetParamJzodSchema | QueryByQueryTemplateGetParamJzodSchema;;
-export type QueryJzodSchemaParams = QueryByEntityUuidGetEntityDefinition | QueryByQuery2GetParamJzodSchema | QueryByQueryGetParamJzodSchema;;
-export type MiroirQueryTemplate = BoxedExtractorTemplateReturningObjectOrObjectList | BoxedQueryTemplateWithExtractorCombinerTransformer | LocalCacheExtractor | QueryByEntityUuidGetEntityDefinition | QueryByTemplateGetParamJzodSchema | QueryByQueryTemplateGetParamJzodSchema;;
-export type MiroirQuery = BoxedExtractorOrCombinerReturningObjectOrObjectList | BoxedQueryWithExtractorCombinerTransformer | LocalCacheExtractor | QueryByEntityUuidGetEntityDefinition | QueryByQuery2GetParamJzodSchema | QueryByQueryGetParamJzodSchema;;
-export type ______________________________________________actions_____________________________________________ = never;;
+};
+export type DomainModelQueryTemplateJzodSchemaParams = QueryByEntityUuidGetEntityDefinition | QueryByTemplateGetParamJzodSchema | QueryByQueryTemplateGetParamJzodSchema;
+export type QueryJzodSchemaParams = QueryByEntityUuidGetEntityDefinition | QueryByQuery2GetParamJzodSchema | QueryByQueryGetParamJzodSchema;
+export type MiroirQueryTemplate = BoxedExtractorTemplateReturningObjectOrObjectList | BoxedQueryTemplateWithExtractorCombinerTransformer | LocalCacheExtractor | QueryByEntityUuidGetEntityDefinition | QueryByTemplateGetParamJzodSchema | QueryByQueryTemplateGetParamJzodSchema;
+export type MiroirQuery = BoxedExtractorOrCombinerReturningObjectOrObjectList | BoxedQueryWithExtractorCombinerTransformer | LocalCacheExtractor | QueryByEntityUuidGetEntityDefinition | QueryByQuery2GetParamJzodSchema | QueryByQueryGetParamJzodSchema;
+export type ______________________________________________actions_____________________________________________ = never;
 export type ActionError = {
     status: "error";
     errorType: ("FailedToCreateStore" | "FailedToDeployModule") | "FailedToDeleteStore" | "FailedToResetAndInitMiroirAndApplicationDatabase" | "FailedToOpenStore" | "FailedToCloseStore" | "FailedToCreateInstance" | "FailedToDeleteInstance" | "FailedToDeleteInstanceWithCascade" | "FailedToUpdateInstance" | "FailedToLoadNewInstancesInLocalCache" | "FailedToGetInstance" | "FailedToGetInstances" | "FailedToResolveTemplate";
     errorMessage?: string | undefined;
     errorStack?: (string | undefined)[] | undefined;
     innerError?: ActionError | undefined;
-};;
+};
 export type ActionVoidSuccess = {
     status: "ok";
     returnedDomainElement: DomainElementVoid;
-};;
-export type ActionVoidReturnType = ActionError | ActionVoidSuccess;;
+};
+export type ActionVoidReturnType = ActionError | ActionVoidSuccess;
 export type ActionEntityInstanceSuccess = {
     status: "ok";
     returnedDomainElement: DomainElementEntityInstance;
-};;
-export type ActionEntityInstanceReturnType = ActionError | ActionEntityInstanceSuccess;;
+};
+export type ActionEntityInstanceReturnType = ActionError | ActionEntityInstanceSuccess;
 export type ActionEntityInstanceCollectionSuccess = {
     status: "ok";
     returnedDomainElement: DomainElementEntityInstanceCollection;
-};;
-export type ActionEntityInstanceCollectionReturnType = ActionError | ActionEntityInstanceCollectionSuccess;;
+};
+export type ActionEntityInstanceCollectionReturnType = ActionError | ActionEntityInstanceCollectionSuccess;
 export type ActionSuccess = {
     status: "ok";
     returnedDomainElement: DomainElement;
-};;
-export type ActionReturnType = ActionError | ActionSuccess;;
+};
+export type ActionReturnType = ActionError | ActionSuccess;
 export type ModelActionInitModelParams = {
     metaModel: MetaModel;
     dataStoreType: DataStoreType;
     selfApplication: SelfApplication;
     applicationModelBranch: EntityInstance;
     applicationVersion: EntityInstance;
-};;
+};
 export type ModelActionCommit = {
     actionType: "modelAction";
     actionName: "commit";
     actionLabel?: string | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
     deploymentUuid: string;
-};;
+};
 export type ModelActionRollback = {
     actionType: "modelAction";
     actionName: "rollback";
     actionLabel?: string | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
     deploymentUuid: string;
-};;
+};
 export type ModelActionInitModel = {
     actionType: "modelAction";
     actionName: "initModel";
@@ -2758,21 +2758,21 @@ export type ModelActionInitModel = {
         applicationModelBranch: EntityInstance;
         applicationVersion: EntityInstance;
     };
-};;
+};
 export type ModelActionResetModel = {
     actionType: "modelAction";
     actionName: "resetModel";
     actionLabel?: string | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
     deploymentUuid: string;
-};;
+};
 export type ModelActionResetData = {
     actionType: "modelAction";
     actionName: "resetData";
     actionLabel?: string | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
     deploymentUuid: string;
-};;
+};
 export type ModelActionAlterEntityAttribute = {
     actionType: "modelAction";
     actionName: "alterEntityAttribute";
@@ -2789,7 +2789,7 @@ export type ModelActionAlterEntityAttribute = {
     }[] | undefined;
     removeColumns?: string[] | undefined;
     update?: JzodElement | undefined;
-};;
+};
 export type ModelActionCreateEntity = {
     actionType: "modelAction";
     actionName: "createEntity";
@@ -2801,7 +2801,7 @@ export type ModelActionCreateEntity = {
         entity: Entity;
         entityDefinition: EntityDefinition;
     }[];
-};;
+};
 export type ModelActionDropEntity = {
     actionType: "modelAction";
     actionName: "dropEntity";
@@ -2811,7 +2811,7 @@ export type ModelActionDropEntity = {
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
     entityUuid: string;
     entityDefinitionUuid: string;
-};;
+};
 export type ModelActionRenameEntity = {
     actionType: "modelAction";
     actionName: "renameEntity";
@@ -2823,7 +2823,7 @@ export type ModelActionRenameEntity = {
     entityUuid: string;
     entityDefinitionUuid: string;
     targetValue: string;
-};;
+};
 export type ModelAction = {
     actionType: "modelAction";
     actionName: "initModel";
@@ -2914,7 +2914,7 @@ export type ModelAction = {
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
     entityUuid: string;
     entityDefinitionUuid: string;
-};;
+};
 export type TestAction_runTestCompositeAction = {
     actionType: "testAction";
     actionName: "runTestCompositeAction";
@@ -2922,7 +2922,7 @@ export type TestAction_runTestCompositeAction = {
     deploymentUuid: string;
     applicationSection: ApplicationSection;
     testToRun: TestCompositeAction;
-};;
+};
 export type TestAction_runTestCase = {
     actionType: "testAction";
     actionName: "runTestCase";
@@ -2930,7 +2930,7 @@ export type TestAction_runTestCase = {
     deploymentUuid: string;
     applicationSection: ApplicationSection;
     testToRun: TestAssertion;
-};;
+};
 export type InstanceCUDAction = {
     actionType: "instanceAction";
     actionName: "createInstance";
@@ -2957,7 +2957,7 @@ export type InstanceCUDAction = {
     applicationSection: ApplicationSection;
     includeInTransaction?: boolean | undefined;
     objects: EntityInstanceCollection[];
-};;
+};
 export type InstanceAction = {
     actionType: "instanceAction";
     actionName: "createInstance";
@@ -3017,7 +3017,7 @@ export type InstanceAction = {
     deploymentUuid: string;
     applicationSection: ApplicationSection;
     parentUuid: string;
-};;
+};
 export type UndoRedoAction = {
     actionType: "undoRedoAction";
     actionName: "undo";
@@ -3030,14 +3030,14 @@ export type UndoRedoAction = {
     actionLabel?: string | undefined;
     endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389";
     deploymentUuid: string;
-};;
+};
 export type TransactionalInstanceAction = {
     actionType: "transactionalInstanceAction";
     actionLabel?: string | undefined;
     deploymentUuid?: string | undefined;
     instanceAction: InstanceCUDAction;
-};;
-export type LocalCacheAction = UndoRedoAction | ModelAction | InstanceAction | TransactionalInstanceAction;;
+};
+export type LocalCacheAction = UndoRedoAction | ModelAction | InstanceAction | TransactionalInstanceAction;
 export type StoreManagementAction = {
     actionType: "storeManagementAction";
     actionName: "createStore";
@@ -3074,7 +3074,7 @@ export type StoreManagementAction = {
     actionLabel?: string | undefined;
     endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f";
     deploymentUuid: string;
-};;
+};
 export type PersistenceAction = {
     actionType: "LocalPersistenceAction";
     actionName: "create" | "read" | "update" | "delete";
@@ -3097,7 +3097,7 @@ export type PersistenceAction = {
     parentUuid?: string | undefined;
     uuid?: string | undefined;
     objects?: (EntityInstance | undefined)[] | undefined;
-} | RunBoxedExtractorAction | RunBoxedQueryAction | RunBoxedExtractorOrQueryAction | RunBoxedQueryTemplateAction | RunBoxedExtractorTemplateAction | RunBoxedQueryTemplateOrBoxedExtractorTemplateAction | BundleAction | InstanceAction | ModelAction | StoreManagementAction;;
+} | RunBoxedExtractorAction | RunBoxedQueryAction | RunBoxedExtractorOrQueryAction | RunBoxedQueryTemplateAction | RunBoxedExtractorTemplateAction | RunBoxedQueryTemplateOrBoxedExtractorTemplateAction | BundleAction | InstanceAction | ModelAction | StoreManagementAction;
 export type LocalPersistenceAction = {
     actionType: "LocalPersistenceAction";
     actionName: "create" | "read" | "update" | "delete";
@@ -3109,7 +3109,7 @@ export type LocalPersistenceAction = {
     parentUuid?: string | undefined;
     uuid?: string | undefined;
     objects?: (EntityInstance | undefined)[] | undefined;
-};;
+};
 export type RestPersistenceAction = {
     actionType: "RestPersistenceAction";
     actionName: "create" | "read" | "update" | "delete";
@@ -3121,7 +3121,7 @@ export type RestPersistenceAction = {
     parentUuid?: string | undefined;
     uuid?: string | undefined;
     objects?: (EntityInstance | undefined)[] | undefined;
-};;
+};
 export type RunBoxedQueryTemplateOrBoxedExtractorTemplateAction = {
     actionType: "runBoxedQueryTemplateOrBoxedExtractorTemplateAction";
     actionName: "runQuery";
@@ -3130,7 +3130,7 @@ export type RunBoxedQueryTemplateOrBoxedExtractorTemplateAction = {
     applicationSection?: ApplicationSection | undefined;
     deploymentUuid: string;
     query: BoxedExtractorTemplateReturningObjectOrObjectList | BoxedQueryTemplateWithExtractorCombinerTransformer;
-};;
+};
 export type RunBoxedExtractorOrQueryAction = {
     actionType: "runBoxedExtractorOrQueryAction";
     actionName: "runQuery";
@@ -3140,7 +3140,7 @@ export type RunBoxedExtractorOrQueryAction = {
     deploymentUuid: string;
     queryExecutionStrategy?: ("localCacheOrFail" | "localCacheOrFetch" | "ServerCache" | "storage") | undefined;
     query: BoxedExtractorOrCombinerReturningObjectOrObjectList | BoxedQueryWithExtractorCombinerTransformer;
-};;
+};
 export type RunBoxedQueryTemplateAction = {
     actionType: "runBoxedQueryTemplateAction";
     actionName: "runQuery";
@@ -3149,7 +3149,7 @@ export type RunBoxedQueryTemplateAction = {
     applicationSection?: ApplicationSection | undefined;
     deploymentUuid: string;
     query: BoxedQueryTemplateWithExtractorCombinerTransformer;
-};;
+};
 export type RunBoxedExtractorTemplateAction = {
     actionType: "runBoxedExtractorTemplateAction";
     actionName: "runQuery";
@@ -3157,7 +3157,7 @@ export type RunBoxedExtractorTemplateAction = {
     applicationSection?: ApplicationSection | undefined;
     deploymentUuid: string;
     query: BoxedExtractorTemplateReturningObjectOrObjectList;
-};;
+};
 export type RunBoxedQueryAction = {
     actionType: "runBoxedQueryAction";
     actionName: "runQuery";
@@ -3166,7 +3166,7 @@ export type RunBoxedQueryAction = {
     applicationSection?: ApplicationSection | undefined;
     deploymentUuid: string;
     query: BoxedQueryWithExtractorCombinerTransformer;
-};;
+};
 export type RunBoxedExtractorAction = {
     actionType: "runBoxedExtractorAction";
     actionName: "runQuery";
@@ -3175,7 +3175,7 @@ export type RunBoxedExtractorAction = {
     applicationSection?: ApplicationSection | undefined;
     deploymentUuid: string;
     query: BoxedExtractorOrCombinerReturningObjectOrObjectList;
-};;
+};
 export type CompositeActionDefinition = (DomainAction | CompositeAction | {
     actionType: "compositeRunBoxedQueryTemplateAction";
     actionLabel?: string | undefined;
@@ -3201,7 +3201,7 @@ export type CompositeActionDefinition = (DomainAction | CompositeAction | {
     actionLabel?: string | undefined;
     nameGivenToResult: string;
     testAssertion: TestAssertion;
-})[];;
+})[];
 export type CompositeAction = {
     actionType: "compositeAction";
     actionName: "sequence";
@@ -3236,13 +3236,13 @@ export type CompositeAction = {
         nameGivenToResult: string;
         testAssertion: TestAssertion;
     })[];
-};;
+};
 export type CompositeRunTestAssertion = {
     actionType: "compositeRunTestAssertion";
     actionLabel?: string | undefined;
     nameGivenToResult: string;
     testAssertion: TestAssertion;
-};;
+};
 export type DomainAction = UndoRedoAction | StoreOrBundleAction | ModelAction | InstanceAction | {
     actionType: "transactionalInstanceAction";
     actionLabel?: string | undefined;
@@ -3282,8 +3282,8 @@ export type DomainAction = UndoRedoAction | StoreOrBundleAction | ModelAction | 
         nameGivenToResult: string;
         testAssertion: TestAssertion;
     })[];
-};;
-export type ModelActionReplayableAction = ModelActionAlterEntityAttribute | ModelActionCreateEntity | ModelActionDropEntity | ModelActionRenameEntity;;
+};
+export type ModelActionReplayableAction = ModelActionAlterEntityAttribute | ModelActionCreateEntity | ModelActionDropEntity | ModelActionRenameEntity;
 export type BundleAction = {
     actionType: "bundleAction";
     actionName: "createBundle";
@@ -3294,14 +3294,14 @@ export type BundleAction = {
     actionName: "deleteBundle";
     actionLabel?: string | undefined;
     deploymentUuid: string;
-};;
-export type StoreOrBundleAction = StoreManagementAction | BundleAction;;
+};
+export type StoreOrBundleAction = StoreManagementAction | BundleAction;
 export type ActionTransformer = {
     transformerType: "actionTransformer";
-};;
+};
 export type DataTransformer = {
     transformerType: "dataTransformer";
-};;
+};
 export type GetBasicApplicationConfigurationParameters = {
     emulatedServerType: "sql";
     connectionString: string;
@@ -3311,7 +3311,7 @@ export type GetBasicApplicationConfigurationParameters = {
 } | {
     emulatedServerType: "filesystem";
     rootDirectory: string;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodBaseObject = CarryOnObject | {
     optional?: ((boolean | undefined) | CarryOnObject) | undefined;
     nullable?: ((boolean | undefined) | CarryOnObject) | undefined;
@@ -3330,7 +3330,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodBaseObject = CarryO
         } | undefined;
         optional?: boolean | undefined;
     } | undefined;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodArray = CarryOnObject | {
     optional?: ((boolean | undefined) | CarryOnObject) | undefined;
     nullable?: ((boolean | undefined) | CarryOnObject) | undefined;
@@ -3351,7 +3351,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodArray = CarryOnObje
     } | undefined;
     type: "array" | CarryOnObject;
     definition: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodPlainAttribute = CarryOnObject | {
     optional?: ((boolean | undefined) | CarryOnObject) | undefined;
     nullable?: ((boolean | undefined) | CarryOnObject) | undefined;
@@ -3372,11 +3372,11 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodPlainAttribute = Ca
     } | undefined;
     type: ("any" | "bigint" | "boolean" | "never" | "null" | "uuid" | "undefined" | "unknown" | "void") | CarryOnObject;
     coerce?: ((boolean | undefined) | CarryOnObject) | undefined;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributeDateValidations = CarryOnObject | {
     type: ("min" | "max") | CarryOnObject;
     parameter?: any | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributePlainDateWithValidations = CarryOnObject | {
     optional?: ((boolean | undefined) | CarryOnObject) | undefined;
     nullable?: ((boolean | undefined) | CarryOnObject) | undefined;
@@ -3398,11 +3398,11 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributePlainDateW
     type: "date" | CarryOnObject;
     coerce?: ((boolean | undefined) | CarryOnObject) | undefined;
     validations?: ((CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributeDateValidations[] | undefined) | CarryOnObject) | undefined;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributeNumberValidations = CarryOnObject | {
     type: ("gt" | "gte" | "lt" | "lte" | "int" | "positive" | "nonpositive" | "negative" | "nonnegative" | "multipleOf" | "finite" | "safe") | CarryOnObject;
     parameter?: any | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributePlainNumberWithValidations = CarryOnObject | {
     optional?: ((boolean | undefined) | CarryOnObject) | undefined;
     nullable?: ((boolean | undefined) | CarryOnObject) | undefined;
@@ -3424,11 +3424,11 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributePlainNumbe
     type: "number" | CarryOnObject;
     coerce?: ((boolean | undefined) | CarryOnObject) | undefined;
     validations?: ((CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributeNumberValidations[] | undefined) | CarryOnObject) | undefined;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributeStringValidations = CarryOnObject | {
     type: ("max" | "min" | "length" | "email" | "url" | "emoji" | "uuid" | "cuid" | "cuid2" | "ulid" | "regex" | "includes" | "startsWith" | "endsWith" | "datetime" | "ip") | CarryOnObject;
     parameter?: any | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributePlainStringWithValidations = CarryOnObject | {
     optional?: ((boolean | undefined) | CarryOnObject) | undefined;
     nullable?: ((boolean | undefined) | CarryOnObject) | undefined;
@@ -3450,8 +3450,8 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributePlainStrin
     type: "string" | CarryOnObject;
     coerce?: ((boolean | undefined) | CarryOnObject) | undefined;
     validations?: ((CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributeStringValidations[] | undefined) | CarryOnObject) | undefined;
-};;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodArray | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodPlainAttribute | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributePlainDateWithValidations | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributePlainNumberWithValidations | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributePlainStringWithValidations | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodEnum | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodFunction | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodLazy | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodLiteral | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodIntersection | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodMap | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodPromise | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodRecord | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodReference | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodSet | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodTuple | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodUnion | CarryOnObject;;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodArray | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodPlainAttribute | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributePlainDateWithValidations | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributePlainNumberWithValidations | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodAttributePlainStringWithValidations | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodEnum | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodFunction | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodLazy | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodLiteral | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodIntersection | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodMap | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodPromise | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodRecord | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodReference | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodSet | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodTuple | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodUnion | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodEnum = CarryOnObject | {
     optional?: ((boolean | undefined) | CarryOnObject) | undefined;
     nullable?: ((boolean | undefined) | CarryOnObject) | undefined;
@@ -3472,9 +3472,9 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodEnum = CarryOnObjec
     } | undefined;
     type: "enum" | CarryOnObject;
     definition: (string | CarryOnObject)[] | CarryOnObject;
-};;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodEnumAttributeTypes = ("any" | "bigint" | "boolean" | "date" | "never" | "null" | "number" | "string" | "uuid" | "undefined" | "unknown" | "void") | CarryOnObject;;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodEnumElementTypes = ("array" | "date" | "enum" | "function" | "lazy" | "literal" | "intersection" | "map" | "number" | "object" | "promise" | "record" | "schemaReference" | "set" | "string" | "tuple" | "union") | CarryOnObject;;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodEnumAttributeTypes = ("any" | "bigint" | "boolean" | "date" | "never" | "null" | "number" | "string" | "uuid" | "undefined" | "unknown" | "void") | CarryOnObject;
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodEnumElementTypes = ("array" | "date" | "enum" | "function" | "lazy" | "literal" | "intersection" | "map" | "number" | "object" | "promise" | "record" | "schemaReference" | "set" | "string" | "tuple" | "union") | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodFunction = CarryOnObject | {
     optional?: ((boolean | undefined) | CarryOnObject) | undefined;
     nullable?: ((boolean | undefined) | CarryOnObject) | undefined;
@@ -3498,7 +3498,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodFunction = CarryOnO
         args: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement[] | CarryOnObject;
         returns?: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement | undefined;
     };
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodLazy = CarryOnObject | {
     optional?: ((boolean | undefined) | CarryOnObject) | undefined;
     nullable?: ((boolean | undefined) | CarryOnObject) | undefined;
@@ -3519,7 +3519,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodLazy = CarryOnObjec
     } | undefined;
     type: "lazy" | CarryOnObject;
     definition: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodFunction;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodLiteral = CarryOnObject | {
     optional?: ((boolean | undefined) | CarryOnObject) | undefined;
     nullable?: ((boolean | undefined) | CarryOnObject) | undefined;
@@ -3540,7 +3540,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodLiteral = CarryOnOb
     } | undefined;
     type: "literal" | CarryOnObject;
     definition: string | number | bigint | boolean | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodIntersection = CarryOnObject | {
     optional?: ((boolean | undefined) | CarryOnObject) | undefined;
     nullable?: ((boolean | undefined) | CarryOnObject) | undefined;
@@ -3564,7 +3564,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodIntersection = Carr
         left: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement;
         right: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement;
     };
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodMap = CarryOnObject | {
     optional?: ((boolean | undefined) | CarryOnObject) | undefined;
     nullable?: ((boolean | undefined) | CarryOnObject) | undefined;
@@ -3588,7 +3588,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodMap = CarryOnObject
         CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement,
         CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement
     ] | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject = CarryOnObject | {
     optional?: ((boolean | undefined) | CarryOnObject) | undefined;
     nullable?: ((boolean | undefined) | CarryOnObject) | undefined;
@@ -3615,7 +3615,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject = CarryOnObj
     definition: {
         [x: string]: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement;
     } | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodPromise = CarryOnObject | {
     optional?: ((boolean | undefined) | CarryOnObject) | undefined;
     nullable?: ((boolean | undefined) | CarryOnObject) | undefined;
@@ -3636,7 +3636,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodPromise = CarryOnOb
     } | undefined;
     type: "promise" | CarryOnObject;
     definition: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodRecord = CarryOnObject | {
     optional?: ((boolean | undefined) | CarryOnObject) | undefined;
     nullable?: ((boolean | undefined) | CarryOnObject) | undefined;
@@ -3657,7 +3657,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodRecord = CarryOnObj
     } | undefined;
     type: "record" | CarryOnObject;
     definition: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodReference = CarryOnObject | {
     optional?: ((boolean | undefined) | CarryOnObject) | undefined;
     nullable?: ((boolean | undefined) | CarryOnObject) | undefined;
@@ -3687,7 +3687,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodReference = CarryOn
         relativePath?: ((string | undefined) | CarryOnObject) | undefined;
         absolutePath?: ((string | undefined) | CarryOnObject) | undefined;
     };
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodSet = CarryOnObject | {
     optional?: ((boolean | undefined) | CarryOnObject) | undefined;
     nullable?: ((boolean | undefined) | CarryOnObject) | undefined;
@@ -3708,7 +3708,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodSet = CarryOnObject
     } | undefined;
     type: "set" | CarryOnObject;
     definition: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodTuple = CarryOnObject | {
     optional?: ((boolean | undefined) | CarryOnObject) | undefined;
     nullable?: ((boolean | undefined) | CarryOnObject) | undefined;
@@ -3729,7 +3729,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodTuple = CarryOnObje
     } | undefined;
     type: "tuple" | CarryOnObject;
     definition: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement[] | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodUnion = CarryOnObject | {
     optional?: ((boolean | undefined) | CarryOnObject) | undefined;
     nullable?: ((boolean | undefined) | CarryOnObject) | undefined;
@@ -3759,8 +3759,8 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodUnion = CarryOnObje
     } | CarryOnObject) | undefined;
     carryOn?: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject | undefined;
     definition: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement[] | CarryOnObject;
-};;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_dataStoreType = ("miroir" | "app") | CarryOnObject;;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_dataStoreType = ("miroir" | "app") | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selfApplication = CarryOnObject | {
     uuid: string | CarryOnObject;
     parentName?: ((string | undefined) | CarryOnObject) | undefined;
@@ -3769,7 +3769,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selfApplication = Carry
     name: string | CarryOnObject;
     defaultLabel: string | CarryOnObject;
     description?: ((string | undefined) | CarryOnObject) | undefined;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationVersion = CarryOnObject | {
     uuid: string | CarryOnObject;
     parentName?: ((string | undefined) | CarryOnObject) | undefined;
@@ -3788,7 +3788,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationVersion = Ca
     modelCUDMigration?: ((({
         [x: string]: any | CarryOnObject;
     } | CarryOnObject)[] | undefined) | CarryOnObject) | undefined;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_menu = CarryOnObject | {
     uuid: string | CarryOnObject;
     parentName?: ((string | undefined) | CarryOnObject) | undefined;
@@ -3798,8 +3798,8 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_menu = CarryOnObject | 
     defaultLabel: string | CarryOnObject;
     description?: ((string | undefined) | CarryOnObject) | undefined;
     definition: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_menuDefinition;
-};;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_menuDefinition = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_simpleMenu | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_complexMenu | CarryOnObject;;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_menuDefinition = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_simpleMenu | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_complexMenu | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity = CarryOnObject | {
     uuid: string | CarryOnObject;
     parentName?: ((string | undefined) | CarryOnObject) | undefined;
@@ -3810,7 +3810,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity = CarryOnObject 
     name: string | CarryOnObject;
     author?: ((string | undefined) | CarryOnObject) | undefined;
     description?: ((string | undefined) | CarryOnObject) | undefined;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition = CarryOnObject | {
     uuid: string | CarryOnObject;
     parentName: string | CarryOnObject;
@@ -3824,18 +3824,18 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition = Carr
     viewAttributes?: (((string | CarryOnObject)[] | undefined) | CarryOnObject) | undefined;
     icon?: ((string | undefined) | CarryOnObject) | undefined;
     jzodSchema: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject;
-};;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection = "model" | "data" | CarryOnObject;;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection = "model" | "data" | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance = CarryOnObject | {
     uuid: string | CarryOnObject;
     parentName?: ((string | undefined) | CarryOnObject) | undefined;
     parentUuid: string | CarryOnObject;
     conceptLevel?: ((("MetaModel" | "Model" | "Data") | undefined) | CarryOnObject) | undefined;
-};;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceUuid = string | CarryOnObject;;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceUuid = string | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstancesUuidIndex = {
     [x: string]: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance;
-} | CarryOnObject;;
+} | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_deployment = CarryOnObject | {
     uuid: string | CarryOnObject;
     parentName?: ((string | undefined) | CarryOnObject) | undefined;
@@ -3849,7 +3849,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_deployment = CarryOnObj
     configuration?: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration | undefined;
     model?: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject | undefined;
     data?: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject | undefined;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selfApplicationDeploymentConfiguration = CarryOnObject | {
     uuid: string | CarryOnObject;
     parentName?: ((string | undefined) | CarryOnObject) | undefined;
@@ -3859,70 +3859,70 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selfApplicationDeployme
     defaultLabel: string | CarryOnObject;
     description?: ((string | undefined) | CarryOnObject) | undefined;
     selfApplication: string | CarryOnObject;
-};;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementSuccess = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementVoid | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementAny | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementObject | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementInstanceUuidIndex | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementEntityInstanceCollection | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementInstanceArray | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementEntityInstance | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementInstanceUuid | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementString | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementNumber | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementArray | CarryOnObject;;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementSuccess = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementVoid | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementAny | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementObject | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementInstanceUuidIndex | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementEntityInstanceCollection | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementInstanceArray | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementEntityInstance | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementInstanceUuid | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementString | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementNumber | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementArray | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementVoid = CarryOnObject | {
     elementType: "void" | CarryOnObject;
     elementValue?: (void | undefined) | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementAny = CarryOnObject | {
     elementType: "any" | CarryOnObject;
     elementValue?: any | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementArray = CarryOnObject | {
     elementType: "array" | CarryOnObject;
     elementValue: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElement[] | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementInstanceUuid = CarryOnObject | {
     elementType: "instanceUuid" | CarryOnObject;
     elementValue: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceUuid;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementNumber = CarryOnObject | {
     elementType: "number" | CarryOnObject;
     elementValue: number | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementString = CarryOnObject | {
     elementType: "string" | CarryOnObject;
     elementValue: string | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementFailed = CarryOnObject | {
     elementType: "failure" | CarryOnObject;
     elementValue: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryFailed;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementObject = CarryOnObject | {
     elementType: "object" | CarryOnObject;
     elementValue: {
         [x: string]: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElement;
     } | CarryOnObject;
-};;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementObjectOrFailed = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementObject | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementFailed | CarryOnObject;;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementObjectOrFailed = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementObject | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementFailed | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementInstanceUuidIndex = CarryOnObject | {
     elementType: "instanceUuidIndex" | CarryOnObject;
     elementValue: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstancesUuidIndex;
-};;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementInstanceUuidIndexOrFailed = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementInstanceUuidIndex | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementFailed | CarryOnObject;;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementInstanceUuidIndexOrFailed = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementInstanceUuidIndex | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementFailed | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementEntityInstanceCollection = CarryOnObject | {
     elementType: "entityInstanceCollection" | CarryOnObject;
     elementValue: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection;
-};;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementEntityInstanceCollectionOrFailed = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementEntityInstanceCollection | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementFailed | CarryOnObject;;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementEntityInstanceCollectionOrFailed = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementEntityInstanceCollection | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementFailed | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementInstanceArray = CarryOnObject | {
     elementType: "instanceArray" | CarryOnObject;
     elementValue: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance[] | CarryOnObject;
-};;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementInstanceArrayOrFailed = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementInstanceArray | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementFailed | CarryOnObject;;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementInstanceArrayOrFailed = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementInstanceArray | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementFailed | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementEntityInstance = CarryOnObject | {
     elementType: "instance" | CarryOnObject;
     elementValue: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance;
-};;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementEntityInstanceOrFailed = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementEntityInstance | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementFailed | CarryOnObject;;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElement = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementSuccess | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementFailed | CarryOnObject;;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementEntityInstanceOrFailed = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementEntityInstance | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementFailed | CarryOnObject;
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElement = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementSuccess | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainElementFailed | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection = CarryOnObject | {
     parentName?: ((string | undefined) | CarryOnObject) | undefined;
     parentUuid: string | CarryOnObject;
     applicationSection: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection;
     instances: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance[] | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodSchema = CarryOnObject | {
     uuid: string | CarryOnObject;
     parentName: string | CarryOnObject;
@@ -3933,7 +3933,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodSchema = CarryOnObj
     defaultLabel?: ((string | undefined) | CarryOnObject) | undefined;
     description?: ((string | undefined) | CarryOnObject) | undefined;
     definition?: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObjectOrReference | undefined;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirMenuItem = CarryOnObject | {
     label: string | CarryOnObject;
     section: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection;
@@ -3941,22 +3941,22 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirMenuItem = CarryO
     reportUuid: string | CarryOnObject;
     instanceUuid?: ((string | undefined) | CarryOnObject) | undefined;
     icon: string | CarryOnObject;
-};;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_menuItemArray = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirMenuItem[] | CarryOnObject;;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_menuItemArray = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirMenuItem[] | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_sectionOfMenu = CarryOnObject | {
     title: string | CarryOnObject;
     label: string | CarryOnObject;
     items: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_menuItemArray;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_simpleMenu = CarryOnObject | {
     menuType: "simpleMenu" | CarryOnObject;
     definition: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_menuItemArray;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_complexMenu = CarryOnObject | {
     menuType: "complexMenu" | CarryOnObject;
     definition: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_sectionOfMenu[] | CarryOnObject;
-};;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObjectOrReference = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodReference | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject | CarryOnObject;;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObjectOrReference = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodReference | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectInstanceReportSection = CarryOnObject | {
     type: "objectInstanceReportSection" | CarryOnObject;
     combinerTemplates?: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerTemplateRecord | undefined;
@@ -3969,7 +3969,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectInstanceReportSec
         fetchedDataReference?: ((string | undefined) | CarryOnObject) | undefined;
         query?: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateReturningObject | undefined;
     };
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectListReportSection = CarryOnObject | {
     type: "objectListReportSection" | CarryOnObject;
     definition: CarryOnObject | {
@@ -3980,7 +3980,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectListReportSection
         query?: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateReturningObject | undefined;
         sortByAttribute?: ((string | undefined) | CarryOnObject) | undefined;
     };
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_gridReportSection = CarryOnObject | {
     type: "grid" | CarryOnObject;
     combinerTemplates?: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerTemplateRecord | undefined;
@@ -3989,7 +3989,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_gridReportSection = Car
     } | undefined) | CarryOnObject) | undefined;
     selectData?: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerTemplateRecord | undefined;
     definition: (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_reportSection[] | CarryOnObject)[] | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_listReportSection = CarryOnObject | {
     type: "list" | CarryOnObject;
     combinerTemplates?: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerTemplateRecord | undefined;
@@ -3998,8 +3998,8 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_listReportSection = Car
     } | undefined) | CarryOnObject) | undefined;
     selectData?: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerTemplateRecord | undefined;
     definition: (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectInstanceReportSection | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectListReportSection | CarryOnObject)[] | CarryOnObject;
-};;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_reportSection = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_gridReportSection | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_listReportSection | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectListReportSection | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectInstanceReportSection | CarryOnObject;;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_reportSection = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_gridReportSection | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_listReportSection | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectListReportSection | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectInstanceReportSection | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_rootReport = CarryOnObject | {
     reportParametersToFetchQueryParametersTransformer?: (({
         [x: string]: string | CarryOnObject;
@@ -4015,7 +4015,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_rootReport = CarryOnObj
         [x: string]: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime;
     } | undefined) | CarryOnObject) | undefined;
     section: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_reportSection;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_report = CarryOnObject | {
     uuid: string | CarryOnObject;
     parentName?: ((string | undefined) | CarryOnObject) | undefined;
@@ -4027,17 +4027,17 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_report = CarryOnObject 
     type?: ((("list" | "grid") | undefined) | CarryOnObject) | undefined;
     selfApplication?: ((string | undefined) | CarryOnObject) | undefined;
     definition: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_rootReport;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer = {
     transformerType: "objectTransformer" | CarryOnObject;
     attributeName: string | CarryOnObject;
-} | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_recordOfTransformers | CarryOnObject;;
+} | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_recordOfTransformers | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_recordOfTransformers = CarryOnObject | {
     transformerType: "recordOfTransformers" | CarryOnObject;
     definition: {
         [x: string]: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer;
     } | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_metaModel = CarryOnObject | {
     applicationVersions: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationVersion[] | CarryOnObject;
     applicationVersionCrossEntityDefinition: (CarryOnObject | {
@@ -4053,20 +4053,20 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_metaModel = CarryOnObje
     jzodSchemas: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodSchema[] | CarryOnObject;
     menus: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_menu[] | CarryOnObject;
     reports: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_report[] | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_indexedDbStoreSectionConfiguration = CarryOnObject | {
     emulatedServerType: "indexedDb" | CarryOnObject;
     indexedDbName: string | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_filesystemDbStoreSectionConfiguration = CarryOnObject | {
     emulatedServerType: "filesystem" | CarryOnObject;
     directory: string | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_sqlDbStoreSectionConfiguration = CarryOnObject | {
     emulatedServerType: "sql" | CarryOnObject;
     connectionString: string | CarryOnObject;
     schema: string | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeBasedConfiguration = CarryOnObject | {
     uuid: string | CarryOnObject;
     parentName?: ((string | undefined) | CarryOnObject) | undefined;
@@ -4076,13 +4076,13 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeBasedConfiguration
     definition: CarryOnObject | {
         currentApplicationVersion: string | CarryOnObject;
     };
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration = CarryOnObject | {
     admin: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeSectionConfiguration;
     model: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeSectionConfiguration;
     data: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeSectionConfiguration;
-};;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeSectionConfiguration = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_indexedDbStoreSectionConfiguration | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_filesystemDbStoreSectionConfiguration | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_sqlDbStoreSectionConfiguration | CarryOnObject;;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeSectionConfiguration = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_indexedDbStoreSectionConfiguration | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_filesystemDbStoreSectionConfiguration | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_sqlDbStoreSectionConfiguration | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction = {
     actionType: "instanceAction" | CarryOnObject;
     actionName: "createInstance" | CarryOnObject;
@@ -4109,7 +4109,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction = {
     applicationSection: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection;
     includeInTransaction?: ((boolean | undefined) | CarryOnObject) | undefined;
     objects: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection[] | CarryOnObject;
-} | CarryOnObject;;
+} | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction = {
     actionType: "undoRedoAction" | CarryOnObject;
     actionName: "undo" | CarryOnObject;
@@ -4122,8 +4122,8 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction = {
     actionLabel?: ((string | undefined) | CarryOnObject) | undefined;
     endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389" | CarryOnObject;
     deploymentUuid: string | CarryOnObject;
-} | CarryOnObject;;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeOrBundleAction = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeManagementAction | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_bundleAction | CarryOnObject;;
+} | CarryOnObject;
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeOrBundleAction = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeManagementAction | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_bundleAction | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction = {
     actionType: "modelAction" | CarryOnObject;
     actionName: "initModel" | CarryOnObject;
@@ -4214,7 +4214,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction = {
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e" | CarryOnObject;
     entityUuid: string | CarryOnObject;
     entityDefinitionUuid: string | CarryOnObject;
-} | CarryOnObject;;
+} | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction = {
     actionType: "instanceAction" | CarryOnObject;
     actionName: "createInstance" | CarryOnObject;
@@ -4274,7 +4274,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction = {
     deploymentUuid: string | CarryOnObject;
     applicationSection: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection;
     parentUuid: string | CarryOnObject;
-} | CarryOnObject;;
+} | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeManagementAction = {
     actionType: "storeManagementAction" | CarryOnObject;
     actionName: "createStore" | CarryOnObject;
@@ -4311,13 +4311,13 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeManagementAction =
     actionLabel?: ((string | undefined) | CarryOnObject) | undefined;
     endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f" | CarryOnObject;
     deploymentUuid: string | CarryOnObject;
-} | CarryOnObject;;
+} | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transactionalInstanceAction = CarryOnObject | {
     actionType: "transactionalInstanceAction" | CarryOnObject;
     actionLabel?: ((string | undefined) | CarryOnObject) | undefined;
     deploymentUuid?: ((string | undefined) | CarryOnObject) | undefined;
     instanceAction: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_bundleAction = {
     actionType: "bundleAction" | CarryOnObject;
     actionName: "createBundle" | CarryOnObject;
@@ -4328,7 +4328,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_bundleAction = {
     actionName: "deleteBundle" | CarryOnObject;
     actionLabel?: ((string | undefined) | CarryOnObject) | undefined;
     deploymentUuid: string | CarryOnObject;
-} | CarryOnObject;;
+} | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeOrBundleAction | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction | {
     actionType: "transactionalInstanceAction" | CarryOnObject;
     actionLabel?: ((string | undefined) | CarryOnObject) | undefined;
@@ -4368,7 +4368,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction = CarryOn_
         nameGivenToResult: string | CarryOnObject;
         testAssertion: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion;
     } | CarryOnObject)[] | CarryOnObject;
-} | CarryOnObject;;
+} | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeActionDefinition = (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction | {
     actionType: "compositeRunBoxedQueryTemplateAction" | CarryOnObject;
     actionLabel?: ((string | undefined) | CarryOnObject) | undefined;
@@ -4394,7 +4394,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeActionDefiniti
     actionLabel?: ((string | undefined) | CarryOnObject) | undefined;
     nameGivenToResult: string | CarryOnObject;
     testAssertion: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion;
-} | CarryOnObject)[] | CarryOnObject;;
+} | CarryOnObject)[] | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction = CarryOnObject | {
     actionType: "compositeAction" | CarryOnObject;
     actionName: "sequence" | CarryOnObject;
@@ -4429,7 +4429,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction = Carry
         nameGivenToResult: string | CarryOnObject;
         testAssertion: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion;
     } | CarryOnObject)[] | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion = CarryOnObject | {
     testType: "testAssertion" | CarryOnObject;
     testLabel: string | CarryOnObject;
@@ -4439,7 +4439,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion = CarryOn
         ignoreAttributes?: (((string | CarryOnObject)[] | undefined) | CarryOnObject) | undefined;
         expectedValue?: any | CarryOnObject;
     };
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAction_runTestCase = CarryOnObject | {
     actionType: "testAction" | CarryOnObject;
     actionName: "runTestCase" | CarryOnObject;
@@ -4447,7 +4447,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAction_runTestCase 
     deploymentUuid: string | CarryOnObject;
     applicationSection: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection;
     testToRun: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_shippingBox = CarryOnObject | {
     deploymentUuid: string | CarryOnObject;
     pageParams: {
@@ -4459,7 +4459,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_shippingBox = CarryOnOb
     contextResults: {
         [x: string]: any | CarryOnObject;
     } | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedExtractorOrCombinerReturningObject = CarryOnObject | {
     deploymentUuid: string | CarryOnObject;
     pageParams: {
@@ -4473,7 +4473,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedExtractorOrCombine
     } | CarryOnObject;
     queryType: "boxedExtractorOrCombinerReturningObject" | CarryOnObject;
     select: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerReturningObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedExtractorOrCombinerReturningObjectList = CarryOnObject | {
     deploymentUuid: string | CarryOnObject;
     pageParams: {
@@ -4487,7 +4487,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedExtractorOrCombine
     } | CarryOnObject;
     queryType: "boxedExtractorOrCombinerReturningObjectList" | CarryOnObject;
     select: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerReturningObjectList;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedQueryWithExtractorCombinerTransformer = CarryOnObject | {
     deploymentUuid: string | CarryOnObject;
     pageParams: {
@@ -4506,14 +4506,14 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedQueryWithExtractor
     runtimeTransformers?: (({
         [x: string]: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extendedTransformerForRuntime;
     } | undefined) | CarryOnObject) | undefined;
-};;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedExtractorOrCombinerReturningObjectOrObjectList = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedExtractorOrCombinerReturningObject | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedExtractorOrCombinerReturningObjectList | CarryOnObject;;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedExtractorOrCombinerReturningObjectOrObjectList = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedExtractorOrCombinerReturningObject | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedExtractorOrCombinerReturningObjectList | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerRoot = CarryOnObject | {
     label?: ((string | undefined) | CarryOnObject) | undefined;
     applicationSection?: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | undefined;
     parentName?: ((string | undefined) | CarryOnObject) | undefined;
     parentUuid: string | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorByEntityReturningObjectList = CarryOnObject | {
     label?: ((string | undefined) | CarryOnObject) | undefined;
     applicationSection?: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | undefined;
@@ -4528,17 +4528,17 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorByEntityReturn
         attributeName: string | CarryOnObject;
         value?: any | CarryOnObject;
     }) | undefined;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorWrapperReturningList = CarryOnObject | {
     extractorOrCombinerType: "extractorWrapperReturningList" | CarryOnObject;
     definition: (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerContextReference | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombiner | CarryOnObject)[] | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorWrapperReturningObject = CarryOnObject | {
     extractorOrCombinerType: "extractorWrapperReturningObject" | CarryOnObject;
     definition: {
         [x: string]: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerContextReference | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombiner | CarryOnObject;
     } | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorForObjectByDirectReference = CarryOnObject | {
     label?: ((string | undefined) | CarryOnObject) | undefined;
     applicationSection?: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | undefined;
@@ -4546,11 +4546,11 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorForObjectByDir
     parentUuid: string | CarryOnObject;
     extractorOrCombinerType: "extractorForObjectByDirectReference" | CarryOnObject;
     instanceUuid: string | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerContextReference = CarryOnObject | {
     extractorOrCombinerType: "extractorOrCombinerContextReference" | CarryOnObject;
     extractorOrCombinerContextReference: string | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorCombinerByHeteronomousManyToManyReturningListOfObjectList = CarryOnObject | {
     extractorOrCombinerType: "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList" | CarryOnObject;
     orderBy?: (CarryOnObject | {
@@ -4562,16 +4562,16 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorCombinerByHete
         query: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerTemplate;
         rootQueryObjectTransformer: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_recordOfTransformers;
     };
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombiner = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerContextReference | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerReturningObject | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerReturningObjectList | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorWrapper | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorCombinerByHeteronomousManyToManyReturningListOfObjectList | {
     extractorOrCombinerType: "literal" | CarryOnObject;
     definition: string | CarryOnObject;
-} | CarryOnObject;;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerReturningObject = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorForObjectByDirectReference | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerForObjectByRelation | CarryOnObject;;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerReturningObjectList = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorByEntityReturningObjectList | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerByRelationReturningObjectList | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerByManyToManyRelationReturningObjectList | CarryOnObject;;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerReturningObjectOrObjectList = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerReturningObject | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerReturningObjectList | CarryOnObject;;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorWrapper = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorWrapperReturningObject | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorWrapperReturningList | CarryOnObject;;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractor = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorForObjectByDirectReference | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorByEntityReturningObjectList | CarryOnObject;;
+} | CarryOnObject;
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerReturningObject = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorForObjectByDirectReference | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerForObjectByRelation | CarryOnObject;
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerReturningObjectList = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorByEntityReturningObjectList | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerByRelationReturningObjectList | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerByManyToManyRelationReturningObjectList | CarryOnObject;
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerReturningObjectOrObjectList = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerReturningObject | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerReturningObjectList | CarryOnObject;
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorWrapper = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorWrapperReturningObject | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorWrapperReturningList | CarryOnObject;
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractor = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorForObjectByDirectReference | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorByEntityReturningObjectList | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerForObjectByRelation = CarryOnObject | {
     label?: ((string | undefined) | CarryOnObject) | undefined;
     applicationSection?: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | undefined;
@@ -4580,7 +4580,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerForObjectByRela
     extractorOrCombinerType: "combinerForObjectByRelation" | CarryOnObject;
     objectReference: string | CarryOnObject;
     AttributeOfObjectToCompareToReferenceUuid: string | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerByRelationReturningObjectList = CarryOnObject | {
     label?: ((string | undefined) | CarryOnObject) | undefined;
     applicationSection?: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | undefined;
@@ -4594,7 +4594,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerByRelationRetur
     objectReference: string | CarryOnObject;
     objectReferenceAttribute?: ((string | undefined) | CarryOnObject) | undefined;
     AttributeOfListObjectToCompareToReferenceUuid: string | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerByManyToManyRelationReturningObjectList = CarryOnObject | {
     label?: ((string | undefined) | CarryOnObject) | undefined;
     applicationSection?: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | undefined;
@@ -4608,10 +4608,10 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerByManyToManyRel
     objectListReference: string | CarryOnObject;
     objectListReferenceAttribute?: ((string | undefined) | CarryOnObject) | undefined;
     AttributeOfRootListObjectToCompareToListReferenceUuid?: ((string | undefined) | CarryOnObject) | undefined;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerRecord = {
     [x: string]: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombiner;
-} | CarryOnObject;;
+} | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction = CarryOnObject | {
     actionType: "runBoxedExtractorOrQueryAction" | CarryOnObject;
     actionName: "runQuery" | CarryOnObject;
@@ -4621,7 +4621,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQuer
     deploymentUuid: string | CarryOnObject;
     queryExecutionStrategy?: ((("localCacheOrFail" | "localCacheOrFetch" | "ServerCache" | "storage") | undefined) | CarryOnObject) | undefined;
     query: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedExtractorOrCombinerReturningObjectOrObjectList | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedQueryWithExtractorCombinerTransformer | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryTemplateOrBoxedExtractorTemplateAction = CarryOnObject | {
     actionType: "runBoxedQueryTemplateOrBoxedExtractorTemplateAction" | CarryOnObject;
     actionName: "runQuery" | CarryOnObject;
@@ -4630,7 +4630,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryTemplateOr
     applicationSection?: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | undefined;
     deploymentUuid: string | CarryOnObject;
     query: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedExtractorTemplateReturningObjectOrObjectList | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedQueryTemplateWithExtractorCombinerTransformer | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryAction = CarryOnObject | {
     actionType: "runBoxedQueryAction" | CarryOnObject;
     actionName: "runQuery" | CarryOnObject;
@@ -4639,7 +4639,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryAction = C
     applicationSection?: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | undefined;
     deploymentUuid: string | CarryOnObject;
     query: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedQueryWithExtractorCombinerTransformer;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryTemplateAction = CarryOnObject | {
     actionType: "runBoxedQueryTemplateAction" | CarryOnObject;
     actionName: "runQuery" | CarryOnObject;
@@ -4648,7 +4648,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryTemplateAc
     applicationSection?: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | undefined;
     deploymentUuid: string | CarryOnObject;
     query: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedQueryTemplateWithExtractorCombinerTransformer;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorAction = CarryOnObject | {
     actionType: "runBoxedExtractorAction" | CarryOnObject;
     actionName: "runQuery" | CarryOnObject;
@@ -4657,7 +4657,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorAction
     applicationSection?: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | undefined;
     deploymentUuid: string | CarryOnObject;
     query: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedExtractorOrCombinerReturningObjectOrObjectList;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorTemplateAction = CarryOnObject | {
     actionType: "runBoxedExtractorTemplateAction" | CarryOnObject;
     actionName: "runQuery" | CarryOnObject;
@@ -4665,89 +4665,89 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorTempla
     applicationSection?: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | undefined;
     deploymentUuid: string | CarryOnObject;
     query: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedExtractorTemplateReturningObjectOrObjectList;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_label = CarryOnObject | {
     label?: ((string | undefined) | CarryOnObject) | undefined;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_orderBy = CarryOnObject | {
     label?: ((string | undefined) | CarryOnObject) | undefined;
     orderBy?: ((string | undefined) | CarryOnObject) | undefined;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constant = CarryOnObject | {
     transformerType: "constant" | CarryOnObject;
     value?: any | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantAsExtractor = CarryOnObject | {
     transformerType: "constantAsExtractor" | CarryOnObject;
     valueType?: ((("string" | "number" | "boolean" | "bigint" | "object" | "array") | undefined) | CarryOnObject) | undefined;
     valueJzodSchema: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement;
     value?: any | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantArray = CarryOnObject | {
     transformerType: "constantArray" | CarryOnObject;
     value: (any | CarryOnObject)[] | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantBoolean = CarryOnObject | {
     transformerType: "constantBoolean" | CarryOnObject;
     value: boolean | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantBigint = CarryOnObject | {
     transformerType: "constantBigint" | CarryOnObject;
     value: number | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantObject = CarryOnObject | {
     transformerType: "constantObject" | CarryOnObject;
     value: {
         [x: string]: any | CarryOnObject;
     } | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantNumber = CarryOnObject | {
     transformerType: "constantNumber" | CarryOnObject;
     value: number | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantString = CarryOnObject | {
     transformerType: "constantString" | CarryOnObject;
     value: string | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantUuid = CarryOnObject | {
     transformerType: "constantUuid" | CarryOnObject;
     value: string | CarryOnObject;
-};;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constants = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constant | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantAsExtractor | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantArray | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantBigint | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantBoolean | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantUuid | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantObject | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantNumber | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantString | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_newUuid | CarryOnObject;;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constants = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constant | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantAsExtractor | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantArray | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantBigint | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantBoolean | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantUuid | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantObject | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantNumber | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantString | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_newUuid | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantListAsExtractor = CarryOnObject | {
     transformerType: "constantListAsExtractor" | CarryOnObject;
     value: (any | CarryOnObject)[] | CarryOnObject;
-};;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_extractors = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantListAsExtractor;;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_extractors = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantListAsExtractor;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_newUuid = CarryOnObject | {
     transformerType: "newUuid" | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_parameterReference = CarryOnObject | {
     transformerType: "parameterReference" | CarryOnObject;
     referenceName?: ((string | undefined) | CarryOnObject) | undefined;
     referencePath?: (((string | CarryOnObject)[] | undefined) | CarryOnObject) | undefined;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_contextReference = CarryOnObject | {
     transformerType: "contextReference" | CarryOnObject;
     referenceName?: ((string | undefined) | CarryOnObject) | undefined;
     referencePath?: (((string | CarryOnObject)[] | undefined) | CarryOnObject) | undefined;
-};;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_contextOrParameterReference = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_contextReference | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_parameterReference | CarryOnObject;;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_contextOrParameterReference = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_contextReference | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_parameterReference | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_objectDynamicAccess = CarryOnObject | {
     transformerType: "objectDynamicAccess" | CarryOnObject;
     objectAccessPath: (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_contextOrParameterReference | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_objectDynamicAccess | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_mustacheStringTemplate | string | CarryOnObject)[] | CarryOnObject;
-};;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_InnerReference = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_mustacheStringTemplate | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constant | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantUuid | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantObject | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantString | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_newUuid | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_contextOrParameterReference | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_objectDynamicAccess | CarryOnObject;;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_InnerReference = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_mustacheStringTemplate | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constant | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantUuid | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantObject | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantString | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_newUuid | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_contextOrParameterReference | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_objectDynamicAccess | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_mustacheStringTemplate = CarryOnObject | {
     transformerType: "mustacheStringTemplate" | CarryOnObject;
     definition: string | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateRoot = CarryOnObject | {
     label?: ((string | undefined) | CarryOnObject) | undefined;
     applicationSection?: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | undefined;
     parentName?: ((string | undefined) | CarryOnObject) | undefined;
     parentUuid: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_InnerReference;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryFailed = CarryOnObject | {
     queryFailure: ("FailedTransformer_objectEntries" | "FailedExtractor" | "QueryNotExecutable" | "DomainStateNotLoaded" | "IncorrectParameters" | "DeploymentNotFound" | "ApplicationSectionNotFound" | "EntityNotFound" | "InstanceNotFound" | "ReferenceNotFound" | "ReferenceFoundButUndefined" | "ReferenceFoundButAttributeUndefinedOnFoundObject") | CarryOnObject;
     query?: ((string | undefined) | CarryOnObject) | undefined;
@@ -4762,7 +4762,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_queryFailed = CarryOnOb
     applicationSection?: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | undefined;
     entityUuid?: ((string | undefined) | CarryOnObject) | undefined;
     instanceUuid?: ((string | undefined) | CarryOnObject) | undefined;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateByManyToManyRelationReturningObjectList = CarryOnObject | {
     label?: ((string | undefined) | CarryOnObject) | undefined;
     applicationSection?: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | undefined;
@@ -4776,7 +4776,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateByMany
     objectListReference: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_contextReference;
     objectListReferenceAttribute?: ((string | undefined) | CarryOnObject) | undefined;
     AttributeOfRootListObjectToCompareToListReferenceUuid?: ((string | undefined) | CarryOnObject) | undefined;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateForObjectListByEntity = CarryOnObject | {
     label?: ((string | undefined) | CarryOnObject) | undefined;
     applicationSection?: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | undefined;
@@ -4791,7 +4791,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateForObj
         attributeName: string | CarryOnObject;
         value: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantString;
     }) | undefined;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateByRelationReturningObjectList = CarryOnObject | {
     label?: ((string | undefined) | CarryOnObject) | undefined;
     applicationSection?: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | undefined;
@@ -4805,7 +4805,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateByRela
     objectReference: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_InnerReference;
     objectReferenceAttribute?: ((string | undefined) | CarryOnObject) | undefined;
     AttributeOfListObjectToCompareToReferenceUuid: string | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateCombinerForObjectByRelation = CarryOnObject | {
     label?: ((string | undefined) | CarryOnObject) | undefined;
     applicationSection?: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | undefined;
@@ -4814,7 +4814,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateCombin
     extractorTemplateType: "combinerForObjectByRelation" | CarryOnObject;
     objectReference: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_InnerReference;
     AttributeOfObjectToCompareToReferenceUuid: string | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateExtractorForObjectByDirectReference = CarryOnObject | {
     label?: ((string | undefined) | CarryOnObject) | undefined;
     applicationSection?: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | undefined;
@@ -4822,21 +4822,21 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateExtrac
     parentUuid: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_InnerReference;
     extractorTemplateType: "extractorForObjectByDirectReference" | CarryOnObject;
     instanceUuid: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_InnerReference;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateByExtractorWrapperReturningObject = CarryOnObject | {
     extractorTemplateType: "extractorTemplateByExtractorWrapperReturningObject" | CarryOnObject;
     definition: {
         [x: string]: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_contextOrParameterReference;
     } | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateByExtractorWrapperReturningList = CarryOnObject | {
     extractorTemplateType: "extractorTemplateByExtractorWrapperReturningList" | CarryOnObject;
     definition: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_contextOrParameterReference[] | CarryOnObject;
-};;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateByExtractorWrapper = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateByExtractorWrapperReturningObject | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateByExtractorWrapperReturningList | CarryOnObject;;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateReturningObject = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateCombinerForObjectByRelation | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateExtractorForObjectByDirectReference | CarryOnObject;;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateReturningObjectList = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateForObjectListByEntity | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateByRelationReturningObjectList | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateByManyToManyRelationReturningObjectList | CarryOnObject;;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateReturningObjectOrObjectList = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateReturningObject | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateReturningObjectList | CarryOnObject;;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateByExtractorWrapper = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateByExtractorWrapperReturningObject | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateByExtractorWrapperReturningList | CarryOnObject;
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateReturningObject = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateCombinerForObjectByRelation | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateExtractorForObjectByDirectReference | CarryOnObject;
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateReturningObjectList = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateForObjectListByEntity | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateByRelationReturningObjectList | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateByManyToManyRelationReturningObjectList | CarryOnObject;
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateReturningObjectOrObjectList = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateReturningObject | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateReturningObjectList | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateByExtractorCombiner = CarryOnObject | {
     extractorTemplateType: "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList" | CarryOnObject;
     rootExtractorOrReference: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerTemplate | string | CarryOnObject;
@@ -4844,15 +4844,15 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateByExtr
         query: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerTemplate;
         rootQueryObjectTransformer: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_recordOfTransformers;
     };
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerTemplate = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateByExtractorWrapper | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateExtractorForObjectByDirectReference | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateReturningObjectList | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateCombinerForObjectByRelation | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateByRelationReturningObjectList | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateByManyToManyRelationReturningObjectList | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateByExtractorCombiner | {
     extractorTemplateType: "literal" | CarryOnObject;
     definition: string | CarryOnObject;
-} | CarryOnObject;;
+} | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerTemplateRecord = {
     [x: string]: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerTemplate;
-} | CarryOnObject;;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constants | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_InnerReference | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_dataflowObject | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_dataflowSequence | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_freeObjectTemplate | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_inner_object_alter | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_object_fullTemplate | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_object_listReducerToSpreadObject | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_objectEntries | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_objectValues | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_object_listPickElement | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_object_listReducerToIndexObject | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_list_listMapperToList | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_mustacheStringTemplate | CarryOnObject;;
+} | CarryOnObject;
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constants | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_InnerReference | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_dataflowObject | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_dataflowSequence | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_freeObjectTemplate | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_inner_object_alter | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_object_fullTemplate | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_object_listReducerToSpreadObject | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_objectEntries | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_objectValues | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_object_listPickElement | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_object_listReducerToIndexObject | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_list_listMapperToList | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_mustacheStringTemplate | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_count = CarryOnObject | {
     applyTo: {
         referenceType: "referencedExtractor" | CarryOnObject;
@@ -4864,18 +4864,18 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_cou
     transformerType: "count" | CarryOnObject;
     attribute?: ((string | undefined) | CarryOnObject) | undefined;
     groupBy?: ((string | undefined) | CarryOnObject) | undefined;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_dataflowObject = CarryOnObject | {
     transformerType: "dataflowObject" | CarryOnObject;
     target: string | CarryOnObject;
     definition: {
         [x: string]: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild;
     } | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_dataflowSequence = CarryOnObject | {
     transformerType: "dataflowSequence" | CarryOnObject;
     definition: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild[] | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_freeObjectTemplate = CarryOnObject | {
     transformerType: "freeObjectTemplate" | CarryOnObject;
     definition: {
@@ -4883,7 +4883,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_fre
             [x: string]: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild;
         } | string | number | boolean | CarryOnObject;
     } | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_inner_object_alter = CarryOnObject | {
     transformerType: "objectAlter" | CarryOnObject;
     applyTo: {
@@ -4895,7 +4895,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_inn
     } | CarryOnObject;
     referenceToOuterObject: string | CarryOnObject;
     definition: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_freeObjectTemplate;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_innerFullObjectTemplate = CarryOnObject | {
     label?: ((string | undefined) | CarryOnObject) | undefined;
     orderBy?: ((string | undefined) | CarryOnObject) | undefined;
@@ -4912,12 +4912,12 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_inn
         attributeKey: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_InnerReference;
         attributeValue: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild;
     })[] | CarryOnObject;
-};;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_list = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_objectEntries | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_objectValues | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_list_listMapperToList | CarryOnObject;;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_list = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_objectEntries | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_objectValues | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_list_listMapperToList | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_mustacheStringTemplate = CarryOnObject | {
     transformerType: "mustacheStringTemplate" | CarryOnObject;
     definition: string | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_list_listMapperToList = CarryOnObject | {
     label?: ((string | undefined) | CarryOnObject) | undefined;
     orderBy?: ((string | undefined) | CarryOnObject) | undefined;
@@ -4931,13 +4931,13 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_lis
     } | CarryOnObject;
     referenceToOuterObject: string | CarryOnObject;
     elementTransformer: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_object_listReducerToIndexObject_root = CarryOnObject | {
     label?: ((string | undefined) | CarryOnObject) | undefined;
     orderBy?: ((string | undefined) | CarryOnObject) | undefined;
     transformerType: "listReducerToIndexObject" | CarryOnObject;
     indexAttribute: string | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_object_listReducerToIndexObject = CarryOnObject | {
     label?: ((string | undefined) | CarryOnObject) | undefined;
     orderBy?: ((string | undefined) | CarryOnObject) | undefined;
@@ -4950,7 +4950,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_obj
         referenceType: "referencedTransformer" | CarryOnObject;
         reference: string | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild | CarryOnObject;
     } | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_object_listReducerToSpreadObject = CarryOnObject | {
     label?: ((string | undefined) | CarryOnObject) | undefined;
     transformerType: "listReducerToSpreadObject" | CarryOnObject;
@@ -4961,14 +4961,14 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_obj
         referenceType: "referencedTransformer" | CarryOnObject;
         reference: string | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild | CarryOnObject;
     } | CarryOnObject;
-};;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_object = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_object_fullTemplate | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_freeObjectTemplate | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_inner_object_alter | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_object_listPickElement | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_object_listReducerToIndexObject | CarryOnObject;;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_object = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_object_fullTemplate | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_freeObjectTemplate | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_inner_object_alter | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_object_listPickElement | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_object_listReducerToIndexObject | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_object_fullTemplate_root = CarryOnObject | {
     label?: ((string | undefined) | CarryOnObject) | undefined;
     orderBy?: ((string | undefined) | CarryOnObject) | undefined;
     transformerType: "object_fullTemplate" | CarryOnObject;
     referenceToOuterObject: string | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_object_fullTemplate = CarryOnObject | {
     label?: ((string | undefined) | CarryOnObject) | undefined;
     orderBy?: ((string | undefined) | CarryOnObject) | undefined;
@@ -4985,13 +4985,13 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_obj
         attributeKey: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_InnerReference;
         attributeValue: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild;
     })[] | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_object_listPickElement_root = CarryOnObject | {
     label?: ((string | undefined) | CarryOnObject) | undefined;
     orderBy?: ((string | undefined) | CarryOnObject) | undefined;
     transformerType: "listPickElement" | CarryOnObject;
     index: number | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_object_listPickElement = CarryOnObject | {
     label?: ((string | undefined) | CarryOnObject) | undefined;
     orderBy?: ((string | undefined) | CarryOnObject) | undefined;
@@ -5004,12 +5004,12 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_obj
         referenceType: "referencedTransformer" | CarryOnObject;
         reference: string | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild | CarryOnObject;
     } | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_objectEntries_root = CarryOnObject | {
     label?: ((string | undefined) | CarryOnObject) | undefined;
     orderBy?: ((string | undefined) | CarryOnObject) | undefined;
     transformerType: "objectEntries" | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_objectEntries = CarryOnObject | {
     label?: ((string | undefined) | CarryOnObject) | undefined;
     orderBy?: ((string | undefined) | CarryOnObject) | undefined;
@@ -5021,12 +5021,12 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_obj
         referenceType: "referencedTransformer" | CarryOnObject;
         reference: string | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild | CarryOnObject;
     } | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_objectValues_root = CarryOnObject | {
     label?: ((string | undefined) | CarryOnObject) | undefined;
     orderBy?: ((string | undefined) | CarryOnObject) | undefined;
     transformerType: "objectValues" | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_objectValues = CarryOnObject | {
     label?: ((string | undefined) | CarryOnObject) | undefined;
     orderBy?: ((string | undefined) | CarryOnObject) | undefined;
@@ -5038,14 +5038,14 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_obj
         referenceType: "referencedTransformer" | CarryOnObject;
         reference: string | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild | CarryOnObject;
     } | CarryOnObject;
-};;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_string = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_mustacheStringTemplate;;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_string = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_mustacheStringTemplate;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_unique_root = CarryOnObject | {
     label?: ((string | undefined) | CarryOnObject) | undefined;
     orderBy?: ((string | undefined) | CarryOnObject) | undefined;
     transformerType: "unique" | CarryOnObject;
     attribute: string | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_unique = CarryOnObject | {
     label?: ((string | undefined) | CarryOnObject) | undefined;
     orderBy?: ((string | undefined) | CarryOnObject) | undefined;
@@ -5058,10 +5058,10 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_uni
         referenceType: "referencedTransformer" | CarryOnObject;
         reference: string | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild | CarryOnObject;
     } | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_Abstract = CarryOnObject | {
     interpolation: "runtime" | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_count = CarryOnObject | {
     interpolation: "runtime" | CarryOnObject;
     applyTo: {
@@ -5074,61 +5074,61 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_c
     transformerType: "count" | CarryOnObject;
     attribute?: ((string | undefined) | CarryOnObject) | undefined;
     groupBy?: ((string | undefined) | CarryOnObject) | undefined;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_constant = CarryOnObject | {
     transformerType: "constant" | CarryOnObject;
     value?: any | CarryOnObject;
     interpolation: "runtime" | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_constantAsExtractor = CarryOnObject | {
     transformerType: "constantAsExtractor" | CarryOnObject;
     valueType?: ((("string" | "number" | "boolean" | "bigint" | "object" | "array") | undefined) | CarryOnObject) | undefined;
     valueJzodSchema: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement;
     value?: any | CarryOnObject;
     interpolation: "runtime" | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_constantArray = CarryOnObject | {
     transformerType: "constantArray" | CarryOnObject;
     value: (any | CarryOnObject)[] | CarryOnObject;
     interpolation: "runtime" | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_constantBigint = CarryOnObject | {
     transformerType: "constantBigint" | CarryOnObject;
     value: number | CarryOnObject;
     interpolation: "runtime" | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_constantBoolean = CarryOnObject | {
     transformerType: "constantBoolean" | CarryOnObject;
     value: boolean | CarryOnObject;
     interpolation: "runtime" | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_constantNumber = CarryOnObject | {
     transformerType: "constantNumber" | CarryOnObject;
     value: number | CarryOnObject;
     interpolation: "runtime" | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_constantObject = CarryOnObject | {
     transformerType: "constantObject" | CarryOnObject;
     value: {
         [x: string]: any | CarryOnObject;
     } | CarryOnObject;
     interpolation: "runtime" | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_constantString = CarryOnObject | {
     transformerType: "constantString" | CarryOnObject;
     value: string | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_constantUuid = CarryOnObject | {
     transformerType: "constantUuid" | CarryOnObject;
     value: string | CarryOnObject;
     interpolation: "runtime" | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_contextReference = CarryOnObject | {
     transformerType: "contextReference" | CarryOnObject;
     referenceName?: ((string | undefined) | CarryOnObject) | undefined;
     referencePath?: (((string | CarryOnObject)[] | undefined) | CarryOnObject) | undefined;
-};;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_constants = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constant | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantAsExtractor | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantArray | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantBigint | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantBoolean | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantUuid | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantObject | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantNumber | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantString | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_newUuid | CarryOnObject;;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_constants = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constant | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantAsExtractor | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantArray | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantBigint | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantBoolean | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantUuid | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantObject | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantNumber | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantString | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_newUuid | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_dataflowObject = CarryOnObject | {
     interpolation: "runtime" | CarryOnObject;
     transformerType: "dataflowObject" | CarryOnObject;
@@ -5136,13 +5136,13 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_d
     definition: {
         [x: string]: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime;
     } | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_dataflowSequence = CarryOnObject | {
     interpolation: "runtime" | CarryOnObject;
     transformerType: "dataflowSequence" | CarryOnObject;
     definition: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime[] | CarryOnObject;
-};;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_contextOrParameterReference = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_contextReference | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_parameterReference | CarryOnObject;;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_contextOrParameterReference = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_contextReference | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_parameterReference | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_freeObjectTemplate = CarryOnObject | {
     interpolation: "runtime" | CarryOnObject;
     transformerType: "freeObjectTemplate" | CarryOnObject;
@@ -5151,11 +5151,11 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_f
             [x: string]: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime;
         } | string | number | CarryOnObject;
     } | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_orderedTransformer = CarryOnObject | {
     interpolation: "runtime" | CarryOnObject;
     orderBy?: ((string | undefined) | CarryOnObject) | undefined;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_innerFullObjectTemplate = CarryOnObject | {
     interpolation: "runtime" | CarryOnObject;
     orderBy?: ((string | undefined) | CarryOnObject) | undefined;
@@ -5171,8 +5171,8 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_i
         attributeKey: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime;
         attributeValue: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime;
     })[] | CarryOnObject;
-};;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_InnerReference = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_mustacheStringTemplate | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_contextOrParameterReference | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_objectDynamicAccess | CarryOnObject;;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_InnerReference = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_mustacheStringTemplate | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_contextOrParameterReference | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_objectDynamicAccess | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_object_fullTemplate = CarryOnObject | {
     interpolation: "runtime" | CarryOnObject;
     transformerType: "object_fullTemplate" | CarryOnObject;
@@ -5188,11 +5188,11 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_o
         attributeKey: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime;
         attributeValue: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime;
     })[] | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_objectDynamicAccess = CarryOnObject | {
     transformerType: "objectDynamicAccess" | CarryOnObject;
     objectAccessPath: (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_contextOrParameterReference | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_objectDynamicAccess | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_mustacheStringTemplate | string | CarryOnObject)[] | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_objectEntries = CarryOnObject | {
     interpolation: "runtime" | CarryOnObject;
     label?: ((string | undefined) | CarryOnObject) | undefined;
@@ -5205,7 +5205,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_o
         referenceType: "referencedTransformer" | CarryOnObject;
         reference: string | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime | CarryOnObject;
     } | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_objectValues = CarryOnObject | {
     interpolation: "runtime" | CarryOnObject;
     label?: ((string | undefined) | CarryOnObject) | undefined;
@@ -5218,7 +5218,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_o
         referenceType: "referencedTransformer" | CarryOnObject;
         reference: string | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime | CarryOnObject;
     } | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_list_listPickElement = CarryOnObject | {
     interpolation: "runtime" | CarryOnObject;
     label?: ((string | undefined) | CarryOnObject) | undefined;
@@ -5232,7 +5232,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_l
         referenceType: "referencedTransformer" | CarryOnObject;
         reference: string | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime | CarryOnObject;
     } | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_object_alter = CarryOnObject | {
     transformerType: "objectAlter" | CarryOnObject;
     applyTo: {
@@ -5244,7 +5244,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_o
     } | CarryOnObject;
     referenceToOuterObject: string | CarryOnObject;
     definition: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_freeObjectTemplate;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_list_listMapperToList = CarryOnObject | {
     interpolation: "runtime" | CarryOnObject;
     orderBy?: ((string | undefined) | CarryOnObject) | undefined;
@@ -5258,7 +5258,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_l
     } | CarryOnObject;
     referenceToOuterObject: string | CarryOnObject;
     elementTransformer: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_object_listReducerToSpreadObject = CarryOnObject | {
     label?: ((string | undefined) | CarryOnObject) | undefined;
     transformerType: "listReducerToSpreadObject" | CarryOnObject;
@@ -5269,7 +5269,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_o
         referenceType: "referencedTransformer" | CarryOnObject;
         reference: string | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime | CarryOnObject;
     } | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_mapper_listToObject = CarryOnObject | {
     interpolation: "runtime" | CarryOnObject;
     label?: ((string | undefined) | CarryOnObject) | undefined;
@@ -5283,19 +5283,19 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_m
         referenceType: "referencedTransformer" | CarryOnObject;
         reference: string | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime | CarryOnObject;
     } | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_mustacheStringTemplate = CarryOnObject | {
     transformerType: "mustacheStringTemplate" | CarryOnObject;
     definition: string | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_newUuid = CarryOnObject | {
     transformerType: "newUuid" | CarryOnObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_parameterReference = CarryOnObject | {
     transformerType: "parameterReference" | CarryOnObject;
     referenceName?: ((string | undefined) | CarryOnObject) | undefined;
     referencePath?: (((string | CarryOnObject)[] | undefined) | CarryOnObject) | undefined;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_unique = CarryOnObject | {
     label?: ((string | undefined) | CarryOnObject) | undefined;
     orderBy?: ((string | undefined) | CarryOnObject) | undefined;
@@ -5309,8 +5309,8 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_u
         referenceType: "referencedTransformer" | CarryOnObject;
         reference: string | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime | CarryOnObject;
     } | CarryOnObject;
-};;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_constants | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_dataflowObject | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_dataflowSequence | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_InnerReference | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_object_fullTemplate | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_freeObjectTemplate | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_object_alter | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_count | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_list_listPickElement | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_list_listMapperToList | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_mapper_listToObject | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_object_listReducerToSpreadObject | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_mustacheStringTemplate | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_objectValues | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_objectEntries | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_unique | CarryOnObject;;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_constants | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_dataflowObject | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_dataflowSequence | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_InnerReference | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_object_fullTemplate | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_freeObjectTemplate | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_object_alter | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_count | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_list_listPickElement | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_list_listMapperToList | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_mapper_listToObject | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_object_listReducerToSpreadObject | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_mustacheStringTemplate | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_objectValues | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_objectEntries | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_unique | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_menu_addItem = CarryOnObject | {
     transformerType: "transformer_menu_addItem" | CarryOnObject;
     interpolation: "runtime" | CarryOnObject;
@@ -5320,9 +5320,9 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_menu_addIte
         menuSectionInsertionIndex?: ((number | undefined) | CarryOnObject) | undefined;
         menuSectionItemInsertionIndex?: ((number | undefined) | CarryOnObject) | undefined;
     };
-};;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildOrRuntime = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime | CarryOnObject;;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extendedTransformerForRuntime = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_menu_addItem | CarryOnObject;;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildOrRuntime = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime | CarryOnObject;
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extendedTransformerForRuntime = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_menu_addItem | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedExtractorTemplateReturningObject = CarryOnObject | {
     deploymentUuid: string | CarryOnObject;
     pageParams: {
@@ -5336,7 +5336,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedExtractorTemplateR
     } | CarryOnObject;
     queryType: "boxedExtractorTemplateReturningObject" | CarryOnObject;
     select: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateReturningObject;
-};;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedExtractorTemplateReturningObjectList = CarryOnObject | {
     deploymentUuid: string | CarryOnObject;
     pageParams: {
@@ -5350,8 +5350,8 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedExtractorTemplateR
     } | CarryOnObject;
     queryType: "boxedExtractorTemplateReturningObjectList" | CarryOnObject;
     select: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateReturningObjectList;
-};;
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedExtractorTemplateReturningObjectOrObjectList = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedExtractorTemplateReturningObject | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedExtractorTemplateReturningObjectList | CarryOnObject;;
+};
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedExtractorTemplateReturningObjectOrObjectList = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedExtractorTemplateReturningObject | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedExtractorTemplateReturningObjectList | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedQueryTemplateWithExtractorCombinerTransformer = CarryOnObject | {
     deploymentUuid: string | CarryOnObject;
     pageParams: {
@@ -5370,9 +5370,10 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedQueryTemplateWithE
     runtimeTransformers?: (({
         [x: string]: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extendedTransformerForRuntime;
     } | undefined) | CarryOnObject) | undefined;
-};;
-export type CarryOnObject = TransformerForBuild | TransformerForRuntime;;
-export type CompositeActionTemplate = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction;;
+};
+export type CarryOnObject = TransformerForBuild | TransformerForRuntime;
+export type CompositeActionTemplate = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction;
+export type MiroirFundamentalType = JzodElement;
 
 export const ______________________________________________transformers_____________________________________________: z.ZodType<______________________________________________transformers_____________________________________________> = z.never();
 export const recordOfTransformers: z.ZodType<RecordOfTransformers> = z.object({transformerType:z.literal("recordOfTransformers"), definition:z.record(z.string(),z.lazy(() =>transformer))}).strict();
@@ -5843,4 +5844,4 @@ export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedExtractorTemplate
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedQueryTemplateWithExtractorCombinerTransformer: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedQueryTemplateWithExtractorCombinerTransformer> = z.union([z.lazy(() =>carryOnObject), z.object({deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), pageParams:z.union([z.record(z.string(),z.union([z.any(), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)]), queryParams:z.union([z.record(z.string(),z.union([z.any(), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)]), contextResults:z.union([z.record(z.string(),z.union([z.any(), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)]), queryType:z.union([z.literal("boxedQueryTemplateWithExtractorCombinerTransformer"), z.lazy(() =>carryOnObject)]), runAsSql:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), extractorTemplates:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerTemplateRecord).optional(), combinerTemplates:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerTemplateRecord).optional(), runtimeTransformers:z.union([z.record(z.string(),z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extendedTransformerForRuntime)).optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]);
 export const carryOnObject: z.ZodType<CarryOnObject> = z.union([z.lazy(() =>transformerForBuild), z.lazy(() =>transformerForRuntime)]);
 export const compositeActionTemplate: z.ZodType<CompositeActionTemplate> = z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction);
-export const miroirFundamentalType = jzodElement;
+export const miroirFundamentalType = z.lazy(() =>jzodElement);
