@@ -2926,28 +2926,8 @@ export function getMiroirFundamentalJzodSchema(
         // transformerForRuntime_applyTo: (miroirFundamentalJzodSchema as any).definition.context.transformerForRuntime_applyTo,
         transformerForRuntime_count: (transformerJzodSchema as any).definition.context
           .transformerForRuntime_count,
-        transformerForRuntime_constant: (transformerJzodSchema as any).definition.context
-          .transformerForRuntime_constant,
-        transformerForRuntime_constantAsExtractor: (transformerJzodSchema as any).definition.context
-          .transformerForRuntime_constantAsExtractor,
-        transformerForRuntime_constantArray: (transformerJzodSchema as any).definition.context
-          .transformerForRuntime_constantArray,
-        transformerForRuntime_constantBigint: (transformerJzodSchema as any).definition.context
-          .transformerForRuntime_constantBigint,
-        transformerForRuntime_constantBoolean: (transformerJzodSchema as any).definition.context
-          .transformerForRuntime_constantBoolean,
-        transformerForRuntime_constantNumber: (transformerJzodSchema as any).definition.context
-          .transformerForRuntime_constantNumber,
-        transformerForRuntime_constantObject: (transformerJzodSchema as any).definition.context
-          .transformerForRuntime_constantObject,
-        transformerForRuntime_constantString: (transformerJzodSchema as any).definition.context
-          .transformer_constantString,
-        transformerForRuntime_constantUuid: (transformerJzodSchema as any).definition.context
-          .transformerForRuntime_constantUuid,
         transformerForRuntime_contextReference: (transformerJzodSchema as any).definition.context
           .transformer_contextReference,
-        transformerForRuntime_constants: (transformerJzodSchema as any).definition.context
-          .transformer_constants,
         transformerForRuntime_dataflowObject: (transformerJzodSchema as any).definition.context
           .transformerForRuntime_dataflowObject,
         transformerForRuntime_dataflowSequence: (transformerJzodSchema as any).definition.context

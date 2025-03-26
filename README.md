@@ -99,6 +99,26 @@ Time:        6.032 s, estimated 8 s
 Ran all test suites with tests matching "domainSelector".
 ```
 
+To run the Transformer tests, in unit configuration (transformers are executed by the client or server, in memory)
+
+```sh
+RUN_TEST=transformers.unit.test npm run vitestByFile -w miroir-core -- 'transformers.unit'
+```
+
+To run the Transformer tests, in integration configuration (transformers are executed on the database as sql queries)
+
+```sh
+RUN_TEST=transformers.integ.test npm run vitestByFile -w miroir-core -- 'transformers.integ'
+```
+
+
+to run all the miroir-core unit tests:
+
+```sh
+npm run testNode -w miroir-core
+```
+
+
 
 
 ### Miroir-standalone-app: Automated Tests
@@ -117,11 +137,6 @@ then run the test:
 npm run testNode -w miroir-core -- domainSelector
 ```
 
-to run all the miroir-core unit tests:
-
-```sh
-npm run testNode -w miroir-core
-```
 
 #### Persistence store integration tests
 
