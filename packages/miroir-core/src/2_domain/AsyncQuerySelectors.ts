@@ -27,7 +27,7 @@ import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 import { applyExtractorForSingleObjectListToSelectedInstancesListInMemory, applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory, applyExtractorTransformerInMemory } from "./QuerySelectors";
 import { resolveExtractorTemplate } from "./Templates";
-import { applyTransformer } from "./Transformers";
+import { applyTransformer } from "./TransformersForRuntime";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

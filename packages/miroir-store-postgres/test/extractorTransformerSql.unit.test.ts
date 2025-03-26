@@ -1,11 +1,11 @@
 import { DomainElement, DomainElementSuccess, Domain2QueryReturnType } from "miroir-core";
-import { sqlStringForTransformer } from "../src/1_core/SqlGenerator";
-// import { sqlStringForTransformer } from "../src/4_services/SqlDbQueryRunner";
+import { sqlStringForRuntimeTransformer } from "../src/1_core/SqlGenerator";
+// import { sqlStringForRuntimeTransformer } from "../src/4_services/SqlDbQueryRunner";
 
 // console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 
 /**
- * PROBLEM: this tests implementation details of the sqlStringForTransformer function
+ * PROBLEM: this tests implementation details of the sqlStringForRuntimeTransformer function
  * IT IS NOT USED, AS IT IS NOT AT THE "RIGHT" LEVEL.
  */
 // describe("extractorTransformerSql.unit.test", () => {
@@ -13,7 +13,7 @@ import { sqlStringForTransformer } from "../src/1_core/SqlGenerator";
 //   it("apply basic transformer for simple string", async () => { // TODO: test failure cases!
 //       console.log(expect.getState().currentTestName, "START")
 
-//       const result: Domain2QueryReturnType<DomainElementSuccess> = sqlStringForTransformer(
+//       const result: Domain2QueryReturnType<DomainElementSuccess> = sqlStringForRuntimeTransformer(
 //         {
 //           transformerType: "constantString",
 //           interpolation: "runtime",
@@ -43,7 +43,7 @@ import { sqlStringForTransformer } from "../src/1_core/SqlGenerator";
 //   it("apply transformer mustacheStringTemplate", async () => { // TODO: test failure cases!
 //       console.log(expect.getState().currentTestName, "START")
 
-//       const result: Domain2QueryReturnType<DomainElementSuccess> = sqlStringForTransformer(
+//       const result: Domain2QueryReturnType<DomainElementSuccess> = sqlStringForRuntimeTransformer(
 //         {
 //           transformerType: "mustacheStringTemplate",
 //           interpolation: "runtime",
@@ -88,7 +88,7 @@ import { sqlStringForTransformer } from "../src/1_core/SqlGenerator";
 //   // it("apply transformer innerFullObjectTemplate", async () => { // TODO: test failure cases!
 //   //     console.log(expect.getState().currentTestName, "START")
 
-//   //     const result: Domain2QueryReturnType<DomainElementSuccess> = sqlStringForTransformer(
+//   //     const result: Domain2QueryReturnType<DomainElementSuccess> = sqlStringForRuntimeTransformer(
 //   //       {
 //   //         transformerType: "object_fullTemplate",
 //   //         interpolation: "runtime",

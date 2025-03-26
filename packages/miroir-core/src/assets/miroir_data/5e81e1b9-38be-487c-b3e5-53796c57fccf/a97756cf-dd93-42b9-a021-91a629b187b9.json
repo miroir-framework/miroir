@@ -1720,44 +1720,6 @@
         ],
         "definition": {}
       },
-      "transformerForRuntime_parameterReference":{
-        "type": "object",
-        "extend": [
-          {
-            "type": "schemaReference",
-            "definition": {
-              "eager": true,
-              "relativePath": "transformerForRuntime_Abstract"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "eager": true,
-              "relativePath": "transformer_parameterReference"
-            }
-          }
-        ],
-        "definition": {}
-      },
-      "transformerForRuntime_contextOrParameterReference": {
-        "type": "union",
-        "discriminator": "transformerType",
-        "definition": [
-          {
-            "type": "schemaReference",
-            "definition": {
-              "relativePath": "transformerForRuntime_contextReference"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "relativePath": "transformerForRuntime_parameterReference"
-            }
-          }
-        ]
-      },
       "transformerForRuntime_objectDynamicAccess":{
         "type": "object",
         "extend": {
@@ -1780,7 +1742,7 @@
                 {
                   "type": "schemaReference",
                   "definition": {
-                    "relativePath": "transformerForRuntime_contextOrParameterReference"
+                    "relativePath": "transformerForRuntime_contextReference"
                   }
                 },
                 {
@@ -1816,7 +1778,7 @@
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformerForRuntime_contextOrParameterReference"
+              "relativePath": "transformerForRuntime_contextReference"
             }
           },
           {

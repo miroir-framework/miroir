@@ -360,10 +360,16 @@ export class SqlDbQueryRunner {
       });
     }
     if (queryResult instanceof Domain2ElementFailed) {
-      return Promise.resolve(new Action2Error("FailedToGetInstances", JSON.stringify(queryResult), undefined, queryResult));
+      return Promise.resolve(
+        new Action2Error(
+          "FailedToGetInstances",
+          JSON.stringify(queryResult),
+          undefined,
+          queryResult
+        )
+      );
     } else {
       const result: Action2ReturnType = { status: "ok", returnedDomainElement: queryResult };
-      // const result: Action2ReturnType = new Action2Error({ status: "ok", returnedDomainElement: queryResult });
       log.info(
         this.logHeader,
         "handleBoxedQueryAction",
@@ -543,7 +549,10 @@ export class SqlDbQueryRunner {
       );
 
     if (entityInstanceCollection instanceof Action2Error) {
-      log.error("sqlDbQueryRunner extractEntityInstanceList failed with EntityNotFound for extractor", JSON.stringify(extractorRunnerParams.extractor, null, 2));
+      log.error(
+        "sqlDbQueryRunner extractEntityInstanceList failed with EntityNotFound for extractor",
+        JSON.stringify(extractorRunnerParams.extractor, null, 2)
+      );
 
       return new Domain2ElementFailed({
         queryFailure: "EntityNotFound",
@@ -553,7 +562,10 @@ export class SqlDbQueryRunner {
       });
     }
     if (entityInstanceCollection.returnedDomainElement instanceof Domain2ElementFailed) {
-      log.error("sqlDbQueryRunner extractEntityInstanceList failed for extractor", JSON.stringify(extractorRunnerParams.extractor, null, 2));
+      log.error(
+        "sqlDbQueryRunner extractEntityInstanceList failed for extractor",
+        JSON.stringify(extractorRunnerParams.extractor, null, 2)
+      );
       return new Domain2ElementFailed({
         queryFailure: "EntityNotFound",
         deploymentUuid,

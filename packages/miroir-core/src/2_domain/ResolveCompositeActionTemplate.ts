@@ -8,7 +8,7 @@ import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/LoggerFactory";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
-import { transformer_apply_wrapper } from "./Transformers";
+import { transformer_apply_wrapper } from "./TransformersForRuntime";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -19,10 +19,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 export function resolveCompositeActionTemplate(
   compositeActionTemplate: CompositeActionTemplate,
   actionParamValues: Record<string, any>,
-  currentModel: MetaModel
-// ): CompositeAction {
 ): {
-  // resolvedCompositeActionDefinition: CompositeActionDefinition,
   resolvedCompositeActionDefinition: CompositeAction,
   resolvedCompositeActionTemplates: Record<string,any>
 } {

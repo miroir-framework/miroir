@@ -11,7 +11,7 @@ import {
   TransformerForBuild_dataflowObject,
   TransformerForRuntime
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { transformer_extended_apply_wrapper, transformer_InnerReference_resolve } from "../../src/2_domain/Transformers";
+import { transformer_extended_apply_wrapper, transformer_InnerReference_resolve } from "../../src/2_domain/TransformersForRuntime";
 // import {
 //   author1,
 //   author2,
@@ -44,7 +44,7 @@ import {
   TransformerTest,
   transformerTestSuite_miroirTransformers,
   currentTestSuite,
-} from "./transformersTests_miroir.data";
+} from "./transformersForRuntimeTests_miroir.data";
 
 
 // const env:any = (import.meta as any).env
@@ -135,26 +135,36 @@ afterAll(async () => {
 // ################################################################################################
 async function runTransformerTestInMemory(vitest: any, testSuiteNamePath: string[], transformerTest: TransformerTest) {
   const assertionName = transformerTest.transformerTestLabel ?? transformerTest.transformerName;
-  console.log("#################################### test", assertionName, "START");
+  console.log("#################################### runTransformerTestInMemory test", assertionName, "START");
   // TestSuiteContext.setTest(transformerTest.transformerTestLabel);
 
   if (!currentTestSuite) {
     throw new Error("transformerTests is undefined");
   }
-  console.log("################################ transformerTestParams", JSON.stringify(transformerTest, null, 2));
+  console.log("################################ runTransformerTestInMemory transformerTestParams", JSON.stringify(transformerTest, null, 2));
   const transformer: TransformerForBuild | TransformerForRuntime = transformerTest.transformer;
   // const interpolation = (transformerTest.transformer as any).interpolation ?? "runtime"
+
+  const runtimeTransformer:TransformerForRuntime = transformer as any;
+  // const runtimeTransformer:TransformerForRuntime = (transformer as any).interpolation
+  //   ? (transformer as TransformerForRuntime)
+  //   : transformer_extended_apply_wrapper(
+  //       "build",
+  //       (transformer as any)?.label ?? transformerTest.transformerName,
+  //       transformer as TransformerForBuild,
+  //       transformerTest.transformerParams,
+  //       transformerTest.transformerRuntimeContext ?? {}
+  //     )
+  // ;
+
+  console.log("################################ runTransformerTestInMemory runtimeTransformer", JSON.stringify(runtimeTransformer, null, 2));
+  // TODO: check if transformer is indeed a runtime transformer, or if it is a "custom-made" build transformer
+
   const interpolation = "runtime"
-  // const resolvedTransformer = transformer_InnerReference_resolve(
-  //   "build",
-  //   transformer,
-  //   queryParams,
-  //   contextResults
-  // );
   const rawResult: Domain2QueryReturnType<any> = transformer_extended_apply_wrapper(
     interpolation,
     undefined,
-    transformer,
+    runtimeTransformer,
     transformerTest.transformerParams,
     transformerTest.transformerRuntimeContext ?? {}
   );
@@ -187,7 +197,7 @@ async function runTransformerTestInMemory(vitest: any, testSuiteNamePath: string
 }
 
 // ################################################################################################
-const testSuiteName = "transformers.unit.test";
+const testSuiteName = "transformersForRuntime.unit.test";
 if (RUN_TEST == testSuiteName) {
   // await runTransformerTestSuite(vitest, [transformerTests.transformerTestLabel ?? transformerTests.transformerTestType], transformerTests, runTransformerTest);
   await runTransformerTestSuite(vitest, [], currentTestSuite, runTransformerTestInMemory);
@@ -652,7 +662,7 @@ if (RUN_TEST == testSuiteName) {
   //     // }
   //   );
 
-  //   const sqlQuery = sqlStringForTransformer(
+  //   const sqlQuery = sqlStringForRuntimeTransformer(
   //     {
   //       transformerType: "listPickElement",
   //       interpolation: "runtime",

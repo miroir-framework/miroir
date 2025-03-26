@@ -6,7 +6,7 @@ import {
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { Domain2QueryReturnType } from "../../src/0_interfaces/2_domain/DomainElement";
 import { transformer_menu_AddItem } from "../../src/1_core/Menu";
-import { defaultTransformers } from "../../src/2_domain/Transformers";
+import { defaultTransformers } from "../../src/2_domain/TransformersForRuntime";
 // const env:any = (import.meta as any).env
 // console.log("@@@@@@@@@@@@@@@@@@ env", env);
 

@@ -769,7 +769,7 @@ export {
   transformer_extended_apply,
   transformer_InnerReference_resolve,
   transformer_mustacheStringTemplate_apply,
-} from "./2_domain/Transformers";
+} from "./2_domain/TransformersForRuntime";
 export {
   resolveExtractorTemplate,
   resolveQueryTemplateWithExtractorCombinerTransformer,

@@ -94,7 +94,7 @@ import {
   transformerTestSuite_miroirTransformers,
   TransformerTestSuite,
   currentTestSuite,
-} from "../2_domain/transformersTests_miroir.data";
+} from "../2_domain/transformersForRuntimeTests_miroir.data";
 import { MetaEntity, Uuid } from '../../src/0_interfaces/1_core/EntityDefinition.js';
 import { InitApplicationParameters, PersistenceStoreAdminSectionInterface } from '../../src/0_interfaces/4-services/PersistenceStoreControllerInterface.js';
 import { PersistenceStoreController } from '../../src/4_services/PersistenceStoreController.js';
@@ -103,7 +103,7 @@ import { defaultMiroirMetaModel } from '../../src/1_core/Model.js';
 import { TestSuiteContext } from '../../src/4_services/TestSuiteContext.js';
 import { Action2Error, Action2Success, Domain2ElementFailed, Domain2QueryReturnType } from '../../src/0_interfaces/2_domain/DomainElement.js';
 import { ignorePostgresExtraAttributes } from '../../src/4_services/otherTools.js';
-import { transformer_apply_wrapper } from '../../src/2_domain/Transformers.js';
+import { transformer_apply_wrapper } from '../../src/2_domain/TransformersForRuntime.js';
 import { transformerTestSuite_spreadsheet } from '../2_domain/transformersTests_spreadsheet.data.js';
 // const env:any = (import.meta as any).env
 // console.log("@@@@@@@@@@@@@@@@@@ env", env);
@@ -1098,7 +1098,7 @@ if (RUN_TEST == testSuiteName) {
   //     // }
   //   );
 
-  //   const sqlQuery = sqlStringForTransformer(
+  //   const sqlQuery = sqlStringForRuntimeTransformer(
   //     {
   //       transformerType: "listPickElement",
   //       interpolation: "runtime",

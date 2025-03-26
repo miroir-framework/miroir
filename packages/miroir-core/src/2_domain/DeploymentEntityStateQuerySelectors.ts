@@ -40,7 +40,7 @@ import {
 import {
   runQueryTemplateWithExtractorCombinerTransformer
 } from "./QueryTemplateSelectors";
-import { transformer_InnerReference_resolve } from "./Transformers";
+import { transformer_InnerReference_resolve } from "./TransformersForRuntime";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

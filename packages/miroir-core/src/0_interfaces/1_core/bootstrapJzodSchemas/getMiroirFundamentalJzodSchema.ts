@@ -2932,8 +2932,6 @@ export function getMiroirFundamentalJzodSchema(
           .transformerForRuntime_dataflowObject,
         transformerForRuntime_dataflowSequence: (transformerJzodSchema as any).definition.context
           .transformerForRuntime_dataflowSequence,
-        transformerForRuntime_contextOrParameterReference: (transformerJzodSchema as any).definition
-          .context.transformer_contextOrParameterReference,
         transformerForRuntime_freeObjectTemplate: (transformerJzodSchema as any).definition.context
           .transformerForRuntime_freeObjectTemplate,
         transformerForRuntime_orderedTransformer: (miroirFundamentalJzodSchema as any).definition
@@ -2964,8 +2962,6 @@ export function getMiroirFundamentalJzodSchema(
           .context.transformer_mustacheStringTemplate,
         transformerForRuntime_newUuid: (transformerJzodSchema as any).definition.context
           .transformer_newUuid,
-        transformerForRuntime_parameterReference: (transformerJzodSchema as any).definition.context
-          .transformer_parameterReference,
         // transformerForRuntime_mustacheStringTemplate: (miroirFundamentalJzodSchema as any).definition.context.transformerForRuntime_mustacheStringTemplate,
         transformerForRuntime_unique: (transformerJzodSchema as any).definition.context
           .transformerForRuntime_unique,

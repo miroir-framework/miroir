@@ -53,7 +53,7 @@ import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { ACTION_OK } from "../1_core/constants";
 import { defaultMiroirMetaModel, metaModelEntities, miroirModelEntities } from "../1_core/Model";
 import { resolveCompositeActionTemplate } from "../2_domain/ResolveCompositeActionTemplate";
-import { transformer_extended_apply } from "../2_domain/Transformers";
+import { transformer_extended_apply } from "../2_domain/TransformersForRuntime.js";
 import { LoggerGlobalContext } from '../4_services/LoggerContext.js';
 import { MiroirLoggerFactory } from "../4_services/LoggerFactory";
 import { packageName } from "../constants";
