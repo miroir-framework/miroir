@@ -210,9 +210,7 @@ export function getExtendedSchemas(jzodSchemajzodMiroirBootstrapSchema: any) {
     "transformer_constantString",
     "transformer_newUuid",
     "transformer_constant",
-    "transformer_contextReference",
     "transformer_parameterReference",
-    "transformer_contextOrParameterReference",
     "transformer_objectDynamicAccess",
     "transformer_label",
     "transformer_Abstract",
@@ -229,6 +227,8 @@ export function getExtendedSchemas(jzodSchemajzodMiroirBootstrapSchema: any) {
     "transformerForBuild_objectValues_root",
     "transformerForRuntime_Abstract",
     "transformerForRuntime_orderedTransformer",
+    "transformerForRuntime_contextReference",
+    "transformer_contextOrParameterReferenceTO_REMOVE",
   ];
   // console.log("getExtendedSchemas result", JSON.stringify(result, null, 2));
   return result;
@@ -2826,10 +2826,6 @@ export function getMiroirFundamentalJzodSchema(
         transformer_newUuid: (transformerJzodSchema as any).definition.context.transformer_newUuid,
         transformer_parameterReference: (transformerJzodSchema as any).definition.context
           .transformer_parameterReference,
-        transformer_contextReference: (transformerJzodSchema as any).definition.context
-          .transformer_contextReference,
-        transformer_contextOrParameterReference: (transformerJzodSchema as any).definition.context
-          .transformer_contextOrParameterReference,
         transformer_objectDynamicAccess: (transformerJzodSchema as any).definition.context
           .transformer_objectDynamicAccess,
         transformer_InnerReference: (transformerJzodSchema as any).definition.context
@@ -2927,7 +2923,9 @@ export function getMiroirFundamentalJzodSchema(
         transformerForRuntime_count: (transformerJzodSchema as any).definition.context
           .transformerForRuntime_count,
         transformerForRuntime_contextReference: (transformerJzodSchema as any).definition.context
-          .transformer_contextReference,
+          .transformerForRuntime_contextReference,
+        transformer_contextOrParameterReferenceTO_REMOVE: (transformerJzodSchema as any).definition.context
+          .transformer_contextOrParameterReferenceTO_REMOVE,
         transformerForRuntime_dataflowObject: (transformerJzodSchema as any).definition.context
           .transformerForRuntime_dataflowObject,
         transformerForRuntime_dataflowSequence: (transformerJzodSchema as any).definition.context

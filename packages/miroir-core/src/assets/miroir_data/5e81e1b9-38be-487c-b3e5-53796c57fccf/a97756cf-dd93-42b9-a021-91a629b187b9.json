@@ -212,26 +212,6 @@
           }
         }
       },
-      "transformer_contextReference":{
-        "type": "object",
-        "definition": {
-          "transformerType": {
-            "type": "literal",
-            "definition": "contextReference"
-          },
-          "referenceName": {
-            "optional": true,
-            "type": "string"
-          },
-          "referencePath": {
-            "optional": true,
-            "type": "array",
-            "definition": {
-              "type": "string"
-            }
-          }
-        }
-      },
       "transformer_parameterReference":{
         "type": "object",
         "definition": {
@@ -252,14 +232,34 @@
           }
         }
       },
-      "transformer_contextOrParameterReference": {
+      "transformerForRuntime_contextReference": {
+        "type": "object",
+        "definition": {
+          "transformerType": {
+            "type": "literal",
+            "definition": "contextReference"
+          },
+          "referenceName": {
+            "optional": true,
+            "type": "string"
+          },
+          "referencePath": {
+            "optional": true,
+            "type": "array",
+            "definition": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "transformer_contextOrParameterReferenceTO_REMOVE": {
         "type": "union",
         "discriminator": "transformerType",
         "definition": [
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformer_contextReference"
+              "relativePath": "transformerForRuntime_contextReference"
             }
           },
           {
@@ -285,7 +285,7 @@
                 {
                   "type": "schemaReference",
                   "definition": {
-                    "relativePath": "transformer_contextOrParameterReference"
+                    "relativePath": "transformer_contextOrParameterReferenceTO_REMOVE"
                   }
                 },
                 {
@@ -423,7 +423,7 @@
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformer_contextOrParameterReference"
+              "relativePath": "transformer_contextOrParameterReferenceTO_REMOVE"
             }
           },
           {
@@ -1695,26 +1695,6 @@
             "definition": {
               "eager": true,
               "relativePath": "transformer_newUuid"
-            }
-          }
-        ],
-        "definition": {}
-      },
-      "transformerForRuntime_contextReference": {
-        "type": "object",
-        "extend": [
-          {
-            "type": "schemaReference",
-            "definition": {
-              "eager": true,
-              "relativePath": "transformerForRuntime_Abstract"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "eager": true,
-              "relativePath": "transformer_contextReference"
             }
           }
         ],

@@ -10,7 +10,7 @@ import {
   ExtendedTransformerForRuntime,
   Menu,
   Transformer,
-  Transformer_contextOrParameterReference,
+  Transformer_contextOrParameterReferenceTO_REMOVE,
   Transformer_InnerReference,
   Transformer_objectDynamicAccess,
   TransformerDefinition,
@@ -534,7 +534,7 @@ function transformer_objectAlter(
 // ################################################################################################
 export function transformer_resolveReference(
   step: Step,
-  transformerInnerReference: Transformer_contextOrParameterReference,
+  transformerInnerReference: Transformer_contextOrParameterReferenceTO_REMOVE,
   paramOrContext: "param" | "context",
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>

@@ -866,7 +866,7 @@ commit da646f456ff55f376af1837aec05e32a660de7d4
 Author: Miroir Framework <miroir-framework@protonmail.com>
 Date:   Mon Sep 16 17:58:43 2024 +0200
 
-    REFACTOR: the "parentUuid" attribute of QueryTemplates becomes transformer_contextReference (instead of template_innerReference).
+    REFACTOR: the "parentUuid" attribute of QueryTemplates becomes transformerForRuntime_contextReference (instead of template_innerReference).
 
  52 files changed, 349 insertions(+), 246 deletions(-)
 
@@ -874,7 +874,7 @@ commit 75ae78f0023b0dd3e6d7d6ef29111fea11c00235
 Author: Miroir Framework <miroir-framework@protonmail.com>
 Date:   Mon Sep 16 16:50:12 2024 +0200
 
-    REFACTOR: for query "selectObjectListByManyToManyRelation", objectReference becomes transformer_contextReference.
+    REFACTOR: for query "selectObjectListByManyToManyRelation", objectReference becomes transformerForRuntime_contextReference.
 
  8 files changed, 81 insertions(+), 41 deletions(-)
 
@@ -882,7 +882,7 @@ commit 1e7adadba1acfdb0259b62715b07c3f9b3357493
 Author: Miroir Framework <miroir-framework@protonmail.com>
 Date:   Mon Sep 16 12:08:54 2024 +0200
 
-    REFACTOR: for query "selectObjectListByRelation", objectReference becomes transformer_contextReference.
+    REFACTOR: for query "selectObjectListByRelation", objectReference becomes transformerForRuntime_contextReference.
 
  9 files changed, 23 insertions(+), 17 deletions(-)
 

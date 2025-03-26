@@ -1396,7 +1396,7 @@ describe("jzod.unfoldSchemaForValue", () => {
                 },
               },
             },
-            transformer_contextReference: {
+            transformerForRuntime_contextReference: {
               type: "object",
               definition: {
                 transformerType: {
@@ -1436,14 +1436,14 @@ describe("jzod.unfoldSchemaForValue", () => {
                 },
               },
             },
-            transformer_contextOrParameterReference: {
+            transformer_contextOrParameterReferenceTO_REMOVE: {
               type: "union",
               discriminator: "transformerType",
               definition: [
                 {
                   type: "schemaReference",
                   definition: {
-                    relativePath: "transformer_contextReference",
+                    relativePath: "transformerForRuntime_contextReference",
                   },
                 },
                 {
@@ -1479,7 +1479,7 @@ describe("jzod.unfoldSchemaForValue", () => {
                 {
                   type: "schemaReference",
                   definition: {
-                    relativePath: "transformer_contextOrParameterReference",
+                    relativePath: "transformer_contextOrParameterReferenceTO_REMOVE",
                   },
                 },
               ],

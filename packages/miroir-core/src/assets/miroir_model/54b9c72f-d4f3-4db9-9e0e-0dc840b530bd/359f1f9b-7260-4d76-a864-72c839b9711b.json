@@ -410,7 +410,7 @@
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "transformer_contextReference"
+                  "relativePath": "transformerForRuntime_contextReference"
                 }
               },
               "objectListReferenceAttribute": {
@@ -520,7 +520,7 @@
                 "definition": {
                   "type": "schemaReference",
                   "definition": {
-                    "relativePath": "transformer_contextOrParameterReference"
+                    "relativePath": "transformer_contextOrParameterReferenceTO_REMOVE"
                   }
                 }
               }
@@ -538,7 +538,7 @@
                 "definition": {
                   "type": "schemaReference",
                   "definition": {
-                    "relativePath": "transformer_contextOrParameterReference"
+                    "relativePath": "transformer_contextOrParameterReferenceTO_REMOVE"
                   }
                 }
               }
