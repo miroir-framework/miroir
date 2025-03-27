@@ -19,6 +19,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 export function resolveCompositeActionTemplate(
   compositeActionTemplate: CompositeActionTemplate,
   actionParamValues: Record<string, any>,
+  currentModel?: MetaModel
 ): {
   resolvedCompositeActionDefinition: CompositeAction,
   resolvedCompositeActionTemplates: Record<string,any>

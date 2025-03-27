@@ -1239,37 +1239,36 @@ FROM
         withClauseColumnName??label,
       );
     }
-    // case "parameterReference": {
-    //   // this resolves references to static values, passed as parameters upon executing of the query
-    //   // TODO: resolve each parameter as WITH clause, then only call the name of the clause in each reference?
-    //   const resolvedReference = transformer_resolveReference(
-    //     "runtime",
-    //     actionRuntimeTransformer,
-    //     "param",
-    //     queryParams,
-    //     definedContextEntries
-    //   );
-    //   if (resolvedReference instanceof Domain2ElementFailed) {
-    //     return resolvedReference;
-    //   }
-    //   const referenceQuery = sqlStringForRuntimeTransformer(
-    //     {
-    //       transformerType: "constant",
-    //       interpolation: "runtime",
-    //       value: resolvedReference as any,
-    //     },
-    //     preparedStatementParametersCount,
-    //     indentLevel,
-    //     queryParams,
-    //     definedContextEntries,
-    //     useAccessPathForContextReference,
-    //     topLevelTransformer
-    //     // true
-    //   );
+    case "parameterReference": {
+      // this resolves references to static values, passed as parameters upon executing of the query
+      // TODO: resolve each parameter as WITH clause, then only call the name of the clause in each reference?
+      const resolvedReference = transformer_resolveReference(
+        "runtime",
+        actionRuntimeTransformer,
+        "param",
+        queryParams,
+        definedContextEntries
+      );
+      if (resolvedReference instanceof Domain2ElementFailed) {
+        return resolvedReference;
+      }
+      const referenceQuery = sqlStringForRuntimeTransformer(
+        {
+          transformerType: "constant",
+          value: resolvedReference as any,
+        },
+        preparedStatementParametersCount,
+        indentLevel,
+        queryParams,
+        definedContextEntries,
+        useAccessPathForContextReference,
+        topLevelTransformer
+        // true
+      );
 
-    //   return referenceQuery;
-    //   break;
-    // }
+      return referenceQuery;
+      break;
+    }
     case "contextReference": {
       const referenceName = actionRuntimeTransformer.referenceName??((actionRuntimeTransformer.referencePath??[])[0]);
       const definedContextEntry = definedContextEntries[referenceName];

@@ -12,7 +12,7 @@ import {
   ExtractorTemplateReturningObjectOrObjectList,
   ExtractorWrapper,
   QueryFailed,
-  Transformer_contextOrParameterReference
+  Transformer_contextOrParameterReferenceTO_REMOVE
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/LoggerFactory";
@@ -111,7 +111,7 @@ export function resolveExtractorTemplate(
         ...cleanQueryTemplate,
         definition: Object.fromEntries(
           Object.entries(extractorOrCombinerTemplate.definition).map(
-            (e: [string, Transformer_contextOrParameterReference]) => [
+            (e: [string, Transformer_contextOrParameterReferenceTO_REMOVE]) => [
               e[0],
               {
                 extractorOrCombinerType: "extractorOrCombinerContextReference",
@@ -128,7 +128,7 @@ export function resolveExtractorTemplate(
         extractorOrCombinerType: "extractorWrapperReturningList",
         ...cleanQueryTemplate,
         definition: extractorOrCombinerTemplate.definition.map(
-          (e: Transformer_contextOrParameterReference) =>
+          (e: Transformer_contextOrParameterReferenceTO_REMOVE) =>
             ({
               extractorOrCombinerType: "extractorOrCombinerContextReference",
               extractorOrCombinerContextReference: e.referenceName,

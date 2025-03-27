@@ -10,7 +10,6 @@ import { defaultTransformers } from './TransformersForRuntime';
 export function transformerBuildToValue(
   transformerForBuild: TransformerForBuild,
   queryParams: Record<string, any>
-// ): Domain2QueryReturnType<Transformer_constants> {
 ): Domain2QueryReturnType<any> {
   switch (transformerForBuild.transformerType) {
     case "constant":
@@ -35,7 +34,11 @@ export function transformerBuildToValue(
         {}
       );
     }
-    case "contextReference":
+    case "contextReference": {
+      throw new Error(
+        "Context reference is not supported in build transformer. Use 'parameterReference' instead."
+      );
+    }
     case "parameterReference":
     case "objectDynamicAccess":
     case "dataflowObject":

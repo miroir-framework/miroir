@@ -474,7 +474,7 @@ commit 0bdc85ee4fb24d012152554dea5c29100be90798
 Author: Miroir Framework <miroir-framework@protonmail.com>
 Date:   Thu Nov 21 12:04:41 2024 +0100
 
-    FEATURE: allow to compose CompositeActions #38. Improve splitEntity in importer.tsx, allow parentUuid in QueryTemplates to be a simple string (and not only a transformer_InnerReference)
+    FEATURE: allow to compose CompositeActions #38. Improve splitEntity in importer.tsx, allow parentUuid in QueryTemplates to be a simple string (and not only a transformerForBuild_InnerReference)
 
  17 files changed, 2402 insertions(+), 449 deletions(-)
 
@@ -786,7 +786,7 @@ commit 3fcd031e0a943e28b235878a33a26b0ecac6500a
 Author: Miroir Framework <miroir-framework@protonmail.com>
 Date:   Thu Oct 3 23:41:28 2024 +0200
 
-    create basic elements for Miroir Action Script (MAS), migrate Tools.submit to MAS #28. Adding transformer_objectDynamicAccess and migrating Importer update SplittedEntity instances to compositeAction using objectDynamicAccess capability.
+    create basic elements for Miroir Action Script (MAS), migrate Tools.submit to MAS #28. Adding transformerForBuild_objectDynamicAccess and migrating Importer update SplittedEntity instances to compositeAction using objectDynamicAccess capability.
 
  16 files changed, 3935 insertions(+), 1194 deletions(-)
 
@@ -890,7 +890,7 @@ commit 5d32de8b95cb3291eb5e6ccf768637c58bce1e30
 Author: Miroir Framework <miroir-framework@protonmail.com>
 Date:   Thu Sep 12 14:04:35 2024 +0200
 
-    REFACTOR: for query "selectObjectByRelation", objectReference becomes transformer_InnerReference, and filter in queryTemplateExtractObjectListByEntity uses a constant string transformer, too.
+    REFACTOR: for query "selectObjectByRelation", objectReference becomes transformerForBuild_InnerReference, and filter in queryTemplateExtractObjectListByEntity uses a constant string transformer, too.
 
  15 files changed, 102 insertions(+), 57 deletions(-)
 

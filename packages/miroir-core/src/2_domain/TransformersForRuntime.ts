@@ -11,8 +11,8 @@ import {
   Menu,
   Transformer,
   Transformer_contextOrParameterReferenceTO_REMOVE,
-  Transformer_InnerReference,
-  Transformer_objectDynamicAccess,
+  TransformerForBuild_InnerReference,
+  TransformerForBuild_objectDynamicAccess,
   TransformerDefinition,
   TransformerForBuild,
   TransformerForBuild_count,
@@ -35,7 +35,7 @@ import {
   TransformerForRuntime_list_listMapperToList,
   TransformerForRuntime_list_listPickElement,
   TransformerForRuntime_mapper_listToObject,
-  TransformerForRuntime_mustacheStringTemplate,
+  TransformerForRuntime_mustacheStringTemplate_NOT_IMPLEMENTED,
   TransformerForRuntime_object_alter,
   TransformerForRuntime_object_fullTemplate,
   TransformerForRuntime_object_listReducerToSpreadObject,
@@ -626,7 +626,7 @@ export function transformer_resolveReference(
 // constantString -> string
 export function transformer_InnerReference_resolve  (
   step: Step,
-  transformerInnerReference: Transformer_InnerReference | TransformerForRuntime_InnerReference,
+  transformerInnerReference: TransformerForBuild_InnerReference | TransformerForRuntime_InnerReference,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
 ): Domain2QueryReturnType<any> {
@@ -733,7 +733,7 @@ export function transformer_InnerReference_resolve  (
 // string, <A> -> A
 export function transformer_mustacheStringTemplate_apply(
   step: Step,
-  transformer: TransformerForBuild_mustacheStringTemplate | TransformerForRuntime_mustacheStringTemplate,
+  transformer: TransformerForBuild_mustacheStringTemplate | TransformerForRuntime_mustacheStringTemplate_NOT_IMPLEMENTED,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
 ): Domain2QueryReturnType<any> {
@@ -775,7 +775,7 @@ export function transformer_mustacheStringTemplate_apply(
 export function transformer_dynamicObjectAccess_apply(
   step: Step,
   objectName: string | undefined,
-  transformer: TransformerForRuntime_objectDynamicAccess | Transformer_objectDynamicAccess,
+  transformer: TransformerForRuntime_objectDynamicAccess | TransformerForBuild_objectDynamicAccess,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
 ): Domain2QueryReturnType<any> {
@@ -1510,7 +1510,6 @@ export function innerTransformer_array_apply(
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
 ): Domain2QueryReturnType<any> {
-// ): Domain2QueryReturnType<DomainElementSuccess> {
   // log.info(
   //   "innerTransformer_array_apply called for object named",
   //   objectName,
@@ -1668,11 +1667,12 @@ export function transformer_extended_apply(
     } else {
       // TODO: improve test, refuse interpretation of build transformer in runtime step
       if (transformer["transformerType"] != undefined) {
-        if (step == "runtime") {
+        if (step == "runtime" || (transformer as any)["interpolation"] == "build") {
           // log.info("HERE");
+          let preResult
           switch (transformer.transformerType) {
             case "transformer_menu_addItem": {
-              result = defaultTransformers.transformer_menu_AddItem(
+              preResult = defaultTransformers.transformer_menu_AddItem(
                 defaultTransformers,
                 step,
                 label,
@@ -1694,6 +1694,7 @@ export function transformer_extended_apply(
             case "constantString":
             case "newUuid":
             case "mustacheStringTemplate":
+            case "mustacheStringTemplate_NOT_IMPLEMENTED":
             case "contextReference":
             case "parameterReference":
             case "objectDynamicAccess":
@@ -1710,7 +1711,7 @@ export function transformer_extended_apply(
             case "mapperListToList":
             case "count":
             case "unique": {
-              result = innerTransformer_apply(step, label, transformer, queryParams, contextResults);
+              preResult = innerTransformer_apply(step, label, transformer, queryParams, contextResults);
               break;
             }
             default: {
@@ -1724,7 +1725,7 @@ export function transformer_extended_apply(
                   "transformer",
                   JSON.stringify(transformer, null, 2)
                 );
-                result = new Domain2ElementFailed({
+                preResult = new Domain2ElementFailed({
                   queryFailure: "QueryNotExecutable",
                   failureOrigin: ["transformer_extended_apply"],
                   queryContext: "transformer " + (transformer as any).transformerType + " not found",
@@ -1732,7 +1733,7 @@ export function transformer_extended_apply(
                 });
               }
               if (foundApplicationTransformer.transformerImplementation.transformerImplementationType == "transformer") {
-                result = innerTransformer_apply(
+                preResult = innerTransformer_apply(
                   step,
                   label,
                   foundApplicationTransformer.transformerImplementation.definition,
@@ -1740,6 +1741,29 @@ export function transformer_extended_apply(
                   contextResults
                 );
               }
+            }
+          }
+          if (preResult instanceof Domain2ElementFailed) {
+            log.error(
+              "transformer_extended_apply failed for",
+              label,
+              "using to resolve build transformers for step:",
+              step,
+              "transformer",
+              JSON.stringify(transformer, null, 2),
+              "result",
+              JSON.stringify(preResult, null, 2)
+            );
+            return preResult;
+          } else {
+            if ((transformer as any)["interpolation"] == "build") {
+              // result = innerTransformer_plainObject_apply(step, label, preResult, queryParams, contextResults);
+              result = {
+                transformerType: "constant",
+                value: preResult
+              };
+            } else {
+              result = preResult;
             }
           }
         } else {
@@ -1752,6 +1776,7 @@ export function transformer_extended_apply(
             "transformer",
             JSON.stringify(transformer, null, 2)
           );
+
           result = innerTransformer_plainObject_apply(step, label, transformer, queryParams, contextResults);
         }
       } else {

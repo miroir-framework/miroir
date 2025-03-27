@@ -356,7 +356,7 @@ async function runTransformerIntegrationTest(vitest: any, testNameArray: string[
   console.log(testNameArray, "END");
 }
 
-const testSuiteName = "transformers.integ.test";
+const testSuiteName = "transformersForRuntime.integ.test";
 // (async () => {
 if (RUN_TEST == testSuiteName) {
   await beforeAll(); // beforeAll is a function, not the call to the jest/vitest hook

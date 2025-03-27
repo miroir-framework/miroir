@@ -124,5 +124,5 @@ export const transformer_spreadSheetToJzodSchema: TransformerDefinition = {
         },
       },
     },
-  },
+  } as any, // TODO: remove cast, use proper type
 };

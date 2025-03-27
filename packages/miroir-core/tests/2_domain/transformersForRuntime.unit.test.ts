@@ -143,7 +143,6 @@ async function runTransformerTestInMemory(vitest: any, testSuiteNamePath: string
   }
   console.log("################################ runTransformerTestInMemory transformerTestParams", JSON.stringify(transformerTest, null, 2));
   const transformer: TransformerForBuild | TransformerForRuntime = transformerTest.transformer;
-  // const interpolation = (transformerTest.transformer as any).interpolation ?? "runtime"
 
   const runtimeTransformer:TransformerForRuntime = transformer as any;
   // const runtimeTransformer:TransformerForRuntime = (transformer as any).interpolation
@@ -160,14 +159,33 @@ async function runTransformerTestInMemory(vitest: any, testSuiteNamePath: string
   console.log("################################ runTransformerTestInMemory runtimeTransformer", JSON.stringify(runtimeTransformer, null, 2));
   // TODO: check if transformer is indeed a runtime transformer, or if it is a "custom-made" build transformer
 
-  const interpolation = "runtime"
-  const rawResult: Domain2QueryReturnType<any> = transformer_extended_apply_wrapper(
-    interpolation,
-    undefined,
-    runtimeTransformer,
-    transformerTest.transformerParams,
-    transformerTest.transformerRuntimeContext ?? {}
-  );
+  const interpolation = transformerTest.runTestStep??"runtime";
+  let rawResult: Domain2QueryReturnType<any>;
+  if (interpolation == "runtime") {
+    const convertedTransformer = transformer_extended_apply_wrapper(
+      "build",
+      undefined,
+      runtimeTransformer,
+      transformerTest.transformerParams,
+      transformerTest.transformerRuntimeContext ?? {}
+    )
+    rawResult = transformer_extended_apply_wrapper(
+      "runtime",
+      undefined,
+      convertedTransformer,
+      transformerTest.transformerParams,
+      transformerTest.transformerRuntimeContext ?? {}
+    );
+  } else {
+    rawResult = transformer_extended_apply_wrapper(
+      interpolation,
+      undefined,
+      runtimeTransformer,
+      transformerTest.transformerParams,
+      transformerTest.transformerRuntimeContext ?? {}
+    );
+  }
+
 
   console.log("################################ raw result", JSON.stringify(rawResult, null, 2));
   console.log(

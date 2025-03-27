@@ -270,7 +270,7 @@
           }
         ]
       },
-      "transformer_objectDynamicAccess":{
+      "transformerForBuild_objectDynamicAccess":{
         "type": "object",
         "definition": {
           "transformerType": {
@@ -291,7 +291,7 @@
                 {
                   "type": "schemaReference",
                   "definition": {
-                    "relativePath": "transformer_objectDynamicAccess"
+                    "relativePath": "transformerForBuild_objectDynamicAccess"
                   }
                 },
                 {
@@ -380,14 +380,42 @@
           "relativePath": "transformer_constantListAsExtractor"
         }
       },
-      "transformer_InnerReference": {
+      "transformerForBuild_mustacheStringTemplate": {
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuild_Abstract"
+            }
+          }
+        ],
+        "definition": {
+          "transformerType": {
+            "type": "literal",
+            "definition": "mustacheStringTemplate"
+          },
+          "definition": {
+            "type": "string"
+          }
+        }
+      },
+      "transformerForBuild_InnerReference": {
         "type": "union",
         "discriminator": "transformerType",
         "definition": [
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformer_mustacheStringTemplate"
+              "relativePath": "transformerForBuild_mustacheStringTemplate"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformer_contextOrParameterReferenceTO_REMOVE"
             }
           },
           {
@@ -423,13 +451,7 @@
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformer_contextOrParameterReferenceTO_REMOVE"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "relativePath": "transformer_objectDynamicAccess"
+              "relativePath": "transformerForBuild_objectDynamicAccess"
             }
           }
         ]
@@ -451,8 +473,27 @@
           }
         }
       },
+      "transformerForBuild_Abstract": {
+        "type": "object",
+        "definition": {
+          "interpolation": {
+            "type": "literal",
+            "definition": "build"
+          }
+        }
+      },
       "transformerForBuild_count": {
         "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuild_Abstract"
+            }
+          }
+        ],
         "definition": {
           "applyTo": {
             "type": "union",
@@ -552,6 +593,14 @@
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "transformerForBuild_unique_root"
             }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuild_Abstract"
+            }
           }
         ],
         "definition": {
@@ -618,6 +667,14 @@
               "eager": true,
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "transformer_orderBy"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuild_Abstract"
             }
           }
         ],
@@ -689,7 +746,7 @@
                 "attributeKey": {
                   "type": "schemaReference",
                   "definition": {
-                    "relativePath": "transformer_InnerReference"
+                    "relativePath": "transformerForBuild_InnerReference"
                   }
                 },
                 "attributeValue": {
@@ -734,6 +791,14 @@
               "eager": true,
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "transformerForBuild_object_fullTemplate_root"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuild_Abstract"
             }
           }
         ],
@@ -798,7 +863,7 @@
                 "attributeKey": {
                   "type": "schemaReference",
                   "definition": {
-                    "relativePath": "transformer_InnerReference"
+                    "relativePath": "transformerForBuild_InnerReference"
                   }
                 },
                 "attributeValue": {
@@ -814,6 +879,16 @@
       },
       "transformerForBuild_freeObjectTemplate": {
         "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuild_Abstract"
+            }
+          }
+        ],
         "definition": {
           "transformerType": {
             "type": "literal",
@@ -855,6 +930,16 @@
       },
       "transformerForBuild_inner_object_alter": {
         "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuild_Abstract"
+            }
+          }
+        ],
         "definition": {
           "transformerType": {
             "type": "literal",
@@ -923,18 +1008,6 @@
           }
         }
       },
-      "transformerForBuild_mustacheStringTemplate": {
-        "type": "object",
-        "definition": {
-          "transformerType": {
-            "type": "literal",
-            "definition": "mustacheStringTemplate"
-          },
-          "definition": {
-            "type": "string"
-          }
-        }
-      },
       "transformerForBuild_list_listMapperToList": {
         "type": "object",
         "extend": [
@@ -944,6 +1017,14 @@
               "eager": true,
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "transformer_orderBy"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuild_Abstract"
             }
           }
         ],
@@ -1047,6 +1128,14 @@
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "transformerForBuild_object_listReducerToIndexObject_root"
             }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuild_Abstract"
+            }
           }
         ],
         "definition": {
@@ -1112,6 +1201,14 @@
             "definition": {
               "eager": true,
               "relativePath": "transformer_label"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuild_Abstract"
             }
           }
         ],
@@ -1184,6 +1281,14 @@
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "transformer_orderBy"
             }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuild_Abstract"
+            }
           }
         ],
         "definition": {
@@ -1205,6 +1310,14 @@
               "eager": true,
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "transformerForBuild_object_listPickElement_root"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuild_Abstract"
             }
           }
         ],
@@ -1291,6 +1404,14 @@
               "eager": true,
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "transformerForBuild_objectEntries_root"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuild_Abstract"
             }
           }
         ],
@@ -1381,6 +1502,14 @@
               "eager": true,
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "transformerForBuild_objectValues_root"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuild_Abstract"
             }
           }
         ],
@@ -1507,6 +1636,16 @@
       },
       "transformerForBuild_dataflowObject": {
         "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuild_Abstract"
+            }
+          }
+        ],
         "definition": {
           "transformerType": {
             "type": "literal",
@@ -1528,6 +1667,16 @@
       },
       "transformerForBuild_dataflowSequence": {
         "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuild_Abstract"
+            }
+          }
+        ],
         "definition": {
           "transformerType": {
             "type": "literal",
@@ -1557,7 +1706,7 @@
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformer_InnerReference"
+              "relativePath": "transformerForBuild_InnerReference"
             }
           },
           {
@@ -1640,6 +1789,27 @@
           "interpolation": {
             "type": "literal",
             "definition": "runtime"
+          }
+        }
+      },
+      "transformerForRuntime_mustacheStringTemplate_NOT_IMPLEMENTED": {
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformerForRuntime_Abstract"
+            }
+          }
+        ],
+        "definition": {
+          "transformerType": {
+            "type": "literal",
+            "definition": "mustacheStringTemplate_NOT_IMPLEMENTED"
+          },
+          "definition": {
+            "type": "string"
           }
         }
       },
@@ -1734,7 +1904,7 @@
                 {
                   "type": "schemaReference",
                   "definition": {
-                    "relativePath": "transformerForRuntime_mustacheStringTemplate"
+                    "relativePath": "transformerForRuntime_mustacheStringTemplate_NOT_IMPLEMENTED"
                   }
                 },
                 {
@@ -1752,7 +1922,7 @@
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformerForRuntime_mustacheStringTemplate"
+              "relativePath": "transformerForRuntime_mustacheStringTemplate_NOT_IMPLEMENTED"
             }
           },
           {
@@ -1768,26 +1938,6 @@
             }
           }
         ]
-      },
-      "transformerForRuntime_mustacheStringTemplate": {
-        "type": "object",
-        "extend": [
-          {
-            "type": "schemaReference",
-            "definition": {
-              "eager": true,
-              "relativePath": "transformerForRuntime_Abstract"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "eager": true,
-              "relativePath": "transformer_mustacheStringTemplate"
-            }
-          }
-        ],
-        "definition": {}
       },
       "transformerForRuntime_dataflowObject": {
         "type": "object",
@@ -2749,6 +2899,18 @@
           {
             "type": "schemaReference",
             "definition": {
+              "relativePath": "transformer_parameterReference"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformerForRuntime_InnerReference"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
               "relativePath": "transformerForRuntime_dataflowObject"
             }
           },
@@ -2756,12 +2918,6 @@
             "type": "schemaReference",
             "definition": {
               "relativePath": "transformerForRuntime_dataflowSequence"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "relativePath": "transformerForRuntime_InnerReference"
             }
           },
           {
@@ -2815,7 +2971,7 @@
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformerForRuntime_mustacheStringTemplate"
+              "relativePath": "transformerForRuntime_mustacheStringTemplate_NOT_IMPLEMENTED"
             }
           },
           {

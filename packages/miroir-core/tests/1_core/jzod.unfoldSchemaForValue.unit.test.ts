@@ -1454,7 +1454,7 @@ describe("jzod.unfoldSchemaForValue", () => {
                 },
               ],
             },
-            transformer_InnerReference: {
+            transformerForBuild_InnerReference: {
               type: "union",
               discriminator: "transformerType",
               definition: [
@@ -1510,7 +1510,7 @@ describe("jzod.unfoldSchemaForValue", () => {
                   type: "schemaReference",
                   tag: { value: { id: 4, defaultLabel: "Parent Uuid", editable: false } },
                   definition: {
-                    relativePath: "transformer_InnerReference",
+                    relativePath: "transformerForBuild_InnerReference",
                   },
                 },
               },
@@ -1533,7 +1533,7 @@ describe("jzod.unfoldSchemaForValue", () => {
                   type: "schemaReference",
                   definition: {
                     absolutePath: miroirFundamentalJzodSchemaUuid,
-                    relativePath: "transformer_InnerReference",
+                    relativePath: "transformerForBuild_InnerReference",
                   },
                 },
               },

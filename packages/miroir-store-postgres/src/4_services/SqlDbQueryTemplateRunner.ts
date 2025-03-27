@@ -36,7 +36,7 @@ export type RecursiveStringRecords = string | { [x: string]: RecursiveStringReco
 
 export class SqlDbExtractTemplateRunner {
   private logHeader: string;
-  private extractorRunnerMap: AsyncBoxedExtractorOrQueryRunnerMap;
+  private extractorRunnerMapForServerOnly: AsyncBoxedExtractorOrQueryRunnerMap;
 
   constructor(
     private persistenceStoreController:
@@ -76,25 +76,25 @@ export class SqlDbExtractTemplateRunner {
     };
 
     // this.extractorRunnerMap = dbImplementationExtractorRunnerMap;
-    this.extractorRunnerMap = InMemoryImplementationExtractorRunnerMap;
+    this.extractorRunnerMapForServerOnly = InMemoryImplementationExtractorRunnerMap;
   }
 
   // ##############################################################################################
   async handleQueryTemplateActionForServerONLY(runBoxedQueryTemplateAction: RunBoxedQueryTemplateAction): Promise<Action2ReturnType> {
     log.info(this.logHeader, "handleQueryTemplateActionForServerONLY", "runBoxedQueryTemplateAction", JSON.stringify(runBoxedQueryTemplateAction, null, 2));
-    return handleQueryTemplateAction("SqlDbQueryTemplateRunner", runBoxedQueryTemplateAction, this.extractorRunnerMap);
+    return handleQueryTemplateAction("SqlDbQueryTemplateRunner", runBoxedQueryTemplateAction, this.extractorRunnerMapForServerOnly);
   }
 
   // ##############################################################################################
   async handleBoxedExtractorTemplateActionForServerONLY(runBoxedExtractorTemplateAction: RunBoxedExtractorTemplateAction): Promise<Action2ReturnType> {
     log.info(this.logHeader, "handleBoxedExtractorTemplateActionForServerONLY", "runBoxedExtractorTemplateAction", JSON.stringify(runBoxedExtractorTemplateAction, null, 2));
-    return handleBoxedExtractorTemplateAction("SqlDbQueryTemplateRunner", runBoxedExtractorTemplateAction, this.extractorRunnerMap);
+    return handleBoxedExtractorTemplateAction("SqlDbQueryTemplateRunner", runBoxedExtractorTemplateAction, this.extractorRunnerMapForServerOnly);
   }
 
   // ##############################################################################################
   async handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(runBoxedQueryTemplateOrBoxedExtractorTemplateAction: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction): Promise<Action2ReturnType> {
     log.info(this.logHeader, "handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY", "runBoxedQueryTemplateOrBoxedExtractorTemplateAction", JSON.stringify(runBoxedQueryTemplateOrBoxedExtractorTemplateAction, null, 2));
-    return handleBoxedExtractorTemplateOrQueryTemplateAction("SqlDbQueryTemplateRunner", runBoxedQueryTemplateOrBoxedExtractorTemplateAction, this.extractorRunnerMap);
+    return handleBoxedExtractorTemplateOrQueryTemplateAction("SqlDbQueryTemplateRunner", runBoxedQueryTemplateOrBoxedExtractorTemplateAction, this.extractorRunnerMapForServerOnly);
   }
 
 }
