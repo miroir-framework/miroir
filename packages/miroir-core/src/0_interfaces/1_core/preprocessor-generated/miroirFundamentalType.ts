@@ -1331,7 +1331,15 @@ export type TransformerForBuild_mustacheStringTemplate = {
     transformerType: "mustacheStringTemplate";
     definition: string;
 };
-export type TransformerForBuild_InnerReference = TransformerForBuild_mustacheStringTemplate | Transformer_contextOrParameterReferenceTO_REMOVE | Transformer_constant | Transformer_constantUuid | Transformer_constantObject | Transformer_constantString | Transformer_newUuid | TransformerForBuild_objectDynamicAccess;
+export type TransformerForBuild_InnerReference =
+  | TransformerForBuild_mustacheStringTemplate
+  | Transformer_contextOrParameterReferenceTO_REMOVE
+  | Transformer_constant
+  | Transformer_constantUuid
+  | Transformer_constantObject
+  | Transformer_constantString
+  | Transformer_newUuid
+  | TransformerForBuild_objectDynamicAccess;
 export type TransformerForBuild_count = {
     interpolation: "build";
     applyTo: {

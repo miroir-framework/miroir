@@ -89,618 +89,648 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
       transformerTestType: "transformerTestSuite",
       transformerTestLabel: "buildTransformerTests",
       transformerTests: {
-        constants: {
+        // constants: {
+        //   transformerTestType: "transformerTestSuite",
+        //   transformerTestLabel: "constants",
+        //   transformerTests: {
+        //     constantArray: {
+        //       transformerTestType: "transformerTestSuite",
+        //       transformerTestLabel: "constantArray",
+        //       transformerTests: {
+        //         "resolve basic build transformer constantArray": {
+        //           transformerTestType: "transformerTest",
+        //           transformerTestLabel: "resolve basic build transformer constantArray",
+        //           transformerName: "constantArrayAtBuild",
+        //           runTestStep: "build",
+        //           transformer: {
+        //             transformerType: "constantArray",
+        //             interpolation: "build",
+        //             value: ["testA", "testB"],
+        //           },
+        //           transformerParams: {},
+        //           expectedValue: {
+        //             transformerType: "constant",
+        //             value: ["testA", "testB"],
+        //           },
+        //         },
+        //         // // TODO: this should return an error, both in the in-memory and in the database case
+        //         // // when the parsing of the parameter fails, the transformer should return a QueryNotExecutable, but returns the stringified value of the parameter instead
+        //         "failed constantArray build transformer for non-array value": {
+        //           transformerTestType: "transformerTest",
+        //           transformerTestLabel: "failed constantArray build transformer for non-array value",
+        //           transformerName: "constantArrayAtBuildFailed",
+        //           runTestStep: "build",
+        //           transformer: {
+        //             transformerType: "constantArray",
+        //             interpolation: "build",
+        //             value: "{]" as any,
+        //           },
+        //           transformerParams: {},
+        //           ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+        //           expectedValue: {
+        //             transformerType: "constant",
+        //             value: "{]",
+        //           },
+        //         },
+        //       },
+        //     },
+        //     constantUuid: {
+        //       transformerTestType: "transformerTestSuite",
+        //       transformerTestLabel: "constantArray",
+        //       transformerTests: {
+        //         "resolve basic build transformer constantUuid": {
+        //           transformerTestType: "transformerTest",
+        //           transformerTestLabel: "resolve basic build transformer constantUuid",
+        //           transformerName: "constantUuid",
+        //           runTestStep: "build",
+        //           transformer: {
+        //             transformerType: "constantUuid",
+        //             interpolation: "build",
+        //             value: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        //           },
+        //           transformerParams: {},
+        //           expectedValue: {
+        //             transformerType: "constant",
+        //             value: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        //           },
+        //         },
+        //         "failed constantUuid transformer for non-uuid value": {
+        //           transformerTestType: "transformerTest",
+        //           transformerTestLabel: "failed constantUuid transformer for non-uuid value",
+        //           transformerName: "constantUuidFailed",
+        //           runTestStep: "build",
+        //           transformer: {
+        //             transformerType: "constantUuid",
+        //             interpolation: "build",
+        //             value: "test" as any,
+        //           },
+        //           transformerParams: {},
+        //           ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+        //           expectedValue: {
+        //             transformerType: "constant",
+        //             value: "test",
+        //           },
+        //         },
+        //       },
+        //     },
+        //     constantNumber: {
+        //       transformerTestType: "transformerTestSuite",
+        //       transformerTestLabel: "constantNumber",
+        //       transformerTests: {
+        //         "resolve basic build transformer constantNumber": {
+        //           transformerTestType: "transformerTest",
+        //           transformerTestLabel: "resolve basic build transformer constantNumber",
+        //           transformerName: "constantNumber",
+        //           runTestStep: "build",
+        //           transformer: {
+        //             transformerType: "constantNumber",
+        //             interpolation: "build",
+        //             value: 42,
+        //           },
+        //           transformerParams: {},
+        //           expectedValue: {
+        //             transformerType: "constant",
+        //             value: 42,
+        //           },
+        //         },
+        //         "failed constantNumber transformer for non-number value": {
+        //           transformerTestType: "transformerTest",
+        //           transformerTestLabel: "failed constantNumber transformer for non-number value",
+        //           transformerName: "constantNumberFailed",
+        //           runTestStep: "build",
+        //           transformer: {
+        //             transformerType: "constantNumber",
+        //             interpolation: "build",
+        //             value: "test" as any,
+        //           },
+        //           transformerParams: {},
+        //           ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+        //           expectedValue: {
+        //             queryFailure: "QueryNotExecutable",
+        //           },
+        //         },
+        //       },
+        //     },
+        //     constantBigint: {
+        //       transformerTestType: "transformerTestSuite",
+        //       transformerTestLabel: "constantBigint",
+        //       transformerTests: {
+        //         "resolve basic build transformer constantBigint": {
+        //           transformerTestType: "transformerTest",
+        //           transformerTestLabel: "resolve basic build transformer constantBigint",
+        //           transformerName: "constantBigint",
+        //           runTestStep: "build",
+        //           transformer: {
+        //             transformerType: "constantBigint",
+        //             interpolation: "build",
+        //             value: 42, // TODO: ensure actual value is bigint, not number
+        //           },
+        //           transformerParams: {},
+        //           expectedValue: {
+        //             transformerType: "constant",
+        //             value: 42,
+        //           },
+        //         },
+        //         "failed constantBigint transformer for non-bigint value": {
+        //           transformerTestType: "transformerTest",
+        //           transformerTestLabel: "failed constantBigint transformer for non-bigint value",
+        //           transformerName: "constantBigintFailed",
+        //           runTestStep: "build",
+        //           transformer: {
+        //             transformerType: "constantBigint",
+        //             interpolation: "build",
+        //             value: "test" as any,
+        //           },
+        //           transformerParams: {},
+        //           ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+        //           expectedValue: {
+        //             queryFailure: "QueryNotExecutable",
+        //           },
+        //         },
+        //       },
+        //     },
+        //     constantString: {
+        //       transformerTestType: "transformerTestSuite",
+        //       transformerTestLabel: "constantString",
+        //       transformerTests: {
+        //         "resolve basic build transformer constantString": {
+        //           transformerTestType: "transformerTest",
+        //           transformerTestLabel: "resolve basic build transformer constantString",
+        //           transformerName: "constantString",
+        //           runTestStep: "build",
+        //           transformer: {
+        //             transformerType: "constantString",
+        //             interpolation: "build",
+        //             value: "test",
+        //           },
+        //           transformerParams: {},
+        //           expectedValue: {
+        //             transformerType: "constant",
+        //             value: "test",
+        //           },
+        //         },
+        //         "constantString build transformer for non-string value": {
+        //           transformerTestType: "transformerTest",
+        //           transformerTestLabel: "constantString build transformer for non-string value",
+        //           transformerName: "constantStringFailed",
+        //           runTestStep: "build",
+        //           transformer: {
+        //             transformerType: "constantString",
+        //             interpolation: "build",
+        //             value: { test: "objectInsteadOfString" } as any,
+        //           },
+        //           transformerParams: {},
+        //           // expectedValue: {
+        //           //   queryFailure: "QueryNotExecutable",
+        //           // },
+        //           expectedValue:  {
+        //             "transformerType": "constant",
+        //             "value": "{\"test\":\"objectInsteadOfString\"}",
+        //           },
+        //         },
+        //       },
+        //     },
+        //     constantObject: {
+        //       transformerTestType: "transformerTestSuite",
+        //       transformerTestLabel: "constantObject",
+        //       transformerTests: {
+        //         "resolve basic build transformer constantObject before runtime": {
+        //           transformerTestType: "transformerTest",
+        //           transformerTestLabel: "resolve basic build transformer constantObject before runtime",
+        //           transformerName: "constantObjectBeforeRuntime",
+        //           runTestStep: "build",
+        //           transformer: {
+        //             transformerType: "constantObject",
+        //             interpolation: "build",
+        //             value: { test: "test" },
+        //           },
+        //           transformerParams: {},
+        //           expectedValue: {
+        //             transformerType: "constant",
+        //             value: { test: "test" },
+        //           },
+        //         },
+        //         // // TODO: in postgres, conversion to ::jsonb succeeds for string input, it does not require to be an object
+        //         // "failed constantObject transformer for non-object value before runtime": {
+        //         //   transformerTestType: "transformerTest",
+        //         //   transformerTestLabel: "failed constantObject transformer for non-object value before runtime",
+        //         //   transformerName: "constantObjectFailedBeforeRuntime",
+        //         //   runTestStep: "build",
+        //         //   transformer: {
+        //         //     transformerType: "constantObject",
+        //         //     interpolation: "build",
+        //         //     value: "test" as any,
+        //         //   },
+        //         //   transformerParams: {},
+        //         //   ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+        //         //   expectedValue: {
+        //         //     queryFailure: "QueryNotExecutable",
+        //         //   },
+        //         // },
+        //       }
+        //     },
+        //     constantBoolean: {
+        //       transformerTestType: "transformerTestSuite",
+        //       transformerTestLabel: "constantBoolean",
+        //       transformerTests: {
+        //         "resolve basic build transformer constantBoolean": {
+        //           transformerTestType: "transformerTest",
+        //           transformerTestLabel: "resolve basic build transformer constantBoolean",
+        //           transformerName: "constantBoolean",
+        //           runTestStep: "build",
+        //           transformer: {
+        //             transformerType: "constantBoolean",
+        //             interpolation: "build",
+        //             value: true,
+        //           },
+        //           transformerParams: {},
+        //           expectedValue: {
+        //             transformerType: "constant",
+        //             value: true,
+        //           },
+        //         },
+        //         "failed constantBoolean transformer for non-boolean value": {
+        //           transformerTestType: "transformerTest",
+        //           transformerTestLabel: "failed constantBoolean transformer for non-boolean value",
+        //           transformerName: "constantBooleanFailed",
+        //           runTestStep: "build",
+        //           transformer: {
+        //             transformerType: "constantBoolean",
+        //             interpolation: "build",
+        //             value: "test" as any,
+        //           },
+        //           transformerParams: {},
+        //           ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+        //           expectedValue: {
+        //             queryFailure: "QueryNotExecutable",
+        //           },
+        //         }
+        //       }
+        //     }
+        //   },
+        // },
+        simpleCompositions: {
           transformerTestType: "transformerTestSuite",
-          transformerTestLabel: "constants",
+          transformerTestLabel: "simpleCompositions",
           transformerTests: {
-            constantArray: {
-              transformerTestType: "transformerTestSuite",
-              transformerTestLabel: "constantArray",
-              transformerTests: {
-                "resolve basic build transformer constantArray": {
-                  transformerTestType: "transformerTest",
-                  transformerTestLabel: "resolve basic build transformer constantArray",
-                  transformerName: "constantArrayAtBuild",
-                  runTestStep: "build",
-                  transformer: {
-                    transformerType: "constantArray",
+            "resolve basic build transformer count on parameter array": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel: "resolve basic build transformer count on parameter array",
+              transformerName: "buildCountElementsOfParameterArray",
+              runTestStep: "build",
+              transformer: {
+                transformerType: "count",
+                interpolation: "build",
+                applyTo: {
+                  referenceType: "referencedTransformer",
+                  reference: {
+                    transformerType: "parameterReference",
                     interpolation: "build",
-                    value: ["testA", "testB"],
-                  },
-                  transformerParams: {},
-                  expectedValue: {
-                    transformerType: "constant",
-                    value: ["testA", "testB"],
-                  },
-                },
-                // // TODO: this should return an error, both in the in-memory and in the database case
-                // // when the parsing of the parameter fails, the transformer should return a QueryNotExecutable, but returns the stringified value of the parameter instead
-                "failed constantArray build transformer for non-array value": {
-                  transformerTestType: "transformerTest",
-                  transformerTestLabel: "failed constantArray build transformer for non-array value",
-                  transformerName: "constantArrayAtBuildFailed",
-                  runTestStep: "build",
-                  transformer: {
-                    transformerType: "constantArray",
-                    interpolation: "build",
-                    value: "{]" as any,
-                  },
-                  transformerParams: {},
-                  ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-                  expectedValue: {
-                    transformerType: "constant",
-                    value: "{]",
-                  },
-                },
-              },
-            },
-            constantUuid: {
-              transformerTestType: "transformerTestSuite",
-              transformerTestLabel: "constantArray",
-              transformerTests: {
-                "resolve basic build transformer constantUuid": {
-                  transformerTestType: "transformerTest",
-                  transformerTestLabel: "resolve basic build transformer constantUuid",
-                  transformerName: "constantUuid",
-                  runTestStep: "build",
-                  transformer: {
-                    transformerType: "constantUuid",
-                    interpolation: "build",
-                    value: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-                  },
-                  transformerParams: {},
-                  expectedValue: {
-                    transformerType: "constant",
-                    value: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-                  },
-                },
-                "failed constantUuid transformer for non-uuid value": {
-                  transformerTestType: "transformerTest",
-                  transformerTestLabel: "failed constantUuid transformer for non-uuid value",
-                  transformerName: "constantUuidFailed",
-                  runTestStep: "build",
-                  transformer: {
-                    transformerType: "constantUuid",
-                    interpolation: "build",
-                    value: "test" as any,
-                  },
-                  transformerParams: {},
-                  ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-                  expectedValue: {
-                    transformerType: "constant",
-                    value: "test",
-                  },
-                },
-              },
-            },
-            constantNumber: {
-              transformerTestType: "transformerTestSuite",
-              transformerTestLabel: "constantNumber",
-              transformerTests: {
-                "resolve basic build transformer constantNumber": {
-                  transformerTestType: "transformerTest",
-                  transformerTestLabel: "resolve basic build transformer constantNumber",
-                  transformerName: "constantNumber",
-                  runTestStep: "build",
-                  transformer: {
-                    transformerType: "constantNumber",
-                    interpolation: "build",
-                    value: 42,
-                  },
-                  transformerParams: {},
-                  expectedValue: {
-                    transformerType: "constant",
-                    value: 42,
-                  },
-                },
-                "failed constantNumber transformer for non-number value": {
-                  transformerTestType: "transformerTest",
-                  transformerTestLabel: "failed constantNumber transformer for non-number value",
-                  transformerName: "constantNumberFailed",
-                  runTestStep: "build",
-                  transformer: {
-                    transformerType: "constantNumber",
-                    interpolation: "build",
-                    value: "test" as any,
-                  },
-                  transformerParams: {},
-                  ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-                  expectedValue: {
-                    queryFailure: "QueryNotExecutable",
-                  },
-                },
-              },
-            },
-            constantBigint: {
-              transformerTestType: "transformerTestSuite",
-              transformerTestLabel: "constantBigint",
-              transformerTests: {
-                "resolve basic build transformer constantBigint": {
-                  transformerTestType: "transformerTest",
-                  transformerTestLabel: "resolve basic build transformer constantBigint",
-                  transformerName: "constantBigint",
-                  runTestStep: "build",
-                  transformer: {
-                    transformerType: "constantBigint",
-                    interpolation: "build",
-                    value: 42, // TODO: ensure actual value is bigint, not number
-                  },
-                  transformerParams: {},
-                  expectedValue: {
-                    transformerType: "constant",
-                    value: 42,
-                  },
-                },
-                "failed constantBigint transformer for non-bigint value": {
-                  transformerTestType: "transformerTest",
-                  transformerTestLabel: "failed constantBigint transformer for non-bigint value",
-                  transformerName: "constantBigintFailed",
-                  runTestStep: "build",
-                  transformer: {
-                    transformerType: "constantBigint",
-                    interpolation: "build",
-                    value: "test" as any,
-                  },
-                  transformerParams: {},
-                  ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-                  expectedValue: {
-                    queryFailure: "QueryNotExecutable",
-                  },
-                },
-              },
-            },
-            constantString: {
-              transformerTestType: "transformerTestSuite",
-              transformerTestLabel: "constantString",
-              transformerTests: {
-                "resolve basic build transformer constantString": {
-                  transformerTestType: "transformerTest",
-                  transformerTestLabel: "resolve basic build transformer constantString",
-                  transformerName: "constantString",
-                  runTestStep: "build",
-                  transformer: {
-                    transformerType: "constantString",
-                    interpolation: "build",
-                    value: "test",
-                  },
-                  transformerParams: {},
-                  expectedValue: {
-                    transformerType: "constant",
-                    value: "test",
-                  },
-                },
-                "constantString build transformer for non-string value": {
-                  transformerTestType: "transformerTest",
-                  transformerTestLabel: "constantString build transformer for non-string value",
-                  transformerName: "constantStringFailed",
-                  runTestStep: "build",
-                  transformer: {
-                    transformerType: "constantString",
-                    interpolation: "build",
-                    value: { test: "objectInsteadOfString" } as any,
-                  },
-                  transformerParams: {},
-                  // expectedValue: {
-                  //   queryFailure: "QueryNotExecutable",
-                  // },
-                  expectedValue:  {
-                    "transformerType": "constant",
-                    "value": "{\"test\":\"objectInsteadOfString\"}",
-                  },
-                },
-              },
-            },
-            constantObject: {
-              transformerTestType: "transformerTestSuite",
-              transformerTestLabel: "constantObject",
-              transformerTests: {
-                "resolve basic build transformer constantObject before runtime": {
-                  transformerTestType: "transformerTest",
-                  transformerTestLabel: "resolve basic build transformer constantObject before runtime",
-                  transformerName: "constantObjectBeforeRuntime",
-                  runTestStep: "build",
-                  transformer: {
-                    transformerType: "constantObject",
-                    interpolation: "build",
-                    value: { test: "test" },
-                  },
-                  transformerParams: {},
-                  expectedValue: {
-                    transformerType: "constant",
-                    value: { test: "test" },
-                  },
-                },
-                // // TODO: in postgres, conversion to ::jsonb succeeds for string input, it does not require to be an object
-                // "failed constantObject transformer for non-object value before runtime": {
-                //   transformerTestType: "transformerTest",
-                //   transformerTestLabel: "failed constantObject transformer for non-object value before runtime",
-                //   transformerName: "constantObjectFailedBeforeRuntime",
-                //   runTestStep: "build",
-                //   transformer: {
-                //     transformerType: "constantObject",
-                //     interpolation: "build",
-                //     value: "test" as any,
-                //   },
-                //   transformerParams: {},
-                //   ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-                //   expectedValue: {
-                //     queryFailure: "QueryNotExecutable",
-                //   },
-                // },
-              }
-            },
-            constantBoolean: {
-              transformerTestType: "transformerTestSuite",
-              transformerTestLabel: "constantBoolean",
-              transformerTests: {
-                "resolve basic build transformer constantBoolean": {
-                  transformerTestType: "transformerTest",
-                  transformerTestLabel: "resolve basic build transformer constantBoolean",
-                  transformerName: "constantBoolean",
-                  runTestStep: "build",
-                  transformer: {
-                    transformerType: "constantBoolean",
-                    interpolation: "build",
-                    value: true,
-                  },
-                  transformerParams: {},
-                  expectedValue: {
-                    transformerType: "constant",
-                    value: true,
-                  },
-                },
-                "failed constantBoolean transformer for non-boolean value": {
-                  transformerTestType: "transformerTest",
-                  transformerTestLabel: "failed constantBoolean transformer for non-boolean value",
-                  transformerName: "constantBooleanFailed",
-                  runTestStep: "build",
-                  transformer: {
-                    transformerType: "constantBoolean",
-                    interpolation: "build",
-                    value: "test" as any,
-                  },
-                  transformerParams: {},
-                  ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-                  expectedValue: {
-                    queryFailure: "QueryNotExecutable",
+                    referenceName: "fileData",
                   },
                 }
-              }
-            }
+              },
+              transformerParams: { fileData: [ "a", "b", "c" ] },
+              // expectedValue: 3
+              expectedValue: {
+                transformerType: "constant",
+                value: [ { count: 3 }],
+              },
+            },
           },
-        },
+        }
       }
     },
     // runtimeTransformerTests: {
     //   transformerTestType: "transformerTestSuite",
     //   transformerTestLabel: "runtimeTransformerTests",
     //   transformerTests: {
-    //     constants: {
-    //       transformerTestType: "transformerTestSuite",
-    //       transformerTestLabel: "constants",
-    //       transformerTests: {
-    //         constantArray: {
-    //           transformerTestType: "transformerTestSuite",
-    //           transformerTestLabel: "constantArray",
-    //           transformerTests: {
-    //             "resolve basic runtime transformer constantArray": {
-    //               transformerTestType: "transformerTest",
-    //               transformerTestLabel: "resolve basic runtime transformer constantArray",
-    //               transformerName: "constantArrayAtRuntime",
-    //               transformer: {
-    //                 transformerType: "constantArray",
-    //                 // interpolation: "runtime",
-    //                 value: ["testA", "testB"],
-    //               },
-    //               transformerParams: {},
-    //               expectedValue: ["testA", "testB"],
-    //             },
-    //             // TODO: this should return an error, both in the in-memory and in the database case
-    //             // when the parsing of the parameter fails, the transformer should return a QueryNotExecutable, but returns the stringified value of the parameter instead
-    //             "failed constantArray runtime transformer for non-array value": {
-    //               transformerTestType: "transformerTest",
-    //               transformerTestLabel: "failed constantArray runtime transformer for non-array value",
-    //               transformerName: "constantArrayAtRuntimeFailed",
-    //               transformer: {
-    //                 transformerType: "constantArray",
-    //                 // interpolation: "runtime",
-    //                 value: "{]" as any,
-    //               },
-    //               transformerParams: {},
-    //               ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-    //               expectedValue: "{]",
-    //             },
-    //           },
-    //         },
-    //         constantUuid: {
-    //           transformerTestType: "transformerTestSuite",
-    //           transformerTestLabel: "constantUuid",
-    //           transformerTests: {
-    //             "resolve basic transformer constantUuid": {
-    //               transformerTestType: "transformerTest",
-    //               transformerTestLabel: "resolve basic transformer constantUuid",
-    //               transformerName: "constantUuid",
-    //               transformer: {
-    //                 transformerType: "constantUuid",
-    //                 // interpolation: "runtime",
-    //                 value: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-    //               },
-    //               transformerParams: {},
-    //               expectedValue: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-    //             },
-    //             // TODO: does this make any sense?
-    //             // "should fail when context reference is not found": {
-    //             //   transformerTestType: "transformerTest",
-    //             //   transformerTestLabel: "should fail when context reference is not found",
-    //             //   transformerName: "constantUuid",
-    //             //   transformer: {
-    //             //     transformerType: "contextReference",
-    //             //     interpolation: "runtime",
-    //             //     referenceName: "nonExistentReference",
-    //             //   },
-    //             //   transformerParams: {},
-    //             //   ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-    //             //   expectedValue: {
-    //             //     queryFailure: "QueryNotExecutable",
-    //             //   },
-    //             // },
-    //           },
-    //         },
-    //         constantNumber: {
-    //           transformerTestType: "transformerTestSuite",
-    //           transformerTestLabel: "constantNumber",
-    //           transformerTests: {
-    //             "resolve basic transformer constantNumber": {
-    //               transformerTestType: "transformerTest",
-    //               transformerTestLabel: "resolve basic transformer constantNumber",
-    //               transformerName: "constantNumber",
-    //               transformer: {
-    //                 transformerType: "constantNumber",
-    //                 // interpolation: "runtime",
-    //                 value: 42,
-    //               },
-    //               transformerParams: {},
-    //               expectedValue: 42,
-    //             },
-    //             "failed constantNumber transformer for non-number value": {
-    //               transformerTestType: "transformerTest",
-    //               transformerTestLabel: "failed constantNumber transformer for non-number value",
-    //               transformerName: "constantNumberFailed",
-    //               transformer: {
-    //                 transformerType: "constantNumber",
-    //                 // interpolation: "runtime",
-    //                 value: "test" as any,
-    //               },
-    //               transformerParams: {},
-    //               ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-    //               expectedValue: {
-    //                 queryFailure: "QueryNotExecutable",
-    //               },
-    //             },
-    //           },
-    //         },
-    //         constantBigint: {
-    //           transformerTestType: "transformerTestSuite",
-    //           transformerTestLabel: "constantBigint",
-    //           transformerTests: {
-    //             "resolve basic transformer constantBigint": {
-    //               transformerTestType: "transformerTest",
-    //               transformerTestLabel: "resolve basic transformer constantBigint",
-    //               transformerName: "constantBigint",
-    //               transformer: {
-    //                 transformerType: "constantBigint",
-    //                 // interpolation: "runtime",
-    //                 // value: 42n,
-    //                 value: 42, // TODO: ensure actual value is bigint, not number
-    //               },
-    //               transformerParams: {},
-    //               expectedValue: 42,
-    //               // expectedValue: 42n,
-    //             },
-    //             "failed constantBigint transformer for non-bigint value": {
-    //               transformerTestType: "transformerTest",
-    //               transformerTestLabel: "failed constantBigint transformer for non-bigint value",
-    //               transformerName: "constantBigintFailed",
-    //               transformer: {
-    //                 transformerType: "constantBigint",
-    //                 // interpolation: "runtime",
-    //                 value: "test" as any,
-    //               },
-    //               transformerParams: {},
-    //               ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-    //               expectedValue: {
-    //                 queryFailure: "QueryNotExecutable",
-    //               },
-    //             },
-    //           },
-    //         },
-    //         constantString: {
-    //           transformerTestType: "transformerTestSuite",
-    //           transformerTestLabel: "constantString",
-    //           transformerTests: {
-    //             "resolve basic transformer constantString": {
-    //               transformerTestType: "transformerTest",
-    //               transformerTestLabel: "resolve basic transformer constantString",
-    //               transformerName: "constantString",
-    //               transformer: {
-    //                 transformerType: "constantString",
-    //                 // interpolation: "runtime",
-    //                 value: "test",
-    //               },
-    //               transformerParams: {},
-    //               expectedValue: "test",
-    //             },
-    //             "constantString transformer for non-string value": {
-    //               transformerTestType: "transformerTest",
-    //               transformerTestLabel: "failed constantString transformer for non-string value",
-    //               transformerName: "constantStringFailed",
-    //               transformer: {
-    //                 transformerType: "constantString",
-    //                 // interpolation: "runtime",
-    //                 value: { test: "objectInsteadOfString" } as any,
-    //               },
-    //               transformerParams: {},
-    //               expectedValue: '{"test":"objectInsteadOfString"}',
-    //             },
-    //           },
-    //         },
-    //         constantObject: {
-    //           transformerTestType: "transformerTestSuite",
-    //           transformerTestLabel: "constantObject",
-    //           transformerTests: {
-    //             "resolve basic transformer constantObject before runtime": {
-    //               transformerTestType: "transformerTest",
-    //               transformerTestLabel: "resolve basic transformer constantObject before runtime",
-    //               transformerName: "constantObjectBeforeRuntime",
-    //               transformer: {
-    //                 transformerType: "constantObject",
-    //                 // interpolation: "runtime",
-    //                 value: { test: "test" },
-    //               },
-    //               transformerParams: {},
-    //               expectedValue: { test: "test" },
-    //             },
-    //             "resolve basic transformer constantObject at runtime": {
-    //               transformerTestType: "transformerTest",
-    //               transformerTestLabel: "resolve basic transformer constantObject at runtime",
-    //               transformerName: "constantObjectAtRuntime",
-    //               transformer: {
-    //                 transformerType: "constantObject",
-    //                 // interpolation: "runtime",
-    //                 value: { test: "test" },
-    //               },
-    //               transformerParams: {},
-    //               expectedValue: { test: "test" },
-    //             },
-    //             // TODO: in postgres, conversion to ::jsonb succeeds for string input, it does not require to be an object
-    //             // // "failed constantObject transformer for non-object value before runtime": {
-    //             // //   transformerTestType: "transformerTest",
-    //             // //   transformerTestLabel: "failed constantObject transformer for non-object value before runtime",
-    //             // //   transformerName: "constantObjectFailedBeforeRuntime",
-    //             // //   transformer: {
-    //             // //     transformerType: "constantObject",
-    //             // //     interpolation: "runtime",
-    //             // //     value: "test" as any,
-    //             // //   },
-    //             // //   transformerParams: {},
-    //             // //   ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-    //             // //   expectedValue: {
-    //             // //     queryFailure: "QueryNotExecutable",
-    //             // //   },
-    //             // // }
-    //           },
-    //         },
-    //         constantBoolean: {
-    //           transformerTestType: "transformerTestSuite",
-    //           transformerTestLabel: "constantBoolean",
-    //           transformerTests: {
-    //             "resolve basic transformer constantBoolean": {
-    //               transformerTestType: "transformerTest",
-    //               transformerTestLabel: "resolve basic transformer constantBoolean",
-    //               transformerName: "constantBoolean",
-    //               transformer: {
-    //                 transformerType: "constantBoolean",
-    //                 // interpolation: "runtime",
-    //                 value: true,
-    //               },
-    //               transformerParams: {},
-    //               expectedValue: true,
-    //             },
-    //             "failed constantBoolean transformer for non-boolean value": {
-    //               transformerTestType: "transformerTest",
-    //               transformerTestLabel: "failed constantBoolean transformer for non-boolean value",
-    //               transformerName: "constantBooleanFailed",
-    //               transformer: {
-    //                 transformerType: "constantBoolean",
-    //                 // interpolation: "runtime",
-    //                 value: "test" as any,
-    //               },
-    //               transformerParams: {},
-    //               ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-    //               expectedValue: {
-    //                 queryFailure: "QueryNotExecutable",
-    //               },
-    //             },
-    //           },
-    //         },
-    //         constantAsExtractor: {
-    //           transformerTestType: "transformerTestSuite",
-    //           transformerTestLabel: "constantAsExtractor",
-    //           transformerTests: {
-    //             "resolve basic transformer constantAsExtractor for simple object": {
-    //               transformerTestType: "transformerTest",
-    //               transformerTestLabel: "resolve basic transformer constantAsExtractor for simple object",
-    //               transformerName: "constantAsExtractor",
-    //               transformer: {
-    //                 transformerType: "constantAsExtractor",
-    //                 // interpolation: "runtime",
-    //                 valueJzodSchema: {
-    //                   type: "object",
-    //                   definition: {
-    //                     test: { type: "string" },
-    //                   },
-    //                 },
-    //                 value: { test: "a" },
-    //               },
-    //               transformerParams: {},
-    //               expectedValue: { test: "a" }, // should an extractor always be a table (that is a list of rows)?
-    //             },
-    //             "resolve basic transformer constantAsExtractor for Country object": {
-    //               transformerTestType: "transformerTest",
-    //               transformerTestLabel: "resolve basic transformer constantAsExtractor for Country object",
-    //               transformerName: "constantAsExtractor",
-    //               transformer: {
-    //                 transformerType: "constantAsExtractor",
-    //                 // interpolation: "runtime",
-    //                 valueJzodSchema: entityDefinitionCountry.jzodSchema as JzodElement,
-    //                 value: Country1 as EntityInstance,
-    //               },
-    //               transformerParams: {},
-    //               ignoreAttributes: ["conceptLevel", "icon"],
-    //               expectedValue: Country1, // should an extractor always be a table (that is a list of rows)?
-    //             },
-    //             "resolve basic transformer constantAsExtractor for array of simple objects": {
-    //               transformerTestType: "transformerTest",
-    //               transformerTestLabel: "resolve basic transformer constantAsExtractor for array of simple objects",
-    //               transformerName: "constantAsExtractor",
-    //               transformer: {
-    //                 transformerType: "constantAsExtractor",
-    //                 // interpolation: "runtime",
-    //                 valueJzodSchema: {
-    //                   type: "array",
-    //                   definition: {
-    //                     type: "object",
-    //                     definition: {
-    //                       test: { type: "string" },
-    //                     },
-    //                   },
-    //                 },
-    //                 value: [{ test: "a" }, { test: "b" }],
-    //               },
-    //               transformerParams: {},
-    //               expectedValue: [{ test: "a" }, { test: "b" }], // an extractor is always a table (that is a list of rows)
-    //             },
-    //             // // TODO: constantAsExtractor should fail when the value does not follow the given jzod schema
-    //             // // "failed constantAsExtractor transformer for 'never' value": {
-    //             // //   transformerTestType: "transformerTest",
-    //             // //   transformerTestLabel: "failed constantAsExtractor transformer for 'never' value",
-    //             // //   transformerName: "constantAsExtractorFailed",
-    //             // //   transformer: {
-    //             // //     transformerType: "constantAsExtractor",
-    //             // //     interpolation: "runtime",
-    //             // //     valueJzodSchema: { type: "never" },
-    //             // //     value: { test: "objectInsteadOfString" } as any,
-    //             // //   },
-    //             // //   transformerParams: {},
-    //             // //   ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-    //             // //   expectedValue: {
-    //             // //     queryFailure: "QueryNotExecutable",
-    //             // //   },
-    //             // // },
-    //           },
-    //         },
-    //       },
-    //     },
+    //     // constants: {
+    //     //   transformerTestType: "transformerTestSuite",
+    //     //   transformerTestLabel: "constants",
+    //     //   transformerTests: {
+    //     //     constantArray: {
+    //     //       transformerTestType: "transformerTestSuite",
+    //     //       transformerTestLabel: "constantArray",
+    //     //       transformerTests: {
+    //     //         "resolve basic runtime transformer constantArray": {
+    //     //           transformerTestType: "transformerTest",
+    //     //           transformerTestLabel: "resolve basic runtime transformer constantArray",
+    //     //           transformerName: "constantArrayAtRuntime",
+    //     //           transformer: {
+    //     //             transformerType: "constantArray",
+    //     //             // interpolation: "runtime",
+    //     //             value: ["testA", "testB"],
+    //     //           },
+    //     //           transformerParams: {},
+    //     //           expectedValue: ["testA", "testB"],
+    //     //         },
+    //     //         // TODO: this should return an error, both in the in-memory and in the database case
+    //     //         // when the parsing of the parameter fails, the transformer should return a QueryNotExecutable, but returns the stringified value of the parameter instead
+    //     //         "failed constantArray runtime transformer for non-array value": {
+    //     //           transformerTestType: "transformerTest",
+    //     //           transformerTestLabel: "failed constantArray runtime transformer for non-array value",
+    //     //           transformerName: "constantArrayAtRuntimeFailed",
+    //     //           transformer: {
+    //     //             transformerType: "constantArray",
+    //     //             // interpolation: "runtime",
+    //     //             value: "{]" as any,
+    //     //           },
+    //     //           transformerParams: {},
+    //     //           ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+    //     //           expectedValue: "{]",
+    //     //         },
+    //     //       },
+    //     //     },
+    //     //     constantUuid: {
+    //     //       transformerTestType: "transformerTestSuite",
+    //     //       transformerTestLabel: "constantUuid",
+    //     //       transformerTests: {
+    //     //         "resolve basic transformer constantUuid": {
+    //     //           transformerTestType: "transformerTest",
+    //     //           transformerTestLabel: "resolve basic transformer constantUuid",
+    //     //           transformerName: "constantUuid",
+    //     //           transformer: {
+    //     //             transformerType: "constantUuid",
+    //     //             // interpolation: "runtime",
+    //     //             value: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+    //     //           },
+    //     //           transformerParams: {},
+    //     //           expectedValue: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+    //     //         },
+    //     //         // TODO: does this make any sense?
+    //     //         // "should fail when context reference is not found": {
+    //     //         //   transformerTestType: "transformerTest",
+    //     //         //   transformerTestLabel: "should fail when context reference is not found",
+    //     //         //   transformerName: "constantUuid",
+    //     //         //   transformer: {
+    //     //         //     transformerType: "contextReference",
+    //     //         //     interpolation: "runtime",
+    //     //         //     referenceName: "nonExistentReference",
+    //     //         //   },
+    //     //         //   transformerParams: {},
+    //     //         //   ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+    //     //         //   expectedValue: {
+    //     //         //     queryFailure: "QueryNotExecutable",
+    //     //         //   },
+    //     //         // },
+    //     //       },
+    //     //     },
+    //     //     constantNumber: {
+    //     //       transformerTestType: "transformerTestSuite",
+    //     //       transformerTestLabel: "constantNumber",
+    //     //       transformerTests: {
+    //     //         "resolve basic transformer constantNumber": {
+    //     //           transformerTestType: "transformerTest",
+    //     //           transformerTestLabel: "resolve basic transformer constantNumber",
+    //     //           transformerName: "constantNumber",
+    //     //           transformer: {
+    //     //             transformerType: "constantNumber",
+    //     //             // interpolation: "runtime",
+    //     //             value: 42,
+    //     //           },
+    //     //           transformerParams: {},
+    //     //           expectedValue: 42,
+    //     //         },
+    //     //         "failed constantNumber transformer for non-number value": {
+    //     //           transformerTestType: "transformerTest",
+    //     //           transformerTestLabel: "failed constantNumber transformer for non-number value",
+    //     //           transformerName: "constantNumberFailed",
+    //     //           transformer: {
+    //     //             transformerType: "constantNumber",
+    //     //             // interpolation: "runtime",
+    //     //             value: "test" as any,
+    //     //           },
+    //     //           transformerParams: {},
+    //     //           ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+    //     //           expectedValue: {
+    //     //             queryFailure: "QueryNotExecutable",
+    //     //           },
+    //     //         },
+    //     //       },
+    //     //     },
+    //     //     constantBigint: {
+    //     //       transformerTestType: "transformerTestSuite",
+    //     //       transformerTestLabel: "constantBigint",
+    //     //       transformerTests: {
+    //     //         "resolve basic transformer constantBigint": {
+    //     //           transformerTestType: "transformerTest",
+    //     //           transformerTestLabel: "resolve basic transformer constantBigint",
+    //     //           transformerName: "constantBigint",
+    //     //           transformer: {
+    //     //             transformerType: "constantBigint",
+    //     //             // interpolation: "runtime",
+    //     //             // value: 42n,
+    //     //             value: 42, // TODO: ensure actual value is bigint, not number
+    //     //           },
+    //     //           transformerParams: {},
+    //     //           expectedValue: 42,
+    //     //           // expectedValue: 42n,
+    //     //         },
+    //     //         "failed constantBigint transformer for non-bigint value": {
+    //     //           transformerTestType: "transformerTest",
+    //     //           transformerTestLabel: "failed constantBigint transformer for non-bigint value",
+    //     //           transformerName: "constantBigintFailed",
+    //     //           transformer: {
+    //     //             transformerType: "constantBigint",
+    //     //             // interpolation: "runtime",
+    //     //             value: "test" as any,
+    //     //           },
+    //     //           transformerParams: {},
+    //     //           ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+    //     //           expectedValue: {
+    //     //             queryFailure: "QueryNotExecutable",
+    //     //           },
+    //     //         },
+    //     //       },
+    //     //     },
+    //     //     constantString: {
+    //     //       transformerTestType: "transformerTestSuite",
+    //     //       transformerTestLabel: "constantString",
+    //     //       transformerTests: {
+    //     //         "resolve basic transformer constantString": {
+    //     //           transformerTestType: "transformerTest",
+    //     //           transformerTestLabel: "resolve basic transformer constantString",
+    //     //           transformerName: "constantString",
+    //     //           transformer: {
+    //     //             transformerType: "constantString",
+    //     //             // interpolation: "runtime",
+    //     //             value: "test",
+    //     //           },
+    //     //           transformerParams: {},
+    //     //           expectedValue: "test",
+    //     //         },
+    //     //         "constantString transformer for non-string value": {
+    //     //           transformerTestType: "transformerTest",
+    //     //           transformerTestLabel: "failed constantString transformer for non-string value",
+    //     //           transformerName: "constantStringFailed",
+    //     //           transformer: {
+    //     //             transformerType: "constantString",
+    //     //             // interpolation: "runtime",
+    //     //             value: { test: "objectInsteadOfString" } as any,
+    //     //           },
+    //     //           transformerParams: {},
+    //     //           expectedValue: '{"test":"objectInsteadOfString"}',
+    //     //         },
+    //     //       },
+    //     //     },
+    //     //     constantObject: {
+    //     //       transformerTestType: "transformerTestSuite",
+    //     //       transformerTestLabel: "constantObject",
+    //     //       transformerTests: {
+    //     //         "resolve basic transformer constantObject before runtime": {
+    //     //           transformerTestType: "transformerTest",
+    //     //           transformerTestLabel: "resolve basic transformer constantObject before runtime",
+    //     //           transformerName: "constantObjectBeforeRuntime",
+    //     //           transformer: {
+    //     //             transformerType: "constantObject",
+    //     //             // interpolation: "runtime",
+    //     //             value: { test: "test" },
+    //     //           },
+    //     //           transformerParams: {},
+    //     //           expectedValue: { test: "test" },
+    //     //         },
+    //     //         "resolve basic transformer constantObject at runtime": {
+    //     //           transformerTestType: "transformerTest",
+    //     //           transformerTestLabel: "resolve basic transformer constantObject at runtime",
+    //     //           transformerName: "constantObjectAtRuntime",
+    //     //           transformer: {
+    //     //             transformerType: "constantObject",
+    //     //             // interpolation: "runtime",
+    //     //             value: { test: "test" },
+    //     //           },
+    //     //           transformerParams: {},
+    //     //           expectedValue: { test: "test" },
+    //     //         },
+    //     //         // TODO: in postgres, conversion to ::jsonb succeeds for string input, it does not require to be an object
+    //     //         // // "failed constantObject transformer for non-object value before runtime": {
+    //     //         // //   transformerTestType: "transformerTest",
+    //     //         // //   transformerTestLabel: "failed constantObject transformer for non-object value before runtime",
+    //     //         // //   transformerName: "constantObjectFailedBeforeRuntime",
+    //     //         // //   transformer: {
+    //     //         // //     transformerType: "constantObject",
+    //     //         // //     interpolation: "runtime",
+    //     //         // //     value: "test" as any,
+    //     //         // //   },
+    //     //         // //   transformerParams: {},
+    //     //         // //   ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+    //     //         // //   expectedValue: {
+    //     //         // //     queryFailure: "QueryNotExecutable",
+    //     //         // //   },
+    //     //         // // }
+    //     //       },
+    //     //     },
+    //     //     constantBoolean: {
+    //     //       transformerTestType: "transformerTestSuite",
+    //     //       transformerTestLabel: "constantBoolean",
+    //     //       transformerTests: {
+    //     //         "resolve basic transformer constantBoolean": {
+    //     //           transformerTestType: "transformerTest",
+    //     //           transformerTestLabel: "resolve basic transformer constantBoolean",
+    //     //           transformerName: "constantBoolean",
+    //     //           transformer: {
+    //     //             transformerType: "constantBoolean",
+    //     //             // interpolation: "runtime",
+    //     //             value: true,
+    //     //           },
+    //     //           transformerParams: {},
+    //     //           expectedValue: true,
+    //     //         },
+    //     //         "failed constantBoolean transformer for non-boolean value": {
+    //     //           transformerTestType: "transformerTest",
+    //     //           transformerTestLabel: "failed constantBoolean transformer for non-boolean value",
+    //     //           transformerName: "constantBooleanFailed",
+    //     //           transformer: {
+    //     //             transformerType: "constantBoolean",
+    //     //             // interpolation: "runtime",
+    //     //             value: "test" as any,
+    //     //           },
+    //     //           transformerParams: {},
+    //     //           ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+    //     //           expectedValue: {
+    //     //             queryFailure: "QueryNotExecutable",
+    //     //           },
+    //     //         },
+    //     //       },
+    //     //     },
+    //     //     constantAsExtractor: {
+    //     //       transformerTestType: "transformerTestSuite",
+    //     //       transformerTestLabel: "constantAsExtractor",
+    //     //       transformerTests: {
+    //     //         "resolve basic transformer constantAsExtractor for simple object": {
+    //     //           transformerTestType: "transformerTest",
+    //     //           transformerTestLabel: "resolve basic transformer constantAsExtractor for simple object",
+    //     //           transformerName: "constantAsExtractor",
+    //     //           transformer: {
+    //     //             transformerType: "constantAsExtractor",
+    //     //             // interpolation: "runtime",
+    //     //             valueJzodSchema: {
+    //     //               type: "object",
+    //     //               definition: {
+    //     //                 test: { type: "string" },
+    //     //               },
+    //     //             },
+    //     //             value: { test: "a" },
+    //     //           },
+    //     //           transformerParams: {},
+    //     //           expectedValue: { test: "a" }, // should an extractor always be a table (that is a list of rows)?
+    //     //         },
+    //     //         "resolve basic transformer constantAsExtractor for Country object": {
+    //     //           transformerTestType: "transformerTest",
+    //     //           transformerTestLabel: "resolve basic transformer constantAsExtractor for Country object",
+    //     //           transformerName: "constantAsExtractor",
+    //     //           transformer: {
+    //     //             transformerType: "constantAsExtractor",
+    //     //             // interpolation: "runtime",
+    //     //             valueJzodSchema: entityDefinitionCountry.jzodSchema as JzodElement,
+    //     //             value: Country1 as EntityInstance,
+    //     //           },
+    //     //           transformerParams: {},
+    //     //           ignoreAttributes: ["conceptLevel", "icon"],
+    //     //           expectedValue: Country1, // should an extractor always be a table (that is a list of rows)?
+    //     //         },
+    //     //         "resolve basic transformer constantAsExtractor for array of simple objects": {
+    //     //           transformerTestType: "transformerTest",
+    //     //           transformerTestLabel: "resolve basic transformer constantAsExtractor for array of simple objects",
+    //     //           transformerName: "constantAsExtractor",
+    //     //           transformer: {
+    //     //             transformerType: "constantAsExtractor",
+    //     //             // interpolation: "runtime",
+    //     //             valueJzodSchema: {
+    //     //               type: "array",
+    //     //               definition: {
+    //     //                 type: "object",
+    //     //                 definition: {
+    //     //                   test: { type: "string" },
+    //     //                 },
+    //     //               },
+    //     //             },
+    //     //             value: [{ test: "a" }, { test: "b" }],
+    //     //           },
+    //     //           transformerParams: {},
+    //     //           expectedValue: [{ test: "a" }, { test: "b" }], // an extractor is always a table (that is a list of rows)
+    //     //         },
+    //     //         // // TODO: constantAsExtractor should fail when the value does not follow the given jzod schema
+    //     //         // // "failed constantAsExtractor transformer for 'never' value": {
+    //     //         // //   transformerTestType: "transformerTest",
+    //     //         // //   transformerTestLabel: "failed constantAsExtractor transformer for 'never' value",
+    //     //         // //   transformerName: "constantAsExtractorFailed",
+    //     //         // //   transformer: {
+    //     //         // //     transformerType: "constantAsExtractor",
+    //     //         // //     interpolation: "runtime",
+    //     //         // //     valueJzodSchema: { type: "never" },
+    //     //         // //     value: { test: "objectInsteadOfString" } as any,
+    //     //         // //   },
+    //     //         // //   transformerParams: {},
+    //     //         // //   ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+    //     //         // //   expectedValue: {
+    //     //         // //     queryFailure: "QueryNotExecutable",
+    //     //         // //   },
+    //     //         // // },
+    //     //       },
+    //     //     },
+    //     //   },
+    //     // },
     //     references: {
     //       transformerTestType: "transformerTestSuite",
     //       transformerTestLabel: "references",
@@ -1474,106 +1504,106 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
     //           },
     //           expectedValue: { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", name: "US" },
     //         },
-    //         // "object_fullTemplate allows to dynamically build an object during runtime using parameterReference (unknown keys, unknown values)":
-    //         //   {
-    //         //     transformerTestType: "transformerTest",
-    //         //     transformerTestLabel:
-    //         //       "object_fullTemplate allows to dynamically build an object during runtime using parameterReference (unknown keys, unknown values)",
-    //         //     transformerName: "fullTemplate",
-    //         //     transformer: {
-    //         //       transformerType: "object_fullTemplate",
-    //         //       applyTo: {
-    //         //         referenceType: "referencedTransformer",
-    //         //         reference: {
-    //         //           transformerType: "parameterReference",
-    //         //           referenceName: "country",
-    //         //         },
-    //         //       },
-    //         //       referenceToOuterObject: "country",
-    //         //       definition: [
-    //         //         {
-    //         //           attributeKey: {
-    //         //             transformerType: "constantString",
-    //         //             value: "uuid",
-    //         //           },
-    //         //           attributeValue: {
-    //         //             transformerType: "parameterReference",
-    //         //             referenceName: "newUuid",
-    //         //           },
-    //         //         },
-    //         //         {
-    //         //           attributeKey: {
-    //         //             transformerType: "constantString",
-    //         //             value: "name",
-    //         //           },
-    //         //           attributeValue: {
-    //         //             transformerType: "contextReference",
-    //         //             interpolation: "runtime",
-    //         //             referencePath: ["country", "iso3166-1Alpha-2"],
-    //         //           },
-    //         //         },
-    //         //       ],
-    //         //     },
-    //         //     transformerParams: {
-    //         //       newUuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-    //         //       country: Country1 as EntityInstance,
-    //         //     },
-    //         //     transformerRuntimeContext: {},
-    //         //     expectedValue: { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", name: "US" },
-    //         //   },
-    //         // "object_fullTemplate allows to dynamically build an object using an extractor": {
-    //         //   transformerTestType: "transformerTest",
-    //         //   transformerTestLabel: "object_fullTemplate allows to dynamically build an object using an extractor",
-    //         //   transformerName: "fullTemplate",
-    //         //   transformer: {
-    //         //     transformerType: "object_fullTemplate",
-    //         //     interpolation: "runtime",
-    //         //     applyTo: {
-    //         //       referenceType: "referencedTransformer",
-    //         //       reference: {
-    //         //         transformerType: "constantAsExtractor",
-    //         //         interpolation: "runtime",
-    //         //         valueJzodSchema: entityDefinitionCountry.jzodSchema as JzodElement,
-    //         //         value: Country1 as EntityInstance,
-    //         //       },
-    //         //     },
-    //         //     referenceToOuterObject: "country",
-    //         //     definition: [
-    //         //       {
-    //         //         attributeKey: {
-    //         //           transformerType: "constantString",
-    //         //           // interpolation: "runtime",
-    //         //           value: "uuid",
-    //         //         },
-    //         //         attributeValue: {
-    //         //           transformerType: "parameterReference",
-    //         //           referenceName: "newUuid",
-    //         //         },
-    //         //       },
-    //         //       {
-    //         //         attributeKey: {
-    //         //           transformerType: "constantString",
-    //         //           // interpolation: "runtime",
-    //         //           value: "name",
-    //         //         },
-    //         //         attributeValue: {
-    //         //           transformerType: "contextReference",
-    //         //           interpolation: "runtime",
-    //         //           referencePath: ["country", "iso3166-1Alpha-2"],
-    //         //         },
-    //         //       },
-    //         //     ],
-    //         //   },
-    //         //   transformerParams: {
-    //         //     newUuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-    //         //     country: Country1 as EntityInstance,
-    //         //   },
-    //         //   transformerRuntimeContext: {
-    //         //     // newUuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-    //         //     // country: Country1 as EntityInstance,
-    //         //   },
-    //         //   expectedValue: { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", name: "US" },
-    //         // },
+    //         "object_fullTemplate allows to dynamically build an object during runtime using parameterReference (unknown keys, unknown values)":
+    //           {
+    //             transformerTestType: "transformerTest",
+    //             transformerTestLabel:
+    //               "object_fullTemplate allows to dynamically build an object during runtime using parameterReference (unknown keys, unknown values)",
+    //             transformerName: "fullTemplate",
+    //             transformer: {
+    //               transformerType: "object_fullTemplate",
+    //               applyTo: {
+    //                 referenceType: "referencedTransformer",
+    //                 reference: {
+    //                   transformerType: "parameterReference",
+    //                   referenceName: "country",
+    //                 },
+    //               },
+    //               referenceToOuterObject: "country",
+    //               definition: [
+    //                 {
+    //                   attributeKey: {
+    //                     transformerType: "constantString",
+    //                     value: "uuid",
+    //                   },
+    //                   attributeValue: {
+    //                     transformerType: "parameterReference",
+    //                     referenceName: "newUuid",
+    //                   },
+    //                 },
+    //                 {
+    //                   attributeKey: {
+    //                     transformerType: "constantString",
+    //                     value: "name",
+    //                   },
+    //                   attributeValue: {
+    //                     transformerType: "contextReference",
+    //                     interpolation: "runtime",
+    //                     referencePath: ["country", "iso3166-1Alpha-2"],
+    //                   },
+    //                 },
+    //               ],
+    //             },
+    //             transformerParams: {
+    //               newUuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+    //               country: Country1 as EntityInstance,
+    //             },
+    //             transformerRuntimeContext: {},
+    //             expectedValue: { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", name: "US" },
+    //           },
+    //         "object_fullTemplate allows to dynamically build an object using an extractor": {
+    //           transformerTestType: "transformerTest",
+    //           transformerTestLabel: "object_fullTemplate allows to dynamically build an object using an extractor",
+    //           transformerName: "fullTemplate",
+    //           transformer: {
+    //             transformerType: "object_fullTemplate",
+    //             interpolation: "runtime",
+    //             applyTo: {
+    //               referenceType: "referencedTransformer",
+    //               reference: {
+    //                 transformerType: "constantAsExtractor",
+    //                 interpolation: "runtime",
+    //                 valueJzodSchema: entityDefinitionCountry.jzodSchema as JzodElement,
+    //                 value: Country1 as EntityInstance,
+    //               },
+    //             },
+    //             referenceToOuterObject: "country",
+    //             definition: [
+    //               {
+    //                 attributeKey: {
+    //                   transformerType: "constantString",
+    //                   // interpolation: "runtime",
+    //                   value: "uuid",
+    //                 },
+    //                 attributeValue: {
+    //                   transformerType: "parameterReference",
+    //                   referenceName: "newUuid",
+    //                 },
+    //               },
+    //               {
+    //                 attributeKey: {
+    //                   transformerType: "constantString",
+    //                   // interpolation: "runtime",
+    //                   value: "name",
+    //                 },
+    //                 attributeValue: {
+    //                   transformerType: "contextReference",
+    //                   interpolation: "runtime",
+    //                   referencePath: ["country", "iso3166-1Alpha-2"],
+    //                 },
+    //               },
+    //             ],
+    //           },
+    //           transformerParams: {
+    //             newUuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+    //             country: Country1 as EntityInstance,
+    //           },
+    //           transformerRuntimeContext: {
+    //             // newUuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+    //             // country: Country1 as EntityInstance,
+    //           },
+    //           expectedValue: { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", name: "US" },
+    //         },
     //       },
     //     },
     //     mapperListToList: {

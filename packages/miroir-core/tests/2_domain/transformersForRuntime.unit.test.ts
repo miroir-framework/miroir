@@ -187,13 +187,13 @@ async function runTransformerTestInMemory(vitest: any, testSuiteNamePath: string
   }
 
 
-  console.log("################################ raw result", JSON.stringify(rawResult, null, 2));
+  console.log("################################ runTransformerTestInMemory raw result", JSON.stringify(rawResult, null, 2));
   console.log(
-    "################################ expectedResult",
+    "################################ runTransformerTestInMemory expectedResult",
     JSON.stringify(transformerTest.expectedValue, null, 2)
   );
   const result = ignorePostgresExtraAttributes(rawResult, transformerTest.ignoreAttributes);
-  console.log("################################ result", JSON.stringify(result, null, 2));
+  console.log("################################ runTransformerTestInMemory result", JSON.stringify(result, null, 2));
   const testSuiteNamePathAsString = TestSuiteContext.testSuitePathName(testSuiteNamePath);
   try {
     vitest.expect(result, `${testSuiteNamePathAsString} > ${assertionName}`).toEqual(transformerTest.expectedValue);
