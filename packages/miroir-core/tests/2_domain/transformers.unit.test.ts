@@ -161,14 +161,16 @@ async function runTransformerTestInMemory(vitest: any, testSuiteNamePath: string
 
   const interpolation = transformerTest.runTestStep??"runtime";
   let rawResult: Domain2QueryReturnType<any>;
+
+  const convertedTransformer = transformer_extended_apply_wrapper(
+    "build",
+    undefined,
+    runtimeTransformer,
+    transformerTest.transformerParams,
+    transformerTest.transformerRuntimeContext ?? {}
+  );
+
   if (interpolation == "runtime") {
-    const convertedTransformer = transformer_extended_apply_wrapper(
-      "build",
-      undefined,
-      runtimeTransformer,
-      transformerTest.transformerParams,
-      transformerTest.transformerRuntimeContext ?? {}
-    )
     rawResult = transformer_extended_apply_wrapper(
       "runtime",
       undefined,
@@ -177,13 +179,14 @@ async function runTransformerTestInMemory(vitest: any, testSuiteNamePath: string
       transformerTest.transformerRuntimeContext ?? {}
     );
   } else {
-    rawResult = transformer_extended_apply_wrapper(
-      interpolation,
-      undefined,
-      runtimeTransformer,
-      transformerTest.transformerParams,
-      transformerTest.transformerRuntimeContext ?? {}
-    );
+    rawResult = convertedTransformer;
+    // rawResult = transformer_extended_apply_wrapper(
+    //   interpolation,
+    //   undefined,
+    //   runtimeTransformer,
+    //   transformerTest.transformerParams,
+    //   transformerTest.transformerRuntimeContext ?? {}
+    // );
   }
 
 
@@ -215,7 +218,7 @@ async function runTransformerTestInMemory(vitest: any, testSuiteNamePath: string
 }
 
 // ################################################################################################
-const testSuiteName = "transformersForRuntime.unit.test";
+const testSuiteName = "transformers.unit.test";
 if (RUN_TEST == testSuiteName) {
   // await runTransformerTestSuite(vitest, [transformerTests.transformerTestLabel ?? transformerTests.transformerTestType], transformerTests, runTransformerTest);
   await runTransformerTestSuite(vitest, [], currentTestSuite, runTransformerTestInMemory);
