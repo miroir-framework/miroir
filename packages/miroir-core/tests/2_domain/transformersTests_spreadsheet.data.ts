@@ -32,7 +32,7 @@ import { TestSuiteContext } from "../../src/4_services/TestSuiteContext";
 // import publisher1 from "../../src/assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/1f550a2a-33f5-4a56-83ee-302701039494.json" with { type: "json" };
 // import publisher2 from "../../src/assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/516a7366-39e7-4998-82cb-80199a7fa667.json" with { type: "json" };
 // import publisher3 from "../../src/assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/c1c97d54-aba8-4599-883a-7fe8f3874095.json" with { type: "json" };
-import { TransformerTestSuite } from "./transformersForRuntimeTests_miroir.data";
+import { TransformerTestSuite } from "./transformersTests_miroir.data";
 import { transformer_spreadSheetToJzodSchema } from "../../src/2_domain/Spreadsheet";
 
 // // ################################################################################################

@@ -94,7 +94,7 @@ import {
   transformerTestSuite_miroirTransformers,
   TransformerTestSuite,
   currentTestSuite,
-} from "../2_domain/transformersForRuntimeTests_miroir.data";
+} from "../2_domain/transformersTests_miroir.data";
 import { MetaEntity, Uuid } from '../../src/0_interfaces/1_core/EntityDefinition.js';
 import { InitApplicationParameters, PersistenceStoreAdminSectionInterface } from '../../src/0_interfaces/4-services/PersistenceStoreControllerInterface.js';
 import { PersistenceStoreController } from '../../src/4_services/PersistenceStoreController.js';

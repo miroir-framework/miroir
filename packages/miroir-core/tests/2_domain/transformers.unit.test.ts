@@ -44,7 +44,7 @@ import {
   TransformerTest,
   transformerTestSuite_miroirTransformers,
   currentTestSuite,
-} from "./transformersForRuntimeTests_miroir.data";
+} from "./transformersTests_miroir.data";
 
 
 // const env:any = (import.meta as any).env
