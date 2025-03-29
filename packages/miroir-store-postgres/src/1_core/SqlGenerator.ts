@@ -339,59 +339,59 @@ export function sqlStringForRuntimeTransformer(
         sqlStringOrObject: (topLevelTransformer ? "select " : "") + "gen_random_uuid()",
       };
     }
-    case "mustacheStringTemplate": {
-      if (actionRuntimeTransformer.interpolation == "runtime") {
-        throw new Error("sqlStringForRuntimeTransformer mustacheStringTemplate interpolation not implemented: runtime");
-        // const resolvedReference = sqlStringForRuntimeTransformer(
-        //   f.attributeKey,
-        //   newPreparedStatementParametersCount,
-        //   queryParams,
-        //   definedContextEntries,
-        //   true,
-        //   `attributeKey${index}`, 
+    // case "mustacheStringTemplate": {
+    //   if (actionRuntimeTransformer.interpolation == "runtime") {
+    //     throw new Error("sqlStringForRuntimeTransformer mustacheStringTemplate interpolation not implemented: runtime");
+    //     // const resolvedReference = sqlStringForRuntimeTransformer(
+    //     //   f.attributeKey,
+    //     //   newPreparedStatementParametersCount,
+    //     //   queryParams,
+    //     //   definedContextEntries,
+    //     //   true,
+    //     //   `attributeKey${index}`, 
 
-        // )
-        // // const resolvedReference = transformer_resolveReference(
-        // //   "runtime",
-        // //   actionRuntimeTransformer,
-        // //   "param",
-        // //   queryParams,
-        // //   definedContextEntries
-        // // );
-        // if (resolvedReference instanceof Domain2ElementFailed) {
-        //   return resolvedReference;
-        // }
-        // const referenceQuery = sqlStringForRuntimeTransformer(
-        //   {
-        //     transformerType: "constant",
-        //     interpolation: "runtime",
-        //     value: resolvedReference as any,
-        //   },
-        //   preparedStatementParametersCount,
-        //   queryParams,
-        //   definedContextEntries,
-        //   true
-        // );
-        // return referenceQuery;
-      } else {
-        const resolvedReference = transformer_mustacheStringTemplate_apply(
-          "runtime",
-          actionRuntimeTransformer,
-          queryParams,
-          definedContextEntries
-        );
-        if (resolvedReference instanceof Domain2ElementFailed) {
-          return resolvedReference;
-        }
-        // log.info("sqlStringForRuntimeTransformer mustacheStringTemplate sqlQuery", sqlQuery);
-        return {
-          type: "scalar",
-          // sqlStringOrObject: `SELECT '${resolvedReference}'::text as "mustacheStringTemplate"`, // TODO: determine type
-          sqlStringOrObject: `SELECT '${resolvedReference}' as "mustacheStringTemplate"`, // TODO: determine type
-          resultAccessPath: topLevelTransformer ? [0, "mustacheStringTemplate"] : undefined,
-        };
-      }
-    }
+    //     // )
+    //     // // const resolvedReference = transformer_resolveReference(
+    //     // //   "runtime",
+    //     // //   actionRuntimeTransformer,
+    //     // //   "param",
+    //     // //   queryParams,
+    //     // //   definedContextEntries
+    //     // // );
+    //     // if (resolvedReference instanceof Domain2ElementFailed) {
+    //     //   return resolvedReference;
+    //     // }
+    //     // const referenceQuery = sqlStringForRuntimeTransformer(
+    //     //   {
+    //     //     transformerType: "constant",
+    //     //     interpolation: "runtime",
+    //     //     value: resolvedReference as any,
+    //     //   },
+    //     //   preparedStatementParametersCount,
+    //     //   queryParams,
+    //     //   definedContextEntries,
+    //     //   true
+    //     // );
+    //     // return referenceQuery;
+    //   } else {
+    //     const resolvedReference = transformer_mustacheStringTemplate_apply(
+    //       "runtime",
+    //       actionRuntimeTransformer,
+    //       queryParams,
+    //       definedContextEntries
+    //     );
+    //     if (resolvedReference instanceof Domain2ElementFailed) {
+    //       return resolvedReference;
+    //     }
+    //     // log.info("sqlStringForRuntimeTransformer mustacheStringTemplate sqlQuery", sqlQuery);
+    //     return {
+    //       type: "scalar",
+    //       // sqlStringOrObject: `SELECT '${resolvedReference}'::text as "mustacheStringTemplate"`, // TODO: determine type
+    //       sqlStringOrObject: `SELECT '${resolvedReference}' as "mustacheStringTemplate"`, // TODO: determine type
+    //       resultAccessPath: topLevelTransformer ? [0, "mustacheStringTemplate"] : undefined,
+    //     };
+    //   }
+    // }
     // case "innerFullObjectTemplate":
     case "object_fullTemplate": {
       if (topLevelTransformer) {
@@ -1955,10 +1955,12 @@ ${orderBy}
         useAccessPathForContextReference,
         topLevelTransformer,
       );
+      console.log("sqlStringForRuntimeTransformer count referenceQuery", JSON.stringify(referenceQuery, null, 2));
       if (referenceQuery instanceof Domain2ElementFailed) {
         return referenceQuery;
       }
       switch (referenceQuery.type) {
+        case "json_array":
         case "json": {
           return {
             type: "json",
@@ -2018,7 +2020,7 @@ FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo",
           return new Domain2ElementFailed({
             queryFailure: "QueryNotExecutable",
             query: actionRuntimeTransformer as any,
-            failureMessage: "sqlStringForRuntimeTransformer count referenceQuery result is not determined",
+            failureMessage: "sqlStringForRuntimeTransformer count referenceQuery result type is not known: " + referenceQuery.type,
           });
           break;
         }
