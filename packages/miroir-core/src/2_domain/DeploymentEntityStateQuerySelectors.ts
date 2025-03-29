@@ -92,9 +92,11 @@ export const selectEntityInstanceFromDeploymentEntityState: SyncBoxedExtractorRu
   switch (querySelectorParams?.extractorOrCombinerType) {
     case "combinerForObjectByRelation": {
       // TODO: reference object is implicitly a contextReference here, should be made explicit?!
+      // TODO: gives a condition for "build" resolution to yield value not constantTransformer, this is actually not relevant, the interface must be corrected.
       const referenceObject = transformer_InnerReference_resolve(
         "runtime",
         { transformerType: "contextReference", referenceName: querySelectorParams.objectReference },
+        "value",
         selectorParams.extractor.queryParams,
         selectorParams.extractor.contextResults
       );

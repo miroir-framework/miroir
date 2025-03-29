@@ -1454,10 +1454,25 @@ describe("jzod.unfoldSchemaForValue", () => {
                 },
               ],
             },
+            transformerForBuild_Abstract: {
+              type: "object",
+              definition: {
+                interpolation: {
+                  type: "literal",
+                  definition: "build",
+                },
+              },
+            },
             transformerForBuild_InnerReference: {
               type: "union",
               discriminator: "transformerType",
               definition: [
+                {
+                  type: "schemaReference",
+                  definition: {
+                    relativePath: "transformer_parameterReference",
+                  },
+                },
                 {
                   type: "schemaReference",
                   definition: {
@@ -1475,13 +1490,7 @@ describe("jzod.unfoldSchemaForValue", () => {
                   definition: {
                     relativePath: "transformer_newUuid",
                   },
-                },
-                {
-                  type: "schemaReference",
-                  definition: {
-                    relativePath: "transformer_contextOrParameterReferenceTO_REMOVE",
-                  },
-                },
+                }
               ],
             },
             extractorTemplateRoot: {
@@ -1532,7 +1541,7 @@ describe("jzod.unfoldSchemaForValue", () => {
                 instanceUuid: {
                   type: "schemaReference",
                   definition: {
-                    absolutePath: miroirFundamentalJzodSchemaUuid,
+                    // absolutePath: miroirFundamentalJzodSchemaUuid,
                     relativePath: "transformerForBuild_InnerReference",
                   },
                 },
@@ -1652,7 +1661,8 @@ describe("jzod.unfoldSchemaForValue", () => {
             relativePath: "extractorTemplateByExtractorWrapper",
           },
         },
-        expectedResult: { // TODO: missing alternate possible union branches in parentUuid, instanceUuid?
+        expectedResult: {
+          // TODO: missing alternate possible union branches in parentUuid, instanceUuid?
           type: "object",
           definition: {
             extractorOrCombinerType: {
@@ -1710,7 +1720,6 @@ describe("jzod.unfoldSchemaForValue", () => {
           },
         },
       },
-
     };
 
     for (const test of Object.entries(tests)) {

@@ -703,9 +703,18 @@ export function resolveJzodSchemaReferenceInContext(
   miroirMetaModel?: MetaModel,
   relativeReferenceJzodContext?: {[k:string]: JzodElement},
 ): JzodElement {
-  if (!jzodReference.definition.absolutePath && !relativeReferenceJzodContext) {
-    throw new Error("resolveJzodSchemaReferenceInContext can not find relative reference " + JSON.stringify(jzodReference.definition) + " for empty relative reference set!");
+  if ((!jzodReference.definition || !jzodReference.definition?.absolutePath) && !relativeReferenceJzodContext) {
+    throw new Error(
+      "resolveJzodSchemaReferenceInContext can not find relative reference " +
+        JSON.stringify(jzodReference?.definition) +
+        " for empty relative reference: " +
+        JSON.stringify(jzodReference)
+    );
   }
+  log.info(
+    "resolveJzodSchemaReferenceInContext called for reference",
+    JSON.stringify(jzodReference, null, 2),
+  );
   const absoluteReferences = (currentModel
     ? [miroirFundamentalJzodSchema, ...(currentModel as any).jzodSchemas, ...(miroirMetaModel as any).jzodSchemas] // very inefficient!
     : [miroirFundamentalJzodSchema]

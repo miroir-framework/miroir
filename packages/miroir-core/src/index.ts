@@ -764,7 +764,6 @@ export {
   ActionTemplate,
   resolveApplyTo_legacy,
   transformer_resolveReference,
-  transformer_apply,
   transformer_extended_apply,
   transformer_InnerReference_resolve,
   transformer_mustacheStringTemplate_apply,

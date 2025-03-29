@@ -1331,15 +1331,7 @@ export type TransformerForBuild_mustacheStringTemplate = {
     transformerType: "mustacheStringTemplate";
     definition: string;
 };
-export type TransformerForBuild_InnerReference =
-  | TransformerForBuild_mustacheStringTemplate
-  | Transformer_contextOrParameterReferenceTO_REMOVE
-  | Transformer_constant
-  | Transformer_constantUuid
-  | Transformer_constantObject
-  | Transformer_constantString
-  | Transformer_newUuid
-  | TransformerForBuild_objectDynamicAccess;
+export type TransformerForBuild_InnerReference = TransformerForBuild_mustacheStringTemplate | Transformer_contextOrParameterReferenceTO_REMOVE | Transformer_constant | Transformer_constantUuid | Transformer_constantObject | Transformer_constantString | Transformer_newUuid | TransformerForBuild_objectDynamicAccess;
 export type TransformerForBuild_count = {
     interpolation: "build";
     applyTo: {
@@ -5304,7 +5296,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedQueryTemplateWithE
         [x: string]: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extendedTransformerForRuntime;
     } | undefined) | CarryOnObject) | undefined;
 };
-export type CarryOnObject = TransformerForBuild | TransformerForRuntime;
+export type CarryOnObject = Transformer_constants | TransformerForBuild_InnerReference | TransformerForBuild_dataflowObject | TransformerForBuild_dataflowSequence | TransformerForBuild_freeObjectTemplate | TransformerForBuild_inner_object_alter | TransformerForBuild_object_fullTemplate | TransformerForBuild_object_listReducerToSpreadObject | TransformerForBuild_objectEntries | TransformerForBuild_objectValues | TransformerForBuild_object_listPickElement | TransformerForBuild_object_listReducerToIndexObject | TransformerForBuild_list_listMapperToList | TransformerForBuild_mustacheStringTemplate;
 export type CompositeActionTemplate = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction;
 export type MiroirFundamentalType = JzodElement;
 
@@ -5752,6 +5744,6 @@ export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedExtractorTemplate
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedExtractorTemplateReturningObjectList: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedExtractorTemplateReturningObjectList> = z.union([z.lazy(() =>carryOnObject), z.object({deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), pageParams:z.union([z.record(z.string(),z.union([z.any(), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)]), queryParams:z.union([z.record(z.string(),z.union([z.any(), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)]), contextResults:z.union([z.record(z.string(),z.union([z.any(), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)]), queryType:z.union([z.literal("boxedExtractorTemplateReturningObjectList"), z.lazy(() =>carryOnObject)]), select:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateReturningObjectList)}).strict()]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedExtractorTemplateReturningObjectOrObjectList: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedExtractorTemplateReturningObjectOrObjectList> = z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedExtractorTemplateReturningObject), z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedExtractorTemplateReturningObjectList), z.lazy(() =>carryOnObject)]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedQueryTemplateWithExtractorCombinerTransformer: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedQueryTemplateWithExtractorCombinerTransformer> = z.union([z.lazy(() =>carryOnObject), z.object({deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)]), pageParams:z.union([z.record(z.string(),z.union([z.any(), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)]), queryParams:z.union([z.record(z.string(),z.union([z.any(), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)]), contextResults:z.union([z.record(z.string(),z.union([z.any(), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)]), queryType:z.union([z.literal("boxedQueryTemplateWithExtractorCombinerTransformer"), z.lazy(() =>carryOnObject)]), runAsSql:z.union([z.boolean().optional(), z.lazy(() =>carryOnObject)]).optional(), extractorTemplates:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerTemplateRecord).optional(), combinerTemplates:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerTemplateRecord).optional(), runtimeTransformers:z.union([z.record(z.string(),z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extendedTransformerForRuntime)).optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]);
-export const carryOnObject: z.ZodType<CarryOnObject> = z.union([z.lazy(() =>transformerForBuild), z.lazy(() =>transformerForRuntime)]);
+export const carryOnObject: z.ZodType<CarryOnObject> = z.union([z.lazy(() =>transformer_constants), z.lazy(() =>transformerForBuild_InnerReference), z.lazy(() =>transformerForBuild_dataflowObject), z.lazy(() =>transformerForBuild_dataflowSequence), z.lazy(() =>transformerForBuild_freeObjectTemplate), z.lazy(() =>transformerForBuild_inner_object_alter), z.lazy(() =>transformerForBuild_object_fullTemplate), z.lazy(() =>transformerForBuild_object_listReducerToSpreadObject), z.lazy(() =>transformerForBuild_objectEntries), z.lazy(() =>transformerForBuild_objectValues), z.lazy(() =>transformerForBuild_object_listPickElement), z.lazy(() =>transformerForBuild_object_listReducerToIndexObject), z.lazy(() =>transformerForBuild_list_listMapperToList), z.lazy(() =>transformerForBuild_mustacheStringTemplate)]);
 export const compositeActionTemplate: z.ZodType<CompositeActionTemplate> = z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction);
 export const miroirFundamentalType = z.lazy(() =>jzodElement);

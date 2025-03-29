@@ -32,12 +32,14 @@ export function transformer_menu_AddItem(
       ? (transformers.transformer_InnerReference_resolve(
           step,
           { transformerType: "contextReference", referenceName: transformer.transformerDefinition.menuReference },
+          "value",
           queryParams,
           contextResults
         ) as Menu)
       : (transformers.transformer_InnerReference_resolve(
           step,
           transformer.transformerDefinition.menuReference,
+          "value",
           queryParams,
           contextResults
         ) as Menu);
@@ -50,12 +52,14 @@ export function transformer_menu_AddItem(
       ? (transformers.transformer_InnerReference_resolve(
           step,
           { transformerType: "contextReference", referenceName: transformer.transformerDefinition.menuItemReference },
+          "value",
           queryParams,
           contextResults
         ) as MiroirMenuItem)
       : (transformers.transformer_InnerReference_resolve(
           step,
           transformer.transformerDefinition.menuItemReference,
+          "value",
           queryParams,
           contextResults
         ) as MiroirMenuItem);

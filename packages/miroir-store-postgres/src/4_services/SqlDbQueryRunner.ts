@@ -410,7 +410,11 @@ export class SqlDbQueryRunner {
       case "combinerForObjectByRelation": {
         const referenceObject = transformer_InnerReference_resolve(
           "runtime",
-          { transformerType: "contextReference", referenceName: querySelectorParams.objectReference },
+          {
+            transformerType: "contextReference",
+            referenceName: querySelectorParams.objectReference,
+          },
+          "value",
           selectorParams.extractor.queryParams,
           selectorParams.extractor.contextResults
         );

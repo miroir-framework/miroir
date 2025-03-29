@@ -64,6 +64,7 @@ import { packageName } from '../../src/constants';
 import { MiroirContextReactProvider } from '../../src/miroir-fwk/4_view/MiroirContextReactProvider';
 import { cleanLevel } from '../../src/miroir-fwk/4_view/constants';
 import { ApplicationEntitiesAndInstances } from "./tests-utils-testOnLibrary";
+import { LocalCacheInterface } from 'miroir-core';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -622,7 +623,7 @@ export async function createMiroirDeploymentGetPersistenceStoreController(
 export async function resetApplicationDeployments(
   deploymentConfigurations: DeploymentConfiguration[],
   domainController: DomainControllerInterface,
-  localCache: LocalCache,
+  localCache: LocalCacheInterface,
 ):Promise<void> {
   log.info('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ resetApplicationDeployments');
   for (const d of deploymentConfigurations) {

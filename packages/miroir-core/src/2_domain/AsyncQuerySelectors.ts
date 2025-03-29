@@ -170,6 +170,7 @@ export async function asyncInnerSelectElementFromQuery/*BoxedExtractorTemplateRu
     case "combinerForObjectByRelation":
     case "extractorForObjectByDirectReference": {
       log.info("############ asyncInnerSelectElementFromQuery", extractorOrCombiner.extractorOrCombinerType, "start");
+      log.info("asyncInnerSelectElementFromQuery", JSON.stringify(extractorOrCombiner, null, 2));
       const result = await extractorRunnerMap.extractEntityInstance({
         extractorRunnerMap,
         extractor: {

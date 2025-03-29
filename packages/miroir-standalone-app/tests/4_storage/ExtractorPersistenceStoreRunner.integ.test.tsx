@@ -28,8 +28,6 @@ import {
   EntityInstance,
   entityMenu,
   entityPublisher,
-  entityReport,
-  entityStoreBasedConfiguration,
   ignorePostgresExtraAttributes,
   ignorePostgresExtraAttributesOnObject,
   LoggerInterface,
@@ -41,10 +39,8 @@ import {
   publisher2,
   publisher3,
   resetAndInitApplicationDeployment,
-  SelfApplicationDeploymentConfiguration,
   selfApplicationLibrary,
   selfApplicationModelBranchLibraryMasterBranch,
-  selfApplicationStoreBasedConfigurationLibrary,
   selfApplicationVersionLibraryInitialVersion,
   StoreUnitConfiguration
 } from "miroir-core";
@@ -55,17 +51,15 @@ import {
   defaultMiroirMetaModel,
   ignorePostgresExtraAttributesOnList,
   MiroirContext,
-  PersistenceStoreControllerManagerInterface,
-  selfApplicationDeploymentLibrary,
-  selfApplicationDeploymentMiroir,
+  PersistenceStoreControllerManagerInterface
 } from "miroir-core";
 import { AdminApplicationDeploymentConfiguration } from 'miroir-core/src/0_interfaces/1_core/StorageConfiguration.js';
 import { LoggerOptions } from 'miroir-core/src/0_interfaces/4-services/LoggerInterface.js';
-import { miroirCoreStartup } from 'miroir-core/src/startup.js';
-import { LocalCache } from 'miroir-localcache-redux';
 import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
 import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
 import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
+// import { miroirCoreStartup } from 'miroir-core/src/startup.js';
+import { LocalCacheInterface, miroirCoreStartup } from 'miroir-core';
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { miroirAppStartup } from '../../src/startup.js';
 import { cleanLevel, packageName } from '../3_controllers/constants.js';
@@ -84,7 +78,7 @@ import {
 } from "../utils/tests-utils.js";
 
 let domainController: DomainControllerInterface;
-let localCache: LocalCache;
+let localCache: LocalCacheInterface;
 let localMiroirPersistenceStoreController: PersistenceStoreControllerInterface;
 let localAppPersistenceStoreController: PersistenceStoreControllerInterface;
 let miroirContext: MiroirContext;
@@ -1021,6 +1015,10 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
                 parentName: "Publisher",
                 parentUuid: "a027c379-8468-43a5-ba4d-bf618be25cab",
                 objectReference: "book",
+                // objectReference: {
+                //   transformerType: "contextReference"
+                //   referenceName: "book"
+                // },
                 AttributeOfObjectToCompareToReferenceUuid: "publisher",
               },
             },

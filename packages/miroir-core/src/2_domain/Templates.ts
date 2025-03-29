@@ -51,16 +51,18 @@ export function resolveExtractorTemplate(
             typeof extractorOrCombinerTemplate.parentUuid == "string"
               ? extractorOrCombinerTemplate.parentUuid
               : transformer_InnerReference_resolve(
-                  "build",
+                  "build", // TODO: should this be "build" or "runtime"? "value" is not consistent with "build"
                   extractorOrCombinerTemplate.parentUuid,
+                  "value",
                   queryParams,
                   contextResults
                 ), // TODO: check for failure!
           filter: {
             attributeName: extractorOrCombinerTemplate.filter.attributeName,
             value: transformer_InnerReference_resolve(
-              "build",
+              "build", // TODO: should this be "build" or "runtime"? "value" is not consistent with "build"
               extractorOrCombinerTemplate.filter.value,
+              "value",
               queryParams,
               contextResults
             ), // TODO: check for failure!
@@ -76,6 +78,7 @@ export function resolveExtractorTemplate(
               : transformer_InnerReference_resolve(
                   "build",
                   extractorOrCombinerTemplate.parentUuid,
+                  "value",
                   queryParams,
                   contextResults
                 ), // TODO: check for failure!
@@ -93,12 +96,14 @@ export function resolveExtractorTemplate(
             : transformer_InnerReference_resolve(
                 "build",
                 extractorOrCombinerTemplate.parentUuid,
+                "value",
                 queryParams,
                 contextResults
               ), // TODO: check for failure!
         instanceUuid: transformer_InnerReference_resolve(
           "build",
           extractorOrCombinerTemplate.instanceUuid,
+          "value",
           queryParams,
           contextResults
         ), // TODO: check for failure!
@@ -147,6 +152,7 @@ export function resolveExtractorTemplate(
             : transformer_InnerReference_resolve(
                 "build",
                 extractorOrCombinerTemplate.parentUuid,
+                "value",
                 queryParams,
                 contextResults
               ), // TODO: check for failure!
@@ -168,6 +174,7 @@ export function resolveExtractorTemplate(
             : transformer_InnerReference_resolve(
                 "build",
                 extractorOrCombinerTemplate.parentUuid,
+                "value",
                 queryParams,
                 contextResults
               ), // TODO: check for failure!
@@ -189,6 +196,7 @@ export function resolveExtractorTemplate(
             : transformer_InnerReference_resolve(
                 "build",
                 extractorOrCombinerTemplate.parentUuid,
+                "value",
                 queryParams,
                 contextResults
               ), // TODO: check for failure!

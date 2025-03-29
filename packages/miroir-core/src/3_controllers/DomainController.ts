@@ -1052,6 +1052,7 @@ export class DomainController implements DomainControllerInterface {
             "runtime",
             undefined /**WHAT?? */,
             compositeRunTestAssertion.testAssertion.definition.resultTransformer,
+            "value",
             {},
             localContext
           )
@@ -1345,6 +1346,7 @@ export class DomainController implements DomainControllerInterface {
                     "runtime",
                     undefined /**WHAT?? */,
                     currentAction.testAssertion.definition.resultTransformer,
+                    "value",
                     {},
                     localContext
                   )
@@ -1519,7 +1521,7 @@ export class DomainController implements DomainControllerInterface {
             "runtime",
             currentAction.actionLabel ?? "NO NAME",
             currentAction as any as TransformerForRuntime, // TODO: correct type
-            // resolved.actionParamsAndTemplates,
+            "value",
             localActionParams,
             localContext
           ) as InstanceAction;

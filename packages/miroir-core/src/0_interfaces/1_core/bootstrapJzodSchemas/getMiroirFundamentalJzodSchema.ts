@@ -3002,7 +3002,7 @@ export function getMiroirFundamentalJzodSchema(
 
   // const carryOnSchema: any = transformerJzodSchema.definition.context.transformerForBuild as any;
   const carryOnSchema: any = transformerJzodSchema.definition.context
-    .transformerForBuildOrRuntime as any;
+    .transformerForBuild as any;
 
   // const carryOnSchemaReference: JzodReference = {
   const carryOnSchemaReference: any = {

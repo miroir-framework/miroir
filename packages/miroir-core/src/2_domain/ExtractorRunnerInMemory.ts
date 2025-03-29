@@ -109,12 +109,13 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
       case "combinerForObjectByRelation": {
         // TODO: we assume this ia a constant, get rid of resolution altogether (push it up)
         const referenceObject = transformer_InnerReference_resolve(
-          "build",
+          "runtime",
           { transformerType: "contextReference", referenceName: querySelectorParams.objectReference },
+          "value", // TODO: this is inconsistent with "build" evaluation, "build" evaluation should always yield a runtime transformer.
           selectorParams.extractor.queryParams,
           selectorParams.extractor.contextResults
         );
-  
+        log.info("extractEntityInstance combinerForObjectByRelation found referenceObject", JSON.stringify(referenceObject, null, 2));
         if (
           !querySelectorParams.AttributeOfObjectToCompareToReferenceUuid
         ) {
