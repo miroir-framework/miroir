@@ -3,9 +3,10 @@ import { describe, expect } from 'vitest';
 // import { miroirFileSystemStoreSectionStartup } from "../dist/bundle";
 import {
   ACTION_OK,
-  ActionError,
+  Action2Error,
   Action2ReturnType,
   Action2VoidReturnType,
+  ActionError,
   ConfigurationService,
   DomainControllerInterface,
   DomainElementType,
@@ -21,7 +22,6 @@ import {
   ModelActionRenameEntity,
   PersistenceStoreControllerInterface,
   PersistenceStoreControllerManagerInterface,
-  SelfApplicationDeploymentConfiguration,
   StoreUnitConfiguration,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
@@ -33,19 +33,13 @@ import {
   entityDefinitionAuthor,
   entityEntity,
   entityEntityDefinition,
-  entityReport,
   ignorePostgresExtraAttributesOnList,
   miroirCoreStartup,
-  resetAndInitApplicationDeployment,
-  selfApplicationDeploymentLibrary,
-  selfApplicationDeploymentMiroir,
-  Domain2ElementFailed,
-  Action2Error
+  resetAndInitApplicationDeployment
 } from "miroir-core";
 
 
-import { MiroirContext } from 'miroir-core';
-import { LocalCache } from 'miroir-localcache-redux';
+import { LocalCacheInterface, MiroirContext } from 'miroir-core';
 import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
 import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
 import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
@@ -63,7 +57,7 @@ import {
 } from "../utils/tests-utils.js";
 
 let domainController: DomainControllerInterface;
-let localCache: LocalCache;
+let localCache: LocalCacheInterface;
 let localMiroirPersistenceStoreController: PersistenceStoreControllerInterface;
 let localAppPersistenceStoreController: PersistenceStoreControllerInterface;
 let miroirContext: MiroirContext;

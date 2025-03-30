@@ -343,7 +343,7 @@ export async function addEntitiesAndInstancesForEmulatedServer(
 // ################################################################################################
 export async function addEntitiesAndInstancesForRealServer(
   domainController: DomainControllerInterface,
-  localCache: LocalCache,
+  localCache: LocalCacheInterface,
   adminConfigurationDeploymentLibrary: EntityInstance,
   entities: { entity: MetaEntity, entityDefinition: EntityDefinition, instances: EntityInstance[] }[],
   act?: unknown,
@@ -411,7 +411,7 @@ export async function addEntitiesAndInstancesForRealServer(
 export async function addEntitiesAndInstances(
   localAppPersistenceStoreController: PersistenceStoreControllerInterface,
   domainController: DomainControllerInterface,
-  localCache: LocalCache,
+  localCache: LocalCacheInterface,
   miroirConfig: MiroirConfigClient,
   adminConfigurationDeploymentLibrary: EntityInstance,
   entities: { entity: MetaEntity, entityDefinition: EntityDefinition, instances: EntityInstance[] }[],
@@ -840,7 +840,7 @@ export const chainVitestSteps = async (
 
 // ################################################################################################
 export async function runTestOrTestSuite(
-  localCache: LocalCache,
+  localCache: LocalCacheInterface,
   domainController: DomainControllerInterface,
   testAction: TestActionParams,
   testActionParamValues?: {[k:string]: any},

@@ -31,8 +31,6 @@ import {
   EntityInstance,
   entityMenu,
   entityPublisher,
-  entityReport,
-  entityStoreBasedConfiguration,
   ignorePostgresExtraAttributesOnList,
   ignorePostgresExtraAttributesOnObject,
   LoggerInterface,
@@ -52,8 +50,7 @@ import {
 } from "miroir-core";
 
 
-import { MiroirContext } from 'miroir-core';
-import { LocalCache } from 'miroir-localcache-redux';
+import { LocalCacheInterface, MiroirContext } from 'miroir-core';
 import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
 import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
 import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
@@ -73,7 +70,7 @@ import {
 } from "../utils/tests-utils.js";
 
 let domainController: DomainControllerInterface;
-let localCache: LocalCache;
+let localCache: LocalCacheInterface;
 let localMiroirPersistenceStoreController: PersistenceStoreControllerInterface;
 let localAppPersistenceStoreController: PersistenceStoreControllerInterface;
 let miroirContext: MiroirContext;
