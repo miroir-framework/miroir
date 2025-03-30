@@ -43,23 +43,20 @@ import {
   publisher3,
   resetAndInitApplicationDeployment,
   SelfApplicationDeploymentConfiguration,
-  selfApplicationDeploymentLibrary,
   selfApplicationDeploymentMiroir,
-  selfApplicationLibrary,
-  selfApplicationModelBranchLibraryMasterBranch,
-  selfApplicationStoreBasedConfigurationLibrary,
-  selfApplicationVersionLibraryInitialVersion,
   StoreUnitConfiguration,
-  TestSuiteContext,
-  TestSuiteResult,
   Uuid
 } from "miroir-core";
 
 
-import { AdminApplicationDeploymentConfiguration } from 'miroir-core/src/0_interfaces/1_core/StorageConfiguration.js';
-import { LoggerOptions } from 'miroir-core/src/0_interfaces/4-services/LoggerInterface.js';
-import { packageName } from 'miroir-core/src/constants.js';
-import { LocalCache } from 'miroir-localcache-redux';
+// import { packageName } from 'miroir-core';
+// import { AdminApplicationDeploymentConfiguration } from 'miroir-core/src/0_interfaces/1_core/StorageConfiguration.js';
+import {
+  AdminApplicationDeploymentConfiguration,
+  InitApplicationParameters,
+  LocalCacheInterface,
+  LoggerOptions,
+} from "miroir-core";
 import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
 import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
 import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
@@ -74,13 +71,11 @@ import {
   setupMiroirTest,
   TestActionParams
 } from "../utils/tests-utils.js";
-import { cleanLevel } from './constants.js';
-import { InitApplicationParameters } from 'miroir-core/src/0_interfaces/4-services/PersistenceStoreControllerInterface.js';
-import exp from 'constants';
-import { transform } from 'typescript';
+import { cleanLevel, packageName } from './constants.js';
+import { testOnLibrary_deleteLibraryDeployment, testOnLibrary_resetLibraryDeployment } from '../utils/tests-utils-testOnLibrary.js';
 
 let domainController: DomainControllerInterface;
-let localCache: LocalCache;
+let localCache: LocalCacheInterface;
 // let localMiroirPersistenceStoreController: PersistenceStoreControllerInterface;
 // let localAppPersistenceStoreController: PersistenceStoreControllerInterface;
 let miroirContext: MiroirContext;
@@ -347,6 +342,8 @@ const testTemplateSuites: Record<string, TestActionParams> = {
         // libraryEntitesAndInstances
         []
       ),
+      afterEach: testOnLibrary_resetLibraryDeployment(miroirConfig, testAdminConfigurationDeploymentUuid),
+      // afterAll: testOnLibrary_deleteLibraryDeployment(miroirConfig, testAdminConfigurationDeploymentUuid),
       // afterEach: {
       //   actionType: "compositeAction",
       //   actionLabel: "afterEach",
@@ -469,19 +466,23 @@ const testTemplateSuites: Record<string, TestActionParams> = {
               createEntity_newEntity: {
                 uuid: {
                   transformerType: "parameterReference",
+                  interpolation: "build",
                   referenceName: "newEntityUuid",
                 },
                 parentUuid: entityEntity.uuid,
                 selfApplication: {
                   transformerType: "parameterReference",
+                  interpolation: "build",
                   referenceName: "testSelfApplicationUuid",
                 },
                 description: {
                   transformerType: "parameterReference",
+                  interpolation: "build",
                   referenceName: "createEntity_newEntityDescription",
                 },
                 name: {
                   transformerType: "parameterReference",
+                  interpolation: "build",
                   referenceName: "newEntityName",
                 },
               },
@@ -489,16 +490,19 @@ const testTemplateSuites: Record<string, TestActionParams> = {
               createEntity_newEntityDefinition: {
                 name: {
                   transformerType: "parameterReference",
+                  interpolation: "build",
                   referenceName: "newEntityName",
                 },
                 uuid: {
                   transformerType: "parameterReference",
+                  interpolation: "build",
                   referenceName: "newEntityDefinitionUuid",
                 },
                 parentName: "EntityDefinition",
                 parentUuid: entityEntityDefinition.uuid,
                 entityUuid: {
                   transformerType: "mustacheStringTemplate",
+                  interpolation: "build",
                   definition: "{{createEntity_newEntity.uuid}}",
                 },
                 conceptLevel: "Model",
@@ -538,6 +542,7 @@ const testTemplateSuites: Record<string, TestActionParams> = {
                 actionLabel: "createEntity",
                 deploymentUuid: {
                   transformerType: "parameterReference",
+                  interpolation: "build",
                   referenceName: "testAdminConfigurationDeploymentUuid",
                 },
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
@@ -545,10 +550,12 @@ const testTemplateSuites: Record<string, TestActionParams> = {
                   {
                     entity: {
                       transformerType: "parameterReference",
+                      interpolation: "build",
                       referenceName: "createEntity_newEntity",
                     },
                     entityDefinition: {
                       transformerType: "parameterReference",
+                      interpolation: "build",
                       referenceName: "createEntity_newEntityDefinition",
                     },
                   },
@@ -565,17 +572,20 @@ const testTemplateSuites: Record<string, TestActionParams> = {
                   applicationSection: "model", // TODO: give only selfApplication section in individual queries?
                   deploymentUuid: {
                     transformerType: "parameterReference",
+                    interpolation: "build",
                     referenceName: "testAdminConfigurationDeploymentUuid",
                   },
                   query: {
                     queryType: "boxedQueryWithExtractorCombinerTransformer",
                     deploymentUuid: {
                       transformerType: "parameterReference",
+                      interpolation: "build",
                       referenceName: "testAdminConfigurationDeploymentUuid",
                     },
                     pageParams: {
                       currentDeploymentUuid: {
                         transformerType: "parameterReference",
+                        interpolation: "build",
                         referenceName: "testAdminConfigurationDeploymentUuid",
                       },
                     },
@@ -607,17 +617,20 @@ const testTemplateSuites: Record<string, TestActionParams> = {
                   applicationSection: "model", // TODO: give only selfApplication section in individual queries?
                   deploymentUuid: {
                     transformerType: "parameterReference",
+                    interpolation: "build",
                     referenceName: "testAdminConfigurationDeploymentUuid",
                   },
                   query: {
                     queryType: "boxedQueryWithExtractorCombinerTransformer",
                     deploymentUuid: {
                       transformerType: "parameterReference",
+                      interpolation: "build",
                       referenceName: "testAdminConfigurationDeploymentUuid",
                     },
                     pageParams: {
                       currentDeploymentUuid: {
                         transformerType: "parameterReference",
+                        interpolation: "build",
                         referenceName: "testAdminConfigurationDeploymentUuid",
                       },
                     },
@@ -1006,15 +1019,14 @@ describe.sequential("applicative.Library.integ.test", () => {
   //     expect(testSuiteResults.status, `${currentTestSuiteName} failed!`).toBe("ok");
   //   }
   // });
-  it.each(Object.entries(testTemplateSuites))("test %s", async (currentTestSuiteName, testAction: TestActionParams) => {
-    const testSuiteResults = await runTestOrTestSuite(
-      localCache,
-      domainController,
-      testAction
-    );
-    if (testSuiteResults.status !== "ok") {
-      expect(testSuiteResults.status, `${currentTestSuiteName} failed!`).toBe("ok");
+  it.each(Object.entries(testTemplateSuites))(
+    "test %s",
+    async (currentTestSuiteName, testAction: TestActionParams) => {
+      const testSuiteResults = await runTestOrTestSuite(localCache, domainController, testAction);
+      if (testSuiteResults.status !== "ok") {
+        expect(testSuiteResults.status, `${currentTestSuiteName} failed!`).toBe("ok");
+      }
     }
-  });
+  );
 });
 

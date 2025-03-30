@@ -247,11 +247,21 @@ function initializeLocalCacheSliceStateWithEntityAdapter(
 ) {
   // TODO: refactor so as to avoid side effects!
   const entityInstancesLocationIndex = getDeploymentEntityStateIndex(deploymentUuid, section, entityUuid);
-  // log.debug("getInitializedSectionEntityAdapter called", "deploymentUuid", deploymentUuid, "section", section, "entityUuid", entityUuid, "index", index);
+  // log.info(
+  //   "getInitializedSectionEntityAdapter called",
+  //   "deploymentUuid",
+  //   deploymentUuid,
+  //   "section",
+  //   section,
+  //   "entityUuid",
+  //   entityUuid,
+  //   "index",
+  //   entityInstancesLocationIndex
+  // );
   // const sliceEntityAdapter = getLocalCacheSliceEntityAdapter();
   if (!(state as any)[zone][entityInstancesLocationIndex]) {
     (state as any)[zone][entityInstancesLocationIndex] = entityAdapter.getInitialState();
-    log.info(
+    log.warn(
       "getInitializedSectionEntityAdapter state[",
       zone,
       "][",
@@ -605,7 +615,7 @@ function handleAction(
     "deploymentUuid",
     action.actionType !== "transactionalInstanceAction" ?action.deploymentUuid:action.instanceAction.deploymentUuid,
     "action",
-    action
+    JSON.stringify(action, undefined, 2)
   );
   switch (action.actionType) {
     case "undoRedoAction": {

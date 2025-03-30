@@ -81,7 +81,11 @@ export function resolveTestCompositeActionTemplateSuite(
 
   const compositeActionResolved: {[k: string]: TestCompositeAction} = Object.fromEntries(
     Object.entries(compositeActionTemplate.testCompositeActions).map(([key, value]):[string, TestCompositeAction] => {
-      return [key, resolveTestCompositeActionTemplate(value, actionParamValues, currentModel).resolvedTestCompositeActionDefinition]
+      return [
+        key,
+        resolveTestCompositeActionTemplate(value, actionParamValues, currentModel)
+          .resolvedTestCompositeActionDefinition,
+      ];
     }
   ));
   // compositeActionTemplate.afterAll?resolveCompositeActionTemplate(

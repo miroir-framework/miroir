@@ -4,11 +4,11 @@ import { render } from '@testing-library/react';
 import { expect } from 'vitest';
 
 
-import { SetupWorkerApi } from 'msw/browser';
+// import { SetupWorkerApi } from 'msw/browser';
+// import { SetupServerApi } from 'msw/lib/node';
 import * as React from 'react';
 import { FC, PropsWithChildren, createContext, useState } from 'react';
 import { Provider } from 'react-redux';
-// import { SetupServerApi } from 'msw/lib/node';
 
 // As a basic setup, import your same slice reducers
 import {
@@ -440,7 +440,7 @@ export async function addEntitiesAndInstances(
 export interface MiroirIntegrationTestEnvironment {
   localMiroirPersistenceStoreController: PersistenceStoreControllerInterface,
   localAppPersistenceStoreController: PersistenceStoreControllerInterface,
-  localDataStoreWorker?: SetupWorkerApi,
+  localDataStoreWorker?: any /* SetupWorkerApi still useful? */,
   localDataStoreServer?: any /**SetupServerApi*/,
   localCache: LocalCache,
   domainController: DomainControllerInterface,
@@ -846,7 +846,7 @@ export async function runTestOrTestSuite(
   testActionParamValues?: {[k:string]: any},
 ) {
   const fullTestName = expect.getState().currentTestName ?? "no test name";
-  log.info("STARTING test:", fullTestName);
+  log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ STARTING test:", fullTestName, testAction.testActionType);
 
   switch (testAction.testActionType) {
     case "testCompositeActionSuite": {
@@ -887,6 +887,7 @@ export async function runTestOrTestSuite(
     }
     case "testCompositeActionTemplateSuite": {
       // throw new Error("testCompositeActionTemplateSuite not implemented yet!");
+      log.info("testCompositeActionTemplateSuite", fullTestName, "running for testActionParamValues", testActionParamValues);
       const queryResult: Action2ReturnType = await domainController.handleTestCompositeActionTemplateSuite(
         testAction.testCompositeAction,
         testActionParamValues??{},

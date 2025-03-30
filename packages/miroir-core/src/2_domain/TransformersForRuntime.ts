@@ -1893,10 +1893,18 @@ export function transformer_apply_wrapper(
   label: string | undefined,
   transformer: TransformerForBuild | TransformerForRuntime,
   queryParams: Record<string, any>,
-  contextResults?: Record<string, any>
+  contextResults?: Record<string, any>,
+  resolveBuildTransformersTo: ResolveBuildTransformersTo = "constantTransformer",
 ): Domain2QueryReturnType<any> {
   // const result = transformer_extended_apply(step, label, transformer, queryParams, contextResults);
-  const result = transformer_extended_apply(step, label, transformer, "constantTransformer", queryParams, contextResults);
+  const result = transformer_extended_apply(
+    step,
+    label,
+    transformer,
+    resolveBuildTransformersTo,
+    queryParams,
+    contextResults
+  );
   if (result instanceof Domain2ElementFailed) {
     log.error(
       "transformer_extended_apply failed for",
@@ -1926,8 +1934,16 @@ export function transformer_extended_apply_wrapper(
   transformer: TransformerForBuild | TransformerForRuntime | ExtendedTransformerForRuntime,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
+  resolveBuildTransformersTo: ResolveBuildTransformersTo = "constantTransformer",
 ): Domain2QueryReturnType<any> {
-  const result = transformer_extended_apply(step, label, transformer, "constantTransformer", queryParams, contextResults);
+  const result = transformer_extended_apply(
+    step,
+    label,
+    transformer,
+    resolveBuildTransformersTo,
+    queryParams,
+    contextResults,
+  );
   if (result instanceof Domain2ElementFailed) {
     log.error(
       "transformer_extended_apply_wrapper failed for",

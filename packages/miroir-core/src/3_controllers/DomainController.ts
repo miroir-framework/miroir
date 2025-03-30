@@ -1014,9 +1014,11 @@ export class DomainController implements DomainControllerInterface {
         "FailedToResolveTemplate",
         "handleTestCompositeActionTemplateSuite resolveTestCompositeActionTemplateSuite errors for entries: " + JSON.stringify(resolveErrors.map(e=> e[0]), null, 2),
       );
-      
     }
-    log.info("handleTestCompositeActionTemplateSuite resolved testSuite template:", JSON.stringify(resolvedAction.resolvedTestCompositeActionDefinition));
+    log.info(
+      "handleTestCompositeActionTemplateSuite resolved testSuite template:",
+      JSON.stringify(resolvedAction.resolvedTestCompositeActionDefinition)
+    );
 
     const testSuiteResult: Record<string, TestResult> = {};
 
@@ -1811,7 +1813,8 @@ export class DomainController implements DomainControllerInterface {
       "deployment",
       deploymentUuid,
       "action",
-      modelAction
+      JSON.stringify(modelAction, null, 2),
+      // modelAction,
     );
     try {
       switch (modelAction.actionName) {

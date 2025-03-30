@@ -69,7 +69,8 @@ export function resolveCompositeActionTemplate(
         t[0],
         t[1] as any,
         newLocalParameters,
-        undefined
+        undefined,
+        "value",
       );
       log.info("resolveCompositeActionTemplate", compositeActionLabel, "resolved template", t[0], resolvedTemplate);
       if (resolvedTemplate.elementType == "failure") {
@@ -87,7 +88,8 @@ export function resolveCompositeActionTemplate(
     compositeActionLabel,
     (compositeActionTemplate as any).definition as any as TransformerForBuild,
     actionParamsAndTemplates,
-    localContext
+    localContext,
+    "value",
   );
   log.info(
     "resolveCompositeActionTemplate", compositeActionLabel, "resolvedCompositeActionDefinition",

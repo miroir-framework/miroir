@@ -59,9 +59,8 @@ import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
 import { miroirAppStartup } from "../../src/startup.js";
 
-import { LocalCache } from "miroir-localcache-redux";
 
-import { ConfigurationService, defaultMiroirMetaModel } from "miroir-core";
+import { ConfigurationService, defaultMiroirMetaModel, LocalCacheInterface } from "miroir-core";
 import { AdminApplicationDeploymentConfiguration } from "miroir-core/src/0_interfaces/1_core/StorageConfiguration.js";
 import { LoggerOptions } from "miroir-core/src/0_interfaces/4-services/LoggerInterface.js";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
@@ -121,7 +120,7 @@ const typedAdminConfigurationDeploymentLibrary: AdminApplicationDeploymentConfig
   adminConfigurationDeploymentLibrary as any;
 
 let domainController: DomainControllerInterface;
-let localCache: LocalCache;
+let localCache: LocalCacheInterface;
 let miroirContext: MiroirContextInterface;
 let persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface;
 let globalTestSuiteResults: TestSuiteResult = {};

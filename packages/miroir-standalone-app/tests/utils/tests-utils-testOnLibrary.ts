@@ -35,6 +35,7 @@ import {
   selfApplicationVersionLibraryInitialVersion,
   Uuid,
 } from "miroir-core";
+import { deployment } from "miroir-core/dist/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { InitApplicationParameters } from "miroir-core/src/0_interfaces/4-services/PersistenceStoreControllerInterface";
 
 export type ApplicationEntitiesAndInstances = {
@@ -68,7 +69,10 @@ export const libraryEntitesAndInstancesWithoutBook3: ApplicationEntitiesAndInsta
 ];
 
 
-export function testOnLibrary_resetLibraryDeployment(miroirConfig: MiroirConfigClient): CompositeAction {
+export function testOnLibrary_resetLibraryDeployment(
+  miroirConfig: MiroirConfigClient,
+  deploymentUuid: Uuid = adminConfigurationDeploymentLibrary.uuid, // TODO: remove this default value
+): CompositeAction {
   return {
     actionType: "compositeAction",
     actionLabel: "afterEach",
@@ -79,12 +83,16 @@ export function testOnLibrary_resetLibraryDeployment(miroirConfig: MiroirConfigC
         actionName: "resetModel",
         actionLabel: "resetLibraryStore",
         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+        deploymentUuid,
       },
     ],
   };
 }
-export function testOnLibrary_deleteLibraryDeployment(miroirConfig: MiroirConfigClient): CompositeAction {
+export function testOnLibrary_deleteLibraryDeployment(
+  miroirConfig: MiroirConfigClient,
+  deploymentUuid: Uuid = adminConfigurationDeploymentLibrary.uuid, // TODO: remove this default value
+): CompositeAction {
+  console.log("testOnLibrary_deleteLibraryDeployment", deploymentUuid,  JSON.stringify(miroirConfig, null, 2));
   return {
     actionType: "compositeAction",
     actionLabel: "afterEach",
@@ -95,10 +103,10 @@ export function testOnLibrary_deleteLibraryDeployment(miroirConfig: MiroirConfig
         actionName: "deleteStore",
         actionLabel: "deleteLibraryStore",
         endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+        deploymentUuid,
         configuration: miroirConfig.client.emulateServer
-          ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentLibrary.uuid]
-          : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentLibrary.uuid],
+          ? miroirConfig.client.deploymentStorageConfig[deploymentUuid]
+          : miroirConfig.client.serverConfig.storeSectionConfiguration[deploymentUuid],
       },
     ],
   };

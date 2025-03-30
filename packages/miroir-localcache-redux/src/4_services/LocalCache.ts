@@ -178,7 +178,7 @@ export class LocalCache implements LocalCacheInterface {
 
   // ###############################################################################
   handleLocalCacheAction(action: LocalCacheAction): Action2ReturnType {
-    log.info("LocalCache handleAction", action);
+    log.info("LocalCache handleAction", JSON.stringify(action, undefined, 2));
 
     const result:Action2ReturnType = exceptionToActionReturnType(() =>
       this.innerReduxStore.dispatch(
