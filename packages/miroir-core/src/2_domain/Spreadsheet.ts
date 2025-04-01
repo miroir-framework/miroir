@@ -31,7 +31,6 @@ export const transformer_spreadSheetToJzodSchema: TransformerDefinition = {
     },
     transformerResultSchema: {
       type: "schemaReference",
-      optional: true,
       definition: {
         absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
         relativePath: "jzodElement",
@@ -109,6 +108,37 @@ export const transformer_spreadSheetToJzodSchema: TransformerDefinition = {
             },
           },
         },
+        completeAttributeDefinitions: {
+          transformerType: "objectAlter",
+          applyTo: {
+            referenceType: "referencedTransformer",
+            reference: {
+              transformerType: "contextReference",
+              referenceName: "mergedAttributeDefinitions",
+            },
+          },
+          referenceToOuterObject: "mergedAttributeDefinitions",
+          definition: {
+            transformerType: "constantObject",
+            value: {
+              uuid: {
+                type: "string",
+                validations: [{ type: "uuid" }],
+                tag: { id: 1, defaultLabel: "Uuid", editable: false },
+              },
+              parentName: {
+                type: "string",
+                optional: true,
+                tag: { id: 2, defaultLabel: "Uuid", editable: false },
+              },
+              parentUuid: {
+                type: "string",
+                validations: [{ type: "uuid" }],
+                tag: { id: 3, defaultLabel: "parentUuid", editable: false },
+              },
+            },
+          },
+        },
         schema: {
           transformerType: "freeObjectTemplate",
           definition: {
@@ -118,7 +148,7 @@ export const transformer_spreadSheetToJzodSchema: TransformerDefinition = {
             },
             definition: {
               transformerType: "contextReference",
-              referencePath: ["mergedAttributeDefinitions"],
+              referencePath: ["completeAttributeDefinitions"],
             },
           },
         },

@@ -1419,58 +1419,99 @@ FROM
     case "freeObjectTemplate": {
       let newPreparedStatementParametersCount = preparedStatementParametersCount;
       let preparedStatementParameters: any[] = [];
-      const objectAttributes: [string, Domain2QueryReturnType<SqlStringForTransformerElementValue>][] = Object.entries(actionRuntimeTransformer.definition)
-        .map((f, index) => {
-          switch (typeof f[1]) {
-            case "string":
-            case "number":
-            case "bigint":
-            case "boolean": {
-              // return `"${f[0]}", '${f[1]}'`;
-              return [f[0], {
+      const objectAttributes: [
+        string,
+        Domain2QueryReturnType<SqlStringForTransformerElementValue>
+      ][] = Object.entries(actionRuntimeTransformer.definition).map((f, index) => {
+        switch (typeof f[1]) {
+          case "string":
+          case "number":
+          case "bigint":
+          case "boolean": {
+            // return `"${f[0]}", '${f[1]}'`;
+            return [
+              f[0],
+              {
                 type: "scalar",
                 sqlStringOrObject: `'${f[1]}'`,
-              }];
-            }
-            case "object": {
-              if (Array.isArray(f[1])) {
-                throw new Error("sqlStringForRuntimeTransformer freeObjectTemplate array not implemented");
-              }
-              if (f[1] == null) {
-                throw new Error("sqlStringForRuntimeTransformer freeObjectTemplate null not implemented");
-              }
-
-              if (f[1].transformerType) {
-                const attributeSqlString = sqlStringForRuntimeTransformer(
-                  f[1] as TransformerForRuntime,
-                  newPreparedStatementParametersCount,
-                  indentLevel,
-                  queryParams,
-                  definedContextEntries,
-                  useAccessPathForContextReference,
-                  false,
-                );
-                if (attributeSqlString instanceof Domain2ElementFailed) {
-                  return [f[0], {attributeValue: attributeSqlString}];
-                }
-                if (attributeSqlString.preparedStatementParameters) {
-                  preparedStatementParameters = [...preparedStatementParameters, ...attributeSqlString.preparedStatementParameters];
-                  newPreparedStatementParametersCount += attributeSqlString.preparedStatementParameters.length;
-                }
-                // return `"${f[0]}", ${attributeValue.sqlStringOrObject}`;
-                return [f[0], attributeSqlString];
-              }
-            }
-            case "symbol":
-            case "undefined":
-            case "function": {
-              throw new Error("sqlStringForRuntimeTransformer freeObjectTemplate not implemented for type:" + typeof f[1]);
-              break;
-            }
-            default:
-              break;
+              },
+            ];
           }
-        }) as any
+          case "object": {
+            if (Array.isArray(f[1])) {
+              throw new Error(
+                "sqlStringForRuntimeTransformer freeObjectTemplate array not implemented"
+              );
+            }
+            if (f[1] == null) {
+              throw new Error(
+                "sqlStringForRuntimeTransformer freeObjectTemplate null not implemented"
+              );
+            }
+
+            if (f[1].transformerType) {
+              const attributeSqlString = sqlStringForRuntimeTransformer(
+                f[1] as TransformerForRuntime,
+                newPreparedStatementParametersCount,
+                indentLevel,
+                queryParams,
+                definedContextEntries,
+                useAccessPathForContextReference,
+                false
+              );
+              if (attributeSqlString instanceof Domain2ElementFailed) {
+                return [f[0], { attributeValue: attributeSqlString }];
+              }
+              if (attributeSqlString.preparedStatementParameters) {
+                preparedStatementParameters = [
+                  ...preparedStatementParameters,
+                  ...attributeSqlString.preparedStatementParameters,
+                ];
+                newPreparedStatementParametersCount +=
+                  attributeSqlString.preparedStatementParameters.length;
+              }
+              // return `"${f[0]}", ${attributeValue.sqlStringOrObject}`;
+              return [f[0], attributeSqlString];
+            } else {
+              const getSqlParams = getConstantSqlTypeMap["constantObject"];
+              return [
+                f[0],
+                getConstantSql(
+                  {
+                    transformerType: "constantObject",
+                    value: f[1],
+                  },
+                  preparedStatementParametersCount,
+                  topLevelTransformer,
+                  getSqlParams.targetType,
+                  getSqlParams.sqlTargetType,
+                  withClauseColumnName ?? getSqlParams.label
+                ),
+              ];
+            }
+            throw new Error(
+              "sqlStringForRuntimeTransformer freeObjectTemplate object for " +
+                f[0] +
+                " returning no value for type:" +
+                typeof f[1]
+            );
+            break;
+          }
+          case "symbol":
+          case "undefined":
+          case "function": {
+            throw new Error(
+              "sqlStringForRuntimeTransformer freeObjectTemplate for " +
+                f[0] +
+                " not implemented for type:" +
+                typeof f[1]
+            );
+            break;
+          }
+          default:
+            break;
+        }
+      }) as any;
       ;
       log.info("sqlStringForRuntimeTransformer freeObjectTemplate objectAttributes", JSON.stringify(objectAttributes, null, 2));
       const attributeError = objectAttributes.find((e: [string, Domain2QueryReturnType<SqlStringForTransformerElementValue>]) => e[1] instanceof Domain2ElementFailed);
@@ -1531,7 +1572,7 @@ FROM ${selectFrom.join(tokenSeparatorForSelect)}`
       } else {
         return {
           type: "json",
-          sqlStringOrObject: `"object_subfreeObjectTemplate"`,
+          sqlStringOrObject: `"object_subfreeObjectTemplate"`, // TODO: REMOVE DOUBLE QUOTES
           extraWith: [
             ...extraWith,
             {
@@ -1602,115 +1643,172 @@ FROM ${selectFrom.join(tokenSeparatorForSelect)}`
       };
       // #############################################
 
-      const objectAttributes: [string, Domain2QueryReturnType<SqlStringForTransformerElementValue>][] = Object.entries(actionRuntimeTransformer.definition.definition)
-        .map((f, index) => {
-          switch (typeof f[1]) {
-            case "string":
-            case "number":
-            case "bigint":
-            case "boolean": {
-              // return `"${f[0]}", '${f[1]}'`;
-              return [f[0], {
-                type: "scalar",
-                sqlStringOrObject: `'${f[1]}'`,
-              }];
-            }
-            case "object": {
-              if (Array.isArray(f[1])) {
-                throw new Error("sqlStringForRuntimeTransformer freeObjectTemplate array not implemented");
-              }
-              if (f[1] == null) {
-                throw new Error("sqlStringForRuntimeTransformer freeObjectTemplate null not implemented");
-              }
+      // const objectAttributes: [
+      //   string,
+      //   Domain2QueryReturnType<SqlStringForTransformerElementValue>
+      // ][] = Object.entries(actionRuntimeTransformer.definition.definition).map((f, index) => {
+      //   switch (typeof f[1]) {
+      //     case "string":
+      //     case "number":
+      //     case "bigint":
+      //     case "boolean": {
+      //       // return `"${f[0]}", '${f[1]}'`;
+      //       return [
+      //         f[0],
+      //         {
+      //           type: "scalar",
+      //           sqlStringOrObject: `'${f[1]}'`,
+      //         },
+      //       ];
+      //     }
+      //     case "object": {
+      //       if (Array.isArray(f[1])) {
+      //         throw new Error(
+      //           "sqlStringForRuntimeTransformer freeObjectTemplate array not implemented"
+      //         );
+      //       }
+      //       if (f[1] == null) {
+      //         throw new Error(
+      //           "sqlStringForRuntimeTransformer freeObjectTemplate null not implemented"
+      //         );
+      //       }
 
-              if (f[1].transformerType) {
-                const attributeSqlString = sqlStringForRuntimeTransformer(
-                  f[1] as TransformerForRuntime,
-                  newPreparedStatementParametersCount,
-                  indentLevel,
-                  queryParams,
-                  newDefinedContextEntries,
-                  useAccessPathForContextReference,
-                  false,
-                );
-                if (attributeSqlString instanceof Domain2ElementFailed) {
-                  return [f[0], {attributeValue: attributeSqlString}];
-                }
-                if (attributeSqlString.preparedStatementParameters) {
-                  preparedStatementParameters = [...preparedStatementParameters, ...attributeSqlString.preparedStatementParameters];
-                  newPreparedStatementParametersCount += attributeSqlString.preparedStatementParameters.length;
-                }
-                // return `"${f[0]}", ${attributeValue.sqlStringOrObject}`;
-                return [f[0], attributeSqlString];
-              }
-            }
-            case "symbol":
-            case "undefined":
-            case "function": {
-              throw new Error("sqlStringForRuntimeTransformer freeObjectTemplate not implemented for type:" + typeof f[1]);
-              break;
-            }
-            default:
-              break;
-          }
-        }) as any
-      ;
-      log.info("sqlStringForRuntimeTransformer freeObjectTemplate objectAttributes", JSON.stringify(objectAttributes, null, 2));
-      const attributeError = objectAttributes.find((e: [string, Domain2QueryReturnType<SqlStringForTransformerElementValue>]) => e[1] instanceof Domain2ElementFailed);
+      //       if (f[1].transformerType) {
+      //         const attributeSqlString = sqlStringForRuntimeTransformer(
+      //           f[1] as TransformerForRuntime,
+      //           newPreparedStatementParametersCount,
+      //           indentLevel,
+      //           queryParams,
+      //           newDefinedContextEntries,
+      //           useAccessPathForContextReference,
+      //           false
+      //         );
+      //         if (attributeSqlString instanceof Domain2ElementFailed) {
+      //           return [f[0], { attributeValue: attributeSqlString }];
+      //         }
+      //         if (attributeSqlString.preparedStatementParameters) {
+      //           preparedStatementParameters = [
+      //             ...preparedStatementParameters,
+      //             ...attributeSqlString.preparedStatementParameters,
+      //           ];
+      //           newPreparedStatementParametersCount +=
+      //             attributeSqlString.preparedStatementParameters.length;
+      //         }
+      //         // return `"${f[0]}", ${attributeValue.sqlStringOrObject}`;
+      //         return [f[0], attributeSqlString];
+      //       }
+      //     }
+      //     case "symbol":
+      //     case "undefined":
+      //     case "function": {
+      //       throw new Error(
+      //         "sqlStringForRuntimeTransformer freeObjectTemplate not implemented for type:" +
+      //           typeof f[1]
+      //       );
+      //       break;
+      //     }
+      //     default:
+      //       break;
+      //   }
+      // }) as any;
+      // ;
 
-      if (attributeError) {
+      const subQuery: Domain2QueryReturnType<SqlStringForTransformerElementValue> = sqlStringForRuntimeTransformer(
+        actionRuntimeTransformer.definition as TransformerForRuntime,
+        newPreparedStatementParametersCount,
+        indentLevel,
+        queryParams,
+        newDefinedContextEntries,
+        useAccessPathForContextReference,
+        false
+      );
+
+      if (subQuery instanceof Domain2ElementFailed) {
         return new Domain2ElementFailed({
           queryFailure: "QueryNotExecutable",
           query: actionRuntimeTransformer as any,
-          failureMessage: "sqlStringForRuntimeTransformer freeObjectTemplate attributeValue failed: " + JSON.stringify(attributeError, null, 2),
+          failureMessage: "sqlStringForRuntimeTransformer objectAlter attributeValue failed: " + JSON.stringify(subQuery, null, 2),
+          innerError: subQuery,
         });
       }
-      
-      const castObjectAttributes = objectAttributes as [string, SqlStringForTransformerElementValue][];
-      const usedContextEntries = castObjectAttributes.reduce((acc: string[], e: [string, SqlStringForTransformerElementValue]) => {
-        if (e[1].usedContextEntries) {
-          return [...acc, ...e[1].usedContextEntries];
-        }
-        return acc;
+
+      if (subQuery.preparedStatementParameters) {
+        preparedStatementParameters = [
+          ...preparedStatementParameters,
+          ...subQuery.preparedStatementParameters,
+        ];
+        newPreparedStatementParametersCount += subQuery.preparedStatementParameters.length;
       }
-      , []);
 
-      const attributesAsString: string = castObjectAttributes
-        .map(
-          (e: [string, SqlStringForTransformerElementValue]) =>
-            tokenStringQuote +
-            e[0] +
-            tokenStringQuote +
-            tokenSeparatorForSelect +
-            " " +
-            e[1].sqlStringOrObject +
-            (e[1].extraWith && e[1].extraWith.length > 0
-              ? '."' + e[1].extraWith[0].sqlResultAccessPath?.slice(1) + '"'
-              : "")
-        )
-        .join(tokenSeparatorForSelect);
+      // throw new Error("sqlStringForRuntimeTransformer objectAlter not implemented ");
 
-      const selectFrom: string[] = [
-        ...usedContextEntries.map((e) => tokenNameQuote + e + tokenNameQuote),
-      ];
+      // const attributeError = objectAttributes.find((e: [string, Domain2QueryReturnType<SqlStringForTransformerElementValue>]) => e[1] instanceof Domain2ElementFailed);
+
+      // // OLD ###############################################################
+      // if (attributeError) {
+      //   return new Domain2ElementFailed({
+      //     queryFailure: "QueryNotExecutable",
+      //     query: actionRuntimeTransformer as any,
+      //     failureMessage: "sqlStringForRuntimeTransformer freeObjectTemplate attributeValue failed: " + JSON.stringify(attributeError, null, 2),
+      //   });
+      // }
+      
+      // const castObjectAttributes = objectAttributes as [string, SqlStringForTransformerElementValue][];
+      // const usedContextEntries = castObjectAttributes.reduce((acc: string[], e: [string, SqlStringForTransformerElementValue]) => {
+      //   if (e[1].usedContextEntries) {
+      //     return [...acc, ...e[1].usedContextEntries];
+      //   }
+      //   return acc;
+      // }
+      // , []);
+
+      // const attributesAsString: string = castObjectAttributes
+      //   .map(
+      //     (e: [string, SqlStringForTransformerElementValue]) =>
+      //       tokenStringQuote +
+      //       e[0] +
+      //       tokenStringQuote +
+      //       tokenSeparatorForSelect +
+      //       " " +
+      //       e[1].sqlStringOrObject +
+      //       (e[1].extraWith && e[1].extraWith.length > 0
+      //         ? '."' + e[1].extraWith[0].sqlResultAccessPath?.slice(1) + '"'
+      //         : "")
+      //   )
+      //   .join(tokenSeparatorForSelect);
+
+      // const selectFrom: string[] = [
+      //   ...usedContextEntries.map((e) => tokenNameQuote + e + tokenNameQuote),
+      // ];
       const extraWith: { name: string; sql: string; sqlResultAccessPath?: ResultAccessPath }[] = [
-        ...applyToSql.extraWith ?? [],
+        ...(applyToSql.extraWith ?? []),
         {
           name: applyToName,
           sql: applyToSql.sqlStringOrObject,
           sqlResultAccessPath: applyToSql.resultAccessPath?.slice(1), // checked for map above
         },
-        ...castObjectAttributes.flatMap((e: [string, SqlStringForTransformerElementValue], index) => (e[1].extraWith ? e[1].extraWith : []))
-        // ...resolvedDefinition.extraWith ?? [],
+        // ...castObjectAttributes.flatMap((e: [string, SqlStringForTransformerElementValue], index) =>
+        //   e[1].extraWith ? e[1].extraWith : []
+        // ),
+        ...(subQuery.extraWith ?? []),
       ];
 
       log.info("sqlStringForRuntimeTransformer objectAlter found applyTo:", applyToName, JSON.stringify(applyToSql, null, 2));
       const sqlResult = `SELECT (
-${indent(indentLevel+ 1)}"${applyToName}".${applyToSql.resultAccessPath?.slice(1).map(e=>tokenNameQuote+e+tokenNameQuote).join('->')}
-${indent(indentLevel+ 1)}||
-${indent(indentLevel+ 1)}jsonb_build_object(${attributesAsString})
+${indent(indentLevel + 1)}"${applyToName}".${applyToSql.resultAccessPath?.slice(1).map(e=>tokenNameQuote+e+tokenNameQuote).join('->')}
+${indent(indentLevel + 1)}||
+${indent(indentLevel + 1)}${subQuery.sqlStringOrObject}."${subQuery.columnNameContainingJsonValue}"
 ${indent(indentLevel)}) AS "objectAlter"
-${indent(indentLevel)}FROM "${applyToName}"`;
+${indent(indentLevel)}FROM (SELECT ROW_NUMBER() OVER () AS row_num, "${applyToName}".* FROM "${applyToName}") AS "${applyToName}",
+${indent(indentLevel + 1)}(SELECT ROW_NUMBER() OVER () AS row_num, ${subQuery.sqlStringOrObject}.* FROM ${subQuery.sqlStringOrObject}) AS ${subQuery.sqlStringOrObject}
+${indent(indentLevel)}WHERE "${applyToName}".row_num = ${subQuery.sqlStringOrObject}.row_num
+`;
+//       const sqlResult = `SELECT (
+// ${indent(indentLevel+ 1)}"${applyToName}".${applyToSql.resultAccessPath?.slice(1).map(e=>tokenNameQuote+e+tokenNameQuote).join('->')}
+// ${indent(indentLevel+ 1)}||
+// ${indent(indentLevel+ 1)}jsonb_build_object(${attributesAsString})
+// ${indent(indentLevel)}) AS "objectAlter"
+// ${indent(indentLevel)}FROM "${applyToName}"`;
 
         const result: SqlStringForTransformerElementValue = {
           type: "json",
@@ -1720,7 +1818,10 @@ ${indent(indentLevel)}FROM "${applyToName}"`;
           columnNameContainingJsonValue: "objectAlter",
           extraWith,
         }
+        // log.info("sqlStringForRuntimeTransformer freeObjectTemplate objectAttributes", JSON.stringify(objectAttributes, null, 2));
+        log.info("sqlStringForRuntimeTransformer freeObjectTemplate subquery", JSON.stringify(subQuery, null, 2));
         log.info("sqlStringForRuntimeTransformer objectAlter returning result=", JSON.stringify(result, null, 2));
+        // throw new Error("sqlStringForRuntimeTransformer objectAlter not implemented ");
         return result;
     }
     case "listReducerToSpreadObject": {

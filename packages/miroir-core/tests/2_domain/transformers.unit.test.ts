@@ -156,7 +156,10 @@ async function runTransformerTestInMemory(vitest: any, testSuiteNamePath: string
   //     )
   // ;
 
-  console.log("################################ runTransformerTestInMemory runtimeTransformer", JSON.stringify(runtimeTransformer, null, 2));
+  // console.log(
+  //   "################################ runTransformerTestInMemory runtimeTransformer",
+  //   JSON.stringify(runtimeTransformer, null, 2)
+  // );
   // TODO: check if transformer is indeed a runtime transformer, or if it is a "custom-made" build transformer
 
   const interpolation = transformerTest.runTestStep??"runtime";
@@ -168,6 +171,10 @@ async function runTransformerTestInMemory(vitest: any, testSuiteNamePath: string
     runtimeTransformer,
     transformerTest.transformerParams,
     transformerTest.transformerRuntimeContext ?? {}
+  );
+  console.log(
+    "################################ runTransformerTestInMemory convertedTransformer",
+    JSON.stringify(convertedTransformer, null, 2)
   );
 
   if (interpolation == "runtime") {

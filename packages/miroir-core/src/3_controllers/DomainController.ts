@@ -1022,7 +1022,11 @@ export class DomainController implements DomainControllerInterface {
 
     const testSuiteResult: Record<string, TestResult> = {};
 
-    return this.handleTestCompositeActionSuite(resolvedAction.resolvedTestCompositeActionDefinition, localActionParams, currentModel);
+    return this.handleTestCompositeActionSuite(
+      resolvedAction.resolvedTestCompositeActionDefinition,
+      localActionParams,
+      currentModel
+    );
   }
 
   // ################################################################################################

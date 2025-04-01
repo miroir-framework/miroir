@@ -8,7 +8,7 @@ import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/LoggerFactory";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
-import { transformer_apply_wrapper } from "./TransformersForRuntime";
+import { transformer_apply_wrapper, transformer_extended_apply_wrapper } from "./TransformersForRuntime";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -55,44 +55,48 @@ export function resolveCompositeActionTemplate(
     log.info("resolveCompositeActionTemplate resolving templates", localCompositeAction.templates);
     for (const t of Object.entries(localCompositeAction.templates)) {
       const newLocalParameters: Record<string,any> = { ...localActionParams, ...resolvedCompositeActionTemplates };
-      log.info(
-        "resolveCompositeActionTemplate",
-        compositeActionLabel,
-        "resolving template",
-        t[0],
-        t[1],
-        "newLocalParameters",
-        newLocalParameters
-      );
-      const resolvedTemplate = transformer_apply_wrapper(
-        "build",
+      // log.info(
+      //   "resolveCompositeActionTemplate",
+      //   compositeActionLabel,
+      //   "resolving template",
+      //   t[0],
+      //   t[1],
+      //   "newLocalParameters",
+      //   newLocalParameters
+      // );
+      // const resolvedTemplate = transformer_apply_wrapper(
+      const resolvedTemplate = transformer_extended_apply_wrapper(
+        // "build",
+        "runtime",
         t[0],
         t[1] as any,
-        newLocalParameters,
-        undefined,
+        actionParamValues, // queryParams
+        newLocalParameters, // contextResults
         "value",
       );
-      log.info("resolveCompositeActionTemplate", compositeActionLabel, "resolved template", t[0], resolvedTemplate);
       if (resolvedTemplate.elementType == "failure") {
         log.error("resolveCompositeActionTemplate resolved template error", resolvedTemplate);
       } else {
+        log.info("resolveCompositeActionTemplate", compositeActionLabel, "resolved template", t[0], resolvedTemplate);
         resolvedCompositeActionTemplates[t[0]] = resolvedTemplate;
       }
     }
   }
 
   const actionParamsAndTemplates = { ...localActionParams, ...resolvedCompositeActionTemplates };
-  // const resolvedCompositeActionDefinition: CompositeAction = transformer_apply(
-  const resolvedCompositeActionDefinition: CompositeAction = transformer_apply_wrapper(
+  const resolvedCompositeActionDefinition: CompositeAction = transformer_extended_apply_wrapper(
     "build",
     compositeActionLabel,
     (compositeActionTemplate as any).definition as any as TransformerForBuild,
     actionParamsAndTemplates,
-    localContext,
+    undefined,// localContext,
     "value",
   );
   log.info(
-    "resolveCompositeActionTemplate", compositeActionLabel, "resolvedCompositeActionDefinition",
+    "resolveCompositeActionTemplate", compositeActionLabel,
+    "actionParamsAndTemplates",
+    JSON.stringify(Object.keys(actionParamsAndTemplates), null, 2),
+    "resolvedCompositeActionDefinition",
     // resolvedCompositeActionDefinition
     JSON.stringify(resolvedCompositeActionDefinition, null, 2)
   );

@@ -96,12 +96,21 @@ import {
   currentTestSuite,
 } from "../2_domain/transformersTests_miroir.data";
 import { MetaEntity, Uuid } from '../../src/0_interfaces/1_core/EntityDefinition.js';
-import { InitApplicationParameters, PersistenceStoreAdminSectionInterface } from '../../src/0_interfaces/4-services/PersistenceStoreControllerInterface.js';
+import {
+  InitApplicationParameters,
+  PersistenceStoreAdminSectionInterface,
+} from "../../src/0_interfaces/4-services/PersistenceStoreControllerInterface.js";
 import { PersistenceStoreController } from '../../src/4_services/PersistenceStoreController.js';
 import { getBasicApplicationConfiguration, getBasicStoreUnitConfiguration } from '../../src/2_domain/Deployment.js';
 import { defaultMiroirMetaModel } from '../../src/1_core/Model.js';
 import { TestSuiteContext } from '../../src/4_services/TestSuiteContext.js';
-import { Action2Error, Action2ReturnType, Action2Success, Domain2ElementFailed, Domain2QueryReturnType } from '../../src/0_interfaces/2_domain/DomainElement.js';
+import {
+  Action2Error,
+  Action2ReturnType,
+  Action2Success,
+  Domain2ElementFailed,
+  Domain2QueryReturnType,
+} from "../../src/0_interfaces/2_domain/DomainElement.js";
 import { ignorePostgresExtraAttributes } from '../../src/4_services/otherTools.js';
 import { transformer_apply_wrapper, transformer_extended_apply_wrapper } from '../../src/2_domain/TransformersForRuntime.js';
 import { transformerTestSuite_spreadsheet } from '../2_domain/transformersTests_spreadsheet.data.js';

@@ -23,7 +23,10 @@ export function resolveTestCompositeActionTemplate(
     actionParamValues,
     currentModel,
   );
-  log.info("resolveTestCompositeActionTemplate compositeActionTemplateResolved", compositeActionTemplateResolved);
+  log.info(
+    "resolveTestCompositeActionTemplate compositeActionTemplateResolved",
+    JSON.stringify(compositeActionTemplateResolved, null, 2)
+  );
   return {
     resolvedTestCompositeActionDefinition: {
       testLabel: testCompositeActionTemplate.testLabel,
@@ -46,6 +49,7 @@ export function resolveTestCompositeActionTemplate(
   
 }
 
+// #################################################################################################
 export function resolveTestCompositeActionTemplateSuite(
   compositeActionTemplate: TestCompositeActionTemplateSuite,
   actionParamValues: Record<string, any>,

@@ -1,12 +1,3 @@
-import {
-  EntityInstance,
-  JzodElement,
-  TransformerDefinition,
-  TransformerForBuild,
-  TransformerForRuntime,
-} from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { displayTestSuiteResults } from "../../src/4_services/otherTools";
-import { TestSuiteContext } from "../../src/4_services/TestSuiteContext";
 
 // import entityDefinitionCountry from "../../src/assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/56628e31-3db5-4c5c-9328-4ff7ce54c36a.json" with { type: "json" };
 
@@ -33,7 +24,6 @@ import { TestSuiteContext } from "../../src/4_services/TestSuiteContext";
 // import publisher2 from "../../src/assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/516a7366-39e7-4998-82cb-80199a7fa667.json" with { type: "json" };
 // import publisher3 from "../../src/assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/c1c97d54-aba8-4599-883a-7fe8f3874095.json" with { type: "json" };
 import { TransformerTestSuite } from "./transformersTests_miroir.data";
-import { transformer_spreadSheetToJzodSchema } from "../../src/2_domain/Spreadsheet";
 
 // // ################################################################################################
 // // export interface TransformerTestParams {
@@ -111,7 +101,24 @@ export const transformerTestSuite_spreadsheet: TransformerTestSuite = {
             expectedValue: {
               type: "object",
               definition: {
-                "iso3166-1Alpha-2": { type: "string" },
+                uuid: {
+                  type: "string",
+                  validations: [{ type: "uuid" }],
+                  tag: { id: 1, defaultLabel: "Uuid", editable: false },
+                },
+                parentName: {
+                  type: "string",
+                  optional: true,
+                  tag: { id: 2, defaultLabel: "Uuid", editable: false },
+                },
+                parentUuid: {
+                  type: "string",
+                  validations: [{ type: "uuid" }],
+                  tag: { id: 3, defaultLabel: "parentUuid", editable: false },
+                },
+                "iso3166-1Alpha-2": { 
+                  type: "string" 
+                },
                 "iso3166-1Alpha-3": { type: "string" },
                 Name: { type: "string" },
               },

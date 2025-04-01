@@ -709,18 +709,7 @@ export function transformer_InnerReference_resolve  (
       break;
     }
     case "parameterReference": {
-      // FOR NOW, RESOLVING EVERYTHING AT RUNTIME
-      // !!!!!!!!!!!
-
-      // if (step == "runtime") { // any parameter reference must be resolved before runtime step, that is during build step
-      //   return new Domain2ElementFailed({
-      //     queryFailure: "ReferenceNotFound",
-      //     failureOrigin: ["transformer_InnerReference_resolve"],
-      //     queryReference: transformerInnerReference.referenceName,
-      //     failureMessage: "parameterReference not allowed in runtime step, all parameter references must be resolved before runtime",
-      //     queryContext: "parameterReference not allowed in runtime step, all parameter references must be resolved before runtime",
-      //   });
-      // }
+      // RESOLVING EVERYTHING AT RUNTIME
       return transformer_resolveReference(step, transformerInnerReference, "param", localQueryParams, localContextResults);
       break;
     }
@@ -1607,79 +1596,11 @@ export function innerTransformer_array_apply(
   }
 }
 
-// // ################################################################################################
-// // <A>[] -> <A>[]
-// // object -> object
-// // innerFullObjectTemplate { a: A, b: B } -> object 
-// export function transformer_apply(
-//   step: Step,
-//   label: string | undefined,
-//   transformer: TransformerForBuild | TransformerForRuntime,
-//   queryParams: Record<string, any>,
-//   contextResults?: Record<string, any>,
-// ): Domain2QueryReturnType<any> {
-// // ): Domain2QueryReturnType<DomainElementSuccess> {
-//   // log.info(
-//   //   "transformer_apply called for object named",
-//   //   objectName,
-//   //   "step:",
-//   //   step,
-//   //   "transformer.interpolation:",
-//   //   (transformer as any)?.interpolation??"build",
-//   //   "transformer",
-//   //   JSON.stringify(transformer, null, 2),
-//   //   "queryParams elements",
-//   //   JSON.stringify(Object.keys(queryParams??{}), null, 2),
-//   //   "contextResults elements",
-//   //   JSON.stringify(Object.keys(contextResults??{}), null, 2)
-//   // );
-//   if (typeof transformer == "object") {
-//     let result: Domain2QueryReturnType<any> = undefined as any;
-//     if (transformer instanceof Array) {
-//       log.info("transformer_apply ", "step", step, "called for array:", JSON.stringify(transformer, null, 2));
-//       result = innerTransformer_array_apply(step, label, transformer, queryParams, contextResults);
-//     } else {
-//       // TODO: improve test, refuse interpretation of build transformer in runtime step
-//       if (transformer.transformerType != undefined) {
-//         if (step == "build") {
-//           result = innerTransformer_plainObject_apply(step, label, transformer, queryParams, contextResults);
-//         } else {
-//           // FOR NOW, RESOLVING EVERYTHING AT RUNTIME
-//           // if (
-//           //   !(transformer as any).interpolation &&
-//           //   ![
-//           //   "constant",
-//           //   "constantArray",
-//           //   "constantBigint",
-//           //   "constantBoolean",
-//           //   "constantNumber",
-//           //   "constantObject",
-//           //   "constantString",
-//           //   "constantUuid",
-//           // ].includes(transformer.transformerType)) {
-//           //   throw new Error(
-//           //     "transformer_apply called for build transformer in runtime step: " +
-//           //     JSON.stringify(transformer, null, 2)
-//           //   );
-//           // }
-//           result = innerTransformer_apply(step, label, transformer, queryParams, contextResults);
-//         }
-//       } else {
-//         result = innerTransformer_plainObject_apply(step, label, transformer, queryParams, contextResults);
-//       }
-//     }
-//     return result
-//   } else {
-//     // plain value
-//     return transformer;
-//   }
-// }
-
-// ################################################################################################
 export const applicationTransformerDefinitions: Record<string, TransformerDefinition> = {
   spreadSheetToJzodSchema: transformer_spreadSheetToJzodSchema,
 }
 
+// ################################################################################################
 // <A>[] -> <A>[]
 // object -> object
 // innerFullObjectTemplate { a: A, b: B } -> object 

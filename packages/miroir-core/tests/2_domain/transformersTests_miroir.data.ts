@@ -2013,7 +2013,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
             },
           },
         },
-        freeObjectTemplate: {
+        freeObjectTemplate: { // TODO: test free object template without reference to outer object
           transformerTestType: "transformerTestSuite",
           transformerTestLabel: "freeObjectTemplate",
           transformerTests: {

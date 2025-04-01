@@ -201,8 +201,8 @@ afterAll(
       ],
     );
     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done deleteAndCloseApplicationDeployments")
+
     // console.log("globalTestSuiteResults:\n", Object.values(globalTestSuiteResults).map((r) => "\"" + r.testLabel + "\": " + r.testResult).join("\n"));
-    // displayTestSuiteResults(Object.keys(testTemplateSuites)[0]);
     displayTestSuiteResultsDetails(expect,Object.keys(testTemplateSuites)[0]);
   }
 )
@@ -211,6 +211,8 @@ afterAll(
 // ##############################################################################################
 // ##############################################################################################
 // ##############################################################################################
+
+const testName: string = "applicative.Library.integ.test";
 
 const libraryEntitesAndInstances = [
   {
@@ -281,9 +283,9 @@ const defaultInstanceDetailsReportUuid: Uuid = uuidv4();
 // }
 
 const fileData: {[k: string]: any}[] = [
-  {a: "A", b: "B"},
-  {a: "1", b: "2"},
-  {a: "3", b: "4"},
+  { a: "iso3166-1Alpha-2", b: "iso3166-1Alpha-3", c: "Name" },
+  { a: "US", b: "USA", c: "United States" },
+  { a: "DE", b: "DEU", c: "Germany" },
 ];
 const newEntityJzodSchema:JzodObject = {
   type: "object",
@@ -298,12 +300,12 @@ const newEntityJzodSchema:JzodObject = {
       parentName: {
         type: "string",
         optional: true,
-        tag: { id: 1, defaultLabel: "Uuid", editable: false },
+        tag: { id: 2, defaultLabel: "Uuid", editable: false },
       },
       parentUuid: {
         type: "string",
         validations: [{ type: "uuid" }],
-        tag: { id: 1, defaultLabel: "parentUuid", editable: false },
+        tag: { id: 3, defaultLabel: "parentUuid", editable: false },
       },
     },
     ...(
@@ -313,8 +315,8 @@ const newEntityJzodSchema:JzodObject = {
           {
             [a]: {
               type: "string",
-              optional: true,
-              tag: { id: index + 2 /* uuid attribute has been added*/, defaultLabel: a, editable: true },
+              // optional: true,
+              // tag: { id: index + 2 /* uuid attribute has been added*/, defaultLabel: a, editable: true },
             },
           }
         )
@@ -342,43 +344,8 @@ const testTemplateSuites: Record<string, TestActionParams> = {
         // libraryEntitesAndInstances
         []
       ),
-      afterEach: testOnLibrary_resetLibraryDeployment(miroirConfig, testAdminConfigurationDeploymentUuid),
+      // afterEach: testOnLibrary_resetLibraryDeployment(miroirConfig, testAdminConfigurationDeploymentUuid),
       // afterAll: testOnLibrary_deleteLibraryDeployment(miroirConfig, testAdminConfigurationDeploymentUuid),
-      // afterEach: {
-      //   actionType: "compositeAction",
-      //   actionLabel: "afterEach",
-      //   actionName: "sequence",
-      //   definition: [
-      //     {
-      //       actionType: "domainAction",
-      //       actionLabel: "resetLibraryStore",
-      //       domainAction: {
-      //         actionType: "modelAction",
-      //         actionName: "resetModel",
-      //         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-      //         deploymentUuid: testAdminConfigurationDeploymentUuid,
-      //       },
-      //     },
-      //   ],
-      // },
-      // afterAll: {
-      //   actionType: "compositeAction",
-      //   actionLabel: "afterEach",
-      //   actionName: "sequence",
-      //   definition: [
-      //     {
-      //       actionType: "domainAction",
-      //       actionLabel: "resetLibraryStore",
-      //       domainAction: {
-      //         actionType: "storeManagementAction",
-      //         actionName: "deleteStore",
-      //         endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-      //         deploymentUuid: testAdminConfigurationDeploymentUuid,
-      //         configuration: testDeploymentStorageConfiguration,
-      //       },
-      //     },
-      //   ],
-      // },
       testCompositeActions: {
         // "get Entity Entity from Miroir": {
         //   testType: "testCompositeAction",
@@ -465,73 +432,59 @@ const testTemplateSuites: Record<string, TestActionParams> = {
               createEntity_newEntityDescription,
               createEntity_newEntity: {
                 uuid: {
-                  transformerType: "parameterReference",
-                  interpolation: "build",
+                  transformerType: "contextReference",
                   referenceName: "newEntityUuid",
                 },
                 parentUuid: entityEntity.uuid,
                 selfApplication: {
-                  transformerType: "parameterReference",
-                  interpolation: "build",
+                  transformerType: "contextReference",
                   referenceName: "testSelfApplicationUuid",
                 },
                 description: {
-                  transformerType: "parameterReference",
-                  interpolation: "build",
+                  transformerType: "contextReference",
                   referenceName: "createEntity_newEntityDescription",
                 },
                 name: {
-                  transformerType: "parameterReference",
-                  interpolation: "build",
+                  transformerType: "contextReference",
                   referenceName: "newEntityName",
                 },
               },
-              fileData,
+              // spreadsheetContents:fileData,
+              // fileData,
+              newEntityJzodSchema: {
+                transformerType: "spreadSheetToJzodSchema",
+                // interpolation: "build",
+                // spreadsheetContents: {
+                //   type: "contextReference",
+                //   referenceName: "spreadsheetContents",
+                // }
+                spreadsheetContents: [
+                  { a: "iso3166-1Alpha-2", b: "iso3166-1Alpha-3", c: "Name" },
+                  { a: "US", b: "USA", c: "United States" },
+                  { a: "DE", b: "DEU", c: "Germany" },
+                ],
+              },
               createEntity_newEntityDefinition: {
                 name: {
-                  transformerType: "parameterReference",
-                  interpolation: "build",
+                  transformerType: "contextReference",
                   referenceName: "newEntityName",
                 },
                 uuid: {
-                  transformerType: "parameterReference",
-                  interpolation: "build",
+                  transformerType: "contextReference",
                   referenceName: "newEntityDefinitionUuid",
                 },
                 parentName: "EntityDefinition",
                 parentUuid: entityEntityDefinition.uuid,
                 entityUuid: {
-                  transformerType: "mustacheStringTemplate",
-                  interpolation: "build",
-                  definition: "{{createEntity_newEntity.uuid}}",
+                  transformerType: "contextReference",
+                  referencePath: ["createEntity_newEntity","uuid"],
                 },
                 conceptLevel: "Model",
                 defaultInstanceDetailsReportUuid: defaultInstanceDetailsReportUuid,
-                jzodSchema: newEntityJzodSchema
-                // jzodSchema: {
-                //   // {
-                //     transformerType: "listPickElement",
-                //     interpolation: "runtime",
-                //     referencedTransformer: "fileData",
-                //     index: 0
-                //   // }
-                //   // uuid: {
-                //   //   type: "string",
-                //   //   validations: [{ type: "uuid" }],
-                //   //   tag: { id: 1, defaultLabel: "Uuid", editable: false },
-                //   // },
-                //   // parentName: {
-                //   //   type: "string",
-                //   //   optional: true,
-                //   //   tag: { id: 1, defaultLabel: "Uuid", editable: false },
-                //   // },
-                //   // parentUuid: {
-                //   //   type: "string",
-                //   //   validations: [{ type: "uuid" }],
-                //   //   tag: { id: 1, defaultLabel: "parentUuid", editable: false },
-                //   // },
-                  
-                // },
+                jzodSchema: {
+                  transformerType: "contextReference",
+                  referenceName: "newEntityJzodSchema",
+                }
               },
             },
             definition: [
@@ -1008,7 +961,7 @@ const testTemplateSuites: Record<string, TestActionParams> = {
 
 // const display
 // TODO: duplicate test with ExtractorTemplatePersistenceStoreRunner.integ.test.tsx
-describe.sequential("applicative.Library.integ.test", () => {
+describe.sequential(testName, () => {
   // it.each(Object.entries(testSuites))("test %s", async (currentTestSuiteName, testAction: TestActionParams) => {
   //   const testSuiteResults = await runTestOrTestSuite(
   //     localCache,
