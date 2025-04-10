@@ -18,13 +18,25 @@ export const transformer_spreadSheetToJzodSchema: TransformerDefinition = {
         type: "object",
         definition: {
           spreadsheetContents: {
-            type: "array",
-            definition: {
-              type: "record",
-              definition: {
-                type: "any",
+            type: "union",
+            definition: [
+              {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  relativePath: "transformerForBuild",
+                },
               },
-            },
+              {
+                type: "array",
+                definition: {
+                  type: "record",
+                  definition: {
+                    type: "any",
+                  },
+                },
+              },
+            ],
           },
         },
       },

@@ -1571,7 +1571,7 @@ FROM ${selectFrom.join(tokenSeparatorForSelect)}`
         };
       } else {
         return {
-          type: "json",
+          type: "tableOf1JsonColumn",
           sqlStringOrObject: `"object_subfreeObjectTemplate"`, // TODO: REMOVE DOUBLE QUOTES
           extraWith: [
             ...extraWith,
@@ -1740,46 +1740,6 @@ FROM ${selectFrom.join(tokenSeparatorForSelect)}`
         newPreparedStatementParametersCount += subQuery.preparedStatementParameters.length;
       }
 
-      // throw new Error("sqlStringForRuntimeTransformer objectAlter not implemented ");
-
-      // const attributeError = objectAttributes.find((e: [string, Domain2QueryReturnType<SqlStringForTransformerElementValue>]) => e[1] instanceof Domain2ElementFailed);
-
-      // // OLD ###############################################################
-      // if (attributeError) {
-      //   return new Domain2ElementFailed({
-      //     queryFailure: "QueryNotExecutable",
-      //     query: actionRuntimeTransformer as any,
-      //     failureMessage: "sqlStringForRuntimeTransformer freeObjectTemplate attributeValue failed: " + JSON.stringify(attributeError, null, 2),
-      //   });
-      // }
-      
-      // const castObjectAttributes = objectAttributes as [string, SqlStringForTransformerElementValue][];
-      // const usedContextEntries = castObjectAttributes.reduce((acc: string[], e: [string, SqlStringForTransformerElementValue]) => {
-      //   if (e[1].usedContextEntries) {
-      //     return [...acc, ...e[1].usedContextEntries];
-      //   }
-      //   return acc;
-      // }
-      // , []);
-
-      // const attributesAsString: string = castObjectAttributes
-      //   .map(
-      //     (e: [string, SqlStringForTransformerElementValue]) =>
-      //       tokenStringQuote +
-      //       e[0] +
-      //       tokenStringQuote +
-      //       tokenSeparatorForSelect +
-      //       " " +
-      //       e[1].sqlStringOrObject +
-      //       (e[1].extraWith && e[1].extraWith.length > 0
-      //         ? '."' + e[1].extraWith[0].sqlResultAccessPath?.slice(1) + '"'
-      //         : "")
-      //   )
-      //   .join(tokenSeparatorForSelect);
-
-      // const selectFrom: string[] = [
-      //   ...usedContextEntries.map((e) => tokenNameQuote + e + tokenNameQuote),
-      // ];
       const extraWith: { name: string; sql: string; sqlResultAccessPath?: ResultAccessPath }[] = [
         ...(applyToSql.extraWith ?? []),
         {
@@ -1794,21 +1754,32 @@ FROM ${selectFrom.join(tokenSeparatorForSelect)}`
       ];
 
       log.info("sqlStringForRuntimeTransformer objectAlter found applyTo:", applyToName, JSON.stringify(applyToSql, null, 2));
+      log.info("sqlStringForRuntimeTransformer objectAlter found subquery:", JSON.stringify(subQuery, null, 2));
+
+      if (!["json", "tableOf1JsonColumn"].includes(subQuery.type)) {
+        return new Domain2ElementFailed({
+          queryFailure: "QueryNotExecutable",
+          query: actionRuntimeTransformer as any,
+          failureMessage: "sqlStringForRuntimeTransformer objectAlter subquery not json or tableOf1JsonColumn",
+        });
+      }
+
+      const subQueryWithRowNumber =
+        subQuery.type == "tableOf1JsonColumn"
+          ? `(SELECT ROW_NUMBER() OVER () AS row_num, ${subQuery.sqlStringOrObject}.* FROM ${subQuery.sqlStringOrObject}) AS "objectAlter_subQuery"`
+          : `(SELECT ROW_NUMBER() OVER () AS row_num, ${subQuery.sqlStringOrObject} AS "objectAlter_subQueryColumn") AS "objectAlter_subQuery"` // subQuery.type == json
+      ;
+      const subQueryColumnName = subQuery.type == "tableOf1JsonColumn"? subQuery.columnNameContainingJsonValue : "objectAlter_subQueryColumn";
+
       const sqlResult = `SELECT (
 ${indent(indentLevel + 1)}"${applyToName}".${applyToSql.resultAccessPath?.slice(1).map(e=>tokenNameQuote+e+tokenNameQuote).join('->')}
 ${indent(indentLevel + 1)}||
-${indent(indentLevel + 1)}${subQuery.sqlStringOrObject}."${subQuery.columnNameContainingJsonValue}"
+${indent(indentLevel + 1)}"objectAlter_subQuery"."${subQueryColumnName}"
 ${indent(indentLevel)}) AS "objectAlter"
 ${indent(indentLevel)}FROM (SELECT ROW_NUMBER() OVER () AS row_num, "${applyToName}".* FROM "${applyToName}") AS "${applyToName}",
-${indent(indentLevel + 1)}(SELECT ROW_NUMBER() OVER () AS row_num, ${subQuery.sqlStringOrObject}.* FROM ${subQuery.sqlStringOrObject}) AS ${subQuery.sqlStringOrObject}
-${indent(indentLevel)}WHERE "${applyToName}".row_num = ${subQuery.sqlStringOrObject}.row_num
+${indent(indentLevel + 1)}${subQueryWithRowNumber}
+${indent(indentLevel)}WHERE "${applyToName}".row_num = "objectAlter_subQuery".row_num
 `;
-//       const sqlResult = `SELECT (
-// ${indent(indentLevel+ 1)}"${applyToName}".${applyToSql.resultAccessPath?.slice(1).map(e=>tokenNameQuote+e+tokenNameQuote).join('->')}
-// ${indent(indentLevel+ 1)}||
-// ${indent(indentLevel+ 1)}jsonb_build_object(${attributesAsString})
-// ${indent(indentLevel)}) AS "objectAlter"
-// ${indent(indentLevel)}FROM "${applyToName}"`;
 
         const result: SqlStringForTransformerElementValue = {
           type: "json",
@@ -1863,7 +1834,7 @@ ${indent(indentLevel)}WHERE "${applyToName}".row_num = ${subQuery.sqlStringOrObj
         case "json_array": {
           const sqlResult =
             "SELECT " +
-            'json_object_agg("' +
+            'jsonb_object_agg("' +
             applyToLabelPairs +
             '"."key", ' +
             '"' +
@@ -1902,7 +1873,7 @@ ${indent(indentLevel)}WHERE "${applyToName}".row_num = ${subQuery.sqlStringOrObj
           // case "json": {
           const sqlResult =
             "SELECT " +
-            'json_object_agg("' +
+            'jsonb_object_agg("' +
             applyToLabelPairs +
             '"."key", ' +
             '"' +
@@ -2067,7 +2038,7 @@ ${orderBy}
             type: "json",
             sqlStringOrObject: actionRuntimeTransformer.groupBy
               ? `
-SELECT json_object_agg(key, cnt) AS "count_object"
+SELECT jsonb_object_agg(key, cnt) AS "count_object"
 FROM (
   SELECT value ->> '${actionRuntimeTransformer.groupBy}' AS key, COUNT(value ->> '${
                   actionRuntimeTransformer.groupBy

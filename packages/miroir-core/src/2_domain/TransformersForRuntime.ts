@@ -52,7 +52,7 @@ import { packageName } from "../constants";
 import { resolvePathOnObject } from "../tools";
 import { cleanLevel } from "./constants";
 import { transformer } from "zod";
-import { transformer_spreadSheetToJzodSchema } from "./Spreadsheet";
+import { transformer_spreadSheetToJzodSchema } from "./Transformer_Spreadsheet";
 import { resolve } from 'path';
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -113,7 +113,8 @@ function resolveApplyTo(
           transformerReference,
           resolveBuildTransformersTo,
           queryParams,
-          contextResults
+          contextResults,
+          
         );
   return resolvedReference;
 }
@@ -1480,8 +1481,8 @@ export function innerTransformer_plainObject_apply(
   contextResults?: Record<string, any>,
 ): Domain2QueryReturnType<any> {
   // log.info(
-  //   "innerTransformer_plainObject_apply called for object named",
-  //   objectName,
+  //   "innerTransformer_plainObject_apply called for object labeled",
+  //   label,
   //   "step:",
   //   step,
   //   "transformer.interpolation:",
@@ -1647,7 +1648,7 @@ export function transformer_extended_apply(
       if (transformer["transformerType"] != undefined) {
       //  if (step == "runtime" || (transformer as any)["interpolation"] == "build") {
        if (step == "runtime" || (transformer as any)["interpolation"] == "build") {
-          // log.info("HERE");
+          // log.info("transformer_extended_apply interpreting transformer!");
           let preResult
           switch (transformer.transformerType) {
             case "transformer_menu_addItem": {
@@ -1690,7 +1691,14 @@ export function transformer_extended_apply(
             case "mapperListToList":
             case "count":
             case "unique": {
-              preResult = innerTransformer_apply(step, label, transformer, newResolveBuildTransformersTo, queryParams, contextResults);
+              preResult = innerTransformer_apply(
+                step,
+                label,
+                transformer,
+                newResolveBuildTransformersTo,
+                queryParams,
+                contextResults
+              );
               break;
             }
             default: {
@@ -1712,7 +1720,7 @@ export function transformer_extended_apply(
                 });
               }
               if (foundApplicationTransformer.transformerImplementation.transformerImplementationType == "transformer") {
-                preResult = innerTransformer_apply(
+                preResult = transformer_extended_apply(
                   step,
                   label,
                   foundApplicationTransformer.transformerImplementation.definition,

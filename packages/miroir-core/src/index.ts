@@ -758,7 +758,7 @@ export {
 } from './2_domain/ModelEntityActionTransformer.js';
 export { 
   transformer_spreadSheetToJzodSchema
-} from "./2_domain/Spreadsheet";
+} from "./2_domain/Transformer_Spreadsheet";
 export { 
   applicationTransformerDefinitions,
   ActionTemplate,

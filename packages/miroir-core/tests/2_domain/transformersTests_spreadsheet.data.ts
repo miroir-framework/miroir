@@ -23,6 +23,7 @@
 // import publisher1 from "../../src/assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/1f550a2a-33f5-4a56-83ee-302701039494.json" with { type: "json" };
 // import publisher2 from "../../src/assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/516a7366-39e7-4998-82cb-80199a7fa667.json" with { type: "json" };
 // import publisher3 from "../../src/assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/c1c97d54-aba8-4599-883a-7fe8f3874095.json" with { type: "json" };
+import { transformer } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { TransformerTestSuite } from "./transformersTests_miroir.data";
 
 // // ################################################################################################
@@ -81,22 +82,18 @@ export const transformerTestSuite_spreadsheet: TransformerTestSuite = {
             // transformer: (transformer_spreadSheetToJzodSchema.transformerImplementation as any).definition,
             transformer: {
               transformerType: "spreadSheetToJzodSchema",
-              // spreadsheetContents: {
-              //   type: "parameterReference",
-              //   referenceName: "spreadsheetContents",
-              // }
-              spreadsheetContents: [
-                { a: "iso3166-1Alpha-2", b: "iso3166-1Alpha-3", c: "Name" },
-                { a: "US", b: "USA", c: "United States" },
-                { a: "DE", b: "DEU", c: "Germany" },
-              ],
+              spreadsheetContents: {
+                transformerType: "parameterReference",
+                interpolation: "build",
+                referenceName: "spreadsheetContents",
+              }
             } as any,
             transformerParams: {
-              // spreadsheetContents: [
-              //   { "a": "iso3166-1Alpha-2", "b": "iso3166-1Alpha-3", c: "Name" },
-              //   { "a": "US", "b": "USA", c: "United States" },
-              //   { "a": "DE", "b": "DEU", c: "Germany" },
-              // ],
+              spreadsheetContents: [
+                { "a": "iso3166-1Alpha-2", "b": "iso3166-1Alpha-3", c: "Name" },
+                { "a": "US", "b": "USA", c: "United States" },
+                { "a": "DE", "b": "DEU", c: "Germany" },
+              ],
             },
             expectedValue: {
               type: "object",
@@ -116,8 +113,8 @@ export const transformerTestSuite_spreadsheet: TransformerTestSuite = {
                   validations: [{ type: "uuid" }],
                   tag: { id: 3, defaultLabel: "parentUuid", editable: false },
                 },
-                "iso3166-1Alpha-2": { 
-                  type: "string" 
+                "iso3166-1Alpha-2": {
+                  type: "string",
                 },
                 "iso3166-1Alpha-3": { type: "string" },
                 Name: { type: "string" },

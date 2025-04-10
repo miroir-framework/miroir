@@ -108,10 +108,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                     value: ["testA", "testB"],
                   },
                   transformerParams: {},
-                  expectedValue: {
-                    transformerType: "constant",
-                    value: ["testA", "testB"],
-                  },
+                  expectedValue: ["testA", "testB"],
                 },
                 // // TODO: this should return an error, both in the in-memory and in the database case
                 // // when the parsing of the parameter fails, the transformer should return a QueryNotExecutable, but returns the stringified value of the parameter instead
@@ -127,10 +124,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   },
                   transformerParams: {},
                   ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-                  expectedValue: {
-                    transformerType: "constant",
-                    value: "{]",
-                  },
+                  expectedValue: "{]",
                 },
               },
             },
@@ -149,10 +143,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                     value: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
                   },
                   transformerParams: {},
-                  expectedValue: {
-                    transformerType: "constant",
-                    value: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-                  },
+                  expectedValue: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
                 },
                 "failed constantUuid transformer for non-uuid value": {
                   transformerTestType: "transformerTest",
@@ -166,10 +157,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   },
                   transformerParams: {},
                   ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-                  expectedValue: {
-                    transformerType: "constant",
-                    value: "test",
-                  },
+                  expectedValue: "test",
                 },
               },
             },
@@ -188,10 +176,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                     value: 42,
                   },
                   transformerParams: {},
-                  expectedValue: {
-                    transformerType: "constant",
-                    value: 42,
-                  },
+                  expectedValue: 42,
                 },
                 "failed constantNumber transformer for non-number value": {
                   transformerTestType: "transformerTest",
@@ -226,10 +211,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                     value: 42, // TODO: ensure actual value is bigint, not number
                   },
                   transformerParams: {},
-                  expectedValue: {
-                    transformerType: "constant",
-                    value: 42,
-                  },
+                  expectedValue: 42,
                 },
                 "failed constantBigint transformer for non-bigint value": {
                   transformerTestType: "transformerTest",
@@ -264,10 +246,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                     value: "test",
                   },
                   transformerParams: {},
-                  expectedValue: {
-                    transformerType: "constant",
-                    value: "test",
-                  },
+                  expectedValue: "test",
                 },
                 "constantString build transformer for non-string value": {
                   transformerTestType: "transformerTest",
@@ -280,13 +259,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                     value: { test: "objectInsteadOfString" } as any,
                   },
                   transformerParams: {},
-                  // expectedValue: {
-                  //   queryFailure: "QueryNotExecutable",
-                  // },
-                  expectedValue:  {
-                    "transformerType": "constant",
-                    "value": "{\"test\":\"objectInsteadOfString\"}",
-                  },
+                  expectedValue:  "{\"test\":\"objectInsteadOfString\"}",
                 },
               },
             },
@@ -305,10 +278,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                     value: { test: "test" },
                   },
                   transformerParams: {},
-                  expectedValue: {
-                    transformerType: "constant",
-                    value: { test: "test" },
-                  },
+                  expectedValue: { test: "test" },
                 },
                 // // TODO: in postgres, conversion to ::jsonb succeeds for string input, it does not require to be an object
                 // "failed constantObject transformer for non-object value before runtime": {
@@ -344,10 +314,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                     value: true,
                   },
                   transformerParams: {},
-                  expectedValue: {
-                    transformerType: "constant",
-                    value: true,
-                  },
+                  expectedValue: true,
                 },
                 "failed constantBoolean transformer for non-boolean value": {
                   transformerTestType: "transformerTest",
@@ -384,10 +351,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                 referenceName: "fileData",
               },
               transformerParams: { fileData },
-              expectedValue: {
-                transformerType: "constant",
-                value: fileData,
-              },
+              expectedValue: fileData,
             },
             // NO contextReference in build transformers!
             // "resolve basic build transformer contextReference": {
@@ -425,10 +389,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
               transformerParams: {
                 newApplication: { name: "Test", suffix: "Z" },
               },
-              expectedValue: {
-                "transformerType": "constant",
-                "value": "aTest_Z example",
-              },
+              expectedValue: "aTest_Z example",
             },
             "failed mustache string template": {
               transformerTestType: "transformerTest",
@@ -470,10 +431,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                 }
               },
               transformerParams: { fileData: [ "a", "b", "c" ] },
-              expectedValue: {
-                transformerType: "constant",
-                value: [ { count: 3 }],
-              },
+              expectedValue: [ { count: 3 }],
             },
             "resolve basic runtime transformer count on build-resolved parameter array": {
               transformerTestType: "transformerTest",
@@ -497,11 +455,8 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                 transformerType: "count",
                 interpolation: "runtime",
                 applyTo: {
-                  referenceType: "referencedTransformer",
-                  reference: {
-                    transformerType: "constant",
-                    value: [ "a", "b", "c" ],
-                  },
+                  referenceType: "referencedTransformer", // TODO: this is inconsistent! A referenceTransformer with a value in it! Should it be changed to a constant transformer?
+                  reference: [ "a", "b", "c" ],
                 }
               },
             },

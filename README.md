@@ -203,7 +203,7 @@ VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirCo
 Using a real server running on nodejs, the "miroir" and "library" schemas are NOT created or dropped, they have to exist for the test to pass [issue #24](https://github.com/miroir-framework/miroir/issues/24).
 
 ```sh
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug npm run test -w miroir-standalone-app -- DomainController.integ
+VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-realServer-sql VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug npm run test -w miroir-standalone-app -- DomainController.integ
 ```
 
 #### automated unit / integration tests for Transformers

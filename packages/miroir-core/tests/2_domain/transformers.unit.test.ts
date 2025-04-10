@@ -141,10 +141,10 @@ async function runTransformerTestInMemory(vitest: any, testSuiteNamePath: string
   if (!currentTestSuite) {
     throw new Error("transformerTests is undefined");
   }
-  console.log("################################ runTransformerTestInMemory transformerTestParams", JSON.stringify(transformerTest, null, 2));
   const transformer: TransformerForBuild | TransformerForRuntime = transformerTest.transformer;
-
   const runtimeTransformer:TransformerForRuntime = transformer as any;
+  console.log("################################ runTransformerTestInMemory transformerTestParams", JSON.stringify(transformerTest, null, 2));
+
   // const runtimeTransformer:TransformerForRuntime = (transformer as any).interpolation
   //   ? (transformer as TransformerForRuntime)
   //   : transformer_extended_apply_wrapper(
@@ -170,7 +170,8 @@ async function runTransformerTestInMemory(vitest: any, testSuiteNamePath: string
     undefined,
     runtimeTransformer,
     transformerTest.transformerParams,
-    transformerTest.transformerRuntimeContext ?? {}
+    transformerTest.transformerRuntimeContext ?? {},
+    "value"
   );
   console.log(
     "################################ runTransformerTestInMemory convertedTransformer",

@@ -319,7 +319,8 @@ async function runTransformerIntegrationTest(vitest: any, testNameArray: string[
     (transformerTest.transformer as any)?.label,
     transformerTest.transformer,
     transformerTest.transformerParams,
-    transformerTest.transformerRuntimeContext ?? {}
+    transformerTest.transformerRuntimeContext ?? {},
+    'value', // resolveBuildTransformerTo
   );
 
   console.log("runTransformerIntegrationTest", testSuitePathName, "resolvedTransformer", JSON.stringify(resolvedTransformer, null, 2));
@@ -380,7 +381,8 @@ async function runTransformerIntegrationTest(vitest: any, testNameArray: string[
           : transformerTest.transformerRuntimeContext ?? {},
         deploymentUuid: "",
         runtimeTransformers: {
-          transformer: (transformerTest as any).transformer,
+          // transformer: (transformerTest as any).transformer,
+          transformer: resolvedTransformer,
         },
       },
     });
