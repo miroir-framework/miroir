@@ -449,20 +449,18 @@ const testTemplateSuites: Record<string, TestActionParams> = {
                   referenceName: "newEntityName",
                 },
               },
-              // spreadsheetContents:fileData,
-              // fileData,
+              spreadsheetContents:fileData,
               newEntityJzodSchema: {
                 transformerType: "spreadSheetToJzodSchema",
-                // interpolation: "build",
-                // spreadsheetContents: {
-                //   type: "contextReference",
-                //   referenceName: "spreadsheetContents",
-                // }
-                spreadsheetContents: [
-                  { a: "iso3166-1Alpha-2", b: "iso3166-1Alpha-3", c: "Name" },
-                  { a: "US", b: "USA", c: "United States" },
-                  { a: "DE", b: "DEU", c: "Germany" },
-                ],
+                spreadsheetContents: {
+                  transformerType: "contextReference",
+                  referenceName: "spreadsheetContents",
+                }
+                // spreadsheetContents: [
+                //   { a: "iso3166-1Alpha-2", b: "iso3166-1Alpha-3", c: "Name" },
+                //   { a: "US", b: "USA", c: "United States" },
+                //   { a: "DE", b: "DEU", c: "Germany" },
+                // ],
               },
               createEntity_newEntityDefinition: {
                 name: {
@@ -514,9 +512,10 @@ const testTemplateSuites: Record<string, TestActionParams> = {
                   },
                 ],
               },
+              // test preparation: newApplicationEntityList
               {
                 actionType: "compositeRunBoxedExtractorOrQueryAction",
-                actionLabel: "calculateNewEntityDefinionAndReports",
+                actionLabel: "getListOfEntities",
                 nameGivenToResult: "newApplicationEntityList",
                 query: {
                   actionType: "runBoxedExtractorOrQueryAction",
@@ -559,9 +558,10 @@ const testTemplateSuites: Record<string, TestActionParams> = {
                   },
                 },
               },
+              // // newApplicationEntityDefinitionList
               {
                 actionType: "compositeRunBoxedExtractorOrQueryAction",
-                actionLabel: "calculateNewEntityDefinionAndReports",
+                actionLabel: "getListOfEntityDefinitions",
                 nameGivenToResult: "newApplicationEntityDefinitionList",
                 query: {
                   actionType: "runBoxedExtractorOrQueryAction",

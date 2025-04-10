@@ -60,7 +60,7 @@ export const transformer_spreadSheetToJzodSchema: TransformerDefinition = {
           applyTo: {
             referenceType: "referencedTransformer",
             reference: {
-              transformerType: "parameterReference",
+              transformerType: "contextReference",
               referenceName: "spreadsheetContents",
             },
           },

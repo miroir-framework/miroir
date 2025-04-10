@@ -146,7 +146,17 @@ export function resolveApplyTo_legacy(
   contextResults: Record<string, any> | undefined,
   label: string | undefined
 ) {
-  log.info("resolveApplyTo_legacy called for transformer", transformer, "step", step, "label", label);
+  // log.info(
+  //   "resolveApplyTo_legacy",
+  //   "label",
+  //   label,
+  //   "called for transformer",
+  //   JSON.stringify(transformer, null, 2),
+  //   "step",
+  //   step,
+  //   "resolveBuildTransformersTo",
+  //   resolveBuildTransformersTo
+  // );
   
   if (transformer.applyTo.referenceType == "referencedExtractor") {
     throw new Error("resolveApplyTo_legacy can not handle referencedExtractor");
@@ -171,6 +181,17 @@ export function resolveApplyTo_legacy(
           queryParams,
           contextResults
         );
+        // log.info("resolveApplyTo_legacy resolvedReference", resolvedReference);
+  // log.info(
+  //   "resolveApplyTo_legacy resolved for transformer",
+  //   transformer,
+  //   "step",
+  //   step,
+  //   "label",
+  //   label,
+  //   "resolvedReference",
+  //   resolvedReference
+  // );
   return resolvedReference;
 }
 
@@ -556,12 +577,13 @@ export function transformer_resolveReference(
 ): Domain2QueryReturnType<any> {
   // ReferenceNotFound
   const bank: Record<string, any> = paramOrContext == "param" ? queryParams ?? {} : contextResults ?? {};
-  log.info(
-    "transformer_resolveReference called for",
-    JSON.stringify(transformerInnerReference, null, 2),
-    "bank",
-    JSON.stringify(bank, null, 2)
-  );
+  // log.info(
+  //   "transformer_resolveReference called for",
+  //   JSON.stringify(transformerInnerReference, null, 2),
+  //   "bank",
+  //   JSON.stringify(Object.keys(bank), null, 2)
+  //   // JSON.stringify(bank, null, 2)
+  // );
   if (!bank) {
     log.error(
       "transformer_resolveReference failed, no contextResults for step",
@@ -601,6 +623,14 @@ export function transformer_resolveReference(
         queryContext: JSON.stringify(Object.keys(bank)),
       });
     }
+    // log.info(
+    //   "transformer_resolveReference resolved for",
+    //   JSON.stringify(transformerInnerReference, null, 2),
+    //   "bank",
+    //   JSON.stringify(Object.keys(bank), null, 2),
+    //   "found result",
+    //   JSON.stringify(bank[transformerInnerReference.referenceName], null, 2)
+    // );
     return bank[transformerInnerReference.referenceName];
   }
 
@@ -608,6 +638,12 @@ export function transformer_resolveReference(
   if (transformerInnerReference.referencePath) {
     try {
       const pathResult = resolvePathOnObject(bank, transformerInnerReference.referencePath);
+      // log.info(
+      //   "transformer_resolveReference resolved for",
+      //   JSON.stringify(transformerInnerReference, null, 2),
+      //   "found pathResult",
+      //   pathResult
+      // );
       return pathResult;
     } catch (error) {
       log.error(
@@ -1725,8 +1761,8 @@ export function transformer_extended_apply(
                   label,
                   foundApplicationTransformer.transformerImplementation.definition,
                   newResolveBuildTransformersTo,
-                  { ...queryParams, ...(transformer as any) },
-                  contextResults
+                  queryParams,
+                  {...contextResults, ...(transformer as any)} // inner definitions do not have parameter references, only context references
                 );
               }
             }
