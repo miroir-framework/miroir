@@ -1360,9 +1360,22 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
           transformerTestType: "transformerTestSuite",
           transformerTestLabel: "count",
           transformerTests: {
-            "count returns number of elements in a constant object list at runtime": {
+            "count returns number of elements in an object list at runtime": {
               transformerTestType: "transformerTest",
-              transformerTestLabel: "count returns number of elements in a constant object list at runtime",
+              transformerTestLabel: "count returns number of elements in an object list at runtime",
+              transformerName: "countForConstantObjectListAtRuntime",
+              transformer: {
+                transformerType: "count",
+                interpolation: "runtime",
+                applyTo: [ { test: "testA" }, { test: "testB" }, { test: "testC" } ],
+              },
+              transformerParams: {},
+              transformerRuntimeContext: {},
+              expectedValue: [{ count: 3 }],
+            },
+            "count returns number of elements in a constant transformer object list at runtime": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel: "count returns number of elements in a constant transformer object list at runtime",
               transformerName: "countForConstantObjectListAtRuntime",
               transformer: {
                 transformerType: "count",
@@ -1380,9 +1393,9 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
               transformerRuntimeContext: {},
               expectedValue: [{ count: 3 }],
             },
-            "count returns number of elements in an object list at runtime": {
+            "count returns number of elements in a contextReference object list at runtime": {
               transformerTestType: "transformerTest",
-              transformerTestLabel: "count returns number of elements in an object list at runtime",
+              transformerTestLabel: "count returns number of elements in a contextReference object list at runtime",
               transformerName: "countForObjectListAtRuntime",
               transformer: {
                 transformerType: "count",

@@ -236,22 +236,33 @@ function sqlStringForApplyTo(
   useAccessPathForContextReference: boolean = true,
   topLevelTransformer: boolean = true
 ): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
-  if (actionRuntimeTransformer.applyTo.referenceType == "referencedExtractor") {
-    return new Domain2ElementFailed({
-      queryFailure: "QueryNotExecutable",
-      query: actionRuntimeTransformer as any,
-      failureMessage:
-        "sqlStringForRuntimeTransformer listPickElement not implemented for referencedExtractor",
-    });
-  }
-  const referenceQuery =
-    typeof actionRuntimeTransformer.applyTo.reference == "string"
-      ? sqlStringForRuntimeTransformer(
-          // shouldn't this be a contextReference instead?
+  switch (typeof actionRuntimeTransformer.applyTo) {
+    case "string":
+    case "number":
+    case "bigint":
+    case "undefined":
+    case "boolean": {
+      return sqlStringForRuntimeTransformer(
+        {
+          transformerType: "constant",
+          value: actionRuntimeTransformer.applyTo,
+          // interpolation: "runtime",
+        },
+        preparedStatementParametersIndex,
+        indentLevel,
+        queryParams,
+        definedContextEntries,
+        useAccessPathForContextReference,
+        topLevelTransformer
+      )
+      break;
+    }
+    case "object": {
+      if (Array.isArray(actionRuntimeTransformer.applyTo)) {
+        return sqlStringForRuntimeTransformer(
           {
             transformerType: "constant",
-            // interpolation: "runtime",
-            value: actionRuntimeTransformer.applyTo.reference as any,
+            value: actionRuntimeTransformer.applyTo,
           },
           preparedStatementParametersIndex,
           indentLevel,
@@ -259,17 +270,57 @@ function sqlStringForApplyTo(
           definedContextEntries,
           useAccessPathForContextReference,
           topLevelTransformer
-        )
-      : sqlStringForRuntimeTransformer(
-          actionRuntimeTransformer.applyTo.reference,
-          preparedStatementParametersIndex,
-          indentLevel,
-          queryParams,
-          definedContextEntries,
-          useAccessPathForContextReference,
-          topLevelTransformer
         );
-  return referenceQuery;
+      }
+      if (actionRuntimeTransformer.applyTo.referenceType == "referencedExtractor") {
+        return new Domain2ElementFailed({
+          queryFailure: "QueryNotExecutable",
+          query: actionRuntimeTransformer as any,
+          failureMessage:
+            "sqlStringForRuntimeTransformer listPickElement not implemented for referencedExtractor",
+        });
+      }
+      const referenceQuery =
+        typeof actionRuntimeTransformer.applyTo.reference == "string"
+          ? sqlStringForRuntimeTransformer(
+              // shouldn't this be a contextReference instead?
+              {
+                transformerType: "constant",
+                // interpolation: "runtime",
+                value: actionRuntimeTransformer.applyTo.reference as any,
+              },
+              preparedStatementParametersIndex,
+              indentLevel,
+              queryParams,
+              definedContextEntries,
+              useAccessPathForContextReference,
+              topLevelTransformer
+            )
+          : sqlStringForRuntimeTransformer(
+              actionRuntimeTransformer.applyTo.reference,
+              preparedStatementParametersIndex,
+              indentLevel,
+              queryParams,
+              definedContextEntries,
+              useAccessPathForContextReference,
+              topLevelTransformer
+            );
+      return referenceQuery;
+    
+    }
+    case "symbol":
+    case "function":
+    default: {
+      return new Domain2ElementFailed({
+        queryFailure: "QueryNotExecutable",
+        query: actionRuntimeTransformer as any,
+        failureMessage:
+          "sqlStringForRuntimeTransformer applyTo not implemented for type: " +
+          typeof actionRuntimeTransformer.applyTo,
+      });
+      break;
+    }
+  }
 }
 
 // ################################################################################################

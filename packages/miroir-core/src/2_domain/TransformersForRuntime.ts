@@ -157,42 +157,62 @@ export function resolveApplyTo_legacy(
   //   "resolveBuildTransformersTo",
   //   resolveBuildTransformersTo
   // );
-  
-  if (transformer.applyTo.referenceType == "referencedExtractor") {
-    throw new Error("resolveApplyTo_legacy can not handle referencedExtractor");
+  switch (typeof transformer.applyTo) {
+    case 'string':
+    case 'number':
+    case 'bigint':
+    case 'boolean':
+    case 'undefined': {
+      return transformer.applyTo;
+    }
+    case 'object': {
+      if (Array.isArray(transformer.applyTo)) {
+        return transformer.applyTo;
+      }
+      if (transformer.applyTo.referenceType == "referencedExtractor") {
+        throw new Error("resolveApplyTo_legacy can not handle referencedExtractor");
+      }
+    
+      const transformerReference = transformer.applyTo.reference;
+    
+      const resolvedReference =
+        typeof transformerReference == "string"
+          ? defaultTransformers.transformer_InnerReference_resolve(
+              step,
+              { transformerType: "contextReference", referenceName: transformerReference }, // TODO: there's a bug, count can not be used at build time, although it should be usable at build time
+              resolveBuildTransformersTo,
+              queryParams,
+              contextResults
+            )
+          : defaultTransformers.transformer_extended_apply(
+              step,
+              label,
+              transformerReference,
+              resolveBuildTransformersTo,
+              queryParams,
+              contextResults
+            );
+            // log.info("resolveApplyTo_legacy resolvedReference", resolvedReference);
+      // log.info(
+      //   "resolveApplyTo_legacy resolved for transformer",
+      //   transformer,
+      //   "step",
+      //   step,
+      //   "label",
+      //   label,
+      //   "resolvedReference",
+      //   resolvedReference
+      // );
+      return resolvedReference;
+      break;
+    }
+    case 'symbol':
+    case 'function':
+    default: {
+      throw new Error("resolveApplyTo_legacy failed, unknown type for transformer.applyTo=" + transformer.applyTo);
+      break;
+    }
   }
-
-  const transformerReference = transformer.applyTo.reference;
-
-  const resolvedReference =
-    typeof transformerReference == "string"
-      ? defaultTransformers.transformer_InnerReference_resolve(
-          step,
-          { transformerType: "contextReference", referenceName: transformerReference }, // TODO: there's a bug, count can not be used at build time, although it should be usable at build time
-          resolveBuildTransformersTo,
-          queryParams,
-          contextResults
-        )
-      : defaultTransformers.transformer_extended_apply(
-          step,
-          label,
-          transformerReference,
-          resolveBuildTransformersTo,
-          queryParams,
-          contextResults
-        );
-        // log.info("resolveApplyTo_legacy resolvedReference", resolvedReference);
-  // log.info(
-  //   "resolveApplyTo_legacy resolved for transformer",
-  //   transformer,
-  //   "step",
-  //   step,
-  //   "label",
-  //   label,
-  //   "resolvedReference",
-  //   resolvedReference
-  // );
-  return resolvedReference;
 }
 
 // ################################################################################################
