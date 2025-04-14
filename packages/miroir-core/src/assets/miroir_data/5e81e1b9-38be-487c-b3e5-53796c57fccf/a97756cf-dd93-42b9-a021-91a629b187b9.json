@@ -870,7 +870,7 @@
           }
         }
       },
-      "transformerForBuild_inner_object_alter": {
+      "transformerForBuild_objectAlter": {
         "type": "object",
         "extend": [
           {
@@ -891,6 +891,12 @@
             "type": "union",
             "discriminator": "referenceType",
             "definition": [
+              {
+                "type": "record",
+                "definition": {
+                  "type": "any"
+                }
+              },
               {
                 "type": "object",
                 "definition": {
@@ -1559,7 +1565,7 @@
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformerForBuild_inner_object_alter"
+              "relativePath": "transformerForBuild_objectAlter"
             }
           },
           {
@@ -1672,7 +1678,7 @@
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformerForBuild_inner_object_alter"
+              "relativePath": "transformerForBuild_objectAlter"
             }
           },
           {
@@ -2521,6 +2527,12 @@
             "type": "union",
             "discriminator": "referenceType",
             "definition": [
+              {
+                "type": "record",
+                "definition": {
+                  "type": "any"
+                }
+              },
               {
                 "type": "object",
                 "definition": {

@@ -16,7 +16,7 @@ import {
   TransformerDefinition,
   TransformerForBuild,
   TransformerForBuild_count,
-  TransformerForBuild_inner_object_alter,
+  TransformerForBuild_objectAlter,
   TransformerForBuild_list,
   TransformerForBuild_list_listMapperToList,
   TransformerForBuild_mustacheStringTemplate,
@@ -85,7 +85,7 @@ function resolveApplyTo(
   transformer:
     | TransformerForBuild_object_fullTemplate
     | TransformerForRuntime_object_fullTemplate
-    | TransformerForBuild_inner_object_alter
+    | TransformerForBuild_objectAlter
     | TransformerForRuntime_object_alter,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   queryParams: Record<string, any>,
@@ -590,7 +590,7 @@ function transformer_object_fullTemplate(
 function transformer_objectAlter(
   step: Step,
   objectName: string | undefined,
-  transformer: TransformerForBuild_inner_object_alter | TransformerForRuntime_object_alter,
+  transformer: TransformerForBuild_objectAlter | TransformerForRuntime_object_alter,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,

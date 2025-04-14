@@ -1988,7 +1988,7 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "transformerForBuild_inner_object_alter": {
+      "transformerForBuild_objectAlter": {
         "type": "object",
         "extend": [
           {
@@ -2010,6 +2010,12 @@ export const miroirFundamentalJzodSchema = {
             "type": "union",
             "discriminator": "referenceType",
             "definition": [
+              {
+                "type": "record",
+                "definition": {
+                  "type": "any"
+                }
+              },
               {
                 "type": "object",
                 "definition": {
@@ -2740,7 +2746,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformerForBuild_inner_object_alter",
+              "relativePath": "transformerForBuild_objectAlter",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             },
             "context": {}
@@ -2875,7 +2881,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformerForBuild_inner_object_alter",
+              "relativePath": "transformerForBuild_objectAlter",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             },
             "context": {}
@@ -3833,6 +3839,12 @@ export const miroirFundamentalJzodSchema = {
             "type": "union",
             "discriminator": "referenceType",
             "definition": [
+              {
+                "type": "record",
+                "definition": {
+                  "type": "any"
+                }
+              },
               {
                 "type": "object",
                 "definition": {
@@ -36544,7 +36556,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_inner_object_alter",
+              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_objectAlter",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             }
           },
@@ -37029,7 +37041,7 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
-      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_inner_object_alter": {
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_objectAlter": {
         "type": "union",
         "definition": [
           {
@@ -37070,6 +37082,23 @@ export const miroirFundamentalJzodSchema = {
                 "type": "union",
                 "discriminator": "referenceType",
                 "definition": [
+                  {
+                    "type": "record",
+                    "definition": {
+                      "type": "union",
+                      "definition": [
+                        {
+                          "type": "any"
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "carryOnObject"
+                          }
+                        }
+                      ]
+                    }
+                  },
                   {
                     "type": "object",
                     "definition": {
@@ -37784,7 +37813,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_inner_object_alter",
+              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_objectAlter",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             }
           },
@@ -40357,6 +40386,23 @@ export const miroirFundamentalJzodSchema = {
                 "discriminator": "referenceType",
                 "definition": [
                   {
+                    "type": "record",
+                    "definition": {
+                      "type": "union",
+                      "definition": [
+                        {
+                          "type": "any"
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "carryOnObject"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
                     "type": "object",
                     "definition": {
                       "referenceType": {
@@ -41725,7 +41771,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformerForBuild_inner_object_alter"
+              "relativePath": "transformerForBuild_objectAlter"
             }
           },
           {

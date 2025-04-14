@@ -2157,6 +2157,29 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
           transformerTestType: "transformerTestSuite",
           transformerTestLabel: "object_alter",
           transformerTests: {
+            "objectAlter allows to change a constant object attribute value": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel: "objectAlter allows to change a constant object attribute value",
+              transformerName: "objectAlter",
+              transformer: {
+                transformerType: "objectAlter",
+                applyTo: Country1 as EntityInstance,
+                referenceToOuterObject: "country",
+                definition: {
+                  transformerType: "freeObjectTemplate",
+                  interpolation: "runtime",
+                  definition: {
+                    "iso3166-1Alpha-2": {
+                      transformerType: "constantString",
+                      value: "DE",
+                    },
+                  },
+                },
+              },
+              transformerParams: {
+              },
+              expectedValue: { ...Country1, "iso3166-1Alpha-2": "DE" },
+            },
             "objectAlter allows to change an object attribute value": {
               transformerTestType: "transformerTest",
               transformerTestLabel: "objectAlter allows to change an object attribute value",
