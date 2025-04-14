@@ -2010,6 +2010,7 @@ ${indent(indentLevel)}WHERE "${applyToName}".row_num = "objectAlter_subQuery".ro
         return referenceQuery;
       }
       switch (referenceQuery.type) {
+        case "json_array":
         case "json": {
           return {
             type: "json",

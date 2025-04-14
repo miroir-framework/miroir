@@ -615,6 +615,35 @@
             "discriminator": "referenceType",
             "definition": [
               {
+                "type": "array",
+                "definition": {
+                  "type": "any"
+                }
+              },
+              {
+                "type": "object",
+                "definition": {
+                  "referenceType": {
+                    "type": "literal",
+                    "definition": "referencedExtractor"
+                  },
+                  "reference": {
+                    "type": "union",
+                    "definition": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "transformer_extractors"
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              {
                 "type": "object",
                 "definition": {
                   "referenceType": {
@@ -2109,6 +2138,35 @@
             "type": "union",
             "discriminator": "referenceType",
             "definition": [
+              {
+                "type": "array",
+                "definition": {
+                  "type": "any"
+                }
+              },
+              {
+                "type": "object",
+                "definition": {
+                  "referenceType": {
+                    "type": "literal",
+                    "definition": "referencedExtractor"
+                  },
+                  "reference": {
+                    "type": "union",
+                    "definition": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "transformer_extractors"
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
               {
                 "type": "object",
                 "definition": {

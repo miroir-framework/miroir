@@ -1300,6 +1300,21 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
             //   // expectedValue: ["testA", "testB", "testC"],
             //   expectedValue: [ { a: "testA" }, { a: "testB" }, { a: "testC" } ],
             // },
+            "unique returns list of unique objects from constant array at runtime": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel: "unique returns list of unique objects from constant array at runtime",
+              transformerName: "uniqueForReferenceAtRuntime",
+              transformer: {
+                transformerType: "unique",
+                interpolation: "runtime",
+                attribute: "a",
+                applyTo: [{ a: "testA" }, { a: "testB" }, { a: "testA" }, { a: "testC" }],
+              },
+              transformerParams: {},
+              transformerRuntimeContext: {
+              },
+              expectedValue: [{ a: "testA" }, { a: "testB" }, { a: "testC" }],
+            },
             "unique returns list of unique objects from reference at runtime": {
               transformerTestType: "transformerTest",
               transformerTestLabel: "unique returns list of unique objects from reference at runtime",
