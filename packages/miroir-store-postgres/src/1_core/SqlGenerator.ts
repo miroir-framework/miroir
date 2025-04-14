@@ -1475,16 +1475,39 @@ FROM
         Domain2QueryReturnType<SqlStringForTransformerElementValue>
       ][] = Object.entries(actionRuntimeTransformer.definition).map((f, index) => {
         switch (typeof f[1]) {
-          case "string":
-          case "number":
-          case "bigint":
-          case "boolean": {
-            // return `"${f[0]}", '${f[1]}'`;
+          case "string":{
             return [
               f[0],
               {
                 type: "scalar",
                 sqlStringOrObject: `'${f[1]}'`,
+              },
+            ];
+          }
+          case "number":{
+            return [
+              f[0],
+              {
+                type: "scalar",
+                sqlStringOrObject: `${f[1]}::double precision`,
+              },
+            ];
+          }
+          case "bigint": {
+            return [
+              f[0],
+              {
+                type: "scalar",
+                sqlStringOrObject: `${f[1]}::bigint`,
+              },
+            ];
+          }
+          case "boolean": {
+            return [
+              f[0],
+              {
+                type: "scalar",
+                sqlStringOrObject: `${f[1]}::boolean`,
               },
             ];
           }

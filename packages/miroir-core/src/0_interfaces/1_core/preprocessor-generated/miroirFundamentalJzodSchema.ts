@@ -1979,6 +1979,9 @@ export const miroirFundamentalJzodSchema = {
                 },
                 {
                   "type": "boolean"
+                },
+                {
+                  "type": "bigint"
                 }
               ]
             }
@@ -3598,6 +3601,12 @@ export const miroirFundamentalJzodSchema = {
                 },
                 {
                   "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "bigint"
                 }
               ]
             }
@@ -36997,6 +37006,9 @@ export const miroirFundamentalJzodSchema = {
                           "type": "boolean"
                         },
                         {
+                          "type": "bigint"
+                        },
+                        {
                           "type": "schemaReference",
                           "definition": {
                             "relativePath": "carryOnObject"
@@ -39357,6 +39369,12 @@ export const miroirFundamentalJzodSchema = {
                         },
                         {
                           "type": "number"
+                        },
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "bigint"
                         },
                         {
                           "type": "schemaReference",
