@@ -81,7 +81,7 @@ export const defaultTransformers = {
 // ################################################################################################
 function resolveApplyTo(
   step: Step,
-  objectName: string | undefined,
+  label: string | undefined,
   transformer:
     | TransformerForBuild_object_fullTemplate
     | TransformerForRuntime_object_fullTemplate
@@ -91,31 +91,88 @@ function resolveApplyTo(
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>
 ) {
-  if (transformer.applyTo.referenceType == "referencedExtractor") {
-    throw new Error("resolveApplyTo can not handle referencedExtractor");
+  switch (typeof transformer.applyTo) {
+    case 'string':
+    case 'number':
+    case 'bigint':
+    case 'boolean':
+    case 'undefined': {
+      return transformer.applyTo;
+    }
+    case 'object': {
+      if (Array.isArray(transformer.applyTo) || !Object.hasOwn(transformer.applyTo, "referenceType")) {
+        return transformer.applyTo;
+      }
+      if (transformer.applyTo.referenceType == "referencedExtractor") {
+        throw new Error("resolveApplyTo_legacy can not handle referencedExtractor");
+      }
+    
+      const transformerReference = transformer.applyTo.reference;
+    
+      const resolvedReference =
+        typeof transformerReference == "string"
+          ? defaultTransformers.transformer_InnerReference_resolve(
+              step,
+              { transformerType: "contextReference", referenceName: transformerReference }, // TODO: there's a bug, count can not be used at build time, although it should be usable at build time
+              resolveBuildTransformersTo,
+              queryParams,
+              contextResults
+            )
+          : defaultTransformers.transformer_extended_apply(
+              step,
+              label,
+              transformerReference,
+              resolveBuildTransformersTo,
+              queryParams,
+              contextResults
+            );
+            // log.info("resolveApplyTo_legacy resolvedReference", resolvedReference);
+      // log.info(
+      //   "resolveApplyTo_legacy resolved for transformer",
+      //   transformer,
+      //   "step",
+      //   step,
+      //   "label",
+      //   label,
+      //   "resolvedReference",
+      //   resolvedReference
+      // );
+      return resolvedReference;
+      break;
+    }
+    case 'symbol':
+    case 'function':
+    default: {
+      throw new Error("resolveApplyTo_legacy failed, unknown type for transformer.applyTo=" + transformer.applyTo);
+      break;
+    }
   }
 
-  const transformerReference = transformer.applyTo.reference;
+  // if (transformer.applyTo.referenceType == "referencedExtractor") {
+  //   throw new Error("resolveApplyTo can not handle referencedExtractor");
+  // }
 
-  const resolvedReference =
-    typeof transformerReference == "string"
-      ? defaultTransformers.transformer_InnerReference_resolve(
-          step,
-          { transformerType: "contextReference", referenceName: transformerReference }, // TODO: there's a bug, count can not be used at build time, although it should be usable at build time
-          resolveBuildTransformersTo,
-          queryParams,
-          contextResults
-        )
-      : defaultTransformers.transformer_extended_apply(
-          step,
-          objectName,
-          transformerReference,
-          resolveBuildTransformersTo,
-          queryParams,
-          contextResults,
+  // const transformerReference = transformer.applyTo.reference;
+
+  // const resolvedReference =
+  //   typeof transformerReference == "string"
+  //     ? defaultTransformers.transformer_InnerReference_resolve(
+  //         step,
+  //         { transformerType: "contextReference", referenceName: transformerReference }, // TODO: there's a bug, count can not be used at build time, although it should be usable at build time
+  //         resolveBuildTransformersTo,
+  //         queryParams,
+  //         contextResults
+  //       )
+  //     : defaultTransformers.transformer_extended_apply(
+  //         step,
+  //         objectName,
+  //         transformerReference,
+  //         resolveBuildTransformersTo,
+  //         queryParams,
+  //         contextResults,
           
-        );
-  return resolvedReference;
+  //       );
+  // return resolvedReference;
 }
 
 // ################################################################################################
@@ -165,7 +222,7 @@ export function resolveApplyTo_legacy(
       return transformer.applyTo;
     }
     case 'object': {
-      if (Array.isArray(transformer.applyTo)) {
+      if (Array.isArray(transformer.applyTo) || !Object.hasOwn(transformer.applyTo, "referenceType")) {
         return transformer.applyTo;
       }
       if (transformer.applyTo.referenceType == "referencedExtractor") {
@@ -407,7 +464,14 @@ function transformer_object_fullTemplate(
     // // "innerEntry",
     // // JSON.stringify(innerEntry, null, 2)
   );
-  const resolvedApplyTo = resolveApplyTo(step, objectName, transformer, resolveBuildTransformersTo, queryParams, contextResults);
+  const resolvedApplyTo = resolveApplyTo(
+    step,
+    objectName,
+    transformer,
+    resolveBuildTransformersTo,
+    queryParams,
+    contextResults
+  );
 
   if (resolvedApplyTo instanceof Domain2ElementFailed) {
     log.error(
@@ -969,7 +1033,10 @@ export function innerTransformer_apply(
         contextResults,
         label
       );
-      log.info("innerTransformer_apply extractorTransformer count resolvedReference=", resolvedReference);
+      log.info(
+        "innerTransformer_apply extractorTransformer count resolvedReference=",
+        resolvedReference
+      );
       if (resolvedReference instanceof Domain2ElementFailed) {
         log.error(
           "innerTransformer_apply extractorTransformer count can not apply to failed resolvedReference",
@@ -979,12 +1046,12 @@ export function innerTransformer_apply(
           queryFailure: "QueryNotExecutable",
           failureOrigin: ["innerTransformer_apply"],
           queryContext: "count can not apply to failed resolvedReference",
-          innerError: resolvedReference
+          innerError: resolvedReference,
         });
       }
 
-      if ( typeof resolvedReference != "object" || !Array.isArray(resolvedReference)) {
-      // if ( typeof resolvedReference != "object" || !Array.isArray(resolvedReference)) {
+      if (typeof resolvedReference != "object" || !Array.isArray(resolvedReference)) {
+        // if ( typeof resolvedReference != "object" || !Array.isArray(resolvedReference)) {
         log.error(
           "innerTransformer_apply extractorTransformer count can not apply to resolvedReference of wrong type",
           resolvedReference
@@ -992,12 +1059,16 @@ export function innerTransformer_apply(
         return new Domain2ElementFailed({
           queryFailure: "QueryNotExecutable",
           failureOrigin: ["innerTransformer_apply"],
-          queryContext: "count can not apply to resolvedReference of wrong type: " + typeof resolvedReference,
+          queryContext:
+            "count can not apply to resolvedReference of wrong type: " + typeof resolvedReference,
           queryParameters: resolvedReference,
         });
       }
 
-      log.info("innerTransformer_apply extractorTransformer count resolvedReference", resolvedReference.length);
+      log.info(
+        "innerTransformer_apply extractorTransformer count resolvedReference",
+        resolvedReference.length
+      );
       // const sortByAttribute = transformer.orderBy
       //   ? (a: any[]) =>
       //       a.sort((a, b) =>
@@ -1019,8 +1090,11 @@ export function innerTransformer_apply(
         }
         return [Object.fromEntries(result.entries())];
       } else {
-        log.info("innerTransformer_apply extractorTransformer count without groupBy resolvedReference", resolvedReference.length);
-        return [{ count: resolvedReference.length }]
+        log.info(
+          "innerTransformer_apply extractorTransformer count without groupBy resolvedReference",
+          resolvedReference.length
+        );
+        return [{ count: resolvedReference.length }];
       }
       break;
     }
@@ -1071,10 +1145,7 @@ export function innerTransformer_apply(
         contextResults,
         label
       );
-      log.info(
-        "innerTransformer_apply objectEntries referencedExtractor=",
-        resolvedReference
-      );
+      log.info("innerTransformer_apply objectEntries referencedExtractor=", resolvedReference);
 
       if (resolvedReference instanceof Domain2ElementFailed) {
         log.error(
@@ -1085,7 +1156,7 @@ export function innerTransformer_apply(
           queryFailure: "QueryNotExecutable",
           failureOrigin: ["innerTransformer_apply"],
           queryContext: "objectEntries can not apply to resolvedReference",
-          innerError: resolvedReference
+          innerError: resolvedReference,
         });
       }
 
@@ -1111,7 +1182,14 @@ export function innerTransformer_apply(
       return Object.entries(resolvedReference);
     }
     case "objectValues": {
-      const resolvedReference = resolveApplyTo_legacy(transformer, step, resolveBuildTransformersTo, queryParams, contextResults, label);
+      const resolvedReference = resolveApplyTo_legacy(
+        transformer,
+        step,
+        resolveBuildTransformersTo,
+        queryParams,
+        contextResults,
+        label
+      );
       if (resolvedReference instanceof Domain2ElementFailed) {
         log.error(
           "innerTransformer_apply extractorTransformer objectValues can not apply to resolvedReference",
@@ -1121,7 +1199,7 @@ export function innerTransformer_apply(
           queryFailure: "QueryNotExecutable",
           failureOrigin: ["innerTransformer_apply"],
           queryContext: "objectValues failed ro resolve resolvedReference",
-          innerError: resolvedReference
+          innerError: resolvedReference,
         });
       }
 
@@ -1133,7 +1211,8 @@ export function innerTransformer_apply(
         return new Domain2ElementFailed({
           queryFailure: "QueryNotExecutable",
           failureOrigin: ["innerTransformer_apply"],
-          queryContext: "objectValues resolvedReference is not an object: " + typeof resolvedReference,
+          queryContext:
+            "objectValues resolvedReference is not an object: " + typeof resolvedReference,
         });
       }
       log.info(
@@ -1143,19 +1222,47 @@ export function innerTransformer_apply(
       return Object.values(resolvedReference);
     }
     case "mapperListToList": {
-      return defaultTransformers.transformerForBuild_list_listMapperToList_apply(step, label, transformer, resolveBuildTransformersTo, queryParams, contextResults);
+      return defaultTransformers.transformerForBuild_list_listMapperToList_apply(
+        step,
+        label,
+        transformer,
+        resolveBuildTransformersTo,
+        queryParams,
+        contextResults
+      );
       break;
     }
     case "listReducerToIndexObject": {
-      return defaultTransformers.transformer_object_listReducerToIndexObject_apply(step, label, transformer, resolveBuildTransformersTo, queryParams, contextResults);
+      return defaultTransformers.transformer_object_listReducerToIndexObject_apply(
+        step,
+        label,
+        transformer,
+        resolveBuildTransformersTo,
+        queryParams,
+        contextResults
+      );
       break;
     }
     case "listReducerToSpreadObject": {
-      return defaultTransformers.transformer_object_listReducerToSpreadObject_apply(step, label, transformer, resolveBuildTransformersTo, queryParams, contextResults);
+      return defaultTransformers.transformer_object_listReducerToSpreadObject_apply(
+        step,
+        label,
+        transformer,
+        resolveBuildTransformersTo,
+        queryParams,
+        contextResults
+      );
       break;
     }
     case "listPickElement": {
-      const resolvedReference = resolveApplyTo_legacy(transformer, step, resolveBuildTransformersTo, queryParams, contextResults, label);
+      const resolvedReference = resolveApplyTo_legacy(
+        transformer,
+        step,
+        resolveBuildTransformersTo,
+        queryParams,
+        contextResults,
+        label
+      );
       if (resolvedReference instanceof Domain2ElementFailed) {
         log.error(
           "innerTransformer_apply extractorTransformer listPickElement can not apply to resolvedReference",
@@ -1165,7 +1272,7 @@ export function innerTransformer_apply(
           queryFailure: "QueryNotExecutable",
           failureOrigin: ["innerTransformer_apply"],
           queryContext: "listPickElement can not apply to resolvedReference",
-          innerError: resolvedReference
+          innerError: resolvedReference,
         });
       }
 
@@ -1177,42 +1284,44 @@ export function innerTransformer_apply(
         return new Domain2ElementFailed({
           queryFailure: "QueryNotExecutable",
           failureOrigin: ["innerTransformer_apply"],
-          queryContext: "listPickElement can not apply to resolvedReference, wrong type: " + typeof resolvedReference,
+          queryContext:
+            "listPickElement can not apply to resolvedReference, wrong type: " +
+            typeof resolvedReference,
           queryParameters: resolvedReference,
         });
       }
 
-      const orderByAttribute = transformer.orderBy??"";
+      const orderByAttribute = transformer.orderBy ?? "";
       const sortByAttribute = transformer.orderBy
-      ? (a: any[]) =>
-          a.sort((a, b) =>
-            a[orderByAttribute].localeCompare(b[orderByAttribute], "en", {
-              sensitivity: "base",
-            })
-          )
-      : (a: any[]) => a;
+        ? (a: any[]) =>
+            a.sort((a, b) =>
+              a[orderByAttribute].localeCompare(b[orderByAttribute], "en", {
+                sensitivity: "base",
+              })
+            )
+        : (a: any[]) => a;
 
       // try {
-        const sortedResultArray = sortByAttribute(resolvedReference);
-        if (transformer.index < 0 || sortedResultArray.length < transformer.index) {
-          return undefined;
-          // return new Domain2ElementFailed({
-          //   queryFailure: "FailedTransformer_listPickElement",
-          //   failureOrigin: ["innerTransformer_apply"],
-          //   queryContext: "listPickElement index out of bounds",
-          // });
-        } else {
-          const result = sortedResultArray[transformer.index];
-          log.info(
-            "innerTransformer_apply extractorTransformer listPickElement sorted resolvedReference",
-            sortedResultArray,
-            "index",
-            transformer.index,
-            "result",
-            result
-          );
-          return result;
-        }
+      const sortedResultArray = sortByAttribute(resolvedReference);
+      if (transformer.index < 0 || sortedResultArray.length < transformer.index) {
+        return undefined;
+        // return new Domain2ElementFailed({
+        //   queryFailure: "FailedTransformer_listPickElement",
+        //   failureOrigin: ["innerTransformer_apply"],
+        //   queryContext: "listPickElement index out of bounds",
+        // });
+      } else {
+        const result = sortedResultArray[transformer.index];
+        log.info(
+          "innerTransformer_apply extractorTransformer listPickElement sorted resolvedReference",
+          sortedResultArray,
+          "index",
+          transformer.index,
+          "result",
+          result
+        );
+        return result;
+      }
       // } catch (error) {
       //   log.error(
       //     "innerTransformer_apply extractorTransformer listPickElement failed",
@@ -1237,13 +1346,27 @@ export function innerTransformer_apply(
       );
     }
     case "mustacheStringTemplate": {
-      return defaultTransformers.transformer_mustacheStringTemplate_apply(step, transformer, queryParams, contextResults);
+      return defaultTransformers.transformer_mustacheStringTemplate_apply(
+        step,
+        transformer,
+        queryParams,
+        contextResults
+      );
       break;
     }
     case "unique": {
-      const resolvedReference = resolveApplyTo_legacy(transformer, step, resolveBuildTransformersTo, queryParams, contextResults, label);
+      const resolvedReference = resolveApplyTo_legacy(
+        transformer,
+        step,
+        resolveBuildTransformersTo,
+        queryParams,
+        contextResults,
+        label
+      );
       log.info(
-        "innerTransformer_apply extractorTransformer unique", label, "resolvedReference",
+        "innerTransformer_apply extractorTransformer unique",
+        label,
+        "resolvedReference",
         resolvedReference
       );
 
@@ -1256,7 +1379,7 @@ export function innerTransformer_apply(
           queryFailure: "QueryNotExecutable",
           failureOrigin: ["innerTransformer_apply"],
           queryContext: "unique can not apply to resolvedReference",
-          innerError: resolvedReference
+          innerError: resolvedReference,
         });
       }
 
@@ -1268,7 +1391,8 @@ export function innerTransformer_apply(
         return new Domain2ElementFailed({
           queryFailure: "QueryNotExecutable",
           failureOrigin: ["innerTransformer_apply"],
-          queryContext: "unique can not apply to resolvedReference, wrong type: " + typeof resolvedReference,
+          queryContext:
+            "unique can not apply to resolvedReference, wrong type: " + typeof resolvedReference,
           queryParameters: resolvedReference,
         });
       }
@@ -1289,7 +1413,9 @@ export function innerTransformer_apply(
         [...result].map((e) => ({ [transformer.attribute]: e }))
       );
       log.info(
-        "innerTransformer_apply extractorTransformer unique", label, "result",
+        "innerTransformer_apply extractorTransformer unique",
+        label,
+        "result",
         resultDomainElement
       );
       return resultDomainElement;
@@ -1314,15 +1440,12 @@ export function innerTransformer_apply(
       );
       const hasFailures = Object.values(result).find((e) => e instanceof Domain2ElementFailed);
       if (hasFailures) {
-        log.error(
-          "innerTransformer_apply freeObjectTemplate hasFailures",
-          hasFailures
-        );
+        log.error("innerTransformer_apply freeObjectTemplate hasFailures", hasFailures);
         return new Domain2ElementFailed({
           queryFailure: "QueryNotExecutable",
           failureOrigin: ["innerTransformer_apply"],
           queryContext: "freeObjectTemplate hasFailures",
-          innerError: hasFailures
+          innerError: hasFailures,
         });
       }
       log.info(
@@ -1351,7 +1474,7 @@ export function innerTransformer_apply(
     }
     case "constantBigint": {
       if (typeof transformer.value == "number") {
-      // if (typeof transformer.value == "bigint") {
+        // if (typeof transformer.value == "bigint") {
         return transformer.value;
       } else {
         return new Domain2ElementFailed({
@@ -1423,41 +1546,37 @@ export function innerTransformer_apply(
           // if (Array.isArray(transformer.value)) {
           //   return transformer.value
           // } else {
-          //   // TODO: questionable, should "runtime" transformers only return arrays of objects, not objects directly? 
+          //   // TODO: questionable, should "runtime" transformers only return arrays of objects, not objects directly?
           //   // This is likely done to get an identical result to the postgres implementation, where all runtime transformer executions return arrays (of objects or other types).
-          //   return [transformer.value]; 
+          //   return [transformer.value];
           // }
         }
         case "symbol":
         case "undefined":
         case "function": {
-          return new Domain2ElementFailed(
-            {
-              queryFailure: "FailedTransformer_constant",
-              failureOrigin: ["innerTransformer_apply"],
-              queryContext: "constantValue is not a string, number, bigint, boolean, or object",
-            }
-          )
+          return new Domain2ElementFailed({
+            queryFailure: "FailedTransformer_constant",
+            failureOrigin: ["innerTransformer_apply"],
+            queryContext: "constantValue is not a string, number, bigint, boolean, or object",
+          });
           break;
         }
         default: {
-          return new Domain2ElementFailed(
-            {
-              queryFailure: "FailedTransformer_constant",
-              failureOrigin: ["innerTransformer_apply"],
-              queryContext: "constantValue could not be handled",
-            }
-          );
+          return new Domain2ElementFailed({
+            queryFailure: "FailedTransformer_constant",
+            failureOrigin: ["innerTransformer_apply"],
+            queryContext: "constantValue could not be handled",
+          });
           break;
         }
       }
       // return transformer.value;
     }
     case "dataflowObject": {
-      const resultObject: Record<string,any> = {};
+      const resultObject: Record<string, any> = {};
       for (const [key, value] of Object.entries(transformer.definition)) {
         // const currentContext = label ? { ...contextResults, [label]: resultObject } : { ...contextResults, ...resultObject }
-        const currentContext = { ...contextResults, ...resultObject }
+        const currentContext = { ...contextResults, ...resultObject };
         log.info(
           "innerTransformer_apply for dataflowObject labeled",
           label,
@@ -1466,7 +1585,7 @@ export function innerTransformer_apply(
           "step",
           step,
           "calling with context",
-          JSON.stringify(Object.keys(currentContext??{}), null, 2)
+          JSON.stringify(Object.keys(currentContext ?? {}), null, 2)
         );
         resultObject[key] = defaultTransformers.transformer_extended_apply(
           step,
@@ -1688,20 +1807,19 @@ export function transformer_extended_apply(
   // );
   let result: Domain2QueryReturnType<any> = undefined as any;
 
-  const newResolveBuildTransformersTo =
-    (transformer as any)["interpolation"] == "build" &&
-    resolveBuildTransformersTo == "constantTransformer"
-      ? "value"
-      : resolveBuildTransformersTo;
 
   if (typeof transformer == "object") {
     if (transformer instanceof Array) {
       result = innerTransformer_array_apply(step, label, transformer, resolveBuildTransformersTo, queryParams, contextResults);
     } else {
       // TODO: improve test, refuse interpretation of build transformer in runtime step
+      const newResolveBuildTransformersTo =
+      (transformer as any)["interpolation"] == "build" &&
+      resolveBuildTransformersTo == "constantTransformer"
+        ? "value"
+        : resolveBuildTransformersTo;
       if (transformer["transformerType"] != undefined) {
-      //  if (step == "runtime" || (transformer as any)["interpolation"] == "build") {
-       if (step == "runtime" || (transformer as any)["interpolation"] == "build") {
+        if (step == "runtime" || (transformer as any)["interpolation"] == "build") {
           // log.info("transformer_extended_apply interpreting transformer!");
           let preResult
           switch (transformer.transformerType) {

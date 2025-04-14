@@ -719,6 +719,12 @@
         "type": "object",
         "extend": [
           {
+            "type": "record",
+            "definition": {
+              "type": "any"
+            }
+          },
+          {
             "type": "schemaReference",
             "definition": {
               "eager": true,
@@ -2416,6 +2422,12 @@
             "type": "union",
             "discriminator": "referenceType",
             "definition": [
+              {
+                "type": "record",
+                "definition": {
+                  "type": "any"
+                }
+              },
               {
                 "type": "object",
                 "definition": {

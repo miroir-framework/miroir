@@ -258,7 +258,7 @@ function sqlStringForApplyTo(
       break;
     }
     case "object": {
-      if (Array.isArray(actionRuntimeTransformer.applyTo)) {
+      if (Array.isArray(actionRuntimeTransformer.applyTo) || !Object.hasOwn(actionRuntimeTransformer.applyTo, "referenceType")) {
         return sqlStringForRuntimeTransformer(
           {
             transformerType: "constant",
@@ -374,7 +374,7 @@ export function sqlStringForRuntimeTransformer(
   withClauseColumnName?: string,
 ): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
   log.info(
-    "extractorTransformerSql called with actionRuntimeTransformer",
+    "sqlStringForRuntimeTransformer called with actionRuntimeTransformer",
     JSON.stringify(actionRuntimeTransformer, null, 2)
   );
 
@@ -382,7 +382,7 @@ export function sqlStringForRuntimeTransformer(
     ? `ORDER BY "${(actionRuntimeTransformer as any).orderBy}"`
     : "";
 
-  log.info("extractorTransformerSql actionRuntimeTransformer", actionRuntimeTransformer);
+  log.info("sqlStringForRuntimeTransformer actionRuntimeTransformer", actionRuntimeTransformer);
   switch (actionRuntimeTransformer.transformerType) {
     case "newUuid": {
       return {

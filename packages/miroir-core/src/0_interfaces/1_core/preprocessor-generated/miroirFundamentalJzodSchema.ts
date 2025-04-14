@@ -1822,6 +1822,12 @@ export const miroirFundamentalJzodSchema = {
         "type": "object",
         "extend": [
           {
+            "type": "record",
+            "definition": {
+              "type": "any"
+            }
+          },
+          {
             "type": "schemaReference",
             "definition": {
               "eager": true,
@@ -3720,6 +3726,12 @@ export const miroirFundamentalJzodSchema = {
             "type": "union",
             "discriminator": "referenceType",
             "definition": [
+              {
+                "type": "record",
+                "definition": {
+                  "type": "any"
+                }
+              },
               {
                 "type": "object",
                 "definition": {
@@ -37854,6 +37866,23 @@ export const miroirFundamentalJzodSchema = {
             "type": "object",
             "extend": [
               {
+                "type": "record",
+                "definition": {
+                  "type": "union",
+                  "definition": [
+                    {
+                      "type": "any"
+                    },
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "relativePath": "carryOnObject"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
                 "type": "schemaReference",
                 "definition": {
                   "eager": true,
@@ -39645,6 +39674,23 @@ export const miroirFundamentalJzodSchema = {
                 "type": "union",
                 "discriminator": "referenceType",
                 "definition": [
+                  {
+                    "type": "record",
+                    "definition": {
+                      "type": "union",
+                      "definition": [
+                        {
+                          "type": "any"
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "carryOnObject"
+                          }
+                        }
+                      ]
+                    }
+                  },
                   {
                     "type": "object",
                     "definition": {
