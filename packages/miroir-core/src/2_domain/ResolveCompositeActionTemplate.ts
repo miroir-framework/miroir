@@ -77,7 +77,7 @@ export function resolveCompositeActionTemplate(
       if (resolvedTemplate.elementType == "failure") {
         log.error("resolveCompositeActionTemplate resolved template error", resolvedTemplate);
       } else {
-        log.info("resolveCompositeActionTemplate", compositeActionLabel, "resolved template", t[0], resolvedTemplate);
+        // log.info("resolveCompositeActionTemplate", compositeActionLabel, "resolved template", t[0], "has value", resolvedTemplate);
         resolvedCompositeActionTemplates[t[0]] = resolvedTemplate;
       }
     }

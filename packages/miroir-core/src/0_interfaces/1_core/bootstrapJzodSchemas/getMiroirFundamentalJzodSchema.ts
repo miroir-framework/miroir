@@ -2881,8 +2881,6 @@ export function getMiroirFundamentalJzodSchema(
           .transformerForBuild_freeObjectTemplate,
         transformerForBuild_inner_object_alter: (transformerJzodSchema as any).definition.context
           .transformerForBuild_inner_object_alter,
-        transformerForBuild_innerFullObjectTemplate: (miroirFundamentalJzodSchema as any).definition
-          .context.transformerForBuild_innerFullObjectTemplate,
         transformerForBuild_list: (transformerJzodSchema as any).definition.context
           .transformerForBuild_list,
         transformerForBuild_mustacheStringTemplate: (miroirFundamentalJzodSchema as any).definition

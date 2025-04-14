@@ -17,7 +17,6 @@ import {
   TransformerForBuild,
   TransformerForBuild_count,
   TransformerForBuild_inner_object_alter,
-  TransformerForBuild_innerFullObjectTemplate,
   TransformerForBuild_list,
   TransformerForBuild_list_listMapperToList,
   TransformerForBuild_mustacheStringTemplate,
@@ -938,7 +937,6 @@ export function innerTransformer_apply(
   transformer:
     | TransformerForBuild
     | TransformerForRuntime
-    | TransformerForBuild_innerFullObjectTemplate
     | TransformerForRuntime_innerFullObjectTemplate,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   queryParams: Record<string, any>,
