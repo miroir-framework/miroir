@@ -986,6 +986,12 @@
             "discriminator": "referenceType",
             "definition": [
               {
+                "type": "array",
+                "definition": {
+                  "type": "any"
+                }
+              },
+              {
                 "type": "object",
                 "definition": {
                   "referenceType": {
@@ -2612,6 +2618,12 @@
             "type": "union",
             "discriminator": "referenceType",
             "definition": [
+              {
+                "type": "array",
+                "definition": {
+                  "type": "any"
+                }
+              },
               {
                 "type": "object",
                 "definition": {

@@ -1538,10 +1538,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                       value: "name",
                     },
                     attributeValue: {
-                      // transformerType: "mustacheStringTemplate",
-                      // definition: "{{country.iso3166-1Alpha-2}}",
                       transformerType: "contextReference",
-                      // interpolation: "runtime",
                       referencePath: ["country", "iso3166-1Alpha-2"],
                     },
                   },
@@ -1703,13 +1700,320 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
             },
           },
         },
+        objectAlter: {
+          transformerTestType: "transformerTestSuite",
+          transformerTestLabel: "object_alter",
+          transformerTests: {
+            "objectAlter allows to change a constant object attribute value": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel: "objectAlter allows to change a constant object attribute value",
+              transformerName: "objectAlter",
+              transformer: {
+                transformerType: "objectAlter",
+                applyTo: Country1 as EntityInstance,
+                referenceToOuterObject: "country",
+                definition: {
+                  transformerType: "freeObjectTemplate",
+                  interpolation: "runtime",
+                  definition: {
+                    "iso3166-1Alpha-2": {
+                      transformerType: "constantString",
+                      value: "DE",
+                    },
+                  },
+                },
+              },
+              transformerParams: {
+              },
+              expectedValue: { ...Country1, "iso3166-1Alpha-2": "DE" },
+            },
+            // "objectAlter allows to change a referenced object attribute value": {
+            //   transformerTestType: "transformerTest",
+            //   transformerTestLabel: "objectAlter allows to change a referenced object attribute value",
+            //   transformerName: "objectAlter",
+            //   transformer: {
+            //     transformerType: "objectAlter",
+            //     applyTo: {
+            //       referenceType: "referencedTransformer",
+            //       reference: {
+            //         transformerType: "parameterReference",
+            //         referenceName: "country",
+            //       },
+            //     },
+            //     referenceToOuterObject: "country",
+            //     definition: {
+            //       transformerType: "freeObjectTemplate",
+            //       definition: {
+            //         "iso3166-1Alpha-2": {
+            //           transformerType: "constantString",
+            //           value: "DE",
+            //         },
+            //       },
+            //     },
+            //   },
+            //   transformerParams: {
+            //     country: Country1 as EntityInstance,
+            //   },
+            //   expectedValue: { ...Country1, "iso3166-1Alpha-2": "DE" },
+            // },
+            // "objectAlter should fail when applyTo fails to resolve correctly": {
+            //   transformerTestType: "transformerTest",
+            //   transformerTestLabel: "objectAlter should fail when applyTo fails to resolve correctly",
+            //   transformerName: "objectAlter",
+            //   transformer: {
+            //     transformerType: "objectAlter",
+            //     applyTo: {
+            //       referenceType: "referencedTransformer",
+            //       reference: {
+            //         transformerType: "parameterReference",
+            //         referenceName: "nonExistingCountry",
+            //       },
+            //     },
+            //     definition: {
+            //       transformerType: "freeObjectTemplate",
+            //       definition: {
+            //         "iso3166-1Alpha-2": {
+            //           transformerType: "constantString",
+            //           value: "DE",
+            //         },
+            //       },
+            //     },
+            //   },
+            //   transformerParams: {
+            //     country: Country1 as EntityInstance,
+            //   },
+            //   ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+            //   expectedValue: {
+            //     queryFailure: "QueryNotExecutable",
+            //   },
+            // },
+            // "objectAlter should fail when definition fails to resolve correctly": {
+            //   transformerTestType: "transformerTest",
+            //   transformerTestLabel: "objectAlter should fail when definition fails to resolve correctly",
+            //   transformerName: "objectAlter",
+            //   transformer: {
+            //     transformerType: "objectAlter",
+            //     applyTo: {
+            //       referenceType: "referencedTransformer",
+            //       reference: {
+            //         transformerType: "parameterReference",
+            //         referenceName: "country",
+            //       },
+            //     },
+            //     definition: {
+            //       transformerType: "freeObjectTemplate",
+            //       definition: {
+            //         "iso3166-1Alpha-2": {
+            //           transformerType: "parameterReference",
+            //           referencePath: ["country", "nonExistingAttribute"],
+            //         },
+            //       },
+            //     },
+            //   },
+            //   transformerParams: {
+            //     country: Country1 as EntityInstance,
+            //   },
+            //   ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+            //   expectedValue: {
+            //     queryFailure: "QueryNotExecutable",
+            //   },
+            // },
+          },
+        },
+        freeObjectTemplate: {
+          transformerTestType: "transformerTestSuite",
+          transformerTestLabel: "freeObjectTemplate",
+          transformerTests: {
+            "freeObjectTemplate allows to build a simple object with static values": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel: "freeObjectTemplate allows to build a simple object with static values",
+              transformerName: "freeObjectTemplate",
+              transformer: {
+                transformerType: "freeObjectTemplate",
+                interpolation: "runtime",
+                definition: {
+                  uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  name: "US",
+                  isEntity: false,
+                  allocation: 1234,
+                },
+              },
+              transformerParams: {
+                country: Country1 as EntityInstance,
+              },
+              expectedValue: { 
+                uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                name: "US",
+                isEntity: false,
+                allocation: 1234,
+              },
+            },
+            "freeObjectTemplate allows to build a simple object with dynamic values": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel: "freeObjectTemplate allows to build a simple object with dynamic values",
+              transformerName: "freeObjectTemplate",
+              transformer: {
+                transformerType: "freeObjectTemplate",
+                definition: {
+                  uuid: {
+                    transformerType: "constantUuid",
+                    value: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  },
+                  name: {
+                    transformerType: "parameterReference",
+                    referencePath: ["country", "iso3166-1Alpha-2"],
+                  },
+                },
+              },
+              transformerParams: {
+                country: Country1 as EntityInstance,
+              },
+              expectedValue: { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", name: "US" },
+            },
+            "freeObjectTemplate allows to build a 2-level object with dynamic values": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel: "freeObjectTemplate allows to build a 2-level object with dynamic values",
+              transformerName: "freeObjectTemplate",
+              transformer: {
+                transformerType: "freeObjectTemplate",
+                interpolation: "runtime",
+                definition: {
+                  uuid: {
+                    transformerType: "constantUuid",
+                    value: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  },
+                  name: {
+                    transformerType: "parameterReference",
+                    referencePath: ["country", "iso3166-1Alpha-2"],
+                  },
+                  country: {
+                    transformerType: "freeObjectTemplate",
+                    interpolation: "runtime",
+                    definition: {
+                      uuid: {
+                        transformerType: "constantUuid",
+                        value: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+                      },
+                      name: {
+                        transformerType: "parameterReference",
+                        referencePath: ["country", "iso3166-1Alpha-2"],
+                      },
+                    },
+                  },
+                },
+              },
+              transformerParams: {
+                country: Country1 as EntityInstance,
+              },
+              expectedValue: {
+                uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                name: "US",
+                country: { uuid: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy", name: "US" },
+              },
+            },
+            "freeObjectTemplate should fail when definition fails to resolve correctly": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel: "freeObjectTemplate should fail when definition fails to resolve correctly",
+              transformerName: "freeObjectTemplate",
+              transformer: {
+                transformerType: "freeObjectTemplate",
+                definition: {
+                  uuid: {
+                    transformerType: "constantUuid",
+                    value: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  },
+                  name: {
+                    transformerType: "parameterReference",
+                    referencePath: ["country", "nonExistingAttribute"],
+                  },
+                },
+              },
+              transformerParams: {
+                country: Country1 as EntityInstance,
+              },
+              ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+              expectedValue: {
+                queryFailure: "QueryNotExecutable",
+              },
+            },
+          },
+        },
         mapperListToList: {
           transformerTestType: "transformerTestSuite",
           transformerTestLabel: "mapperListToList",
           transformerTests: {
+            // TODO: test for mapperListToList within a mapperListToList
+            "mapperListToList maps a constant list of objects to a list of constant objects": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel: "mapperListToList maps a constant list of objects to a list of constant objects",
+              transformerName: "mapperListToList",
+              transformer: {
+                transformerType: "mapperListToList",
+                label: "countryListMapperToObjectList",
+                interpolation: "runtime",
+                applyTo: [Country1 as EntityInstance, Country2 as EntityInstance],
+                referenceToOuterObject: "country",
+                elementTransformer: {
+                  transformerType: "freeObjectTemplate",
+                  interpolation: "runtime",
+                  definition: {
+                    test: "1"
+                  },
+                },
+              },
+              transformerRuntimeContext: {
+                newUuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+              },
+              transformerParams: {},
+              expectedValue: [
+                { test: "1" },
+                { test: "1" },
+              ],
+            },
+            "mapperListToList maps a constant list of objects to a list of constant objects with subObject": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel: "mapperListToList maps a constant list of objects to a list of constant objects with subObject",
+              transformerName: "mapperListToList",
+              transformer: {
+                transformerType: "mapperListToList",
+                label: "countryListMapperToObjectList",
+                interpolation: "runtime",
+                applyTo: [Country1 as EntityInstance, Country2 as EntityInstance],
+                referenceToOuterObject: "country",
+                elementTransformer: {
+                  transformerType: "freeObjectTemplate",
+                  interpolation: "runtime",
+                  definition: {
+                    test: "1",
+                    subObject: {
+                      transformerType: "freeObjectTemplate",
+                      interpolation: "runtime",
+                      definition: {
+                        uuid: {
+                          transformerType: "constantUuid",
+                          value: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+                        },
+                        name: {
+                          transformerType: "constant",
+                          value: "TEST",
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              transformerRuntimeContext: {
+                newUuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+              },
+              transformerParams: {},
+              expectedValue: [
+                { test: "1", subObject: { uuid: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy", name: "TEST" } },
+                { test: "1", subObject: { uuid: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy", name: "TEST" } },
+              ],
+            },
             "mapperListToList maps a list of objects to another list of objects using object_fullTemplate": {
               transformerTestType: "transformerTest",
-              transformerTestLabel: "mapperListToList maps a list of objects to another list of objects",
+              transformerTestLabel: "mapperListToList maps a list of objects to another list of objects using object_fullTemplate",
               transformerName: "mapperListToList",
               transformer: {
                 transformerType: "mapperListToList",
@@ -1776,7 +2080,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
             },
             "mapperListToList maps a list of objects to a list of altered objects using objectAlter": {
               transformerTestType: "transformerTest",
-              transformerTestLabel: "mapperListToList maps a list of objects to a list of altered objects",
+              transformerTestLabel: "mapperListToList maps a list of objects to a list of altered objects using objectAlter",
               transformerName: "mapperListToList",
               transformer: {
                 transformerType: "mapperListToList",
@@ -1786,34 +2090,35 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   referenceType: "referencedTransformer",
                   reference: {
                     transformerType: "contextReference",
-                    interpolation: "runtime",
+                    // interpolation: "runtime",
                     referenceName: "countryList",
                   },
                 },
                 referenceToOuterObject: "country2",
                 elementTransformer: {
                   transformerType: "objectAlter",
-                  interpolation: "runtime",
+                  // interpolation: "runtime",
                   applyTo: {
                     referenceType: "referencedTransformer",
                     reference: {
                       transformerType: "contextReference",
-                      interpolation: "runtime",
+                      // interpolation: "runtime",
                       referenceName: "country2",
                     },
                   },
                   referenceToOuterObject: "country3",
                   definition: {
                     transformerType: "freeObjectTemplate",
+                    interpolation: "runtime",
                     definition: {
-                      uuid: {
-                        transformerType: "constant",
-                        interpolation: "runtime",
-                        value: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                      id: {
+                        transformerType: "contextReference",
+                        // interpolation: "runtime",
+                        referencePath: ["country3", "uuid"],
                       },
                       name: {
                         transformerType: "contextReference",
-                        interpolation: "runtime",
+                        // interpolation: "runtime",
                         referencePath: ["country3", "iso3166-1Alpha-2"],
                       },
                     },
@@ -1826,8 +2131,8 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
               },
               transformerParams: {},
               expectedValue: [
-                { ...Country1, uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", name: "US" },
-                { ...Country2, uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", name: "DE" },
+                { ...Country1, id: Country1.uuid, name: "US" },
+                { ...Country2, id: Country2.uuid, name: "DE" },
               ],
             },
           },
@@ -2028,242 +2333,6 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
               },
               transformerParams: {
                 newUuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-                country: Country1 as EntityInstance,
-              },
-              ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-              expectedValue: {
-                queryFailure: "QueryNotExecutable",
-              },
-            },
-          },
-        },
-        freeObjectTemplate: {
-          transformerTestType: "transformerTestSuite",
-          transformerTestLabel: "freeObjectTemplate",
-          transformerTests: {
-            "freeObjectTemplate allows to build a simple object with static values": {
-              transformerTestType: "transformerTest",
-              transformerTestLabel: "freeObjectTemplate allows to build a simple object with static values",
-              transformerName: "freeObjectTemplate",
-              transformer: {
-                transformerType: "freeObjectTemplate",
-                interpolation: "runtime",
-                definition: {
-                  uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-                  name: "US",
-                  isEntity: false,
-                  allocation: 1234,
-                },
-              },
-              transformerParams: {
-                country: Country1 as EntityInstance,
-              },
-              expectedValue: { 
-                uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-                name: "US",
-                isEntity: false,
-                allocation: 1234,
-              },
-            },
-            "freeObjectTemplate allows to build a simple object with dynamic values": {
-              transformerTestType: "transformerTest",
-              transformerTestLabel: "freeObjectTemplate allows to build a simple object with dynamic values",
-              transformerName: "freeObjectTemplate",
-              transformer: {
-                transformerType: "freeObjectTemplate",
-                definition: {
-                  uuid: {
-                    transformerType: "constantUuid",
-                    value: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-                  },
-                  name: {
-                    transformerType: "parameterReference",
-                    referencePath: ["country", "iso3166-1Alpha-2"],
-                  },
-                },
-              },
-              transformerParams: {
-                country: Country1 as EntityInstance,
-              },
-              expectedValue: { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", name: "US" },
-            },
-            "freeObjectTemplate allows to build a 2-level object with dynamic values": {
-              transformerTestType: "transformerTest",
-              transformerTestLabel: "freeObjectTemplate allows to build a 2-level object with dynamic values",
-              transformerName: "freeObjectTemplate",
-              transformer: {
-                transformerType: "freeObjectTemplate",
-                definition: {
-                  uuid: {
-                    transformerType: "constantUuid",
-                    value: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-                  },
-                  name: {
-                    transformerType: "parameterReference",
-                    referencePath: ["country", "iso3166-1Alpha-2"],
-                  },
-                  country: {
-                    transformerType: "freeObjectTemplate",
-                    definition: {
-                      uuid: {
-                        transformerType: "constantUuid",
-                        value: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
-                      },
-                      name: {
-                        transformerType: "parameterReference",
-                        referencePath: ["country", "iso3166-1Alpha-2"],
-                      },
-                    },
-                  },
-                },
-              },
-              transformerParams: {
-                country: Country1 as EntityInstance,
-              },
-              expectedValue: {
-                uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-                name: "US",
-                country: { uuid: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy", name: "US" },
-              },
-            },
-            "freeObjectTemplate should fail when definition fails to resolve correctly": {
-              transformerTestType: "transformerTest",
-              transformerTestLabel: "freeObjectTemplate should fail when definition fails to resolve correctly",
-              transformerName: "freeObjectTemplate",
-              transformer: {
-                transformerType: "freeObjectTemplate",
-                definition: {
-                  uuid: {
-                    transformerType: "constantUuid",
-                    value: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-                  },
-                  name: {
-                    transformerType: "parameterReference",
-                    referencePath: ["country", "nonExistingAttribute"],
-                  },
-                },
-              },
-              transformerParams: {
-                country: Country1 as EntityInstance,
-              },
-              ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-              expectedValue: {
-                queryFailure: "QueryNotExecutable",
-              },
-            },
-          },
-        },
-        objectAlter: {
-          transformerTestType: "transformerTestSuite",
-          transformerTestLabel: "object_alter",
-          transformerTests: {
-            "objectAlter allows to change a constant object attribute value": {
-              transformerTestType: "transformerTest",
-              transformerTestLabel: "objectAlter allows to change a constant object attribute value",
-              transformerName: "objectAlter",
-              transformer: {
-                transformerType: "objectAlter",
-                applyTo: Country1 as EntityInstance,
-                referenceToOuterObject: "country",
-                definition: {
-                  transformerType: "freeObjectTemplate",
-                  interpolation: "runtime",
-                  definition: {
-                    "iso3166-1Alpha-2": {
-                      transformerType: "constantString",
-                      value: "DE",
-                    },
-                  },
-                },
-              },
-              transformerParams: {
-              },
-              expectedValue: { ...Country1, "iso3166-1Alpha-2": "DE" },
-            },
-            "objectAlter allows to change an object attribute value": {
-              transformerTestType: "transformerTest",
-              transformerTestLabel: "objectAlter allows to change an object attribute value",
-              transformerName: "objectAlter",
-              transformer: {
-                transformerType: "objectAlter",
-                applyTo: {
-                  referenceType: "referencedTransformer",
-                  reference: {
-                    transformerType: "parameterReference",
-                    referenceName: "country",
-                  },
-                },
-                referenceToOuterObject: "country",
-                definition: {
-                  transformerType: "freeObjectTemplate",
-                  definition: {
-                    "iso3166-1Alpha-2": {
-                      transformerType: "constantString",
-                      value: "DE",
-                    },
-                  },
-                },
-              },
-              transformerParams: {
-                country: Country1 as EntityInstance,
-              },
-              expectedValue: { ...Country1, "iso3166-1Alpha-2": "DE" },
-            },
-            "objectAlter should fail when applyTo fails to resolve correctly": {
-              transformerTestType: "transformerTest",
-              transformerTestLabel: "objectAlter should fail when applyTo fails to resolve correctly",
-              transformerName: "objectAlter",
-              transformer: {
-                transformerType: "objectAlter",
-                applyTo: {
-                  referenceType: "referencedTransformer",
-                  reference: {
-                    transformerType: "parameterReference",
-                    referenceName: "nonExistingCountry",
-                  },
-                },
-                definition: {
-                  transformerType: "freeObjectTemplate",
-                  definition: {
-                    "iso3166-1Alpha-2": {
-                      transformerType: "constantString",
-                      value: "DE",
-                    },
-                  },
-                },
-              },
-              transformerParams: {
-                country: Country1 as EntityInstance,
-              },
-              ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-              expectedValue: {
-                queryFailure: "QueryNotExecutable",
-              },
-            },
-            "objectAlter should fail when definition fails to resolve correctly": {
-              transformerTestType: "transformerTest",
-              transformerTestLabel: "objectAlter should fail when definition fails to resolve correctly",
-              transformerName: "objectAlter",
-              transformer: {
-                transformerType: "objectAlter",
-                applyTo: {
-                  referenceType: "referencedTransformer",
-                  reference: {
-                    transformerType: "parameterReference",
-                    referenceName: "country",
-                  },
-                },
-                definition: {
-                  transformerType: "freeObjectTemplate",
-                  definition: {
-                    "iso3166-1Alpha-2": {
-                      transformerType: "parameterReference",
-                      referencePath: ["country", "nonExistingAttribute"],
-                    },
-                  },
-                },
-              },
-              transformerParams: {
                 country: Country1 as EntityInstance,
               },
               ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
