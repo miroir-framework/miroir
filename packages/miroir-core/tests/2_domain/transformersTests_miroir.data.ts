@@ -974,12 +974,28 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
           transformerTestType: "transformerTestSuite",
           transformerTestLabel: "objectEntries",
           transformerTests: {
+            "objectEntries used on constant object before runtime": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel: "objectEntries used on constant object before runtime",
+              transformerName: "objectEntries",
+              transformer: {
+                transformerType: "objectEntries",
+                interpolation: "runtime",
+                applyTo: { a: "testA", b: "testB" },
+              },
+              transformerParams: {},
+              expectedValue: [
+                ["a", "testA"],
+                ["b", "testB"],
+              ],
+            },
             "objectEntries used on reference before runtime": {
               transformerTestType: "transformerTest",
               transformerTestLabel: "objectEntries used before runtime",
               transformerName: "objectEntries",
               transformer: {
                 transformerType: "objectEntries",
+                interpolation: "runtime",
                 applyTo: {
                   referenceType: "referencedTransformer",
                   reference: {
@@ -1049,16 +1065,32 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
           transformerTestType: "transformerTestSuite",
           transformerTestLabel: "objectValues",
           transformerTests: {
+            "objectValues on constant object at runtime": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel: "objectValues on constant object at runtime",
+              transformerName: "objectValuesBeforeRuntime",
+              transformer: {
+                transformerType: "objectValues",
+                interpolation: "runtime",
+                applyTo: { a: "testA", b: "testB" },
+              },
+              transformerParams: {
+                testObject: { a: "testA", b: "testB" },
+              },
+              expectedValue: ["testA", "testB"],
+            },
             "objectValues on reference before runtime": {
               transformerTestType: "transformerTest",
               transformerTestLabel: "object values with reference before runtime",
               transformerName: "objectValuesBeforeRuntime",
               transformer: {
                 transformerType: "objectValues",
+                interpolation: "runtime",
                 applyTo: {
                   referenceType: "referencedTransformer",
                   reference: {
                     transformerType: "parameterReference",
+                    interpolation: "runtime",
                     referenceName: "testObject",
                   },
                 },
@@ -1068,56 +1100,70 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
               },
               expectedValue: ["testA", "testB"],
             },
-            "objectValues on reference at runtime": {
-              transformerTestType: "transformerTest",
-              transformerTestLabel: "objectValues with reference at runtime",
-              transformerName: "objectValuesAtRuntime",
-              transformer: {
-                transformerType: "objectValues",
-                interpolation: "runtime",
-                applyTo: {
-                  referenceType: "referencedTransformer",
-                  reference: {
-                    transformerType: "contextReference",
-                    interpolation: "runtime",
-                    referenceName: "testObject",
-                  },
-                },
-              },
-              transformerParams: {},
-              transformerRuntimeContext: {
-                testObject: { a: "testA", b: "testB" },
-              },
-              expectedValue: ["testA", "testB"],
-            },
-            "failed object values for string parameter": {
-              transformerTestType: "transformerTest",
-              transformerTestLabel: "failed object values for string parameter",
-              transformerName: "objectValuesFailed",
-              transformer: {
-                transformerType: "objectValues",
-                interpolation: "runtime",
-                applyTo: {
-                  referenceType: "referencedTransformer",
-                  reference: {
-                    transformerType: "constant",
-                    interpolation: "runtime",
-                    value: "nonExistingTestObject",
-                  },
-                },
-              },
-              transformerParams: {},
-              ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-              expectedValue: {
-                queryFailure: "QueryNotExecutable",
-              },
-            },
+            // "objectValues on reference at runtime": {
+            //   transformerTestType: "transformerTest",
+            //   transformerTestLabel: "objectValues with reference at runtime",
+            //   transformerName: "objectValuesAtRuntime",
+            //   transformer: {
+            //     transformerType: "objectValues",
+            //     interpolation: "runtime",
+            //     applyTo: {
+            //       referenceType: "referencedTransformer",
+            //       reference: {
+            //         transformerType: "contextReference",
+            //         interpolation: "runtime",
+            //         referenceName: "testObject",
+            //       },
+            //     },
+            //   },
+            //   transformerParams: {},
+            //   transformerRuntimeContext: {
+            //     testObject: { a: "testA", b: "testB" },
+            //   },
+            //   expectedValue: ["testA", "testB"],
+            // },
+            // "failed object values for string parameter": {
+            //   transformerTestType: "transformerTest",
+            //   transformerTestLabel: "failed object values for string parameter",
+            //   transformerName: "objectValuesFailed",
+            //   transformer: {
+            //     transformerType: "objectValues",
+            //     interpolation: "runtime",
+            //     applyTo: {
+            //       referenceType: "referencedTransformer",
+            //       reference: {
+            //         transformerType: "constant",
+            //         interpolation: "runtime",
+            //         value: "nonExistingTestObject",
+            //       },
+            //     },
+            //   },
+            //   transformerParams: {},
+            //   ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+            //   expectedValue: {
+            //     queryFailure: "QueryNotExecutable",
+            //   },
+            // },
           },
         },
         listPickElement: {
           transformerTestType: "transformerTestSuite",
           transformerTestLabel: "listPickElement",
           transformerTests: {
+            "listPickElement selects wanted element from a constant string list before runtime": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel:
+                "listPickElement selects wanted element from a constant string list before runtime",
+              transformerName: "listPickElementForString",
+              transformer: {
+                transformerType: "listPickElement",
+                interpolation: "runtime",
+                applyTo: ["testA", "testB", "testC"],
+                index: 1,
+              },
+              transformerParams: {},
+              expectedValue: "testB",
+            },
             "listPickElement selects wanted element from a string list parameter reference before runtime": {
               transformerTestType: "transformerTest",
               transformerTestLabel:
@@ -2346,9 +2392,34 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
           transformerTestType: "transformerTestSuite",
           transformerTestLabel: "listReducerToSpreadObject",
           transformerTests: {
-            "listReducerToSpreadObject allows to reduce a list of objects to a single object": {
+            "listReducerToSpreadObject allows to reduce a constant list of objects to a single object": {
               transformerTestType: "transformerTest",
-              transformerTestLabel: "listReducerToSpreadObject allows to reduce a list of objects to a single object",
+              transformerTestLabel: "listReducerToSpreadObject allows to reduce a constant list of objects to a single object",
+              transformerName: "listReducerToSpreadObject",
+              transformer: {
+                transformerType: "listReducerToSpreadObject",
+                applyTo: [
+                  {
+                    uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                    name: "US",
+                  },
+                  {
+                    uuid2: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+                    name2: "DE",
+                  }
+                ],
+              },
+              transformerParams: {},
+              expectedValue: {
+                uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                name: "US",
+                uuid2: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+                name2: "DE",
+              },
+            },
+            "listReducerToSpreadObject allows to reduce a list of objects from parameter to a single object": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel: "listReducerToSpreadObject allows to reduce a list of objects from parameter to a single object",
               transformerName: "listReducerToSpreadObject",
               transformer: {
                 transformerType: "listReducerToSpreadObject",

@@ -1098,6 +1098,12 @@
             "discriminator": "referenceType",
             "definition": [
               {
+                "type": "array",
+                "definition": {
+                  "type": "any"
+                }
+              },
+              {
                 "type": "object",
                 "definition": {
                   "referenceType": {
@@ -1175,6 +1181,15 @@
             "type": "union",
             "discriminator": "referenceType",
             "definition": [
+              {
+                "type": "array",
+                "definition": {
+                  "type": "record",
+                  "definition": {
+                    "type": "any"
+                  }
+                }
+              },
               {
                 "type": "object",
                 "definition": {
@@ -1281,6 +1296,12 @@
             "discriminator": "referenceType",
             "definition": [
               {
+                "type": "array",
+                "definition": {
+                  "type": "any"
+                }
+              },
+              {
                 "type": "object",
                 "definition": {
                   "referenceType": {
@@ -1379,6 +1400,12 @@
             "discriminator": "referenceType",
             "definition": [
               {
+                "type": "record",
+                "definition": {
+                  "type": "any"
+                }
+              },
+              {
                 "type": "object",
                 "definition": {
                   "referenceType": {
@@ -1472,6 +1499,12 @@
             "type": "union",
             "discriminator": "referenceType",
             "definition": [
+              {
+                "type": "record",
+                "definition": {
+                  "type": "any"
+                }
+              },
               {
                 "type": "object",
                 "definition": {
@@ -2160,6 +2193,12 @@
             "discriminator": "referenceType",
             "definition": [
               {
+                "type": "record",
+                "definition": {
+                  "type": "any"
+                }
+              },
+              {
                 "type": "object",
                 "definition": {
                   "referenceType": {
@@ -2232,6 +2271,12 @@
             "type": "union",
             "discriminator": "referenceType",
             "definition": [
+              {
+                "type": "record",
+                "definition": {
+                  "type": "any"
+                }
+              },
               {
                 "type": "object",
                 "definition": {
@@ -2704,6 +2749,15 @@
             "discriminator": "referenceType",
             "definition": [
               {
+                "type": "array",
+                "definition": {
+                  "type": "record",
+                  "definition": {
+                    "type": "any"
+                  }
+                }
+              },
+              {
                 "type": "object",
                 "definition": {
                   "referenceType": {
@@ -2833,14 +2887,14 @@
             "type": "schemaReference",
             "definition": {
               "eager": true,
-              "relativePath": "transformerForBuild_object_listPickElement_root"
+              "relativePath": "transformerForRuntime_Abstract"
             }
           },
           {
             "type": "schemaReference",
             "definition": {
               "eager": true,
-              "relativePath": "transformerForRuntime_Abstract"
+              "relativePath": "transformerForBuild_object_listPickElement_root"
             }
           }
         ],
@@ -2849,6 +2903,12 @@
             "type": "union",
             "discriminator": "referenceType",
             "definition": [
+              {
+                "type": "array",
+                "definition": {
+                  "type": "any"
+                }
+              },
               {
                 "type": "object",
                 "definition": {
