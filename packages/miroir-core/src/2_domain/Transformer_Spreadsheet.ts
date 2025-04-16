@@ -61,6 +61,7 @@ export const transformer_spreadSheetToJzodSchema: TransformerDefinition = {
             referenceType: "referencedTransformer",
             reference: {
               transformerType: "contextReference",
+              interpolation: "runtime",
               referenceName: "spreadsheetContents",
             },
           },
@@ -72,6 +73,7 @@ export const transformer_spreadSheetToJzodSchema: TransformerDefinition = {
             referenceType: "referencedTransformer",
             reference: {
               transformerType: "contextReference",
+              interpolation: "runtime",
               referencePath: ["firstLine"],
             },
           },
@@ -82,6 +84,7 @@ export const transformer_spreadSheetToJzodSchema: TransformerDefinition = {
             referenceType: "referencedTransformer",
             reference: {
               transformerType: "contextReference",
+              interpolation: "runtime",
               referencePath: ["attributeNames"],
             },
           },
@@ -92,6 +95,7 @@ export const transformer_spreadSheetToJzodSchema: TransformerDefinition = {
               referenceType: "referencedTransformer",
               reference: {
                 transformerType: "contextReference",
+                interpolation: "runtime",
                 referencePath: ["attributeName"],
               },
             },
@@ -100,6 +104,7 @@ export const transformer_spreadSheetToJzodSchema: TransformerDefinition = {
               {
                 attributeKey: {
                   transformerType: "contextReference",
+                  interpolation: "runtime",
                   referencePath: ["attributeName"],
                 },
                 attributeValue: {
@@ -116,6 +121,7 @@ export const transformer_spreadSheetToJzodSchema: TransformerDefinition = {
             referenceType: "referencedTransformer",
             reference: {
               transformerType: "contextReference",
+              interpolation: "runtime",
               referencePath: ["splitAttributeDefinitions"],
             },
           },
@@ -126,6 +132,7 @@ export const transformer_spreadSheetToJzodSchema: TransformerDefinition = {
             referenceType: "referencedTransformer",
             reference: {
               transformerType: "contextReference",
+              interpolation: "runtime",
               referenceName: "mergedAttributeDefinitions",
             },
           },
@@ -160,6 +167,7 @@ export const transformer_spreadSheetToJzodSchema: TransformerDefinition = {
             },
             definition: {
               transformerType: "contextReference",
+              interpolation: "runtime",
               referencePath: ["completeAttributeDefinitions"],
             },
           },

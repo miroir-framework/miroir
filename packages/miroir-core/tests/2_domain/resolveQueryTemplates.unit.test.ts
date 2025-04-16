@@ -86,10 +86,12 @@ describe("resolveQueryTemplates.unit.test", () => {
             parentName: "Book",
             parentUuid: {
               transformerType: "constantUuid",
+              interpolation: "build",
               value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             },
             instanceUuid: {
               transformerType: "parameterReference",
+              interpolation: "build",
               referenceName: "instanceUuid",
             },
           },
@@ -98,10 +100,12 @@ describe("resolveQueryTemplates.unit.test", () => {
             parentName: "Fountain",
             parentUuid: {
               transformerType: "parameterReference",
+              interpolation: "build",
               referenceName: "parentUuid",
             },
             instanceUuid: {
               transformerType: "constantObject",
+              interpolation: "build",
               value: {
                 transformerType: "contextReference",
                 interpolation: "runtime",
@@ -116,6 +120,7 @@ describe("resolveQueryTemplates.unit.test", () => {
             parentName: "Publisher",
             parentUuid: {
               transformerType: "constantUuid",
+              interpolation: "build",
               value: "a027c379-8468-43a5-ba4d-bf618be25cab",
             },
             objectReference: {
@@ -130,6 +135,7 @@ describe("resolveQueryTemplates.unit.test", () => {
             parentName: "Book",
             parentUuid: {
               transformerType: "constantUuid",
+              interpolation: "build",
               value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             },
             objectReference: {
@@ -144,6 +150,7 @@ describe("resolveQueryTemplates.unit.test", () => {
             parentName: "Book",
             parentUuid: {
               transformerType: "constantUuid",
+              interpolation: "build",
               value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             },
             objectReference: {
@@ -158,10 +165,12 @@ describe("resolveQueryTemplates.unit.test", () => {
             parentName: "Publisher",
             parentUuid: {
               transformerType: "constantUuid",
+              interpolation: "build",
               value: "a027c379-8468-43a5-ba4d-bf618be25cab",
             },
             objectListReference: {
               transformerType: "contextReference",
+              interpolation: "runtime",
               referenceName: "booksOfAuthor",
             },
             objectListReferenceAttribute: "publisher",

@@ -268,9 +268,9 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     testAssertions: {
       test1: {
         expectedResult: {
-          book: domainState[adminConfigurationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"][
-            "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
-          ],
+          book: domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
+            "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+          ]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
         } as any, // TODO: correct type of the expected result
       },
     },
@@ -377,9 +377,9 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     testAssertions: {
       test1: {
         expectedResult:
-          domainState[adminConfigurationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"][
-            "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
-          ],
+          domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
+            "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+          ]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
         resultAccessPath: ["book"],
       },
     },
@@ -451,9 +451,9 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     testAssertions: {
       test1: {
         expectedResult:
-          domainState[adminConfigurationDeploymentLibrary.uuid]["data"]["a027c379-8468-43a5-ba4d-bf618be25cab"][
-            "516a7366-39e7-4998-82cb-80199a7fa667"
-          ],
+          domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
+            "a027c379-8468-43a5-ba4d-bf618be25cab"
+          ]["516a7366-39e7-4998-82cb-80199a7fa667"],
         resultAccessPath: ["publisher"],
       },
     },
@@ -696,17 +696,17 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       test1: {
         expectedResult: Object.values({
           "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7":
-            domainState[adminConfigurationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"][
-              "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7"
-            ],
+            domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
+              "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+            ]["4cb917b3-3c53-4f9b-b000-b0e4c07a81f7"],
           "c6852e89-3c3c-447f-b827-4b5b9d830975":
-            domainState[adminConfigurationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"][
-              "c6852e89-3c3c-447f-b827-4b5b9d830975"
-            ],
+            domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
+              "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+            ]["c6852e89-3c3c-447f-b827-4b5b9d830975"],
           "caef8a59-39eb-48b5-ad59-a7642d3a1e8f":
-            domainState[adminConfigurationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"][
-              "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
-            ],
+            domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
+              "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+            ]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
         }),
         resultAccessPath: ["booksOfPublisher"],
       },
@@ -769,6 +769,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           definition: {
             "caef8a59-39eb-48b5-ad59-a7642d3a1e8f": {
               transformerType: "contextReference",
+              interpolation: "runtime",
               referenceName: "booksOfPublisher",
             },
           },
@@ -776,8 +777,16 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         result2: {
           extractorTemplateType: "extractorTemplateByExtractorWrapperReturningList",
           definition: [
-            { transformerType: "contextReference", referenceName: "booksOfPublisher" },
-            { transformerType: "contextReference", referenceName: "booksOfPublisher" },
+            {
+              transformerType: "contextReference",
+              interpolation: "runtime",
+              referenceName: "booksOfPublisher",
+            },
+            {
+              transformerType: "contextReference",
+              interpolation: "runtime",
+              referenceName: "booksOfPublisher",
+            },
           ],
         },
       },
@@ -842,51 +851,51 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       test1: {
         expectedResult: Object.values({
           "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7":
-            domainState[adminConfigurationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"][
-              "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7"
-            ],
+            domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
+              "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+            ]["4cb917b3-3c53-4f9b-b000-b0e4c07a81f7"],
           "c6852e89-3c3c-447f-b827-4b5b9d830975":
-            domainState[adminConfigurationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"][
-              "c6852e89-3c3c-447f-b827-4b5b9d830975"
-            ],
+            domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
+              "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+            ]["c6852e89-3c3c-447f-b827-4b5b9d830975"],
           "caef8a59-39eb-48b5-ad59-a7642d3a1e8f":
-            domainState[adminConfigurationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"][
-              "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
-            ],
+            domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
+              "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+            ]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
         }),
         resultAccessPath: ["result1", "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
       },
       test2: {
         expectedResult: Object.values({
           "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7":
-            domainState[adminConfigurationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"][
-              "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7"
-            ],
+            domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
+              "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+            ]["4cb917b3-3c53-4f9b-b000-b0e4c07a81f7"],
           "c6852e89-3c3c-447f-b827-4b5b9d830975":
-            domainState[adminConfigurationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"][
-              "c6852e89-3c3c-447f-b827-4b5b9d830975"
-            ],
+            domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
+              "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+            ]["c6852e89-3c3c-447f-b827-4b5b9d830975"],
           "caef8a59-39eb-48b5-ad59-a7642d3a1e8f":
-            domainState[adminConfigurationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"][
-              "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
-            ],
+            domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
+              "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+            ]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
         }),
         resultAccessPath: ["result2", "0"],
       },
       test3: {
         expectedResult: Object.values({
           "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7":
-            domainState[adminConfigurationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"][
-              "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7"
-            ],
+            domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
+              "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+            ]["4cb917b3-3c53-4f9b-b000-b0e4c07a81f7"],
           "c6852e89-3c3c-447f-b827-4b5b9d830975":
-            domainState[adminConfigurationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"][
-              "c6852e89-3c3c-447f-b827-4b5b9d830975"
-            ],
+            domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
+              "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+            ]["c6852e89-3c3c-447f-b827-4b5b9d830975"],
           "caef8a59-39eb-48b5-ad59-a7642d3a1e8f":
-            domainState[adminConfigurationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"][
-              "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
-            ],
+            domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
+              "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+            ]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
         }),
         resultAccessPath: ["result2", "1"],
       },
@@ -915,7 +924,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         },
         combinerTemplates: {
           instancesOfEntities: {
-            extractorTemplateType: "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList", // heteronomous many-to-many join, not possible with SQL
+            extractorTemplateType:
+              "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList", // heteronomous many-to-many join, not possible with SQL
             rootExtractorOrReference: "entities",
             subQueryTemplate: {
               query: {
@@ -956,7 +966,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         },
         combiners: {
           instancesOfEntities: {
-            extractorOrCombinerType: "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList", // heteronomous many-to-many join, possible but akward with SQL (huge "select" clause, dealing with homonym attributes)
+            extractorOrCombinerType:
+              "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList", // heteronomous many-to-many join, possible but akward with SQL (huge "select" clause, dealing with homonym attributes)
             rootExtractorOrReference: "entities",
             subQueryTemplate: {
               query: {
@@ -984,10 +995,9 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         test1: {
           // expectedResult: domainState[adminConfigurationDeploymentLibrary.uuid]["data"],
           expectedResult: Object.fromEntries(
-            Object.entries(domainState[adminConfigurationDeploymentLibrary.uuid]["data"]).map((e) => [
-              e[0],
-              Object.values(e[1]),
-            ])
+            Object.entries(domainState[adminConfigurationDeploymentLibrary.uuid]["data"]).map(
+              (e) => [e[0], Object.values(e[1])]
+            )
           ),
           resultAccessPath: ["instancesOfEntities"],
         },

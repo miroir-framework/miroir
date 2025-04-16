@@ -28,7 +28,7 @@ export function resolveCompositeActionTemplate(
     throw new Error("resolveCompositeActionTemplate compositeActionTemplate is undefined");
   }
   const localActionParams = { ...actionParamValues };
-  let localContext: Record<string, any> = { ...actionParamValues }; 
+  // let localContext: Record<string, any> = { ...actionParamValues }; 
   const compositeActionLabel = (compositeActionTemplate as any).actionLabel??"NO_ACTION_LABEL";
 
   log.info(
@@ -64,7 +64,6 @@ export function resolveCompositeActionTemplate(
       //   "newLocalParameters",
       //   newLocalParameters
       // );
-      // const resolvedTemplate = transformer_apply_wrapper(
       const resolvedTemplate = transformer_extended_apply_wrapper(
         // "build",
         "runtime",
@@ -76,8 +75,12 @@ export function resolveCompositeActionTemplate(
       );
       if (resolvedTemplate.elementType == "failure") {
         log.error("resolveCompositeActionTemplate resolved template error", resolvedTemplate);
+        // throw new Error(
+        //   "resolveCompositeActionTemplate error resolving template " +
+        //   compositeActionLabel + " " + t[0] + " " + JSON.stringify(resolvedTemplate, null, 2)
+        // );
       } else {
-        // log.info("resolveCompositeActionTemplate", compositeActionLabel, "resolved template", t[0], "has value", resolvedTemplate);
+        log.info("resolveCompositeActionTemplate", compositeActionLabel, "resolved template", t[0], "has value", resolvedTemplate);
         resolvedCompositeActionTemplates[t[0]] = resolvedTemplate;
       }
     }

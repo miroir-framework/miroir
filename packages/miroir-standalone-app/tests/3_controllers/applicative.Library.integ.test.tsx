@@ -190,22 +190,22 @@ beforeEach(
 // )
 
 // ################################################################################################
-afterAll(
-  async () => {
-    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ deleteAndCloseApplicationDeployments")
-    await deleteAndCloseApplicationDeployments(
-      miroirConfig,
-      domainController,
-      [
-        typedAdminConfigurationDeploymentMiroir
-      ],
-    );
-    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done deleteAndCloseApplicationDeployments")
+// afterAll(
+//   async () => {
+//     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ deleteAndCloseApplicationDeployments")
+//     await deleteAndCloseApplicationDeployments(
+//       miroirConfig,
+//       domainController,
+//       [
+//         typedAdminConfigurationDeploymentMiroir
+//       ],
+//     );
+//     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done deleteAndCloseApplicationDeployments")
 
-    // console.log("globalTestSuiteResults:\n", Object.values(globalTestSuiteResults).map((r) => "\"" + r.testLabel + "\": " + r.testResult).join("\n"));
-    displayTestSuiteResultsDetails(expect,Object.keys(testTemplateSuites)[0]);
-  }
-)
+//     // console.log("globalTestSuiteResults:\n", Object.values(globalTestSuiteResults).map((r) => "\"" + r.testLabel + "\": " + r.testResult).join("\n"));
+//     displayTestSuiteResultsDetails(expect,Object.keys(testTemplateSuites)[0]);
+//   }
+// )
 
 
 // ##############################################################################################
@@ -344,7 +344,7 @@ const testTemplateSuites: Record<string, TestActionParams> = {
         // libraryEntitesAndInstances
         []
       ),
-      afterEach: testOnLibrary_resetLibraryDeployment(miroirConfig, testAdminConfigurationDeploymentUuid),
+      // afterEach: testOnLibrary_resetLibraryDeployment(miroirConfig, testAdminConfigurationDeploymentUuid),
       // afterAll: testOnLibrary_deleteLibraryDeployment(miroirConfig, testAdminConfigurationDeploymentUuid),
       testCompositeActions: {
         // "get Entity Entity from Miroir": {
@@ -452,8 +452,11 @@ const testTemplateSuites: Record<string, TestActionParams> = {
               spreadsheetContents:fileData,
               newEntityJzodSchema: {
                 transformerType: "spreadSheetToJzodSchema",
+                interpolation: "runtime",
                 spreadsheetContents: {
+                  // transformerType: "parameterReference",
                   transformerType: "contextReference",
+                  interpolation: "runtime",
                   referenceName: "spreadsheetContents",
                 }
                 // spreadsheetContents: [
@@ -465,22 +468,26 @@ const testTemplateSuites: Record<string, TestActionParams> = {
               createEntity_newEntityDefinition: {
                 name: {
                   transformerType: "contextReference",
+                  interpolation: "runtime",
                   referenceName: "newEntityName",
                 },
                 uuid: {
                   transformerType: "contextReference",
+                  interpolation: "runtime",
                   referenceName: "newEntityDefinitionUuid",
                 },
                 parentName: "EntityDefinition",
                 parentUuid: entityEntityDefinition.uuid,
                 entityUuid: {
                   transformerType: "contextReference",
+                  interpolation: "runtime",
                   referencePath: ["createEntity_newEntity","uuid"],
                 },
                 conceptLevel: "Model",
                 defaultInstanceDetailsReportUuid: defaultInstanceDetailsReportUuid,
                 jzodSchema: {
                   transformerType: "contextReference",
+                  interpolation: "runtime",
                   referenceName: "newEntityJzodSchema",
                 }
               },
@@ -494,6 +501,8 @@ const testTemplateSuites: Record<string, TestActionParams> = {
                 deploymentUuid: {
                   transformerType: "parameterReference",
                   interpolation: "build",
+                  // transformerType: "",
+                  // interpolation: "runtime",
                   referenceName: "testAdminConfigurationDeploymentUuid",
                 },
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",

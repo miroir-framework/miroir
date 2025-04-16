@@ -31,7 +31,11 @@ export function transformer_menu_AddItem(
     typeof transformer.transformerDefinition.menuReference == "string"
       ? (transformers.transformer_InnerReference_resolve(
           step,
-          { transformerType: "contextReference", referenceName: transformer.transformerDefinition.menuReference },
+          {
+            transformerType: "contextReference",
+            interpolation: "runtime",
+            referenceName: transformer.transformerDefinition.menuReference,
+          },
           "value",
           queryParams,
           contextResults
@@ -51,7 +55,11 @@ export function transformer_menu_AddItem(
     typeof transformer.transformerDefinition.menuItemReference == "string"
       ? (transformers.transformer_InnerReference_resolve(
           step,
-          { transformerType: "contextReference", referenceName: transformer.transformerDefinition.menuItemReference },
+          {
+            transformerType: "contextReference",
+            interpolation: "runtime",
+            referenceName: transformer.transformerDefinition.menuItemReference,
+          },
           "value",
           queryParams,
           contextResults

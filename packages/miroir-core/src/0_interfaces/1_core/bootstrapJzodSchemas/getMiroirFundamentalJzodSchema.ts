@@ -219,6 +219,8 @@ export function getExtendedSchemas(jzodSchemajzodMiroirBootstrapSchema: any) {
     "transformer_extractors",
     "transformer_mustacheStringTemplate",
     // "transformerForBuild_InnerReference",
+    "transformerForBuild_constant",
+    "transformerForBuild_parameterReference",
     "transformerForBuild_Abstract",
     "transformerForBuild_unique_root",
     "transformerForBuild_object_fullTemplate_root",
@@ -2868,6 +2870,26 @@ export function getMiroirFundamentalJzodSchema(
           .extractorOrCombinerTemplateRecord,
         transformerForBuild_Abstract: (miroirFundamentalJzodSchema as any).definition.context
           .transformerForBuild_Abstract,
+        transformerForBuild_parameterReference: (transformerJzodSchema as any).definition.context
+          .transformerForBuild_parameterReference,
+        transformerForBuild_constant: (miroirFundamentalJzodSchema as any).definition.context
+          .transformerForBuild_constant,
+        transformerForBuild_constantArray: (miroirFundamentalJzodSchema as any).definition.context
+          .transformerForBuild_constantArray,
+        transformerForBuild_constantBigint: (miroirFundamentalJzodSchema as any).definition.context
+          .transformerForBuild_constantBigint,
+        transformerForBuild_constantBoolean: (miroirFundamentalJzodSchema as any).definition.context
+          .transformerForBuild_constantBoolean,
+        transformerForBuild_constantNumber: (miroirFundamentalJzodSchema as any).definition.context
+          .transformerForBuild_constantNumber,
+        transformerForBuild_constantObject: (miroirFundamentalJzodSchema as any).definition.context
+          .transformerForBuild_constantObject,
+        transformerForBuild_constantString: (miroirFundamentalJzodSchema as any).definition.context
+          .transformerForBuild_constantString,
+        transformerForBuild_constantUuid: (miroirFundamentalJzodSchema as any).definition.context
+          .transformerForBuild_constantUuid,
+        transformerForBuild_constants: (miroirFundamentalJzodSchema as any).definition.context
+          .transformerForBuild_constants,
         transformerForBuild: (transformerJzodSchema as any).definition.context.transformerForBuild,
         // transformerForBuild_applyTo: (transformerJzodSchema as any).definition.context.transformerForBuild_applyTo,
         // transformerForBuild_count_root: (miroirFundamentalJzodSchema as any).definition.context.transformerForBuild_count_root,

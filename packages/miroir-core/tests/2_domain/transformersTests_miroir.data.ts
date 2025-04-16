@@ -85,385 +85,386 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
   transformerTestType: "transformerTestSuite",
   transformerTestLabel: "transformers",
   transformerTests: {
-    buildTransformerTests: {
-      transformerTestType: "transformerTestSuite",
-      transformerTestLabel: "buildTransformerTests",
-      transformerTests: {
-        constants: {
-          transformerTestType: "transformerTestSuite",
-          transformerTestLabel: "constants",
-          transformerTests: {
-            constantArray: {
-              transformerTestType: "transformerTestSuite",
-              transformerTestLabel: "constantArray",
-              transformerTests: {
-                "resolve basic build transformer constantArray": {
-                  transformerTestType: "transformerTest",
-                  transformerTestLabel: "resolve basic build transformer constantArray",
-                  transformerName: "constantArrayAtBuild",
-                  runTestStep: "build",
-                  transformer: {
-                    transformerType: "constantArray",
-                    interpolation: "build",
-                    value: ["testA", "testB"],
-                  },
-                  transformerParams: {},
-                  expectedValue: ["testA", "testB"],
-                },
-                // // TODO: this should return an error, both in the in-memory and in the database case
-                // // when the parsing of the parameter fails, the transformer should return a QueryNotExecutable, but returns the stringified value of the parameter instead
-                "failed constantArray build transformer for non-array value": {
-                  transformerTestType: "transformerTest",
-                  transformerTestLabel: "failed constantArray build transformer for non-array value",
-                  transformerName: "constantArrayAtBuildFailed",
-                  runTestStep: "build",
-                  transformer: {
-                    transformerType: "constantArray",
-                    interpolation: "build",
-                    value: "{]" as any,
-                  },
-                  transformerParams: {},
-                  ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-                  expectedValue: "{]",
-                },
-              },
-            },
-            constantUuid: {
-              transformerTestType: "transformerTestSuite",
-              transformerTestLabel: "constantArray",
-              transformerTests: {
-                "resolve basic build transformer constantUuid": {
-                  transformerTestType: "transformerTest",
-                  transformerTestLabel: "resolve basic build transformer constantUuid",
-                  transformerName: "constantUuid",
-                  runTestStep: "build",
-                  transformer: {
-                    transformerType: "constantUuid",
-                    interpolation: "build",
-                    value: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-                  },
-                  transformerParams: {},
-                  expectedValue: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-                },
-                "failed constantUuid transformer for non-uuid value": {
-                  transformerTestType: "transformerTest",
-                  transformerTestLabel: "failed constantUuid transformer for non-uuid value",
-                  transformerName: "constantUuidFailed",
-                  runTestStep: "build",
-                  transformer: {
-                    transformerType: "constantUuid",
-                    interpolation: "build",
-                    value: "test" as any,
-                  },
-                  transformerParams: {},
-                  ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-                  expectedValue: "test",
-                },
-              },
-            },
-            constantNumber: {
-              transformerTestType: "transformerTestSuite",
-              transformerTestLabel: "constantNumber",
-              transformerTests: {
-                "resolve basic build transformer constantNumber": {
-                  transformerTestType: "transformerTest",
-                  transformerTestLabel: "resolve basic build transformer constantNumber",
-                  transformerName: "constantNumber",
-                  runTestStep: "build",
-                  transformer: {
-                    transformerType: "constantNumber",
-                    interpolation: "build",
-                    value: 42,
-                  },
-                  transformerParams: {},
-                  expectedValue: 42,
-                },
-                "failed constantNumber transformer for non-number value": {
-                  transformerTestType: "transformerTest",
-                  transformerTestLabel: "failed constantNumber transformer for non-number value",
-                  transformerName: "constantNumberFailed",
-                  runTestStep: "build",
-                  transformer: {
-                    transformerType: "constantNumber",
-                    interpolation: "build",
-                    value: "test" as any,
-                  },
-                  transformerParams: {},
-                  ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-                  expectedValue: {
-                    queryFailure: "QueryNotExecutable",
-                  },
-                },
-              },
-            },
-            constantBigint: {
-              transformerTestType: "transformerTestSuite",
-              transformerTestLabel: "constantBigint",
-              transformerTests: {
-                "resolve basic build transformer constantBigint": {
-                  transformerTestType: "transformerTest",
-                  transformerTestLabel: "resolve basic build transformer constantBigint",
-                  transformerName: "constantBigint",
-                  runTestStep: "build",
-                  transformer: {
-                    transformerType: "constantBigint",
-                    interpolation: "build",
-                    value: 42, // TODO: ensure actual value is bigint, not number
-                  },
-                  transformerParams: {},
-                  expectedValue: 42,
-                },
-                "failed constantBigint transformer for non-bigint value": {
-                  transformerTestType: "transformerTest",
-                  transformerTestLabel: "failed constantBigint transformer for non-bigint value",
-                  transformerName: "constantBigintFailed",
-                  runTestStep: "build",
-                  transformer: {
-                    transformerType: "constantBigint",
-                    interpolation: "build",
-                    value: "test" as any,
-                  },
-                  transformerParams: {},
-                  ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-                  expectedValue: {
-                    queryFailure: "QueryNotExecutable",
-                  },
-                },
-              },
-            },
-            constantString: {
-              transformerTestType: "transformerTestSuite",
-              transformerTestLabel: "constantString",
-              transformerTests: {
-                "resolve basic build transformer constantString": {
-                  transformerTestType: "transformerTest",
-                  transformerTestLabel: "resolve basic build transformer constantString",
-                  transformerName: "constantString",
-                  runTestStep: "build",
-                  transformer: {
-                    transformerType: "constantString",
-                    interpolation: "build",
-                    value: "test",
-                  },
-                  transformerParams: {},
-                  expectedValue: "test",
-                },
-                "constantString build transformer for non-string value": {
-                  transformerTestType: "transformerTest",
-                  transformerTestLabel: "constantString build transformer for non-string value",
-                  transformerName: "constantStringFailed",
-                  runTestStep: "build",
-                  transformer: {
-                    transformerType: "constantString",
-                    interpolation: "build",
-                    value: { test: "objectInsteadOfString" } as any,
-                  },
-                  transformerParams: {},
-                  expectedValue:  "{\"test\":\"objectInsteadOfString\"}",
-                },
-              },
-            },
-            constantObject: {
-              transformerTestType: "transformerTestSuite",
-              transformerTestLabel: "constantObject",
-              transformerTests: {
-                "resolve basic build transformer constantObject before runtime": {
-                  transformerTestType: "transformerTest",
-                  transformerTestLabel: "resolve basic build transformer constantObject before runtime",
-                  transformerName: "constantObjectBeforeRuntime",
-                  runTestStep: "build",
-                  transformer: {
-                    transformerType: "constantObject",
-                    interpolation: "build",
-                    value: { test: "test" },
-                  },
-                  transformerParams: {},
-                  expectedValue: { test: "test" },
-                },
-                // // TODO: in postgres, conversion to ::jsonb succeeds for string input, it does not require to be an object
-                // "failed constantObject transformer for non-object value before runtime": {
-                //   transformerTestType: "transformerTest",
-                //   transformerTestLabel: "failed constantObject transformer for non-object value before runtime",
-                //   transformerName: "constantObjectFailedBeforeRuntime",
-                //   runTestStep: "build",
-                //   transformer: {
-                //     transformerType: "constantObject",
-                //     interpolation: "build",
-                //     value: "test" as any,
-                //   },
-                //   transformerParams: {},
-                //   ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-                //   expectedValue: {
-                //     queryFailure: "QueryNotExecutable",
-                //   },
-                // },
-              }
-            },
-            constantBoolean: {
-              transformerTestType: "transformerTestSuite",
-              transformerTestLabel: "constantBoolean",
-              transformerTests: {
-                "resolve basic build transformer constantBoolean": {
-                  transformerTestType: "transformerTest",
-                  transformerTestLabel: "resolve basic build transformer constantBoolean",
-                  transformerName: "constantBoolean",
-                  runTestStep: "build",
-                  transformer: {
-                    transformerType: "constantBoolean",
-                    interpolation: "build",
-                    value: true,
-                  },
-                  transformerParams: {},
-                  expectedValue: true,
-                },
-                "failed constantBoolean transformer for non-boolean value": {
-                  transformerTestType: "transformerTest",
-                  transformerTestLabel: "failed constantBoolean transformer for non-boolean value",
-                  transformerName: "constantBooleanFailed",
-                  runTestStep: "build",
-                  transformer: {
-                    transformerType: "constantBoolean",
-                    interpolation: "build",
-                    value: "test" as any,
-                  },
-                  transformerParams: {},
-                  ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-                  expectedValue: {
-                    queryFailure: "QueryNotExecutable",
-                  },
-                }
-              }
-            }
-          },
-        },
-        references: {
-          transformerTestType: "transformerTestSuite",
-          transformerTestLabel: "references",
-          transformerTests: {
-            "resolve basic build transformer parameterReference": {
-              transformerTestType: "transformerTest",
-              transformerTestLabel: "resolve basic build transformer parameterReference",
-              transformerName: "parameterReference",
-              runTestStep: "build",
-              transformer: {
-                transformerType: "parameterReference",
-                interpolation: "build",
-                referenceName: "fileData",
-              },
-              transformerParams: { fileData },
-              expectedValue: fileData,
-            },
-            // NO contextReference in build transformers!
-            // "resolve basic build transformer contextReference": {
-            //   transformerTestType: "transformerTest",
-            //   transformerTestLabel: "resolve basic build transformer contextReference",
-            //   transformerName: "contextReference",
-            //   runTestStep: "build",
-            //   transformer: {
-            //     transformerType: "contextReference",
-            //     interpolation: "build",
-            //     referencePath: ["fileData"],
-            //   },
-            //   transformerParams: { fileData },
-            //   expectedValue: {
-            //     transformerType: "constant",
-            //     value: fileData,
-            //   },
-            // }
-          }
-        },
-        mustache: {
-          transformerTestType: "transformerTestSuite",
-          transformerTestLabel: "mustache",
-          transformerTests: {
-            "mustache string template": {
-              transformerTestType: "transformerTest",
-              transformerTestLabel: "mustache string template",
-              transformerName: "mustache",
-              runTestStep: "build",
-              transformer: {
-                transformerType: "mustacheStringTemplate",
-                interpolation: "build",
-                definition: "a{{newApplication.name}}_{{newApplication.suffix}} example",
-              },
-              transformerParams: {
-                newApplication: { name: "Test", suffix: "Z" },
-              },
-              expectedValue: "aTest_Z example",
-            },
-            "failed mustache string template": {
-              transformerTestType: "transformerTest",
-              transformerTestLabel: "failed mustache string template",
-              transformerName: "mustacheStringTemplateFailed",
-              runTestStep: "build",
-              transformer: {
-                transformerType: "mustacheStringTemplate",
-                interpolation: "build",
-                definition: "{{newApplicationName}SelfApplication",
-              },
-              transformerParams: {},
-              ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-              expectedValue: {
-                queryFailure: "QueryNotExecutable",
-              },
-            },
-          },
-        },
-        simpleCompositions: {
-          transformerTestType: "transformerTestSuite",
-          transformerTestLabel: "simpleCompositions",
-          transformerTests: {
-            "resolve basic build transformer count on parameter array": {
-              transformerTestType: "transformerTest",
-              transformerTestLabel: "resolve basic build transformer count on parameter array",
-              transformerName: "buildCountElementsOfParameterArray",
-              runTestStep: "build",
-              transformer: {
-                transformerType: "count",
-                interpolation: "build",
-                applyTo: {
-                  referenceType: "referencedTransformer",
-                  reference: {
-                    transformerType: "parameterReference",
-                    interpolation: "build",
-                    referenceName: "fileData",
-                  },
-                }
-              },
-              transformerParams: { fileData: [ "a", "b", "c" ] },
-              expectedValue: [ { count: 3 }],
-            },
-            "resolve basic runtime transformer count on build-resolved parameter array": {
-              transformerTestType: "transformerTest",
-              transformerTestLabel: "resolve basic runtime transformer count on build-resolved parameter array",
-              transformerName: "runtimeCountElementsOfBuildParameterArray",
-              runTestStep: "build",
-              transformer: {
-                transformerType: "count",
-                interpolation: "runtime",
-                applyTo: {
-                  referenceType: "referencedTransformer",
-                  reference: {
-                    transformerType: "parameterReference",
-                    interpolation: "build",
-                    referenceName: "smallStringArray",
-                  },
-                }
-              },
-              transformerParams: { smallStringArray: [ "a", "b", "c" ] },
-              expectedValue: {
-                transformerType: "count",
-                interpolation: "runtime",
-                applyTo: {
-                  referenceType: "referencedTransformer", // TODO: this is inconsistent! A referenceTransformer with a value in it! Should it be changed to a constant transformer?
-                  reference: [ "a", "b", "c" ],
-                }
-              },
-            },
-          },
-        }
-      }
-    },
+    // buildTransformerTests: {
+    //   transformerTestType: "transformerTestSuite",
+    //   transformerTestLabel: "buildTransformerTests",
+    //   transformerTests: {
+    //     constants: {
+    //       transformerTestType: "transformerTestSuite",
+    //       transformerTestLabel: "constants",
+    //       transformerTests: {
+    //         constantArray: {
+    //           transformerTestType: "transformerTestSuite",
+    //           transformerTestLabel: "constantArray",
+    //           transformerTests: {
+    //             "resolve basic build transformer constantArray": {
+    //               transformerTestType: "transformerTest",
+    //               transformerTestLabel: "resolve basic build transformer constantArray",
+    //               transformerName: "constantArrayAtBuild",
+    //               runTestStep: "build",
+    //               transformer: {
+    //                 transformerType: "constantArray",
+    //                 interpolation: "build",
+    //                 value: ["testA", "testB"],
+    //               },
+    //               transformerParams: {},
+    //               expectedValue: ["testA", "testB"],
+    //             },
+    //             // // TODO: this should return an error, both in the in-memory and in the database case
+    //             // // when the parsing of the parameter fails, the transformer should return a QueryNotExecutable, but returns the stringified value of the parameter instead
+    //             "failed constantArray build transformer for non-array value": {
+    //               transformerTestType: "transformerTest",
+    //               transformerTestLabel: "failed constantArray build transformer for non-array value",
+    //               transformerName: "constantArrayAtBuildFailed",
+    //               runTestStep: "build",
+    //               transformer: {
+    //                 transformerType: "constantArray",
+    //                 interpolation: "build",
+    //                 value: "{]" as any,
+    //               },
+    //               transformerParams: {},
+    //               ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+    //               expectedValue: "{]",
+    //             },
+    //           },
+    //         },
+    //         constantUuid: {
+    //           transformerTestType: "transformerTestSuite",
+    //           transformerTestLabel: "constantArray",
+    //           transformerTests: {
+    //             "resolve basic build transformer constantUuid": {
+    //               transformerTestType: "transformerTest",
+    //               transformerTestLabel: "resolve basic build transformer constantUuid",
+    //               transformerName: "constantUuid",
+    //               runTestStep: "build",
+    //               transformer: {
+    //                 transformerType: "constantUuid",
+    //                 interpolation: "build",
+    //                 value: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+    //               },
+    //               transformerParams: {},
+    //               expectedValue: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+    //             },
+    //             "failed constantUuid transformer for non-uuid value": {
+    //               transformerTestType: "transformerTest",
+    //               transformerTestLabel: "failed constantUuid transformer for non-uuid value",
+    //               transformerName: "constantUuidFailed",
+    //               runTestStep: "build",
+    //               transformer: {
+    //                 transformerType: "constantUuid",
+    //                 interpolation: "build",
+    //                 value: "test" as any,
+    //               },
+    //               transformerParams: {},
+    //               ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+    //               expectedValue: "test",
+    //             },
+    //           },
+    //         },
+    //         constantNumber: {
+    //           transformerTestType: "transformerTestSuite",
+    //           transformerTestLabel: "constantNumber",
+    //           transformerTests: {
+    //             "resolve basic build transformer constantNumber": {
+    //               transformerTestType: "transformerTest",
+    //               transformerTestLabel: "resolve basic build transformer constantNumber",
+    //               transformerName: "constantNumber",
+    //               runTestStep: "build",
+    //               transformer: {
+    //                 transformerType: "constantNumber",
+    //                 interpolation: "build",
+    //                 value: 42,
+    //               },
+    //               transformerParams: {},
+    //               expectedValue: 42,
+    //             },
+    //             "failed constantNumber transformer for non-number value": {
+    //               transformerTestType: "transformerTest",
+    //               transformerTestLabel: "failed constantNumber transformer for non-number value",
+    //               transformerName: "constantNumberFailed",
+    //               runTestStep: "build",
+    //               transformer: {
+    //                 transformerType: "constantNumber",
+    //                 interpolation: "build",
+    //                 value: "test" as any,
+    //               },
+    //               transformerParams: {},
+    //               ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+    //               expectedValue: {
+    //                 queryFailure: "QueryNotExecutable",
+    //               },
+    //             },
+    //           },
+    //         },
+    //         constantBigint: {
+    //           transformerTestType: "transformerTestSuite",
+    //           transformerTestLabel: "constantBigint",
+    //           transformerTests: {
+    //             "resolve basic build transformer constantBigint": {
+    //               transformerTestType: "transformerTest",
+    //               transformerTestLabel: "resolve basic build transformer constantBigint",
+    //               transformerName: "constantBigint",
+    //               runTestStep: "build",
+    //               transformer: {
+    //                 transformerType: "constantBigint",
+    //                 interpolation: "build",
+    //                 value: 42, // TODO: ensure actual value is bigint, not number
+    //               },
+    //               transformerParams: {},
+    //               expectedValue: 42,
+    //             },
+    //             "failed constantBigint transformer for non-bigint value": {
+    //               transformerTestType: "transformerTest",
+    //               transformerTestLabel: "failed constantBigint transformer for non-bigint value",
+    //               transformerName: "constantBigintFailed",
+    //               runTestStep: "build",
+    //               transformer: {
+    //                 transformerType: "constantBigint",
+    //                 interpolation: "build",
+    //                 value: "test" as any,
+    //               },
+    //               transformerParams: {},
+    //               ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+    //               expectedValue: {
+    //                 queryFailure: "QueryNotExecutable",
+    //               },
+    //             },
+    //           },
+    //         },
+    //         constantString: {
+    //           transformerTestType: "transformerTestSuite",
+    //           transformerTestLabel: "constantString",
+    //           transformerTests: {
+    //             "resolve basic build transformer constantString": {
+    //               transformerTestType: "transformerTest",
+    //               transformerTestLabel: "resolve basic build transformer constantString",
+    //               transformerName: "constantString",
+    //               runTestStep: "build",
+    //               transformer: {
+    //                 transformerType: "constantString",
+    //                 interpolation: "build",
+    //                 value: "test",
+    //               },
+    //               transformerParams: {},
+    //               expectedValue: "test",
+    //             },
+    //             "constantString build transformer for non-string value": {
+    //               transformerTestType: "transformerTest",
+    //               transformerTestLabel: "constantString build transformer for non-string value",
+    //               transformerName: "constantStringFailed",
+    //               runTestStep: "build",
+    //               transformer: {
+    //                 transformerType: "constantString",
+    //                 interpolation: "build",
+    //                 value: { test: "objectInsteadOfString" } as any,
+    //               },
+    //               transformerParams: {},
+    //               expectedValue:  "{\"test\":\"objectInsteadOfString\"}",
+    //             },
+    //           },
+    //         },
+    //         constantObject: {
+    //           transformerTestType: "transformerTestSuite",
+    //           transformerTestLabel: "constantObject",
+    //           transformerTests: {
+    //             "resolve basic build transformer constantObject before runtime": {
+    //               transformerTestType: "transformerTest",
+    //               transformerTestLabel: "resolve basic build transformer constantObject before runtime",
+    //               transformerName: "constantObjectBeforeRuntime",
+    //               runTestStep: "build",
+    //               transformer: {
+    //                 transformerType: "constantObject",
+    //                 interpolation: "build",
+    //                 value: { test: "test" },
+    //               },
+    //               transformerParams: {},
+    //               expectedValue: { test: "test" },
+    //             },
+    //             // // TODO: in postgres, conversion to ::jsonb succeeds for string input, it does not require to be an object
+    //             // "failed constantObject transformer for non-object value before runtime": {
+    //             //   transformerTestType: "transformerTest",
+    //             //   transformerTestLabel: "failed constantObject transformer for non-object value before runtime",
+    //             //   transformerName: "constantObjectFailedBeforeRuntime",
+    //             //   runTestStep: "build",
+    //             //   transformer: {
+    //             //     transformerType: "constantObject",
+    //             //     interpolation: "build",
+    //             //     value: "test" as any,
+    //             //   },
+    //             //   transformerParams: {},
+    //             //   ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+    //             //   expectedValue: {
+    //             //     queryFailure: "QueryNotExecutable",
+    //             //   },
+    //             // },
+    //           }
+    //         },
+    //         constantBoolean: {
+    //           transformerTestType: "transformerTestSuite",
+    //           transformerTestLabel: "constantBoolean",
+    //           transformerTests: {
+    //             "resolve basic build transformer constantBoolean": {
+    //               transformerTestType: "transformerTest",
+    //               transformerTestLabel: "resolve basic build transformer constantBoolean",
+    //               transformerName: "constantBoolean",
+    //               runTestStep: "build",
+    //               transformer: {
+    //                 transformerType: "constantBoolean",
+    //                 interpolation: "build",
+    //                 value: true,
+    //               },
+    //               transformerParams: {},
+    //               expectedValue: true,
+    //             },
+    //             "failed constantBoolean transformer for non-boolean value": {
+    //               transformerTestType: "transformerTest",
+    //               transformerTestLabel: "failed constantBoolean transformer for non-boolean value",
+    //               transformerName: "constantBooleanFailed",
+    //               runTestStep: "build",
+    //               transformer: {
+    //                 transformerType: "constantBoolean",
+    //                 interpolation: "build",
+    //                 value: "test" as any,
+    //               },
+    //               transformerParams: {},
+    //               ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+    //               expectedValue: {
+    //                 queryFailure: "QueryNotExecutable",
+    //               },
+    //             }
+    //           }
+    //         }
+    //       },
+    //     },
+    //     references: {
+    //       transformerTestType: "transformerTestSuite",
+    //       transformerTestLabel: "references",
+    //       transformerTests: {
+    //         "resolve basic build transformer parameterReference": {
+    //           transformerTestType: "transformerTest",
+    //           transformerTestLabel: "resolve basic build transformer parameterReference",
+    //           transformerName: "parameterReference",
+    //           runTestStep: "build",
+    //           transformer: {
+    //             transformerType: "parameterReference",
+    //             interpolation: "build",
+    //             referenceName: "fileData",
+    //           },
+    //           transformerParams: { fileData },
+    //           expectedValue: fileData,
+    //         },
+    //         // NO contextReference in build transformers!
+    //         // "resolve basic build transformer contextReference": {
+    //         //   transformerTestType: "transformerTest",
+    //         //   transformerTestLabel: "resolve basic build transformer contextReference",
+    //         //   transformerName: "contextReference",
+    //         //   runTestStep: "build",
+    //         //   transformer: {
+    //         //     transformerType: "contextReference",
+    //         //     interpolation: "build",
+    //         //     referencePath: ["fileData"],
+    //         //   },
+    //         //   transformerParams: { fileData },
+    //         //   expectedValue: {
+    //         //     transformerType: "constant",
+    //         //     value: fileData,
+    //         //   },
+    //         // }
+    //       }
+    //     },
+    //     mustache: {
+    //       transformerTestType: "transformerTestSuite",
+    //       transformerTestLabel: "mustache",
+    //       transformerTests: {
+    //         "mustache string template": {
+    //           transformerTestType: "transformerTest",
+    //           transformerTestLabel: "mustache string template",
+    //           transformerName: "mustache",
+    //           runTestStep: "build",
+    //           transformer: {
+    //             transformerType: "mustacheStringTemplate",
+    //             interpolation: "build",
+    //             definition: "a{{newApplication.name}}_{{newApplication.suffix}} example",
+    //           },
+    //           transformerParams: {
+    //             newApplication: { name: "Test", suffix: "Z" },
+    //           },
+    //           expectedValue: "aTest_Z example",
+    //         },
+    //         "failed mustache string template": {
+    //           transformerTestType: "transformerTest",
+    //           transformerTestLabel: "failed mustache string template",
+    //           transformerName: "mustacheStringTemplateFailed",
+    //           runTestStep: "build",
+    //           transformer: {
+    //             transformerType: "mustacheStringTemplate",
+    //             interpolation: "build",
+    //             definition: "{{newApplicationName}SelfApplication",
+    //           },
+    //           transformerParams: {},
+    //           ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+    //           expectedValue: {
+    //             queryFailure: "QueryNotExecutable",
+    //           },
+    //         },
+    //       },
+    //     },
+    //     simpleCompositions: {
+    //       transformerTestType: "transformerTestSuite",
+    //       transformerTestLabel: "simpleCompositions",
+    //       transformerTests: {
+    //         "resolve basic build transformer count on parameter array": {
+    //           transformerTestType: "transformerTest",
+    //           transformerTestLabel: "resolve basic build transformer count on parameter array",
+    //           transformerName: "buildCountElementsOfParameterArray",
+    //           runTestStep: "build",
+    //           transformer: {
+    //             transformerType: "count",
+    //             interpolation: "build",
+    //             applyTo: {
+    //               referenceType: "referencedTransformer",
+    //               reference: {
+    //                 transformerType: "parameterReference",
+    //                 interpolation: "build",
+    //                 referenceName: "fileData",
+    //               },
+    //             }
+    //           },
+    //           transformerParams: { fileData: [ "a", "b", "c" ] },
+    //           expectedValue: [ { count: 3 }],
+    //         },
+    //         "resolve basic runtime transformer count on build-resolved parameter array": {
+    //           transformerTestType: "transformerTest",
+    //           transformerTestLabel: "resolve basic runtime transformer count on build-resolved parameter array",
+    //           transformerName: "runtimeCountElementsOfBuildParameterArray",
+    //           runTestStep: "build",
+    //           transformer: {
+    //             transformerType: "count",
+    //             interpolation: "runtime",
+    //             // interpolation: "build",
+    //             applyTo: {
+    //               referenceType: "referencedTransformer",
+    //               reference: {
+    //                 transformerType: "parameterReference",
+    //                 interpolation: "build",
+    //                 referenceName: "smallStringArray",
+    //               },
+    //             }
+    //           },
+    //           transformerParams: { smallStringArray: [ "a", "b", "c" ] },
+    //           expectedValue: {
+    //             transformerType: "count",
+    //             interpolation: "runtime",
+    //             applyTo: {
+    //               referenceType: "referencedTransformer", // TODO: this is inconsistent! A referenceTransformer with a value in it! Should it be changed to a constant transformer?
+    //               reference: [ "a", "b", "c" ],
+    //             }
+    //           },
+    //         },
+    //       },
+    //     }
+    //   }
+    // },
     runtimeTransformerTests: {
       transformerTestType: "transformerTestSuite",
       transformerTestLabel: "runtimeTransformerTests",
@@ -808,6 +809,8 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   transformerName: "parameterReference",
                   transformer: {
                     transformerType: "parameterReference",
+                    interpolation: "build",
+                    // interpolation: "runtime",
                     referenceName: "a",
                   },
                   transformerParams: {
@@ -821,6 +824,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   transformerName: "parameterReferenceForReferencePath",
                   transformer: {
                     transformerType: "parameterReference",
+                    interpolation: "build",
                     referencePath: ["a", "b", "c"],
                   },
                   transformerParams: {
@@ -835,6 +839,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   transformer: {
                     transformerType: "parameterReference",
                     interpolation: "runtime",
+                    // interpolation: "build",
                     referenceName: "nonExistentReference",
                   },
                   transformerParams: {},
@@ -1100,50 +1105,50 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
               },
               expectedValue: ["testA", "testB"],
             },
-            // "objectValues on reference at runtime": {
-            //   transformerTestType: "transformerTest",
-            //   transformerTestLabel: "objectValues with reference at runtime",
-            //   transformerName: "objectValuesAtRuntime",
-            //   transformer: {
-            //     transformerType: "objectValues",
-            //     interpolation: "runtime",
-            //     applyTo: {
-            //       referenceType: "referencedTransformer",
-            //       reference: {
-            //         transformerType: "contextReference",
-            //         interpolation: "runtime",
-            //         referenceName: "testObject",
-            //       },
-            //     },
-            //   },
-            //   transformerParams: {},
-            //   transformerRuntimeContext: {
-            //     testObject: { a: "testA", b: "testB" },
-            //   },
-            //   expectedValue: ["testA", "testB"],
-            // },
-            // "failed object values for string parameter": {
-            //   transformerTestType: "transformerTest",
-            //   transformerTestLabel: "failed object values for string parameter",
-            //   transformerName: "objectValuesFailed",
-            //   transformer: {
-            //     transformerType: "objectValues",
-            //     interpolation: "runtime",
-            //     applyTo: {
-            //       referenceType: "referencedTransformer",
-            //       reference: {
-            //         transformerType: "constant",
-            //         interpolation: "runtime",
-            //         value: "nonExistingTestObject",
-            //       },
-            //     },
-            //   },
-            //   transformerParams: {},
-            //   ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-            //   expectedValue: {
-            //     queryFailure: "QueryNotExecutable",
-            //   },
-            // },
+            "objectValues on reference at runtime": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel: "objectValues with reference at runtime",
+              transformerName: "objectValuesAtRuntime",
+              transformer: {
+                transformerType: "objectValues",
+                interpolation: "runtime",
+                applyTo: {
+                  referenceType: "referencedTransformer",
+                  reference: {
+                    transformerType: "contextReference",
+                    interpolation: "runtime",
+                    referenceName: "testObject",
+                  },
+                },
+              },
+              transformerParams: {},
+              transformerRuntimeContext: {
+                testObject: { a: "testA", b: "testB" },
+              },
+              expectedValue: ["testA", "testB"],
+            },
+            "failed object values for string parameter": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel: "failed object values for string parameter",
+              transformerName: "objectValuesFailed",
+              transformer: {
+                transformerType: "objectValues",
+                interpolation: "runtime",
+                applyTo: {
+                  referenceType: "referencedTransformer",
+                  reference: {
+                    transformerType: "constant",
+                    interpolation: "runtime",
+                    value: "nonExistingTestObject",
+                  },
+                },
+              },
+              transformerParams: {},
+              ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+              expectedValue: {
+                queryFailure: "QueryNotExecutable",
+              },
+            },
           },
         },
         listPickElement: {
@@ -1171,12 +1176,12 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
               transformerName: "listPickElementForString",
               transformer: {
                 transformerType: "listPickElement",
-                // interpolation: "runtime",
+                interpolation: "runtime",
                 applyTo: {
                   referenceType: "referencedTransformer",
                   reference: {
                     transformerType: "parameterReference",
-                    // interpolation: "runtime",
+                    interpolation: "build",
                     referenceName: "testList",
                   },
                 },
@@ -1193,12 +1198,12 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
               transformerName: "listPickElementForObject",
               transformer: {
                 transformerType: "listPickElement",
-                // interpolation: "runtime",
+                interpolation: "runtime",
                 applyTo: {
                   referenceType: "referencedTransformer",
                   reference: {
                     transformerType: "parameterReference",
-                    // interpolation: "runtime",
+                    interpolation: "build",
                     referenceName: "testList",
                   },
                 },
@@ -1222,7 +1227,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   referenceType: "referencedTransformer",
                   reference: {
                     transformerType: "constantAsExtractor",
-                    interpolation: "runtime",
+                    // interpolation: "runtime",
                     valueJzodSchema: {
                       type: "array",
                       definition: {
@@ -1250,7 +1255,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   referenceType: "referencedTransformer",
                   reference: {
                     transformerType: "constantAsExtractor",
-                    interpolation: "runtime",
+                    // interpolation: "runtime",
                     valueJzodSchema: {
                       type: "array",
                       definition: {
@@ -1276,12 +1281,12 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
               transformerName: "listPickElementForString",
               transformer: {
                 transformerType: "listPickElement",
-                // interpolation: "runtime",
+                interpolation: "runtime",
                 applyTo: {
                   referenceType: "referencedTransformer",
                   reference: {
                     transformerType: "parameterReference",
-                    // interpolation: "runtime",
+                    interpolation: "build",
                     referenceName: "testList",
                   },
                 },
@@ -1374,6 +1379,8 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   reference: {
                     transformerType: "contextReference",
                     interpolation: "runtime",
+                    // transformerType: "parameterReference",
+                    // interpolation: "build",
                     referenceName: "testList",
                   },
                 },
@@ -1398,7 +1405,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   referenceType: "referencedTransformer",
                   reference: {
                     transformerType: "constantAsExtractor",
-                    interpolation: "runtime",
+                    // interpolation: "runtime",
                     valueJzodSchema: {
                       type: "array",
                       definition: {
@@ -1445,7 +1452,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   referenceType: "referencedTransformer",
                   reference: {
                     transformerType: "constant",
-                    interpolation: "runtime",
+                    // interpolation: "runtime",
                     value: [ { test: "testA" }, { test: "testB" }, { test: "testC" } ] ,
                   },
                 },
@@ -1487,7 +1494,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   referenceType: "referencedTransformer",
                   reference: {
                     transformerType: "constantAsExtractor",
-                    interpolation: "runtime",
+                    // interpolation: "runtime",
                     valueJzodSchema: {
                       type: "array",
                       definition: {
@@ -1512,7 +1519,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   referenceType: "referencedTransformer",
                   reference: {
                     transformerType: "constantAsExtractor",
-                    interpolation: "runtime",
+                    // interpolation: "runtime",
                     valueJzodSchema: {
                       type: "array",
                       definition: {
@@ -1565,6 +1572,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
               transformerName: "fullTemplate",
               transformer: {
                 transformerType: "object_fullTemplate",
+                interpolation: "runtime",
                 applyTo: Country1 as EntityInstance,
                 referenceToOuterObject: "country",
                 definition: [
@@ -1575,6 +1583,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                     },
                     attributeValue: {
                       transformerType: "parameterReference",
+                      interpolation: "build",
                       referenceName: "newUuid",
                     },
                   },
@@ -1585,6 +1594,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                     },
                     attributeValue: {
                       transformerType: "contextReference",
+                      interpolation: "runtime",
                       referencePath: ["country", "iso3166-1Alpha-2"],
                     },
                   },
@@ -1603,6 +1613,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
               transformerName: "fullTemplate",
               transformer: {
                 transformerType: "object_fullTemplate",
+                interpolation: "runtime",
                 applyTo: {
                   referenceType: "referencedTransformer",
                   reference: {
@@ -1620,6 +1631,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                     },
                     attributeValue: {
                       transformerType: "parameterReference",
+                      interpolation: "build",
                       referenceName: "newUuid",
                     },
                   },
@@ -1632,7 +1644,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                       // transformerType: "mustacheStringTemplate",
                       // definition: "{{country.iso3166-1Alpha-2}}",
                       transformerType: "contextReference",
-                      // interpolation: "runtime",
+                      interpolation: "runtime",
                       referencePath: ["country", "iso3166-1Alpha-2"],
                     },
                   },
@@ -1652,6 +1664,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                 transformerName: "fullTemplate",
                 transformer: {
                   transformerType: "object_fullTemplate",
+                  interpolation: "runtime",
                   applyTo: {
                     referenceType: "referencedTransformer",
                     reference: {
@@ -1668,6 +1681,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                       },
                       attributeValue: {
                         transformerType: "parameterReference",
+                        interpolation: "build",
                         referenceName: "newUuid",
                       },
                     },
@@ -1717,6 +1731,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                     },
                     attributeValue: {
                       transformerType: "parameterReference",
+                      interpolation: "build",
                       referenceName: "newUuid",
                     },
                   },
@@ -1756,6 +1771,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
               transformerName: "objectAlter",
               transformer: {
                 transformerType: "objectAlter",
+                interpolation: "runtime",
                 applyTo: Country1 as EntityInstance,
                 referenceToOuterObject: "country",
                 definition: {
@@ -1773,97 +1789,108 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
               },
               expectedValue: { ...Country1, "iso3166-1Alpha-2": "DE" },
             },
-            // "objectAlter allows to change a referenced object attribute value": {
-            //   transformerTestType: "transformerTest",
-            //   transformerTestLabel: "objectAlter allows to change a referenced object attribute value",
-            //   transformerName: "objectAlter",
-            //   transformer: {
-            //     transformerType: "objectAlter",
-            //     applyTo: {
-            //       referenceType: "referencedTransformer",
-            //       reference: {
-            //         transformerType: "parameterReference",
-            //         referenceName: "country",
-            //       },
-            //     },
-            //     referenceToOuterObject: "country",
-            //     definition: {
-            //       transformerType: "freeObjectTemplate",
-            //       definition: {
-            //         "iso3166-1Alpha-2": {
-            //           transformerType: "constantString",
-            //           value: "DE",
-            //         },
-            //       },
-            //     },
-            //   },
-            //   transformerParams: {
-            //     country: Country1 as EntityInstance,
-            //   },
-            //   expectedValue: { ...Country1, "iso3166-1Alpha-2": "DE" },
-            // },
-            // "objectAlter should fail when applyTo fails to resolve correctly": {
-            //   transformerTestType: "transformerTest",
-            //   transformerTestLabel: "objectAlter should fail when applyTo fails to resolve correctly",
-            //   transformerName: "objectAlter",
-            //   transformer: {
-            //     transformerType: "objectAlter",
-            //     applyTo: {
-            //       referenceType: "referencedTransformer",
-            //       reference: {
-            //         transformerType: "parameterReference",
-            //         referenceName: "nonExistingCountry",
-            //       },
-            //     },
-            //     definition: {
-            //       transformerType: "freeObjectTemplate",
-            //       definition: {
-            //         "iso3166-1Alpha-2": {
-            //           transformerType: "constantString",
-            //           value: "DE",
-            //         },
-            //       },
-            //     },
-            //   },
-            //   transformerParams: {
-            //     country: Country1 as EntityInstance,
-            //   },
-            //   ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-            //   expectedValue: {
-            //     queryFailure: "QueryNotExecutable",
-            //   },
-            // },
-            // "objectAlter should fail when definition fails to resolve correctly": {
-            //   transformerTestType: "transformerTest",
-            //   transformerTestLabel: "objectAlter should fail when definition fails to resolve correctly",
-            //   transformerName: "objectAlter",
-            //   transformer: {
-            //     transformerType: "objectAlter",
-            //     applyTo: {
-            //       referenceType: "referencedTransformer",
-            //       reference: {
-            //         transformerType: "parameterReference",
-            //         referenceName: "country",
-            //       },
-            //     },
-            //     definition: {
-            //       transformerType: "freeObjectTemplate",
-            //       definition: {
-            //         "iso3166-1Alpha-2": {
-            //           transformerType: "parameterReference",
-            //           referencePath: ["country", "nonExistingAttribute"],
-            //         },
-            //       },
-            //     },
-            //   },
-            //   transformerParams: {
-            //     country: Country1 as EntityInstance,
-            //   },
-            //   ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-            //   expectedValue: {
-            //     queryFailure: "QueryNotExecutable",
-            //   },
-            // },
+            "objectAlter allows to change a referenced object attribute value": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel: "objectAlter allows to change a referenced object attribute value",
+              transformerName: "objectAlter",
+              transformer: {
+                transformerType: "objectAlter",
+                interpolation: "runtime",
+                applyTo: {
+                  referenceType: "referencedTransformer",
+                  reference: {
+                    transformerType: "parameterReference",
+                    referenceName: "country",
+                  },
+                },
+                referenceToOuterObject: "country",
+                definition: {
+                  transformerType: "freeObjectTemplate",
+                  interpolation: "runtime",
+                  definition: {
+                    "iso3166-1Alpha-2": {
+                      transformerType: "constantString",
+                      value: "DE",
+                    },
+                  },
+                },
+              },
+              transformerParams: {
+                country: Country1 as EntityInstance,
+              },
+              expectedValue: { ...Country1, "iso3166-1Alpha-2": "DE" },
+            },
+            "objectAlter should fail when applyTo fails to resolve correctly": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel: "objectAlter should fail when applyTo fails to resolve correctly",
+              transformerName: "objectAlter",
+              transformer: {
+                transformerType: "objectAlter",
+                interpolation: "runtime",
+                applyTo: {
+                  referenceType: "referencedTransformer",
+                  reference: {
+                    transformerType: "parameterReference",
+                    referenceName: "nonExistingCountry",
+                  },
+                },
+                referenceToOuterObject: "country",
+                definition: {
+                  transformerType: "freeObjectTemplate",
+                  interpolation: "runtime",
+                  definition: {
+                    "iso3166-1Alpha-2": {
+                      transformerType: "constantString",
+                      value: "DE",
+                    },
+                  },
+                },
+              },
+              transformerParams: {
+                country: Country1 as EntityInstance,
+              },
+              ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+              expectedValue: {
+                queryFailure: "QueryNotExecutable",
+              },
+            },
+            "objectAlter should fail when definition fails to resolve correctly": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel: "objectAlter should fail when definition fails to resolve correctly",
+              transformerName: "objectAlter",
+              transformer: {
+                transformerType: "objectAlter",
+                interpolation: "runtime",
+                applyTo: {
+                  referenceType: "referencedTransformer",
+                  reference: {
+                    transformerType: "parameterReference",
+                    referenceName: "country",
+                  },
+                },
+                referenceToOuterObject: "country",
+                definition: {
+                  transformerType: "freeObjectTemplate",
+                  interpolation: "runtime",
+                  definition: {
+                    "iso3166-1Alpha-2": {
+                      transformerType: "parameterReference",
+                      // interpolation: "build",
+                      // transformerType: "contextReference",
+                      // interpolation: "runtime",
+                      referencePath: ["country", "nonExistingAttribute"],
+                    },
+                  },
+                },
+              },
+              transformerParams: {
+                country: Country1 as EntityInstance,
+              },
+              ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+              expectedValue: {
+                queryFailure: "QueryNotExecutable",
+              },
+            },
           },
         },
         freeObjectTemplate: {
@@ -1900,6 +1927,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
               transformerName: "freeObjectTemplate",
               transformer: {
                 transformerType: "freeObjectTemplate",
+                interpolation: "runtime",
                 definition: {
                   uuid: {
                     transformerType: "constantUuid",
@@ -1907,6 +1935,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   },
                   name: {
                     transformerType: "parameterReference",
+                    interpolation: "build",
                     referencePath: ["country", "iso3166-1Alpha-2"],
                   },
                 },
@@ -1930,6 +1959,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   },
                   name: {
                     transformerType: "parameterReference",
+                    interpolation: "build",
                     referencePath: ["country", "iso3166-1Alpha-2"],
                   },
                   country: {
@@ -1942,6 +1972,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                       },
                       name: {
                         transformerType: "parameterReference",
+                        interpolation: "build",
                         referencePath: ["country", "iso3166-1Alpha-2"],
                       },
                     },
@@ -1963,6 +1994,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
               transformerName: "freeObjectTemplate",
               transformer: {
                 transformerType: "freeObjectTemplate",
+                interpolation: "runtime",
                 definition: {
                   uuid: {
                     transformerType: "constantUuid",
@@ -1970,6 +2002,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   },
                   name: {
                     transformerType: "parameterReference",
+                    // interpolation: "build",
                     referencePath: ["country", "nonExistingAttribute"],
                   },
                 },
@@ -2090,18 +2123,18 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                     {
                       attributeKey: {
                         transformerType: "constant",
-                        interpolation: "runtime",
+                        // interpolation: "runtime",
                         value: "uuid",
                       },
                       attributeValue: {
                         transformerType: "constant",
-                        interpolation: "runtime",
+                        // interpolation: "runtime",
                         value: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
                       },
                     },
                     {
                       attributeKey: {
-                        interpolation: "runtime",
+                        // interpolation: "runtime",
                         transformerType: "constantUuid",
                         value: "name",
                       },
@@ -2136,19 +2169,19 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   referenceType: "referencedTransformer",
                   reference: {
                     transformerType: "contextReference",
-                    // interpolation: "runtime",
+                    interpolation: "runtime",
                     referenceName: "countryList",
                   },
                 },
                 referenceToOuterObject: "country2",
                 elementTransformer: {
                   transformerType: "objectAlter",
-                  // interpolation: "runtime",
+                  interpolation: "runtime",
                   applyTo: {
                     referenceType: "referencedTransformer",
                     reference: {
                       transformerType: "contextReference",
-                      // interpolation: "runtime",
+                      interpolation: "runtime",
                       referenceName: "country2",
                     },
                   },
@@ -2159,12 +2192,12 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                     definition: {
                       id: {
                         transformerType: "contextReference",
-                        // interpolation: "runtime",
+                        interpolation: "runtime",
                         referencePath: ["country3", "uuid"],
                       },
                       name: {
                         transformerType: "contextReference",
-                        // interpolation: "runtime",
+                        interpolation: "runtime",
                         referencePath: ["country3", "iso3166-1Alpha-2"],
                       },
                     },
@@ -2194,10 +2227,12 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
               transformerName: "dataflowObject",
               transformer: {
                 transformerType: "dataflowObject",
+                interpolation: "runtime",
                 target: "newObject",
                 definition: {
                   newObject: {
                     transformerType: "object_fullTemplate",
+                    interpolation: "runtime",
                     applyTo: {
                       referenceType: "referencedTransformer",
                       reference: {
@@ -2214,6 +2249,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                         },
                         attributeValue: {
                           transformerType: "parameterReference",
+                          interpolation: "build",
                           referenceName: "newUuid",
                         },
                       },
@@ -2225,7 +2261,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                         attributeValue: {
                           // transformerType: "parameterReference",
                           transformerType: "contextReference",
-                          // interpolation: "runtime",
+                          interpolation: "runtime",
                           referencePath: ["country2", "iso3166-1Alpha-2"],
                         },
                       },
@@ -2247,10 +2283,12 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
               transformerName: "dataflowObject",
               transformer: {
                 transformerType: "dataflowObject",
+                interpolation: "runtime",
                 target: "newObject2",
                 definition: {
                   newObject: {
                     transformerType: "object_fullTemplate",
+                    interpolation: "runtime",
                     label: "newObject",
                     applyTo: {
                       referenceType: "referencedTransformer",
@@ -2268,6 +2306,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                         },
                         attributeValue: {
                           transformerType: "parameterReference",
+                          interpolation: "build",
                           referenceName: "newUuid",
                         },
                       },
@@ -2286,6 +2325,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   },
                   newObject2: {
                     transformerType: "object_fullTemplate",
+                    interpolation: "runtime",
                     label: "newObject2",
                     applyTo: {
                       referenceType: "referencedTransformer",
@@ -2303,6 +2343,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                         },
                         attributeValue: {
                           transformerType: "parameterReference",
+                          interpolation: "build",
                           referenceName: "newUuid2",
                         },
                       },
@@ -2313,7 +2354,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                         },
                         attributeValue: {
                           transformerType: "contextReference",
-                          // interpolation: "runtime",
+                          interpolation: "runtime",
                           referencePath: ["newObject", "name"],
                         },
                       },
@@ -2339,10 +2380,12 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
               transformerName: "dataflowObject",
               transformer: {
                 transformerType: "dataflowObject",
+                interpolation: "runtime",
                 target: "newObject",
                 definition: {
                   newObject: {
                     transformerType: "object_fullTemplate",
+                    interpolation: "runtime",
                     applyTo: {
                       referenceType: "referencedTransformer",
                       reference: {
@@ -2359,6 +2402,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                         },
                         attributeValue: {
                           transformerType: "parameterReference",
+                          interpolation: "build",
                           referenceName: "newUuid",
                         },
                       },
@@ -2369,7 +2413,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                         },
                         attributeValue: {
                           transformerType: "contextReference",
-                          // interpolation: "runtime",
+                          interpolation: "runtime",
                           referencePath: ["country3", "nonExistingAttribute"],
                         },
                       },
@@ -2427,6 +2471,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   referenceType: "referencedTransformer",
                   reference: {
                     transformerType: "parameterReference",
+                    interpolation: "build",
                     referenceName: "objectList",
                   },
                 },

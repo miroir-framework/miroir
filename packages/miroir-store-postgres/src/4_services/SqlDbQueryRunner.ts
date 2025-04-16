@@ -131,8 +131,9 @@ export class SqlDbQueryRunner {
   asyncExtractWithQuery = async (
     selectorParams: AsyncQueryRunnerParams,
   ): Promise<Domain2QueryReturnType<Record<string, any>>> => {
-    // log.info("########## asyncRunQuery begin, query", selectorParams);
+    log.info("########## asyncRunQuery begin, selectorParams", JSON.stringify(selectorParams, null, 2));
   
+    // if (selectorParams.extractor.)
     const sqlQueryParams = sqlStringForQuery(
       selectorParams,
       this.schema,
@@ -412,6 +413,7 @@ export class SqlDbQueryRunner {
           "runtime",
           {
             transformerType: "contextReference",
+            interpolation: "runtime",
             referenceName: querySelectorParams.objectReference,
           },
           "value",

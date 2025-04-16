@@ -214,7 +214,11 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
     case "combinerForObjectByRelation": {
       const referenceObject = transformer_InnerReference_resolve(
         "runtime",
-        { transformerType: "contextReference", referenceName: querySelectorParams.objectReference },
+        {
+          transformerType: "contextReference",
+          interpolation: "runtime",
+          referenceName: querySelectorParams.objectReference,
+        },
         "value", // TODO: not consistent with "runtime" evaluation, this has no influence on the result of "runtime" evaluations.
         selectorParams.extractor.queryParams,
         selectorParams.extractor.contextResults

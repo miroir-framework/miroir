@@ -993,7 +993,7 @@ export class DomainController implements DomainControllerInterface {
     let localContext: Record<string, any> = { ...actionParamValues };
 
     log.info(
-      "handleTestCompositeActionTemplateSuite testAction",
+      "handleTestCompositeActionTemplateSuite resolving testAction",
       testAction,
       "localActionParams",
       Object.keys(localActionParams)
@@ -1009,7 +1009,7 @@ export class DomainController implements DomainControllerInterface {
     )
 
     if (resolveErrors.length > 0) {
-      log.error("handleTestCompositeActionTemplateSuite resolveTestCompositeActionTemplateSuite errors", resolveErrors);
+      log.error("handleTestCompositeActionTemplateSuite errors", resolveErrors);
       return new Action2Error(
         "FailedToResolveTemplate",
         "handleTestCompositeActionTemplateSuite resolveTestCompositeActionTemplateSuite errors for entries: " + JSON.stringify(resolveErrors.map(e=> e[0]), null, 2),

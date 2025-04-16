@@ -239,6 +239,10 @@
             "type": "literal",
             "definition": "contextReference"
           },
+          "interpolation": {
+            "type": "literal",
+            "definition": "runtime"
+          },
           "referenceName": {
             "optional": true,
             "type": "string"
@@ -265,7 +269,7 @@
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformer_parameterReference"
+              "relativePath": "transformerForBuild_parameterReference"
             }
           }
         ]
@@ -415,31 +419,31 @@
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformer_contextOrParameterReferenceTO_REMOVE"
+              "relativePath": "transformerForBuild_constant"
             }
           },
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformer_constant"
+              "relativePath": "transformerForBuild_parameterReference"
             }
           },
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformer_constantUuid"
+              "relativePath": "transformerForBuild_constantUuid"
             }
           },
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformer_constantObject"
+              "relativePath": "transformerForBuild_constantObject"
             }
           },
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformer_constantString"
+              "relativePath": "transformerForBuild_constantString"
             }
           },
           {
@@ -475,12 +479,284 @@
       },
       "transformerForBuild_Abstract": {
         "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "transformer_label"
+          }
+        },
         "definition": {
           "interpolation": {
             "type": "literal",
             "definition": "build"
           }
         }
+      },
+      "transformerForBuild_parameterReference": {
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformer_parameterReference"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuild_Abstract"
+            }
+          }
+        ],
+        "definition": {}
+      },
+      "transformerForBuild_constant": {
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformer_constant"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuild_Abstract"
+            }
+          }
+        ],
+        "definition": {}
+      },
+      "transformerForBuild_constantArray": {
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformer_constantArray"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuild_Abstract"
+            }
+          }
+        ],
+        "definition": {}
+      },
+      "transformerForBuild_constantBigint": {
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformer_constantBigint"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuild_Abstract"
+            }
+          }
+        ],
+        "definition": {}
+      },
+      "transformerForBuild_constantBoolean": {
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformer_constantBoolean"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuild_Abstract"
+            }
+          }
+        ],
+        "definition": {}
+      },
+      "transformerForBuild_constantNumber": {
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformer_constantNumber"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuild_Abstract"
+            }
+          }
+        ],
+        "definition": {}
+      },
+      "transformerForBuild_constantObject": {
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformer_constantObject"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuild_Abstract"
+            }
+          }
+        ],
+        "definition": {}
+      },
+      "transformerForBuild_constantString": {
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformer_constantString"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuild_Abstract"
+            }
+          }
+        ],
+        "definition": {}
+      },
+      "transformerForBuild_constantUuid": {
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformer_constantUuid"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuild_Abstract"
+            }
+          }
+        ],
+        "definition": {}
+      },
+      "transformerForBuild_constants": {
+        "type": "union",
+        "discriminator": "transformerType",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformerForBuild_constant"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformer_constantAsExtractor"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformerForBuild_constantArray"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformerForBuild_constantBigint"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformerForBuild_constantBoolean"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformerForBuild_constantUuid"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformerForBuild_constantNumber"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformerForBuild_constantObject"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformerForBuild_constantString"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformer_newUuid"
+            }
+          }
+        ]
       },
       "transformerForBuild_count": {
         "type": "object",
@@ -1687,13 +1963,25 @@
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformer_constants"
+              "relativePath": "transformerForBuild_constants"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformerForBuild_parameterReference"
             }
           },
           {
             "type": "schemaReference",
             "definition": {
               "relativePath": "transformerForBuild_InnerReference"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformerForBuild_count"
             }
           },
           {
@@ -1772,6 +2060,14 @@
       },
       "transformerForRuntime_Abstract": {
         "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "transformer_label"
+          }
+        },
         "definition": {
           "interpolation": {
             "type": "literal",
@@ -2569,6 +2865,15 @@
       },
       "transformerForRuntime_object_alter": {
         "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformerForRuntime_Abstract"
+            }
+          }
+        ],
         "definition": {
           "transformerType": {
             "type": "literal",
@@ -2972,7 +3277,7 @@
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformer_parameterReference"
+              "relativePath": "transformerForBuild_parameterReference"
             }
           },
           {

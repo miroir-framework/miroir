@@ -110,7 +110,11 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
         // TODO: we assume this ia a constant, get rid of resolution altogether (push it up)
         const referenceObject = transformer_InnerReference_resolve(
           "runtime",
-          { transformerType: "contextReference", referenceName: querySelectorParams.objectReference },
+          {
+            transformerType: "contextReference",
+            interpolation: "runtime",
+            referenceName: querySelectorParams.objectReference,
+          },
           "value", // TODO: this is inconsistent with "build" evaluation, "build" evaluation should always yield a runtime transformer.
           selectorParams.extractor.queryParams,
           selectorParams.extractor.contextResults

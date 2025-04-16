@@ -41,7 +41,9 @@ import {
   TransformerForRuntime_objectDynamicAccess,
   TransformerForRuntime_objectEntries,
   TransformerForRuntime_objectValues,
-  TransformerForRuntime_unique
+  TransformerForRuntime_unique,
+  Transformer_constants,
+  Transformer_parameterReference
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { Action2Error, Domain2ElementFailed, Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
@@ -113,7 +115,11 @@ function resolveApplyTo(
         typeof transformerReference == "string"
           ? defaultTransformers.transformer_InnerReference_resolve(
               step,
-              { transformerType: "contextReference", referenceName: transformerReference }, // TODO: there's a bug, count can not be used at build time, although it should be usable at build time
+              {
+                transformerType: "contextReference",
+                interpolation: "runtime",
+                referenceName: transformerReference,
+              }, // TODO: there's a bug, count can not be used at build time, although it should be usable at build time
               resolveBuildTransformersTo,
               queryParams,
               contextResults
@@ -235,7 +241,11 @@ export function resolveApplyTo_legacy(
         typeof transformerReference == "string"
           ? defaultTransformers.transformer_InnerReference_resolve(
               step,
-              { transformerType: "contextReference", referenceName: transformerReference }, // TODO: there's a bug, count can not be used at build time, although it should be usable at build time
+              {
+                transformerType: "contextReference",
+                interpolation: "runtime",
+                referenceName: transformerReference,
+              }, // TODO: there's a bug, count can not be used at build time, although it should be usable at build time
               resolveBuildTransformersTo,
               queryParams,
               contextResults
@@ -653,13 +663,16 @@ function transformer_objectAlter(
 // ################################################################################################
 export function transformer_resolveReference(
   step: Step,
-  transformerInnerReference: Transformer_contextOrParameterReferenceTO_REMOVE,
+  transformerInnerReference:
+    | Transformer_contextOrParameterReferenceTO_REMOVE
+    | Transformer_parameterReference,
   paramOrContext: "param" | "context",
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>
 ): Domain2QueryReturnType<any> {
   // ReferenceNotFound
-  const bank: Record<string, any> = paramOrContext == "param" ? queryParams ?? {} : contextResults ?? {};
+  const bank: Record<string, any> =
+    paramOrContext == "param" ? queryParams ?? {} : contextResults ?? {};
   // log.info(
   //   "transformer_resolveReference called for",
   //   JSON.stringify(transformerInnerReference, null, 2),
@@ -743,7 +756,8 @@ export function transformer_resolveReference(
         queryFailure: "ReferenceNotFound",
         failureOrigin: ["transformer_resolveReference"],
         queryReference: JSON.stringify(transformerInnerReference.referencePath),
-        failureMessage: "no referencePath " + transformerInnerReference.referencePath + " found in queryContext",
+        failureMessage:
+          "no referencePath " + transformerInnerReference.referencePath + " found in queryContext",
         queryContext: JSON.stringify(Object.keys(bank)),
       });
     }
@@ -758,54 +772,50 @@ export function transformer_resolveReference(
 // parameterReference<A> -> A
 // constantUuid -> Uuid
 // constantString -> string
-export function transformer_InnerReference_resolve  (
+export function transformer_InnerReference_resolve(
   step: Step,
-  transformerInnerReference: TransformerForBuild_InnerReference | TransformerForRuntime_InnerReference,
+  transformerInnerReference:
+    | Transformer_constants
+    | TransformerForBuild_InnerReference
+    | TransformerForRuntime_InnerReference,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   queryParams: Record<string, any>,
-  contextResults?: Record<string, any>,
+  contextResults?: Record<string, any>
 ): Domain2QueryReturnType<any> {
   // TODO: copy / paste (almost?) from query parameter lookup!
-  log.info(
-    "transformer_InnerReference_resolve called for transformerInnerReference=",
-    transformerInnerReference,
-    "queryParams=",
-    Object.keys(queryParams),
-    "contextResults=",
-    Object.keys(contextResults ?? {})
-  );
-  const localQueryParams = queryParams??{};
-  const localContextResults = contextResults??{};
+  // log.info(
+  //   "transformer_InnerReference_resolve called for transformerInnerReference=",
+  //   transformerInnerReference,
+  //   "queryParams=",
+  //   Object.keys(queryParams),
+  //   "contextResults=",
+  //   Object.keys(contextResults ?? {})
+  // );
+  const localQueryParams = queryParams ?? {};
+  const localContextResults = contextResults ?? {};
   if (step == "build" && (transformerInnerReference as any).interpolation == "runtime") {
     log.warn(
       "transformer_InnerReference_resolve called for runtime interpolation in build step",
       transformerInnerReference
     );
-    return transformerInnerReference
+    return transformerInnerReference;
   }
 
+  let result: Domain2QueryReturnType<any> = undefined;
   switch (transformerInnerReference.transformerType) {
-    case "constant": {
-      return transformerInnerReference.value
-    }
-    case "constantUuid": {
-      return transformerInnerReference.value // new object
-      break;
-    }
-    case "constantObject": {
-      return transformerInnerReference.value
-      break;
-    }
+    case "constant": 
+    case "constantUuid": 
+    case "constantObject": 
     case "constantString": {
-      return transformerInnerReference.value;
+      result = transformerInnerReference.value;
       break;
     }
     case "newUuid": {
-      return uuidv4();
+      result = uuidv4();
       break;
     }
     case "mustacheStringTemplate": {
-      return defaultTransformers.transformer_mustacheStringTemplate_apply(
+      result = defaultTransformers.transformer_mustacheStringTemplate_apply(
         step,
         transformerInnerReference,
         localQueryParams,
@@ -814,8 +824,9 @@ export function transformer_InnerReference_resolve  (
       break;
     }
     case "contextReference": {
-      if (step == "build") { // no resolution in case of build step
-        return transformerInnerReference;
+      if (step == "build") {
+        // no resolution in case of build step
+        result = transformerInnerReference;
         // return new Domain2ElementFailed({
         //   queryFailure: "ReferenceNotFound",
         //   failureOrigin: ["transformer_InnerReference_resolve"],
@@ -824,17 +835,29 @@ export function transformer_InnerReference_resolve  (
         //   queryContext: "contextReference not allowed in build step, all context references must be resolved at runtime",
         // });
       } else {
-        return transformer_resolveReference(step, transformerInnerReference, "context", localQueryParams, localContextResults);
+        result = transformer_resolveReference(
+          step,
+          transformerInnerReference,
+          "context",
+          localQueryParams,
+          localContextResults
+        );
       }
       break;
     }
     case "parameterReference": {
       // RESOLVING EVERYTHING AT RUNTIME
-      return transformer_resolveReference(step, transformerInnerReference, "param", localQueryParams, localContextResults);
+      result = transformer_resolveReference(
+        step,
+        transformerInnerReference,
+        "param",
+        localQueryParams,
+        localContextResults
+      );
       break;
     }
     case "objectDynamicAccess": {
-      return defaultTransformers.transformer_dynamicObjectAccess_apply(
+      result = defaultTransformers.transformer_dynamicObjectAccess_apply(
         step,
         "none",
         transformerInnerReference,
@@ -845,11 +868,23 @@ export function transformer_InnerReference_resolve  (
       break;
     }
     default: {
-      throw new Error("transformer_InnerReference_resolve failed, unknown transformerType for transformer=" + transformerInnerReference);
+      throw new Error(
+        "transformer_InnerReference_resolve failed, unknown transformerType for transformer=" +
+          transformerInnerReference
+      );
       break;
     }
   }
-
+  log.info(
+    "transformer_InnerReference_resolve resolved for",
+    "step",
+    step,
+    "transformerInnerReference=",
+    JSON.stringify(transformerInnerReference, null, 2),
+    "result",
+    JSON.stringify(result, null, 2),
+  );
+  return result;
 };
 
 // ################################################################################################
@@ -1813,11 +1848,11 @@ export function transformer_extended_apply(
       result = innerTransformer_array_apply(step, label, transformer, resolveBuildTransformersTo, queryParams, contextResults);
     } else {
       // TODO: improve test, refuse interpretation of build transformer in runtime step
-      const newResolveBuildTransformersTo =
-      (transformer as any)["interpolation"] == "build" &&
-      resolveBuildTransformersTo == "constantTransformer"
-        ? "value"
-        : resolveBuildTransformersTo;
+      const newResolveBuildTransformersTo: ResolveBuildTransformersTo =
+        (transformer as any)["interpolation"] == "build" &&
+        resolveBuildTransformersTo == "constantTransformer"
+          ? "value" // HACK!
+          : resolveBuildTransformersTo;
       if (transformer["transformerType"] != undefined) {
         if (step == "runtime" || (transformer as any)["interpolation"] == "build") {
           // log.info("transformer_extended_apply interpreting transformer!");
@@ -1892,14 +1927,53 @@ export function transformer_extended_apply(
                 });
               }
               if (foundApplicationTransformer.transformerImplementation.transformerImplementationType == "transformer") {
-                preResult = transformer_extended_apply(
-                  step,
-                  label,
-                  foundApplicationTransformer.transformerImplementation.definition,
-                  newResolveBuildTransformersTo,
-                  queryParams,
-                  {...contextResults, ...(transformer as any)} // inner definitions do not have parameter references, only context references
-                );
+                // TODO: clean up environment, only parameters to transformer should be passed
+                // evaluate transformer parameters
+                if (!foundApplicationTransformer.transformerInterface) {
+                  log.error(
+                    "transformer_extended_apply failed for",
+                    label,
+                    "using to resolve build transformers for step:",
+                    step,
+                    "transformer",
+                    JSON.stringify(transformer, null, 2)
+                  );
+                  preResult = new Domain2ElementFailed({
+                    queryFailure: "QueryNotExecutable",
+                    failureOrigin: ["transformer_extended_apply"],
+                    queryContext: "transformer " + (transformer as any).transformerType + " not found",
+                    queryParameters: transformer,
+                  });
+                } else {
+                  // CALL BY-VALUE: evaluate parameters to transformer first
+                  const evaluatedParams = Object.fromEntries(
+                    Object.keys(
+                      foundApplicationTransformer.transformerInterface.transformerParameterSchema
+                        .transformerDefinition.definition
+                    ).map((param) => {
+                      return [
+                        param,
+                        defaultTransformers.transformer_extended_apply(
+                          step,
+                          label,
+                          transformer[param],
+                          resolveBuildTransformersTo,
+                          queryParams,
+                          contextResults
+                        ),
+                      ];
+                    })
+                  );
+                  preResult = transformer_extended_apply(
+                    step,
+                    label,
+                    foundApplicationTransformer.transformerImplementation.definition,
+                    newResolveBuildTransformersTo,
+                    queryParams,
+                    {...contextResults, ...evaluatedParams},
+                    // {...contextResults, ...(transformer as any)} // inner definitions do not have parameter references, only context references
+                  );
+                }
               }
             }
           }
