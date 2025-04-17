@@ -178,7 +178,7 @@ async function runTransformerTestInMemory(vitest: any, testSuiteNamePath: string
     JSON.stringify(convertedTransformer, null, 2)
   );
 
-  if (interpolation == "runtime") {
+  if (interpolation == "runtime" && !convertedTransformer["elementType"]) {
     rawResult = transformer_extended_apply_wrapper(
       "runtime",
       undefined,
@@ -188,13 +188,6 @@ async function runTransformerTestInMemory(vitest: any, testSuiteNamePath: string
     );
   } else {
     rawResult = convertedTransformer;
-    // rawResult = transformer_extended_apply_wrapper(
-    //   interpolation,
-    //   undefined,
-    //   runtimeTransformer,
-    //   transformerTest.transformerParams,
-    //   transformerTest.transformerRuntimeContext ?? {}
-    // );
   }
 
 

@@ -2002,15 +2002,14 @@ export function transformer_extended_apply(
             }
           }
         } else {
-          // log.info("THERE");
-          log.warn(
-            "transformer_extended_apply called for",
-            label,
-            "treated as plain object for step:",
-            step,
-            "transformer",
-            JSON.stringify(transformer, null, 2)
-          );
+          // log.warn(
+          //   "transformer_extended_apply called for",
+          //   label,
+          //   "treated as plain object for step:",
+          //   step,
+          //   "transformer",
+          //   JSON.stringify(transformer, null, 2)
+          // );
 
           result = innerTransformer_plainObject_apply(
             step,

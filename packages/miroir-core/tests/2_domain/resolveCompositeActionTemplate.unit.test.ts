@@ -1113,6 +1113,7 @@ describe('resolveTestCompositeActionTemplate', () => {
             actionLabel: "createEntity",
             deploymentUuid: {
               transformerType: "parameterReference",
+              interpolation: "build",
               referenceName: "currentDeploymentUuid",
             },
             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
@@ -1120,10 +1121,12 @@ describe('resolveTestCompositeActionTemplate', () => {
               {
                 entity: {
                   transformerType: "parameterReference",
+                  interpolation: "build",
                   referenceName: "createEntity_newEntity",
                 },
                 entityDefinition: {
                   transformerType: "parameterReference",
+                  interpolation: "build",
                   referenceName: "newEntityDefinition",
                 },
               },
@@ -1306,6 +1309,7 @@ describe('resolveTestCompositeActionTemplateSuite', () => {
                 actionLabel: "createEntity",
                 deploymentUuid: {
                   transformerType: "parameterReference",
+                  interpolation: "build",
                   referenceName: "currentDeploymentUuid",
                 },
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
@@ -1314,6 +1318,7 @@ describe('resolveTestCompositeActionTemplateSuite', () => {
                     // entity: newEntity,
                     entity: {
                       transformerType: "parameterReference",
+                      interpolation: "build",
                       referenceName: "createEntity_newEntity",
                     },
                     entityDefinition: newEntityDefinition as any,

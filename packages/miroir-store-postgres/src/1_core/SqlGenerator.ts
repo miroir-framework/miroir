@@ -402,6 +402,20 @@ export function sqlStringForRuntimeTransformer(
     : "";
 
   log.info("sqlStringForRuntimeTransformer actionRuntimeTransformer", actionRuntimeTransformer);
+  if (typeof actionRuntimeTransformer != "object" || Array.isArray(actionRuntimeTransformer)) {
+    return sqlStringForRuntimeTransformer(
+      {
+        transformerType: "constant",
+        value: actionRuntimeTransformer,
+      },
+      preparedStatementParametersCount,
+      indentLevel,
+      queryParams,
+      definedContextEntries,
+      useAccessPathForContextReference,
+      topLevelTransformer
+    )
+  }
   switch (actionRuntimeTransformer.transformerType) {
     case "newUuid": {
       return {

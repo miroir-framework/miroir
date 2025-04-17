@@ -320,8 +320,7 @@ async function runTransformerIntegrationTest(vitest: any, testNameArray: string[
     transformerTest.transformer,
     transformerTest.transformerParams,
     transformerTest.transformerRuntimeContext ?? {},
-    "constantTransformer", // resolveBuildTransformerTo
-    // 'value', // resolveBuildTransformerTo
+    'value', // resolveBuildTransformerTo
   );
 
   console.log("runTransformerIntegrationTest", testSuitePathName, "resolvedTransformer", JSON.stringify(resolvedTransformer, null, 2));
