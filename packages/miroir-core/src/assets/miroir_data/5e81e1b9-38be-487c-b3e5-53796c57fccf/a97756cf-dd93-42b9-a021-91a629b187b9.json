@@ -7,10 +7,79 @@
   "definition": {
     "type": "schemaReference",
     "context": {
-      "transformer_label": {
+      "transformer_inner_label": {
         "type": "object",
         "definition": {
           "label": { "type": "string", "optional": true }
+        }
+      },
+      "transformer_inner_referenced_extractor": {
+        "type": "object",
+        "definition": {
+          "referenceType": {
+            "type": "literal",
+            "definition": "referencedExtractor"
+          },
+          "reference": {
+            "type": "union",
+            "definition": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "transformer_extractors"
+                }
+              }
+            ]
+          }
+        }
+      },
+      "transformer_inner_referenced_transformerForBuild": {
+        "type": "object",
+        "definition": {
+          "referenceType": {
+            "type": "literal",
+            "definition": "referencedTransformer"
+          },
+          "reference": {
+            "type": "union",
+            "definition": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "transformerForBuild"
+                }
+              }
+            ]
+          }
+        }
+      },
+      "transformer_inner_referenced_transformerForRuntime": {
+        "type": "object",
+        "definition": {
+          "referenceType": {
+            "type": "literal",
+            "definition": "referencedTransformer"
+          },
+          "reference": {
+            "type": "union",
+            "definition": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "transformerForRuntime"
+                }
+              }
+            ]
+          }
         }
       },
       "recordOfTransformers": {
@@ -467,7 +536,7 @@
           "definition": {
             "eager": true,
             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "relativePath": "transformer_label"
+            "relativePath": "transformer_inner_label"
           }
         },
         "definition": {
@@ -484,7 +553,7 @@
           "definition": {
             "eager": true,
             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "relativePath": "transformer_label"
+            "relativePath": "transformer_inner_label"
           }
         },
         "definition": {
@@ -782,49 +851,15 @@
                 }
               },
               {
-                "type": "object",
+                "type": "schemaReference",
                 "definition": {
-                  "referenceType": {
-                    "type": "literal",
-                    "definition": "referencedExtractor"
-                  },
-                  "reference": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "transformer_extractors"
-                        }
-                      }
-                    ]
-                  }
+                  "relativePath": "transformer_inner_referenced_extractor"
                 }
               },
               {
-                "type": "object",
+                "type": "schemaReference",
                 "definition": {
-                  "referenceType": {
-                    "type": "literal",
-                    "definition": "referencedTransformer"
-                  },
-                  "reference": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "transformerForBuild"
-                        }
-                      }
-                    ]
-                  }
+                  "relativePath": "transformer_inner_referenced_transformerForBuild"
                 }
               }
             ]
@@ -897,72 +932,15 @@
                 }
               },
               {
-                "type": "object",
+                "type": "schemaReference",
                 "definition": {
-                  "referenceType": {
-                    "type": "literal",
-                    "definition": "referencedExtractor"
-                  },
-                  "reference": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "transformer_extractors"
-                        }
-                      }
-                    ]
-                  }
+                  "relativePath": "transformer_inner_referenced_extractor"
                 }
               },
               {
-                "type": "object",
+                "type": "schemaReference",
                 "definition": {
-                  "referenceType": {
-                    "type": "literal",
-                    "definition": "referencedExtractor"
-                  },
-                  "reference": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "transformer_extractors"
-                        }
-                      }
-                    ]
-                  }
-                }
-              },
-              {
-                "type": "object",
-                "definition": {
-                  "referenceType": {
-                    "type": "literal",
-                    "definition": "referencedTransformer"
-                  },
-                  "reference": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "transformerForBuild"
-                        }
-                      }
-                    ]
-                  }
+                  "relativePath": "transformer_inner_referenced_transformerForBuild"
                 }
               }
             ]
@@ -1023,49 +1001,21 @@
             "discriminator": "referenceType",
             "definition": [
               {
-                "type": "object",
+                "type": "record",
                 "definition": {
-                  "referenceType": {
-                    "type": "literal",
-                    "definition": "referencedExtractor"
-                  },
-                  "reference": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "transformer_extractors"
-                        }
-                      }
-                    ]
-                  }
+                  "type": "any"
                 }
               },
               {
-                "type": "object",
+                "type": "schemaReference",
                 "definition": {
-                  "referenceType": {
-                    "type": "literal",
-                    "definition": "referencedTransformer"
-                  },
-                  "reference": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "transformerForBuild"
-                        }
-                      }
-                    ]
-                  }
+                  "relativePath": "transformer_inner_referenced_extractor"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "transformer_inner_referenced_transformerForBuild"
                 }
               }
             ]
@@ -1174,49 +1124,15 @@
                 }
               },
               {
-                "type": "object",
+                "type": "schemaReference",
                 "definition": {
-                  "referenceType": {
-                    "type": "literal",
-                    "definition": "referencedExtractor"
-                  },
-                  "reference": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "transformer_extractors"
-                        }
-                      }
-                    ]
-                  }
+                  "relativePath": "transformer_inner_referenced_extractor"
                 }
               },
               {
-                "type": "object",
+                "type": "schemaReference",
                 "definition": {
-                  "referenceType": {
-                    "type": "literal",
-                    "definition": "referencedTransformer"
-                  },
-                  "reference": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "transformerForBuild"
-                        }
-                      }
-                    ]
-                  }
+                  "relativePath": "transformer_inner_referenced_transformerForBuild"
                 }
               }
             ]
@@ -1268,49 +1184,15 @@
                 }
               },
               {
-                "type": "object",
+                "type": "schemaReference",
                 "definition": {
-                  "referenceType": {
-                    "type": "literal",
-                    "definition": "referencedExtractor"
-                  },
-                  "reference": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "transformer_extractors"
-                        }
-                      }
-                    ]
-                  }
+                  "relativePath": "transformer_inner_referenced_extractor"
                 }
               },
               {
-                "type": "object",
+                "type": "schemaReference",
                 "definition": {
-                  "referenceType": {
-                    "type": "literal",
-                    "definition": "referencedTransformer"
-                  },
-                  "reference": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "transformerForBuild"
-                        }
-                      }
-                    ]
-                  }
+                  "relativePath": "transformer_inner_referenced_transformerForBuild"
                 }
               }
             ]
@@ -1380,49 +1262,15 @@
                 }
               },
               {
-                "type": "object",
+                "type": "schemaReference",
                 "definition": {
-                  "referenceType": {
-                    "type": "literal",
-                    "definition": "referencedExtractor"
-                  },
-                  "reference": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "transformer_extractors"
-                        }
-                      }
-                    ]
-                  }
+                  "relativePath": "transformer_inner_referenced_extractor"
                 }
               },
               {
-                "type": "object",
+                "type": "schemaReference",
                 "definition": {
-                  "referenceType": {
-                    "type": "literal",
-                    "definition": "referencedTransformer"
-                  },
-                  "reference": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "transformerForBuild"
-                        }
-                      }
-                    ]
-                  }
+                  "relativePath": "transformer_inner_referenced_transformerForBuild"
                 }
               }
             ]
@@ -1436,7 +1284,7 @@
             "type": "schemaReference",
             "definition": {
               "eager": true,
-              "relativePath": "transformer_label"
+              "relativePath": "transformer_inner_label"
             }
           },
           {
@@ -1467,49 +1315,15 @@
                 }
               },
               {
-                "type": "object",
+                "type": "schemaReference",
                 "definition": {
-                  "referenceType": {
-                    "type": "literal",
-                    "definition": "referencedExtractor"
-                  },
-                  "reference": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "transformer_extractors"
-                        }
-                      }
-                    ]
-                  }
+                  "relativePath": "transformer_inner_referenced_extractor"
                 }
               },
               {
-                "type": "object",
+                "type": "schemaReference",
                 "definition": {
-                  "referenceType": {
-                    "type": "literal",
-                    "definition": "referencedTransformer"
-                  },
-                  "reference": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "transformerForBuild"
-                        }
-                      }
-                    ]
-                  }
+                  "relativePath": "transformer_inner_referenced_transformerForBuild"
                 }
               }
             ]
@@ -1578,49 +1392,15 @@
                 }
               },
               {
-                "type": "object",
+                "type": "schemaReference",
                 "definition": {
-                  "referenceType": {
-                    "type": "literal",
-                    "definition": "referencedExtractor"
-                  },
-                  "reference": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "transformer_extractors"
-                        }
-                      }
-                    ]
-                  }
+                  "relativePath": "transformer_inner_referenced_extractor"
                 }
               },
               {
-                "type": "object",
+                "type": "schemaReference",
                 "definition": {
-                  "referenceType": {
-                    "type": "literal",
-                    "definition": "referencedTransformer"
-                  },
-                  "reference": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "transformerForBuild"
-                        }
-                      }
-                    ]
-                  }
+                  "relativePath": "transformer_inner_referenced_transformerForBuild"
                 }
               }
             ]
@@ -1682,49 +1462,15 @@
                 }
               },
               {
-                "type": "object",
+                "type": "schemaReference",
                 "definition": {
-                  "referenceType": {
-                    "type": "literal",
-                    "definition": "referencedExtractor"
-                  },
-                  "reference": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "transformer_extractors"
-                        }
-                      }
-                    ]
-                  }
+                  "relativePath": "transformer_inner_referenced_extractor"
                 }
               },
               {
-                "type": "object",
+                "type": "schemaReference",
                 "definition": {
-                  "referenceType": {
-                    "type": "literal",
-                    "definition": "referencedTransformer"
-                  },
-                  "reference": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "transformerForBuild"
-                        }
-                      }
-                    ]
-                  }
+                  "relativePath": "transformer_inner_referenced_transformerForBuild"
                 }
               }
             ]
@@ -1782,49 +1528,15 @@
                 }
               },
               {
-                "type": "object",
+                "type": "schemaReference",
                 "definition": {
-                  "referenceType": {
-                    "type": "literal",
-                    "definition": "referencedExtractor"
-                  },
-                  "reference": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "transformer_extractors"
-                        }
-                      }
-                    ]
-                  }
+                  "relativePath": "transformer_inner_referenced_extractor"
                 }
               },
               {
-                "type": "object",
+                "type": "schemaReference",
                 "definition": {
-                  "referenceType": {
-                    "type": "literal",
-                    "definition": "referencedTransformer"
-                  },
-                  "reference": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "transformerForBuild"
-                        }
-                      }
-                    ]
-                  }
+                  "relativePath": "transformer_inner_referenced_transformerForBuild"
                 }
               }
             ]
@@ -2065,7 +1777,7 @@
           "definition": {
             "eager": true,
             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "relativePath": "transformer_label"
+            "relativePath": "transformer_inner_label"
           }
         },
         "definition": {
@@ -2302,49 +2014,15 @@
                 }
               },
               {
-                "type": "object",
+                "type": "schemaReference",
                 "definition": {
-                  "referenceType": {
-                    "type": "literal",
-                    "definition": "referencedExtractor"
-                  },
-                  "reference": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "transformer_extractors"
-                        }
-                      }
-                    ]
-                  }
+                  "relativePath": "transformer_inner_referenced_extractor"
                 }
               },
               {
-                "type": "object",
+                "type": "schemaReference",
                 "definition": {
-                  "referenceType": {
-                    "type": "literal",
-                    "definition": "referencedTransformer"
-                  },
-                  "reference": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "transformerForRuntime"
-                        }
-                      }
-                    ]
-                  }
+                  "relativePath": "transformer_inner_referenced_transformerForRuntime"
                 }
               }
             ]
@@ -2393,72 +2071,15 @@
                 }
               },
               {
-                "type": "object",
+                "type": "schemaReference",
                 "definition": {
-                  "referenceType": {
-                    "type": "literal",
-                    "definition": "referencedExtractor"
-                  },
-                  "reference": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "transformer_extractors"
-                        }
-                      }
-                    ]
-                  }
+                  "relativePath": "transformer_inner_referenced_extractor"
                 }
               },
               {
-                "type": "object",
+                "type": "schemaReference",
                 "definition": {
-                  "referenceType": {
-                    "type": "literal",
-                    "definition": "referencedExtractor"
-                  },
-                  "reference": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "transformer_extractors"
-                        }
-                      }
-                    ]
-                  }
-                }
-              },
-              {
-                "type": "object",
-                "definition": {
-                  "referenceType": {
-                    "type": "literal",
-                    "definition": "referencedTransformer"
-                  },
-                  "reference": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "transformerForRuntime"
-                        }
-                      }
-                    ]
-                  }
+                  "relativePath": "transformer_inner_referenced_transformerForRuntime"
                 }
               }
             ]
@@ -2495,49 +2116,15 @@
                 }
               },
               {
-                "type": "object",
+                "type": "schemaReference",
                 "definition": {
-                  "referenceType": {
-                    "type": "literal",
-                    "definition": "referencedExtractor"
-                  },
-                  "reference": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "transformer_extractors"
-                        }
-                      }
-                    ]
-                  }
+                  "relativePath": "transformer_inner_referenced_extractor"
                 }
               },
               {
-                "type": "object",
+                "type": "schemaReference",
                 "definition": {
-                  "referenceType": {
-                    "type": "literal",
-                    "definition": "referencedTransformer"
-                  },
-                  "reference": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "transformerForRuntime"
-                        }
-                      }
-                    ]
-                  }
+                  "relativePath": "transformer_inner_referenced_transformerForRuntime"
                 }
               }
             ]
@@ -2574,49 +2161,15 @@
                 }
               },
               {
-                "type": "object",
+                "type": "schemaReference",
                 "definition": {
-                  "referenceType": {
-                    "type": "literal",
-                    "definition": "referencedExtractor"
-                  },
-                  "reference": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "transformer_extractors"
-                        }
-                      }
-                    ]
-                  }
+                  "relativePath": "transformer_inner_referenced_extractor"
                 }
               },
               {
-                "type": "object",
+                "type": "schemaReference",
                 "definition": {
-                  "referenceType": {
-                    "type": "literal",
-                    "definition": "referencedTransformer"
-                  },
-                  "reference": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "transformerForRuntime"
-                        }
-                      }
-                    ]
-                  }
+                  "relativePath": "transformer_inner_referenced_transformerForRuntime"
                 }
               }
             ]
@@ -2695,49 +2248,21 @@
             "discriminator": "referenceType",
             "definition": [
               {
-                "type": "object",
+                "type": "record",
                 "definition": {
-                  "referenceType": {
-                    "type": "literal",
-                    "definition": "referencedExtractor"
-                  },
-                  "reference": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "transformer_extractors"
-                        }
-                      }
-                    ]
-                  }
+                  "type": "any"
                 }
               },
               {
-                "type": "object",
+                "type": "schemaReference",
                 "definition": {
-                  "referenceType": {
-                    "type": "literal",
-                    "definition": "referencedTransformer"
-                  },
-                  "reference": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "transformerForRuntime"
-                        }
-                      }
-                    ]
-                  }
+                  "relativePath": "transformer_inner_referenced_extractor"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "transformer_inner_referenced_transformerForRuntime"
                 }
               }
             ]
@@ -2791,49 +2316,15 @@
                 }
               },
               {
-                "type": "object",
+                "type": "schemaReference",
                 "definition": {
-                  "referenceType": {
-                    "type": "literal",
-                    "definition": "referencedExtractor"
-                  },
-                  "reference": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "transformer_extractors"
-                        }
-                      }
-                    ]
-                  }
+                  "relativePath": "transformer_inner_referenced_extractor"
                 }
               },
               {
-                "type": "object",
+                "type": "schemaReference",
                 "definition": {
-                  "referenceType": {
-                    "type": "literal",
-                    "definition": "referencedTransformer"
-                  },
-                  "reference": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "transformerForRuntime"
-                        }
-                      }
-                    ]
-                  }
+                  "relativePath": "transformer_inner_referenced_transformerForRuntime"
                 }
               }
             ]
@@ -2890,49 +2381,15 @@
                 }
               },
               {
-                "type": "object",
+                "type": "schemaReference",
                 "definition": {
-                  "referenceType": {
-                    "type": "literal",
-                    "definition": "referencedExtractor"
-                  },
-                  "reference": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "transformer_extractors"
-                        }
-                      }
-                    ]
-                  }
+                  "relativePath": "transformer_inner_referenced_extractor"
                 }
               },
               {
-                "type": "object",
+                "type": "schemaReference",
                 "definition": {
-                  "referenceType": {
-                    "type": "literal",
-                    "definition": "referencedTransformer"
-                  },
-                  "reference": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "transformerForRuntime"
-                        }
-                      }
-                    ]
-                  }
+                  "relativePath": "transformer_inner_referenced_transformerForRuntime"
                 }
               }
             ]
@@ -2975,49 +2432,15 @@
                 }
               },
               {
-                "type": "object",
+                "type": "schemaReference",
                 "definition": {
-                  "referenceType": {
-                    "type": "literal",
-                    "definition": "referencedExtractor"
-                  },
-                  "reference": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "transformer_extractors"
-                        }
-                      }
-                    ]
-                  }
+                  "relativePath": "transformer_inner_referenced_extractor"
                 }
               },
               {
-                "type": "object",
+                "type": "schemaReference",
                 "definition": {
-                  "referenceType": {
-                    "type": "literal",
-                    "definition": "referencedTransformer"
-                  },
-                  "reference": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "transformerForRuntime"
-                        }
-                      }
-                    ]
-                  }
+                  "relativePath": "transformer_inner_referenced_transformerForRuntime"
                 }
               }
             ]
@@ -3040,7 +2463,7 @@
             "type": "schemaReference",
             "definition": {
               "eager": true,
-              "relativePath": "transformer_label"
+              "relativePath": "transformer_inner_label"
             }
           }
         ],
@@ -3063,49 +2486,15 @@
                 }
               },
               {
-                "type": "object",
+                "type": "schemaReference",
                 "definition": {
-                  "referenceType": {
-                    "type": "literal",
-                    "definition": "referencedExtractor"
-                  },
-                  "reference": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "transformer_extractors"
-                        }
-                      }
-                    ]
-                  }
+                  "relativePath": "transformer_inner_referenced_extractor"
                 }
               },
               {
-                "type": "object",
+                "type": "schemaReference",
                 "definition": {
-                  "referenceType": {
-                    "type": "literal",
-                    "definition": "referencedTransformer"
-                  },
-                  "reference": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "transformerForRuntime"
-                        }
-                      }
-                    ]
-                  }
+                  "relativePath": "transformer_inner_referenced_transformerForRuntime"
                 }
               }
             ]
@@ -3136,49 +2525,21 @@
             "discriminator": "referenceType",
             "definition": [
               {
-                "type": "object",
+                "type": "array",
                 "definition": {
-                  "referenceType": {
-                    "type": "literal",
-                    "definition": "referencedExtractor"
-                  },
-                  "reference": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "transformer_extractors"
-                        }
-                      }
-                    ]
-                  }
+                  "type": "any"
                 }
               },
               {
-                "type": "object",
+                "type": "schemaReference",
                 "definition": {
-                  "referenceType": {
-                    "type": "literal",
-                    "definition": "referencedTransformer"
-                  },
-                  "reference": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "transformerForRuntime"
-                        }
-                      }
-                    ]
-                  }
+                  "relativePath": "transformer_inner_referenced_extractor"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "transformer_inner_referenced_transformerForRuntime"
                 }
               }
             ]
@@ -3215,49 +2576,15 @@
                 }
               },
               {
-                "type": "object",
+                "type": "schemaReference",
                 "definition": {
-                  "referenceType": {
-                    "type": "literal",
-                    "definition": "referencedExtractor"
-                  },
-                  "reference": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "transformer_extractors"
-                        }
-                      }
-                    ]
-                  }
+                  "relativePath": "transformer_inner_referenced_extractor"
                 }
               },
               {
-                "type": "object",
+                "type": "schemaReference",
                 "definition": {
-                  "referenceType": {
-                    "type": "literal",
-                    "definition": "referencedTransformer"
-                  },
-                  "reference": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "transformerForRuntime"
-                        }
-                      }
-                    ]
-                  }
+                  "relativePath": "transformer_inner_referenced_transformerForRuntime"
                 }
               }
             ]

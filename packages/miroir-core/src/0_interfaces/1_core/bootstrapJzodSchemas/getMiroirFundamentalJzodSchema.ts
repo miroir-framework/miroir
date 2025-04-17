@@ -212,7 +212,7 @@ export function getExtendedSchemas(jzodSchemajzodMiroirBootstrapSchema: any) {
     "transformer_constant",
     "transformer_parameterReference",
     "transformerForBuild_objectDynamicAccess",
-    "transformer_label",
+    "transformer_inner_label",
     "transformer_Abstract",
     "transformer_orderBy",
     "transformer_constantListAsExtractor",
@@ -2798,8 +2798,14 @@ export function getMiroirFundamentalJzodSchema(
         // runBoxedQueryTemplateOrBoxedExtractorTemplateAction: queryEndpointVersionV1.definition.actions[0].actionParameters,
         // queries
         // Transformer constants and references
-        transformer_label: (miroirFundamentalJzodSchema as any).definition.context
-          .transformer_label,
+        transformer_inner_referenced_extractor: (miroirFundamentalJzodSchema as any).definition.context
+        .transformer_inner_referenced_extractor,
+        transformer_inner_referenced_transformerForBuild: (miroirFundamentalJzodSchema as any).definition.context
+          .transformer_inner_referenced_transformerForBuild,
+        transformer_inner_referenced_transformerForRuntime: (miroirFundamentalJzodSchema as any).definition.context
+          .transformer_inner_referenced_transformerForRuntime,
+        transformer_inner_label: (miroirFundamentalJzodSchema as any).definition.context
+          .transformer_inner_label,
         transformer_orderBy: (miroirFundamentalJzodSchema as any).definition.context
           .transformer_orderBy,
         transformer_constant: (transformerJzodSchema as any).definition.context

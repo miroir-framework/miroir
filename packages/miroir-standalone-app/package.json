@@ -52,7 +52,7 @@
     "react-router-dom": "^6.13.0",
     "react-select": "^5.7.4",
     "util": "^0.12.5",
-    "uuid": "^9.0.0",
+    "uuid": "^11.0.0",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {

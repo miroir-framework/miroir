@@ -35,8 +35,6 @@ import {
   selfApplicationVersionLibraryInitialVersion,
   Uuid,
 } from "miroir-core";
-import { deployment } from "miroir-core/dist/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { InitApplicationParameters } from "miroir-core/src/0_interfaces/4-services/PersistenceStoreControllerInterface";
 
 export type ApplicationEntitiesAndInstances = {
   entity: MetaEntity;
