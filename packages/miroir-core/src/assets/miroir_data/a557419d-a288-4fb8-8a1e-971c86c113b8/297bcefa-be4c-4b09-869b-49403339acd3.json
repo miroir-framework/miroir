@@ -21,6 +21,6 @@
   },
   "transformerImplementation": {
     "type": "transformerImplementationType",
-    "implementationFunctionName": "transformer_mustacheStringTemplate"
+    "inMemoryImplementationFunctionName": "transformer_mustacheStringTemplate"
   }
 }

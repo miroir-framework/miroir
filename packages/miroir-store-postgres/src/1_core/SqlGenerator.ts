@@ -43,6 +43,20 @@ MiroirLoggerFactory.registerLoggerToStart(
   log = logger;
 });
 
+export type ITransformerHandler<T> = (
+  actionRuntimeTransformer: T,
+  preparedStatementParametersCount: number,
+  indentLevel: number,
+  queryParams: Record<string, any>,
+  definedContextEntries: Record<string, SqlContextEntry>,
+  useAccessPathForContextReference: boolean,
+  topLevelTransformer: boolean
+) => Domain2QueryReturnType<SqlStringForTransformerElementValue>;
+
+const sqlTransformerImplementations: Record<string, ITransformerHandler<any>> = {
+  "sqlStringForCountTransformer": sqlStringForCountTransformer
+}
+
 // ################################################################################################
 export interface SqlContextEntry {
   // type: "json" | "scalar" | "table"; resultAccessPath?: (string | number)[]
@@ -379,6 +393,91 @@ function flushAndIndent(indentLevel: number) {
   return "\n" + indent(indentLevel);
 }
 
+function sqlStringForCountTransformer(
+  actionRuntimeTransformer: TransformerForRuntime_count,
+  preparedStatementParametersCount: number,
+  indentLevel: number,
+  queryParams: Record<string, any>,
+  definedContextEntries: Record<string, SqlContextEntry>,
+  useAccessPathForContextReference: boolean,
+  topLevelTransformer: boolean
+): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
+  const referenceQuery = sqlStringForApplyTo(
+    actionRuntimeTransformer,
+    preparedStatementParametersCount,
+    indentLevel,
+    queryParams,
+    definedContextEntries,
+    useAccessPathForContextReference,
+    topLevelTransformer,
+  );
+  console.log("sqlStringForRuntimeTransformer count referenceQuery", JSON.stringify(referenceQuery, null, 2));
+  if (referenceQuery instanceof Domain2ElementFailed) {
+    return referenceQuery;
+  }
+  switch (referenceQuery.type) {
+    case "json_array":
+    case "json": {
+      return {
+        type: "json",
+        sqlStringOrObject: actionRuntimeTransformer.groupBy
+          ? `
+SELECT jsonb_object_agg(key, cnt) AS "count_object"
+FROM (
+  SELECT value ->> '${actionRuntimeTransformer.groupBy}' AS key, COUNT(value ->> '${
+                  actionRuntimeTransformer.groupBy
+                }')::int AS cnt
+  FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo",
+      LATERAL jsonb_array_elements("count_applyTo"."${
+        (referenceQuery as any).resultAccessPath[1]
+      }") AS "count_applyTo_array"
+  GROUP BY value ->> '${actionRuntimeTransformer.groupBy}'
+) t
+`
+          : `
+SELECT json_build_object('count', COUNT(*)::int) AS "count_object"
+FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo",
+    LATERAL jsonb_array_elements("count_applyTo"."${
+      (referenceQuery as any).resultAccessPath[1]
+    }") AS "count_applyTo_array"
+`,
+        preparedStatementParameters: referenceQuery.preparedStatementParameters,
+        resultAccessPath: [0, "count_object"],
+        columnNameContainingJsonValue: "count_object",
+        encloseEndResultInArray: true,
+      };
+    }
+    case "table": {
+      const transformerSqlQuery = actionRuntimeTransformer.groupBy
+        ? `SELECT "${actionRuntimeTransformer.groupBy}", COUNT(*)::int FROM ${referenceQuery.sqlStringOrObject}
+            GROUP BY "${actionRuntimeTransformer.groupBy}"
+`
+        : `SELECT COUNT(*)::int FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo"
+`;
+      log.info("sqlStringForRuntimeTransformer count transformerSqlQuery", transformerSqlQuery);
+      return {
+        type: "table",
+        sqlStringOrObject: transformerSqlQuery,
+        resultAccessPath: undefined,
+        preparedStatementParameters: referenceQuery.preparedStatementParameters,
+      };
+    }
+    case "scalar": {
+      return new Domain2ElementFailed({
+        queryFailure: "QueryNotExecutable",
+        query: actionRuntimeTransformer as any,
+        failureMessage: "sqlStringForRuntimeTransformer count referenceQuery result is scalar",
+      });
+    }
+    default: {
+      return new Domain2ElementFailed({
+        queryFailure: "QueryNotExecutable",
+        query: actionRuntimeTransformer as any,
+        failureMessage: "sqlStringForRuntimeTransformer count referenceQuery result type is not known: " + referenceQuery.type,
+      });
+    }
+  }
+}
 
 // ################################################################################################
 export function sqlStringForRuntimeTransformer(
@@ -2036,89 +2135,6 @@ ${orderBy}
       // };
       break;
     }
-    case "count": {
-      const referenceQuery = sqlStringForApplyTo(
-        actionRuntimeTransformer,
-        preparedStatementParametersCount,
-        indentLevel,
-        queryParams,
-        definedContextEntries,
-        useAccessPathForContextReference,
-        topLevelTransformer,
-      );
-      console.log("sqlStringForRuntimeTransformer count referenceQuery", JSON.stringify(referenceQuery, null, 2));
-      if (referenceQuery instanceof Domain2ElementFailed) {
-        return referenceQuery;
-      }
-      switch (referenceQuery.type) {
-        case "json_array":
-        case "json": {
-          return {
-            type: "json",
-            sqlStringOrObject: actionRuntimeTransformer.groupBy
-              ? `
-SELECT jsonb_object_agg(key, cnt) AS "count_object"
-FROM (
-  SELECT value ->> '${actionRuntimeTransformer.groupBy}' AS key, COUNT(value ->> '${
-                  actionRuntimeTransformer.groupBy
-                }')::int AS cnt
-  FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo",
-      LATERAL jsonb_array_elements("count_applyTo"."${
-        (referenceQuery as any).resultAccessPath[1]
-      }") AS "count_applyTo_array"
-  GROUP BY value ->> '${actionRuntimeTransformer.groupBy}'
-) t
-`
-              : `
-SELECT json_build_object('count', COUNT(*)::int) AS "count_object"
-FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo",
-    LATERAL jsonb_array_elements("count_applyTo"."${
-      (referenceQuery as any).resultAccessPath[1]
-    }") AS "count_applyTo_array"
-`,
-            preparedStatementParameters: referenceQuery.preparedStatementParameters,
-            resultAccessPath: [0, "count_object"],
-            columnNameContainingJsonValue: "count_object",
-            encloseEndResultInArray: true,
-          };
-          break;
-        }
-        case "table": {
-          const transformerSqlQuery = actionRuntimeTransformer.groupBy
-            ? `SELECT "${actionRuntimeTransformer.groupBy}", COUNT(*)::int FROM ${referenceQuery.sqlStringOrObject}
-            GROUP BY "${actionRuntimeTransformer.groupBy}"
-`
-            : `SELECT COUNT(*)::int FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo"
-`;
-          log.info("sqlStringForRuntimeTransformer count transformerSqlQuery", transformerSqlQuery);
-          return {
-            type: "table",
-            sqlStringOrObject: transformerSqlQuery,
-            resultAccessPath: undefined,
-            preparedStatementParameters: referenceQuery.preparedStatementParameters,
-          };
-          break;
-        }
-        case "scalar": {
-          return new Domain2ElementFailed({
-            queryFailure: "QueryNotExecutable",
-            query: actionRuntimeTransformer as any,
-            failureMessage: "sqlStringForRuntimeTransformer count referenceQuery result is scalar",
-          });
-          break;
-        }
-        default: {
-          return new Domain2ElementFailed({
-            queryFailure: "QueryNotExecutable",
-            query: actionRuntimeTransformer as any,
-            failureMessage: "sqlStringForRuntimeTransformer count referenceQuery result type is not known: " + referenceQuery.type,
-          });
-          break;
-        }
-      }
-      // log.info("sqlStringForRuntimeTransformer count actionRuntimeTransformer.groupBy", actionRuntimeTransformer.groupBy);
-      break;
-    }
     default: {
       const castTransformer = actionRuntimeTransformer as any;
       const foundApplicationTransformer = applicationTransformerDefinitions[castTransformer.transformerType];
@@ -2130,28 +2146,57 @@ FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo",
           failureMessage: "sqlStringForRuntimeTransformer transformerType not found in applicationTransformerDefinitions: " + castTransformer.transformerType,
         });
       }
-      if (foundApplicationTransformer.transformerImplementation.transformerImplementationType != "transformer") {
-        return new Domain2ElementFailed({
-          queryFailure: "QueryNotExecutable",
-          query: actionRuntimeTransformer as any,
-          failureMessage: "sqlStringForRuntimeTransformer transformer is not implementated using transformers: " + (castTransformer.label??castTransformer.transformerType),
-        });
+      switch (foundApplicationTransformer.transformerImplementation.transformerImplementationType) {
+        case "libraryImplementation": {
+          if (!sqlTransformerImplementations[foundApplicationTransformer.transformerImplementation.sqlImplementationFunctionName]) {
+            return new Domain2ElementFailed({
+              queryFailure: "QueryNotExecutable",
+              query: actionRuntimeTransformer as any,
+              failureMessage:
+                "sqlStringForRuntimeTransformer transformerType not found in sqlTransformerImplementations: " +
+                foundApplicationTransformer.transformerImplementation.sqlImplementationFunctionName,
+            });
+          }
+          const transformerSql = sqlTransformerImplementations[
+            foundApplicationTransformer.transformerImplementation.sqlImplementationFunctionName
+          ](
+            castTransformer,
+            preparedStatementParametersCount,
+            indentLevel,
+            queryParams,
+            definedContextEntries,
+            useAccessPathForContextReference,
+            topLevelTransformer
+          );
+          return transformerSql;
+          break;
+        }
+        case "transformer":{
+          const applicationTransformerSql = sqlStringForRuntimeTransformer(
+            foundApplicationTransformer.transformerImplementation.definition as TransformerForRuntime,
+            preparedStatementParametersCount,
+            indentLevel,
+            {
+              ...queryParams,
+              ...castTransformer,
+            },
+            definedContextEntries,
+            useAccessPathForContextReference,
+            topLevelTransformer,
+            // undefined, // withClauseColumnName
+            // iterateOn, // iterateOn
+          );
+          return applicationTransformerSql;
+          break;
       }
-      const applicationTransformerSql = sqlStringForRuntimeTransformer(
-        foundApplicationTransformer.transformerImplementation.definition as TransformerForRuntime,
-        preparedStatementParametersCount,
-        indentLevel,
-        {
-          ...queryParams,
-          ...castTransformer,
-        },
-        definedContextEntries,
-        useAccessPathForContextReference,
-        topLevelTransformer,
-        // undefined, // withClauseColumnName
-        // iterateOn, // iterateOn
-      );
-      return applicationTransformerSql;
+        default:{
+          throw new Error(
+            "sqlStringForRuntimeTransformer transformerType not implemented: " +
+              JSON.stringify(foundApplicationTransformer.transformerImplementation)
+          );
+          break;
+        }
+      }
       break;
     }
   }

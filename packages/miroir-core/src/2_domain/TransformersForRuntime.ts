@@ -55,6 +55,7 @@ import { cleanLevel } from "./constants";
 import { transformer } from "zod";
 import { transformer_spreadSheetToJzodSchema } from "./Transformer_Spreadsheet";
 import { resolve } from 'path';
+import { transformer_count } from './Transformer_count';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -78,6 +79,10 @@ export const defaultTransformers = {
   transformer_dynamicObjectAccess_apply,
   // ##############################
   transformer_menu_AddItem,
+}
+
+const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any>> = {
+  "handleCountTransformer": handleCountTransformer
 }
 
 // ################################################################################################
@@ -1023,6 +1028,106 @@ export function transformer_dynamicObjectAccess_apply(
 }
 
 // ################################################################################################
+export function handleCountTransformer(
+  step: Step,
+  label: string | undefined,
+  transformer:
+  | TransformerForBuild_count
+  | TransformerForRuntime_count
+  ,
+  resolveBuildTransformersTo: ResolveBuildTransformersTo,
+  queryParams: Record<string, any>,
+  contextResults?: Record<string, any>
+) {
+  const resolvedReference = resolveApplyTo_legacy(
+    transformer,
+    step,
+    resolveBuildTransformersTo,
+    queryParams,
+    contextResults,
+    label
+  );
+  log.info(
+    "innerTransformer_apply extractorTransformer count resolvedReference=",
+    resolvedReference
+  );
+  if (resolvedReference instanceof Domain2ElementFailed) {
+    log.error(
+      "innerTransformer_apply extractorTransformer count can not apply to failed resolvedReference",
+      resolvedReference
+    );
+    return new Domain2ElementFailed({
+      queryFailure: "QueryNotExecutable",
+      failureOrigin: ["innerTransformer_apply"],
+      queryContext: "count can not apply to failed resolvedReference",
+      innerError: resolvedReference,
+    });
+  }
+
+  if (typeof resolvedReference != "object" || !Array.isArray(resolvedReference)) {
+    // if ( typeof resolvedReference != "object" || !Array.isArray(resolvedReference)) {
+    log.error(
+      "innerTransformer_apply extractorTransformer count can not apply to resolvedReference of wrong type",
+      resolvedReference
+    );
+    return new Domain2ElementFailed({
+      queryFailure: "QueryNotExecutable",
+      failureOrigin: ["innerTransformer_apply"],
+      queryContext:
+        "count can not apply to resolvedReference of wrong type: " + typeof resolvedReference,
+      queryParameters: resolvedReference,
+    });
+  }
+
+  log.info(
+    "innerTransformer_apply extractorTransformer count resolvedReference",
+    resolvedReference.length
+  );
+  // const sortByAttribute = transformer.orderBy
+  //   ? (a: any[]) =>
+  //       a.sort((a, b) =>
+  //         a[transformer.orderBy ?? ""].localeCompare(b[transformer.orderBy ?? ""], "en", {
+  //           sensitivity: "base",
+  //         })
+  //       )
+  //   : (a: any[]) => a;
+
+  if (transformer.groupBy) {
+    const result = new Map<string, number>();
+    for (const entry of resolvedReference) {
+      const key = (entry as any)[transformer.groupBy];
+      if (result.has(key)) {
+        result.set(key, (result.get(key) ?? 0) + 1);
+      } else {
+        result.set(key, 1);
+      }
+    }
+    return [Object.fromEntries(result.entries())];
+  } else {
+    log.info(
+      "innerTransformer_apply extractorTransformer count without groupBy resolvedReference",
+      resolvedReference.length
+    );
+    return [{ count: resolvedReference.length }];
+  }
+  // break;
+}
+// ################################################################################################
+export type ITransformerHandler<T extends (TransformerForBuild
+| TransformerForRuntime
+| TransformerForRuntime_innerFullObjectTemplate)
+> = (
+  step: Step,
+  label: string | undefined,
+  transformer: T,
+    // | TransformerForBuild
+    // | TransformerForRuntime
+    // | TransformerForRuntime_innerFullObjectTemplate,
+  resolveBuildTransformersTo: ResolveBuildTransformersTo,
+  queryParams: Record<string, any>,
+  contextResults?: Record<string, any>
+) => Domain2QueryReturnType<any>;
+
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
@@ -1060,77 +1165,86 @@ export function innerTransformer_apply(
   // );
   switch (transformer.transformerType) {
     case "count": {
-      const resolvedReference = resolveApplyTo_legacy(
-        transformer,
+      return handleCountTransformer(
         step,
+        label,
+        transformer,
         resolveBuildTransformersTo,
         queryParams,
         contextResults,
-        label
-      );
-      log.info(
-        "innerTransformer_apply extractorTransformer count resolvedReference=",
-        resolvedReference
-      );
-      if (resolvedReference instanceof Domain2ElementFailed) {
-        log.error(
-          "innerTransformer_apply extractorTransformer count can not apply to failed resolvedReference",
-          resolvedReference
-        );
-        return new Domain2ElementFailed({
-          queryFailure: "QueryNotExecutable",
-          failureOrigin: ["innerTransformer_apply"],
-          queryContext: "count can not apply to failed resolvedReference",
-          innerError: resolvedReference,
-        });
-      }
+        // transformer:
+        // | TransformerForBuild_count
+        // | TransformerForRuntime_count
+        // // | TransformerForRuntime_innerFullObjectTemplate
+        // ,
+        // step: Step,
+        // label: string | undefined,
+        // resolveBuildTransformersTo: ResolveBuildTransformersTo,
+        // queryParams: Record<string, any>,
+        // contextResults?: Record<string, any>
+      )
+      // const resolvedReference = resolveApplyTo_legacy(
+      //   transformer,
+      //   step,
+      //   resolveBuildTransformersTo,
+      //   queryParams,
+      //   contextResults,
+      //   label
+      // );
+      // log.info(
+      //   "innerTransformer_apply extractorTransformer count resolvedReference=",
+      //   resolvedReference
+      // );
+      // if (resolvedReference instanceof Domain2ElementFailed) {
+      //   log.error(
+      //     "innerTransformer_apply extractorTransformer count can not apply to failed resolvedReference",
+      //     resolvedReference
+      //   );
+      //   return new Domain2ElementFailed({
+      //     queryFailure: "QueryNotExecutable",
+      //     failureOrigin: ["innerTransformer_apply"],
+      //     queryContext: "count can not apply to failed resolvedReference",
+      //     innerError: resolvedReference,
+      //   });
+      // }
 
-      if (typeof resolvedReference != "object" || !Array.isArray(resolvedReference)) {
-        // if ( typeof resolvedReference != "object" || !Array.isArray(resolvedReference)) {
-        log.error(
-          "innerTransformer_apply extractorTransformer count can not apply to resolvedReference of wrong type",
-          resolvedReference
-        );
-        return new Domain2ElementFailed({
-          queryFailure: "QueryNotExecutable",
-          failureOrigin: ["innerTransformer_apply"],
-          queryContext:
-            "count can not apply to resolvedReference of wrong type: " + typeof resolvedReference,
-          queryParameters: resolvedReference,
-        });
-      }
+      // if (typeof resolvedReference != "object" || !Array.isArray(resolvedReference)) {
+      //   // if ( typeof resolvedReference != "object" || !Array.isArray(resolvedReference)) {
+      //   log.error(
+      //     "innerTransformer_apply extractorTransformer count can not apply to resolvedReference of wrong type",
+      //     resolvedReference
+      //   );
+      //   return new Domain2ElementFailed({
+      //     queryFailure: "QueryNotExecutable",
+      //     failureOrigin: ["innerTransformer_apply"],
+      //     queryContext:
+      //       "count can not apply to resolvedReference of wrong type: " + typeof resolvedReference,
+      //     queryParameters: resolvedReference,
+      //   });
+      // }
 
-      log.info(
-        "innerTransformer_apply extractorTransformer count resolvedReference",
-        resolvedReference.length
-      );
-      // const sortByAttribute = transformer.orderBy
-      //   ? (a: any[]) =>
-      //       a.sort((a, b) =>
-      //         a[transformer.orderBy ?? ""].localeCompare(b[transformer.orderBy ?? ""], "en", {
-      //           sensitivity: "base",
-      //         })
-      //       )
-      //   : (a: any[]) => a;
-
-      if (transformer.groupBy) {
-        const result = new Map<string, number>();
-        for (const entry of resolvedReference) {
-          const key = (entry as any)[transformer.groupBy];
-          if (result.has(key)) {
-            result.set(key, (result.get(key) ?? 0) + 1);
-          } else {
-            result.set(key, 1);
-          }
-        }
-        return [Object.fromEntries(result.entries())];
-      } else {
-        log.info(
-          "innerTransformer_apply extractorTransformer count without groupBy resolvedReference",
-          resolvedReference.length
-        );
-        return [{ count: resolvedReference.length }];
-      }
+      // log.info(
+      //   "innerTransformer_apply extractorTransformer count resolvedReference",
+      //   resolvedReference.length
+      // );
+      // if (transformer.groupBy) {
+      //   const result = new Map<string, number>();
+      //   for (const entry of resolvedReference) {
+      //     const key = (entry as any)[transformer.groupBy];
+      //     if (result.has(key)) {
+      //       result.set(key, (result.get(key) ?? 0) + 1);
+      //     } else {
+      //       result.set(key, 1);
+      //     }
+      //   }
+      //   return [Object.fromEntries(result.entries())];
+      // } else {
+      //   log.info(
+      //     "innerTransformer_apply extractorTransformer count without groupBy resolvedReference",
+      //     resolvedReference.length
+      //   );
+      //   return [{ count: resolvedReference.length }];
+      // }
       break;
     }
     case "innerFullObjectTemplate": {
@@ -1807,6 +1921,7 @@ export function innerTransformer_array_apply(
 
 export const applicationTransformerDefinitions: Record<string, TransformerDefinition> = {
   spreadSheetToJzodSchema: transformer_spreadSheetToJzodSchema,
+  "count": transformer_count,
 }
 
 // ################################################################################################
@@ -1896,7 +2011,7 @@ export function transformer_extended_apply(
             case "listPickElement":
             case "listReducerToIndexObject":
             case "mapperListToList":
-            case "count":
+            // case "count":
             case "unique": {
               preResult = innerTransformer_apply(
                 step,
@@ -1908,6 +2023,7 @@ export function transformer_extended_apply(
               );
               break;
             }
+            // case "count":
             default: {
               const foundApplicationTransformer = applicationTransformerDefinitions[(transformer as any).transformerType];
               if (!foundApplicationTransformer) {
@@ -1923,58 +2039,173 @@ export function transformer_extended_apply(
                   queryFailure: "QueryNotExecutable",
                   failureOrigin: ["transformer_extended_apply"],
                   queryContext: "transformer " + (transformer as any).transformerType + " not found",
-                  queryParameters: transformer,
+                  queryParameters: JSON.stringify(transformer),
                 });
               }
-              if (foundApplicationTransformer.transformerImplementation.transformerImplementationType == "transformer") {
-                // TODO: clean up environment, only parameters to transformer should be passed
-                // evaluate transformer parameters
-                if (!foundApplicationTransformer.transformerInterface) {
-                  log.error(
-                    "transformer_extended_apply failed for",
-                    label,
-                    "using to resolve build transformers for step:",
-                    step,
-                    "transformer",
-                    JSON.stringify(transformer, null, 2)
-                  );
-                  preResult = new Domain2ElementFailed({
-                    queryFailure: "QueryNotExecutable",
-                    failureOrigin: ["transformer_extended_apply"],
-                    queryContext: "transformer " + (transformer as any).transformerType + " not found",
-                    queryParameters: transformer,
-                  });
-                } else {
-                  // CALL BY-VALUE: evaluate parameters to transformer first
-                  const evaluatedParams = Object.fromEntries(
-                    Object.keys(
-                      foundApplicationTransformer.transformerInterface.transformerParameterSchema
-                        .transformerDefinition.definition
-                    ).map((param) => {
-                      return [
-                        param,
-                        defaultTransformers.transformer_extended_apply(
-                          step,
-                          label,
-                          transformer[param],
-                          resolveBuildTransformersTo,
-                          queryParams,
-                          contextResults
-                        ),
-                      ];
-                    })
-                  );
-                  preResult = transformer_extended_apply(
+              switch (
+                foundApplicationTransformer.transformerImplementation.transformerImplementationType
+              ) {
+                case "libraryImplementation": {
+                  if (
+                    !foundApplicationTransformer.transformerImplementation.inMemoryImplementationFunctionName ||
+                    !inMemoryTransformerImplementations[
+                      foundApplicationTransformer.transformerImplementation.inMemoryImplementationFunctionName
+                    ]
+                  ) {
+                    log.error(
+                      "transformer_extended_apply failed for",
+                      label,
+                      "using to resolve build transformers for step:",
+                      step,
+                      "transformer",
+                      JSON.stringify(transformer, null, 2)
+                    );
+                    preResult = new Domain2ElementFailed({
+                      queryFailure: "QueryNotExecutable",
+                      failureOrigin: ["transformer_extended_apply"],
+                      queryContext:
+                        "transformerImplementation " +
+                        (transformer as any).transformerImplementation.inMemoryImplementationFunctionName +
+                        " not found",
+                      queryParameters: transformer as any,
+                    });
+                  }
+                  return inMemoryTransformerImplementations[foundApplicationTransformer.transformerImplementation.inMemoryImplementationFunctionName](
                     step,
                     label,
-                    foundApplicationTransformer.transformerImplementation.definition,
+                    transformer,
                     newResolveBuildTransformersTo,
                     queryParams,
-                    {...contextResults, ...evaluatedParams},
-                    // {...contextResults, ...(transformer as any)} // inner definitions do not have parameter references, only context references
+                    contextResults
                   );
+                  throw new Error(
+                    "transformer_extended_apply failed for " +
+                      label +
+                      " using to resolve build transformers for step: " +
+                      step +
+                      " transformer " +
+                      JSON.stringify(transformer, null, 2) +
+                      " transformerImplementation " +
+                      JSON.stringify(foundApplicationTransformer.transformerImplementation, null, 2)
+                  );
+                  break;
+                }
+                case "transformer": {
+                  // if (foundApplicationTransformer.transformerImplementation.transformerImplementationType == "transformer") {
+                  // TODO: clean up environment, only parameters to transformer should be passed
+                  // evaluate transformer parameters
+                  if (!foundApplicationTransformer.transformerInterface) {
+                    log.error(
+                      "transformer_extended_apply failed for",
+                      label,
+                      "using to resolve build transformers for step:",
+                      step,
+                      "transformer",
+                      JSON.stringify(transformer, null, 2)
+                    );
+                    preResult = new Domain2ElementFailed({
+                      queryFailure: "QueryNotExecutable",
+                      failureOrigin: ["transformer_extended_apply"],
+                      queryContext:
+                        "transformer " + (transformer as any).transformerType + " not found",
+                      queryParameters: transformer as any,
+                    });
+                  } else {
+                    // CALL BY-VALUE: evaluate parameters to transformer first
+                    const evaluatedParams = Object.fromEntries(
+                      Object.keys(
+                        foundApplicationTransformer.transformerInterface.transformerParameterSchema
+                          .transformerDefinition.definition
+                      ).map((param) => {
+                        return [
+                          param,
+                          defaultTransformers.transformer_extended_apply(
+                            step,
+                            label,
+                            (transformer as any)[param],
+                            resolveBuildTransformersTo,
+                            queryParams,
+                            contextResults
+                          ),
+                        ];
+                      })
+                    );
+                    preResult = transformer_extended_apply(
+                      step,
+                      label,
+                      foundApplicationTransformer.transformerImplementation.definition,
+                      newResolveBuildTransformersTo,
+                      queryParams,
+                      { ...contextResults, ...evaluatedParams }
+                      // {...contextResults, ...(transformer as any)} // inner definitions do not have parameter references, only context references
+                    );
+                  }
+                  // }
+                  break;
+                }
+                default: {
+                  throw new Error(
+                    "transformer_extended_apply failed for " +
+                      label +
+                      " using to resolve build transformers for step: " +
+                      step +
+                      " transformer " +
+                      JSON.stringify(transformer, null, 2) +
+                      " transformerImplementation " +
+                      JSON.stringify(foundApplicationTransformer.transformerImplementation, null, 2)
+                  );
+                  break;
                 }
               }
+              // if (foundApplicationTransformer.transformerImplementation.transformerImplementationType == "transformer") {
+              //   // TODO: clean up environment, only parameters to transformer should be passed
+              //   // evaluate transformer parameters
+              //   if (!foundApplicationTransformer.transformerInterface) {
+              //     log.error(
+              //       "transformer_extended_apply failed for",
+              //       label,
+              //       "using to resolve build transformers for step:",
+              //       step,
+              //       "transformer",
+              //       JSON.stringify(transformer, null, 2)
+              //     );
+              //     preResult = new Domain2ElementFailed({
+              //       queryFailure: "QueryNotExecutable",
+              //       failureOrigin: ["transformer_extended_apply"],
+              //       queryContext: "transformer " + (transformer as any).transformerType + " not found",
+              //       queryParameters: transformer,
+              //     });
+              //   } else {
+              //     // CALL BY-VALUE: evaluate parameters to transformer first
+              //     const evaluatedParams = Object.fromEntries(
+              //       Object.keys(
+              //         foundApplicationTransformer.transformerInterface.transformerParameterSchema
+              //           .transformerDefinition.definition
+              //       ).map((param) => {
+              //         return [
+              //           param,
+              //           defaultTransformers.transformer_extended_apply(
+              //             step,
+              //             label,
+              //             transformer[param],
+              //             resolveBuildTransformersTo,
+              //             queryParams,
+              //             contextResults
+              //           ),
+              //         ];
+              //       })
+              //     );
+              //     preResult = transformer_extended_apply(
+              //       step,
+              //       label,
+              //       foundApplicationTransformer.transformerImplementation.definition,
+              //       newResolveBuildTransformersTo,
+              //       queryParams,
+              //       {...contextResults, ...evaluatedParams},
+              //       // {...contextResults, ...(transformer as any)} // inner definitions do not have parameter references, only context references
+              //     );
+              //   }
+              // }
             }
           }
           if (preResult instanceof Domain2ElementFailed) {

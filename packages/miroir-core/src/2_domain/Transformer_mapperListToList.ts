@@ -155,7 +155,7 @@ export const transformer_mapperListToList: TransformerDefinition = {
   },
   transformerImplementation: {
     transformerImplementationType: "libraryImplementation",
-    implementationFunctionName: "transformer_mapperListToList",
+    inMemoryImplementationFunctionName: "transformer_mapperListToList",
   } as any, // TODO: remove cast, use proper type
 };
 

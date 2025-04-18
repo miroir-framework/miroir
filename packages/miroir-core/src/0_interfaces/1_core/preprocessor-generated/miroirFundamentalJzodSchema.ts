@@ -4456,7 +4456,10 @@ export const miroirFundamentalJzodSchema = {
                     "type": "literal",
                     "definition": "libraryImplementation"
                   },
-                  "implementationFunctionName": {
+                  "inMemoryImplementationFunctionName": {
+                    "type": "string"
+                  },
+                  "sqlImplementationFunctionName": {
                     "type": "string"
                   }
                 }

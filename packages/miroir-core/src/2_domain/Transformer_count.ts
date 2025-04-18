@@ -62,11 +62,15 @@ export const transformer_count: TransformerDefinition = {
   },
   transformerImplementation: {
     transformerImplementationType: "libraryImplementation",
-    implementationFunctionName: "transformer_count",
+    inMemoryImplementationFunctionName: "handleCountTransformer",
+    sqlImplementationFunctionName: "sqlStringForCountTransformer",
   } as any, // TODO: remove cast, use proper type
 };
 
-export function transformerForRuntimeInterfaceFromDefinition(transformerDefinition:TransformerDefinition, target: "build" | "runtime"  ):JzodElement {
+export function transformerForRuntimeInterfaceFromDefinition(
+  transformerDefinition: TransformerDefinition,
+  target: "build" | "runtime"
+): JzodElement {
   const result: JzodElement = {
     type: "object",
     extend: [
