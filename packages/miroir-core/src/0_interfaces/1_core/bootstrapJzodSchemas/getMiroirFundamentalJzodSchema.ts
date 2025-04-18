@@ -12,6 +12,8 @@ import { optional } from "zod";
 import { JzodElement, JzodReference } from "@miroir-framework/jzod-ts";
 import { transformerForBuildInterface_count, transformerForRuntimeInterface_count } from "../../../2_domain/Transformer_count";
 import { transformerForBuildInterface_unique, transformerForRuntimeInterface_unique } from "../../../2_domain/Transformer_unique";
+import { transformerForBuildInterface_mapperListToList, transformerForRuntimeInterface_mapperListToList } from "../../../2_domain/Transformer_mapperListToList";
+import { transformerForBuild_list_listMapperToList, transformerForRuntime_list_listMapperToList } from "../preprocessor-generated/miroirFundamentalType";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -349,6 +351,8 @@ export function getMiroirFundamentalJzodSchema(
         transformerForRuntime_count: transformerForRuntimeInterface_count,
         transformerForBuild_unique: transformerForBuildInterface_unique,
         transformerForRuntime_unique: transformerForRuntimeInterface_unique,
+        transformerForBuild_list_listMapperToList: transformerForBuildInterface_mapperListToList,
+        transformerForRuntime_list_listMapperToList: transformerForRuntimeInterface_mapperListToList,
         extendedTransformerForRuntime: {
           type: "union",
           definition: [
@@ -2921,6 +2925,7 @@ export function getMiroirFundamentalJzodSchema(
           .transformerForBuild_list,
         transformerForBuild_mustacheStringTemplate: (miroirFundamentalJzodSchema as any).definition
           .context.transformerForBuild_mustacheStringTemplate,
+        // transformerForBuild_list_listMapperToList: transformerForBuildInterface_mapperListToList,
         transformerForBuild_list_listMapperToList: (miroirFundamentalJzodSchema as any).definition
           .context.transformerForBuild_list_listMapperToList,
         transformerForBuild_object_listReducerToIndexObject_root: (
@@ -2983,6 +2988,7 @@ export function getMiroirFundamentalJzodSchema(
           .context.transformerForRuntime_list_listPickElement,
         transformerForRuntime_object_alter: (transformerJzodSchema as any).definition.context
           .transformerForRuntime_object_alter,
+        // transformerForRuntime_list_listMapperToList: transformerForRuntimeInterface_mapperListToList,
         transformerForRuntime_list_listMapperToList: (transformerJzodSchema as any).definition
           .context.transformerForRuntime_list_listMapperToList,
         transformerForRuntime_object_listReducerToSpreadObject: (transformerJzodSchema as any)

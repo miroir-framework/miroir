@@ -1,4 +1,5 @@
 import { JzodElement, TransformerDefinition } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { transformerForRuntimeInterfaceFromDefinition } from "./Transformer_tools";
 
 export const transformer_Reference: JzodElement = {
   type: "object",
@@ -7,29 +8,20 @@ export const transformer_Reference: JzodElement = {
       type: "literal",
       definition: "transformer_reference",
     },
-    reference: 
-    // {
-    //   type: "union",
-    //   definition: [
-    //     {
-    //       type: "string",
-    //     },
-      {
-        type: "object",
-        definition: {
-          transformerName: { type: "string" },
-          transformerResultType: {
-            type: "schemaReference",
-            definition: {
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "jzodElement",
-            },
-          }
+    reference: {
+      type: "object",
+      definition: {
+        transformerName: { type: "string" },
+        transformerResultType: {
+          type: "schemaReference",
+          definition: {
+            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            relativePath: "jzodElement",
+          },
         },
       },
-      // ],
-    // },
-  }
+    },
+  },
 };
   
 export const transformer_typed: JzodElement = {
@@ -74,64 +66,22 @@ export const transformer_mapperListToList: TransformerDefinition = {
       },
       transformerDefinition: {
         type: "object",
+        extend: [
+          {
+            type: "schemaReference",
+            definition: {
+              eager: true,
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              relativePath: "transformer_orderBy",
+            },
+          },
+        ],
         definition: {
           applyTo: { // data element or reference to input data. Input parameter type for the transformer
-            type: "union",
-            discriminator: "referenceType", // not necessarily a discriminated union. Here, it is NOT.
-            definition: [
-              {
-                type: "array",
-                definition: {
-                  type: "any",
-                },
-              },
-              {
-                type: "object",
-                definition: {
-                  referenceType: {
-                    type: "literal",
-                    definition: "referencedExtractor",
-                  },
-                  reference: {
-                    type: "union",
-                    definition: [
-                      {
-                        type: "string",
-                      },
-                      {
-                        type: "schemaReference",
-                        definition: {
-                          relativePath: "transformer_extractors",  // transformer_extractor returning a list of items
-                        },
-                      },
-                    ],
-                  },
-                },
-              },
-              {
-                type: "object",
-                definition: {
-                  referenceType: {
-                    type: "literal",
-                    definition: "referencedTransformer",
-                  },
-                  reference: {
-                    type: "union",
-                    definition: [
-                      {
-                        type: "string",
-                      },
-                      {
-                        type: "schemaReference",
-                        definition: {
-                          relativePath: "transformerForBuild", // transformer returning a list of items
-                        },
-                      },
-                    ],
-                  },
-                },
-              },
-            ],
+            type: "array",
+            definition: {
+              type: "any",
+            },
           },
           referenceToOuterObject: {
             type: "string",
@@ -155,7 +105,12 @@ export const transformer_mapperListToList: TransformerDefinition = {
   },
   transformerImplementation: {
     transformerImplementationType: "libraryImplementation",
-    inMemoryImplementationFunctionName: "transformer_mapperListToList",
+    inMemoryImplementationFunctionName: "transformerForBuild_list_listMapperToList_apply",
+    sqlImplementationFunctionName: "sqlStringForMapperListToListTransformer",
   } as any, // TODO: remove cast, use proper type
 };
 
+export const transformerForRuntimeInterface_mapperListToList: JzodElement =
+  transformerForRuntimeInterfaceFromDefinition(transformer_mapperListToList, "runtime");
+export const transformerForBuildInterface_mapperListToList: JzodElement =
+  transformerForRuntimeInterfaceFromDefinition(transformer_mapperListToList, "build");

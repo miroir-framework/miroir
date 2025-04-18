@@ -57,6 +57,7 @@ import { transformer_spreadSheetToJzodSchema } from "./Transformer_Spreadsheet";
 import { resolve } from 'path';
 import { transformer_count } from './Transformer_count';
 import { transformer_unique } from './Transformer_unique';
+import { transformer_mapperListToList } from './Transformer_mapperListToList';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -85,6 +86,7 @@ export const defaultTransformers = {
 const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any>> = {
   "handleCountTransformer": handleCountTransformer,
   "handleUniqueTransformer": handleUniqueTransformer,
+  "transformerForBuild_list_listMapperToList_apply": defaultTransformers.transformerForBuild_list_listMapperToList_apply,
 }
 
 // ################################################################################################
@@ -1511,70 +1513,71 @@ export function innerTransformer_apply(
       break;
     }
     case "unique": {
-      const resolvedReference = resolveApplyTo_legacy(
-        transformer,
-        step,
-        resolveBuildTransformersTo,
-        queryParams,
-        contextResults,
-        label
-      );
-      log.info(
-        "innerTransformer_apply extractorTransformer unique",
-        label,
-        "resolvedReference",
-        resolvedReference
-      );
+      throw new Error("unique transformer not allowed in innerTransformer_apply");
+      // const resolvedReference = resolveApplyTo_legacy(
+      //   transformer,
+      //   step,
+      //   resolveBuildTransformersTo,
+      //   queryParams,
+      //   contextResults,
+      //   label
+      // );
+      // log.info(
+      //   "innerTransformer_apply extractorTransformer unique",
+      //   label,
+      //   "resolvedReference",
+      //   resolvedReference
+      // );
 
-      if (resolvedReference instanceof Domain2ElementFailed) {
-        log.error(
-          "innerTransformer_apply extractorTransformer unique can not apply to resolvedReference",
-          resolvedReference
-        );
-        return new Domain2ElementFailed({
-          queryFailure: "QueryNotExecutable",
-          failureOrigin: ["innerTransformer_apply"],
-          queryContext: "unique can not apply to resolvedReference",
-          innerError: resolvedReference,
-        });
-      }
+      // if (resolvedReference instanceof Domain2ElementFailed) {
+      //   log.error(
+      //     "innerTransformer_apply extractorTransformer unique can not apply to resolvedReference",
+      //     resolvedReference
+      //   );
+      //   return new Domain2ElementFailed({
+      //     queryFailure: "QueryNotExecutable",
+      //     failureOrigin: ["innerTransformer_apply"],
+      //     queryContext: "unique can not apply to resolvedReference",
+      //     innerError: resolvedReference,
+      //   });
+      // }
 
-      if (typeof resolvedReference != "object" || !Array.isArray(resolvedReference)) {
-        log.error(
-          "innerTransformer_apply extractorTransformer unique referencedExtractor can not apply to resolvedReference",
-          resolvedReference
-        );
-        return new Domain2ElementFailed({
-          queryFailure: "QueryNotExecutable",
-          failureOrigin: ["innerTransformer_apply"],
-          queryContext:
-            "unique can not apply to resolvedReference, wrong type: " + typeof resolvedReference,
-          queryParameters: resolvedReference,
-        });
-      }
+      // if (typeof resolvedReference != "object" || !Array.isArray(resolvedReference)) {
+      //   log.error(
+      //     "innerTransformer_apply extractorTransformer unique referencedExtractor can not apply to resolvedReference",
+      //     resolvedReference
+      //   );
+      //   return new Domain2ElementFailed({
+      //     queryFailure: "QueryNotExecutable",
+      //     failureOrigin: ["innerTransformer_apply"],
+      //     queryContext:
+      //       "unique can not apply to resolvedReference, wrong type: " + typeof resolvedReference,
+      //     queryParameters: resolvedReference,
+      //   });
+      // }
 
-      const sortByAttribute = transformer.orderBy
-        ? (a: any[]) =>
-            a.sort((a, b) =>
-              a[transformer.orderBy ?? ""].localeCompare(b[transformer.orderBy ?? ""], "en", {
-                sensitivity: "base",
-              })
-            )
-        : (a: any[]) => a;
-      const result = new Set<string>();
-      for (const entry of Object.entries(resolvedReference)) {
-        result.add((entry[1] as any)[transformer.attribute]);
-      }
-      const resultDomainElement: Domain2QueryReturnType<any> = sortByAttribute(
-        [...result].map((e) => ({ [transformer.attribute]: e }))
-      );
-      log.info(
-        "innerTransformer_apply extractorTransformer unique",
-        label,
-        "result",
-        resultDomainElement
-      );
-      return resultDomainElement;
+      // const sortByAttribute = transformer.orderBy
+      //   ? (a: any[]) =>
+      //       a.sort((a, b) =>
+      //         a[transformer.orderBy ?? ""].localeCompare(b[transformer.orderBy ?? ""], "en", {
+      //           sensitivity: "base",
+      //         })
+      //       )
+      //   : (a: any[]) => a;
+      // const result = new Set<string>();
+      // for (const entry of Object.entries(resolvedReference)) {
+      //   result.add((entry[1] as any)[transformer.attribute]);
+      // }
+      // const resultDomainElement: Domain2QueryReturnType<any> = sortByAttribute(
+      //   [...result].map((e) => ({ [transformer.attribute]: e }))
+      // );
+      // log.info(
+      //   "innerTransformer_apply extractorTransformer unique",
+      //   label,
+      //   "result",
+      //   resultDomainElement
+      // );
+      // return resultDomainElement;
       break;
     }
     case "freeObjectTemplate": {
@@ -1930,6 +1933,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   spreadSheetToJzodSchema: transformer_spreadSheetToJzodSchema,
   "count": transformer_count,
   "unique": transformer_unique,
+  "mapperListToList": transformer_mapperListToList,
 }
 
 // ################################################################################################
@@ -2017,10 +2021,10 @@ export function transformer_extended_apply(
             case "objectEntries":
             case "objectValues":
             case "listPickElement":
-            case "listReducerToIndexObject":
               // case "count":
               // case "unique":
-            case "mapperListToList": {
+            // case "mapperListToList": 
+            case "listReducerToIndexObject": {
               preResult = innerTransformer_apply(
                 step,
                 label,
