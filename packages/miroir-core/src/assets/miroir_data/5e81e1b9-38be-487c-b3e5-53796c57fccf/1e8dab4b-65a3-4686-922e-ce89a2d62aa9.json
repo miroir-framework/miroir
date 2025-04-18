@@ -672,12 +672,32 @@
         },
         "definition": {
           "extend": {
-            "type": "schemaReference",
+            "type": "union",
             "optional": true,
-            "definition": {
-              "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-              "relativePath": "jzodReference"
-            }
+            "definition": [
+              {
+                "type": "union",
+                "optional": true,
+                "definition": [
+                  { "type": "schemaReference", "definition": { "relativePath": "jzodReference" } },
+                  { "type": "schemaReference", "definition": { "relativePath": "jzodObject" } }
+                ]
+              },
+              {
+                "type": "array",
+                "definition": {
+                  "type": "union",
+                  "optional": true,
+                  "definition": [
+                    {
+                      "type": "schemaReference",
+                      "definition": { "relativePath": "jzodReference" }
+                    },
+                    { "type": "schemaReference", "definition": { "relativePath": "jzodObject" } }
+                  ]
+                }
+              }
+            ]
           },
           "type": {
             "type": "literal",

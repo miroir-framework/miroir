@@ -1,5 +1,6 @@
 import path from "path";
 import fs from 'fs/promises';
+import equal from "fast-deep-equal";
 
 import {
   jzodToZodTextAndZodSchema,
@@ -75,7 +76,13 @@ import transformerMenuV1 from "../src/assets/miroir_data/a557419d-a288-4fb8-8a1e
 import entityDefinitionSelfApplicationDeploymentConfiguration from "../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bd303ae8-6bce-4b44-a63c-815b9ebf728b.json";
 
 
-import { getExtendedSchemas, getExtendedSchemasWithCarryOn, getMiroirFundamentalJzodSchema, miroirFundamentalJzodSchemaUuid } from "../src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema.js";
+import {
+  getExtendedSchemas,
+  getExtendedSchemasWithCarryOn,
+  getMiroirFundamentalJzodSchema,
+  miroirFundamentalJzodSchemaUuid,
+} from "../src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema.js";
+import { transformerForBuildInterface_count, transformerForRuntimeInterface_count } from "../src/2_domain/Transformer_count";
 
 async function build() {
     try {
@@ -351,6 +358,23 @@ async function generateSchemas(generateFundamentalJzodSchema = true) {
         Date.now() - startGenerateZodSchmaFileFromZodSchema,
         "ms"
       );
+      console.log(
+        "old transformer count", 
+        JSON.stringify((miroirFundamentalJzodSchema as any).definition.context.transformerForBuild_count, null, 2)
+      )
+      console.log(
+        "transformer count", 
+        JSON.stringify(transformerForBuildInterface_count, null, 2)
+      )
+
+      console.log(
+        "comparison",
+        "equal",
+        Object.is(miroirFundamentalJzodSchema.definition.context.transformerForBuild_count, transformerForBuildInterface_count),
+        "deepEqual",
+        equal(miroirFundamentalJzodSchema.definition.context.transformerForBuild_count, transformerForBuildInterface_count),
+      );
+    
     } catch (error) {
       console.error("miroir-core could not generate TS files from Jzod schemas", error);
     }

@@ -49,7 +49,6 @@
       },
       "transformerInterface": {
         "type": "object",
-        "optional": true,
         "definition": {
           "transformerParameterSchema": {
             "type": "object",

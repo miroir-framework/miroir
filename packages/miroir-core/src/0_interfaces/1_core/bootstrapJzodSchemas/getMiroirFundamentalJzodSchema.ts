@@ -10,6 +10,7 @@ import { packageName } from "../../../constants";
 import { LoggerInterface } from "../../4-services/LoggerInterface";
 import { optional } from "zod";
 import { JzodElement, JzodReference } from "@miroir-framework/jzod-ts";
+import { transformerForBuildInterface_count, transformerForRuntimeInterface_count } from "../../../2_domain/Transformer_count";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -344,6 +345,8 @@ export function getMiroirFundamentalJzodSchema(
             { type: "object", definition: e.transformerInterface.transformerParameterSchema },
           ])
         ),
+        transformerForBuild_count: transformerForBuildInterface_count,
+        transformerForRuntime_count: transformerForRuntimeInterface_count,
         extendedTransformerForRuntime: {
           type: "union",
           definition: [
@@ -2804,6 +2807,10 @@ export function getMiroirFundamentalJzodSchema(
           .transformer_inner_referenced_transformerForBuild,
         transformer_inner_referenced_transformerForRuntime: (miroirFundamentalJzodSchema as any).definition.context
           .transformer_inner_referenced_transformerForRuntime,
+        transformer_inner_elementTransformer_transformerForBuild: (miroirFundamentalJzodSchema as any).definition.context
+          .transformer_inner_elementTransformer_transformerForBuild,
+        transformer_inner_elementTransformer_transformerForRuntime: (miroirFundamentalJzodSchema as any).definition.context
+          .transformer_inner_elementTransformer_transformerForRuntime,
         transformer_inner_label: (miroirFundamentalJzodSchema as any).definition.context
           .transformer_inner_label,
         transformer_orderBy: (miroirFundamentalJzodSchema as any).definition.context
@@ -2898,9 +2905,7 @@ export function getMiroirFundamentalJzodSchema(
           .transformerForBuild_constants,
         transformerForBuild: (transformerJzodSchema as any).definition.context.transformerForBuild,
         // transformerForBuild_applyTo: (transformerJzodSchema as any).definition.context.transformerForBuild_applyTo,
-        // transformerForBuild_count_root: (miroirFundamentalJzodSchema as any).definition.context.transformerForBuild_count_root,
-        transformerForBuild_count: (miroirFundamentalJzodSchema as any).definition.context
-          .transformerForBuild_count,
+        transformerForBuild_count: transformerForBuildInterface_count,
         transformerForBuild_dataflowObject: (transformerJzodSchema as any).definition.context
           .transformerForBuild_dataflowObject,
         transformerForBuild_dataflowSequence: (transformerJzodSchema as any).definition.context
@@ -2949,8 +2954,7 @@ export function getMiroirFundamentalJzodSchema(
         transformerForRuntime_Abstract: (miroirFundamentalJzodSchema as any).definition.context
           .transformerForRuntime_Abstract,
         // transformerForRuntime_applyTo: (miroirFundamentalJzodSchema as any).definition.context.transformerForRuntime_applyTo,
-        transformerForRuntime_count: (transformerJzodSchema as any).definition.context
-          .transformerForRuntime_count,
+        transformerForRuntime_count: transformerForRuntimeInterface_count,
         transformerForRuntime_contextReference: (transformerJzodSchema as any).definition.context
           .transformerForRuntime_contextReference,
         transformer_contextOrParameterReferenceTO_REMOVE: (transformerJzodSchema as any).definition.context

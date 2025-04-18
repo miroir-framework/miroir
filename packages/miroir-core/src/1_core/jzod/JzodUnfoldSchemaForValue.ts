@@ -698,15 +698,32 @@ export function resolveReferencesForJzodSchemaAndValueObject(
 // ################################################################################################
 export function resolveJzodSchemaReferenceInContext(
   miroirFundamentalJzodSchema: JzodSchema,
-  jzodReference: JzodReference,
+  // jzodReference: JzodReference | JzodObject | (JzodReference | JzodObject)[],
+  jzodReference: JzodReference | JzodObject | (JzodReference | JzodObject | undefined)[],
   currentModel?: MetaModel,
   miroirMetaModel?: MetaModel,
   relativeReferenceJzodContext?: {[k:string]: JzodElement},
 ): JzodElement {
+  if (Array.isArray(jzodReference)) {
+    throw new Error(
+      "resolveJzodSchemaReferenceInContext can handle array reference " +
+        JSON.stringify(jzodReference) +
+        " for empty relative reference: " +
+        JSON.stringify(jzodReference)
+    );
+  }
+  if (jzodReference.type == "object") {
+    throw new Error(
+      "resolveJzodSchemaReferenceInContext can handle object reference " +
+        JSON.stringify(jzodReference) +
+        " for empty relative reference: " +
+        JSON.stringify(jzodReference)
+    );
+  }
   if ((!jzodReference.definition || !jzodReference.definition?.absolutePath) && !relativeReferenceJzodContext) {
     throw new Error(
-      "resolveJzodSchemaReferenceInContext can not find relative reference " +
-        JSON.stringify(jzodReference?.definition) +
+      "resolveJzodSchemaReferenceInContext can handle complex / unexisting reference " +
+        JSON.stringify(jzodReference) +
         " for empty relative reference: " +
         JSON.stringify(jzodReference)
     );

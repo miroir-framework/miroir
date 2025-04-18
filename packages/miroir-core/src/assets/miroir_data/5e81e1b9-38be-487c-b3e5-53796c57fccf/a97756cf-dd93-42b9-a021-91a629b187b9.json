@@ -82,6 +82,29 @@
           }
         }
       },
+      "transformer_inner_elementTransformer_transformerForBuild": {
+        "type": "union",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformerForRuntime"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformerForBuild"
+            }
+          }
+        ]
+      },
+      "transformer_inner_elementTransformer_transformerForRuntime": {
+        "type": "schemaReference",
+        "definition": {
+          "relativePath": "transformerForRuntime"
+        }
+      },
       "recordOfTransformers": {
         "type": "object",
         "definition": {
@@ -1203,7 +1226,7 @@
           "elementTransformer": {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformerForBuild"
+              "relativePath": "transformer_inner_elementTransformer_transformerForBuild"
             }
           }
         }
@@ -1991,56 +2014,6 @@
           }
         }
       },
-      "transformerForRuntime_count":{
-        "type": "object",
-        "extend": [
-          {
-            "type": "schemaReference",
-            "definition": {
-              "eager": true,
-              "relativePath": "transformerForRuntime_Abstract"
-            }
-          }
-        ],
-        "definition": {
-          "applyTo": {
-            "type": "union",
-            "discriminator": "referenceType",
-            "definition": [
-              {
-                "type": "array",
-                "definition": {
-                  "type": "any"
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "transformer_inner_referenced_extractor"
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "transformer_inner_referenced_transformerForRuntime"
-                }
-              }
-            ]
-          },
-          "transformerType": {
-            "type": "literal",
-            "definition": "count"
-          },
-          "attribute": {
-            "type": "string",
-            "optional": true
-          },
-          "groupBy": {
-            "type": "string",
-            "optional": true
-          }
-        }
-      },
       "transformerForRuntime_unique": {
         "type": "object",
         "extend": [
@@ -2451,7 +2424,7 @@
           "elementTransformer": {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformerForRuntime"
+              "relativePath": "transformer_inner_elementTransformer_transformerForRuntime"
             }
           }
         }

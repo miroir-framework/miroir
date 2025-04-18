@@ -57,7 +57,7 @@ export const transformer_typed: JzodElement = {
 };
   
 
-export const transformer_count: TransformerDefinition = {
+export const transformer_mapperListToList: TransformerDefinition = {
   uuid: "3ec73049-5e54-40aa-bc86-4c4906d00baa",
   name: "mapperListToList",
   defaultLabel: "mapperListToList",
@@ -139,7 +139,7 @@ export const transformer_count: TransformerDefinition = {
           elementTransformer: {
             type: "schemaReference",
             definition: {
-              relativePath: "transformerForRuntime",
+              relativePath: "transformer_inner_elementTransformer_transformerForRuntime",
               // relativePath: "transformer_Reference",
             },
           },
