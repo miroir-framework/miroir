@@ -83,6 +83,7 @@ import {
   miroirFundamentalJzodSchemaUuid,
 } from "../src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema.js";
 import { transformerForBuildInterface_count, transformerForRuntimeInterface_count } from "../src/2_domain/Transformer_count";
+import { transformerForBuildInterface_unique } from "../src/2_domain/Transformer_unique";
 
 async function build() {
     try {
@@ -358,21 +359,23 @@ async function generateSchemas(generateFundamentalJzodSchema = true) {
         Date.now() - startGenerateZodSchmaFileFromZodSchema,
         "ms"
       );
+      const oldTransformer = (miroirFundamentalJzodSchema as any).definition.context.transformerForBuild_unique;
+      const newTransformer = transformerForBuildInterface_unique;
       console.log(
-        "old transformer count", 
-        JSON.stringify((miroirFundamentalJzodSchema as any).definition.context.transformerForBuild_count, null, 2)
+        "old transformer", 
+        JSON.stringify(oldTransformer, null, 2)
       )
       console.log(
-        "transformer count", 
-        JSON.stringify(transformerForBuildInterface_count, null, 2)
+        "new transformer", 
+        JSON.stringify(newTransformer, null, 2)
       )
 
       console.log(
         "comparison",
         "equal",
-        Object.is(miroirFundamentalJzodSchema.definition.context.transformerForBuild_count, transformerForBuildInterface_count),
+        Object.is(oldTransformer, newTransformer),
         "deepEqual",
-        equal(miroirFundamentalJzodSchema.definition.context.transformerForBuild_count, transformerForBuildInterface_count),
+        equal(oldTransformer, newTransformer),
       );
     
     } catch (error) {

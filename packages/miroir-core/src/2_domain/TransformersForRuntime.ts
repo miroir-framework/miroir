@@ -56,6 +56,7 @@ import { transformer } from "zod";
 import { transformer_spreadSheetToJzodSchema } from "./Transformer_Spreadsheet";
 import { resolve } from 'path';
 import { transformer_count } from './Transformer_count';
+import { transformer_unique } from './Transformer_unique';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -82,7 +83,8 @@ export const defaultTransformers = {
 }
 
 const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any>> = {
-  "handleCountTransformer": handleCountTransformer
+  "handleCountTransformer": handleCountTransformer,
+  "handleUniqueTransformer": handleUniqueTransformer,
 }
 
 // ################################################################################################
@@ -1033,12 +1035,11 @@ export function handleCountTransformer(
   label: string | undefined,
   transformer:
   | TransformerForBuild_count
-  | TransformerForRuntime_count
-  ,
+  | TransformerForRuntime_count,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>
-) {
+): Domain2QueryReturnType<any> {
   const resolvedReference = resolveApplyTo_legacy(
     transformer,
     step,
@@ -1048,17 +1049,17 @@ export function handleCountTransformer(
     label
   );
   log.info(
-    "innerTransformer_apply extractorTransformer count resolvedReference=",
+    "handleCountTransformer extractorTransformer count resolvedReference=",
     resolvedReference
   );
   if (resolvedReference instanceof Domain2ElementFailed) {
     log.error(
-      "innerTransformer_apply extractorTransformer count can not apply to failed resolvedReference",
+      "handleCountTransformer extractorTransformer count can not apply to failed resolvedReference",
       resolvedReference
     );
     return new Domain2ElementFailed({
       queryFailure: "QueryNotExecutable",
-      failureOrigin: ["innerTransformer_apply"],
+      failureOrigin: ["handleCountTransformer"],
       queryContext: "count can not apply to failed resolvedReference",
       innerError: resolvedReference,
     });
@@ -1072,7 +1073,7 @@ export function handleCountTransformer(
     );
     return new Domain2ElementFailed({
       queryFailure: "QueryNotExecutable",
-      failureOrigin: ["innerTransformer_apply"],
+      failureOrigin: ["handleCountTransformer"],
       queryContext:
         "count can not apply to resolvedReference of wrong type: " + typeof resolvedReference,
       queryParameters: resolvedReference,
@@ -1080,7 +1081,7 @@ export function handleCountTransformer(
   }
 
   log.info(
-    "innerTransformer_apply extractorTransformer count resolvedReference",
+    "handleCountTransformer extractorTransformer count resolvedReference",
     resolvedReference.length
   );
   // const sortByAttribute = transformer.orderBy
@@ -1105,13 +1106,90 @@ export function handleCountTransformer(
     return [Object.fromEntries(result.entries())];
   } else {
     log.info(
-      "innerTransformer_apply extractorTransformer count without groupBy resolvedReference",
+      "handleCountTransformer extractorTransformer count without groupBy resolvedReference",
       resolvedReference.length
     );
     return [{ count: resolvedReference.length }];
   }
   // break;
 }
+// ################################################################################################
+export function handleUniqueTransformer(
+  step: Step,
+  label: string | undefined,
+  transformer:
+  | TransformerForBuild_unique
+  | TransformerForRuntime_unique,
+  resolveBuildTransformersTo: ResolveBuildTransformersTo,
+  queryParams: Record<string, any>,
+  contextResults?: Record<string, any>
+): Domain2QueryReturnType<any> {
+  const resolvedReference = resolveApplyTo_legacy(
+    transformer,
+    step,
+    resolveBuildTransformersTo,
+    queryParams,
+    contextResults,
+    label
+  );
+  log.info(
+    "handleUniqueTransformer extractorTransformer unique",
+    label,
+    "resolvedReference",
+    resolvedReference
+  );
+
+  if (resolvedReference instanceof Domain2ElementFailed) {
+    log.error(
+      "handleUniqueTransformer extractorTransformer unique can not apply to resolvedReference",
+      resolvedReference
+    );
+    return new Domain2ElementFailed({
+      queryFailure: "QueryNotExecutable",
+      failureOrigin: ["handleUniqueTransformer"],
+      queryContext: "unique can not apply to resolvedReference",
+      innerError: resolvedReference,
+    });
+  }
+
+  if (typeof resolvedReference != "object" || !Array.isArray(resolvedReference)) {
+    log.error(
+      "handleUniqueTransformer extractorTransformer unique referencedExtractor can not apply to resolvedReference",
+      resolvedReference
+    );
+    return new Domain2ElementFailed({
+      queryFailure: "QueryNotExecutable",
+      failureOrigin: ["handleUniqueTransformer"],
+      queryContext:
+        "unique can not apply to resolvedReference, wrong type: " + typeof resolvedReference,
+      queryParameters: resolvedReference,
+    });
+  }
+
+  const sortByAttribute = transformer.orderBy
+    ? (a: any[]) =>
+        a.sort((a, b) =>
+          a[transformer.orderBy ?? ""].localeCompare(b[transformer.orderBy ?? ""], "en", {
+            sensitivity: "base",
+          })
+        )
+    : (a: any[]) => a;
+  const result = new Set<string>();
+  for (const entry of Object.entries(resolvedReference)) {
+    result.add((entry[1] as any)[transformer.attribute]);
+  }
+  const resultDomainElement: Domain2QueryReturnType<any> = sortByAttribute(
+    [...result].map((e) => ({ [transformer.attribute]: e }))
+  );
+  log.info(
+    "handleUniqueTransformer extractorTransformer unique",
+    label,
+    "result",
+    resultDomainElement
+  );
+  return resultDomainElement;
+}
+
 // ################################################################################################
 export type ITransformerHandler<T extends (TransformerForBuild
 | TransformerForRuntime
@@ -1165,86 +1243,15 @@ export function innerTransformer_apply(
   // );
   switch (transformer.transformerType) {
     case "count": {
-      return handleCountTransformer(
-        step,
-        label,
-        transformer,
-        resolveBuildTransformersTo,
-        queryParams,
-        contextResults,
-        // transformer:
-        // | TransformerForBuild_count
-        // | TransformerForRuntime_count
-        // // | TransformerForRuntime_innerFullObjectTemplate
-        // ,
-        // step: Step,
-        // label: string | undefined,
-        // resolveBuildTransformersTo: ResolveBuildTransformersTo,
-        // queryParams: Record<string, any>,
-        // contextResults?: Record<string, any>
-      )
-      // const resolvedReference = resolveApplyTo_legacy(
-      //   transformer,
+      throw new Error("count transformer not allowed in innerTransformer_apply");
+      // return handleCountTransformer(
       //   step,
+      //   label,
+      //   transformer,
       //   resolveBuildTransformersTo,
       //   queryParams,
       //   contextResults,
-      //   label
-      // );
-      // log.info(
-      //   "innerTransformer_apply extractorTransformer count resolvedReference=",
-      //   resolvedReference
-      // );
-      // if (resolvedReference instanceof Domain2ElementFailed) {
-      //   log.error(
-      //     "innerTransformer_apply extractorTransformer count can not apply to failed resolvedReference",
-      //     resolvedReference
-      //   );
-      //   return new Domain2ElementFailed({
-      //     queryFailure: "QueryNotExecutable",
-      //     failureOrigin: ["innerTransformer_apply"],
-      //     queryContext: "count can not apply to failed resolvedReference",
-      //     innerError: resolvedReference,
-      //   });
-      // }
-
-      // if (typeof resolvedReference != "object" || !Array.isArray(resolvedReference)) {
-      //   // if ( typeof resolvedReference != "object" || !Array.isArray(resolvedReference)) {
-      //   log.error(
-      //     "innerTransformer_apply extractorTransformer count can not apply to resolvedReference of wrong type",
-      //     resolvedReference
-      //   );
-      //   return new Domain2ElementFailed({
-      //     queryFailure: "QueryNotExecutable",
-      //     failureOrigin: ["innerTransformer_apply"],
-      //     queryContext:
-      //       "count can not apply to resolvedReference of wrong type: " + typeof resolvedReference,
-      //     queryParameters: resolvedReference,
-      //   });
-      // }
-
-      // log.info(
-      //   "innerTransformer_apply extractorTransformer count resolvedReference",
-      //   resolvedReference.length
-      // );
-      // if (transformer.groupBy) {
-      //   const result = new Map<string, number>();
-      //   for (const entry of resolvedReference) {
-      //     const key = (entry as any)[transformer.groupBy];
-      //     if (result.has(key)) {
-      //       result.set(key, (result.get(key) ?? 0) + 1);
-      //     } else {
-      //       result.set(key, 1);
-      //     }
-      //   }
-      //   return [Object.fromEntries(result.entries())];
-      // } else {
-      //   log.info(
-      //     "innerTransformer_apply extractorTransformer count without groupBy resolvedReference",
-      //     resolvedReference.length
-      //   );
-      //   return [{ count: resolvedReference.length }];
-      // }
+      // )
       break;
     }
     case "innerFullObjectTemplate": {
@@ -1922,6 +1929,7 @@ export function innerTransformer_array_apply(
 export const applicationTransformerDefinitions: Record<string, TransformerDefinition> = {
   spreadSheetToJzodSchema: transformer_spreadSheetToJzodSchema,
   "count": transformer_count,
+  "unique": transformer_unique,
 }
 
 // ################################################################################################
@@ -2010,9 +2018,9 @@ export function transformer_extended_apply(
             case "objectValues":
             case "listPickElement":
             case "listReducerToIndexObject":
-            case "mapperListToList":
-            // case "count":
-            case "unique": {
+              // case "count":
+              // case "unique":
+            case "mapperListToList": {
               preResult = innerTransformer_apply(
                 step,
                 label,

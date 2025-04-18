@@ -11,6 +11,7 @@ import { LoggerInterface } from "../../4-services/LoggerInterface";
 import { optional } from "zod";
 import { JzodElement, JzodReference } from "@miroir-framework/jzod-ts";
 import { transformerForBuildInterface_count, transformerForRuntimeInterface_count } from "../../../2_domain/Transformer_count";
+import { transformerForBuildInterface_unique, transformerForRuntimeInterface_unique } from "../../../2_domain/Transformer_unique";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -223,7 +224,6 @@ export function getExtendedSchemas(jzodSchemajzodMiroirBootstrapSchema: any) {
     "transformerForBuild_constant",
     "transformerForBuild_parameterReference",
     "transformerForBuild_Abstract",
-    "transformerForBuild_unique_root",
     "transformerForBuild_object_fullTemplate_root",
     "transformerForBuild_object_listReducerToIndexObject_root",
     "transformerForBuild_object_listPickElement_root",
@@ -347,6 +347,8 @@ export function getMiroirFundamentalJzodSchema(
         ),
         transformerForBuild_count: transformerForBuildInterface_count,
         transformerForRuntime_count: transformerForRuntimeInterface_count,
+        transformerForBuild_unique: transformerForBuildInterface_unique,
+        transformerForRuntime_unique: transformerForRuntimeInterface_unique,
         extendedTransformerForRuntime: {
           type: "union",
           definition: [
@@ -2906,6 +2908,7 @@ export function getMiroirFundamentalJzodSchema(
         transformerForBuild: (transformerJzodSchema as any).definition.context.transformerForBuild,
         // transformerForBuild_applyTo: (transformerJzodSchema as any).definition.context.transformerForBuild_applyTo,
         transformerForBuild_count: transformerForBuildInterface_count,
+        transformerForBuild_unique: transformerForBuildInterface_unique,
         transformerForBuild_dataflowObject: (transformerJzodSchema as any).definition.context
           .transformerForBuild_dataflowObject,
         transformerForBuild_dataflowSequence: (transformerJzodSchema as any).definition.context
@@ -2947,14 +2950,11 @@ export function getMiroirFundamentalJzodSchema(
           .transformerForBuild_objectValues,
         transformerForBuild_string: (transformerJzodSchema as any).definition.context
           .transformerForBuild_string,
-        transformerForBuild_unique_root: (miroirFundamentalJzodSchema as any).definition.context
-          .transformerForBuild_unique_root,
-        transformerForBuild_unique: (miroirFundamentalJzodSchema as any).definition.context
-          .transformerForBuild_unique,
         transformerForRuntime_Abstract: (miroirFundamentalJzodSchema as any).definition.context
           .transformerForRuntime_Abstract,
         // transformerForRuntime_applyTo: (miroirFundamentalJzodSchema as any).definition.context.transformerForRuntime_applyTo,
         transformerForRuntime_count: transformerForRuntimeInterface_count,
+        transformerForRuntime_unique: transformerForRuntimeInterface_unique,
         transformerForRuntime_contextReference: (transformerJzodSchema as any).definition.context
           .transformerForRuntime_contextReference,
         transformer_contextOrParameterReferenceTO_REMOVE: (transformerJzodSchema as any).definition.context
@@ -2994,8 +2994,6 @@ export function getMiroirFundamentalJzodSchema(
         transformerForRuntime_newUuid: (transformerJzodSchema as any).definition.context
           .transformer_newUuid,
         // transformerForRuntime_mustacheStringTemplate_NOT_IMPLEMENTED: (miroirFundamentalJzodSchema as any).definition.context.transformerForRuntime_mustacheStringTemplate_NOT_IMPLEMENTED,
-        transformerForRuntime_unique: (transformerJzodSchema as any).definition.context
-          .transformerForRuntime_unique,
         transformerForRuntime: (transformerJzodSchema as any).definition.context
           .transformerForRuntime,
         transformer_menu_addItem: (miroirFundamentalJzodSchema as any).definition.context

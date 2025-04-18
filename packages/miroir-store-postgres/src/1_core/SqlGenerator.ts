@@ -54,7 +54,8 @@ export type ITransformerHandler<T> = (
 ) => Domain2QueryReturnType<SqlStringForTransformerElementValue>;
 
 const sqlTransformerImplementations: Record<string, ITransformerHandler<any>> = {
-  "sqlStringForCountTransformer": sqlStringForCountTransformer
+  "sqlStringForCountTransformer": sqlStringForCountTransformer,
+  "sqlStringForUniqueTransformer": sqlStringForUniqueTransformer,
 }
 
 // ################################################################################################
@@ -393,6 +394,7 @@ function flushAndIndent(indentLevel: number) {
   return "\n" + indent(indentLevel);
 }
 
+// ################################################################################################
 function sqlStringForCountTransformer(
   actionRuntimeTransformer: TransformerForRuntime_count,
   preparedStatementParametersCount: number,
@@ -475,6 +477,85 @@ FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo",
         query: actionRuntimeTransformer as any,
         failureMessage: "sqlStringForRuntimeTransformer count referenceQuery result type is not known: " + referenceQuery.type,
       });
+    }
+  }
+}
+
+// ################################################################################################
+function sqlStringForUniqueTransformer(
+  actionRuntimeTransformer: TransformerForRuntime_unique,
+  preparedStatementParametersCount: number,
+  indentLevel: number,
+  queryParams: Record<string, any>,
+  definedContextEntries: Record<string, SqlContextEntry>,
+  useAccessPathForContextReference: boolean,
+  topLevelTransformer: boolean
+): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
+  const orderBy = (actionRuntimeTransformer as any).orderBy
+    ? `ORDER BY "${(actionRuntimeTransformer as any).orderBy}"`
+    : "";
+  const referenceQuery = sqlStringForApplyTo(
+    actionRuntimeTransformer,
+    preparedStatementParametersCount,
+    indentLevel,
+    queryParams,
+    definedContextEntries,
+    useAccessPathForContextReference,
+    topLevelTransformer,
+  );
+  if (referenceQuery instanceof Domain2ElementFailed) {
+    return referenceQuery;
+  }
+  switch (referenceQuery.type) {
+    case "json_array":
+    case "json": {
+      return {
+        type: "json",
+        sqlStringOrObject: `
+SELECT jsonb_agg(t."unique_applyTo_array") AS "unique_objects"
+FROM (
+SELECT DISTINCT ON ("unique_applyTo_array"->>'${actionRuntimeTransformer.attribute}') "unique_applyTo_array"
+FROM (${referenceQuery.sqlStringOrObject}) AS "unique_applyTo", 
+LATERAL jsonb_array_elements("unique_applyTo"."${
+(referenceQuery as any).resultAccessPath[1]
+}") AS "unique_applyTo_array"
+ORDER BY "unique_applyTo_array"->>'${actionRuntimeTransformer.attribute}'
+) t
+`,
+        preparedStatementParameters: referenceQuery.preparedStatementParameters,
+        resultAccessPath: [0, "unique_objects"],
+        columnNameContainingJsonValue: "unique_objects",
+      };
+      break;
+    }
+    case "table": {
+      const transformerSqlQuery = `
+SELECT DISTINCT ON ("unique_applyTo"."${actionRuntimeTransformer.attribute}") "${actionRuntimeTransformer.attribute}" 
+FROM (${referenceQuery.sqlStringOrObject}) AS "unique_applyTo"
+${orderBy}
+`;
+      return {
+        type: "table",
+        sqlStringOrObject: transformerSqlQuery,
+        preparedStatementParameters: referenceQuery.preparedStatementParameters,
+        resultAccessPath: undefined,
+      };
+      break;
+    }
+    case "scalar": {
+      return new Domain2ElementFailed({
+        queryFailure: "QueryNotExecutable",
+        query: actionRuntimeTransformer as any,
+        failureMessage: "sqlStringForRuntimeTransformer unique referenceQuery result is scalar, not json",
+      });
+      break;
+    }
+    default: {
+      throw new Error(
+        "sqlStringForRuntimeTransformer unique referenceQuery result type is not known: " +
+          referenceQuery.type
+      );
+      break;
     }
   }
 }
@@ -2062,79 +2143,86 @@ ${indent(indentLevel)}WHERE "${applyToName}".row_num = "objectAlter_subQuery".ro
       });
       break;
     }
-    case "unique": {
-      const referenceQuery = sqlStringForApplyTo(
-        actionRuntimeTransformer,
-        preparedStatementParametersCount,
-        indentLevel,
-        queryParams,
-        definedContextEntries,
-        useAccessPathForContextReference,
-        topLevelTransformer,
-      );
-      if (referenceQuery instanceof Domain2ElementFailed) {
-        return referenceQuery;
-      }
-      switch (referenceQuery.type) {
-        case "json_array":
-        case "json": {
-          return {
-            type: "json",
-            sqlStringOrObject: `
-SELECT jsonb_agg(t."unique_applyTo_array") AS "unique_objects"
-FROM (
-  SELECT DISTINCT ON ("unique_applyTo_array"->>'${actionRuntimeTransformer.attribute}') "unique_applyTo_array"
-  FROM (${referenceQuery.sqlStringOrObject}) AS "unique_applyTo", 
-  LATERAL jsonb_array_elements("unique_applyTo"."${
-    (referenceQuery as any).resultAccessPath[1]
-  }") AS "unique_applyTo_array"
-  ORDER BY "unique_applyTo_array"->>'${actionRuntimeTransformer.attribute}'
-) t
-`,
-            preparedStatementParameters: referenceQuery.preparedStatementParameters,
-            resultAccessPath: [0, "unique_objects"],
-            columnNameContainingJsonValue: "unique_objects",
-          };
-          break;
-        }
-        case "table": {
-          const transformerSqlQuery = `
-SELECT DISTINCT ON ("unique_applyTo"."${actionRuntimeTransformer.attribute}") "${actionRuntimeTransformer.attribute}" 
-FROM (${referenceQuery.sqlStringOrObject}) AS "unique_applyTo"
-${orderBy}
-`;
-          return {
-            type: "table",
-            sqlStringOrObject: transformerSqlQuery,
-            preparedStatementParameters: referenceQuery.preparedStatementParameters,
-            resultAccessPath: undefined,
-          };
-          break;
-        }
-        case "scalar": {
-          return new Domain2ElementFailed({
-            queryFailure: "QueryNotExecutable",
-            query: actionRuntimeTransformer as any,
-            failureMessage: "sqlStringForRuntimeTransformer unique referenceQuery result is scalar, not json",
-          });
-          break;
-        }
-        default:
-          break;
-      }
-      // if(referenceQuery.type == "table") {
-      // }
-      // log.info("extractorTransformerSql actionRuntimeTransformer.attribute", actionRuntimeTransformer.attribute);
-      // log.info("sqlStringForRuntimeTransformer unique transformerRawQuery", JSON.stringify(transformerSqlQuery));
-
-      // return {
-      //   type: "table",
-      //   sqlStringOrObject: transformerSqlQuery,
-      //   preparedStatementParameters: referenceQuery.preparedStatementParameters,
-      //   resultAccessPath: undefined,
-      // };
-      break;
-    }
+//     case "unique": {
+//       return sqlStringForUniqueTransformer(
+//         actionRuntimeTransformer,
+//         preparedStatementParametersCount,
+//         indentLevel,
+//         queryParams,
+//         definedContextEntries,
+//         useAccessPathForContextReference,
+//         topLevelTransformer
+//       )
+// //       const referenceQuery = sqlStringForApplyTo(
+// //         actionRuntimeTransformer,
+// //         preparedStatementParametersCount,
+// //         indentLevel,
+// //         queryParams,
+// //         definedContextEntries,
+// //         useAccessPathForContextReference,
+// //         topLevelTransformer,
+// //       );
+// //       if (referenceQuery instanceof Domain2ElementFailed) {
+// //         return referenceQuery;
+// //       }
+// //       switch (referenceQuery.type) {
+// //         case "json_array":
+// //         case "json": {
+// //           return {
+// //             type: "json",
+// //             sqlStringOrObject: `
+// // SELECT jsonb_agg(t."unique_applyTo_array") AS "unique_objects"
+// // FROM (
+// //   SELECT DISTINCT ON ("unique_applyTo_array"->>'${actionRuntimeTransformer.attribute}') "unique_applyTo_array"
+// //   FROM (${referenceQuery.sqlStringOrObject}) AS "unique_applyTo", 
+// //   LATERAL jsonb_array_elements("unique_applyTo"."${
+// //     (referenceQuery as any).resultAccessPath[1]
+// //   }") AS "unique_applyTo_array"
+// //   ORDER BY "unique_applyTo_array"->>'${actionRuntimeTransformer.attribute}'
+// // ) t
+// // `,
+// //             preparedStatementParameters: referenceQuery.preparedStatementParameters,
+// //             resultAccessPath: [0, "unique_objects"],
+// //             columnNameContainingJsonValue: "unique_objects",
+// //           };
+// //           break;
+// //         }
+// //         case "table": {
+// //           const transformerSqlQuery = `
+// // SELECT DISTINCT ON ("unique_applyTo"."${actionRuntimeTransformer.attribute}") "${actionRuntimeTransformer.attribute}" 
+// // FROM (${referenceQuery.sqlStringOrObject}) AS "unique_applyTo"
+// // ${orderBy}
+// // `;
+// //           return {
+// //             type: "table",
+// //             sqlStringOrObject: transformerSqlQuery,
+// //             preparedStatementParameters: referenceQuery.preparedStatementParameters,
+// //             resultAccessPath: undefined,
+// //           };
+// //           break;
+// //         }
+// //         case "scalar": {
+// //           return new Domain2ElementFailed({
+// //             queryFailure: "QueryNotExecutable",
+// //             query: actionRuntimeTransformer as any,
+// //             failureMessage: "sqlStringForRuntimeTransformer unique referenceQuery result is scalar, not json",
+// //           });
+// //           break;
+// //         }
+// //         default: {
+// //           return new Domain2ElementFailed({
+// //             queryFailure: "QueryNotExecutable",
+// //             query: actionRuntimeTransformer as any,
+// //             failureMessage:
+// //               "sqlStringForRuntimeTransformer unique referenceQuery type not implemented: " +
+// //               referenceQuery.type,
+// //           });
+// //           break;
+// //         }
+//       //   break;
+//       // }
+//       break;
+//     }
     default: {
       const castTransformer = actionRuntimeTransformer as any;
       const foundApplicationTransformer = applicationTransformerDefinitions[castTransformer.transformerType];
@@ -2143,7 +2231,9 @@ ${orderBy}
         return new Domain2ElementFailed({
           queryFailure: "QueryNotExecutable",
           query: actionRuntimeTransformer as any,
-          failureMessage: "sqlStringForRuntimeTransformer transformerType not found in applicationTransformerDefinitions: " + castTransformer.transformerType,
+          failureMessage:
+            "sqlStringForRuntimeTransformer transformerType not found in applicationTransformerDefinitions: " +
+            castTransformer.transformerType,
         });
       }
       switch (foundApplicationTransformer.transformerImplementation.transformerImplementationType) {
@@ -2201,12 +2291,18 @@ ${orderBy}
     }
   }
 
-  return new Domain2ElementFailed({
-    queryFailure: "QueryNotExecutable",
-    failureOrigin: ["sqlStringForRuntimeTransformer"],
-    query: actionRuntimeTransformer as any,
-    failureMessage: "could not handle transformer: " + JSON.stringify(actionRuntimeTransformer.label??actionRuntimeTransformer.transformerType, null, 2),
-  });
+  // return new Domain2ElementFailed({
+  //   queryFailure: "QueryNotExecutable",
+  //   failureOrigin: ["sqlStringForRuntimeTransformer"],
+  //   query: actionRuntimeTransformer as any,
+  //   failureMessage:
+  //     "could not handle transformer: " +
+  //     JSON.stringify(
+  //       actionRuntimeTransformer.label ?? actionRuntimeTransformer.transformerType,
+  //       null,
+  //       2
+  //     ),
+  // });
 }
 
 // ################################################################################################
