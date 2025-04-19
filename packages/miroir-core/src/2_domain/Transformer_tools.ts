@@ -1,6 +1,6 @@
 import { JzodElement, TransformerDefinition } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
-export function transformerForRuntimeInterfaceFromDefinition(
+export function transformerInterfaceFromDefinition(
   transformerDefinition: TransformerDefinition,
   target: "build" | "runtime"
 ): JzodElement {

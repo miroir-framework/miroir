@@ -54,9 +54,10 @@ export type ITransformerHandler<T> = (
 ) => Domain2QueryReturnType<SqlStringForTransformerElementValue>;
 
 const sqlTransformerImplementations: Record<string, ITransformerHandler<any>> = {
-  "sqlStringForCountTransformer": sqlStringForCountTransformer,
-  "sqlStringForUniqueTransformer": sqlStringForUniqueTransformer,
-  "sqlStringForMapperListToListTransformer": sqlStringForMapperListToListTransformer,
+  sqlStringForCountTransformer,
+  sqlStringForListPickElementTransformer,
+  sqlStringForUniqueTransformer,
+  sqlStringForMapperListToListTransformer,
 }
 
 // ################################################################################################
@@ -732,6 +733,133 @@ function sqlStringForMapperListToListTransformer(
 }
 
 // ################################################################################################
+function sqlStringForListPickElementTransformer(
+  actionRuntimeTransformer: TransformerForRuntime_list_listPickElement,
+  preparedStatementParametersCount: number,
+  indentLevel: number,
+  queryParams: Record<string, any>,
+  definedContextEntries: Record<string, SqlContextEntry>,
+  useAccessPathForContextReference: boolean,
+  topLevelTransformer: boolean
+): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
+  log.info(
+    "sqlStringForListPickElementTransformer listPickElement called for",
+    JSON.stringify(actionRuntimeTransformer, null, 2),
+    "topLevelTransformer",
+    topLevelTransformer,
+    "useAccessPathForContextReference",
+    useAccessPathForContextReference,
+    "definedContextEntries",
+    JSON.stringify(definedContextEntries, null, 2)
+  );
+  if (topLevelTransformer) {
+    const sqlForApplyTo = sqlStringForApplyTo(
+      actionRuntimeTransformer,
+      preparedStatementParametersCount,
+      indentLevel,
+      queryParams,
+      definedContextEntries,
+      useAccessPathForContextReference,
+      topLevelTransformer
+    );
+
+    log.info("sqlStringForListPickElementTransformer listPickElement found applyTo", JSON.stringify(sqlForApplyTo, null, 2));
+    if (sqlForApplyTo instanceof Domain2ElementFailed) {
+      return sqlForApplyTo;
+    }
+
+    const limit = actionRuntimeTransformer.index;
+    let sqlResult;
+    switch (sqlForApplyTo.type) {
+      case "tableOf1JsonColumn": {
+        return new Domain2ElementFailed({
+          queryFailure: "QueryNotExecutable",
+          query: actionRuntimeTransformer as any,
+          failureMessage: "sqlStringForListPickElementTransformer listPickElement referenceQuery result is tableOf1JsonColumn",
+        });
+      }
+      case "json_array":
+      case "json": {
+        if (actionRuntimeTransformer.orderBy) {
+          sqlResult = `
+SELECT (
+jsonb_agg(
+  "listPickElement_applyTo_array" ORDER BY (
+    "listPickElement_applyTo_array" ->> '${actionRuntimeTransformer.orderBy}'
+  )::"any"
+) ->> ${limit}
+)::jsonb AS "listPickElement" 
+FROM
+(${sqlForApplyTo.sqlStringOrObject}) AS "listPickElement_applyTo", 
+LATERAL jsonb_array_elements("listPickElement_applyTo"."${
+  (sqlForApplyTo as any).resultAccessPath[1]
+}") AS "listPickElement_applyTo_array"
+`;
+        } else { // no orderBy
+          // SELECT ("listPickElement_applyTo_array" ->> ${limit})::"any" AS "listPickElement" 
+          sqlResult = `
+SELECT "listPickElement_applyTo_array"."value" AS "listPickElement"
+FROM
+(${sqlForApplyTo.sqlStringOrObject}) AS "listPickElement_applyTo", 
+LATERAL jsonb_array_elements("listPickElement_applyTo"."${
+(sqlForApplyTo as any).resultAccessPath[1]
+}") AS "listPickElement_applyTo_array" LIMIT 1 OFFSET ${limit}
+`;
+//               sqlResult = `SELECT ("listPickElement_applyTo"."${
+//                 (sqlForApplyTo as any).resultAccessPath[1]
+//               }" ->> ${limit}) AS "listPickElement" 
+// FROM (${sqlForApplyTo.sqlStringOrObject}) AS "listPickElement_applyTo"
+// `;
+        }
+        return {
+          type: "json",
+          sqlStringOrObject: sqlResult,
+          preparedStatementParameters: sqlForApplyTo.preparedStatementParameters,
+          resultAccessPath: [0, "listPickElement"],
+          columnNameContainingJsonValue: "listPickElement",
+        };
+        break;
+      }
+      case "table": {
+        // const column = referenceQuery.resultAccessPath?"." + referenceQuery.resultAccessPath.join("."): "";
+        if (actionRuntimeTransformer.orderBy) {
+          sqlResult = `SELECT * FROM (${sqlForApplyTo.sqlStringOrObject}) AS "listPickElement" ORDER BY ${actionRuntimeTransformer.orderBy} LIMIT 1 OFFSET ${limit}`;
+        } else {
+          sqlResult = `SELECT * FROM (${sqlForApplyTo.sqlStringOrObject}) AS "listPickElement" LIMIT 1 OFFSET ${limit}`;
+        }
+        return {
+          type: "json",
+          sqlStringOrObject: sqlResult,
+          preparedStatementParameters: sqlForApplyTo.preparedStatementParameters,
+          resultAccessPath: [0, ...(sqlForApplyTo.resultAccessPath ?? [])],
+          columnNameContainingJsonValue: "listPickElement",
+        };
+        break;
+      }
+      case "scalar": {
+        return new Domain2ElementFailed({
+          queryFailure: "QueryNotExecutable",
+          query: actionRuntimeTransformer as any,
+          failureMessage: "sqlStringForListPickElementTransformer listPickElement referenceQuery result is scalar, not json",
+        });
+        break;
+      }
+      default: {
+        return new Domain2ElementFailed({
+          queryFailure: "QueryNotExecutable",
+          query: actionRuntimeTransformer as any,
+          failureMessage: "sqlStringForListPickElementTransformer listPickElement referenceQuery not json",
+        });
+        break;
+      }
+    }
+  } else {
+    throw new Error("sqlStringForListPickElementTransformer listPickElement not implemented for (non-topLevel) inner transformer");
+  }
+  // break;
+}
+
+// ################################################################################################
 export function sqlStringForRuntimeTransformer(
   actionRuntimeTransformer: TransformerForRuntime,
   preparedStatementParametersCount: number,
@@ -1205,123 +1333,6 @@ export function sqlStringForRuntimeTransformer(
     }
     case "dataflowSequence": {
       throw new Error("sqlStringForRuntimeTransformer dataflowSequence not implemented");
-      break;
-    }
-    case "listPickElement": {
-      log.info(
-        "sqlStringForRuntimeTransformer listPickElement called for",
-        JSON.stringify(actionRuntimeTransformer, null, 2),
-        "topLevelTransformer",
-        topLevelTransformer,
-        "useAccessPathForContextReference",
-        useAccessPathForContextReference,
-        "definedContextEntries",
-        JSON.stringify(definedContextEntries, null, 2)
-      );
-      if (topLevelTransformer) {
-        const sqlForApplyTo = sqlStringForApplyTo(
-          actionRuntimeTransformer,
-          preparedStatementParametersCount,
-          indentLevel,
-          queryParams,
-          definedContextEntries,
-          useAccessPathForContextReference,
-          topLevelTransformer
-        );
-  
-        log.info("sqlStringForRuntimeTransformer listPickElement found applyTo", JSON.stringify(sqlForApplyTo, null, 2));
-        if (sqlForApplyTo instanceof Domain2ElementFailed) {
-          return sqlForApplyTo;
-        }
-  
-        const limit = actionRuntimeTransformer.index;
-        let sqlResult;
-        switch (sqlForApplyTo.type) {
-          case "tableOf1JsonColumn": {
-            return new Domain2ElementFailed({
-              queryFailure: "QueryNotExecutable",
-              query: actionRuntimeTransformer as any,
-              failureMessage: "sqlStringForRuntimeTransformer listPickElement referenceQuery result is tableOf1JsonColumn",
-            });
-          }
-          case "json_array":
-          case "json": {
-            if (actionRuntimeTransformer.orderBy) {
-              sqlResult = `
-  SELECT (
-    jsonb_agg(
-      "listPickElement_applyTo_array" ORDER BY (
-        "listPickElement_applyTo_array" ->> '${actionRuntimeTransformer.orderBy}'
-      )::"any"
-    ) ->> ${limit}
-  )::jsonb AS "listPickElement" 
-  FROM
-    (${sqlForApplyTo.sqlStringOrObject}) AS "listPickElement_applyTo", 
-    LATERAL jsonb_array_elements("listPickElement_applyTo"."${
-      (sqlForApplyTo as any).resultAccessPath[1]
-    }") AS "listPickElement_applyTo_array"
-  `;
-            } else { // no orderBy
-              // SELECT ("listPickElement_applyTo_array" ->> ${limit})::"any" AS "listPickElement" 
-              sqlResult = `
-SELECT "listPickElement_applyTo_array"."value" AS "listPickElement"
-FROM
-(${sqlForApplyTo.sqlStringOrObject}) AS "listPickElement_applyTo", 
-  LATERAL jsonb_array_elements("listPickElement_applyTo"."${
-    (sqlForApplyTo as any).resultAccessPath[1]
-  }") AS "listPickElement_applyTo_array" LIMIT 1 OFFSET ${limit}
-`;
-//               sqlResult = `SELECT ("listPickElement_applyTo"."${
-//                 (sqlForApplyTo as any).resultAccessPath[1]
-//               }" ->> ${limit}) AS "listPickElement" 
-// FROM (${sqlForApplyTo.sqlStringOrObject}) AS "listPickElement_applyTo"
-// `;
-            }
-            return {
-              type: "json",
-              sqlStringOrObject: sqlResult,
-              preparedStatementParameters: sqlForApplyTo.preparedStatementParameters,
-              resultAccessPath: [0, "listPickElement"],
-              columnNameContainingJsonValue: "listPickElement",
-            };
-            break;
-          }
-          case "table": {
-            // const column = referenceQuery.resultAccessPath?"." + referenceQuery.resultAccessPath.join("."): "";
-            if (actionRuntimeTransformer.orderBy) {
-              sqlResult = `SELECT * FROM (${sqlForApplyTo.sqlStringOrObject}) AS "listPickElement" ORDER BY ${actionRuntimeTransformer.orderBy} LIMIT 1 OFFSET ${limit}`;
-            } else {
-              sqlResult = `SELECT * FROM (${sqlForApplyTo.sqlStringOrObject}) AS "listPickElement" LIMIT 1 OFFSET ${limit}`;
-            }
-            return {
-              type: "json",
-              sqlStringOrObject: sqlResult,
-              preparedStatementParameters: sqlForApplyTo.preparedStatementParameters,
-              resultAccessPath: [0, ...(sqlForApplyTo.resultAccessPath ?? [])],
-              columnNameContainingJsonValue: "listPickElement",
-            };
-            break;
-          }
-          case "scalar": {
-            return new Domain2ElementFailed({
-              queryFailure: "QueryNotExecutable",
-              query: actionRuntimeTransformer as any,
-              failureMessage: "sqlStringForRuntimeTransformer listPickElement referenceQuery result is scalar, not json",
-            });
-            break;
-          }
-          default: {
-            return new Domain2ElementFailed({
-              queryFailure: "QueryNotExecutable",
-              query: actionRuntimeTransformer as any,
-              failureMessage: "sqlStringForRuntimeTransformer listPickElement referenceQuery not json",
-            });
-            break;
-          }
-        }
-      } else {
-        throw new Error("sqlStringForRuntimeTransformer listPickElement not implemented for (non-topLevel) inner transformer");
-      }
       break;
     }
     case "constantArray":

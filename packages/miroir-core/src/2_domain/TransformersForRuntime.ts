@@ -14,6 +14,7 @@ import {
   TransformerForBuild,
   TransformerForBuild_count,
   TransformerForBuild_InnerReference,
+  TransformerForBuild_list,
   TransformerForBuild_list_listMapperToList,
   TransformerForBuild_mustacheStringTemplate,
   TransformerForBuild_object_fullTemplate,
@@ -51,6 +52,7 @@ import { cleanLevel } from "./constants";
 import { transformer_spreadSheetToJzodSchema } from "./Transformer_Spreadsheet";
 import {
   transformer_count,
+  transformer_listPickElement,
   transformer_mapperListToList,
   transformer_unique,
 } from "./Transformers";
@@ -81,6 +83,7 @@ export const defaultTransformers = {
 
 const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any>> = {
   "handleCountTransformer": handleCountTransformer,
+  "handleListPickElementTransformer": handleListPickElementTransformer,
   "handleUniqueTransformer": handleUniqueTransformer,
   "transformerForBuild_list_listMapperToList_apply": defaultTransformers.transformerForBuild_list_listMapperToList_apply,
 }
@@ -88,6 +91,7 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
 export const applicationTransformerDefinitions: Record<string, TransformerDefinition> = {
   spreadSheetToJzodSchema: transformer_spreadSheetToJzodSchema,
   "count": transformer_count,
+  "listPickElement": transformer_listPickElement,
   "unique": transformer_unique,
   "mapperListToList": transformer_mapperListToList,
 }
@@ -1196,6 +1200,97 @@ export function handleUniqueTransformer(
 }
 
 // ################################################################################################
+export function handleListPickElementTransformer(
+  step: Step,
+  label: string | undefined,
+  transformer:
+  | TransformerForBuild_object_listPickElement
+  | TransformerForRuntime_list_listPickElement,
+  resolveBuildTransformersTo: ResolveBuildTransformersTo,
+  queryParams: Record<string, any>,
+  contextResults?: Record<string, any>
+): Domain2QueryReturnType<any> {
+  const resolvedReference = resolveApplyTo_legacy(
+    transformer,
+    step,
+    resolveBuildTransformersTo,
+    queryParams,
+    contextResults,
+    label
+  );
+  if (resolvedReference instanceof Domain2ElementFailed) {
+    log.error(
+      "handleListPickElementTransformer extractorTransformer listPickElement can not apply to resolvedReference",
+      resolvedReference
+    );
+    return new Domain2ElementFailed({
+      queryFailure: "QueryNotExecutable",
+      failureOrigin: ["innerTransformer_apply"],
+      queryContext: "listPickElement can not apply to resolvedReference",
+      innerError: resolvedReference,
+    });
+  }
+
+  if (typeof resolvedReference != "object" || !Array.isArray(resolvedReference)) {
+    log.error(
+      "handleListPickElementTransformer extractorTransformer listPickElement can not apply to resolvedReference",
+      resolvedReference
+    );
+    return new Domain2ElementFailed({
+      queryFailure: "QueryNotExecutable",
+      failureOrigin: ["innerTransformer_apply"],
+      queryContext:
+        "listPickElement can not apply to resolvedReference, wrong type: " +
+        typeof resolvedReference,
+      queryParameters: resolvedReference,
+    });
+  }
+
+  const orderByAttribute = transformer.orderBy ?? "";
+  const sortByAttribute = transformer.orderBy
+    ? (a: any[]) =>
+        a.sort((a, b) =>
+          a[orderByAttribute].localeCompare(b[orderByAttribute], "en", {
+            sensitivity: "base",
+          })
+        )
+    : (a: any[]) => a;
+
+  // try {
+  const sortedResultArray = sortByAttribute(resolvedReference);
+  if (transformer.index < 0 || sortedResultArray.length < transformer.index) {
+    return undefined;
+    // return new Domain2ElementFailed({
+    //   queryFailure: "FailedTransformer_listPickElement",
+    //   failureOrigin: ["innerTransformer_apply"],
+    //   queryContext: "listPickElement index out of bounds",
+    // });
+  } else {
+    const result = sortedResultArray[transformer.index];
+    log.info(
+      "handleListPickElementTransformer extractorTransformer listPickElement sorted resolvedReference",
+      sortedResultArray,
+      "index",
+      transformer.index,
+      "result",
+      result
+    );
+    return result;
+  }
+  // } catch (error) {
+  //   log.error(
+  //     "innerTransformer_apply extractorTransformer listPickElement failed",
+  //     error
+  //   )
+  //   return new Domain2ElementFailed({
+  //     queryFailure: "FailedTransformer_listPickElement",
+  //     failureOrigin: ["innerTransformer_apply"],
+  //     queryContext: "listPickElement failed: " + error,
+  //   });
+  // }
+  // break;
+}
+// ################################################################################################
 export type ITransformerHandler<T extends (TransformerForBuild
 | TransformerForRuntime
 | TransformerForRuntime_innerFullObjectTemplate)
@@ -1383,14 +1478,15 @@ export function innerTransformer_apply(
       return Object.values(resolvedReference);
     }
     case "mapperListToList": {
-      return defaultTransformers.transformerForBuild_list_listMapperToList_apply(
-        step,
-        label,
-        transformer,
-        resolveBuildTransformersTo,
-        queryParams,
-        contextResults
-      );
+      throw new Error("mapperListToList transformer not allowed in innerTransformer_apply");
+      // return defaultTransformers.transformerForBuild_list_listMapperToList_apply(
+      //   step,
+      //   label,
+      //   transformer,
+      //   resolveBuildTransformersTo,
+      //   queryParams,
+      //   contextResults
+      // );
       break;
     }
     case "listReducerToIndexObject": {
@@ -1416,84 +1512,93 @@ export function innerTransformer_apply(
       break;
     }
     case "listPickElement": {
-      const resolvedReference = resolveApplyTo_legacy(
-        transformer,
-        step,
-        resolveBuildTransformersTo,
-        queryParams,
-        contextResults,
-        label
-      );
-      if (resolvedReference instanceof Domain2ElementFailed) {
-        log.error(
-          "innerTransformer_apply extractorTransformer listPickElement can not apply to resolvedReference",
-          resolvedReference
-        );
-        return new Domain2ElementFailed({
-          queryFailure: "QueryNotExecutable",
-          failureOrigin: ["innerTransformer_apply"],
-          queryContext: "listPickElement can not apply to resolvedReference",
-          innerError: resolvedReference,
-        });
-      }
-
-      if (typeof resolvedReference != "object" || !Array.isArray(resolvedReference)) {
-        log.error(
-          "innerTransformer_apply extractorTransformer listPickElement can not apply to resolvedReference",
-          resolvedReference
-        );
-        return new Domain2ElementFailed({
-          queryFailure: "QueryNotExecutable",
-          failureOrigin: ["innerTransformer_apply"],
-          queryContext:
-            "listPickElement can not apply to resolvedReference, wrong type: " +
-            typeof resolvedReference,
-          queryParameters: resolvedReference,
-        });
-      }
-
-      const orderByAttribute = transformer.orderBy ?? "";
-      const sortByAttribute = transformer.orderBy
-        ? (a: any[]) =>
-            a.sort((a, b) =>
-              a[orderByAttribute].localeCompare(b[orderByAttribute], "en", {
-                sensitivity: "base",
-              })
-            )
-        : (a: any[]) => a;
-
-      // try {
-      const sortedResultArray = sortByAttribute(resolvedReference);
-      if (transformer.index < 0 || sortedResultArray.length < transformer.index) {
-        return undefined;
-        // return new Domain2ElementFailed({
-        //   queryFailure: "FailedTransformer_listPickElement",
-        //   failureOrigin: ["innerTransformer_apply"],
-        //   queryContext: "listPickElement index out of bounds",
-        // });
-      } else {
-        const result = sortedResultArray[transformer.index];
-        log.info(
-          "innerTransformer_apply extractorTransformer listPickElement sorted resolvedReference",
-          sortedResultArray,
-          "index",
-          transformer.index,
-          "result",
-          result
-        );
-        return result;
-      }
-      // } catch (error) {
+      throw new Error("listPickElement transformer not allowed in innerTransformer_apply");
+      // return handleListPickElementTransformer(
+      //   step,
+      //   label,
+      //   transformer,
+      //   resolveBuildTransformersTo,
+      //   queryParams,
+      //   contextResults
+      // );
+      // const resolvedReference = resolveApplyTo_legacy(
+      //   transformer,
+      //   step,
+      //   resolveBuildTransformersTo,
+      //   queryParams,
+      //   contextResults,
+      //   label
+      // );
+      // if (resolvedReference instanceof Domain2ElementFailed) {
       //   log.error(
-      //     "innerTransformer_apply extractorTransformer listPickElement failed",
-      //     error
-      //   )
+      //     "innerTransformer_apply extractorTransformer listPickElement can not apply to resolvedReference",
+      //     resolvedReference
+      //   );
       //   return new Domain2ElementFailed({
-      //     queryFailure: "FailedTransformer_listPickElement",
+      //     queryFailure: "QueryNotExecutable",
       //     failureOrigin: ["innerTransformer_apply"],
-      //     queryContext: "listPickElement failed: " + error,
+      //     queryContext: "listPickElement can not apply to resolvedReference",
+      //     innerError: resolvedReference,
       //   });
       // }
+
+      // if (typeof resolvedReference != "object" || !Array.isArray(resolvedReference)) {
+      //   log.error(
+      //     "innerTransformer_apply extractorTransformer listPickElement can not apply to resolvedReference",
+      //     resolvedReference
+      //   );
+      //   return new Domain2ElementFailed({
+      //     queryFailure: "QueryNotExecutable",
+      //     failureOrigin: ["innerTransformer_apply"],
+      //     queryContext:
+      //       "listPickElement can not apply to resolvedReference, wrong type: " +
+      //       typeof resolvedReference,
+      //     queryParameters: resolvedReference,
+      //   });
+      // }
+
+      // const orderByAttribute = transformer.orderBy ?? "";
+      // const sortByAttribute = transformer.orderBy
+      //   ? (a: any[]) =>
+      //       a.sort((a, b) =>
+      //         a[orderByAttribute].localeCompare(b[orderByAttribute], "en", {
+      //           sensitivity: "base",
+      //         })
+      //       )
+      //   : (a: any[]) => a;
+
+      // // try {
+      // const sortedResultArray = sortByAttribute(resolvedReference);
+      // if (transformer.index < 0 || sortedResultArray.length < transformer.index) {
+      //   return undefined;
+      //   // return new Domain2ElementFailed({
+      //   //   queryFailure: "FailedTransformer_listPickElement",
+      //   //   failureOrigin: ["innerTransformer_apply"],
+      //   //   queryContext: "listPickElement index out of bounds",
+      //   // });
+      // } else {
+      //   const result = sortedResultArray[transformer.index];
+      //   log.info(
+      //     "innerTransformer_apply extractorTransformer listPickElement sorted resolvedReference",
+      //     sortedResultArray,
+      //     "index",
+      //     transformer.index,
+      //     "result",
+      //     result
+      //   );
+      //   return result;
+      // }
+      // // } catch (error) {
+      // //   log.error(
+      // //     "innerTransformer_apply extractorTransformer listPickElement failed",
+      // //     error
+      // //   )
+      // //   return new Domain2ElementFailed({
+      // //     queryFailure: "FailedTransformer_listPickElement",
+      // //     failureOrigin: ["innerTransformer_apply"],
+      // //     queryContext: "listPickElement failed: " + error,
+      // //   });
+      // // }
       break;
     }
     case "objectDynamicAccess": {
@@ -1517,70 +1622,6 @@ export function innerTransformer_apply(
     }
     case "unique": {
       throw new Error("unique transformer not allowed in innerTransformer_apply");
-      // const resolvedReference = resolveApplyTo_legacy(
-      //   transformer,
-      //   step,
-      //   resolveBuildTransformersTo,
-      //   queryParams,
-      //   contextResults,
-      //   label
-      // );
-      // log.info(
-      //   "innerTransformer_apply extractorTransformer unique",
-      //   label,
-      //   "resolvedReference",
-      //   resolvedReference
-      // );
-
-      // if (resolvedReference instanceof Domain2ElementFailed) {
-      //   log.error(
-      //     "innerTransformer_apply extractorTransformer unique can not apply to resolvedReference",
-      //     resolvedReference
-      //   );
-      //   return new Domain2ElementFailed({
-      //     queryFailure: "QueryNotExecutable",
-      //     failureOrigin: ["innerTransformer_apply"],
-      //     queryContext: "unique can not apply to resolvedReference",
-      //     innerError: resolvedReference,
-      //   });
-      // }
-
-      // if (typeof resolvedReference != "object" || !Array.isArray(resolvedReference)) {
-      //   log.error(
-      //     "innerTransformer_apply extractorTransformer unique referencedExtractor can not apply to resolvedReference",
-      //     resolvedReference
-      //   );
-      //   return new Domain2ElementFailed({
-      //     queryFailure: "QueryNotExecutable",
-      //     failureOrigin: ["innerTransformer_apply"],
-      //     queryContext:
-      //       "unique can not apply to resolvedReference, wrong type: " + typeof resolvedReference,
-      //     queryParameters: resolvedReference,
-      //   });
-      // }
-
-      // const sortByAttribute = transformer.orderBy
-      //   ? (a: any[]) =>
-      //       a.sort((a, b) =>
-      //         a[transformer.orderBy ?? ""].localeCompare(b[transformer.orderBy ?? ""], "en", {
-      //           sensitivity: "base",
-      //         })
-      //       )
-      //   : (a: any[]) => a;
-      // const result = new Set<string>();
-      // for (const entry of Object.entries(resolvedReference)) {
-      //   result.add((entry[1] as any)[transformer.attribute]);
-      // }
-      // const resultDomainElement: Domain2QueryReturnType<any> = sortByAttribute(
-      //   [...result].map((e) => ({ [transformer.attribute]: e }))
-      // );
-      // log.info(
-      //   "innerTransformer_apply extractorTransformer unique",
-      //   label,
-      //   "result",
-      //   resultDomainElement
-      // );
-      // return resultDomainElement;
       break;
     }
     case "freeObjectTemplate": {
@@ -2017,9 +2058,9 @@ export function transformer_extended_apply(
             case "listReducerToSpreadObject":
             case "objectEntries":
             case "objectValues":
-            case "listPickElement":
-              // case "count":
-              // case "unique":
+            // case "listPickElement":
+            // case "count":
+            // case "unique":
             // case "mapperListToList": 
             case "listReducerToIndexObject": {
               preResult = innerTransformer_apply(

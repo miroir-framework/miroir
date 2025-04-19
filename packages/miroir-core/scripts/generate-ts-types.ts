@@ -82,7 +82,7 @@ import {
   getMiroirFundamentalJzodSchema,
   miroirFundamentalJzodSchemaUuid,
 } from "../src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema.js";
-import { transformerForBuildInterface_unique } from "../src/2_domain/Transformers.js";
+import { miroirTransformersForBuild } from "../src/2_domain/Transformers";
 
 async function build() {
     try {
@@ -359,7 +359,7 @@ async function generateSchemas(generateFundamentalJzodSchema = true) {
         "ms"
       );
       const oldTransformer = (miroirFundamentalJzodSchema as any).definition.context.transformerForBuild_unique;
-      const newTransformer = transformerForBuildInterface_unique;
+      const newTransformer = miroirTransformersForBuild.transformer_unique;
       console.log(
         "old transformer", 
         JSON.stringify(oldTransformer, null, 2)
