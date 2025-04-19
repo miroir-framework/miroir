@@ -213,6 +213,7 @@ export function sqlStringForExtractor(extractor: ExtractorOrCombiner, schema: st
   }
 }
 
+// ##############################################################################################
 export type SqlStringForTransformerElementValueType = "json" | "scalar" | "table" | "json_array" | "tableOf1JsonColumn";
 /**
  * * This type represents the structure of the SQL string or object that is generated for a transformer element.
@@ -1206,174 +1207,6 @@ export function sqlStringForRuntimeTransformer(
       throw new Error("sqlStringForRuntimeTransformer dataflowSequence not implemented");
       break;
     }
-    // case "mapperListToList": {
-    //   return sqlStringForMapperListToListTransformer(
-    //     actionRuntimeTransformer as TransformerForRuntime_list_listMapperToList,
-    //     preparedStatementParametersCount,
-    //     indentLevel,
-    //     queryParams,
-    //     definedContextEntries,
-    //     useAccessPathForContextReference,
-    //     topLevelTransformer
-    //   );
-    // //   /**
-    // //    * must take the rerferencedExtractor result and make it avaialable to elementTransformer, apply the elementTransformer to
-    // //    * each element of the list and return the sorted list of transformed elements
-    // //    */
-    // //   // throw new Error("sqlStringForRuntimeTransformer mapperListToList not implemented");
-    // //   let newPreparedStatementParametersCount = preparedStatementParametersCount;
-
-    // //   // const referenceName: string = (actionRuntimeTransformer as any).referencedTransformer;
-    // //   const transformerLabel: string = (actionRuntimeTransformer as any).label ?? actionRuntimeTransformer.transformerType;
-    // //   const referenceToOuterObjectRenamed: string =
-    // //     transformerLabel + "_" + actionRuntimeTransformer.referenceToOuterObject;
-      
-    // //   const sqlStringForElementTransformer = sqlStringForRuntimeTransformer(
-    // //     actionRuntimeTransformer.elementTransformer,
-    // //     newPreparedStatementParametersCount,
-    // //     indentLevel,
-    // //     queryParams,
-    // //     {
-    // //       ...definedContextEntries,
-    // //       [actionRuntimeTransformer.referenceToOuterObject]: {
-    // //         type: "json",
-    // //         renameTo: referenceToOuterObjectRenamed,
-    // //         attributeResultAccessPath: ["element"],
-    // //       },
-    // //     }, // contextEntries
-    // //     useAccessPathForContextReference,
-    // //     topLevelTransformer,
-    // //     undefined, // withClauseColumnName
-    // //     referenceToOuterObjectRenamed, // iterateOn
-    // //   );
-
-    // //   log.info(
-    // //     "sqlStringForRuntimeTransformer mapperListToList found elementTransformer",
-    // //     JSON.stringify(sqlStringForElementTransformer, null, 2)
-    // //   );
-    // //   if (sqlStringForElementTransformer instanceof Domain2ElementFailed) {
-    // //     return sqlStringForElementTransformer;
-    // //   }
-    // //   if (sqlStringForElementTransformer.type != "json") {
-    // //     return new Domain2ElementFailed({
-    // //       queryFailure: "QueryNotExecutable",
-    // //       query: actionRuntimeTransformer as any,
-    // //       failureMessage: "sqlStringForRuntimeTransformer mapperListToList elementTransformer not json",
-    // //     });
-    // //   }
-
-    // //   let preparedStatementParameters: any[] = sqlStringForElementTransformer.preparedStatementParameters ?? [];
-    // //   newPreparedStatementParametersCount += preparedStatementParameters.length;
-
-    // //   const applyTo = sqlStringForApplyTo(
-    // //     actionRuntimeTransformer,
-    // //     newPreparedStatementParametersCount,
-    // //     indentLevel + 2,
-    // //     queryParams,
-    // //     definedContextEntries,
-    // //     // false,//useAccessPathForContextReference, // useAccessPathForContextReference,
-    // //     useAccessPathForContextReference,// false, // useAccessPathForContextReference,
-    // //     topLevelTransformer,
-    // // );
-    // //   // log.info("sqlStringForRuntimeTransformer mapperListToList found applyTo", JSON.stringify(applyTo, null, 2));
-    // //   if (applyTo instanceof Domain2ElementFailed) {
-    // //     return applyTo;
-    // //   }
-    // //   // if (applyTo.type != "json" || applyTo.type != "json_array") {
-    // //   if (!["json", "json_array"].includes(applyTo.type)) { // TODO: why is cast needed?
-    // //     return new Domain2ElementFailed({
-    // //       queryFailure: "QueryNotExecutable",
-    // //       query: actionRuntimeTransformer as any,
-    // //       failureMessage: "sqlStringForRuntimeTransformer mapperListToList referenceQuery result is not json:" + applyTo.type,
-    // //     });
-    // //   }
-
-    // //   if (applyTo.preparedStatementParameters) {
-    // //     preparedStatementParameters = [...preparedStatementParameters, ...applyTo.preparedStatementParameters];
-    // //     newPreparedStatementParametersCount += applyTo.preparedStatementParameters.length;
-    // //   }
-    // //   log.info(
-    // //     "sqlStringForRuntimeTransformer mapperListToList applyTo",
-    // //     JSON.stringify(applyTo, null, 2),
-    // //   )
-    // //   switch (applyTo.type) {
-    // //     case "json_array": 
-    // //     case "json": {
-    // //       const extraWith: { name: string; sql: string }[] = [
-    // //         ...applyTo.extraWith??[],
-    // //         {
-    // //           name: referenceToOuterObjectRenamed,
-    // //           sql:
-    // //             // flushAndIndent(indentLevel) +
-    // //             'SELECT "' + transformerLabel + '_oneElementPerRow"."element" FROM (' +
-    // //             flushAndIndent(indentLevel + 1) +
-    // //             'SELECT jsonb_array_elements("' + transformerLabel + '_applyTo"."' +
-    // //             (applyTo as any).resultAccessPath[1] +
-    // //             '") AS "element" FROM (' +
-    // //             flushAndIndent(indentLevel + 2) +
-    // //             applyTo.sqlStringOrObject +
-    // //             flushAndIndent(indentLevel + 1) +
-    // //             ') AS "' + transformerLabel + '_applyTo"' +
-    // //             flushAndIndent(indentLevel) +
-    // //             ') AS "' + transformerLabel + '_oneElementPerRow"',
-    // //         },
-    // //         ...sqlStringForElementTransformer.extraWith??[],
-    // //         {
-    // //           name: transformerLabel + "_elementTransformer",
-    // //           sql: sqlStringForElementTransformer.sqlStringOrObject,
-    // //         },
-    // //       ];
-    // //       const sqlResult = `SELECT "${sqlStringForElementTransformer.columnNameContainingJsonValue}" FROM "${transformerLabel}_elementTransformer"`;
-
-    // //       return {
-    // //         type: "json",
-    // //         sqlStringOrObject: sqlResult,
-    // //         preparedStatementParameters,
-    // //         extraWith,
-    // //         resultAccessPath: [
-    // //           {
-    // //             type: "map",
-    // //             key:
-    // //               sqlStringForElementTransformer.columnNameContainingJsonValue ??
-    // //               "mapperListToList_NO_COLUMN_NAME_FOUND",
-    // //           },
-    // //         ],
-    // //         columnNameContainingJsonValue:
-    // //           sqlStringForElementTransformer.columnNameContainingJsonValue,
-    // //       };
-    // //       break;
-    // //     }
-    // //     // case "table": {
-    // //     //   // const column = applyTo.resultAccessPath ? "." + applyTo.resultAccessPath.join(".") : "";
-    // //     //   // const sqlResult = `SELECT * FROM (${applyTo.sqlStringOrObject}) AS "mapperListToList" ORDER BY ${column}`;
-    // //     //   const sqlResult = `SELECT * FROM (${applyTo.sqlStringOrObject}) AS "mapperListToList"`;
-    // //     //   return {
-    // //     //     // type: "json",
-    // //     //     type: "table",
-    // //     //     sqlStringOrObject: sqlResult,
-    // //     //     preparedStatementParameters: applyTo.preparedStatementParameters,
-    // //     //     resultAccessPath: [0, "mapperListToList"],
-    // //     //   };
-    // //     //   break;
-    // //     // }
-    // //     // case "scalar": {
-    // //     //   return new Domain2ElementFailed({
-    // //     //     queryFailure: "QueryNotExecutable",
-    // //     //     query: actionRuntimeTransformer as any,
-    // //     //     failureMessage: "sqlStringForRuntimeTransformer mapperListToList referenceQuery result is scalar, not json",
-    // //     //   });
-    // //     //   break;
-    // //     // }
-    // //     default: {
-    // //       return new Domain2ElementFailed({
-    // //         queryFailure: "QueryNotExecutable",
-    // //         query: actionRuntimeTransformer as any,
-    // //         failureMessage: "sqlStringForRuntimeTransformer mapperListToList referenceQuery not json",
-    // //       });
-    // //       break;
-    // //     }
-    // //   }
-    // }
     case "listPickElement": {
       log.info(
         "sqlStringForRuntimeTransformer listPickElement called for",
@@ -2322,86 +2155,6 @@ ${indent(indentLevel)}WHERE "${applyToName}".row_num = "objectAlter_subQuery".ro
       });
       break;
     }
-//     case "unique": {
-//       return sqlStringForUniqueTransformer(
-//         actionRuntimeTransformer,
-//         preparedStatementParametersCount,
-//         indentLevel,
-//         queryParams,
-//         definedContextEntries,
-//         useAccessPathForContextReference,
-//         topLevelTransformer
-//       )
-// //       const referenceQuery = sqlStringForApplyTo(
-// //         actionRuntimeTransformer,
-// //         preparedStatementParametersCount,
-// //         indentLevel,
-// //         queryParams,
-// //         definedContextEntries,
-// //         useAccessPathForContextReference,
-// //         topLevelTransformer,
-// //       );
-// //       if (referenceQuery instanceof Domain2ElementFailed) {
-// //         return referenceQuery;
-// //       }
-// //       switch (referenceQuery.type) {
-// //         case "json_array":
-// //         case "json": {
-// //           return {
-// //             type: "json",
-// //             sqlStringOrObject: `
-// // SELECT jsonb_agg(t."unique_applyTo_array") AS "unique_objects"
-// // FROM (
-// //   SELECT DISTINCT ON ("unique_applyTo_array"->>'${actionRuntimeTransformer.attribute}') "unique_applyTo_array"
-// //   FROM (${referenceQuery.sqlStringOrObject}) AS "unique_applyTo", 
-// //   LATERAL jsonb_array_elements("unique_applyTo"."${
-// //     (referenceQuery as any).resultAccessPath[1]
-// //   }") AS "unique_applyTo_array"
-// //   ORDER BY "unique_applyTo_array"->>'${actionRuntimeTransformer.attribute}'
-// // ) t
-// // `,
-// //             preparedStatementParameters: referenceQuery.preparedStatementParameters,
-// //             resultAccessPath: [0, "unique_objects"],
-// //             columnNameContainingJsonValue: "unique_objects",
-// //           };
-// //           break;
-// //         }
-// //         case "table": {
-// //           const transformerSqlQuery = `
-// // SELECT DISTINCT ON ("unique_applyTo"."${actionRuntimeTransformer.attribute}") "${actionRuntimeTransformer.attribute}" 
-// // FROM (${referenceQuery.sqlStringOrObject}) AS "unique_applyTo"
-// // ${orderBy}
-// // `;
-// //           return {
-// //             type: "table",
-// //             sqlStringOrObject: transformerSqlQuery,
-// //             preparedStatementParameters: referenceQuery.preparedStatementParameters,
-// //             resultAccessPath: undefined,
-// //           };
-// //           break;
-// //         }
-// //         case "scalar": {
-// //           return new Domain2ElementFailed({
-// //             queryFailure: "QueryNotExecutable",
-// //             query: actionRuntimeTransformer as any,
-// //             failureMessage: "sqlStringForRuntimeTransformer unique referenceQuery result is scalar, not json",
-// //           });
-// //           break;
-// //         }
-// //         default: {
-// //           return new Domain2ElementFailed({
-// //             queryFailure: "QueryNotExecutable",
-// //             query: actionRuntimeTransformer as any,
-// //             failureMessage:
-// //               "sqlStringForRuntimeTransformer unique referenceQuery type not implemented: " +
-// //               referenceQuery.type,
-// //           });
-// //           break;
-// //         }
-//       //   break;
-//       // }
-//       break;
-//     }
     default: {
       const castTransformer = actionRuntimeTransformer as any;
       const foundApplicationTransformer = applicationTransformerDefinitions[castTransformer.transformerType];
@@ -2469,19 +2222,6 @@ ${indent(indentLevel)}WHERE "${applyToName}".row_num = "objectAlter_subQuery".ro
       break;
     }
   }
-
-  // return new Domain2ElementFailed({
-  //   queryFailure: "QueryNotExecutable",
-  //   failureOrigin: ["sqlStringForRuntimeTransformer"],
-  //   query: actionRuntimeTransformer as any,
-  //   failureMessage:
-  //     "could not handle transformer: " +
-  //     JSON.stringify(
-  //       actionRuntimeTransformer.label ?? actionRuntimeTransformer.transformerType,
-  //       null,
-  //       2
-  //     ),
-  // });
 }
 
 // ################################################################################################

@@ -1,0 +1,52 @@
+{
+  "uuid": "4ee5c863-5ade-4706-92bd-1fc2d89c3766",
+  "name": "count",
+  "defaultLabel": "count",
+  "description": "Transform a list into a count object",
+  "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
+  "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
+  "parentName": "TransformerDefinition",
+  "transformerInterface": {
+    "transformerParameterSchema": {
+      "transformerType": {
+        "type": "literal",
+        "definition": "count"
+      },
+      "transformerDefinition": {
+        "type": "object",
+        "definition": {
+          "applyTo": {
+            "type": "array",
+            "definition": {
+              "type": "any"
+            }
+          },
+          "attribute": {
+            "type": "string",
+            "optional": true
+          },
+          "groupBy": {
+            "type": "string",
+            "optional": true
+          }
+        }
+      }
+    },
+    "transformerResultSchema": {
+      "type": "array",
+      "definition": {
+        "type": "object",
+        "definition": {
+          "count": {
+            "type": "number"
+          }
+        }
+      }
+    }
+  },
+  "transformerImplementation": {
+    "transformerImplementationType": "libraryImplementation",
+    "inMemoryImplementationFunctionName": "handleCountTransformer",
+    "sqlImplementationFunctionName": "sqlStringForCountTransformer"
+  }
+}
