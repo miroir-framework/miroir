@@ -34,11 +34,11 @@ export function transformerBuildToValue(
         {}
       );
     }
-    case "contextReference": {
-      throw new Error(
-        "Context reference is not supported in build transformer. Use 'parameterReference' instead."
-      );
-    }
+    // case "contextReference": {
+    //   throw new Error(
+    //     "Context reference is not supported in build transformer. Use 'parameterReference' instead."
+    //   );
+    // }
     case "parameterReference":
     case "objectDynamicAccess":
     case "dataflowObject":

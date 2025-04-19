@@ -4,16 +4,19 @@ import {
   forgeCarryOnReferenceName,
   JzodReferenceResolutionFunction,
 } from "@miroir-framework/jzod";
+import { JzodElement, JzodReference } from "@miroir-framework/jzod-ts";
 import { cleanLevel } from "../../../1_core/constants";
+import {
+  transformerForBuildInterface_count,
+  transformerForBuildInterface_mapperListToList,
+  transformerForBuildInterface_unique,
+  transformerForRuntimeInterface_count,
+  transformerForRuntimeInterface_mapperListToList,
+  transformerForRuntimeInterface_unique,
+} from "../../../2_domain/Transformers";
 import { MiroirLoggerFactory } from "../../../4_services/LoggerFactory";
 import { packageName } from "../../../constants";
 import { LoggerInterface } from "../../4-services/LoggerInterface";
-import { optional } from "zod";
-import { JzodElement, JzodReference } from "@miroir-framework/jzod-ts";
-import { transformerForBuildInterface_count, transformerForRuntimeInterface_count } from "../../../2_domain/Transformer_count";
-import { transformerForBuildInterface_unique, transformerForRuntimeInterface_unique } from "../../../2_domain/Transformer_unique";
-import { transformerForBuildInterface_mapperListToList, transformerForRuntimeInterface_mapperListToList } from "../../../2_domain/Transformer_mapperListToList";
-import { transformerForBuild_list_listMapperToList, transformerForRuntime_list_listMapperToList } from "../preprocessor-generated/miroirFundamentalType";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

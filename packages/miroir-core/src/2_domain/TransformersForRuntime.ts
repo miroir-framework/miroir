@@ -2,28 +2,26 @@ import mustache from 'mustache';
 // import Mustache from "mustache";
 import { v4 as uuidv4 } from 'uuid';
 import {
-  DomainElementFailed,
   DomainElementInstanceArray,
-  DomainElementObject,
   DomainElementString,
   DomainElementSuccess,
   ExtendedTransformerForRuntime,
-  Menu,
   Transformer,
+  Transformer_constants,
   Transformer_contextOrParameterReferenceTO_REMOVE,
-  TransformerForBuild_InnerReference,
-  TransformerForBuild_objectDynamicAccess,
+  Transformer_parameterReference,
   TransformerDefinition,
   TransformerForBuild,
   TransformerForBuild_count,
-  TransformerForBuild_objectAlter,
-  TransformerForBuild_list,
+  TransformerForBuild_InnerReference,
   TransformerForBuild_list_listMapperToList,
   TransformerForBuild_mustacheStringTemplate,
   TransformerForBuild_object_fullTemplate,
   TransformerForBuild_object_listPickElement,
   TransformerForBuild_object_listReducerToIndexObject,
   TransformerForBuild_object_listReducerToSpreadObject,
+  TransformerForBuild_objectAlter,
+  TransformerForBuild_objectDynamicAccess,
   TransformerForBuild_objectEntries,
   TransformerForBuild_objectValues,
   TransformerForBuild_unique,
@@ -41,9 +39,7 @@ import {
   TransformerForRuntime_objectDynamicAccess,
   TransformerForRuntime_objectEntries,
   TransformerForRuntime_objectValues,
-  TransformerForRuntime_unique,
-  Transformer_constants,
-  Transformer_parameterReference
+  TransformerForRuntime_unique
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { Action2Error, Domain2ElementFailed, Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
@@ -52,12 +48,12 @@ import { MiroirLoggerFactory } from "../4_services/LoggerFactory";
 import { packageName } from "../constants";
 import { resolvePathOnObject } from "../tools";
 import { cleanLevel } from "./constants";
-import { transformer } from "zod";
 import { transformer_spreadSheetToJzodSchema } from "./Transformer_Spreadsheet";
-import { resolve } from 'path';
-import { transformer_count } from './Transformer_count';
-import { transformer_unique } from './Transformer_unique';
-import { transformer_mapperListToList } from './Transformer_mapperListToList';
+import {
+  transformer_count,
+  transformer_mapperListToList,
+  transformer_unique,
+} from "./Transformers";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -87,6 +83,13 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
   "handleCountTransformer": handleCountTransformer,
   "handleUniqueTransformer": handleUniqueTransformer,
   "transformerForBuild_list_listMapperToList_apply": defaultTransformers.transformerForBuild_list_listMapperToList_apply,
+}
+
+export const applicationTransformerDefinitions: Record<string, TransformerDefinition> = {
+  spreadSheetToJzodSchema: transformer_spreadSheetToJzodSchema,
+  "count": transformer_count,
+  "unique": transformer_unique,
+  "mapperListToList": transformer_mapperListToList,
 }
 
 // ################################################################################################
@@ -1929,12 +1932,6 @@ export function innerTransformer_array_apply(
   }
 }
 
-export const applicationTransformerDefinitions: Record<string, TransformerDefinition> = {
-  spreadSheetToJzodSchema: transformer_spreadSheetToJzodSchema,
-  "count": transformer_count,
-  "unique": transformer_unique,
-  "mapperListToList": transformer_mapperListToList,
-}
 
 // ################################################################################################
 // <A>[] -> <A>[]

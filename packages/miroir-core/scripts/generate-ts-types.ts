@@ -82,8 +82,7 @@ import {
   getMiroirFundamentalJzodSchema,
   miroirFundamentalJzodSchemaUuid,
 } from "../src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema.js";
-import { transformerForBuildInterface_count, transformerForRuntimeInterface_count } from "../src/2_domain/Transformer_count";
-import { transformerForBuildInterface_unique } from "../src/2_domain/Transformer_unique";
+import { transformerForBuildInterface_unique } from "../src/2_domain/Transformers.js";
 
 async function build() {
     try {
