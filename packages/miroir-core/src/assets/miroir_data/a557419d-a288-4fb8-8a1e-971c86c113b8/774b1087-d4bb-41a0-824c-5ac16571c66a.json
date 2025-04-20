@@ -1,0 +1,48 @@
+{
+  "uuid": "774b1087-d4bb-41a0-824c-5ac16571c66a",
+  "name": "object_fullTemplate",
+  "defaultLabel": "object_fullTemplate",
+  "description": "Create an object from an array of key-value pairs",
+  "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
+  "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
+  "parentName": "TransformerDefinition",
+  "transformerInterface": {
+    "transformerParameterSchema": {
+      "transformerType": {
+        "type": "literal",
+        "definition": "objectAlter"
+      },
+      "transformerDefinition": {
+        "type": "object",
+        "definition": {
+          "applyTo": {
+            "type": "record",
+            "definition": {
+              "type": "any"
+            }
+          },
+          "referenceToOuterObject": {
+            "type": "string"
+          },
+          "definition": {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformer_freeObjectTemplate"
+            }
+          }
+        }
+      }
+    },
+    "transformerResultSchema": {
+      "type": "record",
+      "definition": {
+        "type": "any"
+      }
+    }
+  },
+  "transformerImplementation": {
+    "transformerImplementationType": "libraryImplementation",
+    "inMemoryImplementationFunctionName": "handleTransformer_objectAlter",
+    "sqlImplementationFunctionName": "sqlStringForObjectAlterTransformer"
+  }
+}

@@ -98,10 +98,12 @@ export function transformerInterfaceFromDefinition(
           ? {
               transformer: "transformerForRuntime",
               transformer_InnerReference: "transformerForRuntime_InnerReference",
+              transformer_freeObjectTemplate: "transformerForRuntime_freeObjectTemplate"
             }
           : {
               transformer: "transformerForBuild",
               transformer_InnerReference: "transformerForBuild_InnerReference",
+              transformer_freeObjectTemplate: "transformerForBuild_freeObjectTemplate"
             }
       ).definition,
       applyTo: {

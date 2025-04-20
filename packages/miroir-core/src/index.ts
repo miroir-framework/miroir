@@ -210,8 +210,6 @@ export {
   transformerForBuild_objectEntries_root,
   TransformerForBuild_objectValues_root,
   transformerForBuild_objectValues_root,
-  TransformerForBuild_object_listPickElement_root,
-  transformerForBuild_object_listPickElement_root,
   TransformerForBuild_object_listReducerToIndexObject_root,
   transformerForBuild_object_listReducerToIndexObject_root,
   TransformerForRuntime_orderedTransformer,

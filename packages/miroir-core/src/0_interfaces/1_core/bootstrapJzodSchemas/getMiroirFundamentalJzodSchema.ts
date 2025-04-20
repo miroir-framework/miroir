@@ -354,12 +354,14 @@ export function getMiroirFundamentalJzodSchema(
         ),
         transformerForBuild_count: miroirTransformersForBuild.transformer_count,
         transformerForBuild_list_listMapperToList: miroirTransformersForBuild.transformer_mapperListToList,
+        transformerForBuild_objectAlter: miroirTransformersForBuild.transformer_objectAlter,
         transformerForBuild_object_listPickElement: miroirTransformersForBuild.transformer_listPickElement,
         transformerForBuild_object_fullTemplate: miroirTransformersForBuild.transformer_object_fullTemplate,
         transformerForBuild_unique: miroirTransformersForBuild.transformer_unique,
         transformerForRuntime_count: miroirTransformersForRuntime.transformer_count,
         transformerForRuntime_list_listMapperToList: miroirTransformersForRuntime.transformer_mapperListToList,
         transformerForRuntime_list_listPickElement: miroirTransformersForRuntime.transformer_listPickElement,
+        transformerForRuntime_objectAlter: miroirTransformersForRuntime.transformer_objectAlter,
         transformerForRuntime_object_fullTemplate: miroirTransformersForRuntime.transformer_object_fullTemplate,
         transformerForRuntime_unique: miroirTransformersForRuntime.transformer_unique,
         extendedTransformerForRuntime: {
@@ -2927,7 +2929,7 @@ export function getMiroirFundamentalJzodSchema(
           .transformerForBuild_dataflowSequence,
         transformerForBuild_freeObjectTemplate: (transformerJzodSchema as any).definition.context
           .transformerForBuild_freeObjectTemplate,
-        transformerForBuild_objectAlter: (transformerJzodSchema as any).definition.context
+        transformerForBuild_objectAlter: (miroirFundamentalJzodSchema as any).definition.context
           .transformerForBuild_objectAlter,
         transformerForBuild_list: (transformerJzodSchema as any).definition.context
           .transformerForBuild_list,
@@ -2994,7 +2996,7 @@ export function getMiroirFundamentalJzodSchema(
           .context.transformerForRuntime_list_listPickElement,
         transformerForRuntime_object_alter: (transformerJzodSchema as any).definition.context
           .transformerForRuntime_object_alter,
-        transformerForRuntime_list_listMapperToList: (transformerJzodSchema as any).definition
+        transformerForRuntime_list_listMapperToList: (miroirFundamentalJzodSchema as any).definition
           .context.transformerForRuntime_list_listMapperToList,
         transformerForRuntime_object_listReducerToSpreadObject: (transformerJzodSchema as any)
           .definition.context.transformerForRuntime_object_listReducerToSpreadObject,

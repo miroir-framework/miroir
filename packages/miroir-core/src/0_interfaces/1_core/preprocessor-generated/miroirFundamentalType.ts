@@ -1404,25 +1404,6 @@ export type TransformerForBuild_freeObjectTemplate = {
         } | string | number | boolean | bigint;
     };
 };
-export type TransformerForBuild_objectAlter = {
-    label?: string | undefined;
-    interpolation: "build";
-    transformerType: "objectAlter";
-    applyTo: {
-        [x: string]: any;
-    } | Transformer_inner_referenced_extractor | Transformer_inner_referenced_transformerForBuild;
-    referenceToOuterObject: string;
-    definition: TransformerForBuild_freeObjectTemplate;
-};
-export type TransformerForBuild_list_listMapperToList = {
-    label?: string | undefined;
-    interpolation: "build";
-    orderBy?: string | undefined;
-    transformerType: "mapperListToList";
-    applyTo: any[] | Transformer_inner_referenced_extractor | Transformer_inner_referenced_transformerForBuild;
-    referenceToOuterObject: string;
-    elementTransformer: Transformer_inner_elementTransformer_transformerForRuntime;
-};
 export type TransformerForBuild_object_listReducerToIndexObject = {
     label?: string | undefined;
     interpolation: "build";
@@ -1438,21 +1419,6 @@ export type TransformerForBuild_object_listReducerToSpreadObject = {
     applyTo: {
         [x: string]: any;
     }[] | Transformer_inner_referenced_extractor | Transformer_inner_referenced_transformerForBuild;
-};
-export type TransformerForBuild_object_listPickElement_root = {
-    label?: string | undefined;
-    interpolation: "build";
-    orderBy?: string | undefined;
-    transformerType: "listPickElement";
-    index: number;
-};
-export type TransformerForBuild_object_listPickElement = {
-    label?: string | undefined;
-    interpolation: "build";
-    orderBy?: string | undefined;
-    transformerType: "listPickElement";
-    applyTo: any[] | Transformer_inner_referenced_extractor | Transformer_inner_referenced_transformerForBuild;
-    index: number;
 };
 export type TransformerForBuild_objectEntries = {
     label?: string | undefined;
@@ -1583,15 +1549,6 @@ export type TransformerForRuntime_object_alter = {
     referenceToOuterObject: string;
     definition: TransformerForRuntime_freeObjectTemplate;
 };
-export type TransformerForRuntime_list_listMapperToList = {
-    label?: string | undefined;
-    interpolation: "runtime";
-    orderBy?: string | undefined;
-    transformerType: "mapperListToList";
-    applyTo: any[] | Transformer_inner_referenced_extractor | Transformer_inner_referenced_transformerForRuntime;
-    referenceToOuterObject: string;
-    elementTransformer: Transformer_inner_elementTransformer_transformerForRuntime;
-};
 export type TransformerForRuntime_object_listReducerToSpreadObject = {
     label?: string | undefined;
     transformerType: "listReducerToSpreadObject";
@@ -1638,6 +1595,33 @@ export type Transformer_menu_addItem = {
         menuSectionItemInsertionIndex?: number | undefined;
     };
 };
+export type TransformerForBuild_list_listMapperToList = {
+    label?: string | undefined;
+    interpolation: "build";
+    orderBy?: string | undefined;
+    transformerType: "mapperListToList";
+    applyTo: any[] | Transformer_inner_referenced_extractor | Transformer_inner_referenced_transformerForBuild;
+    referenceToOuterObject: string;
+    elementTransformer: Transformer_inner_elementTransformer_transformerForRuntime;
+};
+export type TransformerForBuild_objectAlter = {
+    label?: string | undefined;
+    interpolation: "build";
+    transformerType: "objectAlter";
+    applyTo: {
+        [x: string]: any;
+    } | Transformer_inner_referenced_extractor | Transformer_inner_referenced_transformerForBuild;
+    referenceToOuterObject: string;
+    definition: TransformerForBuild_freeObjectTemplate;
+};
+export type TransformerForBuild_object_listPickElement = {
+    label?: string | undefined;
+    interpolation: "build";
+    orderBy?: string | undefined;
+    transformerType: "listPickElement";
+    applyTo: any[] | Transformer_inner_referenced_extractor | Transformer_inner_referenced_transformerForBuild;
+    index: number;
+};
 export type TransformerForBuild_object_fullTemplate = {
     label?: string | undefined;
     interpolation: "build";
@@ -1667,6 +1651,25 @@ export type TransformerForRuntime_count = {
     applyTo: any[] | Transformer_inner_referenced_extractor | Transformer_inner_referenced_transformerForRuntime;
     attribute?: string | undefined;
     groupBy?: string | undefined;
+};
+export type TransformerForRuntime_list_listMapperToList = {
+    label?: string | undefined;
+    interpolation: "runtime";
+    orderBy?: string | undefined;
+    transformerType: "mapperListToList";
+    applyTo: any[] | Transformer_inner_referenced_extractor | Transformer_inner_referenced_transformerForRuntime;
+    referenceToOuterObject: string;
+    elementTransformer: Transformer_inner_elementTransformer_transformerForRuntime;
+};
+export type TransformerForRuntime_objectAlter = {
+    label?: string | undefined;
+    interpolation: "runtime";
+    transformerType: "objectAlter";
+    applyTo: {
+        [x: string]: any;
+    } | Transformer_inner_referenced_extractor | Transformer_inner_referenced_transformerForRuntime;
+    referenceToOuterObject: string;
+    definition: TransformerForRuntime_freeObjectTemplate;
 };
 export type TransformerForRuntime_object_fullTemplate = {
     label?: string | undefined;
@@ -5231,12 +5234,8 @@ export const transformerForBuild_constantUuid: z.ZodType<TransformerForBuild_con
 export const transformerForBuild_constants: z.ZodType<TransformerForBuild_constants> = z.union([z.lazy(() =>transformerForBuild_constant), z.lazy(() =>transformer_constantAsExtractor), z.lazy(() =>transformerForBuild_constantArray), z.lazy(() =>transformerForBuild_constantBigint), z.lazy(() =>transformerForBuild_constantBoolean), z.lazy(() =>transformerForBuild_constantUuid), z.lazy(() =>transformerForBuild_constantNumber), z.lazy(() =>transformerForBuild_constantObject), z.lazy(() =>transformerForBuild_constantString), z.lazy(() =>transformer_newUuid)]);
 export const transformerForBuild_count: z.ZodType<TransformerForBuild_count> = z.object({label:z.string().optional(), interpolation:z.literal("build"), transformerType:z.literal("count"), applyTo:z.union([z.array(z.any()), z.lazy(() =>transformer_inner_referenced_extractor), z.lazy(() =>transformer_inner_referenced_transformerForBuild)]), attribute:z.string().optional(), groupBy:z.string().optional()}).strict();
 export const transformerForBuild_freeObjectTemplate: z.ZodType<TransformerForBuild_freeObjectTemplate> = z.object({label:z.string().optional(), interpolation:z.literal("build"), transformerType:z.literal("freeObjectTemplate"), definition:z.record(z.string(),z.union([z.lazy(() =>transformerForBuild), z.record(z.string(),z.lazy(() =>transformerForBuild)), z.string(), z.number(), z.boolean(), z.bigint()]))}).strict();
-export const transformerForBuild_objectAlter: z.ZodType<TransformerForBuild_objectAlter> = z.object({label:z.string().optional(), interpolation:z.literal("build"), transformerType:z.literal("objectAlter"), applyTo:z.union([z.record(z.string(),z.any()), z.lazy(() =>transformer_inner_referenced_extractor), z.lazy(() =>transformer_inner_referenced_transformerForBuild)]), referenceToOuterObject:z.string(), definition:z.lazy(() =>transformerForBuild_freeObjectTemplate)}).strict();
-export const transformerForBuild_list_listMapperToList: z.ZodType<TransformerForBuild_list_listMapperToList> = z.object({label:z.string().optional(), interpolation:z.literal("build"), orderBy:z.string().optional(), transformerType:z.literal("mapperListToList"), applyTo:z.union([z.array(z.any()), z.lazy(() =>transformer_inner_referenced_extractor), z.lazy(() =>transformer_inner_referenced_transformerForBuild)]), referenceToOuterObject:z.string(), elementTransformer:z.lazy(() =>transformer_inner_elementTransformer_transformerForRuntime)}).strict();
 export const transformerForBuild_object_listReducerToIndexObject: z.ZodType<TransformerForBuild_object_listReducerToIndexObject> = z.object({label:z.string().optional(), interpolation:z.literal("build"), orderBy:z.string().optional(), transformerType:z.literal("listReducerToIndexObject"), indexAttribute:z.string(), applyTo:z.union([z.array(z.any()), z.lazy(() =>transformer_inner_referenced_extractor), z.lazy(() =>transformer_inner_referenced_transformerForBuild)])}).strict();
 export const transformerForBuild_object_listReducerToSpreadObject: z.ZodType<TransformerForBuild_object_listReducerToSpreadObject> = z.object({label:z.string().optional(), interpolation:z.literal("build"), transformerType:z.literal("listReducerToSpreadObject"), applyTo:z.union([z.array(z.record(z.string(),z.any())), z.lazy(() =>transformer_inner_referenced_extractor), z.lazy(() =>transformer_inner_referenced_transformerForBuild)])}).strict();
-export const transformerForBuild_object_listPickElement_root: z.ZodType<TransformerForBuild_object_listPickElement_root> = z.object({label:z.string().optional(), interpolation:z.literal("build"), orderBy:z.string().optional(), transformerType:z.literal("listPickElement"), index:z.number()}).strict();
-export const transformerForBuild_object_listPickElement: z.ZodType<TransformerForBuild_object_listPickElement> = z.object({label:z.string().optional(), interpolation:z.literal("build"), orderBy:z.string().optional(), transformerType:z.literal("listPickElement"), applyTo:z.union([z.array(z.any()), z.lazy(() =>transformer_inner_referenced_extractor), z.lazy(() =>transformer_inner_referenced_transformerForBuild)]), index:z.number()}).strict();
 export const transformerForBuild_objectEntries: z.ZodType<TransformerForBuild_objectEntries> = z.object({label:z.string().optional(), interpolation:z.literal("build"), orderBy:z.string().optional(), transformerType:z.literal("objectEntries"), applyTo:z.union([z.record(z.string(),z.any()), z.lazy(() =>transformer_inner_referenced_extractor), z.lazy(() =>transformer_inner_referenced_transformerForBuild)])}).strict();
 export const transformerForBuild_objectValues: z.ZodType<TransformerForBuild_objectValues> = z.object({label:z.string().optional(), interpolation:z.literal("build"), orderBy:z.string().optional(), transformerType:z.literal("objectValues"), applyTo:z.union([z.record(z.string(),z.any()), z.lazy(() =>transformer_inner_referenced_extractor), z.lazy(() =>transformer_inner_referenced_transformerForBuild)])}).strict();
 export const transformerForBuild_list: z.ZodType<TransformerForBuild_list> = z.union([z.lazy(() =>transformerForBuild_objectEntries), z.lazy(() =>transformerForBuild_objectValues), z.lazy(() =>transformerForBuild_list_listMapperToList)]);
@@ -5257,7 +5256,6 @@ export const transformerForRuntime_objectValues: z.ZodType<TransformerForRuntime
 export const transformerForRuntime_freeObjectTemplate: z.ZodType<TransformerForRuntime_freeObjectTemplate> = z.object({label:z.string().optional(), interpolation:z.literal("runtime"), transformerType:z.literal("freeObjectTemplate"), definition:z.record(z.string(),z.union([z.lazy(() =>transformerForRuntime), z.record(z.string(),z.lazy(() =>transformerForRuntime)), z.string(), z.number(), z.boolean(), z.bigint()]))}).strict();
 export const transformerForRuntime_innerFullObjectTemplate: z.ZodType<TransformerForRuntime_innerFullObjectTemplate> = z.object({label:z.string().optional(), interpolation:z.literal("runtime"), orderBy:z.string().optional(), transformerType:z.literal("innerFullObjectTemplate"), applyTo:z.union([z.record(z.string(),z.any()), z.lazy(() =>transformer_inner_referenced_extractor), z.lazy(() =>transformer_inner_referenced_transformerForRuntime)]), definition:z.array(z.object({attributeKey:z.lazy(() =>transformerForRuntime), attributeValue:z.lazy(() =>transformerForRuntime)}).strict())}).strict();
 export const transformerForRuntime_object_alter: z.ZodType<TransformerForRuntime_object_alter> = z.object({label:z.string().optional(), interpolation:z.literal("runtime"), transformerType:z.literal("objectAlter"), applyTo:z.union([z.record(z.string(),z.any()), z.lazy(() =>transformer_inner_referenced_extractor), z.lazy(() =>transformer_inner_referenced_transformerForRuntime)]), referenceToOuterObject:z.string(), definition:z.lazy(() =>transformerForRuntime_freeObjectTemplate)}).strict();
-export const transformerForRuntime_list_listMapperToList: z.ZodType<TransformerForRuntime_list_listMapperToList> = z.object({label:z.string().optional(), interpolation:z.literal("runtime"), orderBy:z.string().optional(), transformerType:z.literal("mapperListToList"), applyTo:z.union([z.array(z.any()), z.lazy(() =>transformer_inner_referenced_extractor), z.lazy(() =>transformer_inner_referenced_transformerForRuntime)]), referenceToOuterObject:z.string(), elementTransformer:z.lazy(() =>transformer_inner_elementTransformer_transformerForRuntime)}).strict();
 export const transformerForRuntime_object_listReducerToSpreadObject: z.ZodType<TransformerForRuntime_object_listReducerToSpreadObject> = z.object({label:z.string().optional(), transformerType:z.literal("listReducerToSpreadObject"), applyTo:z.union([z.array(z.record(z.string(),z.any())), z.lazy(() =>transformer_inner_referenced_extractor), z.lazy(() =>transformer_inner_referenced_transformerForRuntime)])}).strict();
 export const transformerForRuntime_mapper_listToObject: z.ZodType<TransformerForRuntime_mapper_listToObject> = z.object({label:z.string().optional(), interpolation:z.literal("runtime"), orderBy:z.string().optional(), transformerType:z.literal("listReducerToIndexObject"), indexAttribute:z.string(), applyTo:z.union([z.array(z.any()), z.lazy(() =>transformer_inner_referenced_extractor), z.lazy(() =>transformer_inner_referenced_transformerForRuntime)])}).strict();
 export const transformerForRuntime_list_listPickElement: z.ZodType<TransformerForRuntime_list_listPickElement> = z.object({label:z.string().optional(), interpolation:z.literal("runtime"), orderBy:z.string().optional(), transformerType:z.literal("listPickElement"), applyTo:z.union([z.array(z.any()), z.lazy(() =>transformer_inner_referenced_extractor), z.lazy(() =>transformer_inner_referenced_transformerForRuntime)]), index:z.number()}).strict();
@@ -5265,9 +5263,14 @@ export const transformerForRuntime: z.ZodType<TransformerForRuntime> = z.union([
 export const transformerForBuildOrRuntime: z.ZodType<TransformerForBuildOrRuntime> = z.union([z.lazy(() =>transformerForBuild), z.lazy(() =>transformerForRuntime)]);
 export const actionHandler: z.ZodType<ActionHandler> = z.object({interface:z.object({actionJzodObjectSchema:z.lazy(() =>jzodObject)}).strict(), implementation:z.object({templates:z.record(z.string(),z.any()).optional(), compositeActionTemplate:z.lazy(() =>compositeActionTemplate)}).strict()}).strict();
 export const transformer_menu_addItem: z.ZodType<Transformer_menu_addItem> = z.object({transformerType:z.literal("transformer_menu_addItem"), interpolation:z.literal("runtime"), transformerDefinition:z.object({menuReference:z.union([z.string(), z.lazy(() =>transformerForRuntime_InnerReference)]), menuItemReference:z.union([z.string(), z.lazy(() =>transformerForRuntime_InnerReference)]), menuSectionInsertionIndex:z.number().optional(), menuSectionItemInsertionIndex:z.number().optional()}).strict()}).strict();
+export const transformerForBuild_list_listMapperToList: z.ZodType<TransformerForBuild_list_listMapperToList> = z.object({label:z.string().optional(), interpolation:z.literal("build"), orderBy:z.string().optional(), transformerType:z.literal("mapperListToList"), applyTo:z.union([z.array(z.any()), z.lazy(() =>transformer_inner_referenced_extractor), z.lazy(() =>transformer_inner_referenced_transformerForBuild)]), referenceToOuterObject:z.string(), elementTransformer:z.lazy(() =>transformer_inner_elementTransformer_transformerForRuntime)}).strict();
+export const transformerForBuild_objectAlter: z.ZodType<TransformerForBuild_objectAlter> = z.object({label:z.string().optional(), interpolation:z.literal("build"), transformerType:z.literal("objectAlter"), applyTo:z.union([z.record(z.string(),z.any()), z.lazy(() =>transformer_inner_referenced_extractor), z.lazy(() =>transformer_inner_referenced_transformerForBuild)]), referenceToOuterObject:z.string(), definition:z.lazy(() =>transformerForBuild_freeObjectTemplate)}).strict();
+export const transformerForBuild_object_listPickElement: z.ZodType<TransformerForBuild_object_listPickElement> = z.object({label:z.string().optional(), interpolation:z.literal("build"), orderBy:z.string().optional(), transformerType:z.literal("listPickElement"), applyTo:z.union([z.array(z.any()), z.lazy(() =>transformer_inner_referenced_extractor), z.lazy(() =>transformer_inner_referenced_transformerForBuild)]), index:z.number()}).strict();
 export const transformerForBuild_object_fullTemplate: z.ZodType<TransformerForBuild_object_fullTemplate> = z.object({label:z.string().optional(), interpolation:z.literal("build"), orderBy:z.string().optional(), transformerType:z.literal("object_fullTemplate"), applyTo:z.union([z.record(z.string(),z.any()), z.lazy(() =>transformer_inner_referenced_extractor), z.lazy(() =>transformer_inner_referenced_transformerForBuild)]), referenceToOuterObject:z.string(), definition:z.array(z.object({attributeKey:z.lazy(() =>transformerForBuild_InnerReference), attributeValue:z.lazy(() =>transformerForBuild)}).strict())}).strict();
 export const transformerForBuild_unique: z.ZodType<TransformerForBuild_unique> = z.object({label:z.string().optional(), interpolation:z.literal("build"), orderBy:z.string().optional(), transformerType:z.literal("unique"), applyTo:z.union([z.array(z.any()), z.lazy(() =>transformer_inner_referenced_extractor), z.lazy(() =>transformer_inner_referenced_transformerForBuild)]), attribute:z.string()}).strict();
 export const transformerForRuntime_count: z.ZodType<TransformerForRuntime_count> = z.object({label:z.string().optional(), interpolation:z.literal("runtime"), transformerType:z.literal("count"), applyTo:z.union([z.array(z.any()), z.lazy(() =>transformer_inner_referenced_extractor), z.lazy(() =>transformer_inner_referenced_transformerForRuntime)]), attribute:z.string().optional(), groupBy:z.string().optional()}).strict();
+export const transformerForRuntime_list_listMapperToList: z.ZodType<TransformerForRuntime_list_listMapperToList> = z.object({label:z.string().optional(), interpolation:z.literal("runtime"), orderBy:z.string().optional(), transformerType:z.literal("mapperListToList"), applyTo:z.union([z.array(z.any()), z.lazy(() =>transformer_inner_referenced_extractor), z.lazy(() =>transformer_inner_referenced_transformerForRuntime)]), referenceToOuterObject:z.string(), elementTransformer:z.lazy(() =>transformer_inner_elementTransformer_transformerForRuntime)}).strict();
+export const transformerForRuntime_objectAlter: z.ZodType<TransformerForRuntime_objectAlter> = z.object({label:z.string().optional(), interpolation:z.literal("runtime"), transformerType:z.literal("objectAlter"), applyTo:z.union([z.record(z.string(),z.any()), z.lazy(() =>transformer_inner_referenced_extractor), z.lazy(() =>transformer_inner_referenced_transformerForRuntime)]), referenceToOuterObject:z.string(), definition:z.lazy(() =>transformerForRuntime_freeObjectTemplate)}).strict();
 export const transformerForRuntime_object_fullTemplate: z.ZodType<TransformerForRuntime_object_fullTemplate> = z.object({label:z.string().optional(), interpolation:z.literal("runtime"), orderBy:z.string().optional(), transformerType:z.literal("object_fullTemplate"), applyTo:z.union([z.record(z.string(),z.any()), z.lazy(() =>transformer_inner_referenced_extractor), z.lazy(() =>transformer_inner_referenced_transformerForRuntime)]), referenceToOuterObject:z.string(), definition:z.array(z.object({attributeKey:z.lazy(() =>transformerForRuntime_InnerReference), attributeValue:z.lazy(() =>transformerForRuntime)}).strict())}).strict();
 export const transformerForRuntime_unique: z.ZodType<TransformerForRuntime_unique> = z.object({label:z.string().optional(), interpolation:z.literal("runtime"), orderBy:z.string().optional(), transformerType:z.literal("unique"), applyTo:z.union([z.array(z.any()), z.lazy(() =>transformer_inner_referenced_extractor), z.lazy(() =>transformer_inner_referenced_transformerForRuntime)]), attribute:z.string()}).strict();
 export const extendedTransformerForRuntime: z.ZodType<ExtendedTransformerForRuntime> = z.union([z.lazy(() =>transformerForRuntime), z.lazy(() =>transformer_menu_addItem)]);

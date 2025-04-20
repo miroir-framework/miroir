@@ -58,6 +58,7 @@ const sqlTransformerImplementations: Record<string, ITransformerHandler<any>> = 
   sqlStringForListPickElementTransformer,
   sqlStringForMapperListToListTransformer,
   sqlStringForObjectFullTemplateTransformer,
+  sqlStringForObjectAlterTransformer,
   sqlStringForUniqueTransformer,
 }
 
@@ -1168,7 +1169,149 @@ function sqlStringForObjectFullTemplateTransformer(
   }
 }
 
+// ################################################################################################
+function sqlStringForObjectAlterTransformer(
+  actionRuntimeTransformer: TransformerForRuntime_object_alter,
+  preparedStatementParametersCount: number,
+  indentLevel: number,
+  queryParams: Record<string, any>,
+  definedContextEntries: Record<string, SqlContextEntry>,
+  useAccessPathForContextReference: boolean,
+  topLevelTransformer: boolean
+): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
+  let newPreparedStatementParametersCount = preparedStatementParametersCount;
+  let preparedStatementParameters: any[] = [];
+  const applyToName: string =
+    ((actionRuntimeTransformer as any).label
+      ? (actionRuntimeTransformer as any).label
+      : actionRuntimeTransformer.transformerType) +
+    "_" +
+    actionRuntimeTransformer.referenceToOuterObject;
 
+  // #############################################
+  const applyToSql = sqlStringForApplyTo(
+    actionRuntimeTransformer,
+    newPreparedStatementParametersCount,
+    indentLevel,
+    queryParams,
+    definedContextEntries,
+    useAccessPathForContextReference,
+    topLevelTransformer
+  );
+  if (applyToSql instanceof Domain2ElementFailed) {
+    return applyToSql;
+  }
+  if (applyToSql.type != "json") {
+    return new Domain2ElementFailed({
+      queryFailure: "QueryNotExecutable",
+      query: actionRuntimeTransformer as any,
+      failureMessage: "sqlStringForRuntimeTransformer objectAlter referenceQuery not json",
+    });
+  }
+  const accessPathHasMap = applyToSql.resultAccessPath?.find((e: any) => typeof e == "object" && e.type == "map");
+  if (accessPathHasMap) {
+    return new Domain2ElementFailed({
+      queryFailure: "QueryNotExecutable",
+      query: actionRuntimeTransformer as any,
+      failureMessage: "sqlStringForRuntimeTransformer object_fullTemplate resultAccessPath has map: " + JSON.stringify(applyToSql.resultAccessPath, null, 2),
+    });
+  }
+  // #############################################
+  newPreparedStatementParametersCount += (applyToSql.preparedStatementParameters ?? []).length;
+  preparedStatementParameters = [...preparedStatementParameters, ...(applyToSql.preparedStatementParameters ?? [])];
+
+  let newDefinedContextEntries = { ...definedContextEntries };
+  newDefinedContextEntries[actionRuntimeTransformer.referenceToOuterObject] = {
+    type: "json",
+    renameTo: applyToName,
+    attributeResultAccessPath: applyToSql.resultAccessPath?.slice(1) as any, // correct since resolvedApplyTo has no "map" (object) item
+  };
+  // #############################################
+
+  const subQuery: Domain2QueryReturnType<SqlStringForTransformerElementValue> = sqlStringForRuntimeTransformer(
+    actionRuntimeTransformer.definition as TransformerForRuntime,
+    newPreparedStatementParametersCount,
+    indentLevel,
+    queryParams,
+    newDefinedContextEntries,
+    useAccessPathForContextReference,
+    false, // topLevelTransformer
+    // undefined, // withClauseColumnName
+    // iterateOn, // iterateOn
+  );
+
+  if (subQuery instanceof Domain2ElementFailed) {
+    return new Domain2ElementFailed({
+      queryFailure: "QueryNotExecutable",
+      query: actionRuntimeTransformer as any,
+      failureMessage: "sqlStringForRuntimeTransformer objectAlter attributeValue failed: " + JSON.stringify(subQuery, null, 2),
+      innerError: subQuery,
+    });
+  }
+
+  if (subQuery.preparedStatementParameters) {
+    preparedStatementParameters = [
+      ...preparedStatementParameters,
+      ...subQuery.preparedStatementParameters,
+    ];
+    newPreparedStatementParametersCount += subQuery.preparedStatementParameters.length;
+  }
+
+  const extraWith: { name: string; sql: string; sqlResultAccessPath?: ResultAccessPath }[] = [
+    ...(applyToSql.extraWith ?? []),
+    {
+      name: applyToName,
+      sql: applyToSql.sqlStringOrObject,
+      sqlResultAccessPath: applyToSql.resultAccessPath?.slice(1), // checked for map above
+    },
+    // ...castObjectAttributes.flatMap((e: [string, SqlStringForTransformerElementValue], index) =>
+    //   e[1].extraWith ? e[1].extraWith : []
+    // ),
+    ...(subQuery.extraWith ?? []),
+  ];
+
+  log.info("sqlStringForRuntimeTransformer objectAlter found applyTo:", applyToName, JSON.stringify(applyToSql, null, 2));
+  log.info("sqlStringForRuntimeTransformer objectAlter found subquery:", JSON.stringify(subQuery, null, 2));
+
+  if (!["json", "tableOf1JsonColumn"].includes(subQuery.type)) {
+    return new Domain2ElementFailed({
+      queryFailure: "QueryNotExecutable",
+      query: actionRuntimeTransformer as any,
+      failureMessage: "sqlStringForRuntimeTransformer objectAlter subquery not json or tableOf1JsonColumn",
+    });
+  }
+
+  const subQueryWithRowNumber =
+    subQuery.type == "tableOf1JsonColumn"
+      ? `(SELECT ROW_NUMBER() OVER () AS row_num, ${subQuery.sqlStringOrObject}.* FROM ${subQuery.sqlStringOrObject}) AS "objectAlter_subQuery"`
+      : `(SELECT ROW_NUMBER() OVER () AS row_num, ${subQuery.sqlStringOrObject} AS "objectAlter_subQueryColumn") AS "objectAlter_subQuery"` // subQuery.type == json
+  ;
+  const subQueryColumnName = subQuery.type == "tableOf1JsonColumn"? subQuery.columnNameContainingJsonValue : "objectAlter_subQueryColumn";
+
+  const sqlResult = `SELECT (
+${indent(indentLevel + 1)}"${applyToName}".${applyToSql.resultAccessPath?.slice(1).map(e=>tokenNameQuote+e+tokenNameQuote).join('->')}
+${indent(indentLevel + 1)}||
+${indent(indentLevel + 1)}"objectAlter_subQuery"."${subQueryColumnName}"
+${indent(indentLevel)}) AS "objectAlter"
+${indent(indentLevel)}FROM (SELECT ROW_NUMBER() OVER () AS row_num, "${applyToName}".* FROM "${applyToName}") AS "${applyToName}",
+${indent(indentLevel + 1)}${subQueryWithRowNumber}
+${indent(indentLevel)}WHERE "${applyToName}".row_num = "objectAlter_subQuery".row_num
+`;
+
+    const result: SqlStringForTransformerElementValue = {
+      type: "json",
+      sqlStringOrObject: sqlResult,
+      preparedStatementParameters,
+      resultAccessPath: [0, "objectAlter"],
+      columnNameContainingJsonValue: "objectAlter",
+      extraWith,
+    }
+    // log.info("sqlStringForRuntimeTransformer freeObjectTemplate objectAttributes", JSON.stringify(objectAttributes, null, 2));
+    log.info("sqlStringForRuntimeTransformer freeObjectTemplate subquery", JSON.stringify(subQuery, null, 2));
+    log.info("sqlStringForRuntimeTransformer objectAlter returning result=", JSON.stringify(result, null, 2));
+    // throw new Error("sqlStringForRuntimeTransformer objectAlter not implemented ");
+    return result;
+}
 // ################################################################################################
 export function sqlStringForRuntimeTransformer(
   actionRuntimeTransformer: TransformerForRuntime,
@@ -1895,140 +2038,6 @@ export function sqlStringForRuntimeTransformer(
         };
       }
       break;
-    }
-    case "objectAlter": {
-      let newPreparedStatementParametersCount = preparedStatementParametersCount;
-      let preparedStatementParameters: any[] = [];
-      const applyToName: string =
-        ((actionRuntimeTransformer as any).label
-          ? (actionRuntimeTransformer as any).label
-          : actionRuntimeTransformer.transformerType) +
-        "_" +
-        actionRuntimeTransformer.referenceToOuterObject;
-
-      // #############################################
-      const applyToSql = sqlStringForApplyTo(
-        actionRuntimeTransformer,
-        newPreparedStatementParametersCount,
-        indentLevel,
-        queryParams,
-        definedContextEntries,
-        useAccessPathForContextReference,
-        topLevelTransformer
-      );
-      if (applyToSql instanceof Domain2ElementFailed) {
-        return applyToSql;
-      }
-      if (applyToSql.type != "json") {
-        return new Domain2ElementFailed({
-          queryFailure: "QueryNotExecutable",
-          query: actionRuntimeTransformer as any,
-          failureMessage: "sqlStringForRuntimeTransformer objectAlter referenceQuery not json",
-        });
-      }
-      const accessPathHasMap = applyToSql.resultAccessPath?.find((e: any) => typeof e == "object" && e.type == "map");
-      if (accessPathHasMap) {
-        return new Domain2ElementFailed({
-          queryFailure: "QueryNotExecutable",
-          query: actionRuntimeTransformer as any,
-          failureMessage: "sqlStringForRuntimeTransformer object_fullTemplate resultAccessPath has map: " + JSON.stringify(applyToSql.resultAccessPath, null, 2),
-        });
-      }
-      // #############################################
-      newPreparedStatementParametersCount += (applyToSql.preparedStatementParameters ?? []).length;
-      preparedStatementParameters = [...preparedStatementParameters, ...(applyToSql.preparedStatementParameters ?? [])];
-
-      let newDefinedContextEntries = { ...definedContextEntries };
-      newDefinedContextEntries[actionRuntimeTransformer.referenceToOuterObject] = {
-        type: "json",
-        renameTo: applyToName,
-        attributeResultAccessPath: applyToSql.resultAccessPath?.slice(1) as any, // correct since resolvedApplyTo has no "map" (object) item
-      };
-      // #############################################
-
-      const subQuery: Domain2QueryReturnType<SqlStringForTransformerElementValue> = sqlStringForRuntimeTransformer(
-        actionRuntimeTransformer.definition as TransformerForRuntime,
-        newPreparedStatementParametersCount,
-        indentLevel,
-        queryParams,
-        newDefinedContextEntries,
-        useAccessPathForContextReference,
-        false, // topLevelTransformer
-        // undefined, // withClauseColumnName
-        // iterateOn, // iterateOn
-      );
-
-      if (subQuery instanceof Domain2ElementFailed) {
-        return new Domain2ElementFailed({
-          queryFailure: "QueryNotExecutable",
-          query: actionRuntimeTransformer as any,
-          failureMessage: "sqlStringForRuntimeTransformer objectAlter attributeValue failed: " + JSON.stringify(subQuery, null, 2),
-          innerError: subQuery,
-        });
-      }
-
-      if (subQuery.preparedStatementParameters) {
-        preparedStatementParameters = [
-          ...preparedStatementParameters,
-          ...subQuery.preparedStatementParameters,
-        ];
-        newPreparedStatementParametersCount += subQuery.preparedStatementParameters.length;
-      }
-
-      const extraWith: { name: string; sql: string; sqlResultAccessPath?: ResultAccessPath }[] = [
-        ...(applyToSql.extraWith ?? []),
-        {
-          name: applyToName,
-          sql: applyToSql.sqlStringOrObject,
-          sqlResultAccessPath: applyToSql.resultAccessPath?.slice(1), // checked for map above
-        },
-        // ...castObjectAttributes.flatMap((e: [string, SqlStringForTransformerElementValue], index) =>
-        //   e[1].extraWith ? e[1].extraWith : []
-        // ),
-        ...(subQuery.extraWith ?? []),
-      ];
-
-      log.info("sqlStringForRuntimeTransformer objectAlter found applyTo:", applyToName, JSON.stringify(applyToSql, null, 2));
-      log.info("sqlStringForRuntimeTransformer objectAlter found subquery:", JSON.stringify(subQuery, null, 2));
-
-      if (!["json", "tableOf1JsonColumn"].includes(subQuery.type)) {
-        return new Domain2ElementFailed({
-          queryFailure: "QueryNotExecutable",
-          query: actionRuntimeTransformer as any,
-          failureMessage: "sqlStringForRuntimeTransformer objectAlter subquery not json or tableOf1JsonColumn",
-        });
-      }
-
-      const subQueryWithRowNumber =
-        subQuery.type == "tableOf1JsonColumn"
-          ? `(SELECT ROW_NUMBER() OVER () AS row_num, ${subQuery.sqlStringOrObject}.* FROM ${subQuery.sqlStringOrObject}) AS "objectAlter_subQuery"`
-          : `(SELECT ROW_NUMBER() OVER () AS row_num, ${subQuery.sqlStringOrObject} AS "objectAlter_subQueryColumn") AS "objectAlter_subQuery"` // subQuery.type == json
-      ;
-      const subQueryColumnName = subQuery.type == "tableOf1JsonColumn"? subQuery.columnNameContainingJsonValue : "objectAlter_subQueryColumn";
-
-      const sqlResult = `SELECT (
-${indent(indentLevel + 1)}"${applyToName}".${applyToSql.resultAccessPath?.slice(1).map(e=>tokenNameQuote+e+tokenNameQuote).join('->')}
-${indent(indentLevel + 1)}||
-${indent(indentLevel + 1)}"objectAlter_subQuery"."${subQueryColumnName}"
-${indent(indentLevel)}) AS "objectAlter"
-${indent(indentLevel)}FROM (SELECT ROW_NUMBER() OVER () AS row_num, "${applyToName}".* FROM "${applyToName}") AS "${applyToName}",
-${indent(indentLevel + 1)}${subQueryWithRowNumber}
-${indent(indentLevel)}WHERE "${applyToName}".row_num = "objectAlter_subQuery".row_num
-`;
-
-        const result: SqlStringForTransformerElementValue = {
-          type: "json",
-          sqlStringOrObject: sqlResult,
-          preparedStatementParameters,
-          resultAccessPath: [0, "objectAlter"],
-          columnNameContainingJsonValue: "objectAlter",
-          extraWith,
-        }
-        // log.info("sqlStringForRuntimeTransformer freeObjectTemplate objectAttributes", JSON.stringify(objectAttributes, null, 2));
-        log.info("sqlStringForRuntimeTransformer freeObjectTemplate subquery", JSON.stringify(subQuery, null, 2));
-        log.info("sqlStringForRuntimeTransformer objectAlter returning result=", JSON.stringify(result, null, 2));
-        // throw new Error("sqlStringForRuntimeTransformer objectAlter not implemented ");
-        return result;
     }
     case "listReducerToSpreadObject": {
       // throw new Error("sqlStringForRuntimeTransformer listReducerToSpreadObject not implemented");
