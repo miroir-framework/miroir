@@ -54,6 +54,7 @@ import {
   transformer_count,
   transformer_listPickElement,
   transformer_mapperListToList,
+  transformer_object_fullTemplate,
   transformer_unique,
 } from "./Transformers";
 
@@ -72,7 +73,7 @@ export const defaultTransformers = {
   transformer_mustacheStringTemplate_apply,
   transformer_InnerReference_resolve,
   transformer_objectAlter,
-  transformer_object_fullTemplate,
+  handleTransformer_object_fullTemplate,
   transformer_object_listReducerToIndexObject_apply,
   transformer_object_listReducerToSpreadObject_apply,
   transformerForBuild_list_listMapperToList_apply,
@@ -82,9 +83,10 @@ export const defaultTransformers = {
 }
 
 const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any>> = {
-  "handleCountTransformer": handleCountTransformer,
-  "handleListPickElementTransformer": handleListPickElementTransformer,
-  "handleUniqueTransformer": handleUniqueTransformer,
+  handleCountTransformer,
+  handleListPickElementTransformer,
+  handleUniqueTransformer,
+  "handleTransformer_object_fullTemplate": defaultTransformers.handleTransformer_object_fullTemplate,
   "transformerForBuild_list_listMapperToList_apply": defaultTransformers.transformerForBuild_list_listMapperToList_apply,
 }
 
@@ -92,8 +94,9 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   spreadSheetToJzodSchema: transformer_spreadSheetToJzodSchema,
   "count": transformer_count,
   "listPickElement": transformer_listPickElement,
-  "unique": transformer_unique,
   "mapperListToList": transformer_mapperListToList,
+  "object_fullTemplate": transformer_object_fullTemplate,
+  "unique": transformer_unique,
 }
 
 // ################################################################################################
@@ -472,7 +475,7 @@ function transformer_object_listReducerToIndexObject_apply(
  * 
  */
 // ################################################################################################
-function transformer_object_fullTemplate(
+function handleTransformer_object_fullTemplate(
   step: Step,
   objectName: string | undefined,
   transformer: TransformerForBuild_object_fullTemplate
@@ -1371,14 +1374,7 @@ export function innerTransformer_apply(
       break;
     }
     case "object_fullTemplate": {
-      return defaultTransformers.transformer_object_fullTemplate(
-        step,
-        label,
-        transformer,
-        resolveBuildTransformersTo,
-        queryParams,
-        contextResults
-      );
+      throw new Error("object_fullTemplate transformer not allowed in innerTransformer_apply");
       break;
     }
     case "objectAlter": {
@@ -2054,7 +2050,7 @@ export function transformer_extended_apply(
             case "dataflowSequence":
             case "freeObjectTemplate":
             case "objectAlter":
-            case "object_fullTemplate":
+            // case "object_fullTemplate":
             case "listReducerToSpreadObject":
             case "objectEntries":
             case "objectValues":

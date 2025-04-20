@@ -225,7 +225,7 @@ export function getExtendedSchemas(jzodSchemajzodMiroirBootstrapSchema: any) {
     "transformerForBuild_constant",
     "transformerForBuild_parameterReference",
     "transformerForBuild_Abstract",
-    "transformerForBuild_object_fullTemplate_root",
+    // "transformerForBuild_object_fullTemplate_root",
     "transformerForBuild_object_listReducerToIndexObject_root",
     // "transformerForBuild_object_listPickElement_root",
     "transformerForBuild_objectEntries_root",
@@ -353,12 +353,14 @@ export function getMiroirFundamentalJzodSchema(
           ])
         ),
         transformerForBuild_count: miroirTransformersForBuild.transformer_count,
-        transformerForRuntime_count: miroirTransformersForRuntime.transformer_count,
-        transformerForBuild_object_listPickElement: miroirTransformersForBuild.transformer_listPickElement,
-        transformerForRuntime_list_listPickElement: miroirTransformersForRuntime.transformer_listPickElement,
         transformerForBuild_list_listMapperToList: miroirTransformersForBuild.transformer_mapperListToList,
-        transformerForRuntime_list_listMapperToList: miroirTransformersForRuntime.transformer_mapperListToList,
+        transformerForBuild_object_listPickElement: miroirTransformersForBuild.transformer_listPickElement,
+        transformerForBuild_object_fullTemplate: miroirTransformersForBuild.transformer_object_fullTemplate,
         transformerForBuild_unique: miroirTransformersForBuild.transformer_unique,
+        transformerForRuntime_count: miroirTransformersForRuntime.transformer_count,
+        transformerForRuntime_list_listMapperToList: miroirTransformersForRuntime.transformer_mapperListToList,
+        transformerForRuntime_list_listPickElement: miroirTransformersForRuntime.transformer_listPickElement,
+        transformerForRuntime_object_fullTemplate: miroirTransformersForRuntime.transformer_object_fullTemplate,
         transformerForRuntime_unique: miroirTransformersForRuntime.transformer_unique,
         extendedTransformerForRuntime: {
           type: "union",
@@ -2942,8 +2944,8 @@ export function getMiroirFundamentalJzodSchema(
           .definition.context.transformerForBuild_object_listReducerToSpreadObject,
         transformerForBuild_object: (transformerJzodSchema as any).definition.context
           .transformerForBuild_object,
-        transformerForBuild_object_fullTemplate_root: (miroirFundamentalJzodSchema as any)
-          .definition.context.transformerForBuild_object_fullTemplate_root,
+        // transformerForBuild_object_fullTemplate_root: (miroirFundamentalJzodSchema as any)
+        //   .definition.context.transformerForBuild_object_fullTemplate_root,
         transformerForBuild_object_fullTemplate: (miroirFundamentalJzodSchema as any).definition
           .context.transformerForBuild_object_fullTemplate,
         transformerForBuild_object_listPickElement: (miroirFundamentalJzodSchema as any).definition
@@ -2980,7 +2982,7 @@ export function getMiroirFundamentalJzodSchema(
           .context.transformerForRuntime_innerFullObjectTemplate,
         transformerForRuntime_InnerReference: (transformerJzodSchema as any).definition.context
           .transformerForRuntime_InnerReference,
-        transformerForRuntime_object_fullTemplate: (transformerJzodSchema as any).definition.context
+        transformerForRuntime_object_fullTemplate: (miroirFundamentalJzodSchema as any).definition.context
           .transformerForRuntime_object_fullTemplate,
         transformerForRuntime_objectDynamicAccess: (transformerJzodSchema as any).definition.context
           .transformerForBuild_objectDynamicAccess,

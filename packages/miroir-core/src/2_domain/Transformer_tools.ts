@@ -1,4 +1,47 @@
-import { JzodElement, TransformerDefinition } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { JzodElement, JzodObject, TransformerDefinition } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+
+export function substituteTransformerReferencesInJzodElement<T>(
+  jzodElement: any,
+  // jzodElement: JzodObject,
+  newReference: Record<string, string>,
+): T {
+  if (jzodElement == null || jzodElement == undefined) {
+    return jzodElement;
+  }
+  if (typeof jzodElement == "object") {
+    if (Array.isArray(jzodElement)) {
+      return jzodElement.map((v) => substituteTransformerReferencesInJzodElement(v, newReference)) as T;
+    }
+    if (jzodElement.type == "schemaReference") {
+      return {
+        ...jzodElement,
+        definition: {
+          ...jzodElement.definition,
+          relativePath:
+            Object.hasOwn(newReference, jzodElement.definition.relativePath)
+              ? newReference[jzodElement.definition.relativePath]
+              : jzodElement.definition.relativePath,
+        },
+      };
+    } else {
+      return Object.fromEntries(
+        Object.entries(jzodElement).map(([key, value]) => {
+          if (Array.isArray(value)) {
+            return [
+              key,
+              value.map((v) => substituteTransformerReferencesInJzodElement(v, newReference)),
+            ];
+          } else if (typeof value === "object" && value !== null) {
+            return [key, substituteTransformerReferencesInJzodElement(value, newReference)];
+          } else {
+            return [key, value];
+          }
+        })
+      ) as T;
+    }
+  }
+  return jzodElement;
+}
 
 export function transformerInterfaceFromDefinition(
   transformerDefinition: TransformerDefinition,
@@ -49,8 +92,18 @@ export function transformerInterfaceFromDefinition(
     definition: {
       transformerType:
         transformerDefinition.transformerInterface.transformerParameterSchema.transformerType,
-      ...transformerDefinition.transformerInterface.transformerParameterSchema.transformerDefinition
-        .definition,
+      ...substituteTransformerReferencesInJzodElement<JzodObject>(
+        transformerDefinition.transformerInterface.transformerParameterSchema.transformerDefinition,
+        target == "runtime"
+          ? {
+              transformer: "transformerForRuntime",
+              transformer_InnerReference: "transformerForRuntime_InnerReference",
+            }
+          : {
+              transformer: "transformerForBuild",
+              transformer_InnerReference: "transformerForBuild_InnerReference",
+            }
+      ).definition,
       applyTo: {
         type: "union",
         discriminator: "referenceType",
