@@ -63,6 +63,7 @@ const sqlTransformerImplementations: Record<string, ITransformerHandler<any>> = 
   sqlStringForCountTransformer,
   sqlStringForListPickElementTransformer,
   sqlStringForListReducerToIndexObjectTransformer,
+  sqlStringForListReducerToSpreadObjectTransformer,
   sqlStringForMapperListToListTransformer,
   sqlStringForObjectFullTemplateTransformer,
   sqlStringForObjectAlterTransformer,
@@ -1829,6 +1830,155 @@ function sqlStringForListReducerToIndexObjectTransformer(
       break;
   }
 }
+
+// ################################################################################################
+function sqlStringForListReducerToSpreadObjectTransformer(
+  actionRuntimeTransformer: TransformerForRuntime_object_listReducerToSpreadObject,
+  preparedStatementParametersCount: number,
+  indentLevel: number,
+  queryParams: Record<string, any>,
+  definedContextEntries: Record<string, SqlContextEntry>,
+  useAccessPathForContextReference: boolean,
+  topLevelTransformer: boolean
+): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
+  // throw new Error("sqlStringForRuntimeTransformer listReducerToSpreadObject not implemented");
+  const transformerLabel: string =
+    (actionRuntimeTransformer as any).label ?? actionRuntimeTransformer.transformerType;
+  let newPreparedStatementParametersCount = preparedStatementParametersCount;
+  let preparedStatementParameters: any[] = [];
+  // newPreparedStatementParametersCount += preparedStatementParameters.length;
+  // const newDefinedContextEntries = {
+  //   ...definedContextEntries
+  // }
+
+  const applyTo = sqlStringForApplyTo(
+    actionRuntimeTransformer,
+    preparedStatementParametersCount,
+    indentLevel,
+    queryParams,
+    definedContextEntries,
+    useAccessPathForContextReference,
+    topLevelTransformer
+  );
+  if (applyTo instanceof Domain2ElementFailed) {
+    return applyTo;
+  }
+  log.info("sqlStringForListReducerToSpreadObjectTransformer found definedContextEntries", JSON.stringify(definedContextEntries, null, 2));
+  log.info("sqlStringForListReducerToSpreadObjectTransformer found applyTo", JSON.stringify(applyTo, null, 2));
+  const applyToLabel = transformerLabel + "_applyTo";
+  const applyToLabelElements = applyToLabel + "_elements";
+  const applyToLabelPairs = applyToLabel + "_pairs";
+  const extraWith: { name: string; sql: string }[] = [
+    {
+      name: applyToLabel,
+      sql: applyTo.sqlStringOrObject,
+    },
+  ];
+  switch (applyTo.type) {
+    // case "json":
+    case "json_array": {
+      const sqlResult =
+        "SELECT " +
+        'jsonb_object_agg("' +
+        applyToLabelPairs +
+        '"."key", ' +
+        '"' +
+        applyToLabelPairs +
+        '"."value")' +
+        ' AS "' +
+        transformerLabel +
+        '"' +
+        flushAndIndent(indentLevel) +
+        'FROM "' +
+        applyToLabel +
+        '"' +
+        ', jsonb_array_elements("' +
+        applyToLabel +
+        '"."' +
+        (applyTo as any).columnNameContainingJsonValue +
+        '") AS "' +
+        applyToLabelElements +
+        '"' +
+        ', jsonb_each("' +
+        applyToLabelElements +
+        '") AS "' +
+        applyToLabelPairs +
+        '"';
+      return {
+        type: "json",
+        sqlStringOrObject: sqlResult,
+        preparedStatementParameters: applyTo.preparedStatementParameters,
+        resultAccessPath: [0, transformerLabel],
+        columnNameContainingJsonValue: transformerLabel,
+        extraWith,
+      };
+    }
+    case "json":
+    case "tableOf1JsonColumn": {
+      // case "json": {
+      const sqlResult =
+        "SELECT " +
+        'jsonb_object_agg("' +
+        applyToLabelPairs +
+        '"."key", ' +
+        '"' +
+        applyToLabelPairs +
+        '"."value")' +
+        ' AS "' +
+        transformerLabel +
+        '"' +
+        flushAndIndent(indentLevel) +
+        'FROM "' +
+        applyToLabel +
+        '"' +
+        ', jsonb_each("' +
+        applyToLabel +
+        '"."' +
+        (applyTo as any).columnNameContainingJsonValue +
+        '") AS "' +
+        applyToLabelPairs +
+        '"';
+      return {
+        type: "json",
+        sqlStringOrObject: sqlResult,
+        preparedStatementParameters: applyTo.preparedStatementParameters,
+        resultAccessPath: [0, transformerLabel],
+        columnNameContainingJsonValue: transformerLabel,
+        extraWith,
+      };
+      break;
+    }
+    case "table": {
+      // TODO: table of JSON objects, 1 per line, or table of split objects into columns?
+      // WITH json_objects AS (
+      //   SELECT '{"a": 1, "b": 2}'::jsonb AS obj
+      //   UNION ALL
+      //   SELECT '{"b": 3, "c": 4}'::jsonb AS obj
+      //   UNION ALL
+      //   SELECT '{"d": 5}'::jsonb AS obj
+      // )
+      // SELECT jsonb_object_agg(key, value) AS merged_object
+      // FROM (
+      //   SELECT key, value
+      //   FROM json_objects, jsonb_each(obj)
+      // ) AS key_value_pairs;
+      throw new Error(
+        "sqlStringForListReducerToSpreadObjectTransformer not implemented for applyTo type:" + applyTo.type
+      );
+    }
+    case "scalar": {
+      throw new Error(
+        "sqlStringForListReducerToSpreadObjectTransformer not implemented for applyTo type:" + applyTo.type
+      );
+      break;
+    }
+    default:
+      throw new Error(
+        "sqlStringForListReducerToSpreadObjectTransformer not implemented for applyTo type:" + applyTo.type
+      );
+      break;
+  }
+}
 // ################################################################################################
 export function sqlStringForRuntimeTransformer(
   actionRuntimeTransformer: TransformerForRuntime,
@@ -2274,146 +2424,6 @@ export function sqlStringForRuntimeTransformer(
         };
         log.info("sqlStringForRuntimeTransformer contextReference topLevelTransformer=false", JSON.stringify(result, null, 2));
         return result;
-      }
-      break;
-    }
-    case "listReducerToSpreadObject": {
-      // throw new Error("sqlStringForRuntimeTransformer listReducerToSpreadObject not implemented");
-      const transformerLabel: string =
-        (actionRuntimeTransformer as any).label ?? actionRuntimeTransformer.transformerType;
-      let newPreparedStatementParametersCount = preparedStatementParametersCount;
-      let preparedStatementParameters: any[] = [];
-      // newPreparedStatementParametersCount += preparedStatementParameters.length;
-      // const newDefinedContextEntries = {
-      //   ...definedContextEntries
-      // }
-
-      const applyTo = sqlStringForApplyTo(
-        actionRuntimeTransformer,
-        preparedStatementParametersCount,
-        indentLevel,
-        queryParams,
-        definedContextEntries,
-        useAccessPathForContextReference,
-        topLevelTransformer
-      );
-      if (applyTo instanceof Domain2ElementFailed) {
-        return applyTo;
-      }
-      log.info("sqlStringForRuntimeTransformer listReducerToSpreadObject found definedContextEntries", JSON.stringify(definedContextEntries, null, 2));
-      log.info("sqlStringForRuntimeTransformer listReducerToSpreadObject found applyTo", JSON.stringify(applyTo, null, 2));
-      const applyToLabel = transformerLabel + "_applyTo";
-      const applyToLabelElements = applyToLabel + "_elements";
-      const applyToLabelPairs = applyToLabel + "_pairs";
-      const extraWith: { name: string; sql: string }[] = [
-        {
-          name: applyToLabel,
-          sql: applyTo.sqlStringOrObject,
-        },
-      ];
-      switch (applyTo.type) {
-        // case "json":
-        case "json_array": {
-          const sqlResult =
-            "SELECT " +
-            'jsonb_object_agg("' +
-            applyToLabelPairs +
-            '"."key", ' +
-            '"' +
-            applyToLabelPairs +
-            '"."value")' +
-            ' AS "' +
-            transformerLabel +
-            '"' +
-            flushAndIndent(indentLevel) +
-            'FROM "' +
-            applyToLabel +
-            '"' +
-            ', jsonb_array_elements("' +
-            applyToLabel +
-            '"."' +
-            (applyTo as any).columnNameContainingJsonValue +
-            '") AS "' +
-            applyToLabelElements +
-            '"' +
-            ', jsonb_each("' +
-            applyToLabelElements +
-            '") AS "' +
-            applyToLabelPairs +
-            '"';
-          return {
-            type: "json",
-            sqlStringOrObject: sqlResult,
-            preparedStatementParameters: applyTo.preparedStatementParameters,
-            resultAccessPath: [0, transformerLabel],
-            columnNameContainingJsonValue: transformerLabel,
-            extraWith,
-          };
-        }
-        case "json":
-        case "tableOf1JsonColumn": {
-          // case "json": {
-          const sqlResult =
-            "SELECT " +
-            'jsonb_object_agg("' +
-            applyToLabelPairs +
-            '"."key", ' +
-            '"' +
-            applyToLabelPairs +
-            '"."value")' +
-            ' AS "' +
-            transformerLabel +
-            '"' +
-            flushAndIndent(indentLevel) +
-            'FROM "' +
-            applyToLabel +
-            '"' +
-            ', jsonb_each("' +
-            applyToLabel +
-            '"."' +
-            (applyTo as any).columnNameContainingJsonValue +
-            '") AS "' +
-            applyToLabelPairs +
-            '"';
-          return {
-            type: "json",
-            sqlStringOrObject: sqlResult,
-            preparedStatementParameters: applyTo.preparedStatementParameters,
-            resultAccessPath: [0, transformerLabel],
-            columnNameContainingJsonValue: transformerLabel,
-            extraWith,
-          };
-          break;
-        }
-        case "table": {
-          // TODO: table of JSON objects, 1 per line, or table of split objects into columns?
-          // WITH json_objects AS (
-          //   SELECT '{"a": 1, "b": 2}'::jsonb AS obj
-          //   UNION ALL
-          //   SELECT '{"b": 3, "c": 4}'::jsonb AS obj
-          //   UNION ALL
-          //   SELECT '{"d": 5}'::jsonb AS obj
-          // )
-          // SELECT jsonb_object_agg(key, value) AS merged_object
-          // FROM (
-          //   SELECT key, value
-          //   FROM json_objects, jsonb_each(obj)
-          // ) AS key_value_pairs;
-          throw new Error(
-            "sqlStringForRuntimeTransformer listReducerToSpreadObject not implemented for applyTo type:" + applyTo.type
-          );
-        }
-        case "scalar": {
-          throw new Error(
-            "sqlStringForRuntimeTransformer listReducerToSpreadObject not implemented for applyTo type:" + applyTo.type
-          );
-          break;
-        }
-        default:
-          throw new Error(
-            "sqlStringForRuntimeTransformer listReducerToSpreadObject not implemented for applyTo type:" + applyTo.type
-          );
-          break;
       }
       break;
     }

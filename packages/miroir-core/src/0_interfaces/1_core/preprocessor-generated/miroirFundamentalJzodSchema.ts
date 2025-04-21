@@ -2096,15 +2096,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "eager": true,
-              "relativePath": "transformer_inner_label",
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
-            },
-            "context": {}
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "eager": true,
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "transformerForBuild_Abstract"
             },
@@ -2865,8 +2856,8 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "eager": true,
-              "relativePath": "transformer_inner_label",
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForRuntime_Abstract"
             },
             "context": {}
           }
@@ -38029,14 +38020,6 @@ export const miroirFundamentalJzodSchema = {
                 "type": "schemaReference",
                 "definition": {
                   "eager": true,
-                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_inner_label_extend",
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "eager": true,
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_Abstract_extend"
                 }
@@ -40247,8 +40230,8 @@ export const miroirFundamentalJzodSchema = {
                 "type": "schemaReference",
                 "definition": {
                   "eager": true,
-                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_inner_label_extend",
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_Abstract_extend"
                 }
               }
             ],

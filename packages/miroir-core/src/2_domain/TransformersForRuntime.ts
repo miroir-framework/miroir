@@ -58,6 +58,7 @@ import {
   transformer_freeObjectTemplate,
   transformer_listPickElement,
   transformer_listReducerToIndexObject,
+  transformer_listReducerToSpreadObject,
   transformer_mapperListToList,
   transformer_object_fullTemplate,
   transformer_objectAlter,
@@ -116,6 +117,7 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
   handleTransformer_objectValues,
   handleTransformer_object_fullTemplate: defaultTransformers.handleTransformer_object_fullTemplate,
   transformer_object_listReducerToIndexObject_apply: defaultTransformers.transformer_object_listReducerToIndexObject_apply,
+  transformer_object_listReducerToSpreadObject_apply: defaultTransformers.transformer_object_listReducerToSpreadObject_apply,
   transformerForBuild_list_listMapperToList_apply:
     defaultTransformers.transformerForBuild_list_listMapperToList_apply,
 };
@@ -126,6 +128,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   freeObjectTemplate: transformer_freeObjectTemplate,
   listPickElement: transformer_listPickElement,
   listReducerToIndexObject: transformer_listReducerToIndexObject,
+  listReducerToSpreadObject: transformer_listReducerToSpreadObject,
   mapperListToList: transformer_mapperListToList,
   objectAlter: transformer_objectAlter,
   objectEntries: transformer_objectEntries,
@@ -471,6 +474,7 @@ function transformer_object_listReducerToSpreadObject_apply(
 
   return result;
 }
+
 // ################################################################################################
 function transformer_object_listReducerToIndexObject_apply(
   step: Step,
@@ -1571,14 +1575,15 @@ export function innerTransformer_apply(
       break;
     }
     case "listReducerToSpreadObject": {
-      return defaultTransformers.transformer_object_listReducerToSpreadObject_apply(
-        step,
-        label,
-        transformer,
-        resolveBuildTransformersTo,
-        queryParams,
-        contextResults
-      );
+      throw new Error("listReducerToSpreadObject transformer not allowed in innerTransformer_apply");
+      // return defaultTransformers.transformer_object_listReducerToSpreadObject_apply(
+      //   step,
+      //   label,
+      //   transformer,
+      //   resolveBuildTransformersTo,
+      //   queryParams,
+      //   contextResults
+      // );
       break;
     }
     case "listPickElement": {
@@ -2005,7 +2010,7 @@ export function transformer_extended_apply(
             // case "freeObjectTemplate":
             // case "objectAlter":
             // case "object_fullTemplate":
-            case "listReducerToSpreadObject":
+            // case "listReducerToSpreadObject":
             // case "objectEntries":
             // case "objectValues":
             // case "listPickElement":
