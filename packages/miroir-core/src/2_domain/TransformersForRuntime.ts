@@ -59,6 +59,7 @@ import {
   transformer_mapperListToList,
   transformer_object_fullTemplate,
   transformer_objectAlter,
+  transformer_objectEntries,
   transformer_unique,
 } from "./Transformers";
 
@@ -71,6 +72,22 @@ MiroirLoggerFactory.registerLoggerToStart(
 export type ActionTemplate = any;
 export type Step = "build" | "runtime";
 export type ResolveBuildTransformersTo = "value" | "constantTransformer";
+
+// ################################################################################################
+export type ITransformerHandler<
+  T extends
+    | TransformerForBuild
+    | TransformerForRuntime
+    | TransformerForRuntime_innerFullObjectTemplate
+> = (
+  step: Step,
+  label: string | undefined,
+  transformer: T,
+  resolveBuildTransformersTo: ResolveBuildTransformersTo,
+  queryParams: Record<string, any>,
+  contextResults?: Record<string, any>
+) => Domain2QueryReturnType<any>;
+
 // ################################################################################################
 export const defaultTransformers = {
   transformer_extended_apply,
@@ -92,6 +109,7 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
   handleUniqueTransformer,
   handleTransformer_FreeObjectTemplate,
   handleTransformer_objectAlter: defaultTransformers.handleTransformer_objectAlter,
+  handleTransformer_objectEntries,
   handleTransformer_object_fullTemplate: defaultTransformers.handleTransformer_object_fullTemplate,
   transformerForBuild_list_listMapperToList_apply:
     defaultTransformers.transformerForBuild_list_listMapperToList_apply,
@@ -104,6 +122,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   "listPickElement": transformer_listPickElement,
   "mapperListToList": transformer_mapperListToList,
   "objectAlter": transformer_objectAlter,
+  "objectEntries": transformer_objectEntries,
   "object_fullTemplate": transformer_object_fullTemplate,
   "unique": transformer_unique,
 }
@@ -1352,20 +1371,60 @@ export function handleTransformer_FreeObjectTemplate(
 }
 
 // ################################################################################################
-export type ITransformerHandler<T extends (TransformerForBuild
-| TransformerForRuntime
-| TransformerForRuntime_innerFullObjectTemplate)
-> = (
+export function handleTransformer_objectEntries(
   step: Step,
   label: string | undefined,
-  transformer: T,
-    // | TransformerForBuild
-    // | TransformerForRuntime
-    // | TransformerForRuntime_innerFullObjectTemplate,
+  transformer:
+  | TransformerForBuild_objectEntries
+  | TransformerForRuntime_objectEntries,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>
-) => Domain2QueryReturnType<any>;
+): Domain2QueryReturnType<any> {
+  const resolvedReference = resolveApplyTo_legacy(
+    transformer,
+    step,
+    resolveBuildTransformersTo,
+    queryParams,
+    contextResults,
+    label
+  );
+  log.info("innerTransformer_apply objectEntries referencedExtractor=", resolvedReference);
+
+  if (resolvedReference instanceof Domain2ElementFailed) {
+    log.error(
+      "innerTransformer_apply extractorTransformer objectEntries can not apply to resolvedReference",
+      resolvedReference
+    );
+    return new Domain2ElementFailed({
+      queryFailure: "QueryNotExecutable",
+      failureOrigin: ["innerTransformer_apply"],
+      queryContext: "objectEntries can not apply to resolvedReference",
+      innerError: resolvedReference,
+    });
+  }
+
+  if (!(typeof resolvedReference == "object") || Array.isArray(resolvedReference)) {
+    const failure: Domain2ElementFailed = new Domain2ElementFailed({
+      queryFailure: "FailedTransformer_objectEntries",
+      failureMessage:
+        "objectEntries transformer called on something that is not an object: " +
+        typeof resolvedReference,
+      // queryParameters: JSON.stringify(resolvedReference, null, 2),
+      queryParameters: resolvedReference,
+    });
+    log.error(
+      "innerTransformer_apply extractorTransformer objectEntries referencedExtractor resolvedReference",
+      resolvedReference
+    );
+    return failure;
+  }
+  log.info(
+    "innerTransformer_apply extractorTransformer objectEntries resolvedReference",
+    resolvedReference
+  );
+  return Object.entries(resolvedReference);
+}
 
 // ################################################################################################
 // ################################################################################################
@@ -1425,49 +1484,58 @@ export function innerTransformer_apply(
       break;
     }
     case "objectEntries": {
-      const resolvedReference = resolveApplyTo_legacy(
-        transformer,
-        step,
-        resolveBuildTransformersTo,
-        queryParams,
-        contextResults,
-        label
-      );
-      log.info("innerTransformer_apply objectEntries referencedExtractor=", resolvedReference);
+      throw new Error("objectEntries transformer not allowed in innerTransformer_apply");
+      // return handleTransformer_objectEntries(
+      //   step,
+      //   label,
+      //   transformer as TransformerForBuild_objectEntries,
+      //   resolveBuildTransformersTo,
+      //   queryParams,
+      //   contextResults
+      // )
+      // const resolvedReference = resolveApplyTo_legacy(
+      //   transformer,
+      //   step,
+      //   resolveBuildTransformersTo,
+      //   queryParams,
+      //   contextResults,
+      //   label
+      // );
+      // log.info("innerTransformer_apply objectEntries referencedExtractor=", resolvedReference);
 
-      if (resolvedReference instanceof Domain2ElementFailed) {
-        log.error(
-          "innerTransformer_apply extractorTransformer objectEntries can not apply to resolvedReference",
-          resolvedReference
-        );
-        return new Domain2ElementFailed({
-          queryFailure: "QueryNotExecutable",
-          failureOrigin: ["innerTransformer_apply"],
-          queryContext: "objectEntries can not apply to resolvedReference",
-          innerError: resolvedReference,
-        });
-      }
+      // if (resolvedReference instanceof Domain2ElementFailed) {
+      //   log.error(
+      //     "innerTransformer_apply extractorTransformer objectEntries can not apply to resolvedReference",
+      //     resolvedReference
+      //   );
+      //   return new Domain2ElementFailed({
+      //     queryFailure: "QueryNotExecutable",
+      //     failureOrigin: ["innerTransformer_apply"],
+      //     queryContext: "objectEntries can not apply to resolvedReference",
+      //     innerError: resolvedReference,
+      //   });
+      // }
 
-      if (!(typeof resolvedReference == "object") || Array.isArray(resolvedReference)) {
-        const failure: Domain2ElementFailed = new Domain2ElementFailed({
-          queryFailure: "FailedTransformer_objectEntries",
-          failureMessage:
-            "objectEntries transformer called on something that is not an object: " +
-            typeof resolvedReference,
-          // queryParameters: JSON.stringify(resolvedReference, null, 2),
-          queryParameters: resolvedReference,
-        });
-        log.error(
-          "innerTransformer_apply extractorTransformer objectEntries referencedExtractor resolvedReference",
-          resolvedReference
-        );
-        return failure;
-      }
-      log.info(
-        "innerTransformer_apply extractorTransformer objectEntries resolvedReference",
-        resolvedReference
-      );
-      return Object.entries(resolvedReference);
+      // if (!(typeof resolvedReference == "object") || Array.isArray(resolvedReference)) {
+      //   const failure: Domain2ElementFailed = new Domain2ElementFailed({
+      //     queryFailure: "FailedTransformer_objectEntries",
+      //     failureMessage:
+      //       "objectEntries transformer called on something that is not an object: " +
+      //       typeof resolvedReference,
+      //     // queryParameters: JSON.stringify(resolvedReference, null, 2),
+      //     queryParameters: resolvedReference,
+      //   });
+      //   log.error(
+      //     "innerTransformer_apply extractorTransformer objectEntries referencedExtractor resolvedReference",
+      //     resolvedReference
+      //   );
+      //   return failure;
+      // }
+      // log.info(
+      //   "innerTransformer_apply extractorTransformer objectEntries resolvedReference",
+      //   resolvedReference
+      // );
+      // return Object.entries(resolvedReference);
     }
     case "objectValues": {
       const resolvedReference = resolveApplyTo_legacy(
@@ -2003,7 +2071,7 @@ export function transformer_extended_apply(
             // case "objectAlter":
             // case "object_fullTemplate":
             case "listReducerToSpreadObject":
-            case "objectEntries":
+            // case "objectEntries":
             case "objectValues":
             // case "listPickElement":
             // case "count":

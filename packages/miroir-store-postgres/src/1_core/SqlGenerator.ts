@@ -64,6 +64,7 @@ const sqlTransformerImplementations: Record<string, ITransformerHandler<any>> = 
   sqlStringForMapperListToListTransformer,
   sqlStringForObjectFullTemplateTransformer,
   sqlStringForObjectAlterTransformer,
+  sqlStringForObjectEntriesTransformer,
   sqlStringForFreeObjectTransformer,
   sqlStringForUniqueTransformer,
 }
@@ -1587,6 +1588,49 @@ ${indent(indentLevel)}WHERE "${applyToName}".row_num = "objectAlter_subQuery".ro
     // throw new Error("sqlStringForObjectAlterTransformer not implemented ");
     return result;
 }
+
+// ################################################################################################
+function sqlStringForObjectEntriesTransformer(
+  actionRuntimeTransformer: TransformerForRuntime_objectEntries,
+  preparedStatementParametersCount: number,
+  indentLevel: number,
+  queryParams: Record<string, any>,
+  definedContextEntries: Record<string, SqlContextEntry>,
+  useAccessPathForContextReference: boolean,
+  topLevelTransformer: boolean
+): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
+  const applyTo = sqlStringForApplyTo(
+    actionRuntimeTransformer,
+    preparedStatementParametersCount,
+    indentLevel,
+    queryParams,
+    definedContextEntries,
+    useAccessPathForContextReference,
+    topLevelTransformer
+  );
+  if (applyTo instanceof Domain2ElementFailed) {
+    return applyTo;
+  }
+
+  const extraWith: { name: string; sql: string }[] = [
+    {
+      name: "innerQuery",
+      sql: applyTo.sqlStringOrObject,
+    },
+  ];
+  const sqlResult = `SELECT jsonb_agg(json_build_array(key, value)) AS "objectEntries" FROM "innerQuery", jsonb_each("innerQuery"."${
+    (applyTo as any).resultAccessPath[1]
+  }")`;
+
+  return {
+    type: "json",
+    sqlStringOrObject: sqlResult,
+    preparedStatementParameters: applyTo.preparedStatementParameters,
+    resultAccessPath: [0, "objectEntries"],
+    columnNameContainingJsonValue: "objectEntries",
+    extraWith,
+  };
+}
 // ################################################################################################
 export function sqlStringForRuntimeTransformer(
   actionRuntimeTransformer: TransformerForRuntime,
@@ -2035,40 +2079,49 @@ export function sqlStringForRuntimeTransformer(
       }
       break;
     }
-    case "objectEntries": {
-      const applyTo = sqlStringForApplyTo(
-        actionRuntimeTransformer,
-        preparedStatementParametersCount,
-        indentLevel,
-        queryParams,
-        definedContextEntries,
-        useAccessPathForContextReference,
-        topLevelTransformer
-      );
-      if (applyTo instanceof Domain2ElementFailed) {
-        return applyTo;
-      }
+    // case "objectEntries": {
+    //   return sqlStringForObjectEntriesTransformer(
+    //     actionRuntimeTransformer,
+    //     preparedStatementParametersCount,
+    //     indentLevel,
+    //     queryParams,
+    //     definedContextEntries,
+    //     useAccessPathForContextReference,
+    //     topLevelTransformer
+    //   )
+    //   // const applyTo = sqlStringForApplyTo(
+    //   //   actionRuntimeTransformer,
+    //   //   preparedStatementParametersCount,
+    //   //   indentLevel,
+    //   //   queryParams,
+    //   //   definedContextEntries,
+    //   //   useAccessPathForContextReference,
+    //   //   topLevelTransformer
+    //   // );
+    //   // if (applyTo instanceof Domain2ElementFailed) {
+    //   //   return applyTo;
+    //   // }
 
-      const extraWith: { name: string; sql: string }[] = [
-        {
-          name: "innerQuery",
-          sql: applyTo.sqlStringOrObject,
-        },
-      ];
-      const sqlResult = `SELECT jsonb_agg(json_build_array(key, value)) AS "objectEntries" FROM "innerQuery", jsonb_each("innerQuery"."${
-        (applyTo as any).resultAccessPath[1]
-      }")`;
+    //   // const extraWith: { name: string; sql: string }[] = [
+    //   //   {
+    //   //     name: "innerQuery",
+    //   //     sql: applyTo.sqlStringOrObject,
+    //   //   },
+    //   // ];
+    //   // const sqlResult = `SELECT jsonb_agg(json_build_array(key, value)) AS "objectEntries" FROM "innerQuery", jsonb_each("innerQuery"."${
+    //   //   (applyTo as any).resultAccessPath[1]
+    //   // }")`;
 
-      return {
-        type: "json",
-        sqlStringOrObject: sqlResult,
-        preparedStatementParameters: applyTo.preparedStatementParameters,
-        resultAccessPath: [0, "objectEntries"],
-        columnNameContainingJsonValue: "objectEntries",
-        extraWith,
-      };
-      break;
-    }
+    //   // return {
+    //   //   type: "json",
+    //   //   sqlStringOrObject: sqlResult,
+    //   //   preparedStatementParameters: applyTo.preparedStatementParameters,
+    //   //   resultAccessPath: [0, "objectEntries"],
+    //   //   columnNameContainingJsonValue: "objectEntries",
+    //   //   extraWith,
+    //   // };
+    //   break;
+    // }
     case "objectValues": {
       const applyTo = sqlStringForApplyTo(
         actionRuntimeTransformer,
