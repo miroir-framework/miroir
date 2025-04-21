@@ -43,7 +43,9 @@ import {
   TransformerForRuntime_objectValues,
   TransformerForRuntime_unique,
   TransformerForRuntime_object_fullTemplate,
-  TransformerForRuntime_object_listReducerToIndexObject
+  TransformerForRuntime_object_listReducerToIndexObject,
+  TransformerForBuild_dataflowObject,
+  TransformerForRuntime_dataflowObject
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { Action2Error, Domain2ElementFailed, Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
@@ -55,6 +57,7 @@ import { cleanLevel } from "./constants";
 import { transformer_spreadSheetToJzodSchema } from "./Transformer_Spreadsheet";
 import {
   transformer_count,
+  transformer_dataflowObject,
   transformer_freeObjectTemplate,
   transformer_listPickElement,
   transformer_listReducerToIndexObject,
@@ -111,6 +114,7 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
   handleCountTransformer,
   handleListPickElementTransformer,
   handleUniqueTransformer,
+  handleTransformer_dataflowObject,
   handleTransformer_FreeObjectTemplate,
   handleTransformer_objectAlter: defaultTransformers.handleTransformer_objectAlter,
   handleTransformer_objectEntries,
@@ -125,6 +129,7 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
 export const applicationTransformerDefinitions: Record<string, TransformerDefinition> = {
   spreadSheetToJzodSchema: transformer_spreadSheetToJzodSchema,
   count: transformer_count,
+  dataflowObject: transformer_dataflowObject,
   freeObjectTemplate: transformer_freeObjectTemplate,
   listPickElement: transformer_listPickElement,
   listReducerToIndexObject: transformer_listReducerToIndexObject,
@@ -1496,6 +1501,43 @@ export function handleTransformer_objectValues(
 }
 
 // ################################################################################################
+export function handleTransformer_dataflowObject(
+  step: Step,
+  label: string | undefined,
+  transformer:
+  | TransformerForBuild_dataflowObject
+  | TransformerForRuntime_dataflowObject,
+  resolveBuildTransformersTo: ResolveBuildTransformersTo,
+  queryParams: Record<string, any>,
+  contextResults?: Record<string, any>
+): Domain2QueryReturnType<any> {
+  const resultObject: Record<string, any> = {};
+  for (const [key, value] of Object.entries(transformer.definition)) {
+    // const currentContext = label ? { ...contextResults, [label]: resultObject } : { ...contextResults, ...resultObject }
+    const currentContext = { ...contextResults, ...resultObject };
+    log.info(
+      "handleTransformer_dataflowObject labeled",
+      label,
+      "key",
+      key,
+      "step",
+      step,
+      "calling with context",
+      JSON.stringify(Object.keys(currentContext ?? {}), null, 2)
+    );
+    resultObject[key] = defaultTransformers.transformer_extended_apply(
+      step,
+      key,
+      value,
+      resolveBuildTransformersTo,
+      queryParams,
+      currentContext
+    );
+  }
+  // return resultObject
+  return resultObject[transformer.target];
+}
+// ################################################################################################
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
@@ -1731,31 +1773,40 @@ export function innerTransformer_apply(
       // return transformer.value;
     }
     case "dataflowObject": {
-      const resultObject: Record<string, any> = {};
-      for (const [key, value] of Object.entries(transformer.definition)) {
-        // const currentContext = label ? { ...contextResults, [label]: resultObject } : { ...contextResults, ...resultObject }
-        const currentContext = { ...contextResults, ...resultObject };
-        log.info(
-          "innerTransformer_apply for dataflowObject labeled",
-          label,
-          "key",
-          key,
-          "step",
-          step,
-          "calling with context",
-          JSON.stringify(Object.keys(currentContext ?? {}), null, 2)
-        );
-        resultObject[key] = defaultTransformers.transformer_extended_apply(
-          step,
-          key,
-          value,
-          resolveBuildTransformersTo,
-          queryParams,
-          currentContext
-        );
-      }
-      // return resultObject
-      return resultObject[transformer.target];
+      throw new Error("dataflowObject transformer not allowed in innerTransformer_apply");
+      // return handleTransformer_dataflowObject(
+      //   step,
+      //   label,
+      //   transformer,
+      //   resolveBuildTransformersTo,
+      //   queryParams,
+      //   contextResults
+      // );
+      // const resultObject: Record<string, any> = {};
+      // for (const [key, value] of Object.entries(transformer.definition)) {
+      //   // const currentContext = label ? { ...contextResults, [label]: resultObject } : { ...contextResults, ...resultObject }
+      //   const currentContext = { ...contextResults, ...resultObject };
+      //   log.info(
+      //     "innerTransformer_apply for dataflowObject labeled",
+      //     label,
+      //     "key",
+      //     key,
+      //     "step",
+      //     step,
+      //     "calling with context",
+      //     JSON.stringify(Object.keys(currentContext ?? {}), null, 2)
+      //   );
+      //   resultObject[key] = defaultTransformers.transformer_extended_apply(
+      //     step,
+      //     key,
+      //     value,
+      //     resolveBuildTransformersTo,
+      //     queryParams,
+      //     currentContext
+      //   );
+      // }
+      // // return resultObject
+      // return resultObject[transformer.target];
       break;
     }
     case "dataflowSequence": {
@@ -2005,7 +2056,7 @@ export function transformer_extended_apply(
             case "contextReference":
             case "parameterReference":
             case "objectDynamicAccess":
-            case "dataflowObject":
+            // case "dataflowObject":
             case "dataflowSequence":
             // case "freeObjectTemplate":
             // case "objectAlter":

@@ -166,6 +166,8 @@ export {
   ExtractorTemplateByExtractorWrapperReturningObject,
   // TransformerForRuntime_constants,
   TransformerForRuntime_InnerReference,
+  TransformerForRuntime_dataflowObject,
+  TransformerForBuild_dataflowObject,
   TransformerForRuntime_freeObjectTemplate,
   TransformerForRuntime_object_alter,
   TransformerForRuntime_object_fullTemplate,

@@ -13,7 +13,7 @@ import {
 import { MiroirLoggerFactory } from "../../../4_services/LoggerFactory";
 import { packageName } from "../../../constants";
 import { LoggerInterface } from "../../4-services/LoggerInterface";
-import { transformerForBuild_freeObjectTemplate, transformerForRuntime_freeObjectTemplate } from "../preprocessor-generated/miroirFundamentalType";
+import { transformerForBuild_dataflowObject, transformerForBuild_freeObjectTemplate, transformerForRuntime_dataflowObject, transformerForRuntime_freeObjectTemplate } from "../preprocessor-generated/miroirFundamentalType";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -348,6 +348,7 @@ export function getMiroirFundamentalJzodSchema(
           ])
         ),
         transformerForBuild_count: miroirTransformersForBuild.transformer_count,
+        transformerForBuild_dataflowObject: miroirTransformersForBuild.transformer_dataflowObject,
         transformerForBuild_list_listMapperToList: miroirTransformersForBuild.transformer_mapperListToList,
         transformerForBuild_freeObjectTemplate: miroirTransformersForBuild.transformer_freeObjectTemplate,
         transformerForBuild_objectAlter: miroirTransformersForBuild.transformer_objectAlter,
@@ -359,6 +360,7 @@ export function getMiroirFundamentalJzodSchema(
         transformerForBuild_object_fullTemplate: miroirTransformersForBuild.transformer_object_fullTemplate,
         transformerForBuild_unique: miroirTransformersForBuild.transformer_unique,
         transformerForRuntime_count: miroirTransformersForRuntime.transformer_count,
+        transformerForRuntime_dataflowObject: miroirTransformersForRuntime.transformer_dataflowObject,
         transformerForRuntime_freeObjectTemplate: miroirTransformersForRuntime.transformer_freeObjectTemplate,
         transformerForRuntime_list_listMapperToList: miroirTransformersForRuntime.transformer_mapperListToList,
         transformerForRuntime_list_listPickElement: miroirTransformersForRuntime.transformer_listPickElement,
@@ -2928,7 +2930,7 @@ export function getMiroirFundamentalJzodSchema(
         transformerForBuild: (transformerJzodSchema as any).definition.context.transformerForBuild,
         transformerForBuild_count: (miroirFundamentalJzodSchema as any).definition.context.transformerForBuild_count,
         transformerForBuild_unique: (miroirFundamentalJzodSchema as any).definition.context.transformerForBuild_unique,
-        transformerForBuild_dataflowObject: (transformerJzodSchema as any).definition.context
+        transformerForBuild_dataflowObject: (miroirFundamentalJzodSchema as any).definition.context
           .transformerForBuild_dataflowObject,
         transformerForBuild_dataflowSequence: (transformerJzodSchema as any).definition.context
           .transformerForBuild_dataflowSequence,
@@ -2976,7 +2978,7 @@ export function getMiroirFundamentalJzodSchema(
           .transformerForRuntime_contextReference,
         transformer_contextOrParameterReferenceTO_REMOVE: (transformerJzodSchema as any).definition.context
           .transformer_contextOrParameterReferenceTO_REMOVE,
-        transformerForRuntime_dataflowObject: (transformerJzodSchema as any).definition.context
+        transformerForRuntime_dataflowObject: (miroirFundamentalJzodSchema as any).definition.context
           .transformerForRuntime_dataflowObject,
         transformerForRuntime_dataflowSequence: (transformerJzodSchema as any).definition.context
           .transformerForRuntime_dataflowSequence,

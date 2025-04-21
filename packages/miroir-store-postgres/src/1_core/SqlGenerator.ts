@@ -23,7 +23,8 @@ import {
   TransformerForBuild_freeObjectTemplate,
   TransformerForBuild_object_fullTemplate,
   TransformerForRuntime_object_fullTemplate,
-  TransformerForRuntime_object_listReducerToIndexObject
+  TransformerForRuntime_object_listReducerToIndexObject,
+  TransformerForRuntime_dataflowObject
 } from "miroir-core";
 import { RecursiveStringRecords } from "../4_services/SqlDbQueryTemplateRunner";
 import { cleanLevel } from "../4_services/constants";
@@ -61,6 +62,7 @@ export type ITransformerHandler<T> = (
 
 const sqlTransformerImplementations: Record<string, ITransformerHandler<any>> = {
   sqlStringForCountTransformer,
+  sqlStringForDataflowObjectTransformer,
   sqlStringForListPickElementTransformer,
   sqlStringForListReducerToIndexObjectTransformer,
   sqlStringForListReducerToSpreadObjectTransformer,
@@ -1979,6 +1981,148 @@ function sqlStringForListReducerToSpreadObjectTransformer(
       break;
   }
 }
+
+// ################################################################################################
+function sqlStringForDataflowObjectTransformer(
+  actionRuntimeTransformer: TransformerForRuntime_dataflowObject,
+  preparedStatementParametersCount: number,
+  indentLevel: number,
+  queryParams: Record<string, any>,
+  definedContextEntries: Record<string, SqlContextEntry>,
+  useAccessPathForContextReference: boolean,
+  topLevelTransformer: boolean
+): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
+  // throw new Error("sqlStringForRuntimeTransformer dataflowObject not implemented");
+  let newPreparedStatementParametersCount = preparedStatementParametersCount;
+  let preparedStatementParameters: any[] = [];
+  // newPreparedStatementParametersCount += preparedStatementParameters.length;
+  const newDefinedContextEntries = {
+    ...definedContextEntries
+  }
+
+  const definitionSql: [string, Domain2QueryReturnType<SqlStringForTransformerElementValue>][] = Object.entries(actionRuntimeTransformer.definition).map(
+    (f, index): [string, Domain2QueryReturnType<SqlStringForTransformerElementValue>] => {
+      const itemSql = sqlStringForRuntimeTransformer(
+        f[1],
+        newPreparedStatementParametersCount,
+        indentLevel,
+        queryParams,
+        newDefinedContextEntries,
+        useAccessPathForContextReference,
+        topLevelTransformer,
+        // undefined, // withClauseColumnName
+        // iterateOn, // iterateOn
+      );
+      // log.info("sqlStringForRuntimeTransformer dataflowObject for item", f[0], "itemSql", JSON.stringify(itemSql, null, 2));
+      if (itemSql instanceof Domain2ElementFailed) {
+        log.error("sqlStringForDataflowObjectTransformer failed for transformer:",JSON.stringify(f[1], null, 2), "itemSql=", JSON.stringify(itemSql, null, 2));
+        return [f[0], itemSql];
+      }
+      if (itemSql.type != "json") {
+        return [f[0], new Domain2ElementFailed({
+          queryFailure: "QueryNotExecutable",
+          query: actionRuntimeTransformer as any,
+          failureMessage: "sqlStringForDataflowObjectTransformer itemSql not json",
+        })];
+      }
+      // const resultPathMapIndex = itemSql.resultAccessPath?.findIndex((e: any) => typeof e == "object" && e.type == "map")
+      // ;
+      // if (resultPathMapIndex) {
+      //   return [
+      //     f[0],
+      //     new Domain2ElementFailed({
+      //     queryFailure: "QueryNotExecutable",
+      //     query: actionRuntimeTransformer as any,
+      //     failureMessage: "sqlStringForRuntimeTransformer dataflowObject resultAccessPath has map: " + JSON.stringify(itemSql.resultAccessPath, null, 2),
+      //   })];
+      // }
+      if (itemSql.preparedStatementParameters) {
+        preparedStatementParameters = [...preparedStatementParameters, ...itemSql.preparedStatementParameters];
+        newPreparedStatementParametersCount += itemSql.preparedStatementParameters.length;
+      }
+      newDefinedContextEntries[f[0]] = {
+        type: "json",
+        // renameTo: f[0],
+        // attributeResultAccessPath: itemSql.resultAccessPath?.slice(1,resultPathMapIndex == -1?itemSql.resultAccessPath.length: resultPathMapIndex) as any,
+        attributeResultAccessPath: itemSql.columnNameContainingJsonValue?[itemSql.columnNameContainingJsonValue]:itemSql.resultAccessPath?.slice(1) as any,
+      };
+      return [f[0], itemSql];
+    }
+  );
+
+  const foundError = definitionSql.find(
+    (e: any) => e[1] instanceof Domain2ElementFailed
+  );
+  if (foundError) {
+    return new Domain2ElementFailed({
+      queryFailure: "QueryNotExecutable",
+      query: actionRuntimeTransformer as any,
+      failureMessage:
+        "sqlStringForDataflowObjectTransformer attributeKey or attributeValue failed: " +
+        JSON.stringify(foundError, null, 2),
+    });
+  }
+  const definitionSqlObject: Record<string,SqlStringForTransformerElementValue>  = Object.fromEntries(definitionSql) as any;
+  log.info("sqlStringForDataflowObjectTransformer definitionSql", JSON.stringify(definitionSql, null, 2));
+  // if(!Object.hasOwn(definitionSqlObject,actionRuntimeTransformer.target)) {
+  if(!definitionSqlObject[actionRuntimeTransformer.target]) {
+    return new Domain2ElementFailed({
+      queryFailure: "QueryNotExecutable",
+      query: actionRuntimeTransformer as any,
+      failureMessage: "sqlStringForDataflowObjectTransformer target not found in definitionSql",
+    });
+  }
+  if (definitionSqlObject[actionRuntimeTransformer.target].type != "json") {
+    return new Domain2ElementFailed({
+      queryFailure: "QueryNotExecutable",
+      query: actionRuntimeTransformer as any,
+      failureMessage: "sqlStringForDataflowObjectTransformer target not json",
+    });
+  }
+  if (!definitionSqlObject[actionRuntimeTransformer.target].resultAccessPath) {
+    return new Domain2ElementFailed({
+      queryFailure: "QueryNotExecutable",
+      query: actionRuntimeTransformer as any,
+      failureMessage: "sqlStringForDataflowObjectTransformer target has no resultAccessPath",
+    });
+  }
+  if (!definitionSqlObject[actionRuntimeTransformer.target].columnNameContainingJsonValue) {
+    return new Domain2ElementFailed({
+      queryFailure: "QueryNotExecutable",
+      query: actionRuntimeTransformer as any,
+      failureMessage: "sqlStringForDataflowObjectTransformer target has no columnNameContainingJsonValue",
+    });
+  }
+  const extraWith = [
+    ...definitionSql
+      .flatMap((e, index) =>
+        (e[1] as any).extraWith
+          ? [
+              ...((e[1] as any).extraWith ?? []).filter((e: any) => e),
+              {
+                name: e[0],
+                sql: (e[1] as any).sqlStringOrObject,
+              },
+            ]
+          : [
+              {
+                name: e[0],
+                sql: (e[1] as any).sqlStringOrObject,
+              },
+            ]
+      )
+      .filter((e: any) => e),
+  ];
+  log.info("sqlStringForDataflowObjectTransformer extraWith", JSON.stringify(extraWith, null, 2));
+  return {
+    type: "json",
+    sqlStringOrObject: `SELECT "${definitionSqlObject[actionRuntimeTransformer.target].columnNameContainingJsonValue}" FROM "${actionRuntimeTransformer.target}"`,
+    preparedStatementParameters,
+    extraWith,
+    resultAccessPath: (definitionSqlObject[actionRuntimeTransformer.target] as any).resultAccessPath,
+    columnNameContainingJsonValue: definitionSqlObject[actionRuntimeTransformer.target].columnNameContainingJsonValue,
+  };
+}
 // ################################################################################################
 export function sqlStringForRuntimeTransformer(
   actionRuntimeTransformer: TransformerForRuntime,
@@ -2021,139 +2165,6 @@ export function sqlStringForRuntimeTransformer(
         type: "scalar",
         sqlStringOrObject: (topLevelTransformer ? "select " : "") + "gen_random_uuid()",
       };
-    }
-    case "dataflowObject": {
-      // throw new Error("sqlStringForRuntimeTransformer dataflowObject not implemented");
-      let newPreparedStatementParametersCount = preparedStatementParametersCount;
-      let preparedStatementParameters: any[] = [];
-      // newPreparedStatementParametersCount += preparedStatementParameters.length;
-      const newDefinedContextEntries = {
-        ...definedContextEntries
-      }
-
-      const definitionSql: [string, Domain2QueryReturnType<SqlStringForTransformerElementValue>][] = Object.entries(actionRuntimeTransformer.definition).map(
-        (f, index): [string, Domain2QueryReturnType<SqlStringForTransformerElementValue>] => {
-          const itemSql = sqlStringForRuntimeTransformer(
-            f[1],
-            newPreparedStatementParametersCount,
-            indentLevel,
-            queryParams,
-            newDefinedContextEntries,
-            useAccessPathForContextReference,
-            topLevelTransformer,
-            // undefined, // withClauseColumnName
-            // iterateOn, // iterateOn
-          );
-          // log.info("sqlStringForRuntimeTransformer dataflowObject for item", f[0], "itemSql", JSON.stringify(itemSql, null, 2));
-          if (itemSql instanceof Domain2ElementFailed) {
-            log.error("sqlStringForRuntimeTransformer dataflowObject failed for transformer:",JSON.stringify(f[1], null, 2), "itemSql=", JSON.stringify(itemSql, null, 2));
-            return [f[0], itemSql];
-          }
-          if (itemSql.type != "json") {
-            return [f[0], new Domain2ElementFailed({
-              queryFailure: "QueryNotExecutable",
-              query: actionRuntimeTransformer as any,
-              failureMessage: "sqlStringForRuntimeTransformer dataflowObject itemSql not json",
-            })];
-          }
-          // const resultPathMapIndex = itemSql.resultAccessPath?.findIndex((e: any) => typeof e == "object" && e.type == "map")
-          // ;
-          // if (resultPathMapIndex) {
-          //   return [
-          //     f[0],
-          //     new Domain2ElementFailed({
-          //     queryFailure: "QueryNotExecutable",
-          //     query: actionRuntimeTransformer as any,
-          //     failureMessage: "sqlStringForRuntimeTransformer dataflowObject resultAccessPath has map: " + JSON.stringify(itemSql.resultAccessPath, null, 2),
-          //   })];
-          // }
-          if (itemSql.preparedStatementParameters) {
-            preparedStatementParameters = [...preparedStatementParameters, ...itemSql.preparedStatementParameters];
-            newPreparedStatementParametersCount += itemSql.preparedStatementParameters.length;
-          }
-          newDefinedContextEntries[f[0]] = {
-            type: "json",
-            // renameTo: f[0],
-            // attributeResultAccessPath: itemSql.resultAccessPath?.slice(1,resultPathMapIndex == -1?itemSql.resultAccessPath.length: resultPathMapIndex) as any,
-            attributeResultAccessPath: itemSql.columnNameContainingJsonValue?[itemSql.columnNameContainingJsonValue]:itemSql.resultAccessPath?.slice(1) as any,
-          };
-          return [f[0], itemSql];
-        }
-      );
-
-      const foundError = definitionSql.find(
-        (e: any) => e[1] instanceof Domain2ElementFailed
-      );
-      if (foundError) {
-        return new Domain2ElementFailed({
-          queryFailure: "QueryNotExecutable",
-          query: actionRuntimeTransformer as any,
-          failureMessage:
-            "sqlStringForRuntimeTransformer object_fullTemplate attributeKey or attributeValue failed: " +
-            JSON.stringify(foundError, null, 2),
-        });
-      }
-      const definitionSqlObject: Record<string,SqlStringForTransformerElementValue>  = Object.fromEntries(definitionSql) as any;
-      log.info("sqlStringForRuntimeTransformer dataflowObject definitionSql", JSON.stringify(definitionSql, null, 2));
-      // if(!Object.hasOwn(definitionSqlObject,actionRuntimeTransformer.target)) {
-      if(!definitionSqlObject[actionRuntimeTransformer.target]) {
-        return new Domain2ElementFailed({
-          queryFailure: "QueryNotExecutable",
-          query: actionRuntimeTransformer as any,
-          failureMessage: "sqlStringForRuntimeTransformer dataflowObject target not found in definitionSql",
-        });
-      }
-      if (definitionSqlObject[actionRuntimeTransformer.target].type != "json") {
-        return new Domain2ElementFailed({
-          queryFailure: "QueryNotExecutable",
-          query: actionRuntimeTransformer as any,
-          failureMessage: "sqlStringForRuntimeTransformer dataflowObject target not json",
-        });
-      }
-      if (!definitionSqlObject[actionRuntimeTransformer.target].resultAccessPath) {
-        return new Domain2ElementFailed({
-          queryFailure: "QueryNotExecutable",
-          query: actionRuntimeTransformer as any,
-          failureMessage: "sqlStringForRuntimeTransformer dataflowObject target has no resultAccessPath",
-        });
-      }
-      if (!definitionSqlObject[actionRuntimeTransformer.target].columnNameContainingJsonValue) {
-        return new Domain2ElementFailed({
-          queryFailure: "QueryNotExecutable",
-          query: actionRuntimeTransformer as any,
-          failureMessage: "sqlStringForRuntimeTransformer dataflowObject target has no columnNameContainingJsonValue",
-        });
-      }
-      const extraWith = [
-        ...definitionSql
-          .flatMap((e, index) =>
-            (e[1] as any).extraWith
-              ? [
-                  ...((e[1] as any).extraWith ?? []).filter((e: any) => e),
-                  {
-                    name: e[0],
-                    sql: (e[1] as any).sqlStringOrObject,
-                  },
-                ]
-              : [
-                  {
-                    name: e[0],
-                    sql: (e[1] as any).sqlStringOrObject,
-                  },
-                ]
-          )
-          .filter((e: any) => e),
-      ];
-      log.info("sqlStringForRuntimeTransformer dataflowObject extraWith", JSON.stringify(extraWith, null, 2));
-      return {
-        type: "json",
-        sqlStringOrObject: `SELECT "${definitionSqlObject[actionRuntimeTransformer.target].columnNameContainingJsonValue}" FROM "${actionRuntimeTransformer.target}"`,
-        preparedStatementParameters,
-        extraWith,
-        resultAccessPath: (definitionSqlObject[actionRuntimeTransformer.target] as any).resultAccessPath,
-        columnNameContainingJsonValue: definitionSqlObject[actionRuntimeTransformer.target].columnNameContainingJsonValue,
-      };
-      break;
     }
     case "dataflowSequence": {
       throw new Error("sqlStringForRuntimeTransformer dataflowSequence not implemented");
