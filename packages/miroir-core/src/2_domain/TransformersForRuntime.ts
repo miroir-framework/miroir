@@ -60,6 +60,7 @@ import {
   transformer_object_fullTemplate,
   transformer_objectAlter,
   transformer_objectEntries,
+  transformer_objectValues,
   transformer_unique,
 } from "./Transformers";
 
@@ -110,6 +111,7 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
   handleTransformer_FreeObjectTemplate,
   handleTransformer_objectAlter: defaultTransformers.handleTransformer_objectAlter,
   handleTransformer_objectEntries,
+  handleTransformer_objectValues,
   handleTransformer_object_fullTemplate: defaultTransformers.handleTransformer_object_fullTemplate,
   transformerForBuild_list_listMapperToList_apply:
     defaultTransformers.transformerForBuild_list_listMapperToList_apply,
@@ -123,6 +125,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   "mapperListToList": transformer_mapperListToList,
   "objectAlter": transformer_objectAlter,
   "objectEntries": transformer_objectEntries,
+  "objectValues": transformer_objectValues,
   "object_fullTemplate": transformer_object_fullTemplate,
   "unique": transformer_unique,
 }
@@ -1389,17 +1392,17 @@ export function handleTransformer_objectEntries(
     contextResults,
     label
   );
-  log.info("innerTransformer_apply objectEntries referencedExtractor=", resolvedReference);
+  log.info("handleTransformer_objectEntries referencedExtractor=", resolvedReference);
 
   if (resolvedReference instanceof Domain2ElementFailed) {
     log.error(
-      "innerTransformer_apply extractorTransformer objectEntries can not apply to resolvedReference",
+      "handleTransformer_objectEntries can not apply to resolvedReference",
       resolvedReference
     );
     return new Domain2ElementFailed({
       queryFailure: "QueryNotExecutable",
-      failureOrigin: ["innerTransformer_apply"],
-      queryContext: "objectEntries can not apply to resolvedReference",
+      failureOrigin: ["handleTransformer_objectEntries"],
+      queryContext: "handleTransformer_objectEntries can not apply to resolvedReference",
       innerError: resolvedReference,
     });
   }
@@ -1408,22 +1411,73 @@ export function handleTransformer_objectEntries(
     const failure: Domain2ElementFailed = new Domain2ElementFailed({
       queryFailure: "FailedTransformer_objectEntries",
       failureMessage:
-        "objectEntries transformer called on something that is not an object: " +
+        "handleTransformer_objectEntries called on something that is not an object: " +
         typeof resolvedReference,
       // queryParameters: JSON.stringify(resolvedReference, null, 2),
       queryParameters: resolvedReference,
     });
     log.error(
-      "innerTransformer_apply extractorTransformer objectEntries referencedExtractor resolvedReference",
+      "handleTransformer_objectEntries resolvedReference",
       resolvedReference
     );
     return failure;
   }
   log.info(
-    "innerTransformer_apply extractorTransformer objectEntries resolvedReference",
+    "handleTransformer_objectEntries resolvedReference",
     resolvedReference
   );
   return Object.entries(resolvedReference);
+}
+
+// ################################################################################################
+export function handleTransformer_objectValues(
+  step: Step,
+  label: string | undefined,
+  transformer:
+  | TransformerForBuild_objectValues
+  | TransformerForRuntime_objectValues,
+  resolveBuildTransformersTo: ResolveBuildTransformersTo,
+  queryParams: Record<string, any>,
+  contextResults?: Record<string, any>
+): Domain2QueryReturnType<any> {
+  const resolvedReference = resolveApplyTo_legacy(
+    transformer,
+    step,
+    resolveBuildTransformersTo,
+    queryParams,
+    contextResults,
+    label
+  );
+  if (resolvedReference instanceof Domain2ElementFailed) {
+    log.error(
+      "handleTransformer_objectValues can not apply to resolvedReference",
+      resolvedReference
+    );
+    return new Domain2ElementFailed({
+      queryFailure: "QueryNotExecutable",
+      failureOrigin: ["handleTransformer_objectValues"],
+      queryContext: "handleTransformer_objectValues failed ro resolve resolvedReference",
+      innerError: resolvedReference,
+    });
+  }
+
+  if (typeof resolvedReference != "object" || Array.isArray(resolvedReference)) {
+    log.error(
+      "innerTransformer_apply extractorTransformer count referencedExtractor resolvedReference",
+      resolvedReference
+    );
+    return new Domain2ElementFailed({
+      queryFailure: "QueryNotExecutable",
+      failureOrigin: ["handleTransformer_objectValues"],
+      queryContext:
+        "handleTransformer_objectValues resolvedReference is not an object: " + typeof resolvedReference,
+    });
+  }
+  log.info(
+    "handleTransformer_objectValues resolvedReference",
+    resolvedReference
+  );
+  return Object.values(resolvedReference);
 }
 
 // ################################################################################################
@@ -1485,97 +1539,9 @@ export function innerTransformer_apply(
     }
     case "objectEntries": {
       throw new Error("objectEntries transformer not allowed in innerTransformer_apply");
-      // return handleTransformer_objectEntries(
-      //   step,
-      //   label,
-      //   transformer as TransformerForBuild_objectEntries,
-      //   resolveBuildTransformersTo,
-      //   queryParams,
-      //   contextResults
-      // )
-      // const resolvedReference = resolveApplyTo_legacy(
-      //   transformer,
-      //   step,
-      //   resolveBuildTransformersTo,
-      //   queryParams,
-      //   contextResults,
-      //   label
-      // );
-      // log.info("innerTransformer_apply objectEntries referencedExtractor=", resolvedReference);
-
-      // if (resolvedReference instanceof Domain2ElementFailed) {
-      //   log.error(
-      //     "innerTransformer_apply extractorTransformer objectEntries can not apply to resolvedReference",
-      //     resolvedReference
-      //   );
-      //   return new Domain2ElementFailed({
-      //     queryFailure: "QueryNotExecutable",
-      //     failureOrigin: ["innerTransformer_apply"],
-      //     queryContext: "objectEntries can not apply to resolvedReference",
-      //     innerError: resolvedReference,
-      //   });
-      // }
-
-      // if (!(typeof resolvedReference == "object") || Array.isArray(resolvedReference)) {
-      //   const failure: Domain2ElementFailed = new Domain2ElementFailed({
-      //     queryFailure: "FailedTransformer_objectEntries",
-      //     failureMessage:
-      //       "objectEntries transformer called on something that is not an object: " +
-      //       typeof resolvedReference,
-      //     // queryParameters: JSON.stringify(resolvedReference, null, 2),
-      //     queryParameters: resolvedReference,
-      //   });
-      //   log.error(
-      //     "innerTransformer_apply extractorTransformer objectEntries referencedExtractor resolvedReference",
-      //     resolvedReference
-      //   );
-      //   return failure;
-      // }
-      // log.info(
-      //   "innerTransformer_apply extractorTransformer objectEntries resolvedReference",
-      //   resolvedReference
-      // );
-      // return Object.entries(resolvedReference);
     }
     case "objectValues": {
-      const resolvedReference = resolveApplyTo_legacy(
-        transformer,
-        step,
-        resolveBuildTransformersTo,
-        queryParams,
-        contextResults,
-        label
-      );
-      if (resolvedReference instanceof Domain2ElementFailed) {
-        log.error(
-          "innerTransformer_apply extractorTransformer objectValues can not apply to resolvedReference",
-          resolvedReference
-        );
-        return new Domain2ElementFailed({
-          queryFailure: "QueryNotExecutable",
-          failureOrigin: ["innerTransformer_apply"],
-          queryContext: "objectValues failed ro resolve resolvedReference",
-          innerError: resolvedReference,
-        });
-      }
-
-      if (typeof resolvedReference != "object" || Array.isArray(resolvedReference)) {
-        log.error(
-          "innerTransformer_apply extractorTransformer count referencedExtractor resolvedReference",
-          resolvedReference
-        );
-        return new Domain2ElementFailed({
-          queryFailure: "QueryNotExecutable",
-          failureOrigin: ["innerTransformer_apply"],
-          queryContext:
-            "objectValues resolvedReference is not an object: " + typeof resolvedReference,
-        });
-      }
-      log.info(
-        "innerTransformer_apply extractorTransformer objectValues resolvedReference",
-        resolvedReference
-      );
-      return Object.values(resolvedReference);
+      throw new Error("objectValues transformer not allowed in innerTransformer_apply");
     }
     case "mapperListToList": {
       throw new Error("mapperListToList transformer not allowed in innerTransformer_apply");
@@ -2072,7 +2038,7 @@ export function transformer_extended_apply(
             // case "object_fullTemplate":
             case "listReducerToSpreadObject":
             // case "objectEntries":
-            case "objectValues":
+            // case "objectValues":
             // case "listPickElement":
             // case "count":
             // case "unique":

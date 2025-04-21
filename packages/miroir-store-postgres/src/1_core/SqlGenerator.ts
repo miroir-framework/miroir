@@ -65,6 +65,7 @@ const sqlTransformerImplementations: Record<string, ITransformerHandler<any>> = 
   sqlStringForObjectFullTemplateTransformer,
   sqlStringForObjectAlterTransformer,
   sqlStringForObjectEntriesTransformer,
+  sqlStringForObjectValuesTransformer,
   sqlStringForFreeObjectTransformer,
   sqlStringForUniqueTransformer,
 }
@@ -1631,6 +1632,49 @@ function sqlStringForObjectEntriesTransformer(
     extraWith,
   };
 }
+
+// ################################################################################################
+function sqlStringForObjectValuesTransformer(
+  actionRuntimeTransformer: TransformerForRuntime_objectValues,
+  preparedStatementParametersCount: number,
+  indentLevel: number,
+  queryParams: Record<string, any>,
+  definedContextEntries: Record<string, SqlContextEntry>,
+  useAccessPathForContextReference: boolean,
+  topLevelTransformer: boolean
+): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
+  const applyTo = sqlStringForApplyTo(
+    actionRuntimeTransformer,
+    preparedStatementParametersCount,
+    indentLevel,
+    queryParams,
+    definedContextEntries,
+    useAccessPathForContextReference,
+    topLevelTransformer
+  );
+  if (applyTo instanceof Domain2ElementFailed) {
+    return applyTo;
+  }
+
+  const extraWith: { name: string; sql: string }[] = [
+    {
+      name: "innerQuery",
+      sql: applyTo.sqlStringOrObject,
+    },
+  ];
+  const sqlResult = `SELECT jsonb_agg(value) AS "objectValues" FROM "innerQuery", jsonb_each("innerQuery"."${
+    (applyTo as any).resultAccessPath[1]
+  }")`;
+
+  return {
+    type: "json",
+    sqlStringOrObject: sqlResult,
+    preparedStatementParameters: applyTo.preparedStatementParameters,
+    resultAccessPath: [0, "objectValues"],
+    columnNameContainingJsonValue: "objectValues",
+    extraWith,
+  };
+}
 // ################################################################################################
 export function sqlStringForRuntimeTransformer(
   actionRuntimeTransformer: TransformerForRuntime,
@@ -2077,83 +2121,6 @@ export function sqlStringForRuntimeTransformer(
         log.info("sqlStringForRuntimeTransformer contextReference topLevelTransformer=false", JSON.stringify(result, null, 2));
         return result;
       }
-      break;
-    }
-    // case "objectEntries": {
-    //   return sqlStringForObjectEntriesTransformer(
-    //     actionRuntimeTransformer,
-    //     preparedStatementParametersCount,
-    //     indentLevel,
-    //     queryParams,
-    //     definedContextEntries,
-    //     useAccessPathForContextReference,
-    //     topLevelTransformer
-    //   )
-    //   // const applyTo = sqlStringForApplyTo(
-    //   //   actionRuntimeTransformer,
-    //   //   preparedStatementParametersCount,
-    //   //   indentLevel,
-    //   //   queryParams,
-    //   //   definedContextEntries,
-    //   //   useAccessPathForContextReference,
-    //   //   topLevelTransformer
-    //   // );
-    //   // if (applyTo instanceof Domain2ElementFailed) {
-    //   //   return applyTo;
-    //   // }
-
-    //   // const extraWith: { name: string; sql: string }[] = [
-    //   //   {
-    //   //     name: "innerQuery",
-    //   //     sql: applyTo.sqlStringOrObject,
-    //   //   },
-    //   // ];
-    //   // const sqlResult = `SELECT jsonb_agg(json_build_array(key, value)) AS "objectEntries" FROM "innerQuery", jsonb_each("innerQuery"."${
-    //   //   (applyTo as any).resultAccessPath[1]
-    //   // }")`;
-
-    //   // return {
-    //   //   type: "json",
-    //   //   sqlStringOrObject: sqlResult,
-    //   //   preparedStatementParameters: applyTo.preparedStatementParameters,
-    //   //   resultAccessPath: [0, "objectEntries"],
-    //   //   columnNameContainingJsonValue: "objectEntries",
-    //   //   extraWith,
-    //   // };
-    //   break;
-    // }
-    case "objectValues": {
-      const applyTo = sqlStringForApplyTo(
-        actionRuntimeTransformer,
-        preparedStatementParametersCount,
-        indentLevel,
-        queryParams,
-        definedContextEntries,
-        useAccessPathForContextReference,
-        topLevelTransformer
-      );
-      if (applyTo instanceof Domain2ElementFailed) {
-        return applyTo;
-      }
-
-      const extraWith: { name: string; sql: string }[] = [
-        {
-          name: "innerQuery",
-          sql: applyTo.sqlStringOrObject,
-        },
-      ];
-      const sqlResult = `SELECT jsonb_agg(value) AS "objectValues" FROM "innerQuery", jsonb_each("innerQuery"."${
-        (applyTo as any).resultAccessPath[1]
-      }")`;
-
-      return {
-        type: "json",
-        sqlStringOrObject: sqlResult,
-        preparedStatementParameters: applyTo.preparedStatementParameters,
-        resultAccessPath: [0, "objectValues"],
-        columnNameContainingJsonValue: "objectValues",
-        extraWith,
-      };
       break;
     }
     case "listReducerToSpreadObject": {

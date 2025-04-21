@@ -8,6 +8,7 @@ import transformer_mapperListToList_json from '../assets/miroir_data/a557419d-a2
 import transformer_objectFullTemplate_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/16d866c4-bc81-4773-89a4-a47ac7f6549d.json';
 import transformer_objectAlter_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/774b1087-d4bb-41a0-824c-5ac16571c66a.json';
 import transformer_objectEntries_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/b726ac6a-f65e-403a-bba0-e11f0982fc41.json';
+import transformer_objectValues_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/8b03069a-f812-4334-a530-e7f8fd684744.json';
 import transformer_freeObjectTemplate_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/e99fec79-162b-49ac-97d6-c058d162d1d8.json';
 import transformer_unique_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/a93aec8f-3f8b-4129-a907-e7321c1e7171.json';
 
@@ -17,6 +18,7 @@ export const transformer_listPickElement: TransformerDefinition = transformer_li
 export const transformer_mapperListToList: TransformerDefinition = transformer_mapperListToList_json as TransformerDefinition;
 export const transformer_objectAlter: TransformerDefinition = transformer_objectAlter_json as TransformerDefinition;
 export const transformer_objectEntries: TransformerDefinition = transformer_objectEntries_json as TransformerDefinition;
+export const transformer_objectValues: TransformerDefinition = transformer_objectValues_json as TransformerDefinition;
 export const transformer_object_fullTemplate: TransformerDefinition = transformer_objectFullTemplate_json as TransformerDefinition;
 export const transformer_unique: TransformerDefinition = transformer_unique_json as TransformerDefinition;
 
@@ -27,6 +29,7 @@ const miroirTransformers: Record<string,TransformerDefinition> = {
   transformer_mapperListToList,
   transformer_objectAlter,
   transformer_objectEntries,
+  transformer_objectValues,
   transformer_object_fullTemplate,
   transformer_unique,
 };
