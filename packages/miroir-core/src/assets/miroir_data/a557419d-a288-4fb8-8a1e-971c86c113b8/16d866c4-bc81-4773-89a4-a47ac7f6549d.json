@@ -40,10 +40,18 @@
               "type": "object",
               "definition": {
                 "attributeKey": {
-                  "type": "schemaReference",
-                  "definition": {
-                    "relativePath": "transformer_InnerReference"
-                  }
+                  "type": "union",
+                  "definition": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "relativePath": "transformer_InnerReference"
+                      }
+                    }
+                  ]
                 },
                 "attributeValue": {
                   "type": "schemaReference",

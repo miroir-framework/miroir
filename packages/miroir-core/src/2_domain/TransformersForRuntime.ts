@@ -13,6 +13,7 @@ import {
   TransformerDefinition,
   TransformerForBuild,
   TransformerForBuild_count,
+  TransformerForBuild_freeObjectTemplate,
   TransformerForBuild_InnerReference,
   TransformerForBuild_list,
   TransformerForBuild_list_listMapperToList,
@@ -35,12 +36,13 @@ import {
   TransformerForRuntime_mapper_listToObject,
   TransformerForRuntime_mustacheStringTemplate_NOT_IMPLEMENTED,
   TransformerForRuntime_object_alter,
-  TransformerForRuntime_object_fullTemplate,
+  TransformerForRuntime_freeObjectTemplate,
   TransformerForRuntime_object_listReducerToSpreadObject,
   TransformerForRuntime_objectDynamicAccess,
   TransformerForRuntime_objectEntries,
   TransformerForRuntime_objectValues,
-  TransformerForRuntime_unique
+  TransformerForRuntime_unique,
+  TransformerForRuntime_object_fullTemplate
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { Action2Error, Domain2ElementFailed, Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
@@ -52,6 +54,7 @@ import { cleanLevel } from "./constants";
 import { transformer_spreadSheetToJzodSchema } from "./Transformer_Spreadsheet";
 import {
   transformer_count,
+  transformer_freeObjectTemplate,
   transformer_listPickElement,
   transformer_mapperListToList,
   transformer_object_fullTemplate,
@@ -87,6 +90,7 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
   handleCountTransformer,
   handleListPickElementTransformer,
   handleUniqueTransformer,
+  handleTransformer_FreeObjectTemplate,
   handleTransformer_objectAlter: defaultTransformers.handleTransformer_objectAlter,
   handleTransformer_object_fullTemplate: defaultTransformers.handleTransformer_object_fullTemplate,
   transformerForBuild_list_listMapperToList_apply:
@@ -96,6 +100,7 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
 export const applicationTransformerDefinitions: Record<string, TransformerDefinition> = {
   spreadSheetToJzodSchema: transformer_spreadSheetToJzodSchema,
   "count": transformer_count,
+  "freeObjectTemplate": transformer_freeObjectTemplate,
   "listPickElement": transformer_listPickElement,
   "mapperListToList": transformer_mapperListToList,
   "objectAlter": transformer_objectAlter,
@@ -528,13 +533,13 @@ function handleTransformer_object_fullTemplate(
   }
   const attributeEntries = transformer.definition.map(
     (innerEntry: {
-      attributeKey: TransformerForBuild | TransformerForRuntime;
+      attributeKey: TransformerForBuild | TransformerForRuntime | string;
       attributeValue: TransformerForBuild | TransformerForRuntime;
     }): [
       { rawLeftValue: Domain2QueryReturnType<DomainElementSuccess>; finalLeftValue: Domain2QueryReturnType<DomainElementSuccess> },
       { renderedRightValue: Domain2QueryReturnType<DomainElementSuccess>; finalRightValue: Domain2QueryReturnType<DomainElementSuccess> }
     ] => {
-      const rawLeftValue: Domain2QueryReturnType<DomainElementSuccess> = innerEntry.attributeKey.transformerType
+      const rawLeftValue: Domain2QueryReturnType<DomainElementSuccess> = typeof innerEntry.attributeKey == "object" && innerEntry.attributeKey.transformerType
         ? defaultTransformers.transformer_extended_apply(
             step,
             objectName, // is this correct? or should it be undefined?
@@ -1297,6 +1302,55 @@ export function handleListPickElementTransformer(
   // }
   // break;
 }
+
+// ################################################################################################
+export function handleTransformer_FreeObjectTemplate(
+  step: Step,
+  label: string | undefined,
+  transformer:
+  | TransformerForBuild_freeObjectTemplate
+  | TransformerForRuntime_freeObjectTemplate,
+  resolveBuildTransformersTo: ResolveBuildTransformersTo,
+  queryParams: Record<string, any>,
+  contextResults?: Record<string, any>
+): Domain2QueryReturnType<any> {
+  // log.info("innerTransformer_apply freeObjectTemplate", JSON.stringify(transformer, null, 2));
+  const result = Object.fromEntries(
+    Object.entries(transformer.definition).map((objectTemplateEntry: [string, any]) => {
+      return [
+        objectTemplateEntry[0],
+        defaultTransformers.transformer_extended_apply(
+          step,
+          objectTemplateEntry[0],
+          objectTemplateEntry[1],
+          resolveBuildTransformersTo,
+          queryParams,
+          contextResults
+        ),
+      ];
+    })
+  );
+  const hasFailures = Object.values(result).find((e) => e instanceof Domain2ElementFailed);
+  if (hasFailures) {
+    log.error("handleTransformer_FreeObjectTemplate freeObjectTemplate hasFailures", hasFailures);
+    return new Domain2ElementFailed({
+      queryFailure: "QueryNotExecutable",
+      failureOrigin: ["handleTransformer_FreeObjectTemplate"],
+      queryContext: "freeObjectTemplate hasFailures",
+      innerError: hasFailures,
+    });
+  }
+  log.info(
+    "handleTransformer_FreeObjectTemplate freeObjectTemplate for",
+    label,
+    "step",
+    step,
+    "result",
+    JSON.stringify(transformer, null, 2)
+  );
+  return result;
+}
+
 // ################################################################################################
 export type ITransformerHandler<T extends (TransformerForBuild
 | TransformerForRuntime
@@ -1368,14 +1422,6 @@ export function innerTransformer_apply(
     }
     case "objectAlter": {
       throw new Error("objectAlter transformer not allowed in innerTransformer_apply");
-      // return defaultTransformers.handleTransformer_objectAlter(
-      //   step,
-      //   label,
-      //   transformer,
-      //   resolveBuildTransformersTo,
-      //   queryParams,
-      //   contextResults
-      // );
       break;
     }
     case "objectEntries": {
@@ -1517,41 +1563,50 @@ export function innerTransformer_apply(
       break;
     }
     case "freeObjectTemplate": {
-      // log.info("innerTransformer_apply freeObjectTemplate", JSON.stringify(transformer, null, 2));
-      const result = Object.fromEntries(
-        Object.entries(transformer.definition).map((objectTemplateEntry: [string, any]) => {
-          return [
-            objectTemplateEntry[0],
-            defaultTransformers.transformer_extended_apply(
-              step,
-              objectTemplateEntry[0],
-              objectTemplateEntry[1],
-              resolveBuildTransformersTo,
-              queryParams,
-              contextResults
-            ),
-          ];
-        })
-      );
-      const hasFailures = Object.values(result).find((e) => e instanceof Domain2ElementFailed);
-      if (hasFailures) {
-        log.error("innerTransformer_apply freeObjectTemplate hasFailures", hasFailures);
-        return new Domain2ElementFailed({
-          queryFailure: "QueryNotExecutable",
-          failureOrigin: ["innerTransformer_apply"],
-          queryContext: "freeObjectTemplate hasFailures",
-          innerError: hasFailures,
-        });
-      }
-      log.info(
-        "innerTransformer_apply freeObjectTemplate for",
-        label,
-        "step",
-        step,
-        "result",
-        JSON.stringify(transformer, null, 2)
-      );
-      return result;
+      throw new Error("freeObjectTemplate transformer not allowed in innerTransformer_apply");
+      // return handleTransformer_FreeObjectTemplate(
+      //   step,
+      //   label,
+      //   transformer,
+      //   resolveBuildTransformersTo,
+      //   queryParams,
+      //   contextResults
+      // )
+      // // log.info("innerTransformer_apply freeObjectTemplate", JSON.stringify(transformer, null, 2));
+      // const result = Object.fromEntries(
+      //   Object.entries(transformer.definition).map((objectTemplateEntry: [string, any]) => {
+      //     return [
+      //       objectTemplateEntry[0],
+      //       defaultTransformers.transformer_extended_apply(
+      //         step,
+      //         objectTemplateEntry[0],
+      //         objectTemplateEntry[1],
+      //         resolveBuildTransformersTo,
+      //         queryParams,
+      //         contextResults
+      //       ),
+      //     ];
+      //   })
+      // );
+      // const hasFailures = Object.values(result).find((e) => e instanceof Domain2ElementFailed);
+      // if (hasFailures) {
+      //   log.error("innerTransformer_apply freeObjectTemplate hasFailures", hasFailures);
+      //   return new Domain2ElementFailed({
+      //     queryFailure: "QueryNotExecutable",
+      //     failureOrigin: ["innerTransformer_apply"],
+      //     queryContext: "freeObjectTemplate hasFailures",
+      //     innerError: hasFailures,
+      //   });
+      // }
+      // log.info(
+      //   "innerTransformer_apply freeObjectTemplate for",
+      //   label,
+      //   "step",
+      //   step,
+      //   "result",
+      //   JSON.stringify(transformer, null, 2)
+      // );
+      // return result;
       break;
     }
     case "constantArray": {
@@ -1944,7 +1999,7 @@ export function transformer_extended_apply(
             case "objectDynamicAccess":
             case "dataflowObject":
             case "dataflowSequence":
-            case "freeObjectTemplate":
+            // case "freeObjectTemplate":
             // case "objectAlter":
             // case "object_fullTemplate":
             case "listReducerToSpreadObject":

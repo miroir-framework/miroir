@@ -47,6 +47,54 @@ export function transformerInterfaceFromDefinition(
   transformerDefinition: TransformerDefinition,
   target: "build" | "runtime"
 ): JzodElement {
+  const newApplyTo: JzodElement = (
+    transformerDefinition.transformerInterface.transformerParameterSchema
+      .transformerDefinition.definition as any
+  ).applyTo?{
+    type: "union",
+    discriminator: "referenceType",
+    definition: [
+      (
+        transformerDefinition.transformerInterface.transformerParameterSchema
+          .transformerDefinition.definition as any
+      ).applyTo,
+      {
+        type: "schemaReference",
+        definition: {
+          relativePath: "transformer_inner_referenced_extractor",
+          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        },
+        context: {},
+      },
+      {
+        type: "schemaReference",
+        definition: {
+          relativePath:
+            target == "runtime"
+              ? "transformer_inner_referenced_transformerForRuntime"
+              : "transformer_inner_referenced_transformerForBuild",
+          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        },
+        context: {},
+      },
+    ],
+  }: { type: "never"};
+
+  const newDefinition = substituteTransformerReferencesInJzodElement<JzodObject>(
+    transformerDefinition.transformerInterface.transformerParameterSchema.transformerDefinition,
+    target == "runtime"
+      ? {
+          transformer: "transformerForRuntime",
+          transformer_InnerReference: "transformerForRuntime_InnerReference",
+          transformer_freeObjectTemplate: "transformerForRuntime_freeObjectTemplate"
+        }
+      : {
+          transformer: "transformerForBuild",
+          transformer_InnerReference: "transformerForBuild_InnerReference",
+          transformer_freeObjectTemplate: "transformerForBuild_freeObjectTemplate"
+        }
+  ).definition;
+
   const result: JzodElement = {
     type: "object",
     extend: transformerDefinition.transformerInterface.transformerParameterSchema
@@ -89,52 +137,19 @@ export function transformerInterfaceFromDefinition(
             context: {},
           },
         ],
-    definition: {
+    definition: (
+      transformerDefinition.transformerInterface.transformerParameterSchema
+        .transformerDefinition.definition as any
+    ).applyTo?{
       transformerType:
         transformerDefinition.transformerInterface.transformerParameterSchema.transformerType,
-      ...substituteTransformerReferencesInJzodElement<JzodObject>(
-        transformerDefinition.transformerInterface.transformerParameterSchema.transformerDefinition,
-        target == "runtime"
-          ? {
-              transformer: "transformerForRuntime",
-              transformer_InnerReference: "transformerForRuntime_InnerReference",
-              transformer_freeObjectTemplate: "transformerForRuntime_freeObjectTemplate"
-            }
-          : {
-              transformer: "transformerForBuild",
-              transformer_InnerReference: "transformerForBuild_InnerReference",
-              transformer_freeObjectTemplate: "transformerForBuild_freeObjectTemplate"
-            }
-      ).definition,
-      applyTo: {
-        type: "union",
-        discriminator: "referenceType",
-        definition: [
-          (
-            transformerDefinition.transformerInterface.transformerParameterSchema
-              .transformerDefinition.definition as any
-          ).applyTo,
-          {
-            type: "schemaReference",
-            definition: {
-              relativePath: "transformer_inner_referenced_extractor",
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            },
-            context: {},
-          },
-          {
-            type: "schemaReference",
-            definition: {
-              relativePath:
-                target == "runtime"
-                  ? "transformer_inner_referenced_transformerForRuntime"
-                  : "transformer_inner_referenced_transformerForBuild",
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            },
-            context: {},
-          },
-        ],
-      },
+      ...newDefinition,
+      applyTo: newApplyTo,
+    }:
+    {
+      transformerType:
+        transformerDefinition.transformerInterface.transformerParameterSchema.transformerType,
+      ...newDefinition
     },
   };
   return result;

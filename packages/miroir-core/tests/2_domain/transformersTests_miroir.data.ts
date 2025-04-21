@@ -1579,6 +1579,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   {
                     attributeKey: {
                       transformerType: "constantUuid",
+                      interpolation: "build",
                       value: "uuid",
                     },
                     attributeValue: {
@@ -1590,6 +1591,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   {
                     attributeKey: {
                       transformerType: "constantUuid",
+                      interpolation: "build",
                       value: "name",
                     },
                     attributeValue: {
@@ -1627,6 +1629,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   {
                     attributeKey: {
                       transformerType: "constantUuid",
+                      interpolation: "build",
                       value: "uuid",
                     },
                     attributeValue: {
@@ -1638,6 +1641,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   {
                     attributeKey: {
                       transformerType: "constantUuid",
+                      interpolation: "build",
                       value: "name",
                     },
                     attributeValue: {
@@ -1677,6 +1681,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                     {
                       attributeKey: {
                         transformerType: "constantString",
+                        interpolation: "build",
                         value: "uuid",
                       },
                       attributeValue: {
@@ -1688,6 +1693,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                     {
                       attributeKey: {
                         transformerType: "constantString",
+                        interpolation: "build",
                         value: "name",
                       },
                       attributeValue: {
@@ -1726,6 +1732,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   {
                     attributeKey: {
                       transformerType: "constantString",
+                      interpolation: "build",
                       // interpolation: "runtime",
                       value: "uuid",
                     },
@@ -1738,6 +1745,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   {
                     attributeKey: {
                       transformerType: "constantString",
+                      interpolation: "build",
                       // interpolation: "runtime",
                       value: "name",
                     },
@@ -1758,6 +1766,130 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                 // country: Country1 as EntityInstance,
               },
               expectedValue: { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", name: "US" },
+            },
+          },
+        },
+        freeObjectTemplate: {
+          transformerTestType: "transformerTestSuite",
+          transformerTestLabel: "freeObjectTemplate",
+          transformerTests: {
+            "freeObjectTemplate allows to build a simple object with static values": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel: "freeObjectTemplate allows to build a simple object with static values",
+              transformerName: "freeObjectTemplate",
+              transformer: {
+                transformerType: "freeObjectTemplate",
+                interpolation: "runtime",
+                definition: {
+                  uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  name: "US",
+                  isEntity: false,
+                  allocation: 1234,
+                },
+              },
+              transformerParams: {
+                country: Country1 as EntityInstance,
+              },
+              expectedValue: { 
+                uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                name: "US",
+                isEntity: false,
+                allocation: 1234,
+              },
+            },
+            "freeObjectTemplate allows to build a simple object with dynamic values": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel: "freeObjectTemplate allows to build a simple object with dynamic values",
+              transformerName: "freeObjectTemplate",
+              transformer: {
+                transformerType: "freeObjectTemplate",
+                interpolation: "runtime",
+                definition: {
+                  uuid: {
+                    transformerType: "constantUuid",
+                    value: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  },
+                  name: {
+                    transformerType: "parameterReference",
+                    interpolation: "build",
+                    referencePath: ["country", "iso3166-1Alpha-2"],
+                  },
+                },
+              },
+              transformerParams: {
+                country: Country1 as EntityInstance,
+              },
+              expectedValue: { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", name: "US" },
+            },
+            "freeObjectTemplate allows to build a 2-level object with dynamic values": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel: "freeObjectTemplate allows to build a 2-level object with dynamic values",
+              transformerName: "freeObjectTemplate",
+              transformer: {
+                transformerType: "freeObjectTemplate",
+                interpolation: "runtime",
+                definition: {
+                  uuid: {
+                    transformerType: "constantUuid",
+                    value: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  },
+                  name: {
+                    transformerType: "parameterReference",
+                    interpolation: "build",
+                    referencePath: ["country", "iso3166-1Alpha-2"],
+                  },
+                  country: {
+                    transformerType: "freeObjectTemplate",
+                    interpolation: "runtime",
+                    definition: {
+                      uuid: {
+                        transformerType: "constantUuid",
+                        value: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+                      },
+                      name: {
+                        transformerType: "parameterReference",
+                        interpolation: "build",
+                        referencePath: ["country", "iso3166-1Alpha-2"],
+                      },
+                    },
+                  },
+                },
+              },
+              transformerParams: {
+                country: Country1 as EntityInstance,
+              },
+              expectedValue: {
+                uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                name: "US",
+                country: { uuid: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy", name: "US" },
+              },
+            },
+            "freeObjectTemplate should fail when definition fails to resolve correctly": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel: "freeObjectTemplate should fail when definition fails to resolve correctly",
+              transformerName: "freeObjectTemplate",
+              transformer: {
+                transformerType: "freeObjectTemplate",
+                interpolation: "runtime",
+                definition: {
+                  uuid: {
+                    transformerType: "constantUuid",
+                    value: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  },
+                  name: {
+                    transformerType: "parameterReference",
+                    interpolation: "build",
+                    referencePath: ["country", "nonExistingAttribute"],
+                  },
+                },
+              },
+              transformerParams: {
+                country: Country1 as EntityInstance,
+              },
+              ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+              expectedValue: {
+                queryFailure: "QueryNotExecutable",
+              },
             },
           },
         },
@@ -1893,130 +2025,6 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
             },
           },
         },
-        freeObjectTemplate: {
-          transformerTestType: "transformerTestSuite",
-          transformerTestLabel: "freeObjectTemplate",
-          transformerTests: {
-            "freeObjectTemplate allows to build a simple object with static values": {
-              transformerTestType: "transformerTest",
-              transformerTestLabel: "freeObjectTemplate allows to build a simple object with static values",
-              transformerName: "freeObjectTemplate",
-              transformer: {
-                transformerType: "freeObjectTemplate",
-                interpolation: "runtime",
-                definition: {
-                  uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-                  name: "US",
-                  isEntity: false,
-                  allocation: 1234,
-                },
-              },
-              transformerParams: {
-                country: Country1 as EntityInstance,
-              },
-              expectedValue: { 
-                uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-                name: "US",
-                isEntity: false,
-                allocation: 1234,
-              },
-            },
-            "freeObjectTemplate allows to build a simple object with dynamic values": {
-              transformerTestType: "transformerTest",
-              transformerTestLabel: "freeObjectTemplate allows to build a simple object with dynamic values",
-              transformerName: "freeObjectTemplate",
-              transformer: {
-                transformerType: "freeObjectTemplate",
-                interpolation: "runtime",
-                definition: {
-                  uuid: {
-                    transformerType: "constantUuid",
-                    value: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-                  },
-                  name: {
-                    transformerType: "parameterReference",
-                    interpolation: "build",
-                    referencePath: ["country", "iso3166-1Alpha-2"],
-                  },
-                },
-              },
-              transformerParams: {
-                country: Country1 as EntityInstance,
-              },
-              expectedValue: { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", name: "US" },
-            },
-            "freeObjectTemplate allows to build a 2-level object with dynamic values": {
-              transformerTestType: "transformerTest",
-              transformerTestLabel: "freeObjectTemplate allows to build a 2-level object with dynamic values",
-              transformerName: "freeObjectTemplate",
-              transformer: {
-                transformerType: "freeObjectTemplate",
-                interpolation: "runtime",
-                definition: {
-                  uuid: {
-                    transformerType: "constantUuid",
-                    value: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-                  },
-                  name: {
-                    transformerType: "parameterReference",
-                    interpolation: "build",
-                    referencePath: ["country", "iso3166-1Alpha-2"],
-                  },
-                  country: {
-                    transformerType: "freeObjectTemplate",
-                    interpolation: "runtime",
-                    definition: {
-                      uuid: {
-                        transformerType: "constantUuid",
-                        value: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
-                      },
-                      name: {
-                        transformerType: "parameterReference",
-                        interpolation: "build",
-                        referencePath: ["country", "iso3166-1Alpha-2"],
-                      },
-                    },
-                  },
-                },
-              },
-              transformerParams: {
-                country: Country1 as EntityInstance,
-              },
-              expectedValue: {
-                uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-                name: "US",
-                country: { uuid: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy", name: "US" },
-              },
-            },
-            "freeObjectTemplate should fail when definition fails to resolve correctly": {
-              transformerTestType: "transformerTest",
-              transformerTestLabel: "freeObjectTemplate should fail when definition fails to resolve correctly",
-              transformerName: "freeObjectTemplate",
-              transformer: {
-                transformerType: "freeObjectTemplate",
-                interpolation: "runtime",
-                definition: {
-                  uuid: {
-                    transformerType: "constantUuid",
-                    value: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-                  },
-                  name: {
-                    transformerType: "parameterReference",
-                    interpolation: "build",
-                    referencePath: ["country", "nonExistingAttribute"],
-                  },
-                },
-              },
-              transformerParams: {
-                country: Country1 as EntityInstance,
-              },
-              ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-              expectedValue: {
-                queryFailure: "QueryNotExecutable",
-              },
-            },
-          },
-        },
         mapperListToList: {
           transformerTestType: "transformerTestSuite",
           transformerTestLabel: "mapperListToList",
@@ -2123,6 +2131,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                     {
                       attributeKey: {
                         transformerType: "constant",
+                        interpolation: "build",
                         // interpolation: "runtime",
                         value: "uuid",
                       },
@@ -2136,6 +2145,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                       attributeKey: {
                         // interpolation: "runtime",
                         transformerType: "constantUuid",
+                        interpolation: "build",
                         value: "name",
                       },
                       attributeValue: {
@@ -2245,6 +2255,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                       {
                         attributeKey: {
                           transformerType: "constantUuid",
+                          interpolation: "build",
                           value: "uuid",
                         },
                         attributeValue: {
@@ -2256,6 +2267,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                       {
                         attributeKey: {
                           transformerType: "constantUuid",
+                          interpolation: "build",
                           value: "name",
                         },
                         attributeValue: {
@@ -2302,6 +2314,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                       {
                         attributeKey: {
                           transformerType: "constantUuid",
+                          interpolation: "build",
                           value: "uuid",
                         },
                         attributeValue: {
@@ -2313,6 +2326,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                       {
                         attributeKey: {
                           transformerType: "constantUuid",
+                          interpolation: "build",
                           value: "name",
                         },
                         attributeValue: {
@@ -2339,6 +2353,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                       {
                         attributeKey: {
                           transformerType: "constantUuid",
+                          interpolation: "build",
                           value: "uuid",
                         },
                         attributeValue: {
@@ -2350,6 +2365,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                       {
                         attributeKey: {
                           transformerType: "constantUuid",
+                          interpolation: "build",
                           value: "name",
                         },
                         attributeValue: {
@@ -2398,6 +2414,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                       {
                         attributeKey: {
                           transformerType: "constantUuid",
+                          interpolation: "build",
                           value: "uuid",
                         },
                         attributeValue: {
@@ -2409,6 +2426,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                       {
                         attributeKey: {
                           transformerType: "constantUuid",
+                          interpolation: "build",
                           value: "name",
                         },
                         attributeValue: {
