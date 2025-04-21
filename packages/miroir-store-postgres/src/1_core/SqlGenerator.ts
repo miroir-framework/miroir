@@ -24,7 +24,8 @@ import {
   TransformerForBuild_object_fullTemplate,
   TransformerForRuntime_object_fullTemplate,
   TransformerForRuntime_object_listReducerToIndexObject,
-  TransformerForRuntime_dataflowObject
+  TransformerForRuntime_dataflowObject,
+  TransformerForRuntime_constantArray
 } from "miroir-core";
 import { RecursiveStringRecords } from "../4_services/SqlDbQueryTemplateRunner";
 import { cleanLevel } from "../4_services/constants";
@@ -61,6 +62,7 @@ export type ITransformerHandler<T> = (
 ) => Domain2QueryReturnType<SqlStringForTransformerElementValue>;
 
 const sqlTransformerImplementations: Record<string, ITransformerHandler<any>> = {
+  sqlStringForConstantTransformer,
   sqlStringForCountTransformer,
   sqlStringForDataflowObjectTransformer,
   sqlStringForListPickElementTransformer,
@@ -2123,6 +2125,29 @@ function sqlStringForDataflowObjectTransformer(
     columnNameContainingJsonValue: definitionSqlObject[actionRuntimeTransformer.target].columnNameContainingJsonValue,
   };
 }
+
+// ################################################################################################
+function sqlStringForConstantTransformer(
+  actionRuntimeTransformer: TransformerForRuntime_constantArray,
+  preparedStatementParametersCount: number,
+  indentLevel: number,
+  queryParams: Record<string, any>,
+  definedContextEntries: Record<string, SqlContextEntry>,
+  useAccessPathForContextReference: boolean,
+  topLevelTransformer: boolean,
+  withClauseColumnName?: string,
+  iterateOn?: string,
+): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
+  const getSqlParams = getConstantSqlTypeMap[actionRuntimeTransformer.transformerType];
+  return getConstantSql(
+    actionRuntimeTransformer,
+    preparedStatementParametersCount,
+    topLevelTransformer,
+    getSqlParams.targetType,
+    getSqlParams.sqlTargetType,
+    withClauseColumnName??getSqlParams.label
+  );
+}
 // ################################################################################################
 export function sqlStringForRuntimeTransformer(
   actionRuntimeTransformer: TransformerForRuntime,
@@ -2170,21 +2195,22 @@ export function sqlStringForRuntimeTransformer(
       throw new Error("sqlStringForRuntimeTransformer dataflowSequence not implemented");
       break;
     }
-    case "constantArray":
     case "constantUuid":
     case "constantBoolean":
     case "constantBigint":
     case "constantNumber":
-    case "constantString":
-    case "constantObject": {
-      const getSqlParams = getConstantSqlTypeMap[actionRuntimeTransformer.transformerType];
-      return getConstantSql(
-        actionRuntimeTransformer,
+    case "constantObject":
+    case "constantString": {
+      return sqlStringForConstantTransformer(
+        actionRuntimeTransformer as any,
         preparedStatementParametersCount,
+        indentLevel,
+        queryParams,
+        definedContextEntries,
+        useAccessPathForContextReference,
         topLevelTransformer,
-        getSqlParams.targetType,
-        getSqlParams.sqlTargetType,
-        withClauseColumnName??getSqlParams.label
+        withClauseColumnName,
+        iterateOn,
       );
       break;
     }

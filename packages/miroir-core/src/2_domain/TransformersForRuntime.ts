@@ -7,7 +7,7 @@ import {
   DomainElementSuccess,
   ExtendedTransformerForRuntime,
   Transformer,
-  Transformer_constants,
+  TransformerForRuntime_constants,
   Transformer_contextOrParameterReferenceTO_REMOVE,
   Transformer_parameterReference,
   TransformerDefinition,
@@ -45,7 +45,10 @@ import {
   TransformerForRuntime_object_fullTemplate,
   TransformerForRuntime_object_listReducerToIndexObject,
   TransformerForBuild_dataflowObject,
-  TransformerForRuntime_dataflowObject
+  TransformerForRuntime_dataflowObject,
+  TransformerForBuild_constant,
+  TransformerForRuntime_constantArray,
+  TransformerForBuild_constantArray
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { Action2Error, Domain2ElementFailed, Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
@@ -56,6 +59,7 @@ import { resolvePathOnObject } from "../tools";
 import { cleanLevel } from "./constants";
 import { transformer_spreadSheetToJzodSchema } from "./Transformer_Spreadsheet";
 import {
+  transformer_constantArray,
   transformer_count,
   transformer_dataflowObject,
   transformer_freeObjectTemplate,
@@ -114,6 +118,7 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
   handleCountTransformer,
   handleListPickElementTransformer,
   handleUniqueTransformer,
+  handleTransformer_constantArray,
   handleTransformer_dataflowObject,
   handleTransformer_FreeObjectTemplate,
   handleTransformer_objectAlter: defaultTransformers.handleTransformer_objectAlter,
@@ -129,6 +134,7 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
 export const applicationTransformerDefinitions: Record<string, TransformerDefinition> = {
   spreadSheetToJzodSchema: transformer_spreadSheetToJzodSchema,
   count: transformer_count,
+  constantArray: transformer_constantArray,
   dataflowObject: transformer_dataflowObject,
   freeObjectTemplate: transformer_freeObjectTemplate,
   listPickElement: transformer_listPickElement,
@@ -845,7 +851,7 @@ export function transformer_resolveReference(
 export function transformer_InnerReference_resolve(
   step: Step,
   transformerInnerReference:
-    | Transformer_constants
+    | TransformerForRuntime_constants
     | TransformerForBuild_InnerReference
     | TransformerForRuntime_InnerReference,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
@@ -1537,6 +1543,30 @@ export function handleTransformer_dataflowObject(
   // return resultObject
   return resultObject[transformer.target];
 }
+
+// ################################################################################################
+export function handleTransformer_constantArray(
+  step: Step,
+  label: string | undefined,
+  transformer:
+  | TransformerForBuild_constantArray
+  | TransformerForRuntime_constantArray,
+  resolveBuildTransformersTo: ResolveBuildTransformersTo,
+  queryParams: Record<string, any>,
+  contextResults?: Record<string, any>
+): Domain2QueryReturnType<any> {
+  if (Array.isArray(transformer.value)) {
+    return transformer.value;
+  } else {
+    return transformer.value; // TODO: fail! is it relevant?
+    // return JSON.stringify(transformer.value)
+    // return new Domain2ElementFailed({
+    //   queryFailure: "FailedTransformer_constantArray",
+    //   failureOrigin: ["innerTransformer_apply"],
+    //   queryContext: "constantArrayValue is not an array",
+    // });
+  }
+}
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
@@ -1606,26 +1636,10 @@ export function innerTransformer_apply(
     }
     case "listReducerToIndexObject": {
       throw new Error("listReducerToIndexObject transformer not allowed in innerTransformer_apply");
-      // return defaultTransformers.transformer_object_listReducerToIndexObject_apply(
-      //   step,
-      //   label,
-      //   transformer,
-      //   resolveBuildTransformersTo,
-      //   queryParams,
-      //   contextResults
-      // );
       break;
     }
     case "listReducerToSpreadObject": {
       throw new Error("listReducerToSpreadObject transformer not allowed in innerTransformer_apply");
-      // return defaultTransformers.transformer_object_listReducerToSpreadObject_apply(
-      //   step,
-      //   label,
-      //   transformer,
-      //   resolveBuildTransformersTo,
-      //   queryParams,
-      //   contextResults
-      // );
       break;
     }
     case "listPickElement": {
@@ -1660,17 +1674,26 @@ export function innerTransformer_apply(
       break;
     }
     case "constantArray": {
-      if (Array.isArray(transformer.value)) {
-        return transformer.value;
-      } else {
-        return transformer.value;
-        // return JSON.stringify(transformer.value)
-        // return new Domain2ElementFailed({
-        //   queryFailure: "FailedTransformer_constantArray",
-        //   failureOrigin: ["innerTransformer_apply"],
-        //   queryContext: "constantArrayValue is not an array",
-        // });
-      }
+      throw new Error("constantArray transformer not allowed in innerTransformer_apply");
+      // return handleTransformer_constantArray(
+      //   step,
+      //   label,
+      //   transformer,
+      //   resolveBuildTransformersTo,
+      //   queryParams,
+      //   contextResults
+      // );
+      // if (Array.isArray(transformer.value)) {
+      //   return transformer.value;
+      // } else {
+      //   return transformer.value;
+      //   // return JSON.stringify(transformer.value)
+      //   // return new Domain2ElementFailed({
+      //   //   queryFailure: "FailedTransformer_constantArray",
+      //   //   failureOrigin: ["innerTransformer_apply"],
+      //   //   queryContext: "constantArrayValue is not an array",
+      //   // });
+      // }
     }
     case "constantBigint": {
       if (typeof transformer.value == "number") {
@@ -2044,7 +2067,7 @@ export function transformer_extended_apply(
             case "constantUuid":
             case "constant":
             case "constantAsExtractor":
-            case "constantArray":
+            // case "constantArray":
             case "constantBigint":
             case "constantBoolean":
             case "constantObject":

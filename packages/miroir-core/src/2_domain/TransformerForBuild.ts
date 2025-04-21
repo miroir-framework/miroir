@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import {
-  Transformer_constants,
+  TransformerForRuntime_constants,
   TransformerForBuild,
   TransformerForRuntime,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
