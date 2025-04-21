@@ -25,7 +25,8 @@ import {
   TransformerForRuntime_object_fullTemplate,
   TransformerForRuntime_object_listReducerToIndexObject,
   TransformerForRuntime_dataflowObject,
-  TransformerForRuntime_constantArray
+  TransformerForRuntime_constantArray,
+  TransformerForRuntime_constant
 } from "miroir-core";
 import { RecursiveStringRecords } from "../4_services/SqlDbQueryTemplateRunner";
 import { cleanLevel } from "../4_services/constants";
@@ -62,6 +63,7 @@ export type ITransformerHandler<T> = (
 ) => Domain2QueryReturnType<SqlStringForTransformerElementValue>;
 
 const sqlTransformerImplementations: Record<string, ITransformerHandler<any>> = {
+  sqlStringForConstantAnyTransformer,
   sqlStringForConstantTransformer,
   sqlStringForCountTransformer,
   sqlStringForDataflowObjectTransformer,
@@ -300,8 +302,8 @@ function sqlStringForApplyTo(
       return sqlStringForRuntimeTransformer(
         {
           transformerType: "constant",
+          interpolation: "runtime",
           value: actionRuntimeTransformer.applyTo,
-          // interpolation: "runtime",
         },
         preparedStatementParametersIndex,
         indentLevel,
@@ -317,6 +319,7 @@ function sqlStringForApplyTo(
         return sqlStringForRuntimeTransformer(
           {
             transformerType: "constant",
+            interpolation: "runtime",
             value: actionRuntimeTransformer.applyTo,
           },
           preparedStatementParametersIndex,
@@ -341,7 +344,7 @@ function sqlStringForApplyTo(
               // shouldn't this be a contextReference instead?
               {
                 transformerType: "constant",
-                // interpolation: "runtime",
+                interpolation: "runtime",
                 value: actionRuntimeTransformer.applyTo.reference as any,
               },
               preparedStatementParametersIndex,
@@ -1226,6 +1229,7 @@ function sqlStringForObjectFullTemplateTransformer(
         sqlStringForRuntimeTransformer(
           {
             transformerType: "constant",
+            interpolation: "runtime",
             value: f.attributeKey
           },
           newPreparedStatementParametersCount,
@@ -1390,6 +1394,7 @@ function sqlStringForObjectFullTemplateTransformer(
             : sqlStringForRuntimeTransformer(
                 {
                   transformerType: "constant",
+                  interpolation: "runtime",
                   value: f.attributeKey,
                 },
                 newPreparedStatementParametersCount,
@@ -2127,7 +2132,7 @@ function sqlStringForDataflowObjectTransformer(
 }
 
 // ################################################################################################
-function sqlStringForConstantTransformer(
+function sqlStringForConstantAnyTransformer(
   actionRuntimeTransformer: TransformerForRuntime_constantArray,
   preparedStatementParametersCount: number,
   indentLevel: number,
@@ -2148,6 +2153,38 @@ function sqlStringForConstantTransformer(
     withClauseColumnName??getSqlParams.label
   );
 }
+
+// ################################################################################################
+function sqlStringForConstantTransformer(
+  actionRuntimeTransformer: TransformerForRuntime_constant,
+  preparedStatementParametersCount: number,
+  indentLevel: number,
+  queryParams: Record<string, any>,
+  definedContextEntries: Record<string, SqlContextEntry>,
+  useAccessPathForContextReference: boolean,
+  topLevelTransformer: boolean,
+  withClauseColumnName?: string,
+  iterateOn?: string,
+): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
+  const targetSqlType =
+    typeof actionRuntimeTransformer.value === "object"
+      ? Array.isArray(actionRuntimeTransformer.value)
+        ? "json_array"
+        : "json"
+      : "scalar";
+  // let sqlTargetType: PostgresDataTypes;
+  // let label: string;
+  const { sqlTargetType, label } = getSqlTypeForValue(actionRuntimeTransformer.value);
+  return getConstantSql(
+    actionRuntimeTransformer,
+    preparedStatementParametersCount,
+    topLevelTransformer,
+    targetSqlType,
+    sqlTargetType,
+    withClauseColumnName??label,
+  );
+}
+
 // ################################################################################################
 export function sqlStringForRuntimeTransformer(
   actionRuntimeTransformer: TransformerForRuntime,
@@ -2174,6 +2211,7 @@ export function sqlStringForRuntimeTransformer(
     return sqlStringForRuntimeTransformer(
       {
         transformerType: "constant",
+        interpolation: "runtime",
         value: actionRuntimeTransformer,
       },
       preparedStatementParametersCount,
@@ -2201,7 +2239,7 @@ export function sqlStringForRuntimeTransformer(
     case "constantNumber":
     case "constantObject":
     case "constantString": {
-      return sqlStringForConstantTransformer(
+      return sqlStringForConstantAnyTransformer(
         actionRuntimeTransformer as any,
         preparedStatementParametersCount,
         indentLevel,
@@ -2336,25 +2374,6 @@ export function sqlStringForRuntimeTransformer(
       // });
       break;
     }
-    case "constant": {
-      const targetSqlType =
-        typeof actionRuntimeTransformer.value === "object"
-          ? Array.isArray(actionRuntimeTransformer.value)
-            ? "json_array"
-            : "json"
-          : "scalar";
-      // let sqlTargetType: PostgresDataTypes;
-      // let label: string;
-      const { sqlTargetType, label } = getSqlTypeForValue(actionRuntimeTransformer.value);
-      return getConstantSql(
-        actionRuntimeTransformer,
-        preparedStatementParametersCount,
-        topLevelTransformer,
-        targetSqlType,
-        sqlTargetType,
-        withClauseColumnName??label,
-      );
-    }
     case "parameterReference": {
       // this resolves references to static values, passed as parameters upon executing of the query
       // TODO: resolve each parameter as WITH clause, then only call the name of the clause in each reference?
@@ -2371,6 +2390,7 @@ export function sqlStringForRuntimeTransformer(
       const referenceQuery = sqlStringForRuntimeTransformer(
         {
           transformerType: "constant",
+          interpolation: "runtime",
           value: resolvedReference as any,
         },
         preparedStatementParametersCount,
@@ -2588,7 +2608,7 @@ export function sqlStringForQuery(
     const convertedParam = sqlStringForRuntimeTransformer(
       {
         transformerType: "constant",
-        // interpolation: "runtime",
+        interpolation: "runtime",
         value: value,
       },
       newPreparedStatementParameters.length,

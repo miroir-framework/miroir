@@ -48,7 +48,8 @@ import {
   TransformerForRuntime_dataflowObject,
   TransformerForBuild_constant,
   TransformerForRuntime_constantArray,
-  TransformerForBuild_constantArray
+  TransformerForBuild_constantArray,
+  TransformerForRuntime_constant
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { Action2Error, Domain2ElementFailed, Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
@@ -59,6 +60,7 @@ import { resolvePathOnObject } from "../tools";
 import { cleanLevel } from "./constants";
 import { transformer_spreadSheetToJzodSchema } from "./Transformer_Spreadsheet";
 import {
+  transformer_constant,
   transformer_constantArray,
   transformer_count,
   transformer_dataflowObject,
@@ -118,6 +120,7 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
   handleCountTransformer,
   handleListPickElementTransformer,
   handleUniqueTransformer,
+  handleTransformer_constant,
   handleTransformer_constantArray,
   handleTransformer_dataflowObject,
   handleTransformer_FreeObjectTemplate,
@@ -134,6 +137,7 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
 export const applicationTransformerDefinitions: Record<string, TransformerDefinition> = {
   spreadSheetToJzodSchema: transformer_spreadSheetToJzodSchema,
   count: transformer_count,
+  constant: transformer_constant,
   constantArray: transformer_constantArray,
   dataflowObject: transformer_dataflowObject,
   freeObjectTemplate: transformer_freeObjectTemplate,
@@ -1567,6 +1571,56 @@ export function handleTransformer_constantArray(
     // });
   }
 }
+
+// ################################################################################################
+export function handleTransformer_constant(
+  step: Step,
+  label: string | undefined,
+  transformer:
+  | TransformerForBuild_constant
+  | TransformerForRuntime_constant,
+  resolveBuildTransformersTo: ResolveBuildTransformersTo,
+  queryParams: Record<string, any>,
+  contextResults?: Record<string, any>
+): Domain2QueryReturnType<any> {
+  switch (typeof transformer.value) {
+    case "string":
+    case "number":
+    case "bigint":
+    case "boolean": {
+      return transformer.value;
+    }
+    case "object": {
+      return transformer.value;
+      // if (Array.isArray(transformer.value)) {
+      //   return transformer.value
+      // } else {
+      //   // TODO: questionable, should "runtime" transformers only return arrays of objects, not objects directly?
+      //   // This is likely done to get an identical result to the postgres implementation, where all runtime transformer executions return arrays (of objects or other types).
+      //   return [transformer.value];
+      // }
+    }
+    case "symbol":
+    case "undefined":
+    case "function": {
+      return new Domain2ElementFailed({
+        queryFailure: "FailedTransformer_constant",
+        failureOrigin: ["handleTransformer_constant"],
+        queryContext: "constantValue is not a string, number, bigint, boolean, or object",
+      });
+      break;
+    }
+    default: {
+      return new Domain2ElementFailed({
+        queryFailure: "FailedTransformer_constant",
+        failureOrigin: ["handleTransformer_constant"],
+        queryContext: "constantValue could not be handled",
+      });
+      break;
+    }
+  }
+  // return transformer.value;
+}
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
@@ -1755,81 +1809,51 @@ export function innerTransformer_apply(
     case "constantUuid": {
       return transformer.value;
     }
-    case "constantAsExtractor":
+    case "constantAsExtractor": {
+      // throw new Error("constantAsExtractor transformer not allowed in innerTransformer_apply");
+      // switch (typeof transformer.value) {
+      //   case "string":
+      //   case "number":
+      //   case "bigint":
+      //   case "boolean": {
+      //     return transformer.value;
+      //   }
+      //   case "object": {
+      //     return transformer.value;
+      //     // if (Array.isArray(transformer.value)) {
+      //     //   return transformer.value
+      //     // } else {
+      //     //   // TODO: questionable, should "runtime" transformers only return arrays of objects, not objects directly?
+      //     //   // This is likely done to get an identical result to the postgres implementation, where all runtime transformer executions return arrays (of objects or other types).
+      //     //   return [transformer.value];
+      //     // }
+      //   }
+      //   case "symbol":
+      //   case "undefined":
+      //   case "function": {
+      //     return new Domain2ElementFailed({
+      //       queryFailure: "FailedTransformer_constant",
+      //       failureOrigin: ["innerTransformer_apply"],
+      //       queryContext: "constantValue is not a string, number, bigint, boolean, or object",
+      //     });
+      //     break;
+      //   }
+      //   default: {
+      //     return new Domain2ElementFailed({
+      //       queryFailure: "FailedTransformer_constant",
+      //       failureOrigin: ["innerTransformer_apply"],
+      //       queryContext: "constantValue could not be handled",
+      //     });
+      //     break;
+      //   }
+      // }
+      return transformer.value;
+    }
     case "constant": {
-      switch (typeof transformer.value) {
-        case "string":
-        case "number":
-        case "bigint":
-        case "boolean": {
-          return transformer.value;
-        }
-        case "object": {
-          return transformer.value;
-          // if (Array.isArray(transformer.value)) {
-          //   return transformer.value
-          // } else {
-          //   // TODO: questionable, should "runtime" transformers only return arrays of objects, not objects directly?
-          //   // This is likely done to get an identical result to the postgres implementation, where all runtime transformer executions return arrays (of objects or other types).
-          //   return [transformer.value];
-          // }
-        }
-        case "symbol":
-        case "undefined":
-        case "function": {
-          return new Domain2ElementFailed({
-            queryFailure: "FailedTransformer_constant",
-            failureOrigin: ["innerTransformer_apply"],
-            queryContext: "constantValue is not a string, number, bigint, boolean, or object",
-          });
-          break;
-        }
-        default: {
-          return new Domain2ElementFailed({
-            queryFailure: "FailedTransformer_constant",
-            failureOrigin: ["innerTransformer_apply"],
-            queryContext: "constantValue could not be handled",
-          });
-          break;
-        }
-      }
-      // return transformer.value;
+      throw new Error("constant transformer not allowed in innerTransformer_apply");
     }
     case "dataflowObject": {
       throw new Error("dataflowObject transformer not allowed in innerTransformer_apply");
-      // return handleTransformer_dataflowObject(
-      //   step,
-      //   label,
-      //   transformer,
-      //   resolveBuildTransformersTo,
-      //   queryParams,
-      //   contextResults
-      // );
-      // const resultObject: Record<string, any> = {};
-      // for (const [key, value] of Object.entries(transformer.definition)) {
-      //   // const currentContext = label ? { ...contextResults, [label]: resultObject } : { ...contextResults, ...resultObject }
-      //   const currentContext = { ...contextResults, ...resultObject };
-      //   log.info(
-      //     "innerTransformer_apply for dataflowObject labeled",
-      //     label,
-      //     "key",
-      //     key,
-      //     "step",
-      //     step,
-      //     "calling with context",
-      //     JSON.stringify(Object.keys(currentContext ?? {}), null, 2)
-      //   );
-      //   resultObject[key] = defaultTransformers.transformer_extended_apply(
-      //     step,
-      //     key,
-      //     value,
-      //     resolveBuildTransformersTo,
-      //     queryParams,
-      //     currentContext
-      //   );
-      // }
-      // // return resultObject
-      // return resultObject[transformer.target];
       break;
     }
     case "dataflowSequence": {
@@ -2065,7 +2089,7 @@ export function transformer_extended_apply(
             }
             // non-extended transformers...
             case "constantUuid":
-            case "constant":
+            // case "constant":
             case "constantAsExtractor":
             // case "constantArray":
             case "constantBigint":

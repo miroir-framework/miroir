@@ -213,7 +213,7 @@ export function getExtendedSchemas(jzodSchemajzodMiroirBootstrapSchema: any) {
     "transformer_constantObject",
     "transformer_constantString",
     "transformer_newUuid",
-    "transformer_constant",
+    // "transformer_constant",
     "transformer_parameterReference",
     "transformerForBuild_objectDynamicAccess",
     "transformer_inner_label",
@@ -222,7 +222,7 @@ export function getExtendedSchemas(jzodSchemajzodMiroirBootstrapSchema: any) {
     "transformer_constantListAsExtractor",
     "transformer_extractors",
     "transformer_mustacheStringTemplate",
-    "transformerForBuild_constant",
+    // "transformerForBuild_constant",
     "transformerForBuild_parameterReference",
     "transformerForBuild_Abstract",
     "transformerForRuntime_Abstract",
@@ -347,6 +347,7 @@ export function getMiroirFundamentalJzodSchema(
             { type: "object", definition: e.transformerInterface.transformerParameterSchema },
           ])
         ),
+        transformerForBuild_constant: miroirTransformersForBuild.transformer_constant,
         transformerForBuild_constantArray: miroirTransformersForBuild.transformer_constantArray,
         transformerForBuild_count: miroirTransformersForBuild.transformer_count,
         transformerForBuild_dataflowObject: miroirTransformersForBuild.transformer_dataflowObject,
@@ -361,6 +362,7 @@ export function getMiroirFundamentalJzodSchema(
         transformerForBuild_object_fullTemplate: miroirTransformersForBuild.transformer_object_fullTemplate,
         transformerForBuild_unique: miroirTransformersForBuild.transformer_unique,
         transformerForRuntime_count: miroirTransformersForRuntime.transformer_count,
+        transformerForRuntime_constant: miroirTransformersForRuntime.transformer_constant,
         transformerForRuntime_constantArray: miroirTransformersForRuntime.transformer_constantArray,
         transformerForRuntime_dataflowObject: miroirTransformersForRuntime.transformer_dataflowObject,
         transformerForRuntime_freeObjectTemplate: miroirTransformersForRuntime.transformer_freeObjectTemplate,
@@ -2841,8 +2843,6 @@ export function getMiroirFundamentalJzodSchema(
           .transformer_inner_label,
         transformer_orderBy: (miroirFundamentalJzodSchema as any).definition.context
           .transformer_orderBy,
-        transformer_constant: (transformerJzodSchema as any).definition.context
-          .transformer_constant,
         transformer_constantAsExtractor: (transformerJzodSchema as any).definition.context
           .transformer_constantAsExtractor,
         transformer_constantBoolean: (transformerJzodSchema as any).definition.context
@@ -2857,6 +2857,8 @@ export function getMiroirFundamentalJzodSchema(
           .transformer_constantString,
         transformer_constantUuid: (transformerJzodSchema as any).definition.context
           .transformer_constantUuid,
+        transformerForRuntime_constant: (miroirFundamentalJzodSchema as any).definition.context
+          .transformerForRuntime_constant,
         transformerForRuntime_constantArray: (miroirFundamentalJzodSchema as any).definition.context
           .transformerForRuntime_constantArray,
         transformerForRuntime_constants: (transformerJzodSchema as any).definition.context

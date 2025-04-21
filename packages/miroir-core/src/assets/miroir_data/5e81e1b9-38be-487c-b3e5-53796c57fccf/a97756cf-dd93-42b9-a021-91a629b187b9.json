@@ -160,18 +160,6 @@
           }
         }
       },
-      "transformer_constant": {
-        "type": "object",
-        "definition": {
-          "transformerType": {
-            "type": "literal",
-            "definition": "constant"
-          },
-          "value": {
-            "type": "any"
-          }
-        }
-      },
       "transformer_constantAsExtractor": {
         "type": "object",
         "definition": {
@@ -398,7 +386,7 @@
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformer_constant"
+              "relativePath": "transformerForRuntime_constant"
             }
           },
           {

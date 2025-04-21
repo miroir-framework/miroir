@@ -457,10 +457,6 @@ export type Transformer_mustacheStringTemplate = {
     transformerType: "mustacheStringTemplate";
     definition: string;
 };
-export type Transformer_constant = {
-    transformerType: "constant";
-    value?: any;
-};
 export type Transformer_constantAsExtractor = {
     transformerType: "constantAsExtractor";
     valueType?: ("string" | "number" | "boolean" | "bigint" | "object" | "array") | undefined;
@@ -531,12 +527,6 @@ export type TransformerForBuild_parameterReference = {
     transformerType: "parameterReference";
     referenceName?: string | undefined;
     referencePath?: string[] | undefined;
-};
-export type TransformerForBuild_constant = {
-    label?: string | undefined;
-    interpolation: "build";
-    transformerType: "constant";
-    value?: any;
 };
 export type TransformerForRuntime_Abstract = {
     label?: string | undefined;
@@ -1054,10 +1044,6 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_orderBy_ext
     label?: ((string | undefined) | CarryOnObject) | undefined;
     orderBy?: ((string | undefined) | CarryOnObject) | undefined;
 };
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constant_extend = {
-    transformerType: "constant" | CarryOnObject;
-    value?: any | CarryOnObject;
-};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantAsExtractor_extend = {
     transformerType: "constantAsExtractor" | CarryOnObject;
     valueType?: ((("string" | "number" | "boolean" | "bigint" | "object" | "array") | undefined) | CarryOnObject) | undefined;
@@ -1128,12 +1114,6 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_par
     referenceName?: ((string | undefined) | CarryOnObject) | undefined;
     referencePath?: (((string | CarryOnObject)[] | undefined) | CarryOnObject) | undefined;
 };
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_constant_extend = {
-    label?: ((string | undefined) | CarryOnObject) | undefined;
-    interpolation: "build" | CarryOnObject;
-    transformerType: "constant" | CarryOnObject;
-    value?: any | CarryOnObject;
-};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_Abstract_extend = {
     label?: ((string | undefined) | CarryOnObject) | undefined;
     interpolation: "runtime" | CarryOnObject;
@@ -1179,7 +1159,6 @@ export const jzodTuple: z.ZodType<JzodTuple> = z.object({optional:z.boolean().op
 export const jzodUnion: z.ZodType<JzodUnion> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), tag:z.object({value:z.object({id:z.number().optional(), defaultLabel:z.string().optional(), initializeTo:z.any().optional(), targetEntity:z.string().optional(), editable:z.boolean().optional()}).strict().optional(), schema:z.object({optional:z.boolean().optional(), metaSchema:z.lazy(() =>jzodElement).optional(), valueSchema:z.lazy(() =>jzodElement).optional()}).strict().optional(), optional:z.boolean().optional()}).strict().optional(), type:z.literal("union"), discriminator:z.string().optional(), discriminatorNew:z.union([z.object({discriminatorType:z.literal("string"), value:z.string()}).strict(), z.object({discriminatorType:z.literal("array"), value:z.array(z.string())}).strict()]).optional(), carryOn:z.lazy(() =>jzodObject).optional(), definition:z.array(z.lazy(() =>jzodElement))}).strict();
 export const transformer_inner_label: z.ZodType<Transformer_inner_label> = z.object({label:z.string().optional()}).strict();
 export const transformer_mustacheStringTemplate: z.ZodType<Transformer_mustacheStringTemplate> = z.object({transformerType:z.literal("mustacheStringTemplate"), definition:z.string()}).strict();
-export const transformer_constant: z.ZodType<Transformer_constant> = z.object({transformerType:z.literal("constant"), value:z.any()}).strict();
 export const transformer_constantAsExtractor: z.ZodType<Transformer_constantAsExtractor> = z.object({transformerType:z.literal("constantAsExtractor"), valueType:z.enum(["string","number","boolean","bigint","object","array"]).optional(), valueJzodSchema:z.lazy(() =>jzodElement), value:z.any()}).strict();
 export const transformer_constantListAsExtractor: z.ZodType<Transformer_constantListAsExtractor> = z.object({transformerType:z.literal("constantListAsExtractor"), value:z.array(z.any())}).strict();
 export const transformer_constantBigint: z.ZodType<Transformer_constantBigint> = z.object({transformerType:z.literal("constantBigint"), value:z.number()}).strict();
@@ -1197,7 +1176,6 @@ export const transformer_extractors: z.ZodType<Transformer_extractors> = z.lazy(
 export const transformer_orderBy: z.ZodType<Transformer_orderBy> = z.object({label:z.string().optional(), orderBy:z.string().optional()}).strict();
 export const transformerForBuild_Abstract: z.ZodType<TransformerForBuild_Abstract> = z.object({label:z.string().optional(), interpolation:z.literal("build")}).strict();
 export const transformerForBuild_parameterReference: z.ZodType<TransformerForBuild_parameterReference> = z.object({label:z.string().optional(), interpolation:z.literal("build"), transformerType:z.literal("parameterReference"), referenceName:z.string().optional(), referencePath:z.array(z.string()).optional()}).strict();
-export const transformerForBuild_constant: z.ZodType<TransformerForBuild_constant> = z.object({label:z.string().optional(), interpolation:z.literal("build"), transformerType:z.literal("constant"), value:z.any()}).strict();
 export const transformerForRuntime_Abstract: z.ZodType<TransformerForRuntime_Abstract> = z.object({label:z.string().optional(), interpolation:z.literal("runtime")}).strict();
 export const transformerForRuntime_orderedTransformer: z.ZodType<TransformerForRuntime_orderedTransformer> = z.object({label:z.string().optional(), interpolation:z.literal("runtime"), orderBy:z.string().optional()}).strict();
 export const entityAttributeUntypedCore = z.object({id:z.number(), name:z.string(), defaultLabel:z.string(), description:z.string().optional(), editable:z.boolean(), nullable:z.boolean()}).strict();
@@ -1235,7 +1213,6 @@ export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_shippingBox_extend: z.
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerRoot_extend: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerRoot_extend> = z.object({label:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), applicationSection:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection).optional(), parentName:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), parentUuid:z.union([z.string().uuid(), z.lazy(() =>carryOnObject)])}).strict();
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_inner_label_extend: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_inner_label_extend> = z.object({label:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict();
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_orderBy_extend: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_orderBy_extend> = z.object({label:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), orderBy:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict();
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constant_extend: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constant_extend> = z.object({transformerType:z.union([z.literal("constant"), z.lazy(() =>carryOnObject)]), value:z.union([z.any(), z.lazy(() =>carryOnObject)])}).strict();
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantAsExtractor_extend: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantAsExtractor_extend> = z.object({transformerType:z.union([z.literal("constantAsExtractor"), z.lazy(() =>carryOnObject)]), valueType:z.union([z.enum(["string","number","boolean","bigint","object","array"]).optional(), z.lazy(() =>carryOnObject)]).optional(), valueJzodSchema:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement), value:z.union([z.any(), z.lazy(() =>carryOnObject)])}).strict();
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantBoolean_extend: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantBoolean_extend> = z.object({transformerType:z.union([z.literal("constantBoolean"), z.lazy(() =>carryOnObject)]), value:z.union([z.boolean(), z.lazy(() =>carryOnObject)])}).strict();
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantBigint_extend: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantBigint_extend> = z.object({transformerType:z.union([z.literal("constantBigint"), z.lazy(() =>carryOnObject)]), value:z.union([z.number(), z.lazy(() =>carryOnObject)])}).strict();
@@ -1252,7 +1229,6 @@ export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_mustacheSt
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateRoot_extend: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateRoot_extend> = z.object({label:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), applicationSection:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection).optional(), parentName:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), parentUuid:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_InnerReference)}).strict();
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_Abstract_extend: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_Abstract_extend> = z.object({label:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), interpolation:z.union([z.literal("build"), z.lazy(() =>carryOnObject)])}).strict();
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_parameterReference_extend: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_parameterReference_extend> = z.object({label:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), interpolation:z.union([z.literal("build"), z.lazy(() =>carryOnObject)]), transformerType:z.union([z.literal("parameterReference"), z.lazy(() =>carryOnObject)]), referenceName:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), referencePath:z.union([z.array(z.union([z.string(), z.lazy(() =>carryOnObject)])).optional(), z.lazy(() =>carryOnObject)]).optional()}).strict();
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_constant_extend: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_constant_extend> = z.object({label:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), interpolation:z.union([z.literal("build"), z.lazy(() =>carryOnObject)]), transformerType:z.union([z.literal("constant"), z.lazy(() =>carryOnObject)]), value:z.union([z.any(), z.lazy(() =>carryOnObject)])}).strict();
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_Abstract_extend: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_Abstract_extend> = z.object({label:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), interpolation:z.union([z.literal("runtime"), z.lazy(() =>carryOnObject)])}).strict();
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_contextReference_extend: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_contextReference_extend> = z.object({transformerType:z.union([z.literal("contextReference"), z.lazy(() =>carryOnObject)]), interpolation:z.union([z.literal("runtime"), z.lazy(() =>carryOnObject)]), referenceName:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), referencePath:z.union([z.array(z.union([z.string(), z.lazy(() =>carryOnObject)])).optional(), z.lazy(() =>carryOnObject)]).optional()}).strict();
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_contextOrParameterReferenceTO_REMOVE_extend: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_contextOrParameterReferenceTO_REMOVE_extend> = z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_contextReference_extend), z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_parameterReference_extend), z.lazy(() =>carryOnObject)]);
@@ -1285,7 +1261,7 @@ export type Transformer = {
     transformerType: "objectTransformer";
     attributeName: string;
 } | RecordOfTransformers;
-export type TransformerForRuntime_constants = Transformer_constant | Transformer_constantAsExtractor | TransformerForRuntime_constantArray | Transformer_constantBigint | Transformer_constantBoolean | Transformer_constantUuid | Transformer_constantObject | Transformer_constantNumber | Transformer_constantString | Transformer_newUuid;
+export type TransformerForRuntime_constants = TransformerForRuntime_constant | Transformer_constantAsExtractor | TransformerForRuntime_constantArray | Transformer_constantBigint | Transformer_constantBoolean | Transformer_constantUuid | Transformer_constantObject | Transformer_constantNumber | Transformer_constantString | Transformer_newUuid;
 export type TransformerForBuild_mustacheStringTemplate = {
     label?: string | undefined;
     interpolation: "build";
@@ -1293,6 +1269,12 @@ export type TransformerForBuild_mustacheStringTemplate = {
     definition: string;
 };
 export type TransformerForBuild_InnerReference = TransformerForBuild_mustacheStringTemplate | TransformerForBuild_constant | TransformerForBuild_parameterReference | TransformerForBuild_constantUuid | TransformerForBuild_constantObject | TransformerForBuild_constantString | Transformer_newUuid | TransformerForBuild_objectDynamicAccess;
+export type TransformerForBuild_constant = {
+    label?: string | undefined;
+    interpolation: "build";
+    transformerType: "constant";
+    value?: any;
+};
 export type TransformerForBuild_constantBigint = {
     label?: string | undefined;
     interpolation: "build";
@@ -1561,6 +1543,12 @@ export type TransformerForRuntime_count = {
     applyTo: any[] | Transformer_inner_referenced_extractor | Transformer_inner_referenced_transformerForRuntime;
     attribute?: string | undefined;
     groupBy?: string | undefined;
+};
+export type TransformerForRuntime_constant = {
+    label?: string | undefined;
+    interpolation: "runtime";
+    transformerType: "constant";
+    value?: any;
 };
 export type TransformerForRuntime_constantArray = {
     label?: string | undefined;
@@ -4578,10 +4566,6 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_orderBy = C
     label?: ((string | undefined) | CarryOnObject) | undefined;
     orderBy?: ((string | undefined) | CarryOnObject) | undefined;
 };
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constant = CarryOnObject | {
-    transformerType: "constant" | CarryOnObject;
-    value?: any | CarryOnObject;
-};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantAsExtractor = CarryOnObject | {
     transformerType: "constantAsExtractor" | CarryOnObject;
     valueType?: ((("string" | "number" | "boolean" | "bigint" | "object" | "array") | undefined) | CarryOnObject) | undefined;
@@ -4614,13 +4598,19 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantUui
     transformerType: "constantUuid" | CarryOnObject;
     value: string | CarryOnObject;
 };
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_constant = CarryOnObject | {
+    label?: ((string | undefined) | CarryOnObject) | undefined;
+    interpolation: "runtime" | CarryOnObject;
+    transformerType: "constant" | CarryOnObject;
+    value?: any | CarryOnObject;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_constantArray = CarryOnObject | {
     label?: ((string | undefined) | CarryOnObject) | undefined;
     interpolation: "runtime" | CarryOnObject;
     transformerType: "constantArray" | CarryOnObject;
     value: (any | CarryOnObject)[] | CarryOnObject;
 };
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_constants = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constant | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantAsExtractor | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_constantArray | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantBigint | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantBoolean | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantUuid | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantObject | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantNumber | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantString | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_newUuid | CarryOnObject;
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_constants = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_constant | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantAsExtractor | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_constantArray | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantBigint | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantBoolean | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantUuid | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantObject | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantNumber | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantString | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_newUuid | CarryOnObject;
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantListAsExtractor = CarryOnObject | {
     transformerType: "constantListAsExtractor" | CarryOnObject;
     value: (any | CarryOnObject)[] | CarryOnObject;
@@ -5175,9 +5165,10 @@ export const transformer_inner_elementTransformer_transformerForBuild: z.ZodType
 export const transformer_inner_elementTransformer_transformerForRuntime: z.ZodType<Transformer_inner_elementTransformer_transformerForRuntime> = z.lazy(() =>transformerForRuntime);
 export const recordOfTransformers: z.ZodType<RecordOfTransformers> = z.object({transformerType:z.literal("recordOfTransformers"), definition:z.record(z.string(),z.lazy(() =>transformer))}).strict();
 export const transformer: z.ZodType<Transformer> = z.union([z.object({transformerType:z.literal("objectTransformer"), attributeName:z.string()}).strict(), z.lazy(() =>recordOfTransformers)]);
-export const transformerForRuntime_constants: z.ZodType<TransformerForRuntime_constants> = z.union([z.lazy(() =>transformer_constant), z.lazy(() =>transformer_constantAsExtractor), z.lazy(() =>transformerForRuntime_constantArray), z.lazy(() =>transformer_constantBigint), z.lazy(() =>transformer_constantBoolean), z.lazy(() =>transformer_constantUuid), z.lazy(() =>transformer_constantObject), z.lazy(() =>transformer_constantNumber), z.lazy(() =>transformer_constantString), z.lazy(() =>transformer_newUuid)]);
+export const transformerForRuntime_constants: z.ZodType<TransformerForRuntime_constants> = z.union([z.lazy(() =>transformerForRuntime_constant), z.lazy(() =>transformer_constantAsExtractor), z.lazy(() =>transformerForRuntime_constantArray), z.lazy(() =>transformer_constantBigint), z.lazy(() =>transformer_constantBoolean), z.lazy(() =>transformer_constantUuid), z.lazy(() =>transformer_constantObject), z.lazy(() =>transformer_constantNumber), z.lazy(() =>transformer_constantString), z.lazy(() =>transformer_newUuid)]);
 export const transformerForBuild_mustacheStringTemplate: z.ZodType<TransformerForBuild_mustacheStringTemplate> = z.object({label:z.string().optional(), interpolation:z.literal("build"), transformerType:z.literal("mustacheStringTemplate"), definition:z.string()}).strict();
 export const transformerForBuild_InnerReference: z.ZodType<TransformerForBuild_InnerReference> = z.union([z.lazy(() =>transformerForBuild_mustacheStringTemplate), z.lazy(() =>transformerForBuild_constant), z.lazy(() =>transformerForBuild_parameterReference), z.lazy(() =>transformerForBuild_constantUuid), z.lazy(() =>transformerForBuild_constantObject), z.lazy(() =>transformerForBuild_constantString), z.lazy(() =>transformer_newUuid), z.lazy(() =>transformerForBuild_objectDynamicAccess)]);
+export const transformerForBuild_constant: z.ZodType<TransformerForBuild_constant> = z.object({label:z.string().optional(), interpolation:z.literal("build"), transformerType:z.literal("constant"), value:z.any()}).strict();
 export const transformerForBuild_constantBigint: z.ZodType<TransformerForBuild_constantBigint> = z.object({label:z.string().optional(), interpolation:z.literal("build"), transformerType:z.literal("constantBigint"), value:z.number()}).strict();
 export const transformerForBuild_constantBoolean: z.ZodType<TransformerForBuild_constantBoolean> = z.object({label:z.string().optional(), interpolation:z.literal("build"), transformerType:z.literal("constantBoolean"), value:z.boolean()}).strict();
 export const transformerForBuild_constantNumber: z.ZodType<TransformerForBuild_constantNumber> = z.object({label:z.string().optional(), interpolation:z.literal("build"), transformerType:z.literal("constantNumber"), value:z.number()}).strict();
@@ -5218,6 +5209,7 @@ export const transformerForBuild_object_listReducerToSpreadObject: z.ZodType<Tra
 export const transformerForBuild_object_fullTemplate: z.ZodType<TransformerForBuild_object_fullTemplate> = z.object({label:z.string().optional(), interpolation:z.literal("build"), orderBy:z.string().optional(), transformerType:z.literal("object_fullTemplate"), applyTo:z.union([z.record(z.string(),z.any()), z.lazy(() =>transformer_inner_referenced_extractor), z.lazy(() =>transformer_inner_referenced_transformerForBuild)]), referenceToOuterObject:z.string(), definition:z.array(z.object({attributeKey:z.union([z.string(), z.lazy(() =>transformerForBuild_InnerReference)]), attributeValue:z.lazy(() =>transformerForBuild)}).strict())}).strict();
 export const transformerForBuild_unique: z.ZodType<TransformerForBuild_unique> = z.object({label:z.string().optional(), interpolation:z.literal("build"), orderBy:z.string().optional(), transformerType:z.literal("unique"), applyTo:z.union([z.array(z.any()), z.lazy(() =>transformer_inner_referenced_extractor), z.lazy(() =>transformer_inner_referenced_transformerForBuild)]), attribute:z.string()}).strict();
 export const transformerForRuntime_count: z.ZodType<TransformerForRuntime_count> = z.object({label:z.string().optional(), interpolation:z.literal("runtime"), transformerType:z.literal("count"), applyTo:z.union([z.array(z.any()), z.lazy(() =>transformer_inner_referenced_extractor), z.lazy(() =>transformer_inner_referenced_transformerForRuntime)]), attribute:z.string().optional(), groupBy:z.string().optional()}).strict();
+export const transformerForRuntime_constant: z.ZodType<TransformerForRuntime_constant> = z.object({label:z.string().optional(), interpolation:z.literal("runtime"), transformerType:z.literal("constant"), value:z.any()}).strict();
 export const transformerForRuntime_constantArray: z.ZodType<TransformerForRuntime_constantArray> = z.object({label:z.string().optional(), interpolation:z.literal("runtime"), transformerType:z.literal("constantArray"), value:z.array(z.any())}).strict();
 export const transformerForRuntime_dataflowObject: z.ZodType<TransformerForRuntime_dataflowObject> = z.object({label:z.string().optional(), interpolation:z.literal("runtime"), transformerType:z.literal("dataflowObject"), target:z.string(), definition:z.record(z.string(),z.lazy(() =>transformerForRuntime))}).strict();
 export const transformerForRuntime_freeObjectTemplate: z.ZodType<TransformerForRuntime_freeObjectTemplate> = z.object({label:z.string().optional(), interpolation:z.literal("runtime"), transformerType:z.literal("freeObjectTemplate"), definition:z.record(z.string(),z.union([z.lazy(() =>transformerForRuntime), z.record(z.string(),z.lazy(() =>transformerForRuntime)), z.string(), z.number(), z.boolean(), z.bigint()]))}).strict();
@@ -5541,7 +5533,6 @@ export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_inner_elem
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_inner_elementTransformer_transformerForRuntime: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_inner_elementTransformer_transformerForRuntime> = z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_inner_label: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_inner_label> = z.union([z.lazy(() =>carryOnObject), z.object({label:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_orderBy: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_orderBy> = z.union([z.lazy(() =>carryOnObject), z.object({label:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), orderBy:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional()}).strict()]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constant: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constant> = z.union([z.lazy(() =>carryOnObject), z.object({transformerType:z.union([z.literal("constant"), z.lazy(() =>carryOnObject)]), value:z.union([z.any(), z.lazy(() =>carryOnObject)])}).strict()]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantAsExtractor: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantAsExtractor> = z.union([z.lazy(() =>carryOnObject), z.object({transformerType:z.union([z.literal("constantAsExtractor"), z.lazy(() =>carryOnObject)]), valueType:z.union([z.enum(["string","number","boolean","bigint","object","array"]).optional(), z.lazy(() =>carryOnObject)]).optional(), valueJzodSchema:z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement), value:z.union([z.any(), z.lazy(() =>carryOnObject)])}).strict()]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantBoolean: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantBoolean> = z.union([z.lazy(() =>carryOnObject), z.object({transformerType:z.union([z.literal("constantBoolean"), z.lazy(() =>carryOnObject)]), value:z.union([z.boolean(), z.lazy(() =>carryOnObject)])}).strict()]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantBigint: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantBigint> = z.union([z.lazy(() =>carryOnObject), z.object({transformerType:z.union([z.literal("constantBigint"), z.lazy(() =>carryOnObject)]), value:z.union([z.number(), z.lazy(() =>carryOnObject)])}).strict()]);
@@ -5549,8 +5540,9 @@ export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantOb
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantNumber: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantNumber> = z.union([z.lazy(() =>carryOnObject), z.object({transformerType:z.union([z.literal("constantNumber"), z.lazy(() =>carryOnObject)]), value:z.union([z.number(), z.lazy(() =>carryOnObject)])}).strict()]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantString: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantString> = z.union([z.lazy(() =>carryOnObject), z.object({transformerType:z.union([z.literal("constantString"), z.lazy(() =>carryOnObject)]), value:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict()]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantUuid: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantUuid> = z.union([z.lazy(() =>carryOnObject), z.object({transformerType:z.union([z.literal("constantUuid"), z.lazy(() =>carryOnObject)]), value:z.union([z.string(), z.lazy(() =>carryOnObject)])}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_constant: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_constant> = z.union([z.lazy(() =>carryOnObject), z.object({label:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), interpolation:z.union([z.literal("runtime"), z.lazy(() =>carryOnObject)]), transformerType:z.union([z.literal("constant"), z.lazy(() =>carryOnObject)]), value:z.union([z.any(), z.lazy(() =>carryOnObject)])}).strict()]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_constantArray: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_constantArray> = z.union([z.lazy(() =>carryOnObject), z.object({label:z.union([z.string().optional(), z.lazy(() =>carryOnObject)]).optional(), interpolation:z.union([z.literal("runtime"), z.lazy(() =>carryOnObject)]), transformerType:z.union([z.literal("constantArray"), z.lazy(() =>carryOnObject)]), value:z.union([z.array(z.union([z.any(), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict()]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_constants: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_constants> = z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constant), z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantAsExtractor), z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_constantArray), z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantBigint), z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantBoolean), z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantUuid), z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantObject), z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantNumber), z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantString), z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_newUuid), z.lazy(() =>carryOnObject)]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_constants: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_constants> = z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_constant), z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantAsExtractor), z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_constantArray), z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantBigint), z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantBoolean), z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantUuid), z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantObject), z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantNumber), z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantString), z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_newUuid), z.lazy(() =>carryOnObject)]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantListAsExtractor: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantListAsExtractor> = z.union([z.lazy(() =>carryOnObject), z.object({transformerType:z.union([z.literal("constantListAsExtractor"), z.lazy(() =>carryOnObject)]), value:z.union([z.array(z.union([z.any(), z.lazy(() =>carryOnObject)])), z.lazy(() =>carryOnObject)])}).strict()]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_extractors: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_extractors> = z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_constantListAsExtractor);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_newUuid: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_newUuid> = z.union([z.lazy(() =>carryOnObject), z.object({transformerType:z.union([z.literal("newUuid"), z.lazy(() =>carryOnObject)])}).strict()]);
