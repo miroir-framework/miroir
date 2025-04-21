@@ -1,0 +1,55 @@
+{
+  "uuid": "8ddb7e2e-a3d3-4622-81d2-0c3e98bca3ea",
+  "name": "listReducerToIndexObject",
+  "defaultLabel": "listReducerToIndexObject",
+  "description": "Create an index object from an array of objects and an attribute key.",
+  "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
+  "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
+  "parentName": "TransformerDefinition",
+  "transformerInterface": {
+    "transformerParameterSchema": {
+      "transformerType": {
+        "type": "literal",
+        "definition": "listReducerToIndexObject"
+      },
+      "transformerDefinition": {
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformer_orderBy"
+            }
+          }
+        ],
+        "definition": {
+          "applyTo": {
+            "type": "array",
+            "definition": {
+              "type": "record",
+              "definition": {
+                "type": "any"
+              }
+            }
+          },
+          "indexAttribute": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "transformerResultSchema": {
+      "type": "record",
+      "definition": {
+        "type": "any"
+      }
+    }
+  },
+  "transformerImplementation": {
+    "transformerImplementationType": "libraryImplementation",
+    "inMemoryImplementationFunctionName": "transformer_object_listReducerToIndexObject_apply",
+    "sqlImplementationFunctionName": "sqlStringForListReducerToIndexObjectTransformer"
+  }
+}

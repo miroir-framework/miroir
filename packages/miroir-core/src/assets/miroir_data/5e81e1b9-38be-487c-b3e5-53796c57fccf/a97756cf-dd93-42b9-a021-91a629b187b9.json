@@ -901,75 +901,6 @@
           }
         }
       },
-      "transformerForBuild_object_listReducerToIndexObject_root": {
-        "type": "object",
-        "extend": [
-          {
-            "type": "schemaReference",
-            "definition": {
-              "eager": true,
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformer_orderBy"
-            }
-          }
-        ],
-        "definition": {
-          "transformerType": {
-            "type": "literal",
-            "definition": "listReducerToIndexObject"
-          },
-          "indexAttribute": {
-            "type": "string"
-          }
-        }
-      },
-      "transformerForBuild_object_listReducerToIndexObject": {
-        "type": "object",
-        "extend": [
-          {
-            "type": "schemaReference",
-            "definition": {
-              "eager": true,
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForBuild_object_listReducerToIndexObject_root"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "eager": true,
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForBuild_Abstract"
-            }
-          }
-        ],
-        "definition": {
-          "applyTo": {
-            "type": "union",
-            "discriminator": "referenceType",
-            "definition": [
-              {
-                "type": "array",
-                "definition": {
-                  "type": "any"
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "transformer_inner_referenced_extractor"
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "transformer_inner_referenced_transformerForBuild"
-                }
-              }
-            ]
-          }
-        }
-      },
       "transformerForBuild_object_listReducerToSpreadObject": {
         "type": "object",
         "extend": [
@@ -1659,51 +1590,6 @@
           }
         }
       },
-      "transformerForRuntime_mapper_listToObject": {
-        "type": "object",
-        "extend": [
-          {
-            "type": "schemaReference",
-            "definition": {
-              "eager": true,
-              "relativePath": "transformerForBuild_object_listReducerToIndexObject_root"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "eager": true,
-              "relativePath": "transformerForRuntime_Abstract"
-            }
-          }
-        ],
-        "definition": {
-          "applyTo": {
-            "type": "union",
-            "discriminator": "referenceType",
-            "definition": [
-              {
-                "type": "array",
-                "definition": {
-                  "type": "any"
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "transformer_inner_referenced_extractor"
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "transformer_inner_referenced_transformerForRuntime"
-                }
-              }
-            ]
-          }
-        }
-      },
       "transformerForRuntime_list_listPickElement": {
         "type": "object",
         "extend": [
@@ -1822,13 +1708,13 @@
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformerForRuntime_mapper_listToObject"
+              "relativePath": "transformerForRuntime_object_listReducerToSpreadObject"
             }
           },
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformerForRuntime_object_listReducerToSpreadObject"
+              "relativePath": "transformerForRuntime_object_listReducerToIndexObject"
             }
           },
           {

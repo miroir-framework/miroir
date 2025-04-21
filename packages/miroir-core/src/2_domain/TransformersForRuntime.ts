@@ -33,7 +33,7 @@ import {
   TransformerForRuntime_InnerReference,
   TransformerForRuntime_list_listMapperToList,
   TransformerForRuntime_list_listPickElement,
-  TransformerForRuntime_mapper_listToObject,
+  // TransformerForRuntime_mapper_listToObject,
   TransformerForRuntime_mustacheStringTemplate_NOT_IMPLEMENTED,
   TransformerForRuntime_object_alter,
   TransformerForRuntime_freeObjectTemplate,
@@ -42,7 +42,8 @@ import {
   TransformerForRuntime_objectEntries,
   TransformerForRuntime_objectValues,
   TransformerForRuntime_unique,
-  TransformerForRuntime_object_fullTemplate
+  TransformerForRuntime_object_fullTemplate,
+  TransformerForRuntime_object_listReducerToIndexObject
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { Action2Error, Domain2ElementFailed, Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
@@ -56,6 +57,7 @@ import {
   transformer_count,
   transformer_freeObjectTemplate,
   transformer_listPickElement,
+  transformer_listReducerToIndexObject,
   transformer_mapperListToList,
   transformer_object_fullTemplate,
   transformer_objectAlter,
@@ -113,22 +115,24 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
   handleTransformer_objectEntries,
   handleTransformer_objectValues,
   handleTransformer_object_fullTemplate: defaultTransformers.handleTransformer_object_fullTemplate,
+  transformer_object_listReducerToIndexObject_apply: defaultTransformers.transformer_object_listReducerToIndexObject_apply,
   transformerForBuild_list_listMapperToList_apply:
     defaultTransformers.transformerForBuild_list_listMapperToList_apply,
 };
 
 export const applicationTransformerDefinitions: Record<string, TransformerDefinition> = {
   spreadSheetToJzodSchema: transformer_spreadSheetToJzodSchema,
-  "count": transformer_count,
-  "freeObjectTemplate": transformer_freeObjectTemplate,
-  "listPickElement": transformer_listPickElement,
-  "mapperListToList": transformer_mapperListToList,
-  "objectAlter": transformer_objectAlter,
-  "objectEntries": transformer_objectEntries,
-  "objectValues": transformer_objectValues,
-  "object_fullTemplate": transformer_object_fullTemplate,
-  "unique": transformer_unique,
-}
+  count: transformer_count,
+  freeObjectTemplate: transformer_freeObjectTemplate,
+  listPickElement: transformer_listPickElement,
+  listReducerToIndexObject: transformer_listReducerToIndexObject,
+  mapperListToList: transformer_mapperListToList,
+  objectAlter: transformer_objectAlter,
+  objectEntries: transformer_objectEntries,
+  objectValues: transformer_objectValues,
+  object_fullTemplate: transformer_object_fullTemplate,
+  unique: transformer_unique,
+};
 
 // ################################################################################################
 function resolveApplyTo(
@@ -246,7 +250,8 @@ export function resolveApplyTo_legacy(
   | TransformerForRuntime_count
   | TransformerForRuntime_list_listMapperToList 
   | TransformerForRuntime_list_listPickElement
-  | TransformerForRuntime_mapper_listToObject 
+  | TransformerForRuntime_object_listReducerToIndexObject
+  // | TransformerForRuntime_mapper_listToObject 
   | TransformerForRuntime_object_listReducerToSpreadObject
   | TransformerForRuntime_objectEntries
   | TransformerForRuntime_objectValues
@@ -470,10 +475,12 @@ function transformer_object_listReducerToSpreadObject_apply(
 function transformer_object_listReducerToIndexObject_apply(
   step: Step,
   label: string | undefined,
-  transformer: TransformerForRuntime_mapper_listToObject | TransformerForBuild_object_listReducerToIndexObject,
+  transformer:
+    | TransformerForBuild_object_listReducerToIndexObject
+    | TransformerForRuntime_object_listReducerToIndexObject,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   queryParams: Record<string, any>,
-  contextResults?: Record<string, any>,
+  contextResults?: Record<string, any>
 ): Domain2QueryReturnType<any> {
   log.info(
     "transformer_object_listReducerToIndexObject_apply called for transformer",
@@ -483,15 +490,19 @@ function transformer_object_listReducerToIndexObject_apply(
     "contextResults",
     JSON.stringify(contextResults, null, 2)
   );
-  const resolvedReference = resolveApplyTo_legacy(transformer, step, resolveBuildTransformersTo, queryParams, contextResults, label);
+  const resolvedReference = resolveApplyTo_legacy(
+    transformer,
+    step,
+    resolveBuildTransformersTo,
+    queryParams,
+    contextResults,
+    label
+  );
 
   // TODO: test if resolvedReference is a list
   const result = Object.fromEntries(
     resolvedReference.map((entry: Record<string, any>) => {
-      return [
-        entry[transformer.indexAttribute],
-        entry
-      ];
+      return [entry[transformer.indexAttribute], entry];
     })
   );
 
@@ -1548,14 +1559,15 @@ export function innerTransformer_apply(
       break;
     }
     case "listReducerToIndexObject": {
-      return defaultTransformers.transformer_object_listReducerToIndexObject_apply(
-        step,
-        label,
-        transformer,
-        resolveBuildTransformersTo,
-        queryParams,
-        contextResults
-      );
+      throw new Error("listReducerToIndexObject transformer not allowed in innerTransformer_apply");
+      // return defaultTransformers.transformer_object_listReducerToIndexObject_apply(
+      //   step,
+      //   label,
+      //   transformer,
+      //   resolveBuildTransformersTo,
+      //   queryParams,
+      //   contextResults
+      // );
       break;
     }
     case "listReducerToSpreadObject": {
@@ -1598,49 +1610,6 @@ export function innerTransformer_apply(
     }
     case "freeObjectTemplate": {
       throw new Error("freeObjectTemplate transformer not allowed in innerTransformer_apply");
-      // return handleTransformer_FreeObjectTemplate(
-      //   step,
-      //   label,
-      //   transformer,
-      //   resolveBuildTransformersTo,
-      //   queryParams,
-      //   contextResults
-      // )
-      // // log.info("innerTransformer_apply freeObjectTemplate", JSON.stringify(transformer, null, 2));
-      // const result = Object.fromEntries(
-      //   Object.entries(transformer.definition).map((objectTemplateEntry: [string, any]) => {
-      //     return [
-      //       objectTemplateEntry[0],
-      //       defaultTransformers.transformer_extended_apply(
-      //         step,
-      //         objectTemplateEntry[0],
-      //         objectTemplateEntry[1],
-      //         resolveBuildTransformersTo,
-      //         queryParams,
-      //         contextResults
-      //       ),
-      //     ];
-      //   })
-      // );
-      // const hasFailures = Object.values(result).find((e) => e instanceof Domain2ElementFailed);
-      // if (hasFailures) {
-      //   log.error("innerTransformer_apply freeObjectTemplate hasFailures", hasFailures);
-      //   return new Domain2ElementFailed({
-      //     queryFailure: "QueryNotExecutable",
-      //     failureOrigin: ["innerTransformer_apply"],
-      //     queryContext: "freeObjectTemplate hasFailures",
-      //     innerError: hasFailures,
-      //   });
-      // }
-      // log.info(
-      //   "innerTransformer_apply freeObjectTemplate for",
-      //   label,
-      //   "step",
-      //   step,
-      //   "result",
-      //   JSON.stringify(transformer, null, 2)
-      // );
-      // return result;
       break;
     }
     case "constantArray": {
@@ -2043,7 +2012,8 @@ export function transformer_extended_apply(
             // case "count":
             // case "unique":
             // case "mapperListToList": 
-            case "listReducerToIndexObject": {
+            // case "listReducerToIndexObject": 
+            {
               preResult = innerTransformer_apply(
                 step,
                 label,

@@ -4,6 +4,7 @@ import { transformerInterfaceFromDefinition } from "./Transformer_tools";
 
 import transformer_count_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/4ee5c863-5ade-4706-92bd-1fc2d89c3766.json';
 import transformer_listPickElement_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/64685ad7-1324-4080-9c41-504fcc1972c9.json';
+import transformer_listReducerToIndexObject_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/8ddb7e2e-a3d3-4622-81d2-0c3e98bca3ea.json';
 import transformer_mapperListToList_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/3ec73049-5e54-40aa-bc86-4c4906d00baa.json';
 import transformer_objectFullTemplate_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/16d866c4-bc81-4773-89a4-a47ac7f6549d.json';
 import transformer_objectAlter_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/774b1087-d4bb-41a0-824c-5ac16571c66a.json';
@@ -15,6 +16,7 @@ import transformer_unique_json from '../assets/miroir_data/a557419d-a288-4fb8-8a
 export const transformer_count: TransformerDefinition = transformer_count_json as TransformerDefinition;
 export const transformer_freeObjectTemplate: TransformerDefinition = transformer_freeObjectTemplate_json as TransformerDefinition;
 export const transformer_listPickElement: TransformerDefinition = transformer_listPickElement_json as TransformerDefinition;
+export const transformer_listReducerToIndexObject: TransformerDefinition = transformer_listReducerToIndexObject_json as TransformerDefinition;
 export const transformer_mapperListToList: TransformerDefinition = transformer_mapperListToList_json as TransformerDefinition;
 export const transformer_objectAlter: TransformerDefinition = transformer_objectAlter_json as TransformerDefinition;
 export const transformer_objectEntries: TransformerDefinition = transformer_objectEntries_json as TransformerDefinition;
@@ -26,6 +28,7 @@ const miroirTransformers: Record<string,TransformerDefinition> = {
   transformer_count,
   transformer_freeObjectTemplate,
   transformer_listPickElement,
+  transformer_listReducerToIndexObject,
   transformer_mapperListToList,
   transformer_objectAlter,
   transformer_objectEntries,
