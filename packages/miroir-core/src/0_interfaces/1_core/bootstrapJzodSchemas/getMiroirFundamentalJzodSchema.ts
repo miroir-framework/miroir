@@ -355,6 +355,7 @@ export function getMiroirFundamentalJzodSchema(
         transformerForBuild_list_listMapperToList: miroirTransformersForBuild.transformer_mapperListToList,
         transformerForBuild_freeObjectTemplate: miroirTransformersForBuild.transformer_freeObjectTemplate,
         transformerForBuild_objectAlter: miroirTransformersForBuild.transformer_objectAlter,
+        transformerForBuild_objectDynamicAccess: miroirTransformersForBuild.transformer_objectDynamicAccess,
         transformerForBuild_objectEntries: miroirTransformersForBuild.transformer_objectEntries,
         transformerForBuild_objectValues: miroirTransformersForBuild.transformer_objectValues,
         transformerForBuild_object_listPickElement: miroirTransformersForBuild.transformer_listPickElement,
@@ -374,6 +375,7 @@ export function getMiroirFundamentalJzodSchema(
         transformerForRuntime_object_listReducerToIndexObject: miroirTransformersForRuntime.transformer_listReducerToIndexObject,
         transformerForRuntime_object_listReducerToSpreadObject: miroirTransformersForRuntime.transformer_listReducerToSpreadObject,
         transformerForRuntime_objectAlter: miroirTransformersForRuntime.transformer_objectAlter,
+        transformerForRuntime_objectDynamicAccess: miroirTransformersForRuntime.transformer_objectDynamicAccess,
         transformerForRuntime_objectEntries: miroirTransformersForRuntime.transformer_objectEntries,
         transformerForRuntime_objectValues: miroirTransformersForRuntime.transformer_objectValues,
         transformerForRuntime_object_fullTemplate: miroirTransformersForRuntime.transformer_object_fullTemplate,
@@ -2875,9 +2877,7 @@ export function getMiroirFundamentalJzodSchema(
         transformer_extractors: (transformerJzodSchema as any).definition.context
           .transformer_extractors,
         transformer_newUuid: (transformerJzodSchema as any).definition.context.transformer_newUuid,
-        // transformer_parameterReference: (transformerJzodSchema as any).definition.context
-        //   .transformer_parameterReference,
-        transformerForBuild_objectDynamicAccess: (transformerJzodSchema as any).definition.context
+        transformerForBuild_objectDynamicAccess: (miroirFundamentalJzodSchema as any).definition.context
           .transformerForBuild_objectDynamicAccess,
         transformerForBuild_InnerReference: (transformerJzodSchema as any).definition.context
           .transformerForBuild_InnerReference,
@@ -3001,7 +3001,7 @@ export function getMiroirFundamentalJzodSchema(
           .transformerForRuntime_InnerReference,
         transformerForRuntime_object_fullTemplate: (miroirFundamentalJzodSchema as any).definition
           .context.transformerForRuntime_object_fullTemplate,
-        transformerForRuntime_objectDynamicAccess: (transformerJzodSchema as any).definition.context
+        transformerForRuntime_objectDynamicAccess: (miroirFundamentalJzodSchema as any).definition.context
           .transformerForBuild_objectDynamicAccess,
         transformerForRuntime_objectEntries: (miroirFundamentalJzodSchema as any).definition.context
           .transformerForRuntime_objectEntries,

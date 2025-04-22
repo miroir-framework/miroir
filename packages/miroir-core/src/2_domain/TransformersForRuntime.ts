@@ -73,11 +73,13 @@ import {
   transformer_mapperListToList,
   transformer_object_fullTemplate,
   transformer_objectAlter,
+  transformer_objectDynamicAccess,
   transformer_objectEntries,
   transformer_objectValues,
   transformer_parameterReference,
   transformer_unique,
 } from "./Transformers";
+import { object } from 'zod';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -129,6 +131,7 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
   handleTransformer_dataflowObject,
   handleTransformer_FreeObjectTemplate,
   handleTransformer_objectAlter: defaultTransformers.handleTransformer_objectAlter,
+  transformer_dynamicObjectAccess_apply: defaultTransformers.transformer_dynamicObjectAccess_apply,
   handleTransformer_objectEntries,
   handleTransformer_objectValues,
   handleTransformer_object_fullTemplate: defaultTransformers.handleTransformer_object_fullTemplate,
@@ -152,6 +155,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   listReducerToSpreadObject: transformer_listReducerToSpreadObject,
   mapperListToList: transformer_mapperListToList,
   objectAlter: transformer_objectAlter,
+  objectDynamicAccess: transformer_objectDynamicAccess,
   objectEntries: transformer_objectEntries,
   objectValues: transformer_objectValues,
   object_fullTemplate: transformer_object_fullTemplate,
@@ -1754,14 +1758,15 @@ export function innerTransformer_apply(
       break;
     }
     case "objectDynamicAccess": {
-      return defaultTransformers.transformer_dynamicObjectAccess_apply(
-        step,
-        label,
-        transformer,
-        resolveBuildTransformersTo,
-        queryParams,
-        contextResults
-      );
+      throw new Error("objectDynamicAccess transformer not allowed in innerTransformer_apply");
+      // return defaultTransformers.transformer_dynamicObjectAccess_apply(
+      //   step,
+      //   label,
+      //   transformer,
+      //   resolveBuildTransformersTo,
+      //   queryParams,
+      //   contextResults
+      // );
     }
     case "mustacheStringTemplate": {
       return defaultTransformers.transformer_mustacheStringTemplate_apply(
@@ -2125,7 +2130,7 @@ export function transformer_extended_apply(
             case "mustacheStringTemplate_NOT_IMPLEMENTED":
             // case "contextReference":
             // case "parameterReference":
-            case "objectDynamicAccess":
+            // case "objectDynamicAccess":
             // case "dataflowObject":
             case "dataflowSequence":
             // case "freeObjectTemplate":

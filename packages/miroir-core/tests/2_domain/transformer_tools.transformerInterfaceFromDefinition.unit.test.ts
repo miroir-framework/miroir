@@ -1,8 +1,27 @@
 import { describe, it, expect } from "vitest";
 import { TransformerDefinition } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { transformerInterfaceFromDefinition } from "../../src/2_domain/Transformer_tools";
+import { b } from "vitest/dist/chunks/suite.B2jumIFP";
 // import { transformerInterfaceFromDefinition } from "./Transformer_tools";
 // import { JzodElement, TransformerDefinition } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+
+const runtimeReferenceMap: Record<string, string> = {
+  transformer: "transformerForRuntime",
+  transformer_InnerReference: "transformerForRuntime_InnerReference",
+  transformer_freeObjectTemplate: "transformerForRuntime_freeObjectTemplate",
+  transformer_contextReference: "transformerForRuntime_contextReference",
+  transformer_objectDynamicAccess: "transformerForRuntime_objectDynamicAccess",
+  transformer_mustacheStringTemplate: "transformerForRuntime_mustacheStringTemplate_NOT_IMPLEMENTED",
+};
+
+const buildReferenceMap: Record<string, string> = {
+  transformer: "transformerForBuild",
+  transformer_InnerReference: "transformerForBuild_InnerReference",
+  transformer_freeObjectTemplate: "transformerForBuild_freeObjectTemplate",
+  transformer_contextReference: "transformerForRuntime_contextReference",
+  transformer_objectDynamicAccess: "transformerForBuild_objectDynamicAccess",
+  transformer_mustacheStringTemplate: "transformer_mustacheStringTemplate", // TODO: rename to transformer_mustacheStringTemplate
+};
 
 describe("transformerInterfaceFromDefinition", () => {
   const transformerDefinition: TransformerDefinition = {
@@ -79,7 +98,7 @@ describe("transformerInterfaceFromDefinition", () => {
   };
 
   it("should return a valid JzodElement for runtime target", () => {
-    const result = transformerInterfaceFromDefinition(transformerDefinition, "runtime");
+    const result = transformerInterfaceFromDefinition(transformerDefinition, "runtime", runtimeReferenceMap);
 
     expect(result).toEqual(
       {
@@ -164,7 +183,7 @@ describe("transformerInterfaceFromDefinition", () => {
   });
 
   it("should return a valid JzodElement for build target", () => {
-    const result = transformerInterfaceFromDefinition(transformerDefinition, "build");
+    const result = transformerInterfaceFromDefinition(transformerDefinition, "build", buildReferenceMap);
 
     expect(result).toEqual(
       {

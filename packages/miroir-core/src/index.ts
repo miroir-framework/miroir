@@ -1,240 +1,328 @@
 export {
-  miroirFundamentalJzodSchemaUuid,
   getMiroirFundamentalJzodSchema,
-} from "../src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema"
-
-console.log("miroir-core: loading miroirFundamentalType.js");
+  miroirFundamentalJzodSchemaUuid,
+} from "../src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema";
 export {
-  ActionError,
-  ActionEntityInstanceReturnType,
-  ActionEntityInstanceSuccess,
   ActionEntityInstanceCollectionReturnType,
+  actionEntityInstanceCollectionReturnType,
   ActionEntityInstanceCollectionSuccess,
-  ActionVoidSuccess,
-  ActionSuccess,
+  actionEntityInstanceCollectionSuccess,
+  ActionEntityInstanceReturnType,
+  actionEntityInstanceReturnType,
+  ActionEntityInstanceSuccess,
+  actionEntityInstanceSuccess,
+  ActionError,
+  actionError,
+  ActionHandler,
+  actionHandler,
   ActionReturnType,
+  actionReturnType,
+  ActionSuccess,
+  actionSuccess,
   ActionTransformer,
-  SelfApplication,
+  actionTransformer,
+  actionVoidReturnType,
+  ActionVoidSuccess,
+  actionVoidSuccess,
+  ApplicationSection,
+  applicationSection,
   ApplicationVersion,
+  applicationVersion,
+  BoxedExtractorOrCombinerReturningObject,
+  boxedExtractorOrCombinerReturningObject,
+  BoxedExtractorOrCombinerReturningObjectList,
+  boxedExtractorOrCombinerReturningObjectList,
+  BoxedExtractorOrCombinerReturningObjectOrObjectList,
+  boxedExtractorOrCombinerReturningObjectOrObjectList,
+  BoxedExtractorTemplateReturningObject,
+  boxedExtractorTemplateReturningObject,
+  BoxedExtractorTemplateReturningObjectList,
+  boxedExtractorTemplateReturningObjectList,
+  BoxedExtractorTemplateReturningObjectOrObjectList,
+  boxedExtractorTemplateReturningObjectOrObjectList,
+  BoxedQueryTemplateWithExtractorCombinerTransformer,
+  // applicationSection,
+  boxedQueryTemplateWithExtractorCombinerTransformer,
+  BoxedQueryWithExtractorCombinerTransformer,
+  boxedQueryWithExtractorCombinerTransformer,
+  CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction,
+  carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction,
+  CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration,
+  carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration,
+  CarryOnObject,
+  carryOnObject,
   // ApplicationSection,
   Commit,
+  CompositeAction,
+  compositeAction,
+  CompositeActionTemplate,
+  compositeActionTemplate,
+  // ===
+  ConceptLevel,
+  DeploymentStorageConfig,
+  deploymentStorageConfig,
   // CompositeInstanceActionTemplate,
   // compositeInstanceActionTemplate,
   DomainAction,
-  BoxedQueryTemplateWithExtractorCombinerTransformer,
-  BoxedQueryWithExtractorCombinerTransformer,
-  QueryByEntityUuidGetEntityDefinition,
-  QueryByQuery2GetParamJzodSchema,
-  QueryByTemplateGetParamJzodSchema,
-  QueryByQueryGetParamJzodSchema,
-  QueryByQueryTemplateGetParamJzodSchema,
-  QueryJzodSchemaParams,
-  DomainModelQueryTemplateJzodSchemaParams,
-  MiroirQueryTemplate,
-  // ===
-  ExtractorWrapper,
-  ExtractorWrapperReturningList,
-  ExtractorWrapperReturningObject,
-  LocalCacheExtractor,
-  MiroirQuery,
-  // ===
-  ConceptLevel,
-  StoreManagementAction,
-  Entity,
-  EntityArrayAttribute,
-  EntityAttribute,
-  EntityForeignKeyAttribute,
-  EntityAttributePartial,
-  EntityAttributeCore,
-  EntityAttributeExpandedType,
-  EntityAttributeType,
-  EntityAttributeUntypedCore,
-  MetaModel,
-  InstanceAction,
-  DeploymentStorageConfig,
-  CompositeAction,
-  EntityDefinition,
-  EntityInstance,
-  EntityInstancesUuidIndex,
-  EntityInstanceCollection,
-  DomainElementType,
-  JzodSchema,
-  JzodArray,
-  JzodPlainAttribute,
-  JzodAttributeDateValidations,
-  JzodAttributePlainDateWithValidations,
-  JzodAttributeNumberValidations,
-  JzodAttributePlainNumberWithValidations,
-  JzodAttributeStringValidations,
-  JzodAttributePlainStringWithValidations,
-  JzodBaseObject,
-  JzodElement,
-  JzodEnum,
-  JzodEnumAttributeTypes,
-  JzodEnumElementTypes,
-  JzodFunction,
-  JzodIntersection,
-  JzodLazy,
-  JzodLiteral,
-  JzodMap,
-  JzodObject,
-  JzodObjectOrReference,
-  JzodPromise,
-  JzodRecord,
-  JzodReference,
-  JzodSet,
-  JzodTuple,
-  JzodUnion,
-  LocalCacheAction,
-  StoreOrBundleAction,
-  Menu,
-  MiroirMenuItem,
-  MiroirConfigForClientStub,
-  MiroirConfigForRestClient,
-  MiroirConfigClient,
-  MiroirConfigServer,
-  MiroirConfig,
-  // MiroirCustomQueryParams,
-  // miroirCustomQueryParams,
-  MiroirFundamentalType,
-  MiroirAllFundamentalTypesUnion,
-  ExtendedTransformerForRuntime,
-  ExtractorOrCombinerRecord,
-  ExtractorOrCombinerTemplate,
-  ExtractorOrCombinerTemplateRecord,
-  ModelAction,
-  ModelActionReplayableAction,
-  ModelActionAlterEntityAttribute,
-  ModelActionRenameEntity,
-  ModelActionCreateEntity,
-  ModelActionDropEntity,
-  TransformerForBuild_InnerReference,
-  TransformerForBuild,
-  ActionHandler,
-  PersistenceAction,
-  RestPersistenceAction,
-  ExtractorOrCombinerReturningObject,
-  ExtractorOrCombinerReturningObjectList,
-  ExtractorForObjectByDirectReference,
-  Extractor,
-  RunBoxedExtractorAction,
-  RunBoxedQueryAction,
-  RunBoxedExtractorOrQueryAction,
-  RunBoxedExtractorTemplateAction,
-  RunBoxedQueryTemplateAction,
-  ExtractorTemplateReturningObject,
-  ExtractorTemplateReturningObjectList,
-  // ExtractorTemplateReturningObjectOrObjectList,
-  // extractorTemplateReturningObjectOrObjectList,
-  RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
-  ServerConfigForClientConfig,
-  SqlDbStoreSectionConfiguration,
-  IndexedDbStoreSectionConfiguration,
-  FilesystemDbStoreSectionConfiguration,
-  SelfApplicationDeploymentConfiguration,
-  StoreBasedConfiguration,
-  StoreSectionConfiguration,
-  StoreUnitConfiguration,
-  TransactionalInstanceAction,
-  UndoRedoAction,
-  GridReportSection,
-  ListReportSection,
-  ObjectInstanceReportSection,
-  ObjectListReportSection,
-  QueryFailed,
-  Report,
-  ReportSection,
-  Test,
-  DomainElementEntityInstance,
-  DomainElementEntityInstanceCollectionOrFailed,
-  DomainElementEntityInstanceOrFailed,
-  DomainElementFailed,
-  DomainElementInstanceArrayOrFailed,
-  DomainElementObject,
-  DomainElementSuccess,
-  DomainElementVoid,
   DomainElement,
-  RootReport,
-  BoxedExtractorOrCombinerReturningObject,
-  BoxedExtractorOrCombinerReturningObjectList,
-  BoxedExtractorOrCombinerReturningObjectOrObjectList,
-  BoxedExtractorTemplateReturningObject,
-  BoxedExtractorTemplateReturningObjectList,
-  BoxedExtractorTemplateReturningObjectOrObjectList,
-  ExtractorTemplateByExtractorWrapper,
-  ExtractorTemplateByExtractorWrapperReturningList,
-  ExtractorTemplateByExtractorWrapperReturningObject,
-  // TransformerForRuntime_constants,
-  TransformerForRuntime_InnerReference,
-  TransformerForRuntime_constantArray,
-  TransformerForBuild_constantArray,
-  TransformerForRuntime_dataflowObject,
-  TransformerForBuild_dataflowObject,
-  TransformerForRuntime_freeObjectTemplate,
-  TransformerForRuntime_object_alter,
-  TransformerForRuntime_object_fullTemplate,
-  transformerForRuntime_object_fullTemplate,
-  TransformerForRuntime_count,
-  TransformerForRuntime_list_listPickElement,
-  TransformerForRuntime_list_listMapperToList,
-  // TransformerForRuntime_mapper_listToObject,
-  TransformerForRuntime_mustacheStringTemplate_NOT_IMPLEMENTED,
-  TransformerForRuntime_objectValues,
-  TransformerForRuntime_objectEntries,
-  TransformerForRuntime_object_listReducerToSpreadObject,
-  TransformerForRuntime_object_listReducerToIndexObject,
-  TransformerForRuntime_unique,
-  TransformerForRuntime_innerFullObjectTemplate,
-  TransformerForRuntime,
-  TransformerForBuildOrRuntime,
-  TransformerForBuild_parameterReference,
-  transformerForBuild_parameterReference,
-  Transformer_menu_addItem,
-  CarryOnObject,
-  CompositeActionTemplate,
-  CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration,
-  CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction,
-  ExtractorOrCombiner,
-  TestAction_runTestCompositeAction,
-  TestCompositeAction,
-  TestCompositeActionSuite,
-  TestCompositeActionTemplateSuite,
-  TestCompositeActionTemplate,
+  domainElement,
+  DomainElementEntityInstance,
+  domainElementEntityInstance,
+  DomainElementEntityInstanceCollectionOrFailed,
+  domainElementEntityInstanceCollectionOrFailed,
+  DomainElementEntityInstanceOrFailed,
+  domainElementEntityInstanceOrFailed,
+  DomainElementFailed,
+  domainElementFailed,
+  DomainElementInstanceArrayOrFailed,
+  domainElementInstanceArrayOrFailed,
   DomainElementInstanceUuidIndex,
-} from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType"
-console.log("miroir-core: loading miroirFundamentalType.js DONE");
-export {
-  ApplicationSection,
-  applicationSection,
+  domainElementInstanceUuidIndexOrFailed,
+  DomainElementObject,
+  domainElementObject,
+  domainElementObjectOrFailed,
+  DomainElementSuccess,
+  domainElementSuccess,
+  DomainElementType,
+  domainElementType,
+  DomainElementVoid,
+  domainElementVoid,
+  DomainModelQueryTemplateJzodSchemaParams,
+  domainModelQueryTemplateJzodSchemaParams,
+  Entity,
+  entity,
+  EntityArrayAttribute,
+  entityArrayAttribute,
+  EntityAttribute,
+  entityAttribute,
+  EntityAttributeCore,
+  entityAttributeCore,
+  EntityAttributeExpandedType,
+  entityAttributeExpandedType,
+  EntityAttributePartial,
+  entityAttributePartial,
+  EntityAttributeType,
+  entityAttributeType,
+  EntityAttributeUntypedCore,
+  entityAttributeUntypedCore,
+  EntityDefinition,
+  entityDefinition,
+  EntityForeignKeyAttribute,
+  entityForeignKeyAttribute,
+  EntityInstance,
+  entityInstance,
+  EntityInstanceCollection,
+  entityInstanceCollection,
+  EntityInstancesUuidIndex,
+  entityInstancesUuidIndex,
+  ExtendedTransformerForRuntime,
+  Extractor,
+  extractor,
+  ExtractorForObjectByDirectReference,
+  extractorForObjectByDirectReference,
+  ExtractorOrCombiner,
+  extractorOrCombiner,
+  ExtractorOrCombinerRecord,
+  ExtractorOrCombinerReturningObject,
+  extractorOrCombinerReturningObject,
+  ExtractorOrCombinerReturningObjectList,
+  extractorOrCombinerReturningObjectList,
   // ExtendedTypes,
   // extendedTypes,
   ExtractorOrCombinerRoot,
   extractorOrCombinerRoot,
+  ExtractorOrCombinerTemplate,
+  extractorOrCombinerTemplate,
+  ExtractorOrCombinerTemplateRecord,
+  extractorOrCombinerTemplateRecord,
+  ExtractorTemplateByExtractorWrapper,
+  extractorTemplateByExtractorWrapper,
+  ExtractorTemplateByExtractorWrapperReturningList,
+  extractorTemplateByExtractorWrapperReturningList,
+  ExtractorTemplateByExtractorWrapperReturningObject,
+  extractorTemplateByExtractorWrapperReturningObject,
+  ExtractorTemplateReturningObject,
+  extractorTemplateReturningObject,
+  ExtractorTemplateReturningObjectList,
+  extractorTemplateReturningObjectList,
   ExtractorTemplateRoot,
   extractorTemplateRoot,
+  // ===
+  ExtractorWrapper,
+  // ===
+  extractorWrapper,
+  ExtractorWrapperReturningList,
+  extractorWrapperReturningList,
+  ExtractorWrapperReturningObject,
+  extractorWrapperReturningObject,
+  FilesystemDbStoreSectionConfiguration,
+  GridReportSection,
+  gridReportSection,
+  IndexedDbStoreSectionConfiguration,
+  InstanceAction,
+  JzodArray,
+  jzodArray,
+  JzodAttributeDateValidations,
+  jzodAttributeDateValidations,
+  JzodAttributeNumberValidations,
+  jzodAttributeNumberValidations,
+  JzodAttributePlainDateWithValidations,
+  jzodAttributePlainDateWithValidations,
+  JzodAttributePlainNumberWithValidations,
+  jzodAttributePlainNumberWithValidations,
+  JzodAttributePlainStringWithValidations,
+  jzodAttributePlainStringWithValidations,
+  JzodAttributeStringValidations,
+  jzodAttributeStringValidations,
+  JzodBaseObject,
+  jzodBaseObject,
+  JzodElement,
+  jzodElement,
+  JzodEnum,
+  jzodEnum,
+  JzodEnumAttributeTypes,
+  jzodEnumAttributeTypes,
+  JzodEnumElementTypes,
+  jzodEnumElementTypes,
+  JzodFunction,
+  jzodFunction,
+  JzodIntersection,
+  jzodIntersection,
+  JzodLazy,
+  jzodLazy,
+  JzodLiteral,
+  jzodLiteral,
+  JzodMap,
+  jzodMap,
+  JzodObject,
+  jzodObject,
+  JzodObjectOrReference,
+  jzodObjectOrReference,
+  JzodPlainAttribute,
+  jzodPlainAttribute,
+  JzodPromise,
+  jzodPromise,
+  JzodRecord,
+  jzodRecord,
+  JzodReference,
+  jzodReference,
+  JzodSchema,
+  jzodSchema,
+  JzodSet,
+  jzodSet,
+  JzodTuple,
+  jzodTuple,
+  JzodUnion,
+  jzodUnion,
+  ListReportSection,
+  listReportSection,
+  LocalCacheAction,
+  LocalCacheExtractor,
+  Menu,
+  menu,
+  MetaModel,
+  metaModel,
+  MiroirAllFundamentalTypesUnion,
+  MiroirConfig,
+  MiroirConfigClient,
+  MiroirConfigForClientStub,
+  miroirConfigForClientStub,
+  MiroirConfigForRestClient,
+  miroirConfigForRestClient,
+  MiroirConfigServer,
+  // MiroirCustomQueryParams,
+  // miroirCustomQueryParams,
+  MiroirFundamentalType,
+  MiroirMenuItem,
+  miroirMenuItem,
+  MiroirQuery,
+  miroirQuery,
+  MiroirQueryTemplate,
+  miroirQueryTemplate,
+  ModelAction,
+  modelAction,
+  ModelActionAlterEntityAttribute,
+  modelActionAlterEntityAttribute,
+  ModelActionCreateEntity,
+  modelActionCreateEntity,
+  ModelActionDropEntity,
+  modelActionDropEntity,
+  ModelActionRenameEntity,
+  modelActionRenameEntity,
+  ModelActionReplayableAction,
+  modelActionReplayableAction,
+  ObjectInstanceReportSection,
+  objectInstanceReportSection,
+  ObjectListReportSection,
+  objectListReportSection,
+  PersistenceAction,
+  QueryByEntityUuidGetEntityDefinition,
+  queryByEntityUuidGetEntityDefinition,
+  QueryByQuery2GetParamJzodSchema,
+  queryByQuery2GetParamJzodSchema,
+  QueryByQueryGetParamJzodSchema,
+  queryByQueryGetParamJzodSchema,
+  QueryByQueryTemplateGetParamJzodSchema,
+  queryByQueryTemplateGetParamJzodSchema,
+  QueryByTemplateGetParamJzodSchema,
+  queryByTemplateGetParamJzodSchema,
+  QueryFailed,
+  QueryJzodSchemaParams,
+  queryJzodSchemaParams,
+  Report,
+  report,
+  ReportSection,
+  reportSection,
+  RestPersistenceAction,
+  RootReport,
+  rootReport,
+  RunBoxedExtractorAction,
+  runBoxedExtractorAction,
+  RunBoxedExtractorOrQueryAction,
+  runBoxedExtractorOrQueryAction,
+  RunBoxedExtractorTemplateAction,
+  runBoxedExtractorTemplateAction,
+  RunBoxedQueryAction,
+  runBoxedQueryAction,
+  RunBoxedQueryTemplateAction,
+  runBoxedQueryTemplateAction,
+  // ExtractorTemplateReturningObjectOrObjectList,
+  // extractorTemplateReturningObjectOrObjectList,
+  RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
+  runBoxedQueryTemplateOrBoxedExtractorTemplateAction,
+  SelfApplication,
+  selfApplication,
+  SelfApplicationDeploymentConfiguration,
+  selfApplicationDeploymentConfiguration,
+  ServerConfigForClientConfig,
+  serverConfigForClientConfig,
   ShippingBox,
   shippingBox,
-  TransformerForBuild_freeObjectTemplate,
-  transformerForBuild_freeObjectTemplate,
-  TransformerForBuild_object_fullTemplate,
-  transformerForBuild_object_fullTemplate,
-  // TransformerForBuild_objectEntries_root,
-  // transformerForBuild_objectEntries_root,
-  TransformerForBuild_objectEntries,
-  TransformerForBuild_objectValues,
-  // TransformerForBuild_objectValues_root,
-  // transformerForBuild_objectValues_root,
-  // TransformerForRuntime_object_listReducerToIndexObject,
-  // transformerForRuntime_object_listReducerToIndexObject,
-  TransformerForBuild_object_listReducerToIndexObject,
-  transformerForBuild_object_listReducerToIndexObject,
-  TransformerForRuntime_orderedTransformer,
-  transformerForRuntime_orderedTransformer,
-  transformerForBuild_InnerReference,
-  TransformerForBuild_constant,
-  transformerForBuild_constant,
-  TransformerForRuntime_constant,
-  transformerForRuntime_constant,
+  SqlDbStoreSectionConfiguration,
+  StoreBasedConfiguration,
+  storeBasedConfiguration,
+  StoreManagementAction,
+  // ===
+  storeManagementAction,
+  StoreOrBundleAction,
+  StoreSectionConfiguration,
+  storeSectionConfiguration,
+  StoreUnitConfiguration,
+  storeUnitConfiguration,
+  Test,
+  test,
+  TestAction_runTestCompositeAction,
+  testAction_runTestCompositeAction,
+  TestCompositeAction,
+  testCompositeAction,
+  TestCompositeActionSuite,
+  testCompositeActionSuite,
+  TestCompositeActionTemplate,
+  testCompositeActionTemplate,
+  TestCompositeActionTemplateSuite,
+  testCompositeActionTemplateSuite,
+  TransactionalInstanceAction,
+  transactionalInstanceAction,
   Transformer_constantListAsExtractor,
   transformer_constantListAsExtractor,
   Transformer_constantObject,
@@ -244,352 +332,242 @@ export {
   Transformer_constantUuid,
   transformer_constantUuid,
   transformer_contextOrParameterReferenceTO_REMOVE,
-  TransformerForRuntime_contextReference,
-  transformerForRuntime_contextReference,
   // TransformerForBuild_contextReference,
   // transformerForBuild_contextReference,
   Transformer_extractors,
   transformer_extractors,
   Transformer_inner_label,
   transformer_inner_label,
+  Transformer_menu_addItem,
+  transformer_menu_addItem,
   Transformer_mustacheStringTemplate,
   transformer_mustacheStringTemplate,
   Transformer_newUuid,
   transformer_newUuid,
-  TransformerForBuild_objectDynamicAccess,
-  transformerForBuild_objectDynamicAccess,
   Transformer_orderBy,
   transformer_orderBy,
-  // Transformer_parameterReference,
-  // transformer_parameterReference,
-} from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType"
-export {
-  actionError,
-  actionEntityInstanceReturnType,
-  actionEntityInstanceSuccess,
-  actionEntityInstanceCollectionReturnType,
-  actionEntityInstanceCollectionSuccess,
-  actionVoidReturnType,
-  actionVoidSuccess,
-  actionSuccess,
-  actionReturnType,
-  actionTransformer,
-  selfApplication,
-  applicationVersion,
-  // applicationSection,
-  boxedQueryTemplateWithExtractorCombinerTransformer,
-  boxedQueryWithExtractorCombinerTransformer,
-  queryByEntityUuidGetEntityDefinition,
-  queryByQuery2GetParamJzodSchema,
-  queryByTemplateGetParamJzodSchema,
-  queryByQueryGetParamJzodSchema,
-  queryByQueryTemplateGetParamJzodSchema,
-  queryJzodSchemaParams,
-  domainModelQueryTemplateJzodSchemaParams,
-  miroirQueryTemplate,
-  // ===
-  extractorWrapper,
-  extractorWrapperReturningList,
-  extractorWrapperReturningObject,
-  miroirQuery,
-  // ===
-  storeManagementAction,
-  entity,
-  entityArrayAttribute,
-  entityAttribute,
-  entityForeignKeyAttribute,
-  entityAttributePartial,
-  entityAttributeCore,
-  entityAttributeExpandedType,
-  entityAttributeType,
-  entityAttributeUntypedCore,
-  metaModel,
-  deploymentStorageConfig,
-  compositeAction,
-  entityDefinition,
-  entityInstance,
-  entityInstancesUuidIndex,
-  entityInstanceCollection,
-  domainElementType,
-  jzodSchema,
-  jzodArray,
-  jzodPlainAttribute,
-  jzodAttributeDateValidations,
-  jzodAttributePlainDateWithValidations,
-  jzodAttributeNumberValidations,
-  jzodAttributePlainNumberWithValidations,
-  jzodAttributeStringValidations,
-  jzodAttributePlainStringWithValidations,
-  jzodBaseObject,
-  jzodElement,
-  jzodEnum,
-  jzodEnumAttributeTypes,
-  jzodEnumElementTypes,
-  jzodFunction,
-  jzodIntersection,
-  jzodLazy,
-  jzodLiteral,
-  jzodMap,
-  jzodObject,
-  jzodObjectOrReference,
-  jzodPromise,
-  jzodRecord,
-  jzodReference,
-  jzodSet,
-  jzodTuple,
-  jzodUnion,
-  menu,
-  miroirMenuItem,
-  miroirConfigForClientStub,
-  miroirConfigForRestClient,
-  extractorOrCombinerTemplate,
-  extractorOrCombinerTemplateRecord,
-  modelAction,
-  modelActionReplayableAction,
-  modelActionAlterEntityAttribute,
-  modelActionRenameEntity,
-  modelActionCreateEntity,
-  modelActionDropEntity,
+  TransformerForBuild,
   // transformerForBuild_InnerReference,
   transformerForBuild,
-  actionHandler,
-  extractorOrCombinerReturningObject,
-  extractorOrCombinerReturningObjectList,
-  extractorForObjectByDirectReference,
-  extractor,
-  runBoxedExtractorAction,
-  runBoxedQueryAction,
-  runBoxedExtractorOrQueryAction,
-  runBoxedExtractorTemplateAction,
-  runBoxedQueryTemplateAction,
-  extractorTemplateReturningObject,
-  extractorTemplateReturningObjectList,
-  runBoxedQueryTemplateOrBoxedExtractorTemplateAction,
-  serverConfigForClientConfig,
-  selfApplicationDeploymentConfiguration,
-  storeBasedConfiguration,
-  storeSectionConfiguration,
-  storeUnitConfiguration,
-  transactionalInstanceAction,
-  undoRedoAction,
-  gridReportSection,
-  listReportSection,
-  objectInstanceReportSection,
-  objectListReportSection,
-  report,
-  reportSection,
-  test,
-  domainElementInstanceUuidIndexOrFailed,
-  domainElementEntityInstance,
-  domainElementEntityInstanceCollectionOrFailed,
-  domainElementEntityInstanceOrFailed, 
-  domainElementFailed,
-  domainElementInstanceArrayOrFailed,
-  domainElementObject,
-  domainElementObjectOrFailed,
-  domainElementSuccess,
-  domainElementVoid,
-  domainElement,
-  rootReport,
-  boxedExtractorOrCombinerReturningObject,
-  boxedExtractorOrCombinerReturningObjectList,
-  boxedExtractorOrCombinerReturningObjectOrObjectList,
-  boxedExtractorTemplateReturningObject,
-  boxedExtractorTemplateReturningObjectList,
-  boxedExtractorTemplateReturningObjectOrObjectList,
+  TransformerForBuild_constant,
+  transformerForBuild_constant,
+  TransformerForBuild_constantArray,
+  TransformerForBuild_dataflowObject,
+  TransformerForBuild_freeObjectTemplate,
+  transformerForBuild_freeObjectTemplate,
+  TransformerForBuild_InnerReference,
+  transformerForBuild_InnerReference,
+  TransformerForBuild_object_fullTemplate,
+  transformerForBuild_object_fullTemplate,
+  // TransformerForBuild_objectValues_root,
+  // transformerForBuild_objectValues_root,
+  // TransformerForRuntime_object_listReducerToIndexObject,
+  // transformerForRuntime_object_listReducerToIndexObject,
+  TransformerForBuild_object_listReducerToIndexObject,
+  transformerForBuild_object_listReducerToIndexObject,
+  TransformerForBuild_objectDynamicAccess,
+  transformerForBuild_objectDynamicAccess,
+  // TransformerForBuild_objectEntries_root,
+  // transformerForBuild_objectEntries_root,
+  TransformerForBuild_objectEntries,
+  TransformerForBuild_objectValues,
+  TransformerForBuild_parameterReference,
+  transformerForBuild_parameterReference,
   transformerForBuild_unique,
-  extractorTemplateByExtractorWrapper,
-  extractorTemplateByExtractorWrapperReturningList,
-  extractorTemplateByExtractorWrapperReturningObject,
-  transformerForRuntime_innerFullObjectTemplate,
-  transformerForRuntime,
+  TransformerForBuildOrRuntime,
   transformerForBuildOrRuntime,
-  transformer_menu_addItem,
-  carryOnObject,
-  compositeActionTemplate,
-  carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration,
-  carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction,
-  extractorOrCombiner,
-  testAction_runTestCompositeAction,
-  testCompositeAction,
-  testCompositeActionSuite,
-  testCompositeActionTemplateSuite,
-  testCompositeActionTemplate,
-} from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType"
+  TransformerForRuntime,
+  transformerForRuntime,
+  TransformerForRuntime_constant,
+  transformerForRuntime_constant,
+  TransformerForRuntime_constantArray,
+  TransformerForRuntime_contextReference,
+  transformerForRuntime_contextReference,
+  TransformerForRuntime_count,
+  TransformerForRuntime_dataflowObject,
+  TransformerForRuntime_freeObjectTemplate,
+  TransformerForRuntime_innerFullObjectTemplate,
+  transformerForRuntime_innerFullObjectTemplate,
+  // TransformerForRuntime_constants,
+  TransformerForRuntime_InnerReference,
+  TransformerForRuntime_list_listMapperToList,
+  TransformerForRuntime_list_listPickElement,
+  // TransformerForRuntime_mapper_listToObject,
+  TransformerForRuntime_mustacheStringTemplate_NOT_IMPLEMENTED,
+  TransformerForRuntime_object_alter,
+  TransformerForRuntime_object_fullTemplate,
+  transformerForRuntime_object_fullTemplate,
+  TransformerForRuntime_object_listReducerToIndexObject,
+  TransformerForRuntime_object_listReducerToSpreadObject,
+  TransformerForRuntime_objectDynamicAccess,
+  transformerForRuntime_objectDynamicAccess,
+  TransformerForRuntime_objectEntries,
+  TransformerForRuntime_objectValues,
+  TransformerForRuntime_orderedTransformer,
+  transformerForRuntime_orderedTransformer,
+  TransformerForRuntime_unique,
+  UndoRedoAction,
+  undoRedoAction,
+} from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+
+console.log("miroir-core: loading miroirFundamentalType.js");
+console.log("miroir-core: loading miroirFundamentalType.js DONE");
 
 export {
-  InstanceDictionaryNum,
   InstanceDictionary,
-  MetaEntitySchema,
+  InstanceDictionaryNum,
   MetaEntity,
-  UuidSchema,
+  MetaEntitySchema,
   Uuid,
-} from './0_interfaces/1_core/EntityDefinition.js';
+  UuidSchema,
+} from "./0_interfaces/1_core/EntityDefinition.js";
+export { HttpMethod, HttpMethodsArray, HttpMethodsObject } from "./0_interfaces/1_core/Http.js";
 export {
   ApplicationSectionOpposite,
-  EntityInstanceWithNameSchema,
   EntityInstanceWithName,
-} from './0_interfaces/1_core/Instance.js';
-export {
-  HttpMethod,
-  HttpMethodsArray,
-  HttpMethodsObject,
-} from './0_interfaces/1_core/Http.js';
+  EntityInstanceWithNameSchema,
+} from "./0_interfaces/1_core/Instance.js";
 export {
   JzodSchemaDefinition,
   jzodSchemaDefinitionSchema,
-} from './0_interfaces/1_core/JzodSchemaDefinition.js';
+} from "./0_interfaces/1_core/JzodSchemaDefinition.js";
+export { DeploymentMode } from "./0_interfaces/1_core/MiroirConfig.js";
+export { DeploymentUuidToReportsEntitiesDefinitionsMapping } from "./0_interfaces/1_core/Model.js";
 export {
-  DeploymentMode,
-  // StoreBasedConfigurationSchema,
-  // StoreBasedConfiguration,
-} from './0_interfaces/1_core/MiroirConfig.js';
-export {
-  DeploymentUuidToReportsEntitiesDefinitionsMapping
-} from './0_interfaces/1_core/Model.js';
-export {
-  ClientFileStorage,
   // SelfApplicationDeploymentConfigurationSchema,
   // SelfApplicationDeploymentConfiguration,
   AdminApplicationDeploymentConfiguration,
-  ApplicationModelLevelSchema,
   ApplicationModelLevel,
+  ApplicationModelLevelSchema,
+  ClientFileStorage,
+  ClientServerDistributionModeSchema,
   DeploymentSide,
   FileStorage,
-  ModelStorageLocationSchema,
   ModelStorageLocation,
+  ModelStorageLocationSchema,
   ServerFileStorage,
   ServerSqlStorage,
   ServerStorageLocation,
   StorageLocation,
   StorageTypeSchema,
-  ClientServerDistributionModeSchema,
-} from './0_interfaces/1_core/StorageConfiguration.js';
+} from "./0_interfaces/1_core/StorageConfiguration.js";
 export {
-  TestImplementationExpect,
   TestImplementation,
-} from './0_interfaces/1_core/TestImplementation.js';
+  TestImplementationExpect,
+} from "./0_interfaces/1_core/TestImplementation.js";
 export {
   EntityDefinitionEntityDefinition,
   EntityDefinitionEntityDefinitionAttribute,
-  EntityDefinitionEntityDefinitionAttributeNew, 
+  EntityDefinitionEntityDefinitionAttributeNew,
   entityDefinitionEntityDefinitionAttributeNewSchema,
   entityDefinitionEntityDefinitionAttributeSchema,
-  entityDefinitionEntityDefinitionSchema
-} from './0_interfaces/1_core/writtenByHandSchema.js';
+  entityDefinitionEntityDefinitionSchema,
+} from "./0_interfaces/1_core/writtenByHandSchema.js";
 export {
-  LocalCacheInfo,
-  CRUDActionNameSchema,
+  DeploymentEntityState,
+  ZEntityState,
+  ZEntityStateSchema,
+} from "./0_interfaces/2_domain/DeploymentStateInterface.js";
+export {
   CRUDActionName,
   CRUDActionNamesArray,
   CRUDActionNamesArrayString,
-  DeploymentSectionDomainState,
-  DomainState,
-  DomainStateMetaModelSelector,
-  EntityInstancesUuidIndexEntityInstanceArraySelector,
-  DomainControllerInterface,
-  EntitiesDomainState,
-  EntitiesDomainStateInstanceSelector,
-  EntitiesDomainStateReducer,
-  EntitiesDomainStateEntityInstanceArraySelector,
-  EntitiesDomainStateTransformer,
-  CUDActionNameSchema,
+  CRUDActionNameSchema,
   CUDActionName,
   CUDActionNamesArray,
-} from './0_interfaces/2_domain/DomainControllerInterface.js';
+  CUDActionNameSchema,
+  DeploymentSectionDomainState,
+  DomainControllerInterface,
+  DomainState,
+  DomainStateMetaModelSelector,
+  EntitiesDomainState,
+  EntitiesDomainStateEntityInstanceArraySelector,
+  EntitiesDomainStateInstanceSelector,
+  EntitiesDomainStateReducer,
+  EntitiesDomainStateTransformer,
+  EntityInstancesUuidIndexEntityInstanceArraySelector,
+  LocalCacheInfo,
+} from "./0_interfaces/2_domain/DomainControllerInterface.js";
 export {
   Action2EntityInstanceCollection,
   Action2EntityInstanceCollectionOrFailure,
   Action2EntityInstanceReturnType,
   Action2EntityInstanceSuccess,
+  Action2Error,
+  Action2ReturnType,
   Action2Success,
   Action2VoidReturnType,
   Action2VoidSuccess,
-  Action2Error,
-  Action2ReturnType,
   Domain2Element,
-  Domain2QueryReturnType,
   Domain2ElementFailed,
-  domain2ElementObjectZodSchema
-} from './0_interfaces/2_domain/DomainElement.js';
+  domain2ElementObjectZodSchema,
+  Domain2QueryReturnType,
+} from "./0_interfaces/2_domain/DomainElement.js";
 export {
   RecordOfJzodElement,
   RecordOfJzodObject,
-} from './0_interfaces/2_domain/DomainStateQuerySelectorInterface.js';
+} from "./0_interfaces/2_domain/DomainStateQuerySelectorInterface.js";
 export {
-  JzodSchemaQueryTemplateSelector,
-  ExtractorTemplatePersistenceStoreRunner,
-  QueryTemplateRunnerMapForJzodSchema,
-  ExtractorTemplateRunnerParamsForJzodSchema,
-  AsyncExtractWithBoxedExtractorOrCombinerReturningObjectOrObjectList,
+  AsyncBoxedExtractorOrQueryRunnerMap,
   AsyncBoxedExtractorRunner,
   AsyncBoxedExtractorRunnerParams,
+  AsyncBoxedExtractorTemplateRunner,
+  AsyncBoxedExtractorTemplateRunnerParams,
+  AsyncExtractWithBoxedExtractorOrCombinerReturningObjectOrObjectList,
+  AsyncQueryRunner,
+  AsyncQueryRunnerParams,
+  AsyncQueryTemplateRunner,
+  AsyncQueryTemplateRunnerParams,
+  BoxedExtractorTemplateRunner,
+  ExtractorOrQueryPersistenceStoreRunner,
+  ExtractorOrQueryRunnerMap,
+  ExtractorRunnerParamsForJzodSchema,
+  ExtractorTemplatePersistenceStoreRunner,
+  ExtractorTemplateRunnerParamsForJzodSchema,
+  JzodSchemaQuerySelector,
+  JzodSchemaQueryTemplateSelector,
+  QueryRunnerMapForJzodSchema,
+  QueryTemplateRunnerMapForJzodSchema,
+  SyncBoxedExtractorOrQueryRunnerMap,
   SyncBoxedExtractorRunner,
   SyncBoxedExtractorRunnerParams,
   SyncBoxedExtractorTemplateRunner,
   SyncBoxedExtractorTemplateRunnerParams,
   SyncExtractWithBoxedExtractorOrCombinerReturningObjectOrObjectList,
-  SyncQueryRunnerParams,
   SyncQueryRunner,
+  SyncQueryRunnerParams,
   SyncQueryTemplateRunner,
   SyncQueryTemplateRunnerParams,
-  ExtractorOrQueryPersistenceStoreRunner,
-  JzodSchemaQuerySelector,
-  QueryRunnerMapForJzodSchema,
-  ExtractorRunnerParamsForJzodSchema,
-  AsyncBoxedExtractorOrQueryRunnerMap,
-  AsyncQueryRunner,
-  AsyncQueryRunnerParams,
-  AsyncQueryTemplateRunner,
-  AsyncQueryTemplateRunnerParams,
-  AsyncBoxedExtractorTemplateRunner,
-  AsyncBoxedExtractorTemplateRunnerParams,
-  SyncBoxedExtractorOrQueryRunnerMap,
-  ExtractorOrQueryRunnerMap,
-  BoxedExtractorTemplateRunner,
-} from './0_interfaces/2_domain/ExtractorRunnerInterface.js';
+} from "./0_interfaces/2_domain/ExtractorRunnerInterface.js";
 export {
-  ZEntityState,
-  ZEntityStateSchema,
-  DeploymentEntityState,
-} from './0_interfaces/2_domain/DeploymentStateInterface.js';
-export {
-  DataStoreApplicationTypeSchema,
   DataStoreApplicationType,
-} from './0_interfaces/3_controllers/ApplicationControllerInterface.js';
+  DataStoreApplicationTypeSchema,
+} from "./0_interfaces/3_controllers/ApplicationControllerInterface.js";
+export { EndpointInterface } from "./0_interfaces/3_controllers/EndpointInterface.js";
 export {
-  EndpointInterface
-} from './0_interfaces/3_controllers/EndpointInterface.js';
+  ErrorLogServiceInterface,
+  MError,
+} from "./0_interfaces/3_controllers/ErrorLogServiceInterface.js";
+export { MiroirContextInterface } from "./0_interfaces/3_controllers/MiroirContextInterface.js";
+export { LocalCacheInterface } from "./0_interfaces/4-services/LocalCacheInterface.js";
 export {
-  ErrorLogServiceInterface, MError
-} from './0_interfaces/3_controllers/ErrorLogServiceInterface.js';
-export {
-  MiroirContextInterface
-} from './0_interfaces/3_controllers/MiroirContextInterface.js';
-export {
-  LoggerFactoryInterface,
-  LoggerFactoryAsyncInterface,
-  LoggerInterface,
-  LogLevelOptions,
   defaultLevels,
-  SpecificLoggerOptionsMap,
+  LoggerFactoryAsyncInterface,
+  LoggerFactoryInterface,
+  LoggerInterface,
   LoggerOptions,
+  LogLevelOptions,
+  SpecificLoggerOptionsMap,
 } from "./0_interfaces/4-services/LoggerInterface";
-export {
-  PersistenceStoreControllerManagerInterface
-} from "./0_interfaces/4-services/PersistenceStoreControllerManagerInterface";
-export {
-  LocalCacheInterface,
-} from './0_interfaces/4-services/LocalCacheInterface.js';
 export {
   HttpRequestBodyFormat,
   HttpResponseBodyFormat,
   PersistenceStoreLocalOrRemoteInterface,
   RemoteStoreActionReturnType,
-  RestPersistenceClientAndRestClientInterface,
   RestClientCallReturnType,
   RestClientInterface,
   RestMethodHandler,
+  RestPersistenceClientAndRestClientInterface,
   RestServiceHandler,
   StoreInterface,
 } from "./0_interfaces/4-services/PersistenceInterface";
@@ -598,49 +576,39 @@ export {
   InitApplicationParameters,
   PersistenceStoreAbstractInterface,
   PersistenceStoreAbstractSectionInterface,
-  PersistenceStoreAdminSectionInterface,
   PersistenceStoreAdminSectionFactory,
+  PersistenceStoreAdminSectionInterface,
+  PersistenceStoreControllerAction,
+  PersistenceStoreControllerInterface,
+  PersistenceStoreDataOrModelSectionInterface,
   PersistenceStoreDataSectionInterface,
-  PersistenceStoreModelSectionInterface,
   PersistenceStoreEntitySectionAbstractInterface,
   PersistenceStoreInstanceSectionAbstractInterface,
-  StorageSpaceHandlerInterface,
-  PersistenceStoreDataOrModelSectionInterface,
-  PersistenceStoreControllerInterface,
-  PersistenceStoreControllerAction,
+  PersistenceStoreModelSectionInterface,
   PersistenceStoreSectionFactory,
+  StorageSpaceHandlerInterface,
   StoreSectionFactoryRegister,
 } from "./0_interfaces/4-services/PersistenceStoreControllerInterface";
-export {
-  TestResult,
-  TestSuiteResult,
-} from "./0_interfaces/4-services/TestInterface";
-export {
-  getApplicationSection
-} from './1_core/AdminApplication.js';
-export { } from "./1_core/Report";
-export { ACTION_OK } from './1_core/constants.js';
-export { DomainInstanceUuidIndexToArray } from './1_core/DomainState.js';
+export { PersistenceStoreControllerManagerInterface } from "./0_interfaces/4-services/PersistenceStoreControllerManagerInterface";
+export { TestResult, TestSuiteResult } from "./0_interfaces/4-services/TestInterface";
+export { getApplicationSection } from "./1_core/AdminApplication.js";
+export { alterObjectAtPath, deleteObjectAtPath } from "./1_core/alterObjectAtPath.js";
+export { ACTION_OK } from "./1_core/constants.js";
+export { DomainInstanceUuidIndexToArray } from "./1_core/DomainState.js";
 export {
   getDefaultValueForJzodSchema,
   getDefaultValueForJzodSchemaWithResolution,
-} from './1_core/jzod/getDefaultValueForJzodSchema.js';
+} from "./1_core/jzod/getDefaultValueForJzodSchema.js";
 export {
-  // getReportSectionTargetEntityUuid,
-  resolveJzodSchemaReference,
-  resolveReferencesForJzodSchemaAndValueObject,
-  resolveJzodSchemaReferenceInContext,
   ResolvedJzodSchemaReturnType,
   ResolvedJzodSchemaReturnTypeError,
   ResolvedJzodSchemaReturnTypeOK,
-} from './1_core/jzod/JzodUnfoldSchemaForValue.js';
-export {
-  unfoldJzodSchemaOnce
-} from './1_core/jzod/JzodUnfoldSchemaOnce.js';
-export {
-  alterObjectAtPath,
-  deleteObjectAtPath,
-} from './1_core/alterObjectAtPath.js';
+  // getReportSectionTargetEntityUuid,
+  resolveJzodSchemaReference,
+  resolveJzodSchemaReferenceInContext,
+  resolveReferencesForJzodSchemaAndValueObject,
+} from "./1_core/jzod/JzodUnfoldSchemaForValue.js";
+export { unfoldJzodSchemaOnce } from "./1_core/jzod/JzodUnfoldSchemaOnce.js";
 export {
   applicationModelEntities,
   defaultMiroirMetaModel,
@@ -648,27 +616,40 @@ export {
   getReportsAndEntitiesDefinitionsForDeploymentUuid,
   metaModelEntities,
   miroirModelEntities,
-} from './1_core/Model.js';
+} from "./1_core/Model.js";
+export {} from "./1_core/Report";
+export {} from "./1_core/Report.js";
 export {
-  // getReportSectionTargetEntityUuid,
-} from './1_core/Report.js';
+  asyncApplyExtractorTransformerInMemory,
+  asyncExtractEntityInstanceListWithObjectListExtractor,
+  asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
+  asyncExtractWithExtractor,
+  asyncInnerSelectElementFromQuery,
+  asyncRunQuery,
+} from "./2_domain/AsyncQuerySelectors.js";
 export {
   getBasicApplicationConfiguration,
   getBasicStoreUnitConfiguration,
-} from './2_domain/Deployment.js';
+} from "./2_domain/Deployment.js";
+export {
+  getDeploymentEntityStateIndex,
+  getLocalCacheIndexDeploymentSection,
+  getLocalCacheIndexDeploymentUuid,
+  getLocalCacheIndexEntityUuid,
+} from "./2_domain/DeploymentEntityState.js";
 export {
   extractEntityJzodSchemaFromDeploymentEntityState,
-  selectEntityInstanceFromDeploymentEntityState,
-  selectEntityInstanceUuidIndexFromDeploymentEntityState,
-  selectEntityInstanceListFromDeploymentEntityState,
   getDeploymentEntityStateJzodSchemaSelectorMap,
   getDeploymentEntityStateSelectorMap,
+  GetExtractorRunnerParamsForDeploymentEntityState,
+  getExtractorRunnerParamsForDeploymentEntityState,
   GetQueryRunnerParamsForDeploymentEntityState,
   getQueryRunnerParamsForDeploymentEntityState,
   runQueryFromDeploymentEntityState,
-  GetExtractorRunnerParamsForDeploymentEntityState,
-  getExtractorRunnerParamsForDeploymentEntityState
-} from './2_domain/DeploymentEntityStateQuerySelectors.js';
+  selectEntityInstanceFromDeploymentEntityState,
+  selectEntityInstanceListFromDeploymentEntityState,
+  selectEntityInstanceUuidIndexFromDeploymentEntityState,
+} from "./2_domain/DeploymentEntityStateQuerySelectors.js";
 export {
   getDeploymentEntityStateJzodSchemaSelectorTemplateMap,
   getDeploymentEntityStateSelectorTemplateMap,
@@ -677,115 +658,97 @@ export {
   getQueryTemplateRunnerParamsForDeploymentEntityState,
   GetQueryTemplateRunnerParamsForDeploymentEntityState,
   runQueryTemplateFromDeploymentEntityState,
-} from './2_domain/DeploymentEntityStateQueryTemplateSelectors.js';
+} from "./2_domain/DeploymentEntityStateQueryTemplateSelectors.js";
 export {
+  selectCurrentDeploymentModel,
   selectEntityInstances,
   selectEntityInstancesFromJzodAttribute,
   selectEntityUuidFromJzodAttribute,
-  selectCurrentDeploymentModel,
   selectReportDefinitionFromReportUuid,
-} from './2_domain/DomainDataAccess.js';
+} from "./2_domain/DomainDataAccess.js";
 export {
-  dummyDomainManyQueryWithDeploymentUuid,
   dummyDomainManyQueryTemplateWithDeploymentUuid,
+  dummyDomainManyQueryWithDeploymentUuid,
   dummyDomainModelGetFetchParamJzodSchemaQueryParams,
-  getDomainStateJzodSchemaExtractorRunnerMap,
+  extractEntityInstanceListFromListQueryAndDomainState,
+  extractEntityInstanceUuidIndexFromListQueryAndDomainState,
+  extractWithExtractorOrCombinerReturningObjectOrObjectListFromDomainState,
   getDomainStateExtractorRunnerMap,
+  getDomainStateJzodSchemaExtractorRunnerMap,
   getExtractorRunnerParamsForDomainState,
+  GetExtractorRunnerParamsForDomainState,
   GetQueryRunnerParamsForDomainState,
   getQueryRunnerParamsForDomainState,
-  GetExtractorRunnerParamsForDomainState,
-  extractWithExtractorOrCombinerReturningObjectOrObjectListFromDomainState,
   innerSelectElementFromQueryAndDomainState,
-  selectJzodSchemaByDomainModelQueryFromDomainStateNew,
-  selectEntityJzodSchemaFromDomainStateNew,
-  selectEntityInstanceUuidIndexFromDomainState,
-  selectEntityInstanceListFromDomainState,
-  selectEntityInstanceFromObjectQueryAndDomainState,
-  extractEntityInstanceUuidIndexFromListQueryAndDomainState,
-  extractEntityInstanceListFromListQueryAndDomainState,
-  selectFetchQueryJzodSchemaFromDomainStateNew,
-  selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
   runQueryFromDomainState,
-} from './2_domain/DomainStateQuerySelectors.js';
+  selectEntityInstanceFromObjectQueryAndDomainState,
+  selectEntityInstanceListFromDomainState,
+  selectEntityInstanceUuidIndexFromDomainState,
+  selectEntityJzodSchemaFromDomainStateNew,
+  selectFetchQueryJzodSchemaFromDomainStateNew,
+  selectJzodSchemaByDomainModelQueryFromDomainStateNew,
+  selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
+} from "./2_domain/DomainStateQuerySelectors.js";
 export {
+  ExtractorTemplateRunnerForDomainState,
+  extractorTemplateRunnerForDomainState,
+  getExtractorTemplateRunnerParamsForDomainState,
+  getQueryTemplateRunnerParamsForDomainState,
   getSelectorMapForTemplate,
+  GetSelectorParamsForExtractorTemplateOnDomainStateType,
+  GetSelectorParamsForQueryTemplateOnDomainStateType,
+  QueryTemplateRunnerForDomainState,
+  queryTemplateRunnerForDomainState,
   runQueryTemplateFromDomainState,
-  selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate,
+  selectEntityJzodSchemaFromDomainStateNewForTemplate,
   selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
   selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
-  selectEntityJzodSchemaFromDomainStateNewForTemplate,
-  getQueryTemplateRunnerParamsForDomainState,
-  GetSelectorParamsForQueryTemplateOnDomainStateType,
-  getExtractorTemplateRunnerParamsForDomainState,
-  ExtractorTemplateRunnerForDomainState,
-  GetSelectorParamsForExtractorTemplateOnDomainStateType,
-  QueryTemplateRunnerForDomainState,
-  extractorTemplateRunnerForDomainState,
-  queryTemplateRunnerForDomainState,
-} from './2_domain/DomainStateQueryTemplateSelector.js';
-export {
-  ExtractorTemplateRunnerInMemory
-} from './2_domain/ExtractorTemplateRunnerInMemory.js';
-export {
-  ExtractorRunnerInMemory
-} from './2_domain/ExtractorRunnerInMemory.js';
-export {
-  handleBoxedExtractorTemplateOrQueryTemplateAction,
-  handleBoxedExtractorTemplateAction,
-  handleQueryTemplateAction,
-  runQueryTemplateWithExtractorCombinerTransformer,
-  extractWithBoxedExtractorTemplate,
-  extractFetchQueryTemplateJzodSchema,
-  extractJzodSchemaForDomainModelQueryTemplate,
-} from './2_domain/QueryTemplateSelectors.js';
+  selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate,
+} from "./2_domain/DomainStateQueryTemplateSelector.js";
+export { ExtractorRunnerInMemory } from "./2_domain/ExtractorRunnerInMemory.js";
+export { ExtractorTemplateRunnerInMemory } from "./2_domain/ExtractorTemplateRunnerInMemory.js";
+export { ModelEntityActionTransformer } from "./2_domain/ModelEntityActionTransformer.js";
 export {
   domainElementToPlainObjectDEFUNCT,
-  plainObjectToDomainElementDEFUNCT,
-  extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
   extractEntityInstanceListWithObjectListExtractorInMemory,
+  extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
   extractFetchQueryJzodSchema,
   extractJzodSchemaForDomainModelQuery,
-  extractzodSchemaForSingleSelectQuery,
-  runQuery,
   extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList,
-} from './2_domain/QuerySelectors.js';
+  extractzodSchemaForSingleSelectQuery,
+  plainObjectToDomainElementDEFUNCT,
+  runQuery,
+} from "./2_domain/QuerySelectors.js";
 export {
-  asyncApplyExtractorTransformerInMemory,
-  asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
-  asyncExtractEntityInstanceListWithObjectListExtractor,
-  asyncExtractWithExtractor,
-  asyncRunQuery,
-  asyncInnerSelectElementFromQuery,
-} from './2_domain/AsyncQuerySelectors.js';
-export{
-  getLocalCacheIndexDeploymentSection,
-  getLocalCacheIndexDeploymentUuid,
-  getLocalCacheIndexEntityUuid,
-  getDeploymentEntityStateIndex,
-} from './2_domain/DeploymentEntityState.js';
+  extractFetchQueryTemplateJzodSchema,
+  extractJzodSchemaForDomainModelQueryTemplate,
+  extractWithBoxedExtractorTemplate,
+  handleBoxedExtractorTemplateAction,
+  handleBoxedExtractorTemplateOrQueryTemplateAction,
+  handleQueryTemplateAction,
+  runQueryTemplateWithExtractorCombinerTransformer,
+} from "./2_domain/QueryTemplateSelectors.js";
 export {
-  ModelEntityActionTransformer
-} from './2_domain/ModelEntityActionTransformer.js';
-export { 
-  transformer_spreadSheetToJzodSchema
-} from "./2_domain/Transformer_Spreadsheet";
-export { 
-  applicationTransformerDefinitions,
+  resolveExtractorOrQueryTemplate,
+  resolveExtractorTemplate,
+  resolveExtractorTemplateForExtractorOrCombinerReturningObjectOrObjectList,
+  resolveQueryTemplateSelectExtractorWrapper,
+  resolveQueryTemplateWithExtractorCombinerTransformer,
+} from "./2_domain/Templates";
+export { transformer_spreadSheetToJzodSchema } from "./2_domain/Transformer_Spreadsheet";
+export {
   ActionTemplate,
+  applicationTransformerDefinitions,
   resolveApplyTo_legacy,
-  transformer_resolveReference,
   transformer_extended_apply,
   transformer_InnerReference_resolve,
   transformer_mustacheStringTemplate_apply,
+  transformer_resolveReference,
 } from "./2_domain/TransformersForRuntime";
 export {
-  resolveExtractorTemplate,
-  resolveQueryTemplateWithExtractorCombinerTransformer,
-  resolveQueryTemplateSelectExtractorWrapper,
-  resolveExtractorTemplateForExtractorOrCombinerReturningObjectOrObjectList,
-  resolveExtractorOrQueryTemplate,
-} from "./2_domain/Templates";
+  modelActionStoreRunnerNotUsed,
+  storeActionOrBundleActionStoreRunner,
+} from "./3_controllers/ActionRunner.js";
 export {
   cacheFetchPolicy,
   cacheInvalidationPolicy,
@@ -794,150 +757,120 @@ export {
   undoRedoHistorization,
 } from "./3_controllers/ConfigurationService";
 export {
-  resetAndInitApplicationDeployment,
   DeploymentConfiguration,
   DomainController,
+  resetAndInitApplicationDeployment,
 } from "./3_controllers/DomainController";
-export {
-  Endpoint
-} from './3_controllers/Endpoint.js';
-export {
-  ErrorAdminStore
-} from './3_controllers/ErrorHandling/ErrorAdminStore.js';
-export {
-  ErrorDataStore
-} from './3_controllers/ErrorHandling/ErrorDataStore.js';
-export {
-  ErrorModelStore
-} from './3_controllers/ErrorHandling/ErrorModelStore.js';
-export {
-  storeActionOrBundleActionStoreRunner,
-  modelActionStoreRunnerNotUsed,
-} from './3_controllers/ActionRunner.js';
-export {
-  modelInitialize,
-} from './3_controllers/ModelInitializer.js';
-export { ErrorLogService } from './3_controllers/ErrorHandling/ErrorLogService.js';
-export { CallUtils } from './3_controllers/ErrorHandling/CallUtils.js';
-export { MiroirContext } from './3_controllers/MiroirContext.js';
-export {
-  MiroirLoggerFactory,
-  testLogger,
-} from './4_services/LoggerFactory.js';
+export { Endpoint } from "./3_controllers/Endpoint.js";
+export { CallUtils } from "./3_controllers/ErrorHandling/CallUtils.js";
+export { ErrorAdminStore } from "./3_controllers/ErrorHandling/ErrorAdminStore.js";
+export { ErrorDataStore } from "./3_controllers/ErrorHandling/ErrorDataStore.js";
+export { ErrorLogService } from "./3_controllers/ErrorHandling/ErrorLogService.js";
+export { ErrorModelStore } from "./3_controllers/ErrorHandling/ErrorModelStore.js";
+export { MiroirContext } from "./3_controllers/MiroirContext.js";
+export { modelInitialize } from "./3_controllers/ModelInitializer.js";
+export { MiroirLoggerFactory, testLogger } from "./4_services/LoggerFactory.js";
 export {
   PersistenceStoreController,
   PersistenceStoreControllerFactoryReturnType,
-} from './4_services/PersistenceStoreController.js';
-export {
-  RestClient
-} from './4_services/RestClient.js';
-export {
-  RestClientStub
-} from './4_services/RestClientStub';
-export {
-  restServerDefaultHandlers
-} from './4_services/RestServer.js';
+} from "./4_services/PersistenceStoreController.js";
+export { PersistenceStoreControllerManager } from "./4_services/PersistenceStoreControllerManager.js";
 export {
   // createPersistenceStoreControllers,
   startLocalPersistenceStoreControllers,
-} from './4_services/PersistenceStoreControllerTools.js';
-export {
-  PersistenceStoreControllerManager
-} from './4_services/PersistenceStoreControllerManager.js';
-export {
-  generateRestServiceResponse,
-} from './4_services/RestTools.js';
-export {
-  TestSuiteContext
-} from './4_services/TestSuiteContext.js';
+} from "./4_services/PersistenceStoreControllerTools.js";
+export { RestClient } from "./4_services/RestClient.js";
+export { RestClientStub } from "./4_services/RestClientStub";
+export { restServerDefaultHandlers } from "./4_services/RestServer.js";
+export { generateRestServiceResponse } from "./4_services/RestTools.js";
+export { TestSuiteContext } from "./4_services/TestSuiteContext.js";
 
 export {
   displayTestSuiteResults,
   displayTestSuiteResultsDetails,
+  ignorePostgresExtraAttributes,
   ignorePostgresExtraAttributesOnList,
   ignorePostgresExtraAttributesOnObject,
   ignorePostgresExtraAttributesOnRecord,
-  ignorePostgresExtraAttributes,
-} from './4_services/otherTools.js';
-export { miroirCoreStartup } from './startup.js';
+} from "./4_services/otherTools.js";
+export { miroirCoreStartup } from "./startup.js";
 export {
-  stringTuple,
   circularReplacer,
-  safeResolvePathOnObject,
+  domainStateToDeploymentEntityState,
   resolvePathOnObject,
   ResultAccessPath,
-  domainStateToDeploymentEntityState,
+  safeResolvePathOnObject,
+  stringTuple,
 } from "./tools";
 
 console.log("miroir-core: DONE exports");
 
 console.log("miroir-core: loading MIROIR json files");
-const entityAdminApplication = require("../src/assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/25d935e7-9e93-42c2-aade-0472b883492b.json") //assert { type: "json" };
-const entityEndpointVersion = require('./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3d8da4d4-8f76-4bb4-9212-14869d81c00c.json');
-const entityEntity = require('./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json');
-const entityEntityDefinition = require('./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json');
-const entityJzodSchema = require('./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/5e81e1b9-38be-487c-b3e5-53796c57fccf.json');
-const entityMenu = require('./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/dde4c883-ae6d-47c3-b6df-26bc6e3c1842.json');
-const entityReport = require('./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916.json');
-const entitySelfApplication = require('./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a659d350-dd97-4da9-91de-524fa01745dc.json');
-const entitySelfApplicationDeploymentConfiguration = require('./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/35c5608a-7678-4f07-a4ec-76fc5bc35424.json');
-const entitySelfApplicationVersion = require('./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json');
-const entitySelfApplicationModelBranch = require('./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/cdb0aec6-b848-43ac-a058-fe2dbe5811f1.json');
-const entityStoreBasedConfiguration = require('./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/7990c0c9-86c3-40a1-a121-036c91b55ed7.json');
-const entityQueryVersion = require('./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e4320b9e-ab45-4abe-85d8-359604b3c62f.json');
-const entityTest = require('./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c37625c7-0b35-4d6a-811d-8181eb978301.json');
+const entityAdminApplication = require("../src/assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/25d935e7-9e93-42c2-aade-0472b883492b.json"); //assert { type: "json" };
+const entityEndpointVersion = require("./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3d8da4d4-8f76-4bb4-9212-14869d81c00c.json");
+const entityEntity = require("./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json");
+const entityEntityDefinition = require("./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json");
+const entityJzodSchema = require("./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/5e81e1b9-38be-487c-b3e5-53796c57fccf.json");
+const entityMenu = require("./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/dde4c883-ae6d-47c3-b6df-26bc6e3c1842.json");
+const entityReport = require("./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916.json");
+const entitySelfApplication = require("./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a659d350-dd97-4da9-91de-524fa01745dc.json");
+const entitySelfApplicationDeploymentConfiguration = require("./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/35c5608a-7678-4f07-a4ec-76fc5bc35424.json");
+const entitySelfApplicationVersion = require("./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json");
+const entitySelfApplicationModelBranch = require("./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/cdb0aec6-b848-43ac-a058-fe2dbe5811f1.json");
+const entityStoreBasedConfiguration = require("./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/7990c0c9-86c3-40a1-a121-036c91b55ed7.json");
+const entityQueryVersion = require("./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e4320b9e-ab45-4abe-85d8-359604b3c62f.json");
+const entityTest = require("./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c37625c7-0b35-4d6a-811d-8181eb978301.json");
 
 const entityDefinitionAdminApplication = require("../src/assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/3fb6203e-f639-4b2a-afe1-e1fb45d6b2ea.json");
-const entityDefinitionEndpoint = require('./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/e3c1cc69-066d-4f52-beeb-b659dc7a88b9.json');
-const entityDefinitionEntity = require('./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/381ab1be-337f-4198-b1d3-f686867fc1dd.json');
-const entityDefinitionEntityDefinition = require('./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bdd7ad43-f0fc-4716-90c1-87454c40dd95.json');
-const entityDefinitionMenu = require('./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/0f421b2f-2fdc-47ee-8232-62121ea46350.json');
-const entityDefinitionJzodSchema = require('./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/15407b85-f2c8-4a34-bfa7-89f044ba2407.json');
-const entityDefinitionQuery = require('./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/359f1f9b-7260-4d76-a864-72c839b9711b.json');
-const entityDefinitionReport = require('./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/952d2c65-4da2-45c2-9394-a0920ceedfb6.json');
-const entityDefinitionSelfApplication = require('./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/9460420b-f176-4918-bd45-894ab195ffe9.json');
-const entityDefinitionSelfApplicationDeploymentConfiguration = require('./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bd303ae8-6bce-4b44-a63c-815b9ebf728b.json');
-const entityDefinitionSelfApplicationVersion = require('./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/27046fce-742f-4cc4-bb95-76b271f490a5.json');
-const entityDefinitionSelfApplicationModelBranch = require('./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/69bf7c03-a1df-4d1c-88c1-44363feeea87.json');
-const entityDefinitionTest = require('./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/d2842a84-3e66-43ee-ac58-7e13b95b01e8.json');
+const entityDefinitionEndpoint = require("./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/e3c1cc69-066d-4f52-beeb-b659dc7a88b9.json");
+const entityDefinitionEntity = require("./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/381ab1be-337f-4198-b1d3-f686867fc1dd.json");
+const entityDefinitionEntityDefinition = require("./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bdd7ad43-f0fc-4716-90c1-87454c40dd95.json");
+const entityDefinitionMenu = require("./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/0f421b2f-2fdc-47ee-8232-62121ea46350.json");
+const entityDefinitionJzodSchema = require("./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/15407b85-f2c8-4a34-bfa7-89f044ba2407.json");
+const entityDefinitionQuery = require("./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/359f1f9b-7260-4d76-a864-72c839b9711b.json");
+const entityDefinitionReport = require("./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/952d2c65-4da2-45c2-9394-a0920ceedfb6.json");
+const entityDefinitionSelfApplication = require("./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/9460420b-f176-4918-bd45-894ab195ffe9.json");
+const entityDefinitionSelfApplicationDeploymentConfiguration = require("./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bd303ae8-6bce-4b44-a63c-815b9ebf728b.json");
+const entityDefinitionSelfApplicationVersion = require("./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/27046fce-742f-4cc4-bb95-76b271f490a5.json");
+const entityDefinitionSelfApplicationModelBranch = require("./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/69bf7c03-a1df-4d1c-88c1-44363feeea87.json");
+const entityDefinitionTest = require("./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/d2842a84-3e66-43ee-ac58-7e13b95b01e8.json");
 
-const selfApplicationMiroir = require('./assets/miroir_data/a659d350-dd97-4da9-91de-524fa01745dc/21840247-b5b1-4344-baec-f818f4797d92.json');
-const selfApplicationDeploymentMiroir = require('./assets/miroir_data/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json');
-const selfApplicationModelBranchMiroirMasterBranch = require('./assets/miroir_data/cdb0aec6-b848-43ac-a058-fe2dbe5811f1/ad1ddc4e-556e-4598-9cff-706a2bde0be7.json');
-const selfApplicationVersionInitialMiroirVersion = require('./assets/miroir_data/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/695826c2-aefa-4f5f-a131-dee46fe21c1.json');
-const selfApplicationStoreBasedConfigurationMiroir = require('./assets/miroir_data/7990c0c9-86c3-40a1-a121-036c91b55ed7/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json');
-const reportApplicationList = require('./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/0e4cf674-3a26-422a-8618-09e32302ac0c.json');
-const reportApplicationDeploymentConfigurationList = require('./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/df0a9a8f-e0f6-4f9f-8635-c8460e638e1b.json');
-const reportApplicationModelBranchList = require('./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/60648b22-e2c6-4b74-8031-53884f597d63.json');
-const reportApplicationVersionList = require('./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/0810de28-fdab-4baf-8935-7e04a8f779a9.json');
-const reportConfigurationList = require('./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/43f04807-8f96-43f9-876f-9a0210f7b99c.json');
-const reportEndpointVersionList = require('./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/ace3d5c9-b6a7-43e6-a277-595329e7532a.json');
-const reportEntityDefinitionList = require('./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/f9aff35d-8636-4519-8361-c7648e0ddc68.json');
-const reportEntityDefinitionDetails = require('./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/acd55b04-84df-427e-b219-cf0e01a6881b.json');
-const reportEntityList = require('./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/c9ea3359-690c-4620-9603-b5b402e4a2b9.json');
-const reportEntityDetails = require('./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/074d1de9-594d-42d6-8848-467baeb6f3e0.json');
-const reportMenuList = require('./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/ecfd8787-09cc-417d-8d2c-173633c9f998.json');
-const reportJzodSchemaList = require('./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/8b22e84e-9374-4121-b2a7-d13d947a0ba2.json');
-const reportQueryVersionList = require('./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/7aed09a9-8a2d-4437-95ab-62966e38352c.json');
-const reportReportList = require('./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855.json');
-const reportTestList = require('./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/683ba925-835e-4f9d-845b-7fae500316ad.json');
-const reportTestDetails = require('./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/d65d8dc8-2a7f-4111-81b1-0324e816c1a8.json');
+const selfApplicationMiroir = require("./assets/miroir_data/a659d350-dd97-4da9-91de-524fa01745dc/21840247-b5b1-4344-baec-f818f4797d92.json");
+const selfApplicationDeploymentMiroir = require("./assets/miroir_data/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json");
+const selfApplicationModelBranchMiroirMasterBranch = require("./assets/miroir_data/cdb0aec6-b848-43ac-a058-fe2dbe5811f1/ad1ddc4e-556e-4598-9cff-706a2bde0be7.json");
+const selfApplicationVersionInitialMiroirVersion = require("./assets/miroir_data/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/695826c2-aefa-4f5f-a131-dee46fe21c1.json");
+const selfApplicationStoreBasedConfigurationMiroir = require("./assets/miroir_data/7990c0c9-86c3-40a1-a121-036c91b55ed7/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json");
+const reportApplicationList = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/0e4cf674-3a26-422a-8618-09e32302ac0c.json");
+const reportApplicationDeploymentConfigurationList = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/df0a9a8f-e0f6-4f9f-8635-c8460e638e1b.json");
+const reportApplicationModelBranchList = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/60648b22-e2c6-4b74-8031-53884f597d63.json");
+const reportApplicationVersionList = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/0810de28-fdab-4baf-8935-7e04a8f779a9.json");
+const reportConfigurationList = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/43f04807-8f96-43f9-876f-9a0210f7b99c.json");
+const reportEndpointVersionList = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/ace3d5c9-b6a7-43e6-a277-595329e7532a.json");
+const reportEntityDefinitionList = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/f9aff35d-8636-4519-8361-c7648e0ddc68.json");
+const reportEntityDefinitionDetails = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/acd55b04-84df-427e-b219-cf0e01a6881b.json");
+const reportEntityList = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/c9ea3359-690c-4620-9603-b5b402e4a2b9.json");
+const reportEntityDetails = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/074d1de9-594d-42d6-8848-467baeb6f3e0.json");
+const reportMenuList = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/ecfd8787-09cc-417d-8d2c-173633c9f998.json");
+const reportJzodSchemaList = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/8b22e84e-9374-4121-b2a7-d13d947a0ba2.json");
+const reportQueryVersionList = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/7aed09a9-8a2d-4437-95ab-62966e38352c.json");
+const reportReportList = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855.json");
+const reportTestList = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/683ba925-835e-4f9d-845b-7fae500316ad.json");
+const reportTestDetails = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/d65d8dc8-2a7f-4111-81b1-0324e816c1a8.json");
 
-const queryVersionBundleProducerV1 = require('./assets/miroir_data/e4320b9e-ab45-4abe-85d8-359604b3c62f/e8c15587-af5d-4c08-b5b7-22f959447690.json');
+const queryVersionBundleProducerV1 = require("./assets/miroir_data/e4320b9e-ab45-4abe-85d8-359604b3c62f/e8c15587-af5d-4c08-b5b7-22f959447690.json");
 
-const applicationEndpointV1 = require('./assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/ddd9c928-2ceb-4f67-971b-5898090412d6.json');
-const deploymentEndpointV1 = require('./assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/bbd08cbb-79ff-4539-b91f-7a14f15ac55f.json');
-const instanceEndpointV1 = require('./assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/ed520de4-55a9-4550-ac50-b1b713b72a89.json');
-const modelEndpointV1 = require('./assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/7947ae40-eb34-4149-887b-15a9021e714e.json');
+const applicationEndpointV1 = require("./assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/ddd9c928-2ceb-4f67-971b-5898090412d6.json");
+const deploymentEndpointV1 = require("./assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/bbd08cbb-79ff-4539-b91f-7a14f15ac55f.json");
+const instanceEndpointV1 = require("./assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/ed520de4-55a9-4550-ac50-b1b713b72a89.json");
+const modelEndpointV1 = require("./assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/7947ae40-eb34-4149-887b-15a9021e714e.json");
 
-const menuDefaultMiroir = require('./assets/miroir_data/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/eaac459c-6c2b-475c-8ae4-c6c3032dae00.json');
+const menuDefaultMiroir = require("./assets/miroir_data/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/eaac459c-6c2b-475c-8ae4-c6c3032dae00.json");
 
-const entityDefinitionStoreBasedConfiguration = require('./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/f93af951-ea13-4815-a2e3-ec0cab1fadd2.json');
+const entityDefinitionStoreBasedConfiguration = require("./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/f93af951-ea13-4815-a2e3-ec0cab1fadd2.json");
 const entityDefinitionTransformerDefinition = require("./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/54a16d69-c1f0-4dd7-aba4-a2cda883586c.json");
 
-const miroirJzodSchemaBootstrap = require('./assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/1e8dab4b-65a3-4686-922e-ce89a2d62aa9.json');
+const miroirJzodSchemaBootstrap = require("./assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/1e8dab4b-65a3-4686-922e-ce89a2d62aa9.json");
 const transformerJzodSchema = require("./assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/a97756cf-dd93-42b9-a021-91a629b187b9.json");
-
 
 // const entityDefinitionSelfApplicationV1 = require("../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/9460420b-f176-4918-bd45-894ab195ffe9.json"); //assert { type: "json" };
 // const entityDefinitionSelfApplicationVersionV1 = require("../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/27046fce-742f-4cc4-bb95-76b271f490a5.json"); //assert { type: "json" };
@@ -965,98 +898,91 @@ const transformerMenuV1 = require("../src/assets/miroir_data/a557419d-a288-4fb8-
 console.log("miroir-core: loading MIROIR json files DONE");
 
 export {
-  selfApplicationMiroir,
-  selfApplicationDeploymentMiroir,
-  selfApplicationModelBranchMiroirMasterBranch,
-  selfApplicationStoreBasedConfigurationMiroir,
-  selfApplicationVersionInitialMiroirVersion,
-  
-  entityAdminApplication,
-  entitySelfApplication,
-  entitySelfApplicationDeploymentConfiguration,
-  entitySelfApplicationModelBranch,
-  entitySelfApplicationVersion,
-  entityEndpointVersion,
-  entityEntity,
-  entityEntityDefinition,
-  entityMenu,
-  entityJzodSchema,
-  // entityQuery,
-  entityQueryVersion,
-  entityReport,
-  entityStoreBasedConfiguration,
-  entityTest,
-  
-  // entityDefinitionSelfApplicationV1,
-  domainEndpointVersionV1,
-  // entityDefinitionSelfApplicationVersionV1,
-  entityDefinitionAdminApplication,
-  entityDefinitionBundleV1,
-  entityDefinitionCommit,
-  // entityDefinitionEntityDefinitionV1,
-  // entityDefinitionJzodSchemaV1,
-  entityDefinitionQueryVersionV1,
-  // entityDefinitionReportV1,
-  entityDefinitionSelfApplication,
-  entityDefinitionSelfApplicationDeploymentConfiguration,
-  entityDefinitionSelfApplicationModelBranch,
-  entityDefinitionSelfApplicationVersion,
-  entityDefinitionEndpoint,
-  entityDefinitionEntity,
-  entityDefinitionEntityDefinition,
-  entityDefinitionJzodSchema,
-  entityDefinitionMenu,
-  entityDefinitionStoreBasedConfiguration,
-  // entityDefinitionQuery,
-  entityDefinitionQuery,
-  entityDefinitionReport,
-  entityDefinitionTest,
-  entityDefinitionTransformerDefinition,
-  
-  miroirJzodSchemaBootstrap,
-  
-  // queryBundleProducer,
-  queryVersionBundleProducerV1,
-  
   // applicationEndpoint,
   // deploymentEndpoint,
   // instanceEndpoint,
   // modelEndpoint,
   applicationEndpointV1,
   deploymentEndpointV1,
+  // entityDefinitionSelfApplicationV1,
+  domainEndpointVersionV1,
+  entityAdminApplication,
+  // entityDefinitionSelfApplicationVersionV1,
+  entityDefinitionAdminApplication,
+  entityDefinitionBundleV1,
+  entityDefinitionCommit,
+  entityDefinitionEndpoint,
+  entityDefinitionEntity,
+  entityDefinitionEntityDefinition,
+  entityDefinitionJzodSchema,
+  entityDefinitionMenu,
+  // entityDefinitionQuery,
+  entityDefinitionQuery,
+  // entityDefinitionEntityDefinitionV1,
+  // entityDefinitionJzodSchemaV1,
+  entityDefinitionQueryVersionV1,
+  entityDefinitionReport,
+  // entityDefinitionReportV1,
+  entityDefinitionSelfApplication,
+  entityDefinitionSelfApplicationDeploymentConfiguration,
+  entityDefinitionSelfApplicationModelBranch,
+  entityDefinitionSelfApplicationVersion,
+  entityDefinitionStoreBasedConfiguration,
+  entityDefinitionTest,
+  entityDefinitionTransformerDefinition,
+  entityEndpointVersion,
+  entityEntity,
+  entityEntityDefinition,
+  entityJzodSchema,
+  entityMenu,
+  // entityQuery,
+  entityQueryVersion,
+  entityReport,
+  entitySelfApplication,
+  entitySelfApplicationDeploymentConfiguration,
+  entitySelfApplicationModelBranch,
+  entitySelfApplicationVersion,
+  entityStoreBasedConfiguration,
+  entityTest,
   instanceEndpointV1,
-  modelEndpointV1,
-  testEndpointVersionV1,
-  menuDefaultMiroir,
-
-  storeManagementEndpoint,
   instanceEndpointVersionV1,
-  undoRedoEndpointVersionV1,
-  localCacheEndpointVersionV1,
-  queryEndpointVersionV1,
-  persistenceEndpointVersionV1,
   jzodSchemajzodMiroirBootstrapSchema,
-
+  localCacheEndpointVersionV1,
+  menuDefaultMiroir,
+  miroirJzodSchemaBootstrap,
+  modelEndpointV1,
+  persistenceEndpointVersionV1,
+  queryEndpointVersionV1,
+  // queryBundleProducer,
+  queryVersionBundleProducerV1,
   reportApplicationDeploymentConfigurationList,
   reportApplicationList,
   reportApplicationModelBranchList,
   reportApplicationVersionList,
   reportConfigurationList,
   reportEndpointVersionList,
-  reportEntityList,
-  reportEntityDetails,
-  reportEntityDefinitionList,
   reportEntityDefinitionDetails,
-  reportMenuList,
+  reportEntityDefinitionList,
+  reportEntityDetails,
+  reportEntityList,
   reportJzodSchemaList,
-  reportReportList,
+  reportMenuList,
   // reportQueryList,
   reportQueryVersionList,
-  reportTestList,
+  reportReportList,
   reportTestDetails,
-  // 
+  reportTestList,
+  selfApplicationDeploymentMiroir,
+  selfApplicationMiroir,
+  selfApplicationModelBranchMiroirMasterBranch,
+  selfApplicationStoreBasedConfigurationMiroir,
+  selfApplicationVersionInitialMiroirVersion,
+  storeManagementEndpoint,
+  testEndpointVersionV1,
+  //
   transformerJzodSchema,
   transformerMenuV1,
+  undoRedoEndpointVersionV1,
 };
 
 // ################################################################################################
@@ -1116,36 +1042,6 @@ const publisher3 = require("./assets/library_data/a027c379-8468-43a5-ba4d-bf618b
 
 console.log("miroir-core: loading APP json files DONE");
 export {
-  entityPublisher,
-  entityAuthor,
-  entityBook,
-  entityCountry,
-  // entityTest,
-  entityDefinitionAuthor,
-  entityDefinitionBook,
-  entityDefinitionCountry,
-  entityDefinitionPublisher,
-  // entityDefinitionTest,
-  menuDefaultLibrary,
-  // 
-  reportAuthorList,
-  reportAuthorDetails,
-  reportBookList,
-  reportBookDetails,
-  reportBookInstance,
-  reportCountryList,
-  reportPublisherList,
-  // reportTestList,
-  selfApplicationLibrary,
-  selfApplicationStoreBasedConfigurationLibrary,
-  selfApplicationVersionLibraryInitialVersion,
-  selfApplicationModelBranchLibraryMasterBranch,
-  // 
-  selfApplicationDeploymentLibrary,
-  // 
-  folio,
-  penguin,
-  springer,
   author1,
   author2,
   author3,
@@ -1161,11 +1057,40 @@ export {
   Country2,
   Country3,
   Country4,
+  entityAuthor,
+  entityBook,
+  entityCountry,
+  // entityTest,
+  entityDefinitionAuthor,
+  entityDefinitionBook,
+  entityDefinitionCountry,
+  entityDefinitionPublisher,
+  entityPublisher,
+  //
+  folio,
+  // entityDefinitionTest,
+  menuDefaultLibrary,
+  penguin,
   publisher1,
   publisher2,
   publisher3,
+  reportAuthorDetails,
+  //
+  reportAuthorList,
+  reportBookDetails,
+  reportBookInstance,
+  reportBookList,
+  reportCountryList,
+  reportPublisherList,
+  //
+  selfApplicationDeploymentLibrary,
+  // reportTestList,
+  selfApplicationLibrary,
+  selfApplicationModelBranchLibraryMasterBranch,
+  selfApplicationStoreBasedConfigurationLibrary,
+  selfApplicationVersionLibraryInitialVersion,
+  springer,
 };
-
 
 const menuDefaultAdmin = require("./assets/admin_model/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/dd168e5a-2a21-4d2d-a443-032c6d15eb22.json"); //assert { type: "json" };
 const adminConfigurationDeploymentAdmin = require("./assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/18db21bf-f8d3-4f6a-8296-84b69f6dc48b.json"); //assert { type: "json" };
@@ -1184,12 +1109,9 @@ export {
   adminConfigurationDeploymentMiroir,
   // adminConfigurationDeploymentTest1,
   entityApplicationForAdmin,
-  entityDeployment,
   entityDefinitionDeployment,
+  entityDeployment,
   menuDefaultAdmin,
-}
+};
 
-export {
-  test1SelfApplication,
-  menuDefaultTest1,
-}
+export { menuDefaultTest1, test1SelfApplication };

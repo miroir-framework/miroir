@@ -45,7 +45,8 @@ export function substituteTransformerReferencesInJzodElement<T>(
 
 export function transformerInterfaceFromDefinition(
   transformerDefinition: TransformerDefinition,
-  target: "build" | "runtime"
+  target: "build" | "runtime",
+  referenceMap: Record<string, string> = {},
 ): JzodElement {
   const newApplyTo: JzodElement = (
     transformerDefinition.transformerInterface.transformerParameterSchema
@@ -82,17 +83,18 @@ export function transformerInterfaceFromDefinition(
 
   const newDefinition = substituteTransformerReferencesInJzodElement<JzodObject>(
     transformerDefinition.transformerInterface.transformerParameterSchema.transformerDefinition,
-    target == "runtime"
-      ? {
-          transformer: "transformerForRuntime",
-          transformer_InnerReference: "transformerForRuntime_InnerReference",
-          transformer_freeObjectTemplate: "transformerForRuntime_freeObjectTemplate"
-        }
-      : {
-          transformer: "transformerForBuild",
-          transformer_InnerReference: "transformerForBuild_InnerReference",
-          transformer_freeObjectTemplate: "transformerForBuild_freeObjectTemplate"
-        }
+    referenceMap
+    // target == "runtime"
+    //   ? {
+    //       transformer: "transformerForRuntime",
+    //       transformer_InnerReference: "transformerForRuntime_InnerReference",
+    //       transformer_freeObjectTemplate: "transformerForRuntime_freeObjectTemplate"
+    //     }
+    //   : {
+    //       transformer: "transformerForBuild",
+    //       transformer_InnerReference: "transformerForBuild_InnerReference",
+    //       transformer_freeObjectTemplate: "transformerForBuild_freeObjectTemplate"
+    //     }
   ).definition;
 
   const result: JzodElement = {

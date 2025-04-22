@@ -27,7 +27,8 @@ import {
   TransformerForRuntime_dataflowObject,
   TransformerForRuntime_constantArray,
   TransformerForRuntime_constant,
-  TransformerForRuntime_contextReference
+  TransformerForRuntime_contextReference,
+  TransformerForRuntime_objectDynamicAccess
 } from "miroir-core";
 import { RecursiveStringRecords } from "../4_services/SqlDbQueryTemplateRunner";
 import { cleanLevel } from "../4_services/constants";
@@ -76,6 +77,7 @@ const sqlTransformerImplementations: Record<string, ITransformerHandler<any>> = 
   sqlStringForMapperListToListTransformer,
   sqlStringForObjectFullTemplateTransformer,
   sqlStringForObjectAlterTransformer,
+  sqlStringForObjectDynamicAccessTransformer,
   sqlStringForObjectEntriesTransformer,
   sqlStringForObjectValuesTransformer,
   sqlStringForParameterReferenceTransformer,
@@ -2321,6 +2323,25 @@ function sqlStringForParameterReferenceTransformer(
 }
 
 // ################################################################################################
+function sqlStringForObjectDynamicAccessTransformer(
+  actionRuntimeTransformer: TransformerForRuntime_objectDynamicAccess,
+  preparedStatementParametersCount: number,
+  indentLevel: number,
+  queryParams: Record<string, any>,
+  definedContextEntries: Record<string, SqlContextEntry>,
+  useAccessPathForContextReference: boolean,
+  topLevelTransformer: boolean,
+  withClauseColumnName?: string,
+  iterateOn?: string,
+): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
+  return new Domain2ElementFailed({
+    queryFailure: "QueryNotExecutable",
+    query: JSON.stringify(actionRuntimeTransformer),
+    failureMessage:
+      "sqlStringForObjectDynamicAccessTransformer not implemented: " + actionRuntimeTransformer.transformerType,
+  });
+}
+// ################################################################################################
 export function sqlStringForRuntimeTransformer(
   actionRuntimeTransformer: TransformerForRuntime,
   preparedStatementParametersCount: number,
@@ -2509,16 +2530,16 @@ export function sqlStringForRuntimeTransformer(
       // });
       break;
     }
-    case "objectDynamicAccess":
-    {
-      return new Domain2ElementFailed({
-        queryFailure: "QueryNotExecutable",
-        query: JSON.stringify(actionRuntimeTransformer),
-        failureMessage:
-          "sqlStringForRuntimeTransformer transformerType not implemented: " + actionRuntimeTransformer.transformerType,
-      });
-      break;
-    }
+    // case "objectDynamicAccess":
+    // {
+    //   return new Domain2ElementFailed({
+    //     queryFailure: "QueryNotExecutable",
+    //     query: JSON.stringify(actionRuntimeTransformer),
+    //     failureMessage:
+    //       "sqlStringForRuntimeTransformer transformerType not implemented: " + actionRuntimeTransformer.transformerType,
+    //   });
+    //   break;
+    // }
     default: {
       const castTransformer = actionRuntimeTransformer as any;
       const foundApplicationTransformer = applicationTransformerDefinitions[castTransformer.transformerType];

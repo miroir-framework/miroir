@@ -1,0 +1,59 @@
+{
+  "uuid": "d1f9e7ce-4b38-4602-a8cf-9658d63619ed",
+  "name": "objectDynamicAccess",
+  "defaultLabel": "objectDynamicAccess",
+  "description": "returns the value found by transitively accessing the input element with the given key.",
+  "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
+  "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
+  "parentName": "TransformerDefinition",
+  "transformerInterface": {
+    "transformerParameterSchema": {
+      "transformerType": {
+        "type": "literal",
+        "definition": "objectDynamicAccess"
+      },
+      "transformerDefinition": {
+        "type": "object",
+        "definition": {
+          "objectAccessPath": {
+            "type": "array",
+            "definition": { 
+              "type": "union",
+              "definition": [
+                {
+                  "type": "schemaReference",
+                  "definition": {
+                    "relativePath": "transformer_contextReference"
+                  }
+                },
+                {
+                  "type": "schemaReference",
+                  "definition": {
+                    "relativePath": "transformer_objectDynamicAccess"
+                  }
+                },
+                {
+                  "type": "schemaReference",
+                  "definition": {
+                    "relativePath": "transformer_mustacheStringTemplate"
+                  }
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "transformerResultSchema": {
+      "type": "any"
+    }
+  },
+  "transformerImplementation": {
+    "transformerImplementationType": "libraryImplementation",
+    "inMemoryImplementationFunctionName": "transformer_dynamicObjectAccess_apply",
+    "sqlImplementationFunctionName": "sqlStringForObjectDynamicAccessTransformer"
+  }
+}

@@ -14,6 +14,7 @@ import transformer_listReducerToSpreadObject_json from '../assets/miroir_data/a5
 import transformer_mapperListToList_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/3ec73049-5e54-40aa-bc86-4c4906d00baa.json';
 import transformer_objectFullTemplate_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/16d866c4-bc81-4773-89a4-a47ac7f6549d.json';
 import transformer_objectAlter_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/774b1087-d4bb-41a0-824c-5ac16571c66a.json';
+import transformer_objectDynamicAccess_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/d1f9e7ce-4b38-4602-a8cf-9658d63619ed.json';
 import transformer_objectEntries_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/b726ac6a-f65e-403a-bba0-e11f0982fc41.json';
 import transformer_objectValues_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/8b03069a-f812-4334-a530-e7f8fd684744.json';
 import transformer_parameterReference_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/af5029f2-b42e-4541-8e50-4e2f2d8fcfab.json';
@@ -30,6 +31,7 @@ export const transformer_listReducerToIndexObject: TransformerDefinition = trans
 export const transformer_listReducerToSpreadObject: TransformerDefinition = transformer_listReducerToSpreadObject_json as TransformerDefinition;
 export const transformer_mapperListToList: TransformerDefinition = transformer_mapperListToList_json as TransformerDefinition;
 export const transformer_objectAlter: TransformerDefinition = transformer_objectAlter_json as TransformerDefinition;
+export const transformer_objectDynamicAccess: TransformerDefinition = transformer_objectDynamicAccess_json as TransformerDefinition;
 export const transformer_objectEntries: TransformerDefinition = transformer_objectEntries_json as TransformerDefinition;
 export const transformer_objectValues: TransformerDefinition = transformer_objectValues_json as TransformerDefinition;
 export const transformer_object_fullTemplate: TransformerDefinition = transformer_objectFullTemplate_json as TransformerDefinition;
@@ -48,6 +50,7 @@ const miroirTransformers: Record<string,TransformerDefinition> = {
   transformer_listReducerToSpreadObject,
   transformer_mapperListToList,
   transformer_objectAlter,
+  transformer_objectDynamicAccess,
   transformer_objectEntries,
   transformer_objectValues,
   transformer_object_fullTemplate,
@@ -55,16 +58,34 @@ const miroirTransformers: Record<string,TransformerDefinition> = {
   transformer_unique,
 };
 
+const runtimeReferenceMap: Record<string, string> = {
+  transformer: "transformerForRuntime",
+  transformer_InnerReference: "transformerForRuntime_InnerReference",
+  transformer_freeObjectTemplate: "transformerForRuntime_freeObjectTemplate",
+  transformer_contextReference: "transformerForRuntime_contextReference",
+  transformer_objectDynamicAccess: "transformerForRuntime_objectDynamicAccess",
+  transformer_mustacheStringTemplate: "transformerForRuntime_mustacheStringTemplate_NOT_IMPLEMENTED",
+};
+
+const buildReferenceMap: Record<string, string> = {
+  transformer: "transformerForBuild",
+  transformer_InnerReference: "transformerForBuild_InnerReference",
+  transformer_freeObjectTemplate: "transformerForBuild_freeObjectTemplate",
+  transformer_contextReference: "transformerForRuntime_contextReference",
+  transformer_objectDynamicAccess: "transformerForBuild_objectDynamicAccess",
+  transformer_mustacheStringTemplate: "transformer_mustacheStringTemplate", // TODO: rename to transformer_mustacheStringTemplate
+};
+
 export const miroirTransformersForRuntime: Record<string,JzodElement> = Object.fromEntries(
   Object.entries(miroirTransformers).map(([key, transformer]) => [
     key,
-    transformerInterfaceFromDefinition(transformer, "runtime"),
+    transformerInterfaceFromDefinition(transformer, "runtime", runtimeReferenceMap),
   ])
 );
 
 export const miroirTransformersForBuild: Record<string,JzodElement> = Object.fromEntries(
   Object.entries(miroirTransformers).map(([key, transformer]) => [
     key,
-    transformerInterfaceFromDefinition(transformer, "build"),
+    transformerInterfaceFromDefinition(transformer, "build", buildReferenceMap),
   ])
 );
