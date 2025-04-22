@@ -1,0 +1,33 @@
+{
+  "uuid": "b1d69881-c9c4-4eb7-a60b-7af68163d559",
+  "name": "mustacheStringTemplate",
+  "defaultLabel": "mustacheStringTemplate",
+  "description": "return the interpretation of a mustache string template.",
+  "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
+  "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
+  "parentName": "TransformerDefinition",
+  "transformerInterface": {
+    "transformerParameterSchema": {
+      "transformerType": {
+        "type": "literal",
+        "definition": "mustacheStringTemplate"
+      },
+      "transformerDefinition": {
+        "type": "object",
+        "definition": {
+          "definition": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "transformerResultSchema": {
+      "type": "string"
+    }
+  },
+  "transformerImplementation": {
+    "transformerImplementationType": "libraryImplementation",
+    "inMemoryImplementationFunctionName": "transformer_mustacheStringTemplate_apply",
+    "sqlImplementationFunctionName": "sqlStringForConstantAnyTransformer"
+  }
+}

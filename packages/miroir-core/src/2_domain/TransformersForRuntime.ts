@@ -53,7 +53,8 @@ import {
   TransformerForBuild_parameterReference,
   TransformerForBuild_constantAsExtractor,
   TransformerForRuntime_newUuid,
-  TransformerForBuild_newUuid
+  TransformerForBuild_newUuid,
+  TransformerForRuntime_mustacheStringTemplate
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { Action2Error, Domain2ElementFailed, Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
@@ -81,6 +82,7 @@ import {
   transformer_listReducerToIndexObject,
   transformer_listReducerToSpreadObject,
   transformer_mapperListToList,
+  transformer_mustacheStringTemplate,
   transformer_newUuid,
   transformer_object_fullTemplate,
   transformer_objectAlter,
@@ -146,6 +148,7 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
   handleTransformer_contextReference,
   handleTransformer_dataflowObject,
   handleTransformer_FreeObjectTemplate,
+  transformer_mustacheStringTemplate_apply: defaultTransformers.transformer_mustacheStringTemplate_apply,
   handleTransformer_newUuid,
   handleTransformer_objectAlter: defaultTransformers.handleTransformer_objectAlter,
   transformer_dynamicObjectAccess_apply: defaultTransformers.transformer_dynamicObjectAccess_apply,
@@ -178,6 +181,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   listReducerToIndexObject: transformer_listReducerToIndexObject,
   listReducerToSpreadObject: transformer_listReducerToSpreadObject,
   mapperListToList: transformer_mapperListToList,
+  mustacheStringTemplate: transformer_mustacheStringTemplate,
   newUuid: transformer_newUuid,
   objectAlter: transformer_objectAlter,
   objectDynamicAccess: transformer_objectDynamicAccess,
@@ -933,7 +937,9 @@ export function transformer_InnerReference_resolve(
     case "mustacheStringTemplate": {
       result = defaultTransformers.transformer_mustacheStringTemplate_apply(
         step,
+        "NO NAME",
         transformerInnerReference,
+        resolveBuildTransformersTo,
         localQueryParams,
         localContextResults
       );
@@ -1009,7 +1015,9 @@ export function transformer_InnerReference_resolve(
 // string, <A> -> A
 export function transformer_mustacheStringTemplate_apply(
   step: Step,
-  transformer: TransformerForBuild_mustacheStringTemplate | TransformerForRuntime_mustacheStringTemplate_NOT_IMPLEMENTED,
+  objectName: string | undefined,
+  transformer: TransformerForBuild_mustacheStringTemplate | TransformerForRuntime_mustacheStringTemplate,
+  resolveBuildTransformersTo: ResolveBuildTransformersTo,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
 ): Domain2QueryReturnType<any> {
@@ -1829,13 +1837,16 @@ export function innerTransformer_apply(
       // );
     }
     case "mustacheStringTemplate": {
-      return defaultTransformers.transformer_mustacheStringTemplate_apply(
-        step,
-        transformer,
-        queryParams,
-        contextResults
-      );
-      break;
+      throw new Error("mustacheStringTemplate transformer not allowed in innerTransformer_apply");
+      // return defaultTransformers.transformer_mustacheStringTemplate_apply(
+      //   step,
+      //   "NO NAME",
+      //   transformer,
+      //   resolveBuildTransformersTo,
+      //   queryParams,
+      //   contextResults
+      // );
+      // break;
     }
     case "unique": {
       throw new Error("unique transformer not allowed in innerTransformer_apply");
@@ -2168,7 +2179,14 @@ export function transformer_extended_apply(
 
   if (typeof transformer == "object") {
     if (transformer instanceof Array) {
-      result = innerTransformer_array_apply(step, label, transformer, resolveBuildTransformersTo, queryParams, contextResults);
+      result = innerTransformer_array_apply(
+        step,
+        label,
+        transformer,
+        resolveBuildTransformersTo,
+        queryParams,
+        contextResults
+      );
     } else {
       // TODO: improve test, refuse interpretation of build transformer in runtime step
       const newResolveBuildTransformersTo: ResolveBuildTransformersTo =
@@ -2203,8 +2221,10 @@ export function transformer_extended_apply(
             // case "constantNumber":
             // case "constantString":
             // case "newUuid":
-            case "mustacheStringTemplate":
-            case "mustacheStringTemplate_NOT_IMPLEMENTED":
+            // case "mustacheStringTemplate":
+            case "mustacheStringTemplate_NOT_IMPLEMENTED": {
+              throw new Error("mustacheStringTemplate NOT IMPLEMENTED transformer not allowed in transformer_extended_apply");
+            }
             // case "contextReference":
             // case "parameterReference":
             // case "objectDynamicAccess":
