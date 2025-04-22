@@ -4,6 +4,7 @@ import { transformerInterfaceFromDefinition } from "./Transformer_tools";
 
 import transformer_constant_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/2b4c25e0-6b0f-4f7d-aa68-1fdc079aead3.json';
 import transformer_constantArray_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/97d772e5-b8df-4b1f-99ca-307bcdb4f79b.json';
+import transformer_constantAsExtractor_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/6b2426ee-b740-4785-a15d-9c48a385f2c2.json';
 import transformer_contextReference_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/dab2932a-8eb3-4620-9f90-0d8d4fcc441a.json';
 import transformer_count_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/4ee5c863-5ade-4706-92bd-1fc2d89c3766.json';
 import transformer_dataflowObject_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/fc7ce040-1653-4cad-842e-99fb0792e728.json';
@@ -22,6 +23,7 @@ import transformer_unique_json from '../assets/miroir_data/a557419d-a288-4fb8-8a
 
 export const transformer_constant: TransformerDefinition = transformer_constant_json as TransformerDefinition;
 export const transformer_constantArray: TransformerDefinition = transformer_constantArray_json as TransformerDefinition;
+export const transformer_constantAsExtractor: TransformerDefinition = transformer_constantAsExtractor_json as TransformerDefinition;
 export const transformer_contextReference: TransformerDefinition = transformer_contextReference_json as TransformerDefinition;
 export const transformer_count: TransformerDefinition = transformer_count_json as TransformerDefinition;
 export const transformer_dataflowObject: TransformerDefinition = transformer_dataflowObject_json as TransformerDefinition;
@@ -41,6 +43,7 @@ export const transformer_unique: TransformerDefinition = transformer_unique_json
 const miroirTransformers: Record<string,TransformerDefinition> = {
   transformer_constant,
   transformer_constantArray,
+  transformer_constantAsExtractor,
   transformer_contextReference,
   transformer_count,
   transformer_dataflowObject,

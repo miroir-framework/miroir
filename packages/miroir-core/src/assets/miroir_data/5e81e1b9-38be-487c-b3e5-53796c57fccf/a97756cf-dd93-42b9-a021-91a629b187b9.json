@@ -194,30 +194,6 @@
           }
         }
       },
-      "transformer_constantAsExtractor": {
-        "type": "object",
-        "definition": {
-          "transformerType": {
-            "type": "literal",
-            "definition": "constantAsExtractor"
-          },
-          "valueType": {
-            "type": "enum",
-            "optional": true,
-            "definition": ["string", "number", "boolean", "bigint", "object", "array"]
-          },
-          "valueJzodSchema": {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
-              "relativePath": "jzodElement"
-            }
-          },
-          "value": {
-            "type": "any"
-          }
-        }
-      },
       "transformer_constantListAsExtractor":{
         "type": "object",
         "definition": {
@@ -382,7 +358,7 @@
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformer_constantAsExtractor"
+              "relativePath": "transformerForRuntime_constantAsExtractor"
             }
           },
           {
@@ -701,7 +677,7 @@
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformer_constantAsExtractor"
+              "relativePath": "transformerForBuild_constantAsExtractor"
             }
           },
           {
@@ -1038,26 +1014,6 @@
             "optional": true
           }
         }
-      },
-      "transformerForRuntime_constantAsExtractor": {
-        "type": "object",
-        "extend": [
-          {
-            "type": "schemaReference",
-            "definition": {
-              "eager": true,
-              "relativePath": "transformerForRuntime_Abstract"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "eager": true,
-              "relativePath": "transformer_constantAsExtractor"
-            }
-          }
-        ],
-        "definition": {}
       },
       "transformerForRuntime_newUuid": {
         "type": "object",

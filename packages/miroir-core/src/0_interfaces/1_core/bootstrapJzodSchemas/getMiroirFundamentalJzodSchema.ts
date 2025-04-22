@@ -349,6 +349,7 @@ export function getMiroirFundamentalJzodSchema(
         ),
         transformerForBuild_constant: miroirTransformersForBuild.transformer_constant,
         transformerForBuild_constantArray: miroirTransformersForBuild.transformer_constantArray,
+        transformerForBuild_constantAsExtractor: miroirTransformersForBuild.transformer_constantAsExtractor,
         // transformerForBuild_contextReference: miroirTransformersForBuild.transformer_contextReference,
         transformerForBuild_count: miroirTransformersForBuild.transformer_count,
         transformerForBuild_dataflowObject: miroirTransformersForBuild.transformer_dataflowObject,
@@ -366,6 +367,7 @@ export function getMiroirFundamentalJzodSchema(
         transformerForBuild_unique: miroirTransformersForBuild.transformer_unique,
         transformerForRuntime_constant: miroirTransformersForRuntime.transformer_constant,
         transformerForRuntime_constantArray: miroirTransformersForRuntime.transformer_constantArray,
+        transformerForRuntime_constantAsExtractor: miroirTransformersForRuntime.transformer_constantAsExtractor,
         transformerForRuntime_contextReference: miroirTransformersForRuntime.transformer_contextReference,
         transformerForRuntime_count: miroirTransformersForRuntime.transformer_count,
         transformerForRuntime_dataflowObject: miroirTransformersForRuntime.transformer_dataflowObject,
@@ -2852,8 +2854,10 @@ export function getMiroirFundamentalJzodSchema(
           .transformerForBuild_Abstract,
         transformerForRuntime_Abstract: (transformerJzodSchema as any).definition.context
           .transformerForRuntime_Abstract,
-        transformer_constantAsExtractor: (transformerJzodSchema as any).definition.context
-          .transformer_constantAsExtractor,
+        transformerForBuild_constantAsExtractor: (miroirFundamentalJzodSchema as any).definition.context
+          .transformerForBuild_constantAsExtractor,
+        transformerForRuntime_constantAsExtractor: (miroirFundamentalJzodSchema as any).definition.context
+          .transformerForRuntime_constantAsExtractor,
         transformer_constantBoolean: (transformerJzodSchema as any).definition.context
           .transformer_constantBoolean,
         transformer_constantBigint: (transformerJzodSchema as any).definition.context

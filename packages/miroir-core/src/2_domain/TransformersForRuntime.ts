@@ -50,7 +50,8 @@ import {
   TransformerForBuild_constantArray,
   TransformerForRuntime_constant,
   TransformerForRuntime_contextReference,
-  TransformerForBuild_parameterReference
+  TransformerForBuild_parameterReference,
+  TransformerForBuild_constantAsExtractor
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { Action2Error, Domain2ElementFailed, Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
@@ -63,6 +64,7 @@ import { transformer_spreadSheetToJzodSchema } from "./Transformer_Spreadsheet";
 import {
   transformer_constant,
   transformer_constantArray,
+  transformer_constantAsExtractor,
   transformer_contextReference,
   transformer_count,
   transformer_dataflowObject,
@@ -127,6 +129,7 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
   handleUniqueTransformer,
   handleTransformer_constant,
   handleTransformer_constantArray,
+  handleTransformer_constantAsExtractor,
   handleTransformer_contextReference,
   handleTransformer_dataflowObject,
   handleTransformer_FreeObjectTemplate,
@@ -146,6 +149,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   spreadSheetToJzodSchema: transformer_spreadSheetToJzodSchema,
   count: transformer_count,
   constant: transformer_constant,
+  constantAsExtractor: transformer_constantAsExtractor,
   constantArray: transformer_constantArray,
   contextReference: transformer_contextReference,
   dataflowObject: transformer_dataflowObject,
@@ -1680,6 +1684,17 @@ export function handleTransformer_parameterReference(
 }
 
 // ################################################################################################
+export function handleTransformer_constantAsExtractor(
+  step: Step,
+  label: string | undefined,
+  transformer: TransformerForBuild_constantAsExtractor,
+  resolveBuildTransformersTo: ResolveBuildTransformersTo,
+  queryParams: Record<string, any>,
+  contextResults?: Record<string, any>
+): Domain2QueryReturnType<any> {
+  return transformer.value;
+}
+// ################################################################################################
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
@@ -1849,7 +1864,7 @@ export function innerTransformer_apply(
       return transformer.value;
     }
     case "constantAsExtractor": {
-      // throw new Error("constantAsExtractor transformer not allowed in innerTransformer_apply");
+      throw new Error("constantAsExtractor transformer not allowed in innerTransformer_apply");
       // switch (typeof transformer.value) {
       //   case "string":
       //   case "number":
@@ -1886,7 +1901,7 @@ export function innerTransformer_apply(
       //     break;
       //   }
       // }
-      return transformer.value;
+      // return transformer.value;
     }
     case "constant": {
       throw new Error("constant transformer not allowed in innerTransformer_apply");
@@ -2118,7 +2133,7 @@ export function transformer_extended_apply(
             // non-extended transformers...
             case "constantUuid":
             // case "constant":
-            case "constantAsExtractor":
+            // case "constantAsExtractor":
             // case "constantArray":
             case "constantBigint":
             case "constantBoolean":

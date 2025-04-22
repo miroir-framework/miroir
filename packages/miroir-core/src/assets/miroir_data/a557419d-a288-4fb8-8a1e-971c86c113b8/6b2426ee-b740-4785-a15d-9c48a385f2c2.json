@@ -1,0 +1,45 @@
+{
+  "uuid": "6b2426ee-b740-4785-a15d-9c48a385f2c2",
+  "name": "constantAsExtractor",
+  "defaultLabel": "constantAsExtractor",
+  "description": "returns a constant as if it were the result of an extractor. RELEVANT FOR TESTS ONLY.",
+  "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
+  "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
+  "parentName": "TransformerDefinition",
+  "transformerInterface": {
+    "transformerParameterSchema": {
+      "transformerType": {
+        "type": "literal",
+        "definition": "constantAsExtractor"
+      },
+      "transformerDefinition": {
+        "type": "object",
+        "definition": {
+          "valueType": {
+            "type": "enum",
+            "optional": true,
+            "definition": ["string", "number", "boolean", "bigint", "object", "array"]
+          },
+          "valueJzodSchema": {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+              "relativePath": "jzodElement"
+            }
+          },
+          "value": {
+            "type": "any"
+          }
+        }
+      }
+    },
+    "transformerResultSchema": {
+      "type": "any"
+    }
+  },
+  "transformerImplementation": {
+    "transformerImplementationType": "libraryImplementation",
+    "inMemoryImplementationFunctionName": "handleTransformer_constantAsExtractor",
+    "sqlImplementationFunctionName": "sqlStringForConstantAsExtractorTransformer"
+  }
+}

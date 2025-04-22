@@ -28,7 +28,8 @@ import {
   TransformerForRuntime_constantArray,
   TransformerForRuntime_constant,
   TransformerForRuntime_contextReference,
-  TransformerForRuntime_objectDynamicAccess
+  TransformerForRuntime_objectDynamicAccess,
+  TransformerForRuntime_constantAsExtractor
 } from "miroir-core";
 import { RecursiveStringRecords } from "../4_services/SqlDbQueryTemplateRunner";
 import { cleanLevel } from "../4_services/constants";
@@ -67,6 +68,7 @@ export type ITransformerHandler<T> = (
 const sqlTransformerImplementations: Record<string, ITransformerHandler<any>> = {
   sqlStringForConstantAnyTransformer,
   sqlStringForConstantTransformer,
+  sqlStringForConstantAsExtractorTransformer,
   sqlStringForContextReferenceTransformer,
   sqlStringForCountTransformer,
   sqlStringForDataflowObjectTransformer,
@@ -2341,6 +2343,140 @@ function sqlStringForObjectDynamicAccessTransformer(
       "sqlStringForObjectDynamicAccessTransformer not implemented: " + actionRuntimeTransformer.transformerType,
   });
 }
+
+// ################################################################################################
+function sqlStringForConstantAsExtractorTransformer(
+  actionRuntimeTransformer: TransformerForRuntime_constantAsExtractor,
+  preparedStatementParametersCount: number,
+  indentLevel: number,
+  queryParams: Record<string, any>,
+  definedContextEntries: Record<string, SqlContextEntry>,
+  useAccessPathForContextReference: boolean,
+  topLevelTransformer: boolean,
+  withClauseColumnName?: string,
+  iterateOn?: string,
+): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
+  // TODO: deal with whole set of transformers, not just constant values.
+  const jsTypeToConstantType: Record<string, string> = {
+    string: "constantString",
+    number: "constantNumber",
+    bigint: "constantBigint",
+    boolean: "constantBoolean",
+    object: "constantObject",
+  };
+  switch (typeof actionRuntimeTransformer.value) {
+    case "string":
+    case "number":
+    case "bigint":
+    case "boolean": {
+      const getSqlParams = getConstantSqlTypeMap[jsTypeToConstantType[actionRuntimeTransformer.transformerType]];
+      return getConstantSql(
+        actionRuntimeTransformer,
+        preparedStatementParametersCount,
+        topLevelTransformer,
+        getSqlParams.targetType,
+        getSqlParams.sqlTargetType,
+        getSqlParams.label
+      );
+      break;
+    }
+    case "object": {
+      const paramIndex = preparedStatementParametersCount + 1;
+      // array of objects or array of scalars
+      if (!actionRuntimeTransformer.valueJzodSchema) {
+        return new Domain2ElementFailed({
+          queryFailure: "QueryNotExecutable",
+          query: actionRuntimeTransformer as any,
+          failureMessage: "sqlStringForRuntimeTransformer constantAsExtractor no schema for array",
+        });
+      }
+      if (
+        Array.isArray(actionRuntimeTransformer.value) &&
+          actionRuntimeTransformer.valueJzodSchema.type != "array"
+      ) {
+        return new Domain2ElementFailed({
+          queryFailure: "QueryNotExecutable",
+          query: actionRuntimeTransformer as any,
+          failureMessage: "sqlStringForRuntimeTransformer constantAsExtractor not constistent for array of objects, valueJzodSchema.type:" + actionRuntimeTransformer.valueJzodSchema.type,
+        });
+      }
+
+      if (
+        actionRuntimeTransformer.valueJzodSchema.type == "object" ||
+        (
+          Array.isArray(actionRuntimeTransformer.value) &&
+          actionRuntimeTransformer.valueJzodSchema.type == "array" &&
+          actionRuntimeTransformer.valueJzodSchema.definition.type == "object"
+        )
+      ) {
+        // object which attributes are returned as columns on a single row, or array of objects which attributes are returned as columns on many rows (one row per object)
+        const recordFunction = Array.isArray(actionRuntimeTransformer.value)
+          ? "jsonb_to_recordset"
+          : "jsonb_to_record";
+        const attributeTypes = getAttributeTypesFromJzodSchema(
+          Array.isArray(actionRuntimeTransformer.value)
+            ? actionRuntimeTransformer.valueJzodSchema.definition as any
+            : actionRuntimeTransformer.valueJzodSchema
+        );
+        const selectFields = Object.entries(attributeTypes)
+          .map(([key, value]) => {
+            return `"${key}" ${value}`;
+          })
+          .join(tokenSeparatorForSelect);
+        return {
+          type: "table",
+          sqlStringOrObject: `SELECT * FROM ${recordFunction}($${paramIndex}::jsonb) AS x(${selectFields})`,
+          preparedStatementParameters: [JSON.stringify(actionRuntimeTransformer.value)],
+          resultAccessPath: Array.isArray(actionRuntimeTransformer.value)?[]:[0],
+        };
+      } else {
+        // scalar or array of scalars
+        // if (!Object.hasOwn(jzodToPostgresTypeMap, (actionRuntimeTransformer.valueJzodSchema as any).definition.type)) {
+        if (!(jzodToPostgresTypeMap as any)[(actionRuntimeTransformer.valueJzodSchema as any).definition.type]) {
+          return new Domain2ElementFailed({
+            queryFailure: "QueryNotExecutable",
+            query: actionRuntimeTransformer as any,
+            failureMessage:
+              "sqlStringForRuntimeTransformer constantAsExtractor no sql type corresponding to elements of array with scalar type:" +
+              actionRuntimeTransformer.valueJzodSchema.type,
+          });
+        }
+        // const sqlTargetType = (jzodToPostgresTypeMap as any)[actionRuntimeTransformer.valueJzodSchema.type].sqlTargetType;
+        if (Array.isArray(actionRuntimeTransformer.value)) {
+          return {
+            type: "table",
+            sqlStringOrObject: `SELECT * FROM jsonb_array_elements($${paramIndex}::jsonb) AS ${actionRuntimeTransformer.transformerType}`,
+            preparedStatementParameters: [JSON.stringify(actionRuntimeTransformer.value)],
+            resultAccessPath: ["value"],
+          };
+        } else {
+          return {
+            type: "table",
+            sqlStringOrObject: `SELECT $${paramIndex} AS ${actionRuntimeTransformer.transformerType}`,
+            preparedStatementParameters: [JSON.stringify(actionRuntimeTransformer.value)],
+          };
+        }
+      }
+    }
+    case "symbol":
+    case "undefined":
+    case "function":
+    default: {
+      return new Domain2ElementFailed({
+        queryFailure: "QueryNotExecutable",
+        query: actionRuntimeTransformer as any,
+        failureMessage: "sqlStringForRuntimeTransformer constantAsExtractor not implemented",
+      });
+      break;
+    }
+  }
+  // return new Domain2ElementFailed({
+  //   queryFailure: "QueryNotExecutable",
+  //   query: actionRuntimeTransformer as any,
+  //   failureMessage: "sqlStringForRuntimeTransformer constantAsExtractor not implemented",
+  // });
+  // break;
+}
 // ################################################################################################
 export function sqlStringForRuntimeTransformer(
   actionRuntimeTransformer: TransformerForRuntime,
@@ -2408,138 +2544,6 @@ export function sqlStringForRuntimeTransformer(
       );
       break;
     }
-    case "constantAsExtractor": {
-      // TODO: deal with whole set of transformers, not just constant values.
-      const jsTypeToConstantType: Record<string, string> = {
-        string: "constantString",
-        number: "constantNumber",
-        bigint: "constantBigint",
-        boolean: "constantBoolean",
-        object: "constantObject",
-      };
-      switch (typeof actionRuntimeTransformer.value) {
-        case "string":
-        case "number":
-        case "bigint":
-        case "boolean": {
-          const getSqlParams = getConstantSqlTypeMap[jsTypeToConstantType[actionRuntimeTransformer.transformerType]];
-          return getConstantSql(
-            actionRuntimeTransformer,
-            preparedStatementParametersCount,
-            topLevelTransformer,
-            getSqlParams.targetType,
-            getSqlParams.sqlTargetType,
-            getSqlParams.label
-          );
-          break;
-        }
-        case "object": {
-          const paramIndex = preparedStatementParametersCount + 1;
-          // array of objects or array of scalars
-          if (!actionRuntimeTransformer.valueJzodSchema) {
-            return new Domain2ElementFailed({
-              queryFailure: "QueryNotExecutable",
-              query: actionRuntimeTransformer as any,
-              failureMessage: "sqlStringForRuntimeTransformer constantAsExtractor no schema for array",
-            });
-          }
-          if (
-            Array.isArray(actionRuntimeTransformer.value) &&
-              actionRuntimeTransformer.valueJzodSchema.type != "array"
-          ) {
-            return new Domain2ElementFailed({
-              queryFailure: "QueryNotExecutable",
-              query: actionRuntimeTransformer as any,
-              failureMessage: "sqlStringForRuntimeTransformer constantAsExtractor not constistent for array of objects, valueJzodSchema.type:" + actionRuntimeTransformer.valueJzodSchema.type,
-            });
-          }
-
-          if (
-            actionRuntimeTransformer.valueJzodSchema.type == "object" ||
-            (
-              Array.isArray(actionRuntimeTransformer.value) &&
-              actionRuntimeTransformer.valueJzodSchema.type == "array" &&
-              actionRuntimeTransformer.valueJzodSchema.definition.type == "object"
-            )
-          ) {
-            // object which attributes are returned as columns on a single row, or array of objects which attributes are returned as columns on many rows (one row per object)
-            const recordFunction = Array.isArray(actionRuntimeTransformer.value)
-              ? "jsonb_to_recordset"
-              : "jsonb_to_record";
-            const attributeTypes = getAttributeTypesFromJzodSchema(
-              Array.isArray(actionRuntimeTransformer.value)
-                ? actionRuntimeTransformer.valueJzodSchema.definition as any
-                : actionRuntimeTransformer.valueJzodSchema
-            );
-            const selectFields = Object.entries(attributeTypes)
-              .map(([key, value]) => {
-                return `"${key}" ${value}`;
-              })
-              .join(tokenSeparatorForSelect);
-            return {
-              type: "table",
-              sqlStringOrObject: `SELECT * FROM ${recordFunction}($${paramIndex}::jsonb) AS x(${selectFields})`,
-              preparedStatementParameters: [JSON.stringify(actionRuntimeTransformer.value)],
-              resultAccessPath: Array.isArray(actionRuntimeTransformer.value)?[]:[0],
-            };
-          } else {
-            // scalar or array of scalars
-            // if (!Object.hasOwn(jzodToPostgresTypeMap, (actionRuntimeTransformer.valueJzodSchema as any).definition.type)) {
-            if (!(jzodToPostgresTypeMap as any)[(actionRuntimeTransformer.valueJzodSchema as any).definition.type]) {
-              return new Domain2ElementFailed({
-                queryFailure: "QueryNotExecutable",
-                query: actionRuntimeTransformer as any,
-                failureMessage:
-                  "sqlStringForRuntimeTransformer constantAsExtractor no sql type corresponding to elements of array with scalar type:" +
-                  actionRuntimeTransformer.valueJzodSchema.type,
-              });
-            }
-            // const sqlTargetType = (jzodToPostgresTypeMap as any)[actionRuntimeTransformer.valueJzodSchema.type].sqlTargetType;
-            if (Array.isArray(actionRuntimeTransformer.value)) {
-              return {
-                type: "table",
-                sqlStringOrObject: `SELECT * FROM jsonb_array_elements($${paramIndex}::jsonb) AS ${actionRuntimeTransformer.transformerType}`,
-                preparedStatementParameters: [JSON.stringify(actionRuntimeTransformer.value)],
-                resultAccessPath: ["value"],
-              };
-            } else {
-              return {
-                type: "table",
-                sqlStringOrObject: `SELECT $${paramIndex} AS ${actionRuntimeTransformer.transformerType}`,
-                preparedStatementParameters: [JSON.stringify(actionRuntimeTransformer.value)],
-              };
-            }
-          }
-        }
-        case "symbol":
-        case "undefined":
-        case "function":
-        default: {
-          return new Domain2ElementFailed({
-            queryFailure: "QueryNotExecutable",
-            query: actionRuntimeTransformer as any,
-            failureMessage: "sqlStringForRuntimeTransformer constantAsExtractor not implemented",
-          });
-          break;
-        }
-      }
-      // return new Domain2ElementFailed({
-      //   queryFailure: "QueryNotExecutable",
-      //   query: actionRuntimeTransformer as any,
-      //   failureMessage: "sqlStringForRuntimeTransformer constantAsExtractor not implemented",
-      // });
-      break;
-    }
-    // case "objectDynamicAccess":
-    // {
-    //   return new Domain2ElementFailed({
-    //     queryFailure: "QueryNotExecutable",
-    //     query: JSON.stringify(actionRuntimeTransformer),
-    //     failureMessage:
-    //       "sqlStringForRuntimeTransformer transformerType not implemented: " + actionRuntimeTransformer.transformerType,
-    //   });
-    //   break;
-    // }
     default: {
       const castTransformer = actionRuntimeTransformer as any;
       const foundApplicationTransformer = applicationTransformerDefinitions[castTransformer.transformerType];
