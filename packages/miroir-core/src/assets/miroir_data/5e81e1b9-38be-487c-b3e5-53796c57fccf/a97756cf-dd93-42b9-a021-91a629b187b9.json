@@ -207,18 +207,6 @@
           }
         }
       },
-      "transformer_constantNumber":{
-        "type": "object",
-        "definition": {
-          "transformerType": {
-            "type": "literal",
-            "definition": "constantNumber"
-          },
-          "value": {
-            "type": "number"
-          }
-        }
-      },
       "transformer_constantObject":{
         "type": "object",
         "definition": {
@@ -349,7 +337,7 @@
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformer_constantNumber"
+              "relativePath": "transformerForRuntime_constantNumber"
             }
           },
           {
@@ -496,28 +484,6 @@
               "eager": true,
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "transformerForBuild_constantBoolean"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "eager": true,
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForBuild_Abstract"
-            }
-          }
-        ],
-        "definition": {}
-      },
-      "transformerForBuild_constantNumber": {
-        "type": "object",
-        "extend": [
-          {
-            "type": "schemaReference",
-            "definition": {
-              "eager": true,
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformer_constantNumber"
             }
           },
           {

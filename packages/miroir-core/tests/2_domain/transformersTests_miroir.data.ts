@@ -178,22 +178,22 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   transformerParams: {},
                   expectedValue: 42,
                 },
-                "failed constantNumber transformer for non-number value": {
-                  transformerTestType: "transformerTest",
-                  transformerTestLabel: "failed constantNumber transformer for non-number value",
-                  transformerName: "constantNumberFailed",
-                  runTestStep: "build",
-                  transformer: {
-                    transformerType: "constantNumber",
-                    interpolation: "build",
-                    value: "test" as any,
-                  },
-                  transformerParams: {},
-                  ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-                  expectedValue: {
-                    queryFailure: "QueryNotExecutable",
-                  },
-                },
+                // "failed constantNumber transformer for non-number value": {
+                //   transformerTestType: "transformerTest",
+                //   transformerTestLabel: "failed constantNumber transformer for non-number value",
+                //   transformerName: "constantNumberFailed",
+                //   runTestStep: "build",
+                //   transformer: {
+                //     transformerType: "constantNumber",
+                //     interpolation: "build",
+                //     value: "test" as any,
+                //   },
+                //   transformerParams: {},
+                //   ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+                //   expectedValue: {
+                //     queryFailure: "QueryNotExecutable",
+                //   },
+                // },
               },
             },
             constantBigint: {
@@ -556,21 +556,21 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   transformerParams: {},
                   expectedValue: 42,
                 },
-                "failed constantNumber transformer for non-number value": {
-                  transformerTestType: "transformerTest",
-                  transformerTestLabel: "failed constantNumber transformer for non-number value",
-                  transformerName: "constantNumberFailed",
-                  transformer: {
-                    transformerType: "constantNumber",
-                    // interpolation: "runtime",
-                    value: "test" as any,
-                  },
-                  transformerParams: {},
-                  ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-                  expectedValue: {
-                    queryFailure: "QueryNotExecutable",
-                  },
-                },
+                // "failed constantNumber transformer for non-number value": {
+                //   transformerTestType: "transformerTest",
+                //   transformerTestLabel: "failed constantNumber transformer for non-number value",
+                //   transformerName: "constantNumberFailed",
+                //   transformer: {
+                //     transformerType: "constantNumber",
+                //     // interpolation: "runtime",
+                //     value: "test" as any,
+                //   },
+                //   transformerParams: {},
+                //   ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+                //   expectedValue: {
+                //     queryFailure: "QueryNotExecutable",
+                //   },
+                // },
               },
             },
             // TODO: runtime transformer for bigint returns a number, not a bigint (issue correctly handle bigint at postgres-level #48)

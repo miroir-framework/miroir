@@ -69,6 +69,7 @@ import {
   transformer_constantAsExtractor,
   transformer_constantBigint,
   transformer_constantBoolean,
+  transformer_constantNumber,
   transformer_constantUuid,
   transformer_contextReference,
   transformer_count,
@@ -162,6 +163,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   constant: transformer_constant,
   constantBoolean: transformer_constantBoolean,
   constantBigint: transformer_constantBigint,
+  constantNumber: transformer_constantNumber,
   constantUuid: transformer_constantUuid,
   constantAsExtractor: transformer_constantAsExtractor,
   constantArray: transformer_constantArray,
@@ -1879,15 +1881,16 @@ export function innerTransformer_apply(
       }
     }
     case "constantNumber": {
-      if (typeof transformer.value == "number") {
-        return transformer.value;
-      } else {
-        return new Domain2ElementFailed({
-          queryFailure: "FailedTransformer_constantNumber",
-          failureOrigin: ["innerTransformer_apply"],
-          queryContext: "value is not a number",
-        });
-      }
+      throw new Error("constantNumber transformer not allowed in innerTransformer_apply");
+      // if (typeof transformer.value == "number") {
+      //   return transformer.value;
+      // } else {
+      //   return new Domain2ElementFailed({
+      //     queryFailure: "FailedTransformer_constantNumber",
+      //     failureOrigin: ["innerTransformer_apply"],
+      //     queryContext: "value is not a number",
+      //   });
+      // }
     }
     case "constantString": {
       if (typeof transformer.value == "string") {
@@ -2191,7 +2194,7 @@ export function transformer_extended_apply(
             // case "constantBigint":
             // case "constantBoolean":
             case "constantObject":
-            case "constantNumber":
+            // case "constantNumber":
             case "constantString":
             // case "newUuid":
             case "mustacheStringTemplate":

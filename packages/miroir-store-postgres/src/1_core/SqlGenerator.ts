@@ -2544,7 +2544,7 @@ export function sqlStringForRuntimeTransformer(
     // case "constantUuid":
     // case "constantBoolean":
     // case "constantBigint":
-    case "constantNumber":
+    // case "constantNumber":
     case "constantObject":
     case "constantString": {
       return sqlStringForConstantAnyTransformer(
