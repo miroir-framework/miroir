@@ -1,5 +1,5 @@
 
-export type PostgresDataTypes = "boolean" | "date" | "double precision" | "varchar" | "text" | "jsonb";
+export type PostgresDataTypes = "boolean" | "bigint" | "date" | "double precision" | "varchar" | "text" | "jsonb";
 
 export const getConstantSqlTypeMap: Record<string, {targetType: "json" | "scalar",
   sqlTargetType: PostgresDataTypes,
@@ -26,7 +26,8 @@ export const getConstantSqlTypeMap: Record<string, {targetType: "json" | "scalar
   },
   "constantBigint": {
     targetType: "scalar",
-    sqlTargetType: "double precision",
+    // sqlTargetType: "double precision",
+    sqlTargetType: "bigint",
     label: "constantBigint",
   },
   "constantBoolean": {

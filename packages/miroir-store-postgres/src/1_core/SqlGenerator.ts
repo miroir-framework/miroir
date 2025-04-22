@@ -123,7 +123,8 @@ function getSqlTypeForValue(
       break;
     }
     case "bigint": {
-      sqlTargetType = "double precision";
+      // sqlTargetType = "double precision";
+      sqlTargetType = "bigint";
       label = "constantBigint";
       break;
     }
@@ -2542,7 +2543,7 @@ export function sqlStringForRuntimeTransformer(
     }
     // case "constantUuid":
     // case "constantBoolean":
-    case "constantBigint":
+    // case "constantBigint":
     case "constantNumber":
     case "constantObject":
     case "constantString": {

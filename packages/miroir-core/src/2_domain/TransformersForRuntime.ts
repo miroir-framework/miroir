@@ -67,6 +67,7 @@ import {
   transformer_constant,
   transformer_constantArray,
   transformer_constantAsExtractor,
+  transformer_constantBigint,
   transformer_constantBoolean,
   transformer_constantUuid,
   transformer_contextReference,
@@ -93,6 +94,10 @@ MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Transformer")
 ).then((logger: LoggerInterface) => {log = logger});
 
+
+(BigInt.prototype as any).toJSON = function () {
+  return Number(this);
+};
 
 export type ActionTemplate = any;
 export type Step = "build" | "runtime";
@@ -156,6 +161,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   count: transformer_count,
   constant: transformer_constant,
   constantBoolean: transformer_constantBoolean,
+  constantBigint: transformer_constantBigint,
   constantUuid: transformer_constantUuid,
   constantAsExtractor: transformer_constantAsExtractor,
   constantArray: transformer_constantArray,
@@ -1837,16 +1843,17 @@ export function innerTransformer_apply(
       throw new Error("constantArray transformer not allowed in innerTransformer_apply");
     }
     case "constantBigint": {
-      if (typeof transformer.value == "number") {
-        // if (typeof transformer.value == "bigint") {
-        return transformer.value;
-      } else {
-        return new Domain2ElementFailed({
-          queryFailure: "FailedTransformer_constantBigint",
-          failureOrigin: ["innerTransformer_apply"],
-          queryContext: "value is not a number (but it should actually be a bigint)",
-        });
-      }
+      throw new Error("constantBigint transformer not allowed in innerTransformer_apply");
+      // if (typeof transformer.value == "number") {
+      //   // if (typeof transformer.value == "bigint") {
+      //   return transformer.value;
+      // } else {
+      //   return new Domain2ElementFailed({
+      //     queryFailure: "FailedTransformer_constantBigint",
+      //     failureOrigin: ["innerTransformer_apply"],
+      //     queryContext: "value is not a number (but it should actually be a bigint)",
+      //   });
+      // }
     }
     case "constantBoolean": {
       throw new Error("constantBoolean transformer not allowed in innerTransformer_apply");
@@ -2181,7 +2188,7 @@ export function transformer_extended_apply(
             // case "constant":
             // case "constantAsExtractor":
             // case "constantArray":
-            case "constantBigint":
+            // case "constantBigint":
             // case "constantBoolean":
             case "constantObject":
             case "constantNumber":
