@@ -2536,31 +2536,31 @@ export function sqlStringForRuntimeTransformer(
       topLevelTransformer
     )
   }
-  switch (actionRuntimeTransformer.transformerType) {
-    case "dataflowSequence": {
-      throw new Error("sqlStringForRuntimeTransformer dataflowSequence not implemented");
-      break;
-    }
-    // case "constantUuid":
-    // case "constantBoolean":
-    // case "constantBigint":
-    // case "constantNumber":
-    // case "constantObject":
-    case "constantString": {
-      return sqlStringForConstantAnyTransformer(
-        actionRuntimeTransformer as any,
-        preparedStatementParametersCount,
-        indentLevel,
-        queryParams,
-        definedContextEntries,
-        useAccessPathForContextReference,
-        topLevelTransformer,
-        withClauseColumnName,
-        iterateOn,
-      );
-      break;
-    }
-    default: {
+  // switch (actionRuntimeTransformer.transformerType) {
+  //   case "dataflowSequence": {
+  //     throw new Error("sqlStringForRuntimeTransformer dataflowSequence not implemented");
+  //     break;
+  //   }
+  //   // case "constantUuid":
+  //   // case "constantBoolean":
+  //   // case "constantBigint":
+  //   // case "constantNumber":
+  //   // case "constantObject":
+  //   case "constantString": {
+  //     return sqlStringForConstantAnyTransformer(
+  //       actionRuntimeTransformer as any,
+  //       preparedStatementParametersCount,
+  //       indentLevel,
+  //       queryParams,
+  //       definedContextEntries,
+  //       useAccessPathForContextReference,
+  //       topLevelTransformer,
+  //       withClauseColumnName,
+  //       iterateOn,
+  //     );
+  //     break;
+  //   }
+    // default: {
       const castTransformer = actionRuntimeTransformer as any;
       const foundApplicationTransformer = applicationTransformerDefinitions[castTransformer.transformerType];
 
@@ -2626,9 +2626,9 @@ export function sqlStringForRuntimeTransformer(
           break;
         }
       }
-      break;
-    }
-  }
+      // break;
+    // }
+  // }
 }
 
 // ################################################################################################

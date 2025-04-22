@@ -248,19 +248,19 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   transformerParams: {},
                   expectedValue: "test",
                 },
-                "constantString build transformer for non-string value": {
-                  transformerTestType: "transformerTest",
-                  transformerTestLabel: "constantString build transformer for non-string value",
-                  transformerName: "constantStringFailed",
-                  runTestStep: "build",
-                  transformer: {
-                    transformerType: "constantString",
-                    interpolation: "build",
-                    value: { test: "objectInsteadOfString" } as any,
-                  },
-                  transformerParams: {},
-                  expectedValue:  "{\"test\":\"objectInsteadOfString\"}",
-                },
+                // "constantString build transformer for non-string value": {
+                //   transformerTestType: "transformerTest",
+                //   transformerTestLabel: "constantString build transformer for non-string value",
+                //   transformerName: "constantStringFailed",
+                //   runTestStep: "build",
+                //   transformer: {
+                //     transformerType: "constantString",
+                //     interpolation: "build",
+                //     value: { test: "objectInsteadOfString" } as any,
+                //   },
+                //   transformerParams: {},
+                //   expectedValue:  "{\"test\":\"objectInsteadOfString\"}",
+                // },
               },
             },
             constantObject: {
@@ -618,24 +618,24 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   transformerName: "constantString",
                   transformer: {
                     transformerType: "constantString",
-                    // interpolation: "runtime",
+                    interpolation: "runtime",
                     value: "test",
                   },
                   transformerParams: {},
                   expectedValue: "test",
                 },
-                "constantString transformer for non-string value": {
-                  transformerTestType: "transformerTest",
-                  transformerTestLabel: "failed constantString transformer for non-string value",
-                  transformerName: "constantStringFailed",
-                  transformer: {
-                    transformerType: "constantString",
-                    // interpolation: "runtime",
-                    value: { test: "objectInsteadOfString" } as any,
-                  },
-                  transformerParams: {},
-                  expectedValue: '{"test":"objectInsteadOfString"}',
-                },
+                // "constantString transformer for non-string value": {
+                //   transformerTestType: "transformerTest",
+                //   transformerTestLabel: "failed constantString transformer for non-string value",
+                //   transformerName: "constantStringFailed",
+                //   transformer: {
+                //     transformerType: "constantString",
+                //     // interpolation: "runtime",
+                //     value: { test: "objectInsteadOfString" } as any,
+                //   },
+                //   transformerParams: {},
+                //   expectedValue: '{"test":"objectInsteadOfString"}',
+                // },
               },
             },
             constantObject: {
@@ -1916,6 +1916,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   definition: {
                     "iso3166-1Alpha-2": {
                       transformerType: "constantString",
+                      interpolation: "runtime",
                       value: "DE",
                     },
                   },
@@ -1946,6 +1947,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   definition: {
                     "iso3166-1Alpha-2": {
                       transformerType: "constantString",
+                      interpolation: "runtime",
                       value: "DE",
                     },
                   },
@@ -1977,6 +1979,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   definition: {
                     "iso3166-1Alpha-2": {
                       transformerType: "constantString",
+                      interpolation: "runtime",
                       value: "DE",
                     },
                   },

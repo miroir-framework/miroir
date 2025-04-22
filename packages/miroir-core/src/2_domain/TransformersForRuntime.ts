@@ -71,6 +71,7 @@ import {
   transformer_constantBoolean,
   transformer_constantNumber,
   transformer_constantObject,
+  transformer_constantString,
   transformer_constantUuid,
   transformer_contextReference,
   transformer_count,
@@ -166,6 +167,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   constantBigint: transformer_constantBigint,
   constantNumber: transformer_constantNumber,
   constantObject: transformer_constantObject,
+  constantString: transformer_constantString,
   constantUuid: transformer_constantUuid,
   constantAsExtractor: transformer_constantAsExtractor,
   constantArray: transformer_constantArray,
@@ -1896,16 +1898,17 @@ export function innerTransformer_apply(
       // }
     }
     case "constantString": {
-      if (typeof transformer.value == "string") {
-        return transformer.value;
-      } else {
-        return JSON.stringify((transformer as any).value);
-        // return new Domain2ElementFailed({
-        //   queryFailure: "FailedTransformer_constantString",
-        //   failureOrigin: ["innerTransformer_apply"],
-        //   queryContext: "value is not a string",
-        // });
-      }
+      throw new Error("constantString transformer not allowed in innerTransformer_apply");
+      // if (typeof transformer.value == "string") {
+      //   return transformer.value;
+      // } else {
+      //   return JSON.stringify((transformer as any).value);
+      //   // return new Domain2ElementFailed({
+      //   //   queryFailure: "FailedTransformer_constantString",
+      //   //   failureOrigin: ["innerTransformer_apply"],
+      //   //   queryContext: "value is not a string",
+      //   // });
+      // }
     }
     case "constantUuid": {
       throw new Error("constantUuid transformer not allowed in innerTransformer_apply");
@@ -2198,7 +2201,7 @@ export function transformer_extended_apply(
             // case "constantBoolean":
             // case "constantObject":
             // case "constantNumber":
-            case "constantString":
+            // case "constantString":
             // case "newUuid":
             case "mustacheStringTemplate":
             case "mustacheStringTemplate_NOT_IMPLEMENTED":

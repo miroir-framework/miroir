@@ -213,9 +213,9 @@ export function getExtendedSchemas(jzodSchemajzodMiroirBootstrapSchema: any) {
     // "transformer_constantBigint",
     // "transformer_constantBoolean",
     // "transformer_constantNumber",
-    "transformer_constantUuid",
+    // "transformer_constantUuid",
     // "transformer_constantObject",
-    "transformer_constantString",
+    // "transformer_constantString",
     // "transformer_newUuid",
     // "transformer_constant",
     // "transformer_parameterReference",
@@ -353,6 +353,7 @@ export function getMiroirFundamentalJzodSchema(
         transformerForBuild_constantUuid: miroirTransformersForBuild.transformer_constantUuid,
         transformerForBuild_constantObject: miroirTransformersForBuild.transformer_constantObject,
         transformerForBuild_constantNumber: miroirTransformersForBuild.transformer_constantNumber,
+        transformerForBuild_constantString: miroirTransformersForBuild.transformer_constantString,
         transformerForBuild_constantArray: miroirTransformersForBuild.transformer_constantArray,
         transformerForBuild_constantAsExtractor: miroirTransformersForBuild.transformer_constantAsExtractor,
         // transformerForBuild_contextReference: miroirTransformersForBuild.transformer_contextReference,
@@ -372,12 +373,13 @@ export function getMiroirFundamentalJzodSchema(
         transformerForBuild_parameterReference: miroirTransformersForBuild.transformer_parameterReference,
         transformerForBuild_unique: miroirTransformersForBuild.transformer_unique,
         transformerForRuntime_constant: miroirTransformersForRuntime.transformer_constant,
+        transformerForRuntime_constantArray: miroirTransformersForRuntime.transformer_constantArray,
         transformerForRuntime_constantBoolean: miroirTransformersForRuntime.transformer_constantBoolean,
         transformerForRuntime_constantBigint: miroirTransformersForRuntime.transformer_constantBigint,
         transformerForRuntime_constantNumber: miroirTransformersForRuntime.transformer_constantNumber,
         transformerForRuntime_constantObject: miroirTransformersForRuntime.transformer_constantObject,
+        transformerForRuntime_constantString: miroirTransformersForRuntime.transformer_constantString,
         transformerForRuntime_constantUuid: miroirTransformersForRuntime.transformer_constantUuid,
-        transformerForRuntime_constantArray: miroirTransformersForRuntime.transformer_constantArray,
         transformerForRuntime_constantAsExtractor: miroirTransformersForRuntime.transformer_constantAsExtractor,
         transformerForRuntime_contextReference: miroirTransformersForRuntime.transformer_contextReference,
         transformerForRuntime_count: miroirTransformersForRuntime.transformer_count,
@@ -2878,8 +2880,8 @@ export function getMiroirFundamentalJzodSchema(
         //   .transformer_constantObject,
         // transformer_constantNumber: (transformerJzodSchema as any).definition.context
         //   .transformer_constantNumber,
-        transformer_constantString: (transformerJzodSchema as any).definition.context
-          .transformer_constantString,
+        // transformer_constantString: (transformerJzodSchema as any).definition.context
+        //   .transformer_constantString,
         // transformer_constantUuid: (transformerJzodSchema as any).definition.context
         //   .transformer_constantUuid,
         transformerForRuntime_constant: (miroirFundamentalJzodSchema as any).definition.context
@@ -2962,6 +2964,8 @@ export function getMiroirFundamentalJzodSchema(
           .transformerForRuntime_constantObject,
         transformerForBuild_constantString: (miroirFundamentalJzodSchema as any).definition.context
           .transformerForBuild_constantString,
+        transformerForRuntime_constantString: (miroirFundamentalJzodSchema as any).definition.context
+          .transformerForRuntime_constantString,
         transformerForBuild_constants: (miroirFundamentalJzodSchema as any).definition.context
           .transformerForBuild_constants,
         transformerForBuild: (transformerJzodSchema as any).definition.context.transformerForBuild,
