@@ -4,6 +4,7 @@ import { transformerInterfaceFromDefinition } from "./Transformer_tools";
 
 import transformer_constant_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/2b4c25e0-6b0f-4f7d-aa68-1fdc079aead3.json';
 import transformer_constantUuid_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/cc56cae6-beff-4692-930c-5b8696d1537c.json';
+import transformer_constantBoolean_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/8a2a482e-4897-42c1-90d2-3e4fce9355f4.json';
 import transformer_constantArray_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/97d772e5-b8df-4b1f-99ca-307bcdb4f79b.json';
 import transformer_constantAsExtractor_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/6b2426ee-b740-4785-a15d-9c48a385f2c2.json';
 import transformer_contextReference_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/dab2932a-8eb3-4620-9f90-0d8d4fcc441a.json';
@@ -24,6 +25,7 @@ import transformer_parameterReference_json from '../assets/miroir_data/a557419d-
 import transformer_unique_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/a93aec8f-3f8b-4129-a907-e7321c1e7171.json';
 
 export const transformer_constant: TransformerDefinition = transformer_constant_json as TransformerDefinition;
+export const transformer_constantBoolean: TransformerDefinition = transformer_constantBoolean_json as TransformerDefinition;
 export const transformer_constantUuid: TransformerDefinition = transformer_constantUuid_json as TransformerDefinition;
 export const transformer_constantArray: TransformerDefinition = transformer_constantArray_json as TransformerDefinition;
 export const transformer_constantAsExtractor: TransformerDefinition = transformer_constantAsExtractor_json as TransformerDefinition;
@@ -46,6 +48,7 @@ export const transformer_unique: TransformerDefinition = transformer_unique_json
 
 const miroirTransformers: Record<string,TransformerDefinition> = {
   transformer_constant,
+  transformer_constantBoolean,
   transformer_constantUuid,
   transformer_constantArray,
   transformer_constantAsExtractor,

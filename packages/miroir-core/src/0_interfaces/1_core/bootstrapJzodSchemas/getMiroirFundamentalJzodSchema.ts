@@ -348,6 +348,7 @@ export function getMiroirFundamentalJzodSchema(
           ])
         ),
         transformerForBuild_constant: miroirTransformersForBuild.transformer_constant,
+        transformerForBuild_constantBoolean: miroirTransformersForBuild.transformer_constantBoolean,
         transformerForBuild_constantUuid: miroirTransformersForBuild.transformer_constantUuid,
         transformerForBuild_constantArray: miroirTransformersForBuild.transformer_constantArray,
         transformerForBuild_constantAsExtractor: miroirTransformersForBuild.transformer_constantAsExtractor,
@@ -368,6 +369,7 @@ export function getMiroirFundamentalJzodSchema(
         transformerForBuild_parameterReference: miroirTransformersForBuild.transformer_parameterReference,
         transformerForBuild_unique: miroirTransformersForBuild.transformer_unique,
         transformerForRuntime_constant: miroirTransformersForRuntime.transformer_constant,
+        transformerForRuntime_constantBoolean: miroirTransformersForRuntime.transformer_constantBoolean,
         transformerForRuntime_constantUuid: miroirTransformersForRuntime.transformer_constantUuid,
         transformerForRuntime_constantArray: miroirTransformersForRuntime.transformer_constantArray,
         transformerForRuntime_constantAsExtractor: miroirTransformersForRuntime.transformer_constantAsExtractor,
@@ -2862,7 +2864,7 @@ export function getMiroirFundamentalJzodSchema(
           .transformerForBuild_constantAsExtractor,
         transformerForRuntime_constantAsExtractor: (miroirFundamentalJzodSchema as any).definition.context
           .transformerForRuntime_constantAsExtractor,
-        transformer_constantBoolean: (transformerJzodSchema as any).definition.context
+        transformer_constantBoolean: (miroirFundamentalJzodSchema as any).definition.context
           .transformer_constantBoolean,
         transformer_constantBigint: (transformerJzodSchema as any).definition.context
           .transformer_constantBigint,

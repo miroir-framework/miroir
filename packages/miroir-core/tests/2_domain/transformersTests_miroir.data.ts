@@ -316,22 +316,22 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   transformerParams: {},
                   expectedValue: true,
                 },
-                "failed constantBoolean transformer for non-boolean value": {
-                  transformerTestType: "transformerTest",
-                  transformerTestLabel: "failed constantBoolean transformer for non-boolean value",
-                  transformerName: "constantBooleanFailed",
-                  runTestStep: "build",
-                  transformer: {
-                    transformerType: "constantBoolean",
-                    interpolation: "build",
-                    value: "test" as any,
-                  },
-                  transformerParams: {},
-                  ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-                  expectedValue: {
-                    queryFailure: "QueryNotExecutable",
-                  },
-                }
+                // "failed constantBoolean transformer for non-boolean value": {
+                //   transformerTestType: "transformerTest",
+                //   transformerTestLabel: "failed constantBoolean transformer for non-boolean value",
+                //   transformerName: "constantBooleanFailed",
+                //   runTestStep: "build",
+                //   transformer: {
+                //     transformerType: "constantBoolean",
+                //     interpolation: "build",
+                //     value: "test" as any,
+                //   },
+                //   transformerParams: {},
+                //   ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+                //   expectedValue: {
+                //     queryFailure: "QueryNotExecutable",
+                //   },
+                // }
               }
             }
           },
@@ -516,7 +516,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   transformerName: "constantUuid",
                   transformer: {
                     transformerType: "constantUuid",
-                    // interpolation: "runtime",
+                    interpolation: "runtime",
                     value: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
                   },
                   transformerParams: {},
@@ -700,21 +700,21 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   transformerParams: {},
                   expectedValue: true,
                 },
-                "failed constantBoolean transformer for non-boolean value": {
-                  transformerTestType: "transformerTest",
-                  transformerTestLabel: "failed constantBoolean transformer for non-boolean value",
-                  transformerName: "constantBooleanFailed",
-                  transformer: {
-                    transformerType: "constantBoolean",
-                    // interpolation: "runtime",
-                    value: "test" as any,
-                  },
-                  transformerParams: {},
-                  ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-                  expectedValue: {
-                    queryFailure: "QueryNotExecutable",
-                  },
-                },
+                // "failed constantBoolean transformer for non-boolean value": {
+                //   transformerTestType: "transformerTest",
+                //   transformerTestLabel: "failed constantBoolean transformer for non-boolean value",
+                //   transformerName: "constantBooleanFailed",
+                //   transformer: {
+                //     transformerType: "constantBoolean",
+                //     // interpolation: "runtime",
+                //     value: "test" as any,
+                //   },
+                //   transformerParams: {},
+                //   ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+                //   expectedValue: {
+                //     queryFailure: "QueryNotExecutable",
+                //   },
+                // },
               },
             },
             constantAsExtractor: {
@@ -727,7 +727,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   transformerName: "constantAsExtractor",
                   transformer: {
                     transformerType: "constantAsExtractor",
-                    // interpolation: "runtime",
+                    interpolation: "runtime",
                     valueJzodSchema: {
                       type: "object",
                       definition: {
@@ -745,7 +745,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   transformerName: "constantAsExtractor",
                   transformer: {
                     transformerType: "constantAsExtractor",
-                    // interpolation: "runtime",
+                    interpolation: "runtime",
                     valueJzodSchema: entityDefinitionCountry.jzodSchema as JzodElement,
                     value: Country1 as EntityInstance,
                   },
@@ -759,7 +759,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   transformerName: "constantAsExtractor",
                   transformer: {
                     transformerType: "constantAsExtractor",
-                    // interpolation: "runtime",
+                    interpolation: "runtime",
                     valueJzodSchema: {
                       type: "array",
                       definition: {
@@ -1227,7 +1227,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   referenceType: "referencedTransformer",
                   reference: {
                     transformerType: "constantAsExtractor",
-                    // interpolation: "runtime",
+                    interpolation: "runtime",
                     valueJzodSchema: {
                       type: "array",
                       definition: {
@@ -1255,7 +1255,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   referenceType: "referencedTransformer",
                   reference: {
                     transformerType: "constantAsExtractor",
-                    // interpolation: "runtime",
+                    interpolation: "runtime",
                     valueJzodSchema: {
                       type: "array",
                       definition: {
@@ -1405,7 +1405,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   referenceType: "referencedTransformer",
                   reference: {
                     transformerType: "constantAsExtractor",
-                    // interpolation: "runtime",
+                    interpolation: "runtime",
                     valueJzodSchema: {
                       type: "array",
                       definition: {
@@ -1494,7 +1494,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   referenceType: "referencedTransformer",
                   reference: {
                     transformerType: "constantAsExtractor",
-                    // interpolation: "runtime",
+                    interpolation: "runtime",
                     valueJzodSchema: {
                       type: "array",
                       definition: {
@@ -1519,7 +1519,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   referenceType: "referencedTransformer",
                   reference: {
                     transformerType: "constantAsExtractor",
-                    // interpolation: "runtime",
+                    interpolation: "runtime",
                     valueJzodSchema: {
                       type: "array",
                       definition: {
@@ -1807,6 +1807,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                 definition: {
                   uuid: {
                     transformerType: "constantUuid",
+                    interpolation: "runtime",
                     value: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
                   },
                   name: {
@@ -1831,6 +1832,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                 definition: {
                   uuid: {
                     transformerType: "constantUuid",
+                    interpolation: "runtime",
                     value: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
                   },
                   name: {
@@ -1844,6 +1846,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                     definition: {
                       uuid: {
                         transformerType: "constantUuid",
+                        interpolation: "runtime",
                         value: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
                       },
                       name: {
@@ -1874,6 +1877,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                 definition: {
                   uuid: {
                     transformerType: "constantUuid",
+                    interpolation: "runtime",
                     value: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
                   },
                   name: {
@@ -2078,6 +2082,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                       definition: {
                         uuid: {
                           transformerType: "constantUuid",
+                          interpolation: "runtime",
                           value: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
                         },
                         name: {

@@ -1488,6 +1488,12 @@ export type TransformerForRuntime_constant = {
     transformerType: "constant";
     value?: any;
 };
+export type TransformerForRuntime_constantBoolean = {
+    label?: string | undefined;
+    interpolation: "runtime";
+    transformerType: "constantBoolean";
+    value: boolean;
+};
 export type TransformerForRuntime_constantUuid = {
     label?: string | undefined;
     interpolation: "runtime";
@@ -5204,6 +5210,7 @@ export const transformerForBuild_object_listReducerToSpreadObject: z.ZodType<Tra
 export const transformerForBuild_object_fullTemplate: z.ZodType<TransformerForBuild_object_fullTemplate> = z.object({label:z.string().optional(), interpolation:z.literal("build"), orderBy:z.string().optional(), transformerType:z.literal("object_fullTemplate"), applyTo:z.union([z.record(z.string(),z.any()), z.lazy(() =>transformer_inner_referenced_extractor), z.lazy(() =>transformer_inner_referenced_transformerForBuild)]), referenceToOuterObject:z.string(), definition:z.array(z.object({attributeKey:z.union([z.string(), z.lazy(() =>transformerForBuild_InnerReference)]), attributeValue:z.lazy(() =>transformerForBuild)}).strict())}).strict();
 export const transformerForBuild_unique: z.ZodType<TransformerForBuild_unique> = z.object({label:z.string().optional(), interpolation:z.literal("build"), orderBy:z.string().optional(), transformerType:z.literal("unique"), applyTo:z.union([z.array(z.any()), z.lazy(() =>transformer_inner_referenced_extractor), z.lazy(() =>transformer_inner_referenced_transformerForBuild)]), attribute:z.string()}).strict();
 export const transformerForRuntime_constant: z.ZodType<TransformerForRuntime_constant> = z.object({label:z.string().optional(), interpolation:z.literal("runtime"), transformerType:z.literal("constant"), value:z.any()}).strict();
+export const transformerForRuntime_constantBoolean: z.ZodType<TransformerForRuntime_constantBoolean> = z.object({label:z.string().optional(), interpolation:z.literal("runtime"), transformerType:z.literal("constantBoolean"), value:z.boolean()}).strict();
 export const transformerForRuntime_constantUuid: z.ZodType<TransformerForRuntime_constantUuid> = z.object({label:z.string().optional(), interpolation:z.literal("runtime"), transformerType:z.literal("constantUuid"), value:z.string()}).strict();
 export const transformerForRuntime_constantArray: z.ZodType<TransformerForRuntime_constantArray> = z.object({label:z.string().optional(), interpolation:z.literal("runtime"), transformerType:z.literal("constantArray"), value:z.array(z.any())}).strict();
 export const transformerForRuntime_constantAsExtractor: z.ZodType<TransformerForRuntime_constantAsExtractor> = z.object({label:z.string().optional(), interpolation:z.literal("runtime"), transformerType:z.literal("constantAsExtractor"), valueType:z.enum(["string","number","boolean","bigint","object","array"]).optional(), valueJzodSchema:z.lazy(() =>jzodElement), value:z.any()}).strict();

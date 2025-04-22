@@ -67,6 +67,7 @@ import {
   transformer_constant,
   transformer_constantArray,
   transformer_constantAsExtractor,
+  transformer_constantBoolean,
   transformer_constantUuid,
   transformer_contextReference,
   transformer_count,
@@ -154,6 +155,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   spreadSheetToJzodSchema: transformer_spreadSheetToJzodSchema,
   count: transformer_count,
   constant: transformer_constant,
+  constantBoolean: transformer_constantBoolean,
   constantUuid: transformer_constantUuid,
   constantAsExtractor: transformer_constantAsExtractor,
   constantArray: transformer_constantArray,
@@ -1847,15 +1849,16 @@ export function innerTransformer_apply(
       }
     }
     case "constantBoolean": {
-      if (typeof transformer.value == "boolean") {
-        return transformer.value;
-      } else {
-        return new Domain2ElementFailed({
-          queryFailure: "FailedTransformer_constantBoolean",
-          failureOrigin: ["innerTransformer_apply"],
-          queryContext: "value is not a boolean",
-        });
-      }
+      throw new Error("constantBoolean transformer not allowed in innerTransformer_apply");
+      // if (typeof transformer.value == "boolean") {
+      //   return transformer.value;
+      // } else {
+      //   return new Domain2ElementFailed({
+      //     queryFailure: "FailedTransformer_constantBoolean",
+      //     failureOrigin: ["innerTransformer_apply"],
+      //     queryContext: "value is not a boolean",
+      //   });
+      // }
     }
     case "constantObject": {
       if (typeof transformer.value == "object") {
@@ -2179,7 +2182,7 @@ export function transformer_extended_apply(
             // case "constantAsExtractor":
             // case "constantArray":
             case "constantBigint":
-            case "constantBoolean":
+            // case "constantBoolean":
             case "constantObject":
             case "constantNumber":
             case "constantString":
