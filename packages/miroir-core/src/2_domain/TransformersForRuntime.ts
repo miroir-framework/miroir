@@ -51,7 +51,9 @@ import {
   TransformerForRuntime_constant,
   TransformerForRuntime_contextReference,
   TransformerForBuild_parameterReference,
-  TransformerForBuild_constantAsExtractor
+  TransformerForBuild_constantAsExtractor,
+  TransformerForRuntime_newUuid,
+  TransformerForBuild_newUuid
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { Action2Error, Domain2ElementFailed, Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
@@ -73,6 +75,7 @@ import {
   transformer_listReducerToIndexObject,
   transformer_listReducerToSpreadObject,
   transformer_mapperListToList,
+  transformer_newUuid,
   transformer_object_fullTemplate,
   transformer_objectAlter,
   transformer_objectDynamicAccess,
@@ -133,6 +136,7 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
   handleTransformer_contextReference,
   handleTransformer_dataflowObject,
   handleTransformer_FreeObjectTemplate,
+  handleTransformer_newUuid,
   handleTransformer_objectAlter: defaultTransformers.handleTransformer_objectAlter,
   transformer_dynamicObjectAccess_apply: defaultTransformers.transformer_dynamicObjectAccess_apply,
   handleTransformer_objectEntries,
@@ -158,6 +162,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   listReducerToIndexObject: transformer_listReducerToIndexObject,
   listReducerToSpreadObject: transformer_listReducerToSpreadObject,
   mapperListToList: transformer_mapperListToList,
+  newUuid: transformer_newUuid,
   objectAlter: transformer_objectAlter,
   objectDynamicAccess: transformer_objectDynamicAccess,
   objectEntries: transformer_objectEntries,
@@ -1694,6 +1699,30 @@ export function handleTransformer_constantAsExtractor(
 ): Domain2QueryReturnType<any> {
   return transformer.value;
 }
+
+// ################################################################################################
+export function handleTransformer_newUuid(
+  step: Step,
+  label: string | undefined,
+  transformer: TransformerForBuild_newUuid | TransformerForRuntime_newUuid,
+  resolveBuildTransformersTo: ResolveBuildTransformersTo,
+  queryParams: Record<string, any>,
+  contextResults?: Record<string, any>
+): Domain2QueryReturnType<any> {
+  const rawValue = defaultTransformers.transformer_InnerReference_resolve(
+    step,
+    transformer,
+    resolveBuildTransformersTo,
+    queryParams,
+    contextResults
+  );
+  const returnedValue: Domain2QueryReturnType<any> =
+    typeof transformer == "object" && (transformer as any).applyFunction
+      ? (transformer as any).applyFunction(rawValue)
+      : rawValue;
+  return returnedValue;
+  // break;
+}
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
@@ -1921,7 +1950,18 @@ export function innerTransformer_apply(
       throw new Error("parameterReference transformer not allowed in innerTransformer_apply");
       break;
     }
-    case "newUuid":
+    case "newUuid": {
+      throw new Error("newUuid transformer not allowed in innerTransformer_apply");
+      // return handleTransformer_newUuid(
+      //   step,
+      //   label,
+      //   transformer,
+      //   resolveBuildTransformersTo,
+      //   queryParams,
+      //   contextResults
+      // );
+      // break;
+    }
     default: {
       const rawValue = defaultTransformers.transformer_InnerReference_resolve(
         step,
@@ -2140,7 +2180,7 @@ export function transformer_extended_apply(
             case "constantObject":
             case "constantNumber":
             case "constantString":
-            case "newUuid":
+            // case "newUuid":
             case "mustacheStringTemplate":
             case "mustacheStringTemplate_NOT_IMPLEMENTED":
             // case "contextReference":

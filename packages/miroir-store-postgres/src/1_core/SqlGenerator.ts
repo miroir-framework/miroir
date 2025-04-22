@@ -29,7 +29,8 @@ import {
   TransformerForRuntime_constant,
   TransformerForRuntime_contextReference,
   TransformerForRuntime_objectDynamicAccess,
-  TransformerForRuntime_constantAsExtractor
+  TransformerForRuntime_constantAsExtractor,
+  TransformerForRuntime_newUuid
 } from "miroir-core";
 import { RecursiveStringRecords } from "../4_services/SqlDbQueryTemplateRunner";
 import { cleanLevel } from "../4_services/constants";
@@ -77,6 +78,7 @@ const sqlTransformerImplementations: Record<string, ITransformerHandler<any>> = 
   sqlStringForListReducerToIndexObjectTransformer,
   sqlStringForListReducerToSpreadObjectTransformer,
   sqlStringForMapperListToListTransformer,
+  sqlStringForNewUuidTransformer,
   sqlStringForObjectFullTemplateTransformer,
   sqlStringForObjectAlterTransformer,
   sqlStringForObjectDynamicAccessTransformer,
@@ -2477,6 +2479,25 @@ function sqlStringForConstantAsExtractorTransformer(
   // });
   // break;
 }
+
+// ################################################################################################
+function sqlStringForNewUuidTransformer(
+  actionRuntimeTransformer: TransformerForRuntime_newUuid,
+  preparedStatementParametersCount: number,
+  indentLevel: number,
+  queryParams: Record<string, any>,
+  definedContextEntries: Record<string, SqlContextEntry>,
+  useAccessPathForContextReference: boolean,
+  topLevelTransformer: boolean,
+  withClauseColumnName?: string,
+  iterateOn?: string,
+): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
+  return {
+    type: "scalar",
+    sqlStringOrObject: (topLevelTransformer ? "select " : "") + "gen_random_uuid()",
+  };
+}
+
 // ################################################################################################
 export function sqlStringForRuntimeTransformer(
   actionRuntimeTransformer: TransformerForRuntime,
@@ -2515,12 +2536,24 @@ export function sqlStringForRuntimeTransformer(
     )
   }
   switch (actionRuntimeTransformer.transformerType) {
-    case "newUuid": {
-      return {
-        type: "scalar",
-        sqlStringOrObject: (topLevelTransformer ? "select " : "") + "gen_random_uuid()",
-      };
-    }
+    // case "newUuid": {
+    //   return sqlStringForNewUuidTransformer(
+    //     actionRuntimeTransformer as TransformerForRuntime_newUuid,
+    //     preparedStatementParametersCount,
+    //     indentLevel,
+    //     queryParams,
+    //     definedContextEntries,
+    //     useAccessPathForContextReference,
+    //     topLevelTransformer,
+    //     withClauseColumnName,
+    //     iterateOn,
+    //   );
+    //   throw new Error("sqlStringForRuntimeTransformer newUuid not implemented");
+    //   // return {
+    //   //   type: "scalar",
+    //   //   sqlStringOrObject: (topLevelTransformer ? "select " : "") + "gen_random_uuid()",
+    //   // };
+    // }
     case "dataflowSequence": {
       throw new Error("sqlStringForRuntimeTransformer dataflowSequence not implemented");
       break;

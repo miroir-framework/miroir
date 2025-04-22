@@ -280,15 +280,6 @@
           }
         }
       },
-      "transformer_newUuid": {
-        "type": "object",
-        "definition": {
-          "transformerType": {
-            "type": "literal",
-            "definition": "newUuid"
-          }
-        }
-      },
       "transformer_contextOrParameterReferenceTO_REMOVE": {
         "type": "union",
         "discriminator": "transformerType",
@@ -406,7 +397,7 @@
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformer_newUuid"
+              "relativePath": "transformerForRuntime_newUuid"
             }
           }
         ]
@@ -482,7 +473,7 @@
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformer_newUuid"
+              "relativePath": "transformerForBuild_newUuid"
             }
           },
           {
@@ -725,7 +716,7 @@
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformer_newUuid"
+              "relativePath": "transformerForBuild_newUuid"
             }
           }
         ]
@@ -1015,26 +1006,6 @@
           }
         }
       },
-      "transformerForRuntime_newUuid": {
-        "type": "object",
-        "extend": [
-          {
-            "type": "schemaReference",
-            "definition": {
-              "eager": true,
-              "relativePath": "transformerForRuntime_Abstract"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "eager": true,
-              "relativePath": "transformer_newUuid"
-            }
-          }
-        ],
-        "definition": {}
-      },
       "transformerForRuntime_objectDynamicAccess":{
         "type": "object",
         "extend": {
@@ -1111,7 +1082,7 @@
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformer_newUuid"
+              "relativePath": "transformerForRuntime_newUuid"
             }
           },
           {
