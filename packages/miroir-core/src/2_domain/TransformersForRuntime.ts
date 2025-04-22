@@ -67,6 +67,7 @@ import {
   transformer_constant,
   transformer_constantArray,
   transformer_constantAsExtractor,
+  transformer_constantUuid,
   transformer_contextReference,
   transformer_count,
   transformer_dataflowObject,
@@ -153,6 +154,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   spreadSheetToJzodSchema: transformer_spreadSheetToJzodSchema,
   count: transformer_count,
   constant: transformer_constant,
+  constantUuid: transformer_constantUuid,
   constantAsExtractor: transformer_constantAsExtractor,
   constantArray: transformer_constantArray,
   contextReference: transformer_contextReference,
@@ -1890,7 +1892,8 @@ export function innerTransformer_apply(
       }
     }
     case "constantUuid": {
-      return transformer.value;
+      throw new Error("constantUuid transformer not allowed in innerTransformer_apply");
+      // return transformer.value;
     }
     case "constantAsExtractor": {
       throw new Error("constantAsExtractor transformer not allowed in innerTransformer_apply");
@@ -2171,7 +2174,7 @@ export function transformer_extended_apply(
               break;
             }
             // non-extended transformers...
-            case "constantUuid":
+            // case "constantUuid":
             // case "constant":
             // case "constantAsExtractor":
             // case "constantArray":

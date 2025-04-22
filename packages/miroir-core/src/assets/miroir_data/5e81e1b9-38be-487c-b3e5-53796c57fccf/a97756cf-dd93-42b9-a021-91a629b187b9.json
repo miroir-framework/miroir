@@ -268,18 +268,6 @@
           }
         }
       },
-      "transformer_constantUuid": {
-        "type": "object",
-        "definition": {
-          "transformerType": {
-            "type": "literal",
-            "definition": "constantUuid"
-          },
-          "value": {
-            "type": "string"
-          }
-        }
-      },
       "transformer_contextOrParameterReferenceTO_REMOVE": {
         "type": "union",
         "discriminator": "transformerType",
@@ -373,7 +361,7 @@
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformer_constantUuid"
+              "relativePath": "transformerForRuntime_constantUuid"
             }
           },
           {
@@ -641,7 +629,7 @@
             "definition": {
               "eager": true,
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformer_constantUuid"
+              "relativePath": "transformerForBuild_constantUuid"
             }
           },
           {

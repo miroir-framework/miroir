@@ -2536,29 +2536,11 @@ export function sqlStringForRuntimeTransformer(
     )
   }
   switch (actionRuntimeTransformer.transformerType) {
-    // case "newUuid": {
-    //   return sqlStringForNewUuidTransformer(
-    //     actionRuntimeTransformer as TransformerForRuntime_newUuid,
-    //     preparedStatementParametersCount,
-    //     indentLevel,
-    //     queryParams,
-    //     definedContextEntries,
-    //     useAccessPathForContextReference,
-    //     topLevelTransformer,
-    //     withClauseColumnName,
-    //     iterateOn,
-    //   );
-    //   throw new Error("sqlStringForRuntimeTransformer newUuid not implemented");
-    //   // return {
-    //   //   type: "scalar",
-    //   //   sqlStringOrObject: (topLevelTransformer ? "select " : "") + "gen_random_uuid()",
-    //   // };
-    // }
     case "dataflowSequence": {
       throw new Error("sqlStringForRuntimeTransformer dataflowSequence not implemented");
       break;
     }
-    case "constantUuid":
+    // case "constantUuid":
     case "constantBoolean":
     case "constantBigint":
     case "constantNumber":
