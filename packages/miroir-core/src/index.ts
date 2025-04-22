@@ -187,6 +187,8 @@ export {
   TransformerForRuntime_innerFullObjectTemplate,
   TransformerForRuntime,
   TransformerForBuildOrRuntime,
+  TransformerForBuild_parameterReference,
+  transformerForBuild_parameterReference,
   Transformer_menu_addItem,
   CarryOnObject,
   CompositeActionTemplate,
@@ -258,8 +260,8 @@ export {
   transformerForBuild_objectDynamicAccess,
   Transformer_orderBy,
   transformer_orderBy,
-  Transformer_parameterReference,
-  transformer_parameterReference,
+  // Transformer_parameterReference,
+  // transformer_parameterReference,
 } from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType"
 export {
   actionError,

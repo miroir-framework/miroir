@@ -218,7 +218,7 @@ export function getExtendedSchemas(jzodSchemajzodMiroirBootstrapSchema: any) {
     "transformer_constantString",
     "transformer_newUuid",
     // "transformer_constant",
-    "transformer_parameterReference",
+    // "transformer_parameterReference",
     "transformerForBuild_objectDynamicAccess",
     // "transformer_Abstract",
     "transformer_constantListAsExtractor",
@@ -361,6 +361,7 @@ export function getMiroirFundamentalJzodSchema(
         transformerForBuild_object_listReducerToIndexObject: miroirTransformersForBuild.transformer_listReducerToIndexObject,
         transformerForBuild_object_listReducerToSpreadObject: miroirTransformersForBuild.transformer_listReducerToSpreadObject,
         transformerForBuild_object_fullTemplate: miroirTransformersForBuild.transformer_object_fullTemplate,
+        transformerForBuild_parameterReference: miroirTransformersForBuild.transformer_parameterReference,
         transformerForBuild_unique: miroirTransformersForBuild.transformer_unique,
         transformerForRuntime_constant: miroirTransformersForRuntime.transformer_constant,
         transformerForRuntime_constantArray: miroirTransformersForRuntime.transformer_constantArray,
@@ -2874,8 +2875,8 @@ export function getMiroirFundamentalJzodSchema(
         transformer_extractors: (transformerJzodSchema as any).definition.context
           .transformer_extractors,
         transformer_newUuid: (transformerJzodSchema as any).definition.context.transformer_newUuid,
-        transformer_parameterReference: (transformerJzodSchema as any).definition.context
-          .transformer_parameterReference,
+        // transformer_parameterReference: (transformerJzodSchema as any).definition.context
+        //   .transformer_parameterReference,
         transformerForBuild_objectDynamicAccess: (transformerJzodSchema as any).definition.context
           .transformerForBuild_objectDynamicAccess,
         transformerForBuild_InnerReference: (transformerJzodSchema as any).definition.context
@@ -2915,7 +2916,7 @@ export function getMiroirFundamentalJzodSchema(
           .extractorOrCombinerTemplate,
         extractorOrCombinerTemplateRecord: (miroirFundamentalJzodSchema as any).definition.context
           .extractorOrCombinerTemplateRecord,
-        transformerForBuild_parameterReference: (transformerJzodSchema as any).definition.context
+        transformerForBuild_parameterReference: (miroirFundamentalJzodSchema as any).definition.context
           .transformerForBuild_parameterReference,
         transformerForBuild_constant: (miroirFundamentalJzodSchema as any).definition.context
           .transformerForBuild_constant,

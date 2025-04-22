@@ -9,7 +9,6 @@ import {
   Transformer,
   TransformerForRuntime_constants,
   Transformer_contextOrParameterReferenceTO_REMOVE,
-  Transformer_parameterReference,
   TransformerDefinition,
   TransformerForBuild,
   TransformerForBuild_count,
@@ -50,7 +49,8 @@ import {
   TransformerForRuntime_constantArray,
   TransformerForBuild_constantArray,
   TransformerForRuntime_constant,
-  TransformerForRuntime_contextReference
+  TransformerForRuntime_contextReference,
+  TransformerForBuild_parameterReference
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { Action2Error, Domain2ElementFailed, Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
@@ -75,6 +75,7 @@ import {
   transformer_objectAlter,
   transformer_objectEntries,
   transformer_objectValues,
+  transformer_parameterReference,
   transformer_unique,
 } from "./Transformers";
 
@@ -131,6 +132,7 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
   handleTransformer_objectEntries,
   handleTransformer_objectValues,
   handleTransformer_object_fullTemplate: defaultTransformers.handleTransformer_object_fullTemplate,
+  handleTransformer_parameterReference,
   transformer_object_listReducerToIndexObject_apply: defaultTransformers.transformer_object_listReducerToIndexObject_apply,
   transformer_object_listReducerToSpreadObject_apply: defaultTransformers.transformer_object_listReducerToSpreadObject_apply,
   transformerForBuild_list_listMapperToList_apply:
@@ -153,6 +155,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   objectEntries: transformer_objectEntries,
   objectValues: transformer_objectValues,
   object_fullTemplate: transformer_object_fullTemplate,
+  parameterReference: transformer_parameterReference,
   unique: transformer_unique,
 };
 
@@ -749,7 +752,7 @@ export function transformer_resolveReference(
   step: Step,
   transformerInnerReference:
     | Transformer_contextOrParameterReferenceTO_REMOVE
-    | Transformer_parameterReference,
+    | TransformerForBuild_parameterReference,
   paramOrContext: "param" | "context",
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>
@@ -1650,6 +1653,29 @@ export function handleTransformer_contextReference(
 }
 
 // ################################################################################################
+export function handleTransformer_parameterReference(
+  step: Step,
+  label: string | undefined,
+  transformer: TransformerForBuild_parameterReference,
+  resolveBuildTransformersTo: ResolveBuildTransformersTo,
+  queryParams: Record<string, any>,
+  contextResults?: Record<string, any>
+): Domain2QueryReturnType<any> {
+  const rawValue = defaultTransformers.transformer_InnerReference_resolve(
+    step,
+    transformer,
+    resolveBuildTransformersTo,
+    queryParams,
+    contextResults
+  );
+  const returnedValue: Domain2QueryReturnType<any> =
+    typeof transformer == "object" && (transformer as any).applyFunction
+      ? (transformer as any).applyFunction(rawValue)
+      : rawValue;
+  return returnedValue;
+}
+
+// ################################################################################################
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
@@ -1666,7 +1692,6 @@ export function innerTransformer_apply(
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>
-// ): Domain2QueryReturnType<DomainElementSuccess> {
 ): Domain2QueryReturnType<any> {
   // log.info(
   //   "innerTransformer_apply called for object named",
@@ -1757,25 +1782,6 @@ export function innerTransformer_apply(
     }
     case "constantArray": {
       throw new Error("constantArray transformer not allowed in innerTransformer_apply");
-      // return handleTransformer_constantArray(
-      //   step,
-      //   label,
-      //   transformer,
-      //   resolveBuildTransformersTo,
-      //   queryParams,
-      //   contextResults
-      // );
-      // if (Array.isArray(transformer.value)) {
-      //   return transformer.value;
-      // } else {
-      //   return transformer.value;
-      //   // return JSON.stringify(transformer.value)
-      //   // return new Domain2ElementFailed({
-      //   //   queryFailure: "FailedTransformer_constantArray",
-      //   //   failureOrigin: ["innerTransformer_apply"],
-      //   //   queryContext: "constantArrayValue is not an array",
-      //   // });
-      // }
     }
     case "constantBigint": {
       if (typeof transformer.value == "number") {
@@ -1887,39 +1893,14 @@ export function innerTransformer_apply(
     case "dataflowSequence": {
       throw new Error("innerTransformer_apply dataflowSequence not implemented");
     }
-    // case "parameterReference": {
-    //   throw new Error("parameterReference transformer not allowed in innerTransformer_apply");
-    // }// TODO: not possible for TransformerForRuntime
-    // {
-    //   // parameterReferences resolve to constant query definitions, that will be further resolved at runtime
-    //   const rawValue = defaultTransformers.transformer_InnerReference_resolve(
-    //     step,
-    //     transformer,
-    //     queryParams,
-    //     contextResults
-    //   );
-    //   const returnedValue: Domain2QueryReturnType<TransformerForRuntime> = {
-    //     transformerType: "constant",
-    //     value: typeof transformer == "object" && (transformer as any).applyFunction
-    //     ? (transformer as any).applyFunction(rawValue)
-    //     : rawValue,
-    //   };
-    //   return returnedValue;
-    //   break;
-    // }
     case "contextReference": {
       throw new Error("contextReference transformer not allowed in innerTransformer_apply");
-      // return handleTransformer_contextReference(
-      //   step,
-      //   label,
-      //   transformer,
-      //   resolveBuildTransformersTo,
-      //   queryParams,
-      //   contextResults
-      // );
       break;
     }
-    case "parameterReference":
+    case "parameterReference": {
+      throw new Error("parameterReference transformer not allowed in innerTransformer_apply");
+      break;
+    }
     case "newUuid":
     default: {
       const rawValue = defaultTransformers.transformer_InnerReference_resolve(
@@ -2143,7 +2124,7 @@ export function transformer_extended_apply(
             case "mustacheStringTemplate":
             case "mustacheStringTemplate_NOT_IMPLEMENTED":
             // case "contextReference":
-            case "parameterReference":
+            // case "parameterReference":
             case "objectDynamicAccess":
             // case "dataflowObject":
             case "dataflowSequence":

@@ -69,6 +69,7 @@ const sqlTransformerImplementations: Record<string, ITransformerHandler<any>> = 
   sqlStringForContextReferenceTransformer,
   sqlStringForCountTransformer,
   sqlStringForDataflowObjectTransformer,
+  sqlStringForFreeObjectTransformer,
   sqlStringForListPickElementTransformer,
   sqlStringForListReducerToIndexObjectTransformer,
   sqlStringForListReducerToSpreadObjectTransformer,
@@ -77,7 +78,7 @@ const sqlTransformerImplementations: Record<string, ITransformerHandler<any>> = 
   sqlStringForObjectAlterTransformer,
   sqlStringForObjectEntriesTransformer,
   sqlStringForObjectValuesTransformer,
-  sqlStringForFreeObjectTransformer,
+  sqlStringForParameterReferenceTransformer,
   sqlStringForUniqueTransformer,
 }
 
@@ -2275,6 +2276,50 @@ function sqlStringForContextReferenceTransformer(
     return result;
   }
 }
+
+// ################################################################################################
+function sqlStringForParameterReferenceTransformer(
+  actionRuntimeTransformer: TransformerForRuntime_contextReference,
+  preparedStatementParametersCount: number,
+  indentLevel: number,
+  queryParams: Record<string, any>,
+  definedContextEntries: Record<string, SqlContextEntry>,
+  useAccessPathForContextReference: boolean,
+  topLevelTransformer: boolean,
+  withClauseColumnName?: string,
+  iterateOn?: string,
+): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
+  // this resolves references to static values, passed as parameters upon executing of the query
+  // TODO: resolve each parameter as WITH clause, then only call the name of the clause in each reference?
+  const resolvedReference = transformer_resolveReference(
+    "runtime",
+    actionRuntimeTransformer,
+    "param",
+    queryParams,
+    definedContextEntries
+  );
+  if (resolvedReference instanceof Domain2ElementFailed) {
+    return resolvedReference;
+  }
+  const referenceQuery = sqlStringForRuntimeTransformer(
+    {
+      transformerType: "constant",
+      interpolation: "runtime",
+      value: resolvedReference as any,
+    },
+    preparedStatementParametersCount,
+    indentLevel,
+    queryParams,
+    definedContextEntries,
+    useAccessPathForContextReference,
+    topLevelTransformer,
+    // undefined, // withClauseColumnName
+    // iterateOn, // iterateOn
+  );
+
+  return referenceQuery;
+}
+
 // ################################################################################################
 export function sqlStringForRuntimeTransformer(
   actionRuntimeTransformer: TransformerForRuntime,
@@ -2464,127 +2509,6 @@ export function sqlStringForRuntimeTransformer(
       // });
       break;
     }
-    case "parameterReference": {
-      // this resolves references to static values, passed as parameters upon executing of the query
-      // TODO: resolve each parameter as WITH clause, then only call the name of the clause in each reference?
-      const resolvedReference = transformer_resolveReference(
-        "runtime",
-        actionRuntimeTransformer,
-        "param",
-        queryParams,
-        definedContextEntries
-      );
-      if (resolvedReference instanceof Domain2ElementFailed) {
-        return resolvedReference;
-      }
-      const referenceQuery = sqlStringForRuntimeTransformer(
-        {
-          transformerType: "constant",
-          interpolation: "runtime",
-          value: resolvedReference as any,
-        },
-        preparedStatementParametersCount,
-        indentLevel,
-        queryParams,
-        definedContextEntries,
-        useAccessPathForContextReference,
-        topLevelTransformer,
-        // undefined, // withClauseColumnName
-        // iterateOn, // iterateOn
-      );
-
-      return referenceQuery;
-      break;
-    }
-    // case "contextReference": {
-    //   return sqlStringForContextReferenceTransformer(
-    //     actionRuntimeTransformer,
-    //     preparedStatementParametersCount,
-    //     indentLevel,
-    //     queryParams,
-    //     definedContextEntries,
-    //     useAccessPathForContextReference,
-    //     topLevelTransformer,
-    //     withClauseColumnName,
-    //     iterateOn,
-    //   );
-    //   // const referenceName = actionRuntimeTransformer.referenceName??((actionRuntimeTransformer.referencePath??[])[0]);
-    //   // const definedContextEntry = definedContextEntries[referenceName];
-    //   // if (!definedContextEntry) {
-    //   //   return new Domain2ElementFailed({
-    //   //     queryFailure: "QueryNotExecutable",
-    //   //     query: actionRuntimeTransformer as any,
-    //   //     failureMessage:
-    //   //       "sqlStringForRuntimeTransformer contextReference not found in definedContextEntries: " +
-    //   //       JSON.stringify(Object.keys(definedContextEntries)),
-    //   //   });
-    //   // }
-    //   // const resultAccessPath = [
-    //   //   ...(useAccessPathForContextReference?(definedContextEntry.attributeResultAccessPath ?? []):[]),
-    //   //   ...(actionRuntimeTransformer?.referencePath?.slice(1) ?? []), // not consistent, works only because used referencePath has only 1 element
-    //   // ];
-    //   // // const resultAccessPathString = resultAccessPath.map((e) => `"${e}"`).join(".");
-    //   // log.info(
-    //   //   "sqlStringForRuntimeTransformer contextReference called with",
-    //   //   JSON.stringify(actionRuntimeTransformer, null, 2),
-    //   //   "topLevelTransformer",
-    //   //   topLevelTransformer,
-    //   //   "useAccessPathForContextReference",
-    //   //   useAccessPathForContextReference,
-    //   //   "referenceName",
-    //   //   referenceName,
-    //   //   "definedContextEntry",
-    //   //   JSON.stringify(definedContextEntry, null, 2),
-    //   //   "resultAccessPath",
-    //   //   JSON.stringify(resultAccessPath, null, 2)
-    //   // );
-    //   // // log.info("sqlStringForRuntimeTransformer contextReference",actionRuntimeTransformer.referencePath,"resultAccessPath", resultAccessPath);
-    //   // const resultAccessPathStringForTable = resultAccessPath
-    //   //   .map((e, index) => `${index == 0 ? tokenNameQuote + e + tokenNameQuote : tokenStringQuote + e + tokenStringQuote}`)
-    //   //   .join(tokenSeparatorForTableColumn);
-
-    //   // const resultAccessPathStringForJson = resultAccessPath
-    //   //   .map(
-    //   //     (e, index) => `${index == 0 ? tokenNameQuote + e + tokenNameQuote : tokenStringQuote + e + tokenStringQuote}`
-    //   //   )
-    //   //   .join(tokenSeparatorForJsonAttributeAccess);
-    //   // const usedReferenceName = definedContextEntry.renameTo??referenceName;
-    //   // if (topLevelTransformer) {
-    //   //   const result: SqlStringForTransformerElementValue = {
-    //   //     type: definedContextEntry.type,
-    //   //     sqlStringOrObject:
-    //   //       "SELECT " +
-    //   //       (resultAccessPath.length > 0
-    //   //         ? (resultAccessPathStringForJson + ' AS "' + usedReferenceName + '"')
-    //   //         : "*") +
-    //   //       // (resultAccessPathStringForJson.length > 0
-    //   //       //   ? (resultAccessPathStringForJson + ' AS "' + usedReferenceName + '"')
-    //   //       //   : "*") +
-    //   //       flushAndIndent(indentLevel) +
-    //   //       'FROM "' +
-    //   //       usedReferenceName +
-    //   //       '"',
-    //   //     usedContextEntries: [usedReferenceName],
-    //   //     resultAccessPath: [0, usedReferenceName],
-    //   //     columnNameContainingJsonValue: definedContextEntry.type ==  "json"?usedReferenceName: undefined,
-    //   //   };
-    //   //   log.info("sqlStringForRuntimeTransformer contextReference topLevelTransformer=true", JSON.stringify(result, null, 2));
-    //   //   return result;
-    //   // } else { // topLevelTransformer == false
-    //   //   const result: SqlStringForTransformerElementValue = {
-    //   //     type: definedContextEntry.type,
-    //   //     sqlStringOrObject: definedContextEntry.type == "table" ?
-    //   //     `"${usedReferenceName}"${resultAccessPathStringForTable.length > 0 ? "." + resultAccessPathStringForTable : ""}`:
-    //   //     `"${usedReferenceName}"${resultAccessPathStringForJson.length > 0 ? tokenSeparatorForTableColumn + resultAccessPathStringForJson : ""}`,
-    //   //     resultAccessPath: [0, usedReferenceName],
-    //   //     usedContextEntries: [usedReferenceName],
-    //   //     columnNameContainingJsonValue: definedContextEntry.type ==  "json"?usedReferenceName: undefined,
-    //   //   };
-    //   //   log.info("sqlStringForRuntimeTransformer contextReference topLevelTransformer=false", JSON.stringify(result, null, 2));
-    //   //   return result;
-    //   // }
-    //   break;
-    // }
     case "objectDynamicAccess":
     {
       return new Domain2ElementFailed({
