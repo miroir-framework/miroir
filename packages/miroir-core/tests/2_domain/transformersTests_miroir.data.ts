@@ -550,7 +550,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   transformerName: "constantNumber",
                   transformer: {
                     transformerType: "constantNumber",
-                    // interpolation: "runtime",
+                    interpolation: "runtime",
                     value: 42,
                   },
                   transformerParams: {},
@@ -648,7 +648,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   transformerName: "constantObjectBeforeRuntime",
                   transformer: {
                     transformerType: "constantObject",
-                    // interpolation: "runtime",
+                    interpolation: "runtime",
                     value: { test: "test" },
                   },
                   transformerParams: {},
@@ -660,7 +660,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   transformerName: "constantObjectAtRuntime",
                   transformer: {
                     transformerType: "constantObject",
-                    // interpolation: "runtime",
+                    interpolation: "runtime",
                     value: { test: "test" },
                   },
                   transformerParams: {},

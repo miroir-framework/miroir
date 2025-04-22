@@ -70,6 +70,7 @@ import {
   transformer_constantBigint,
   transformer_constantBoolean,
   transformer_constantNumber,
+  transformer_constantObject,
   transformer_constantUuid,
   transformer_contextReference,
   transformer_count,
@@ -164,6 +165,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   constantBoolean: transformer_constantBoolean,
   constantBigint: transformer_constantBigint,
   constantNumber: transformer_constantNumber,
+  constantObject: transformer_constantObject,
   constantUuid: transformer_constantUuid,
   constantAsExtractor: transformer_constantAsExtractor,
   constantArray: transformer_constantArray,
@@ -1870,15 +1872,16 @@ export function innerTransformer_apply(
       // }
     }
     case "constantObject": {
-      if (typeof transformer.value == "object") {
-        return transformer.value;
-      } else {
-        return new Domain2ElementFailed({
-          queryFailure: "FailedTransformer_constantObject",
-          failureOrigin: ["innerTransformer_apply"],
-          queryContext: "value is not an object",
-        });
-      }
+      throw new Error("constantObject transformer not allowed in innerTransformer_apply");
+      // if (typeof transformer.value == "object") {
+      //   return transformer.value;
+      // } else {
+      //   return new Domain2ElementFailed({
+      //     queryFailure: "FailedTransformer_constantObject",
+      //     failureOrigin: ["innerTransformer_apply"],
+      //     queryContext: "value is not an object",
+      //   });
+      // }
     }
     case "constantNumber": {
       throw new Error("constantNumber transformer not allowed in innerTransformer_apply");
@@ -2193,7 +2196,7 @@ export function transformer_extended_apply(
             // case "constantArray":
             // case "constantBigint":
             // case "constantBoolean":
-            case "constantObject":
+            // case "constantObject":
             // case "constantNumber":
             case "constantString":
             // case "newUuid":

@@ -2545,7 +2545,7 @@ export function sqlStringForRuntimeTransformer(
     // case "constantBoolean":
     // case "constantBigint":
     // case "constantNumber":
-    case "constantObject":
+    // case "constantObject":
     case "constantString": {
       return sqlStringForConstantAnyTransformer(
         actionRuntimeTransformer as any,
