@@ -49,7 +49,8 @@ import {
   TransformerForBuild_constant,
   TransformerForRuntime_constantArray,
   TransformerForBuild_constantArray,
-  TransformerForRuntime_constant
+  TransformerForRuntime_constant,
+  TransformerForRuntime_contextReference
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { Action2Error, Domain2ElementFailed, Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
@@ -62,6 +63,7 @@ import { transformer_spreadSheetToJzodSchema } from "./Transformer_Spreadsheet";
 import {
   transformer_constant,
   transformer_constantArray,
+  transformer_contextReference,
   transformer_count,
   transformer_dataflowObject,
   transformer_freeObjectTemplate,
@@ -122,6 +124,7 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
   handleUniqueTransformer,
   handleTransformer_constant,
   handleTransformer_constantArray,
+  handleTransformer_contextReference,
   handleTransformer_dataflowObject,
   handleTransformer_FreeObjectTemplate,
   handleTransformer_objectAlter: defaultTransformers.handleTransformer_objectAlter,
@@ -139,6 +142,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   count: transformer_count,
   constant: transformer_constant,
   constantArray: transformer_constantArray,
+  contextReference: transformer_contextReference,
   dataflowObject: transformer_dataflowObject,
   freeObjectTemplate: transformer_freeObjectTemplate,
   listPickElement: transformer_listPickElement,
@@ -1621,6 +1625,30 @@ export function handleTransformer_constant(
   }
   // return transformer.value;
 }
+
+// ################################################################################################
+export function handleTransformer_contextReference(
+  step: Step,
+  label: string | undefined,
+  transformer: TransformerForRuntime_contextReference,
+  resolveBuildTransformersTo: ResolveBuildTransformersTo,
+  queryParams: Record<string, any>,
+  contextResults?: Record<string, any>
+): Domain2QueryReturnType<any> {
+  const rawValue = defaultTransformers.transformer_InnerReference_resolve(
+    step,
+    transformer,
+    resolveBuildTransformersTo,
+    queryParams,
+    contextResults
+  );
+  const returnedValue: Domain2QueryReturnType<any> =
+    typeof transformer == "object" && (transformer as any).applyFunction
+      ? (transformer as any).applyFunction(rawValue)
+      : rawValue;
+  return returnedValue;
+}
+
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
@@ -1859,7 +1887,9 @@ export function innerTransformer_apply(
     case "dataflowSequence": {
       throw new Error("innerTransformer_apply dataflowSequence not implemented");
     }
-    case "parameterReference": // TODO: not possible for TransformerForRuntime
+    // case "parameterReference": {
+    //   throw new Error("parameterReference transformer not allowed in innerTransformer_apply");
+    // }// TODO: not possible for TransformerForRuntime
     // {
     //   // parameterReferences resolve to constant query definitions, that will be further resolved at runtime
     //   const rawValue = defaultTransformers.transformer_InnerReference_resolve(
@@ -1877,8 +1907,20 @@ export function innerTransformer_apply(
     //   return returnedValue;
     //   break;
     // }
+    case "contextReference": {
+      throw new Error("contextReference transformer not allowed in innerTransformer_apply");
+      // return handleTransformer_contextReference(
+      //   step,
+      //   label,
+      //   transformer,
+      //   resolveBuildTransformersTo,
+      //   queryParams,
+      //   contextResults
+      // );
+      break;
+    }
+    case "parameterReference":
     case "newUuid":
-    case "contextReference":
     default: {
       const rawValue = defaultTransformers.transformer_InnerReference_resolve(
         step,
@@ -2100,7 +2142,7 @@ export function transformer_extended_apply(
             case "newUuid":
             case "mustacheStringTemplate":
             case "mustacheStringTemplate_NOT_IMPLEMENTED":
-            case "contextReference":
+            // case "contextReference":
             case "parameterReference":
             case "objectDynamicAccess":
             // case "dataflowObject":
