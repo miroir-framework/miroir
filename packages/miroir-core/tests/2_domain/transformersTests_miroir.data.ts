@@ -1,6 +1,4 @@
 import { EntityInstance, JzodElement, TransformerForBuild, TransformerForBuildOrRuntime, TransformerForRuntime } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { displayTestSuiteResults } from "../../src/4_services/otherTools";
-import { TestSuiteContext } from "../../src/4_services/TestSuiteContext";
 
 import entityDefinitionCountry from "../../src/assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/56628e31-3db5-4c5c-9328-4ff7ce54c36a.json" with { type: "json" };
 
@@ -29,47 +27,9 @@ import publisher3 from "../../src/assets/library_data/a027c379-8468-43a5-ba4d-bf
 import { Step } from "../../src/2_domain/TransformersForRuntime";
 import { json } from "sequelize";
 import { transformerTestSuite_spreadsheet } from "./transformersTests_spreadsheet.data";
+import { ignoreFailureAttributes, TransformerTest, TransformerTestSuite } from "../../src/4_services/TestTools";
 
 
-// ################################################################################################
-// export interface TransformerTestParams {
-// export class TransformerTestParams {
-export type TransformerTest = {
-  transformerTestType: "transformerTest";
-  transformerTestLabel: string;
-  // deploymentUuid: Uuid;
-  transformerName: string;
-  // transformer: TransformerForBuild | TransformerForRuntime;
-  transformer: TransformerForBuildOrRuntime;
-  runTestStep?: Step;
-  transformerParams: Record<string, any>;
-  transformerRuntimeContext?: Record<string, any>;
-  expectedValue: any;
-  ignoreAttributes?: string[];
-};
-export type TransformerTestSuite = 
-  TransformerTest
- |
-{
-  transformerTestType: "transformerTestSuite";
-  transformerTestLabel: string;
-  transformerTests: Record<string, TransformerTestSuite>;
-}
-
-// by default only queryFailure and failureMessage are compared when expectedValue is a Domain2ElementFailed
-export const ignoreFailureAttributes:string[] = [
-  "applicationSection",
-  "deploymentUuid",
-  "entityUuid",
-  "failureOrigin",
-  "instanceUuid",
-  "errorStack",
-  "innerError",
-  "queryContext",
-  "queryParameters",
-  "queryReference",
-  "query",
-];
 
 const fileData:any[] = [
   {a: "A", b: "B"},
@@ -2679,102 +2639,8 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
   }
 };
 
-const globalTimeOut = 30000;
 export const currentTestSuite:TransformerTestSuite = transformerTestSuite_miroirTransformers;
 // export const currentTestSuite:TransformerTestSuite = transformerTestSuite_spreadsheet;
 
 
 
-// ################################################################################################
-export const testSuites = (transformerTestSuite: TransformerTestSuite):string[][] => {
-  const result: string[][] = [];
-
-  const traverseTestSuites = (suite: TransformerTestSuite, path: string[] = []) => {
-    if (suite.transformerTestType === "transformerTestSuite") {
-      const newPath = [...path, suite.transformerTestLabel];
-      const subSuites = Object.values(suite.transformerTests);
-
-      if (subSuites.length === 0 || subSuites.every((subSuite) => subSuite.transformerTestType === "transformerTest")) {
-        result.push(newPath);
-      } else {
-        for (const subSuite of subSuites) {
-          if (subSuite.transformerTestType === "transformerTestSuite") {
-            traverseTestSuites(subSuite, newPath);
-          }
-        }
-      }
-    }
-  };
-
-  traverseTestSuites(transformerTestSuite);
-  return result;
-}
-
-// ################################################################################################
-export async function runTransformerTestSuite(
-  vitest: any,
-  // step: Step,
-  testSuitePath: string[],
-  transformerTestSuite: TransformerTestSuite,
-  runTransformerTest: (vitest: any, testSuitePath: string[], transformerTest: TransformerTest) => Promise<void>
-) {
-  const testSuitePathAsString = TestSuiteContext.testSuitePathName(testSuitePath);
-  const testSuiteName = transformerTestSuite.transformerTestLabel??transformerTestSuite.transformerTestType;
-  console.log(`@@@@@@@@@@@@@@@@@@@@ running transformer test suite called ${testSuitePathAsString} transformerTestType=${transformerTestSuite.transformerTestType}`);
-  TestSuiteContext.setTestSuite(testSuitePathAsString);
-  if (transformerTestSuite.transformerTestType == "transformerTest") {
-    TestSuiteContext.setTest(transformerTestSuite.transformerTestLabel);
-    await runTransformerTest(vitest, testSuitePath, transformerTestSuite);
-    TestSuiteContext.setTest(undefined);
-  } else {
-    // console.log(`running transformer test suite ${testSuiteName} with ${JSON.stringify(Object.keys(transformerTestSuite.transformerTests))} tests`);
-
-    console.log(`handling transformer test suite ${testSuitePath} with transformerTests=${JSON.stringify(Object.values(transformerTestSuite.transformerTests), null, 2)} tests`);
-    await vitest.describe.each(Object.values(transformerTestSuite.transformerTests))(
-      "test $currentTestSuiteName",
-      async (transformerTestParam: TransformerTestSuite) => {
-        console.log(`calling inner transformer test suite of ${testSuitePath} called ${transformerTestParam.transformerTestLabel}`);
-        // TestSuiteContext.setTestSuite(undefined);
-        await runTransformerTestSuite(
-          vitest,
-          // step,
-          // [...testSuiteName, transformerTestParam.transformerTestLabel],
-          [...testSuitePath, testSuiteName],
-          transformerTestParam,
-          runTransformerTest
-        );
-      },
-      globalTimeOut
-    );
-    console.log(`finished running transformer subtests for test suite ${testSuitePath}`);
-  }
-  console.log(`@@@@@@@@@@@@@@@@@@@@ finished running transformer test suite ${JSON.stringify(testSuitePath)}`);
-  // TestSuiteContext.resetContext();
-}
-
-// ################################################################################################
-export const transformerTestsDisplayResults = (
-  transformerTestSuite: TransformerTestSuite,
-  RUN_TEST: string,
-  testSuiteName: string
-) => {
-  if (RUN_TEST == testSuiteName) {
-    console.log(
-      "#################################### afterAll",
-      testSuiteName,
-      "testResults",
-      JSON.stringify(TestSuiteContext.testAssertionsResults, null, 2)
-    );
-    // const testSuitesPaths = testSuites(transformerTestSuite_miroirTransformers);
-    const testSuitesPaths = testSuites(transformerTestSuite);
-    const testSuitesNames = testSuitesPaths.map(TestSuiteContext.testSuitePathName);
-    // console.log("#################################### afterAll TestSuites:", testSuitesPaths);
-    console.log("#################################### afterAll", testSuiteName, "TestSuites names:", testSuitesNames);
-    console.log("#################################### afterAll", testSuiteName, "TestResults:");
-    for (const testSuiteName of testSuitesNames) {
-      displayTestSuiteResults(expect, testSuiteName);
-      console.log("");
-    }
-    TestSuiteContext.resetResults();
-  }
-};

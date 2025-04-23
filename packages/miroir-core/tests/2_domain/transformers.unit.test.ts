@@ -1,50 +1,8 @@
-import { v4 as uuidv4 } from "uuid";
-// import { describe, expect } from 'vitest';
 import * as vitest from 'vitest';
-// import * as vitest from 'jest';
-
 import {
-  DomainAction,
-  EntityInstance,
-  StoreUnitConfiguration,
-  TransformerForBuild,
-  TransformerForBuild_dataflowObject,
-  TransformerForRuntime
-} from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { transformer_extended_apply_wrapper, transformer_InnerReference_resolve } from "../../src/2_domain/TransformersForRuntime";
-// import {
-//   author1,
-//   author2,
-//   author3,
-//   author4,
-//   book1,
-//   book2,
-//   book3,
-//   book4,
-//   book5,
-//   book6,
-//   Country1,
-//   Country2,
-//   Country3,
-//   Country4,
-//   displayTestSuiteResults,
-//   Domain2QueryReturnType,
-//   ignorePostgresExtraAttributes,
-//   ignorePostgresExtraAttributesOnList,
-//   ignorePostgresExtraAttributesOnObject,
-//   TestSuiteContext
-// } from "miroir-core";
-import { Domain2QueryReturnType } from "../../src/0_interfaces/2_domain/DomainElement";
-import { ignorePostgresExtraAttributes } from "../../src/4_services/otherTools";
-import { TestSuiteContext } from "../../src/4_services/TestSuiteContext";
-import {
-  runTransformerTestSuite,
-  transformerTestsDisplayResults,
-  testSuites,
-  TransformerTest,
-  transformerTestSuite_miroirTransformers,
   currentTestSuite,
 } from "./transformersTests_miroir.data";
+import { runTransformerTestInMemory, runTransformerTestSuite, transformerTestsDisplayResults } from '../../src/4_services/TestTools';
 
 
 // const env:any = (import.meta as any).env
@@ -73,59 +31,6 @@ const params = getCommandLineArgs();
 // console.log("@@@@@@@@@@@@@@@@@@ vitest",vitest.describe)
 // describe.sequential("templatesDEFUNCT.unit.test", () => {
 
-// const testApplicationName = "testApplication"
-// const sqlDbStoreName = "testStoreName"
-// const connectionString = "postgres://postgres:postgres@localhost:5432/postgres"
-// // const schema = "testSchema"
-// const schema = testApplicationName;
-// const paramSelfApplicationUuid = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa";
-// const paramAdminConfigurationDeploymentUuid: Uuid = "bbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb";
-// const applicationModelBranchUuid: Uuid = "cccccccc-cccc-cccc-cccc-cccccccccccc";
-// const selfApplicationVersionUuid: Uuid = "dddddddd-dddd-dddd-dddd-dddddddddddd";
-
-// // let sqlDbAdminStore: SqlDbAdminStoreSection;
-// let sqlDbAdminStore: PersistenceStoreAdminSectionInterface;
-// let sqlDbDataStore: SqlDbDataStoreSection;
-// let sqlDbModelStore: SqlDbModelStoreSection;
-// let persistenceStoreController: PersistenceStoreController;
-// const testStoreConfig: StoreUnitConfiguration = getBasicStoreUnitConfiguration(testApplicationName, {
-//   emulatedServerType: "sql",
-//   connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
-// })
-
-// const libraryEntitesAndInstances = [
-//   {
-//     entity: entityAuthor as MetaEntity,
-//     entityDefinition: entityDefinitionAuthor as EntityDefinition,
-//     instances: [
-//       author1,
-//       author2,
-//       author3 as EntityInstance,
-//     ]
-//   },
-//   {
-//     entity: entityBook as MetaEntity,
-//     entityDefinition: entityDefinitionBook as EntityDefinition,
-//     instances: [
-//       book1 as EntityInstance,
-//       book2 as EntityInstance,
-//       // book3 as EntityInstance,
-//       book4 as EntityInstance,
-//       book5 as EntityInstance,
-//       book6 as EntityInstance,
-//     ]
-//   },
-//   {
-//     entity: entityPublisher as MetaEntity,
-//     entityDefinition: entityDefinitionPublisher as EntityDefinition,
-//     instances: [
-//       publisher1 as EntityInstance,
-//       publisher2 as EntityInstance,
-//       publisher3 as EntityInstance,
-//     ]
-//   }
-// ];
-
 afterAll(async () => {
   if (RUN_TEST) {
     transformerTestsDisplayResults(currentTestSuite, RUN_TEST, testSuiteName);
@@ -133,97 +38,9 @@ afterAll(async () => {
 });
 
 // ################################################################################################
-async function runTransformerTestInMemory(vitest: any, testSuiteNamePath: string[], transformerTest: TransformerTest) {
-  const assertionName = transformerTest.transformerTestLabel ?? transformerTest.transformerName;
-  console.log("#################################### runTransformerTestInMemory test", assertionName, "START");
-  // TestSuiteContext.setTest(transformerTest.transformerTestLabel);
-
-  if (!currentTestSuite) {
-    throw new Error("transformerTests is undefined");
-  }
-  const transformer: TransformerForBuild | TransformerForRuntime = transformerTest.transformer;
-  const runtimeTransformer:TransformerForRuntime = transformer as any;
-  console.log("################################ runTransformerTestInMemory transformerTestParams", JSON.stringify(transformerTest, null, 2));
-
-  // const runtimeTransformer:TransformerForRuntime = (transformer as any).interpolation
-  //   ? (transformer as TransformerForRuntime)
-  //   : transformer_extended_apply_wrapper(
-  //       "build",
-  //       (transformer as any)?.label ?? transformerTest.transformerName,
-  //       transformer as TransformerForBuild,
-  //       transformerTest.transformerParams,
-  //       transformerTest.transformerRuntimeContext ?? {}
-  //     )
-  // ;
-
-  // console.log(
-  //   "################################ runTransformerTestInMemory runtimeTransformer",
-  //   JSON.stringify(runtimeTransformer, null, 2)
-  // );
-  // TODO: check if transformer is indeed a runtime transformer, or if it is a "custom-made" build transformer
-
-  const interpolation = transformerTest.runTestStep??"runtime";
-  let rawResult: Domain2QueryReturnType<any>;
-
-  const convertedTransformer = transformer_extended_apply_wrapper(
-    "build",
-    undefined,
-    runtimeTransformer,
-    transformerTest.transformerParams,
-    transformerTest.transformerRuntimeContext ?? {},
-    "value"
-  );
-  console.log(
-    "################################ runTransformerTestInMemory convertedTransformer",
-    JSON.stringify(convertedTransformer, null, 2)
-  );
-
-  if (interpolation == "runtime" && !convertedTransformer["elementType"]) {
-    rawResult = transformer_extended_apply_wrapper(
-      "runtime",
-      undefined,
-      convertedTransformer,
-      transformerTest.transformerParams,
-      transformerTest.transformerRuntimeContext ?? {}
-    );
-  } else {
-    rawResult = convertedTransformer;
-  }
-
-
-  console.log("################################ runTransformerTestInMemory raw result", JSON.stringify(rawResult, null, 2));
-  console.log(
-    "################################ runTransformerTestInMemory expectedResult",
-    JSON.stringify(transformerTest.expectedValue, null, 2)
-  );
-  const result = ignorePostgresExtraAttributes(rawResult, transformerTest.ignoreAttributes);
-  console.log("################################ runTransformerTestInMemory result", JSON.stringify(result, null, 2));
-  const testSuiteNamePathAsString = TestSuiteContext.testSuitePathName(testSuiteNamePath);
-  try {
-    vitest.expect(result, `${testSuiteNamePathAsString} > ${assertionName}`).toEqual(transformerTest.expectedValue);
-    TestSuiteContext.setTestAssertionResult({
-      assertionName,
-      assertionResult: "ok",
-    });
-  } catch (error) {
-    TestSuiteContext.setTestAssertionResult({
-      assertionName,
-      assertionResult: "error",
-      assertionExpectedValue: transformerTest.expectedValue,
-      assertionActualValue: result,
-    });
-  }
-
-  console.log("############################ test", assertionName, "END");
-  return Promise.resolve();
-}
-
-// ################################################################################################
 const testSuiteName = "transformers.unit.test";
 if (RUN_TEST == testSuiteName) {
-  // await runTransformerTestSuite(vitest, [transformerTests.transformerTestLabel ?? transformerTests.transformerTestType], transformerTests, runTransformerTest);
   await runTransformerTestSuite(vitest, [], currentTestSuite, runTransformerTestInMemory);
-  
 } else {
   console.log("################################ skipping test suite:", testSuiteName);
 }
