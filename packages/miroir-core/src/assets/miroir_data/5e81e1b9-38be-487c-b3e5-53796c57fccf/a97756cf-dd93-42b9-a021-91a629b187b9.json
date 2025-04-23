@@ -690,6 +690,12 @@
           {
             "type": "schemaReference",
             "definition": {
+              "relativePath": "transformerForBuild_menu_addItem"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
               "relativePath": "transformerForBuild_constants"
             }
           },
@@ -1066,6 +1072,12 @@
       "type": "union",
         "discriminator": "transformerType",
         "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformerForRuntime_menu_addItem"
+            }
+          },
           {
             "type": "schemaReference",
             "definition": {

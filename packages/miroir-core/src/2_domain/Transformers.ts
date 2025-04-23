@@ -2,6 +2,7 @@ import { JzodElement, TransformerDefinition } from "../0_interfaces/1_core/prepr
 import { transformerInterfaceFromDefinition } from "./Transformer_tools";
 
 
+import transformer_menu_addItem_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/685440be-7f3f-4774-b90d-bafa82d6832b.json';
 import transformer_constant_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/2b4c25e0-6b0f-4f7d-aa68-1fdc079aead3.json';
 import transformer_constantArray_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/97d772e5-b8df-4b1f-99ca-307bcdb4f79b.json';
 import transformer_constantBoolean_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/8a2a482e-4897-42c1-90d2-3e4fce9355f4.json';
@@ -29,6 +30,8 @@ import transformer_objectValues_json from '../assets/miroir_data/a557419d-a288-4
 import transformer_parameterReference_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/af5029f2-b42e-4541-8e50-4e2f2d8fcfab.json';
 import transformer_unique_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/a93aec8f-3f8b-4129-a907-e7321c1e7171.json';
 
+export const transformer_menu_addItem: TransformerDefinition = transformer_menu_addItem_json as TransformerDefinition;
+// 
 export const transformer_constant: TransformerDefinition = transformer_constant_json as TransformerDefinition;
 export const transformer_constantArray: TransformerDefinition = transformer_constantArray_json as TransformerDefinition;
 export const transformer_constantBoolean: TransformerDefinition = transformer_constantBoolean_json as TransformerDefinition;
@@ -57,10 +60,11 @@ export const transformer_parameterReference: TransformerDefinition = transformer
 export const transformer_unique: TransformerDefinition = transformer_unique_json as TransformerDefinition;
 
 const miroirTransformers: Record<string,TransformerDefinition> = {
+  transformer_menu_addItem,
+  // 
   transformer_constant,
   transformer_constantArray,
   transformer_constantBoolean,
-  transformer_constantBigint,
   transformer_constantNumber,
   transformer_constantObject,
   transformer_constantString,
@@ -83,6 +87,7 @@ const miroirTransformers: Record<string,TransformerDefinition> = {
   transformer_object_fullTemplate,
   transformer_parameterReference,
   transformer_unique,
+  transformer_constantBigint,
 };
 
 const runtimeReferenceMap: Record<string, string> = {

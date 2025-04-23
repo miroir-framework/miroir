@@ -260,7 +260,7 @@ export function getMiroirFundamentalJzodSchema(
   testEndpointVersionV1: any,
   jzodSchemajzodMiroirBootstrapSchema: any,
   transformerJzodSchema: any,
-  miroirTransformersJzodSchemas: any[], // TransformerDefinition[]
+  miroirTransformersJzodSchemas: any[], // TransformerDefinition[] NOT USED
   entityDefinitionAdminApplication: any,
   entityDefinitionSelfApplicationV1: any,
   entityDefinitionSelfApplicationVersionV1: any,
@@ -305,11 +305,13 @@ export function getMiroirFundamentalJzodSchema(
   // log.info("localCompositeActionDefinition", JSON.stringify(localCompositeActionDefinition, null, 2));
   // log.info("localRunTestCaseAction", JSON.stringify(localRunTestCaseAction, null, 2));
   // log.info("getMiroirFundamentalJzodSchema miroirTransformersForBuild", JSON.stringify(miroirTransformersForBuild, null, 2));
-  log.info(
-    "getMiroirFundamentalJzodSchema miroirTransformersForBuild.transformer_unique",
-    JSON.stringify(miroirTransformersForBuild.transformer_unique, null, 2)
-  );
+  // log.info(
+  //   "getMiroirFundamentalJzodSchema miroirTransformersForBuild.transformer_unique",
+  //   JSON.stringify(miroirTransformersForBuild.transformer_unique, null, 2)
+  // );
 
+  log.info("getMiroirFundamentalJzodSchema miroirTransformersJzodSchemas", JSON.stringify(miroirTransformersJzodSchemas.map(e=>e.name)), null, 2);
+  log.info("getMiroirFundamentalJzodSchema miroirTransformersForBuild", JSON.stringify(Object.keys(miroirTransformersForBuild), null, 2));
   const miroirFundamentalJzodSchema: any = {
     // const miroirFundamentalJzodSchema: JzodSchema = {
     uuid: miroirFundamentalJzodSchemaUuid,
@@ -336,6 +338,7 @@ export function getMiroirFundamentalJzodSchema(
             type: "never",
           },
         // ...(transformerJzodSchema as any).definition.context, // gives "transformerForBuild_InnerReference", "transformerForBuild", "actionHandler"
+        // TODO: remove parameter transformerJzodSchema, there is no direct correspondance from transformer definition to type of input 
         ...makeReferencesAbsolute(
           (transformerJzodSchema as any).definition,
           miroirFundamentalJzodSchemaUuid,
@@ -347,6 +350,8 @@ export function getMiroirFundamentalJzodSchema(
             { type: "object", definition: e.transformerInterface.transformerParameterSchema },
           ])
         ),
+        transformerForBuild_menu_addItem: miroirTransformersForBuild.transformer_menu_addItem,
+        // 
         transformerForBuild_constant: miroirTransformersForBuild.transformer_constant,
         transformerForBuild_constantBoolean: miroirTransformersForBuild.transformer_constantBoolean,
         transformerForBuild_constantBigint: miroirTransformersForBuild.transformer_constantBigint,
@@ -373,6 +378,9 @@ export function getMiroirFundamentalJzodSchema(
         transformerForBuild_object_fullTemplate: miroirTransformersForBuild.transformer_object_fullTemplate,
         transformerForBuild_parameterReference: miroirTransformersForBuild.transformer_parameterReference,
         transformerForBuild_unique: miroirTransformersForBuild.transformer_unique,
+        // ########################################################################################
+        transformerForRuntime_menu_addItem: miroirTransformersForRuntime.transformer_menu_addItem,
+        // 
         transformerForRuntime_constant: miroirTransformersForRuntime.transformer_constant,
         transformerForRuntime_constantArray: miroirTransformersForRuntime.transformer_constantArray,
         transformerForRuntime_constantBoolean: miroirTransformersForRuntime.transformer_constantBoolean,
@@ -398,6 +406,13 @@ export function getMiroirFundamentalJzodSchema(
         transformerForRuntime_objectValues: miroirTransformersForRuntime.transformer_objectValues,
         transformerForRuntime_object_fullTemplate: miroirTransformersForRuntime.transformer_object_fullTemplate,
         transformerForRuntime_unique: miroirTransformersForRuntime.transformer_unique,
+        // extendedTransformerForRuntime: {
+        //   type: "schemaReference",
+        //   definition: {
+        //     absolutePath: miroirFundamentalJzodSchemaUuid,
+        //     relativePath: "transformerForRuntime",
+        //   },
+        // },
         extendedTransformerForRuntime: {
           type: "union",
           definition: [
@@ -412,7 +427,7 @@ export function getMiroirFundamentalJzodSchema(
               type: "schemaReference",
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "transformer_menu_addItem",
+                relativePath: "transformerForRuntime_menu_addItem",
               },
             },
           ],
@@ -3055,13 +3070,12 @@ export function getMiroirFundamentalJzodSchema(
         //   .transformerForRuntime_mapper_listToObject,
         transformerForRuntime_mustacheStringTemplate_NOT_IMPLEMENTED: (transformerJzodSchema as any).definition
           .context.transformer_mustacheStringTemplate,
-        // transformerForRuntime_newUuid: (transformerJzodSchema as any).definition.context
-        //   .transformer_newUuid,
-        // transformerForRuntime_mustacheStringTemplate_NOT_IMPLEMENTED: (miroirFundamentalJzodSchema as any).definition.context.transformerForRuntime_mustacheStringTemplate_NOT_IMPLEMENTED,
+        transformerForBuild_menu_addItem: (miroirFundamentalJzodSchema as any).definition.context
+        .transformerForBuild_menu_addItem,
+        transformerForRuntime_menu_addItem: (miroirFundamentalJzodSchema as any).definition.context
+        .transformerForRuntime_menu_addItem,
         transformerForRuntime: (transformerJzodSchema as any).definition.context
           .transformerForRuntime,
-        transformer_menu_addItem: (miroirFundamentalJzodSchema as any).definition.context
-          .transformer_menu_addItem,
         transformerForBuildOrRuntime: (transformerJzodSchema as any).definition.context
           .transformerForBuildOrRuntime,
         extendedTransformerForRuntime: (miroirFundamentalJzodSchema as any).definition.context

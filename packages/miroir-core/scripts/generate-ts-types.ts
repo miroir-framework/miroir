@@ -197,7 +197,7 @@ async function generateSchemas(generateFundamentalJzodSchema = true) {
         testEndpointVersionV1,
         jzodSchemajzodMiroirBootstrapSchema,
         miroirTransformersJzodSchemas,
-        [transformerMenuV1],
+        [],//[transformerMenuV1],
         entityDefinitionAdminApplication,
         entityDefinitionSelfApplicationV1,
         entityDefinitionSelfApplicationVersionV1,
@@ -358,24 +358,24 @@ async function generateSchemas(generateFundamentalJzodSchema = true) {
         Date.now() - startGenerateZodSchmaFileFromZodSchema,
         "ms"
       );
-      const oldTransformer = (miroirFundamentalJzodSchema as any).definition.context.transformerForBuild_unique;
-      const newTransformer = miroirTransformersForBuild.transformer_unique;
-      console.log(
-        "old transformer", 
-        JSON.stringify(oldTransformer, null, 2)
-      )
+      // const oldTransformer = (miroirFundamentalJzodSchema as any).definition.context.transformerForBuild_unique;
+      const newTransformer = miroirTransformersForBuild.transformer_menu_addItem;
+      // console.log(
+      //   "old transformer", 
+      //   JSON.stringify(oldTransformer, null, 2)
+      // )
       console.log(
         "new transformer", 
         JSON.stringify(newTransformer, null, 2)
       )
 
-      console.log(
-        "comparison",
-        "equal",
-        Object.is(oldTransformer, newTransformer),
-        "deepEqual",
-        equal(oldTransformer, newTransformer),
-      );
+      // console.log(
+      //   "comparison",
+      //   "equal",
+      //   Object.is(oldTransformer, newTransformer),
+      //   "deepEqual",
+      //   equal(oldTransformer, newTransformer),
+      // );
     
     } catch (error) {
       console.error("miroir-core could not generate TS files from Jzod schemas", error);

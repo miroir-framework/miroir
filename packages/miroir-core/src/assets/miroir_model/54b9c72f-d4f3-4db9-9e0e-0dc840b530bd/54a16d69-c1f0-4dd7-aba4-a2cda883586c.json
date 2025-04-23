@@ -94,7 +94,8 @@
                 "type": "string"
               },
               "sqlImplementationFunctionName": {
-                "type": "string"
+                "type": "string",
+                "optional": true
               }
             }
           },

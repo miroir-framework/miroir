@@ -344,8 +344,10 @@ export {
   transformer_extractors,
   Transformer_inner_label,
   transformer_inner_label,
-  Transformer_menu_addItem,
-  transformer_menu_addItem,
+  TransformerForBuild_menu_addItem,
+  transformerForBuild_menu_addItem,
+  TransformerForRuntime_menu_addItem,
+  transformerForRuntime_menu_addItem,
   TransformerForBuild_mustacheStringTemplate,
   transformerForBuild_mustacheStringTemplate,
   TransformerForRuntime_mustacheStringTemplate,
@@ -800,8 +802,6 @@ export { generateRestServiceResponse } from "./4_services/RestTools.js";
 export { TestSuiteContext } from "./4_services/TestSuiteContext.js";
 
 export {
-  displayTestSuiteResults,
-  displayTestSuiteResultsDetails,
   ignorePostgresExtraAttributes,
   ignorePostgresExtraAttributesOnList,
   ignorePostgresExtraAttributesOnObject,

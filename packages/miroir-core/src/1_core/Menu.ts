@@ -1,13 +1,13 @@
 import {
   ComplexMenu,
-  DomainElement,
   Menu,
   MiroirMenuItem,
-  Transformer_menu_addItem,
+  TransformerForBuild_menu_addItem,
+  TransformerForRuntime_menu_addItem
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
-import { Step } from "../2_domain/TransformersForRuntime";
+import { defaultTransformers, ResolveBuildTransformersTo, Step } from "../2_domain/TransformersForRuntime";
 import { MiroirLoggerFactory } from "../4_services/LoggerFactory";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
@@ -17,32 +17,41 @@ MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Menu")
 ).then((logger: LoggerInterface) => {log = logger});
 
+// export function transformer_mustacheStringTemplate_apply(
+//   step: Step,
+//   objectName: string | undefined,
+//   transformer: TransformerForBuild_mustacheStringTemplate | TransformerForRuntime_mustacheStringTemplate,
+//   resolveBuildTransformersTo: ResolveBuildTransformersTo,
+//   queryParams: Record<string, any>,
+//   contextResults?: Record<string, any>,
+// ): Domain2QueryReturnType<any> {
 
-export function transformer_menu_AddItem(
-  transformers: any,
+export function handleTransformer_menu_AddItem(
   step: Step,
   objectName: string | undefined,
-  transformer: Transformer_menu_addItem,
+  // transformers: any,
+  transformer: TransformerForBuild_menu_addItem | TransformerForRuntime_menu_addItem,
+  resolveBuildTransformersTo: ResolveBuildTransformersTo,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
 ): Domain2QueryReturnType<Menu> {
 // ): Domain2QueryReturnType<DomainElementSuccess> {
   const menu =
-    typeof transformer.transformerDefinition.menuReference == "string"
-      ? (transformers.transformer_InnerReference_resolve(
+    typeof transformer.menuReference == "string"
+      ? (defaultTransformers.transformer_InnerReference_resolve(
           step,
           {
             transformerType: "contextReference",
             interpolation: "runtime",
-            referenceName: transformer.transformerDefinition.menuReference,
+            referenceName: transformer.menuReference,
           },
           "value",
           queryParams,
           contextResults
         ) as Menu)
-      : (transformers.transformer_InnerReference_resolve(
+      : (defaultTransformers.transformer_InnerReference_resolve(
           step,
-          transformer.transformerDefinition.menuReference,
+          transformer.menuReference,
           "value",
           queryParams,
           contextResults
@@ -52,21 +61,21 @@ export function transformer_menu_AddItem(
   log.debug("transformer_menu_AddItem resolved menu", JSON.stringify(menu, null, 2));
 
   const menuItem =
-    typeof transformer.transformerDefinition.menuItemReference == "string"
-      ? (transformers.transformer_InnerReference_resolve(
+    typeof transformer.menuItemReference == "string"
+      ? (defaultTransformers.transformer_InnerReference_resolve(
           step,
           {
             transformerType: "contextReference",
             interpolation: "runtime",
-            referenceName: transformer.transformerDefinition.menuItemReference,
+            referenceName: transformer.menuItemReference,
           },
           "value",
           queryParams,
           contextResults
         ) as MiroirMenuItem)
-      : (transformers.transformer_InnerReference_resolve(
+      : (defaultTransformers.transformer_InnerReference_resolve(
           step,
-          transformer.transformerDefinition.menuItemReference,
+          transformer.menuItemReference,
           "value",
           queryParams,
           contextResults
@@ -79,8 +88,8 @@ export function transformer_menu_AddItem(
     log.error("transformer_menu_AddItem not implemented for simpleMenu yet");
     return menu; // this is a free object, not a recursive DomainElement object
   }
-  const sectionIndex = transformer.transformerDefinition.menuSectionInsertionIndex??0;
-  const itemIndex = transformer.transformerDefinition.menuSectionItemInsertionIndex??0;
+  const sectionIndex = transformer.menuSectionInsertionIndex??0;
+  const itemIndex = transformer.menuSectionItemInsertionIndex??0;
 
   const updatedMenu: Menu = { ...menu };
   const items = (updatedMenu.definition as ComplexMenu).definition[sectionIndex].items;
