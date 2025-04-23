@@ -8,7 +8,7 @@ const runtimeReferenceMap: Record<string, string> = {
   transformer_freeObjectTemplate: "transformerForRuntime_freeObjectTemplate",
   transformer_contextReference: "transformerForRuntime_contextReference",
   transformer_objectDynamicAccess: "transformerForRuntime_objectDynamicAccess",
-  transformer_mustacheStringTemplate: "transformerForRuntime_mustacheStringTemplate_NOT_IMPLEMENTED",
+  transformer_mustacheStringTemplate: "transformerForRuntime_mustacheStringTemplate",
 };
 
 const buildReferenceMap: Record<string, string> = {

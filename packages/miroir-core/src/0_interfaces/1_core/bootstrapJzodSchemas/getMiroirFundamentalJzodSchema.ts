@@ -7,13 +7,22 @@ import {
 import { JzodElement, JzodReference } from "@miroir-framework/jzod-ts";
 import { cleanLevel } from "../../../1_core/constants";
 import {
+  miroirTransformers,
   miroirTransformersForBuild,
-  miroirTransformersForRuntime
+  miroirTransformersForRuntime,
+  transformerForBuildNames,
+  transformerForRuntimeNames
 } from "../../../2_domain/Transformers";
 import { MiroirLoggerFactory } from "../../../4_services/LoggerFactory";
 import { packageName } from "../../../constants";
 import { LoggerInterface } from "../../4-services/LoggerInterface";
-import { transformerForBuild_dataflowObject, transformerForBuild_freeObjectTemplate, transformerForRuntime_dataflowObject, transformerForRuntime_freeObjectTemplate } from "../preprocessor-generated/miroirFundamentalType";
+import {
+  transformerForBuild_dataflowObject,
+  transformerForBuild_freeObjectTemplate,
+  transformerForRuntime_dataflowObject,
+  transformerForRuntime_freeObjectTemplate,
+} from "../preprocessor-generated/miroirFundamentalType";
+import { object } from "zod";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -208,21 +217,9 @@ export function getExtendedSchemas(jzodSchemajzodMiroirBootstrapSchema: any) {
     "transformer_orderBy",
     "transformerForBuild_Abstract",
     "transformerForRuntime_Abstract",
-    // "transformer_constantAsExtractor",
-    // "transformer_constantArray",
-    // "transformer_constantBigint",
-    // "transformer_constantBoolean",
-    // "transformer_constantNumber",
-    // "transformer_constantUuid",
-    // "transformer_constantObject",
-    // "transformer_constantString",
-    // "transformer_newUuid",
-    // "transformer_constant",
-    // "transformer_parameterReference",
     "transformerForBuild_objectDynamicAccess",
-    // "transformer_Abstract",
-    "transformer_constantListAsExtractor",
-    "transformer_extractors",
+    // "transformer_constantListAsExtractor",
+    // "transformer_extractors",
     // "transformer_mustacheStringTemplate",
     // "transformerForBuild_constant",
     "transformerForBuild_parameterReference",
@@ -312,6 +309,7 @@ export function getMiroirFundamentalJzodSchema(
 
   log.info("getMiroirFundamentalJzodSchema miroirTransformersJzodSchemas", JSON.stringify(miroirTransformersJzodSchemas.map(e=>e.name)), null, 2);
   log.info("getMiroirFundamentalJzodSchema miroirTransformersForBuild", JSON.stringify(Object.keys(miroirTransformersForBuild), null, 2));
+  log.info("getMiroirFundamentalJzodSchema transformerForBuildNames", JSON.stringify(transformerForBuildNames, null, 2));
   const miroirFundamentalJzodSchema: any = {
     // const miroirFundamentalJzodSchema: JzodSchema = {
     uuid: miroirFundamentalJzodSchemaUuid,
@@ -338,7 +336,7 @@ export function getMiroirFundamentalJzodSchema(
             type: "never",
           },
         // ...(transformerJzodSchema as any).definition.context, // gives "transformerForBuild_InnerReference", "transformerForBuild", "actionHandler"
-        // TODO: remove parameter transformerJzodSchema, there is no direct correspondance from transformer definition to type of input 
+        // TODO: remove parameter transformerJzodSchema, there is no direct correspondance from transformer definition to type of input
         ...makeReferencesAbsolute(
           (transformerJzodSchema as any).definition,
           miroirFundamentalJzodSchemaUuid,
@@ -351,7 +349,7 @@ export function getMiroirFundamentalJzodSchema(
           ])
         ),
         transformerForBuild_menu_addItem: miroirTransformersForBuild.transformer_menu_addItem,
-        // 
+        //
         transformerForBuild_constant: miroirTransformersForBuild.transformer_constant,
         transformerForBuild_constantBoolean: miroirTransformersForBuild.transformer_constantBoolean,
         transformerForBuild_constantBigint: miroirTransformersForBuild.transformer_constantBigint,
@@ -360,51 +358,77 @@ export function getMiroirFundamentalJzodSchema(
         transformerForBuild_constantNumber: miroirTransformersForBuild.transformer_constantNumber,
         transformerForBuild_constantString: miroirTransformersForBuild.transformer_constantString,
         transformerForBuild_constantArray: miroirTransformersForBuild.transformer_constantArray,
-        transformerForBuild_constantAsExtractor: miroirTransformersForBuild.transformer_constantAsExtractor,
+        transformerForBuild_constantAsExtractor:
+          miroirTransformersForBuild.transformer_constantAsExtractor,
         // transformerForBuild_contextReference: miroirTransformersForBuild.transformer_contextReference,
         transformerForBuild_count: miroirTransformersForBuild.transformer_count,
         transformerForBuild_dataflowObject: miroirTransformersForBuild.transformer_dataflowObject,
-        transformerForBuild_list_listMapperToList: miroirTransformersForBuild.transformer_mapperListToList,
-        transformerForBuild_freeObjectTemplate: miroirTransformersForBuild.transformer_freeObjectTemplate,
+        transformerForBuild_mapperListToList:
+          miroirTransformersForBuild.transformer_mapperListToList,
+        transformerForBuild_freeObjectTemplate:
+          miroirTransformersForBuild.transformer_freeObjectTemplate,
         transformerForBuild_newUuid: miroirTransformersForBuild.transformer_newUuid,
-        transformerForBuild_mustacheStringTemplate: miroirTransformersForBuild.transformer_mustacheStringTemplate,
+        transformerForBuild_mustacheStringTemplate:
+          miroirTransformersForBuild.transformer_mustacheStringTemplate,
         transformerForBuild_objectAlter: miroirTransformersForBuild.transformer_objectAlter,
-        transformerForBuild_objectDynamicAccess: miroirTransformersForBuild.transformer_objectDynamicAccess,
+        transformerForBuild_objectDynamicAccess:
+          miroirTransformersForBuild.transformer_objectDynamicAccess,
         transformerForBuild_objectEntries: miroirTransformersForBuild.transformer_objectEntries,
         transformerForBuild_objectValues: miroirTransformersForBuild.transformer_objectValues,
-        transformerForBuild_object_listPickElement: miroirTransformersForBuild.transformer_listPickElement,
-        transformerForBuild_object_listReducerToIndexObject: miroirTransformersForBuild.transformer_listReducerToIndexObject,
-        transformerForBuild_object_listReducerToSpreadObject: miroirTransformersForBuild.transformer_listReducerToSpreadObject,
-        transformerForBuild_object_fullTemplate: miroirTransformersForBuild.transformer_object_fullTemplate,
-        transformerForBuild_parameterReference: miroirTransformersForBuild.transformer_parameterReference,
+        transformerForBuild_listPickElement:
+          miroirTransformersForBuild.transformer_listPickElement,
+        transformerForBuild_listReducerToIndexObject:
+          miroirTransformersForBuild.transformer_listReducerToIndexObject,
+        transformerForBuild_listReducerToSpreadObject:
+          miroirTransformersForBuild.transformer_listReducerToSpreadObject,
+        transformerForBuild_object_fullTemplate:
+          miroirTransformersForBuild.transformer_object_fullTemplate,
+        transformerForBuild_parameterReference:
+          miroirTransformersForBuild.transformer_parameterReference,
         transformerForBuild_unique: miroirTransformersForBuild.transformer_unique,
         // ########################################################################################
         transformerForRuntime_menu_addItem: miroirTransformersForRuntime.transformer_menu_addItem,
-        // 
+        //
         transformerForRuntime_constant: miroirTransformersForRuntime.transformer_constant,
         transformerForRuntime_constantArray: miroirTransformersForRuntime.transformer_constantArray,
-        transformerForRuntime_constantBoolean: miroirTransformersForRuntime.transformer_constantBoolean,
-        transformerForRuntime_constantBigint: miroirTransformersForRuntime.transformer_constantBigint,
-        transformerForRuntime_constantNumber: miroirTransformersForRuntime.transformer_constantNumber,
-        transformerForRuntime_constantObject: miroirTransformersForRuntime.transformer_constantObject,
-        transformerForRuntime_constantString: miroirTransformersForRuntime.transformer_constantString,
+        transformerForRuntime_constantBoolean:
+          miroirTransformersForRuntime.transformer_constantBoolean,
+        transformerForRuntime_constantBigint:
+          miroirTransformersForRuntime.transformer_constantBigint,
+        transformerForRuntime_constantNumber:
+          miroirTransformersForRuntime.transformer_constantNumber,
+        transformerForRuntime_constantObject:
+          miroirTransformersForRuntime.transformer_constantObject,
+        transformerForRuntime_constantString:
+          miroirTransformersForRuntime.transformer_constantString,
         transformerForRuntime_constantUuid: miroirTransformersForRuntime.transformer_constantUuid,
-        transformerForRuntime_constantAsExtractor: miroirTransformersForRuntime.transformer_constantAsExtractor,
-        transformerForRuntime_contextReference: miroirTransformersForRuntime.transformer_contextReference,
+        transformerForRuntime_constantAsExtractor:
+          miroirTransformersForRuntime.transformer_constantAsExtractor,
+        transformerForRuntime_contextReference:
+          miroirTransformersForRuntime.transformer_contextReference,
         transformerForRuntime_count: miroirTransformersForRuntime.transformer_count,
-        transformerForRuntime_dataflowObject: miroirTransformersForRuntime.transformer_dataflowObject,
-        transformerForRuntime_freeObjectTemplate: miroirTransformersForRuntime.transformer_freeObjectTemplate,
-        transformerForRuntime_list_listMapperToList: miroirTransformersForRuntime.transformer_mapperListToList,
-        transformerForRuntime_list_listPickElement: miroirTransformersForRuntime.transformer_listPickElement,
+        transformerForRuntime_dataflowObject:
+          miroirTransformersForRuntime.transformer_dataflowObject,
+        transformerForRuntime_freeObjectTemplate:
+          miroirTransformersForRuntime.transformer_freeObjectTemplate,
+        transformerForRuntime_mapperListToList:
+          miroirTransformersForRuntime.transformer_mapperListToList,
+        transformerForRuntime_listPickElement:
+          miroirTransformersForRuntime.transformer_listPickElement,
         transformerForRuntime_newUuid: miroirTransformersForRuntime.transformer_newUuid,
-        transformerForRuntime_mustacheStringTemplate: miroirTransformersForRuntime.transformer_mustacheStringTemplate,
-        transformerForRuntime_object_listReducerToIndexObject: miroirTransformersForRuntime.transformer_listReducerToIndexObject,
-        transformerForRuntime_object_listReducerToSpreadObject: miroirTransformersForRuntime.transformer_listReducerToSpreadObject,
+        transformerForRuntime_mustacheStringTemplate:
+          miroirTransformersForRuntime.transformer_mustacheStringTemplate,
+        transformerForRuntime_listReducerToIndexObject:
+          miroirTransformersForRuntime.transformer_listReducerToIndexObject,
+        transformerForRuntime_listReducerToSpreadObject:
+          miroirTransformersForRuntime.transformer_listReducerToSpreadObject,
         transformerForRuntime_objectAlter: miroirTransformersForRuntime.transformer_objectAlter,
-        transformerForRuntime_objectDynamicAccess: miroirTransformersForRuntime.transformer_objectDynamicAccess,
+        transformerForRuntime_objectDynamicAccess:
+          miroirTransformersForRuntime.transformer_objectDynamicAccess,
         transformerForRuntime_objectEntries: miroirTransformersForRuntime.transformer_objectEntries,
         transformerForRuntime_objectValues: miroirTransformersForRuntime.transformer_objectValues,
-        transformerForRuntime_object_fullTemplate: miroirTransformersForRuntime.transformer_object_fullTemplate,
+        transformerForRuntime_object_fullTemplate:
+          miroirTransformersForRuntime.transformer_object_fullTemplate,
         transformerForRuntime_unique: miroirTransformersForRuntime.transformer_unique,
         // extendedTransformerForRuntime: {
         //   type: "schemaReference",
@@ -428,6 +452,55 @@ export function getMiroirFundamentalJzodSchema(
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "transformerForRuntime_menu_addItem",
+              },
+            },
+          ],
+        },
+        transformerForBuild: {
+          type: "union",
+          discriminator: "transformerType",
+          definition: [
+            ...transformerForBuildNames.map((e: any) => ({
+              type: "schemaReference",
+              definition: {
+                // absolutePath: miroirFundamentalJzodSchemaUuid,
+                relativePath: e,
+              },
+            })),
+            {
+              type: "schemaReference",
+              definition: {
+                relativePath: "transformerForBuild_InnerReference",
+              },
+            },
+            {
+              type: "schemaReference",
+              definition: {
+                relativePath: "transformerForBuild_dataflowSequence",
+              },
+            },
+          ],
+        },
+        transformerForRuntime: {
+          type: "union",
+          discriminator: "transformerType",
+          definition: [
+            ...transformerForRuntimeNames.map((e: any) => ({
+              type: "schemaReference",
+              definition: {
+                relativePath: e,
+              },
+            })),
+            {
+              type: "schemaReference",
+              definition: {
+                relativePath: "transformerForRuntime_InnerReference",
+              },
+            },
+            {
+              type: "schemaReference",
+              definition: {
+                relativePath: "transformerForRuntime_dataflowSequence",
               },
             },
           ],
@@ -2983,9 +3056,10 @@ export function getMiroirFundamentalJzodSchema(
           .transformerForBuild_constantString,
         transformerForRuntime_constantString: (miroirFundamentalJzodSchema as any).definition.context
           .transformerForRuntime_constantString,
-        transformerForBuild_constants: (miroirFundamentalJzodSchema as any).definition.context
-          .transformerForBuild_constants,
-        transformerForBuild: (transformerJzodSchema as any).definition.context.transformerForBuild,
+        // transformerForBuild_constants: (miroirFundamentalJzodSchema as any).definition.context
+        //   .transformerForBuild_constants,
+        // transformerForBuild: (transformerJzodSchema as any).definition.context.transformerForBuild,
+        transformerForBuild: (miroirFundamentalJzodSchema as any).definition.context.transformerForBuild,
         transformerForBuild_count: (miroirFundamentalJzodSchema as any).definition.context.transformerForBuild_count,
         transformerForBuild_unique: (miroirFundamentalJzodSchema as any).definition.context.transformerForBuild_unique,
         transformerForBuild_dataflowObject: (miroirFundamentalJzodSchema as any).definition.context
@@ -2996,28 +3070,30 @@ export function getMiroirFundamentalJzodSchema(
           .transformerForBuild_freeObjectTemplate,
         transformerForBuild_objectAlter: (miroirFundamentalJzodSchema as any).definition.context
           .transformerForBuild_objectAlter,
-        transformerForBuild_list: (transformerJzodSchema as any).definition.context
-          .transformerForBuild_list,
+        transformerForRuntime_objectAlter: (miroirFundamentalJzodSchema as any).definition.context
+          .transformerForRuntime_objectAlter,
+        // transformerForBuild_list: (transformerJzodSchema as any).definition.context
+        //   .transformerForBuild_list,
         transformerForBuild_mustacheStringTemplate: (miroirFundamentalJzodSchema as any).definition
           .context.transformerForBuild_mustacheStringTemplate,
         transformerForRuntime_mustacheStringTemplate: (miroirFundamentalJzodSchema as any).definition
           .context.transformerForRuntime_mustacheStringTemplate,
-        transformerForBuild_list_listMapperToList: (miroirFundamentalJzodSchema as any).definition
-          .context.transformerForBuild_list_listMapperToList,
-        transformerForBuild_object_listReducerToIndexObject: (miroirFundamentalJzodSchema as any)
-          .definition.context.transformerForBuild_object_listReducerToIndexObject,
-        transformerForRuntime_object_listReducerToIndexObject: (miroirFundamentalJzodSchema as any)
-          .definition.context.transformerForRuntime_object_listReducerToIndexObject,
-        transformerForBuild_object_listReducerToSpreadObject: (miroirFundamentalJzodSchema as any)
-          .definition.context.transformerForBuild_object_listReducerToSpreadObject,
-        transformerForBuild_object: (transformerJzodSchema as any).definition.context
-          .transformerForBuild_object,
+        transformerForBuild_mapperListToList: (miroirFundamentalJzodSchema as any).definition
+          .context.transformerForBuild_mapperListToList,
+        transformerForBuild_listReducerToIndexObject: (miroirFundamentalJzodSchema as any)
+          .definition.context.transformerForBuild_listReducerToIndexObject,
+        transformerForRuntime_listReducerToIndexObject: (miroirFundamentalJzodSchema as any)
+          .definition.context.transformerForRuntime_listReducerToIndexObject,
+        transformerForBuild_listReducerToSpreadObject: (miroirFundamentalJzodSchema as any)
+          .definition.context.transformerForBuild_listReducerToSpreadObject,
+        // transformerForBuild_object: (transformerJzodSchema as any).definition.context
+        //   .transformerForBuild_object,
         // transformerForBuild_object_fullTemplate_root: (miroirFundamentalJzodSchema as any)
         //   .definition.context.transformerForBuild_object_fullTemplate_root,
         transformerForBuild_object_fullTemplate: (miroirFundamentalJzodSchema as any).definition
           .context.transformerForBuild_object_fullTemplate,
-        transformerForBuild_object_listPickElement: (miroirFundamentalJzodSchema as any).definition
-          .context.transformerForBuild_object_listPickElement,
+        transformerForBuild_listPickElement: (miroirFundamentalJzodSchema as any).definition
+          .context.transformerForBuild_listPickElement,
         // transformerForBuild_objectEntries_root: (transformerJzodSchema as any).definition.context
         //   .transformerForBuild_objectEntries_root,
         transformerForBuild_objectEntries: (miroirFundamentalJzodSchema as any).definition.context
@@ -3026,16 +3102,14 @@ export function getMiroirFundamentalJzodSchema(
         //   .transformerForBuild_objectValues_root,
         transformerForBuild_objectValues: (miroirFundamentalJzodSchema as any).definition.context
           .transformerForBuild_objectValues,
-        transformerForBuild_string: (transformerJzodSchema as any).definition.context
-          .transformerForBuild_string,
+        // transformerForBuild_string: (transformerJzodSchema as any).definition.context
+        //   .transformerForBuild_string,
         transformerForRuntime_count: (miroirFundamentalJzodSchema as any).definition.context
             .transformerForRuntime_count,
         transformerForRuntime_unique: (miroirFundamentalJzodSchema as any).definition.context
               .transformerForRuntime_unique,
         transformerForRuntime_contextReference: (miroirFundamentalJzodSchema as any).definition.context
           .transformerForRuntime_contextReference,
-        // transformerForBuild_contextReference: (miroirFundamentalJzodSchema as any).definition.context
-        //   .transformerForBuild_contextReference,
         transformer_contextOrParameterReferenceTO_REMOVE: (transformerJzodSchema as any).definition.context
           .transformer_contextOrParameterReferenceTO_REMOVE,
         transformerForRuntime_dataflowObject: (miroirFundamentalJzodSchema as any).definition.context
@@ -3046,8 +3120,8 @@ export function getMiroirFundamentalJzodSchema(
           .transformerForRuntime_freeObjectTemplate,
         transformerForRuntime_orderedTransformer: (miroirFundamentalJzodSchema as any).definition
           .context.transformerForRuntime_orderedTransformer,
-        transformerForRuntime_innerFullObjectTemplate: (transformerJzodSchema as any).definition
-          .context.transformerForRuntime_innerFullObjectTemplate,
+        // transformerForRuntime_innerFullObjectTemplate: (transformerJzodSchema as any).definition
+        //   .context.transformerForRuntime_innerFullObjectTemplate,
         transformerForRuntime_InnerReference: (transformerJzodSchema as any).definition.context
           .transformerForRuntime_InnerReference,
         transformerForRuntime_object_fullTemplate: (miroirFundamentalJzodSchema as any).definition
@@ -3058,25 +3132,23 @@ export function getMiroirFundamentalJzodSchema(
           .transformerForRuntime_objectEntries,
         transformerForRuntime_objectValues: (miroirFundamentalJzodSchema as any).definition.context
           .transformerForRuntime_objectValues,
-        transformerForRuntime_list_listPickElement: (miroirFundamentalJzodSchema as any).definition
-          .context.transformerForRuntime_list_listPickElement,
-        transformerForRuntime_object_alter: (transformerJzodSchema as any).definition.context
-          .transformerForRuntime_object_alter,
-        transformerForRuntime_list_listMapperToList: (miroirFundamentalJzodSchema as any).definition
-          .context.transformerForRuntime_list_listMapperToList,
-        transformerForRuntime_object_listReducerToSpreadObject: (miroirFundamentalJzodSchema as any)
-          .definition.context.transformerForRuntime_object_listReducerToSpreadObject,
+        transformerForRuntime_listPickElement: (miroirFundamentalJzodSchema as any).definition
+          .context.transformerForRuntime_listPickElement,
+        transformerForRuntime_mapperListToList: (miroirFundamentalJzodSchema as any).definition
+          .context.transformerForRuntime_mapperListToList,
+        transformerForRuntime_listReducerToSpreadObject: (miroirFundamentalJzodSchema as any)
+          .definition.context.transformerForRuntime_listReducerToSpreadObject,
         // transformerForRuntime_mapper_listToObject: (transformerJzodSchema as any).definition.context
         //   .transformerForRuntime_mapper_listToObject,
-        transformerForRuntime_mustacheStringTemplate_NOT_IMPLEMENTED: (transformerJzodSchema as any).definition
-          .context.transformer_mustacheStringTemplate,
+        // transformerForRuntime_mustacheStringTemplate_NOT_IMPLEMENTED: (transformerJzodSchema as any).definition
+        //   .context.transformer_mustacheStringTemplate,
         transformerForBuild_menu_addItem: (miroirFundamentalJzodSchema as any).definition.context
         .transformerForBuild_menu_addItem,
         transformerForRuntime_menu_addItem: (miroirFundamentalJzodSchema as any).definition.context
         .transformerForRuntime_menu_addItem,
-        transformerForRuntime: (transformerJzodSchema as any).definition.context
+        transformerForRuntime: (miroirFundamentalJzodSchema as any).definition.context
           .transformerForRuntime,
-        transformerForBuildOrRuntime: (transformerJzodSchema as any).definition.context
+        transformerForBuildOrRuntime: (miroirFundamentalJzodSchema as any).definition.context
           .transformerForBuildOrRuntime,
         extendedTransformerForRuntime: (miroirFundamentalJzodSchema as any).definition.context
           .extendedTransformerForRuntime,
@@ -3106,8 +3178,8 @@ export function getMiroirFundamentalJzodSchema(
 
   // log.info("localizedResolutionStore", JSON.stringify(localizedResolutionStore, null, 2));
 
-  // const carryOnSchema: any = transformerJzodSchema.definition.context.transformerForBuild as any;
-  const carryOnSchema: any = transformerJzodSchema.definition.context
+  // const carryOnSchema: any = transformerJzodSchema.definition.context
+  const carryOnSchema: any = miroirFundamentalJzodSchema.definition.context
     .transformerForBuild as any;
 
   // const carryOnSchemaReference: JzodReference = {

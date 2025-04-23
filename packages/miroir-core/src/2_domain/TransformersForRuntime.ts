@@ -7,54 +7,51 @@ import {
   DomainElementSuccess,
   ExtendedTransformerForRuntime,
   Transformer,
-  TransformerForRuntime_constants,
   Transformer_contextOrParameterReferenceTO_REMOVE,
   TransformerDefinition,
   TransformerForBuild,
+  TransformerForBuild_constant,
+  TransformerForBuild_constantArray,
+  TransformerForBuild_constantAsExtractor,
   TransformerForBuild_count,
+  TransformerForBuild_dataflowObject,
   TransformerForBuild_freeObjectTemplate,
   TransformerForBuild_InnerReference,
-  TransformerForBuild_list,
-  TransformerForBuild_list_listMapperToList,
+  TransformerForBuild_mapperListToList,
   TransformerForBuild_mustacheStringTemplate,
+  TransformerForBuild_newUuid,
   TransformerForBuild_object_fullTemplate,
-  TransformerForBuild_object_listPickElement,
-  TransformerForBuild_object_listReducerToIndexObject,
-  TransformerForBuild_object_listReducerToSpreadObject,
+  TransformerForBuild_listPickElement,
+  TransformerForBuild_listReducerToIndexObject,
+  TransformerForBuild_listReducerToSpreadObject,
   TransformerForBuild_objectAlter,
   TransformerForBuild_objectDynamicAccess,
   TransformerForBuild_objectEntries,
   TransformerForBuild_objectValues,
+  TransformerForBuild_parameterReference,
   TransformerForBuild_unique,
   TransformerForRuntime,
+  TransformerForRuntime_constant,
+  TransformerForRuntime_constantArray,
+  TransformerForRuntime_constants,
+  TransformerForRuntime_contextReference,
   TransformerForRuntime_count,
-  TransformerForRuntime_innerFullObjectTemplate,
-  TransformerForRuntime_InnerReference,
-  TransformerForRuntime_list_listMapperToList,
-  TransformerForRuntime_list_listPickElement,
-  // TransformerForRuntime_mapper_listToObject,
-  TransformerForRuntime_mustacheStringTemplate_NOT_IMPLEMENTED,
-  TransformerForRuntime_object_alter,
+  TransformerForRuntime_dataflowObject,
   TransformerForRuntime_freeObjectTemplate,
-  TransformerForRuntime_object_listReducerToSpreadObject,
+  // TransformerForRuntime_innerFullObjectTemplate,
+  TransformerForRuntime_InnerReference,
+  TransformerForRuntime_mapperListToList,
+  TransformerForRuntime_listPickElement,
+  TransformerForRuntime_mustacheStringTemplate,
+  TransformerForRuntime_newUuid,
+  TransformerForRuntime_objectAlter,
+  TransformerForRuntime_object_fullTemplate,
+  TransformerForRuntime_listReducerToIndexObject,
+  TransformerForRuntime_listReducerToSpreadObject,
   TransformerForRuntime_objectDynamicAccess,
   TransformerForRuntime_objectEntries,
   TransformerForRuntime_objectValues,
-  TransformerForRuntime_unique,
-  TransformerForRuntime_object_fullTemplate,
-  TransformerForRuntime_object_listReducerToIndexObject,
-  TransformerForBuild_dataflowObject,
-  TransformerForRuntime_dataflowObject,
-  TransformerForBuild_constant,
-  TransformerForRuntime_constantArray,
-  TransformerForBuild_constantArray,
-  TransformerForRuntime_constant,
-  TransformerForRuntime_contextReference,
-  TransformerForBuild_parameterReference,
-  TransformerForBuild_constantAsExtractor,
-  TransformerForRuntime_newUuid,
-  TransformerForBuild_newUuid,
-  TransformerForRuntime_mustacheStringTemplate
+  TransformerForRuntime_unique
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { Action2Error, Domain2ElementFailed, Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
@@ -93,7 +90,6 @@ import {
   transformer_parameterReference,
   transformer_unique,
 } from "./Transformers";
-import { object } from 'zod';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -114,7 +110,7 @@ export type ITransformerHandler<
   T extends
     | TransformerForBuild
     | TransformerForRuntime
-    | TransformerForRuntime_innerFullObjectTemplate
+    // | TransformerForRuntime_innerFullObjectTemplate
 > = (
   step: Step,
   label: string | undefined,
@@ -205,7 +201,7 @@ function resolveApplyTo(
     | TransformerForBuild_object_fullTemplate
     | TransformerForRuntime_object_fullTemplate
     | TransformerForBuild_objectAlter
-    | TransformerForRuntime_object_alter,
+    | TransformerForRuntime_objectAlter,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>
@@ -303,19 +299,19 @@ function resolveApplyTo(
 export function resolveApplyTo_legacy(
   transformer: 
   | TransformerForBuild_count
-  | TransformerForBuild_list_listMapperToList
-  | TransformerForBuild_object_listPickElement
-  | TransformerForBuild_object_listReducerToSpreadObject
-  | TransformerForBuild_object_listReducerToIndexObject
+  | TransformerForBuild_mapperListToList
+  | TransformerForBuild_listPickElement
+  | TransformerForBuild_listReducerToSpreadObject
+  | TransformerForBuild_listReducerToIndexObject
   | TransformerForBuild_objectEntries
   | TransformerForBuild_objectValues
   | TransformerForBuild_unique
   | TransformerForRuntime_count
-  | TransformerForRuntime_list_listMapperToList 
-  | TransformerForRuntime_list_listPickElement
-  | TransformerForRuntime_object_listReducerToIndexObject
+  | TransformerForRuntime_mapperListToList 
+  | TransformerForRuntime_listPickElement
+  | TransformerForRuntime_listReducerToIndexObject
   // | TransformerForRuntime_mapper_listToObject 
-  | TransformerForRuntime_object_listReducerToSpreadObject
+  | TransformerForRuntime_listReducerToSpreadObject
   | TransformerForRuntime_objectEntries
   | TransformerForRuntime_objectValues
   | TransformerForRuntime_unique
@@ -403,7 +399,7 @@ export function resolveApplyTo_legacy(
 function transformerForBuild_list_listMapperToList_apply(
   step: Step,
   label: string | undefined,
-  transformer: TransformerForRuntime_list_listMapperToList | TransformerForBuild_list_listMapperToList,
+  transformer: TransformerForRuntime_mapperListToList | TransformerForBuild_mapperListToList,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
@@ -483,7 +479,7 @@ function transformerForBuild_list_listMapperToList_apply(
 function transformer_object_listReducerToSpreadObject_apply(
   step: Step,
   label: string | undefined,
-  transformer: TransformerForBuild_object_listReducerToSpreadObject | TransformerForRuntime_object_listReducerToSpreadObject,
+  transformer: TransformerForBuild_listReducerToSpreadObject | TransformerForRuntime_listReducerToSpreadObject,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
@@ -540,8 +536,8 @@ function transformer_object_listReducerToIndexObject_apply(
   step: Step,
   label: string | undefined,
   transformer:
-    | TransformerForBuild_object_listReducerToIndexObject
-    | TransformerForRuntime_object_listReducerToIndexObject,
+    | TransformerForBuild_listReducerToIndexObject
+    | TransformerForRuntime_listReducerToIndexObject,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>
@@ -707,13 +703,12 @@ function handleTransformer_object_fullTemplate(
       attributeEntries.map((e) => [e[0].finalLeftValue, e[1].finalRightValue])
     );
     // log.info("transformer_object_fullTemplate for", transformerForBuild, "fullObjectResult", fullObjectResult);
-    // return transformerForBuild.transformerType == "innerFullObjectTemplate" ? fullObjectResult : [fullObjectResult];
     return fullObjectResult;
   } else {
     return new Domain2ElementFailed({
       queryFailure: "ReferenceNotFound",
       failureOrigin: ["transformer_object_fullTemplate"],
-      queryContext: "innerFullObjectTemplate error in " +
+      queryContext: "FullObjectTemplate error in " +
         objectName,
         innerError: attributeEntries[failureIndex] as any,
         // JSON.stringify(attributeEntries[failureIndex], null, 2),
@@ -725,7 +720,7 @@ function handleTransformer_object_fullTemplate(
 function handleTransformer_objectAlter(
   step: Step,
   objectName: string | undefined,
-  transformer: TransformerForBuild_objectAlter | TransformerForRuntime_object_alter,
+  transformer: TransformerForBuild_objectAlter | TransformerForRuntime_objectAlter,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
@@ -1317,8 +1312,8 @@ export function handleListPickElementTransformer(
   step: Step,
   label: string | undefined,
   transformer:
-  | TransformerForBuild_object_listPickElement
-  | TransformerForRuntime_list_listPickElement,
+  | TransformerForBuild_listPickElement
+  | TransformerForRuntime_listPickElement,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>
@@ -1756,161 +1751,6 @@ export function handleTransformer_newUuid(
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
-// <A>[] -> <A>[]
-// object -> object
-// innerFullObjectTemplate { a: A, b: B } -> object 
-export function innerTransformer_apply(
-  step: Step,
-  label: string | undefined,
-  transformer:
-    | TransformerForBuild
-    | TransformerForRuntime
-    | TransformerForRuntime_innerFullObjectTemplate,
-  resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: Record<string, any>,
-  contextResults?: Record<string, any>
-): Domain2QueryReturnType<any> {
-  // log.info(
-  //   "innerTransformer_apply called for object named",
-  //   objectName,
-  //   "step:",
-  //   step,
-  //   "transformer.interpolation:",
-  //   (transformer as any)?.interpolation??"build",
-  //   // "step==transformer.interpolation",
-  //   // step==((transformer as any)?.interpolation??"build"),
-  //   "transformer",
-  //   JSON.stringify(transformer, null, 2),
-  //   "queryParams elements",
-  //   JSON.stringify(Object.keys(queryParams??{}), null, 2),
-  //   "contextResults elements",
-  //   JSON.stringify(Object.keys(contextResults??{}), null, 2)
-  // );
-  switch (transformer.transformerType) {
-    case "count": {
-      throw new Error("count transformer not allowed in innerTransformer_apply");
-      break;
-    }
-    case "innerFullObjectTemplate": {
-      return new Domain2ElementFailed({
-        queryFailure: "QueryNotExecutable",
-        failureOrigin: ["innerTransformer_apply"],
-        queryContext: "innerFullObjectTemplate can not be applied directly",
-        queryParameters: JSON.stringify(transformer, null, 2),
-      });
-      break;
-    }
-    case "object_fullTemplate": {
-      throw new Error("object_fullTemplate transformer not allowed in innerTransformer_apply");
-      break;
-    }
-    case "objectAlter": {
-      throw new Error("objectAlter transformer not allowed in innerTransformer_apply");
-      break;
-    }
-    case "objectEntries": {
-      throw new Error("objectEntries transformer not allowed in innerTransformer_apply");
-    }
-    case "objectValues": {
-      throw new Error("objectValues transformer not allowed in innerTransformer_apply");
-    }
-    case "mapperListToList": {
-      throw new Error("mapperListToList transformer not allowed in innerTransformer_apply");
-      break;
-    }
-    case "listReducerToIndexObject": {
-      throw new Error("listReducerToIndexObject transformer not allowed in innerTransformer_apply");
-      break;
-    }
-    case "listReducerToSpreadObject": {
-      throw new Error("listReducerToSpreadObject transformer not allowed in innerTransformer_apply");
-      break;
-    }
-    case "listPickElement": {
-      throw new Error("listPickElement transformer not allowed in innerTransformer_apply");
-      break;
-    }
-    case "objectDynamicAccess": {
-      throw new Error("objectDynamicAccess transformer not allowed in innerTransformer_apply");
-    }
-    case "mustacheStringTemplate": {
-      throw new Error("mustacheStringTemplate transformer not allowed in innerTransformer_apply");
-    }
-    case "unique": {
-      throw new Error("unique transformer not allowed in innerTransformer_apply");
-      break;
-    }
-    case "freeObjectTemplate": {
-      throw new Error("freeObjectTemplate transformer not allowed in innerTransformer_apply");
-      break;
-    }
-    case "constantArray": {
-      throw new Error("constantArray transformer not allowed in innerTransformer_apply");
-    }
-    case "constantBigint": {
-      throw new Error("constantBigint transformer not allowed in innerTransformer_apply");
-    }
-    case "constantBoolean": {
-      throw new Error("constantBoolean transformer not allowed in innerTransformer_apply");
-    }
-    case "constantObject": {
-      throw new Error("constantObject transformer not allowed in innerTransformer_apply");
-    }
-    case "constantNumber": {
-      throw new Error("constantNumber transformer not allowed in innerTransformer_apply");
-    }
-    case "constantString": {
-      throw new Error("constantString transformer not allowed in innerTransformer_apply");
-    }
-    case "constantUuid": {
-      throw new Error("constantUuid transformer not allowed in innerTransformer_apply");
-    }
-    case "constantAsExtractor": {
-      throw new Error("constantAsExtractor transformer not allowed in innerTransformer_apply");
-    }
-    case "constant": {
-      throw new Error("constant transformer not allowed in innerTransformer_apply");
-    }
-    case "dataflowObject": {
-      throw new Error("dataflowObject transformer not allowed in innerTransformer_apply");
-      break;
-    }
-    case "dataflowSequence": {
-      throw new Error("innerTransformer_apply dataflowSequence not implemented");
-    }
-    case "contextReference": {
-      throw new Error("contextReference transformer not allowed in innerTransformer_apply");
-      break;
-    }
-    case "parameterReference": {
-      throw new Error("parameterReference transformer not allowed in innerTransformer_apply");
-      break;
-    }
-    case "newUuid": {
-      throw new Error("newUuid transformer not allowed in innerTransformer_apply");
-    }
-    case 'transformer_menu_addItem':
-    case 'mustacheStringTemplate_NOT_IMPLEMENTED':{
-      throw new Error("mustacheStringTemplate transformer not allowed in innerTransformer_apply");
-    }
-    default: {
-      const rawValue = defaultTransformers.transformer_InnerReference_resolve(
-        step,
-        transformer,
-        resolveBuildTransformersTo,
-        queryParams,
-        contextResults
-      );
-      const returnedValue: Domain2QueryReturnType<any> =
-        typeof transformer == "object" && (transformer as any).applyFunction
-          ? (transformer as any).applyFunction(rawValue)
-          : rawValue;
-      return returnedValue;
-      break;
-    }
-  }
-}
-
 // ################################################################################################
 // <A>[] -> <A>[]
 // object -> object

@@ -59,7 +59,7 @@ export const transformer_object_fullTemplate: TransformerDefinition = transforme
 export const transformer_parameterReference: TransformerDefinition = transformer_parameterReference_json as TransformerDefinition;
 export const transformer_unique: TransformerDefinition = transformer_unique_json as TransformerDefinition;
 
-const miroirTransformers: Record<string,TransformerDefinition> = {
+export const miroirTransformers: Record<string,TransformerDefinition> = {
   transformer_menu_addItem,
   // 
   transformer_constant,
@@ -89,6 +89,16 @@ const miroirTransformers: Record<string,TransformerDefinition> = {
   transformer_unique,
   transformer_constantBigint,
 };
+export const transformerForBuildNames = Object.keys(miroirTransformers)
+  .filter((e) => e != "transformer_contextReference")
+  .map((e) => e.replace("transformer_", "transformerForBuild_"));
+
+export const transformerForRuntimeNames = Object.keys(miroirTransformers)
+.filter((e) => e != "transformer_parameterReference")
+.map((e) =>
+  e.replace("transformer_", "transformerForRuntime_")
+);
+
 
 const runtimeReferenceMap: Record<string, string> = {
   transformer: "transformerForRuntime",
@@ -96,7 +106,7 @@ const runtimeReferenceMap: Record<string, string> = {
   transformer_freeObjectTemplate: "transformerForRuntime_freeObjectTemplate",
   transformer_contextReference: "transformerForRuntime_contextReference",
   transformer_objectDynamicAccess: "transformerForRuntime_objectDynamicAccess",
-  transformer_mustacheStringTemplate: "transformerForRuntime_mustacheStringTemplate_NOT_IMPLEMENTED",
+  transformer_mustacheStringTemplate: "transformerForBuild_mustacheStringTemplate",
 };
 
 const buildReferenceMap: Record<string, string> = {

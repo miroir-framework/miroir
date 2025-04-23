@@ -59,14 +59,14 @@ export function transformerInterfaceFromDefinition(
         transformerDefinition.transformerInterface.transformerParameterSchema
           .transformerDefinition.definition as any
       ).applyTo,
-      {
-        type: "schemaReference",
-        definition: {
-          relativePath: "transformer_inner_referenced_extractor",
-          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-        },
-        context: {},
-      },
+      // {
+      //   type: "schemaReference",
+      //   definition: {
+      //     relativePath: "transformer_inner_referenced_extractor",
+      //     absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+      //   },
+      //   context: {},
+      // },
       {
         type: "schemaReference",
         definition: {

@@ -11,19 +11,19 @@ import {
   transformer_resolveReference,
   TransformerForRuntime,
   TransformerForRuntime_count,
-  TransformerForRuntime_innerFullObjectTemplate,
-  TransformerForRuntime_list_listMapperToList,
-  TransformerForRuntime_list_listPickElement,
-  TransformerForRuntime_object_alter,
+  // TransformerForRuntime_innerFullObjectTemplate,
+  TransformerForRuntime_mapperListToList,
+  TransformerForRuntime_listPickElement,
+  TransformerForRuntime_objectAlter,
   TransformerForRuntime_freeObjectTemplate,
-  TransformerForRuntime_object_listReducerToSpreadObject,
+  TransformerForRuntime_listReducerToSpreadObject,
   TransformerForRuntime_objectEntries,
   TransformerForRuntime_objectValues,
   TransformerForRuntime_unique,
   TransformerForBuild_freeObjectTemplate,
   TransformerForBuild_object_fullTemplate,
   TransformerForRuntime_object_fullTemplate,
-  TransformerForRuntime_object_listReducerToIndexObject,
+  TransformerForRuntime_listReducerToIndexObject,
   TransformerForRuntime_dataflowObject,
   TransformerForRuntime_constantArray,
   TransformerForRuntime_constant,
@@ -287,15 +287,16 @@ function sqlStringForApplyTo(
     | TransformerForBuild_object_fullTemplate
     | TransformerForRuntime_object_fullTemplate
     | TransformerForRuntime_count
-    | TransformerForRuntime_list_listPickElement
-    | TransformerForRuntime_list_listMapperToList
-    | TransformerForRuntime_object_alter
+    | TransformerForRuntime_listPickElement
+    | TransformerForRuntime_mapperListToList
+    | TransformerForRuntime_objectAlter
     | TransformerForRuntime_objectValues
     | TransformerForRuntime_objectEntries
-    | TransformerForRuntime_object_listReducerToSpreadObject
-    | TransformerForRuntime_object_listReducerToIndexObject
+    | TransformerForRuntime_listReducerToSpreadObject
+    | TransformerForRuntime_listReducerToIndexObject
     | TransformerForRuntime_unique
-    | TransformerForRuntime_innerFullObjectTemplate,
+    // | TransformerForRuntime_innerFullObjectTemplate
+  ,
   preparedStatementParametersIndex: number,
   indentLevel: number,
   queryParams: Record<string, any> = {},
@@ -832,7 +833,7 @@ ${orderBy}
 
 // ################################################################################################
 function sqlStringForMapperListToListTransformer(
-  actionRuntimeTransformer: TransformerForRuntime_list_listMapperToList,
+  actionRuntimeTransformer: TransformerForRuntime_mapperListToList,
   preparedStatementParametersCount: number,
   indentLevel: number,
   queryParams: Record<string, any>,
@@ -1000,7 +1001,7 @@ function sqlStringForMapperListToListTransformer(
 
 // ################################################################################################
 function sqlStringForListPickElementTransformer(
-  actionRuntimeTransformer: TransformerForRuntime_list_listPickElement,
+  actionRuntimeTransformer: TransformerForRuntime_listPickElement,
   preparedStatementParametersCount: number,
   indentLevel: number,
   queryParams: Record<string, any>,
@@ -1471,7 +1472,7 @@ function sqlStringForObjectFullTemplateTransformer(
 
 // ################################################################################################
 function sqlStringForObjectAlterTransformer(
-  actionRuntimeTransformer: TransformerForRuntime_object_alter,
+  actionRuntimeTransformer: TransformerForRuntime_objectAlter,
   preparedStatementParametersCount: number,
   indentLevel: number,
   queryParams: Record<string, any>,
@@ -1701,7 +1702,7 @@ function sqlStringForObjectValuesTransformer(
 
 // ################################################################################################
 function sqlStringForListReducerToIndexObjectTransformer(
-  actionRuntimeTransformer: TransformerForRuntime_object_listReducerToIndexObject,
+  actionRuntimeTransformer: TransformerForRuntime_listReducerToIndexObject,
   preparedStatementParametersCount: number,
   indentLevel: number,
   queryParams: Record<string, any>,
@@ -1852,7 +1853,7 @@ function sqlStringForListReducerToIndexObjectTransformer(
 
 // ################################################################################################
 function sqlStringForListReducerToSpreadObjectTransformer(
-  actionRuntimeTransformer: TransformerForRuntime_object_listReducerToSpreadObject,
+  actionRuntimeTransformer: TransformerForRuntime_listReducerToSpreadObject,
   preparedStatementParametersCount: number,
   indentLevel: number,
   queryParams: Record<string, any>,
