@@ -67,6 +67,8 @@ import { miroirAppStartup } from "miroir-standalone-app/src/startup";
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { useMiroirContextService } from "../../src/miroir-fwk/4_view/MiroirContextReactProvider";
+import { entityDefinitionTransformerDefinition } from "miroir-core";
+import { entityDefinitionEndpoint } from "miroir-core";
 
 const env:any = (import.meta as any).env
 console.log("@@@@@@@@@@@@@@@@@@ env", env);
@@ -83,7 +85,7 @@ miroirIndexedDbStoreSectionStartup();
 
 let testEnvironment:MiroirIntegrationTestEnvironment;
 
-const miroirFundamentalJzodSchema: JzodSchema = getMiroirFundamentalJzodSchema(
+const miroirFundamentalJzodSchema: JzodElement = getMiroirFundamentalJzodSchema(
   entityDefinitionBundleV1 as EntityDefinition,
   entityDefinitionCommit as EntityDefinition,
   modelEndpointV1,
@@ -110,6 +112,8 @@ const miroirFundamentalJzodSchema: JzodSchema = getMiroirFundamentalJzodSchema(
   entityDefinitionReport as EntityDefinition,
   entityDefinitionSelfApplicationDeploymentConfiguration as EntityDefinition,
   entityDefinitionTest as EntityDefinition,
+  entityDefinitionTransformerDefinition as EntityDefinition,
+  entityDefinitionEndpoint as EntityDefinition,
   // jzodSchemajzodMiroirBootstrapSchema as any,
 );
 
@@ -118,7 +122,7 @@ console.log("@@@@@@@@@@@@@@@@@@ miroirFundamentalJzodSchema", miroirFundamentalJ
 
 beforeAll(
   async () => {
-    testEnvironment = await miroirIntegrationTestEnvironmentFactory(miroirConfig)
+    // testEnvironment = await miroirIntegrationTestEnvironmentFactory(miroirConfig)
   }
 )
 

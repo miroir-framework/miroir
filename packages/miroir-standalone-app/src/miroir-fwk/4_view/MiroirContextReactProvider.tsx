@@ -6,6 +6,7 @@ import {
   ApplicationSection,
   DeploymentUuidToReportsEntitiesDefinitionsMapping,
   DomainControllerInterface,
+  JzodElement,
   JzodSchema,
   LoggerInterface,
   MiroirContext,
@@ -45,7 +46,7 @@ export interface MiroirReactContext {
   deploymentUuidToReportsEntitiesDefinitionsMapping: DeploymentUuidToReportsEntitiesDefinitionsMapping,
   setDeploymentUuidToReportsEntitiesDefinitionsMapping: React.Dispatch<React.SetStateAction<DeploymentUuidToReportsEntitiesDefinitionsMapping>>,
   miroirFundamentalJzodSchema: JzodSchema,
-  setMiroirFundamentalJzodSchema: React.Dispatch<React.SetStateAction<JzodSchema>>,
+  setMiroirFundamentalJzodSchema: React.Dispatch<React.SetStateAction<JzodElement>>,
 }
 
 const miroirReactContext = createContext<MiroirReactContext>({} as MiroirReactContext);

@@ -47,6 +47,7 @@ export function transformerInterfaceFromDefinition(
   transformerDefinition: TransformerDefinition,
   target: "build" | "runtime",
   referenceMap: Record<string, string> = {},
+  optionalInterpolation: boolean = false
 ): JzodElement {
   const newApplyTo: JzodElement = (
     transformerDefinition.transformerInterface.transformerParameterSchema
@@ -59,14 +60,6 @@ export function transformerInterfaceFromDefinition(
         transformerDefinition.transformerInterface.transformerParameterSchema
           .transformerDefinition.definition as any
       ).applyTo,
-      // {
-      //   type: "schemaReference",
-      //   definition: {
-      //     relativePath: "transformer_inner_referenced_extractor",
-      //     absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-      //   },
-      //   context: {},
-      // },
       {
         type: "schemaReference",
         definition: {
@@ -84,19 +77,11 @@ export function transformerInterfaceFromDefinition(
   const newDefinition = substituteTransformerReferencesInJzodElement<JzodObject>(
     transformerDefinition.transformerInterface.transformerParameterSchema.transformerDefinition,
     referenceMap
-    // target == "runtime"
-    //   ? {
-    //       transformer: "transformerForRuntime",
-    //       transformer_InnerReference: "transformerForRuntime_InnerReference",
-    //       transformer_freeObjectTemplate: "transformerForRuntime_freeObjectTemplate"
-    //     }
-    //   : {
-    //       transformer: "transformerForBuild",
-    //       transformer_InnerReference: "transformerForBuild_InnerReference",
-    //       transformer_freeObjectTemplate: "transformerForBuild_freeObjectTemplate"
-    //     }
   ).definition;
 
+  const relativePath = target == "runtime"
+  ? optionalInterpolation?"transformerForRuntime_optional_Abstract":"transformerForRuntime_Abstract"
+  : optionalInterpolation?"transformerForBuild_optional_Abstract":"transformerForBuild_Abstract"
   const result: JzodElement = {
     type: "object",
     extend: transformerDefinition.transformerInterface.transformerParameterSchema
@@ -117,10 +102,7 @@ export function transformerInterfaceFromDefinition(
             definition: {
               eager: true,
               absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath:
-                target == "runtime"
-                  ? "transformerForRuntime_Abstract"
-                  : "transformerForBuild_Abstract",
+              relativePath
             },
             context: {},
           },
@@ -131,10 +113,7 @@ export function transformerInterfaceFromDefinition(
             definition: {
               eager: true,
               absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath:
-                target == "runtime"
-                  ? "transformerForRuntime_Abstract"
-                  : "transformerForBuild_Abstract",
+              relativePath,
             },
             context: {},
           },

@@ -253,6 +253,7 @@ describe(
           entityDefinitionSelfApplicationDeploymentConfiguration as EntityDefinition,
           entityDefinitionTest as EntityDefinition,
           entityDefinitionTransformerDefinition as EntityDefinition,
+          entityDefinitionEndpoint as EntityDefinition,
           // jzodSchemajzodMiroirBootstrapSchema as any,
         );
         console.log(expect.getState().currentTestName, "called getMiroirFundamentalJzodSchema");

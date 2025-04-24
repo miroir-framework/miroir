@@ -121,13 +121,13 @@ const buildReferenceMap: Record<string, string> = {
 export const miroirTransformersForRuntime: Record<string,JzodElement> = Object.fromEntries(
   Object.entries(miroirTransformers).map(([key, transformer]) => [
     key,
-    transformerInterfaceFromDefinition(transformer, "runtime", runtimeReferenceMap),
+    transformerInterfaceFromDefinition(transformer, "runtime", runtimeReferenceMap, ["transformer_contextReference", "transformer_parameterReference"].includes(key)),
   ])
 );
 
 export const miroirTransformersForBuild: Record<string,JzodElement> = Object.fromEntries(
   Object.entries(miroirTransformers).map(([key, transformer]) => [
     key,
-    transformerInterfaceFromDefinition(transformer, "build", buildReferenceMap),
+    transformerInterfaceFromDefinition(transformer, "build", buildReferenceMap, key == "transformer_parameterReference"),
   ])
 );

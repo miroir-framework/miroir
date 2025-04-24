@@ -352,8 +352,8 @@ export {
   transformerForBuild_mustacheStringTemplate,
   TransformerForRuntime_mustacheStringTemplate,
   transformerForRuntime_mustacheStringTemplate,
-  Transformer_orderBy,
-  transformer_orderBy,
+  // Transformer_orderBy,
+  // transformer_orderBy,
   TransformerForBuild,
   // transformerForBuild_InnerReference,
   transformerForBuild,
@@ -419,8 +419,8 @@ export {
   transformerForRuntime_objectDynamicAccess,
   TransformerForRuntime_objectEntries,
   TransformerForRuntime_objectValues,
-  TransformerForRuntime_orderedTransformer,
-  transformerForRuntime_orderedTransformer,
+  // TransformerForRuntime_orderedTransformer,
+  // transformerForRuntime_orderedTransformer,
   TransformerForRuntime_unique,
   UndoRedoAction,
   undoRedoAction,
@@ -800,6 +800,16 @@ export { RestClientStub } from "./4_services/RestClientStub";
 export { restServerDefaultHandlers } from "./4_services/RestServer.js";
 export { generateRestServiceResponse } from "./4_services/RestTools.js";
 export { TestSuiteContext } from "./4_services/TestSuiteContext.js";
+export {
+  TransformerTest,
+  TransformerTestSuite,
+  displayTestSuiteResults,
+  displayTestSuiteResultsDetails,
+  runTransformerTestInMemory,
+  runTransformerTestSuite,
+  testSuites,
+  transformerTestsDisplayResults,
+} from "./4_services/TestTools.js";
 
 export {
   ignorePostgresExtraAttributes,

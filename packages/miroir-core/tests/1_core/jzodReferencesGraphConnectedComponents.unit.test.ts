@@ -158,7 +158,8 @@ const miroirFundamentalJzodSchema = getMiroirFundamentalJzodSchema(
   entityDefinitionReportV1,
   entityDefinitionSelfApplicationDeploymentConfiguration,
   entityDefinitionTest,
-  entityDefinitionTransformerDefinition
+  entityDefinitionTransformerDefinition,
+  entityDefinitionEndpoint,
 );
 
 

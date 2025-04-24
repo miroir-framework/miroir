@@ -13,6 +13,23 @@
           "label": { "type": "string", "optional": true }
         }
       },
+      "transformer_orderBy": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "transformer_inner_label"
+          }
+        },
+        "definition": {
+          "orderBy": {
+            "type": "string",
+            "optional": true
+          }
+        }
+      },
       "transformerForBuild_Abstract": {
         "type": "object",
         "extend": {
@@ -47,6 +64,42 @@
           }
         }
       },
+      "transformerForBuild_optional_Abstract": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "transformer_inner_label"
+          }
+        },
+        "definition": {
+          "interpolation": {
+            "type": "literal",
+            "optional": true,
+            "definition": "build"
+          }
+        }
+      },
+      "transformerForRuntime_optional_Abstract": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "transformer_inner_label"
+          }
+        },
+        "definition": {
+          "interpolation": {
+            "type": "literal",
+            "optional": true,
+            "definition": "runtime"
+          }
+        }
+      },
       "transformer_inner_referenced_extractor": {
         "type": "object",
         "definition": {
@@ -67,6 +120,25 @@
                 }
               }
             ]
+          }
+        }
+      },
+      "transformer_extractors": {
+        "type": "schemaReference",
+        "definition": {
+          "relativePath": "transformer_constantListAsExtractor"
+        }
+      },
+      "transformer_constantListAsExtractor":{
+        "type": "object",
+        "definition": {
+          "transformerType": {
+            "type": "literal",
+            "definition": "constantListAsExtractor"
+          },
+          "value": {
+            "type": "array",
+            "definition": { "type": "any" }
           }
         }
       },
@@ -137,62 +209,6 @@
         "type": "schemaReference",
         "definition": {
           "relativePath": "transformerForRuntime"
-        }
-      },
-      "recordOfTransformers": {
-        "type": "object",
-        "definition": {
-          "transformerType": {
-            "type": "literal",
-            "definition": "recordOfTransformers"
-          },
-          "definition": {
-            "type": "record",
-            "definition": {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "transformer"
-              }
-            }
-          }
-        }
-      },
-      "transformer": {
-        "type": "union",
-        "definition": [
-          {
-            "type": "object",
-            "definition": {
-              "transformerType": {
-                "type": "literal",
-                "definition": "objectTransformer"
-              },
-              "attributeName": {
-                "type": "string"
-              }
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "recordOfTransformers"
-            }
-          }
-        ]
-      },
-      "transformer_constantListAsExtractor":{
-        "type": "object",
-        "definition": {
-          "transformerType": {
-            "type": "literal",
-            "definition": "constantListAsExtractor"
-          },
-          "value": {
-            "type": "array",
-            "definition": { "type": "any" }
-          }
         }
       },
       "transformer_contextOrParameterReferenceTO_REMOVE": {
@@ -279,12 +295,6 @@
           }
         ]
       },
-      "transformer_extractors": {
-        "type": "schemaReference",
-        "definition": {
-          "relativePath": "transformer_constantListAsExtractor"
-        }
-      },
       "transformerForBuild_InnerReference": {
         "type": "union",
         "discriminator": "transformerType",
@@ -339,90 +349,6 @@
           }
         ]
       },
-      "transformer_orderBy": {
-        "type": "object",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "relativePath": "transformer_inner_label"
-          }
-        },
-        "definition": {
-          "orderBy": {
-            "type": "string",
-            "optional": true
-          }
-        }
-      },
-      "transformerForBuild_constant": {
-        "type": "object",
-        "extend": [
-          {
-            "type": "schemaReference",
-            "definition": {
-              "eager": true,
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformer_constant"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "eager": true,
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForBuild_Abstract"
-            }
-          }
-        ],
-        "definition": {}
-      },
-      "transformerForBuild_dataflowSequence": {
-        "type": "object",
-        "extend": [
-          {
-            "type": "schemaReference",
-            "definition": {
-              "eager": true,
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForBuild_Abstract"
-            }
-          }
-        ],
-        "definition": {
-          "transformerType": {
-            "type": "literal",
-            "definition": "dataflowSequence"
-          },
-          "definition": {
-            "type": "array",
-            "definition": {
-              "type": "schemaReference",
-              "definition": {
-                "relativePath": "transformerForBuild"
-              }
-            }
-          }
-        }
-      },
-      "transformerForRuntime_orderedTransformer": {
-        "type": "object",
-        "extend":
-          {
-            "type": "schemaReference",
-            "definition": {
-              "eager": true,
-              "relativePath": "transformerForRuntime_Abstract"
-            }
-          },
-        "definition": {
-          "orderBy": {
-            "type": "string",
-            "optional": true
-          }
-        }
-      },
       "transformerForRuntime_InnerReference": {
         "type": "union",
         "discriminator": "transformerType",
@@ -471,6 +397,34 @@
           }
         ]
       },
+      "transformerForBuild_dataflowSequence": {
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuild_Abstract"
+            }
+          }
+        ],
+        "definition": {
+          "transformerType": {
+            "type": "literal",
+            "definition": "dataflowSequence"
+          },
+          "definition": {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "relativePath": "transformerForBuild"
+              }
+            }
+          }
+        }
+      },
       "transformerForRuntime_dataflowSequence": {
         "type": "object",
         "extend": [
@@ -512,6 +466,49 @@
             "type": "schemaReference",
             "definition": {
               "relativePath": "transformerForRuntime"
+            }
+          }
+        ]
+      },
+      "recordOfTransformers": {
+        "type": "object",
+        "definition": {
+          "transformerType": {
+            "type": "literal",
+            "definition": "recordOfTransformers"
+          },
+          "definition": {
+            "type": "record",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "transformer"
+              }
+            }
+          }
+        }
+      },
+      "transformer": {
+        "type": "union",
+        "definition": [
+          {
+            "type": "object",
+            "definition": {
+              "transformerType": {
+                "type": "literal",
+                "definition": "objectTransformer"
+              },
+              "attributeName": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "recordOfTransformers"
             }
           }
         ]

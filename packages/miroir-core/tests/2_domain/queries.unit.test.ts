@@ -32,12 +32,37 @@ import domainStateImport from "./domainState.json";
 import adminConfigurationDeploymentLibrary from "../../src/assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json";
 import { DeploymentEntityState } from '../../src/0_interfaces/2_domain/DeploymentStateInterface.js';
 import { domainStateToDeploymentEntityState, resolvePathOnObject } from '../../src/tools.js';
-import { getQueryTemplateRunnerParamsForDomainState, runQueryTemplateFromDomainState } from '../../src/2_domain/DomainStateQueryTemplateSelector.js';
-import { getQueryRunnerParamsForDomainState, runQueryFromDomainState } from '../../src/2_domain/DomainStateQuerySelectors.js';
-import { getQueryTemplateRunnerParamsForDeploymentEntityState, runQueryTemplateFromDeploymentEntityState } from '../../src/2_domain/DeploymentEntityStateQueryTemplateSelectors.js';
-import { getQueryRunnerParamsForDeploymentEntityState, runQueryFromDeploymentEntityState } from '../../src/2_domain/DeploymentEntityStateQuerySelectors.js';
-import { Domain2ElementFailed } from '../../src/0_interfaces/2_domain/DomainElement.js';
+import {
+  getQueryTemplateRunnerParamsForDomainState,
+  GetSelectorParamsForQueryTemplateOnDomainStateType,
+  runQueryTemplateFromDomainState,
+} from "../../src/2_domain/DomainStateQueryTemplateSelector.js";
+import {
+  GetQueryRunnerParamsForDomainState,
+  getQueryRunnerParamsForDomainState,
+  runQueryFromDomainState,
+} from "../../src/2_domain/DomainStateQuerySelectors.js";
+import {
+  GetQueryTemplateRunnerParamsForDeploymentEntityState,
+  getQueryTemplateRunnerParamsForDeploymentEntityState,
+  runQueryTemplateFromDeploymentEntityState,
+} from "../../src/2_domain/DeploymentEntityStateQueryTemplateSelectors.js";
+import {
+  GetQueryRunnerParamsForDeploymentEntityState,
+  getQueryRunnerParamsForDeploymentEntityState,
+  runQueryFromDeploymentEntityState,
+} from "../../src/2_domain/DeploymentEntityStateQuerySelectors.js";
+import {
+  Domain2ElementFailed,
+  Domain2QueryReturnType,
+} from "../../src/0_interfaces/2_domain/DomainElement.js";
 import { ignorePostgresExtraAttributes } from '../../src/4_services/otherTools.js';
+import {
+  BoxedQueryTemplateWithExtractorCombinerTransformer,
+  BoxedQueryWithExtractorCombinerTransformer,
+  SyncQueryRunner,
+  SyncQueryTemplateRunner,
+} from "../../dist";
 
 const domainState: DomainState = domainStateImport as DomainState;
 const deploymentEntityState: DeploymentEntityState = domainStateToDeploymentEntityState(domainState);
@@ -137,10 +162,12 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           parentName: "Book",
           parentUuid: {
             transformerType: "constantUuid",
+            interpolation: "build",
             value: "XXXXXX",
           },
           instanceUuid: {
             transformerType: "constantUuid",
+            interpolation: "build",
             value: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
           },
         },
@@ -188,10 +215,12 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           parentName: "Book",
           parentUuid: {
             transformerType: "constantUuid",
+            interpolation: "build",
             value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
           },
           instanceUuid: {
             transformerType: "constantUuid",
+            interpolation: "build",
             value: "XXXXXXXXX",
           },
         },
@@ -240,10 +269,12 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           parentName: "Book",
           parentUuid: {
             transformerType: "constantUuid",
+            interpolation: "build",
             value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
           },
           instanceUuid: {
             transformerType: "constantUuid",
+            interpolation: "build",
             value: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
           },
         },
@@ -348,10 +379,12 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           parentName: "Book",
           parentUuid: {
             transformerType: "constantUuid",
+            interpolation: "build",
             value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
           },
           instanceUuid: {
             transformerType: "parameterReference",
+            interpolation: "build",
             referenceName: "wantedBookUuid",
           },
         },
@@ -397,10 +430,12 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           parentName: "Book",
           parentUuid: {
             transformerType: "constantUuid",
+            interpolation: "build",
             value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
           },
           instanceUuid: {
             transformerType: "constantUuid",
+            interpolation: "build",
             value: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
           },
         },
@@ -411,6 +446,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           parentName: "Publisher",
           parentUuid: {
             transformerType: "constantUuid",
+            interpolation: "build",
             value: "a027c379-8468-43a5-ba4d-bf618be25cab",
           },
           objectReference: {
@@ -473,6 +509,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           parentName: "Author",
           parentUuid: {
             transformerType: "constantUuid",
+            interpolation: "build",
             value: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
           },
         },
@@ -546,12 +583,14 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           parentName: "Author",
           parentUuid: {
             transformerType: "constantUuid",
+            interpolation: "build",
             value: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
           },
           filter: {
             attributeName: "name",
             value: {
               transformerType: "constantString",
+              interpolation: "build",
               value: "or",
             },
           },
@@ -615,10 +654,12 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           parentName: "Book",
           parentUuid: {
             transformerType: "constantUuid",
+            interpolation: "build",
             value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
           },
           instanceUuid: {
             transformerType: "constantUuid",
+            interpolation: "build",
             value: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
           },
         },
@@ -629,6 +670,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           parentName: "Publisher",
           parentUuid: {
             transformerType: "constantUuid",
+            interpolation: "build",
             value: "a027c379-8468-43a5-ba4d-bf618be25cab",
           },
           objectReference: {
@@ -644,6 +686,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           parentName: "Book",
           parentUuid: {
             transformerType: "constantUuid",
+            interpolation: "build",
             value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
           },
           objectReference: {
@@ -727,10 +770,12 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           parentName: "Book",
           parentUuid: {
             transformerType: "constantUuid",
+            interpolation: "build",
             value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
           },
           instanceUuid: {
             transformerType: "constantUuid",
+            interpolation: "build",
             value: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
           },
         },
@@ -741,6 +786,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           parentName: "Publisher",
           parentUuid: {
             transformerType: "constantUuid",
+            interpolation: "build",
             value: "a027c379-8468-43a5-ba4d-bf618be25cab",
           },
           objectReference: {
@@ -755,6 +801,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           parentName: "Book",
           parentUuid: {
             transformerType: "constantUuid",
+            interpolation: "build",
             value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
           },
           objectReference: {
@@ -918,6 +965,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
             parentName: "Entity",
             parentUuid: {
               transformerType: "constantUuid",
+              interpolation: "build",
               value: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
             },
           },
@@ -932,6 +980,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
                 extractorTemplateType: "extractorTemplateForObjectListByEntity",
                 parentUuid: {
                   transformerType: "parameterReference",
+                  interpolation: "build",
                   referenceName: "uuid",
                 },
               },
@@ -974,6 +1023,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
                 extractorTemplateType: "extractorTemplateForObjectListByEntity",
                 parentUuid: {
                   transformerType: "parameterReference",
+                  interpolation: "build",
                   referenceName: "uuid",
                 },
               },
@@ -1018,6 +1068,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           parentName: "Book",
           parentUuid: {
             transformerType: "constantUuid",
+            interpolation: "build",
             value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
           },
         },

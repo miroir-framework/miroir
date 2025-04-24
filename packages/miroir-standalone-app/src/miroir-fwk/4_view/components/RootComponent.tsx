@@ -33,6 +33,7 @@ import {
   entityDefinitionBundleV1,
   entityDefinitionCommit,
   entityDefinitionDeployment,
+  entityDefinitionEndpoint,
   entityDefinitionEntity,
   entityDefinitionEntityDefinition,
   entityDefinitionJzodSchema,
@@ -47,6 +48,7 @@ import {
   entityDeployment,
   getMiroirFundamentalJzodSchema,
   instanceEndpointVersionV1,
+  JzodReference,
   JzodSchema,
   jzodSchemajzodMiroirBootstrapSchema,
   localCacheEndpointVersionV1,
@@ -65,7 +67,11 @@ import {
 } from "miroir-core";
 import { ReduxStateChanges } from "miroir-localcache-redux";
 
-import { useDomainControllerService, useLocalCacheTransactions, useMiroirContextService } from '../MiroirContextReactProvider.js';
+import {
+  useDomainControllerService,
+  useLocalCacheTransactions,
+  useMiroirContextService,
+} from "../MiroirContextReactProvider.js";
 import AppBar from './AppBar.js';
 
 import { deployments, packageName } from '../../../constants.js';
@@ -185,7 +191,7 @@ export const RootComponent = (props: RootComponentProps) => {
 
   // ##############################################################################################
 
-  const miroirFundamentalJzodSchema: JzodSchema = useMemo(() => getMiroirFundamentalJzodSchema(
+  const miroirFundamentalJzodSchema: JzodReference = useMemo(() => getMiroirFundamentalJzodSchema(
     entityDefinitionBundleV1 as EntityDefinition,
     entityDefinitionCommit as EntityDefinition,
     modelEndpointV1,
@@ -213,6 +219,7 @@ export const RootComponent = (props: RootComponentProps) => {
     entityDefinitionSelfApplicationDeploymentConfiguration as EntityDefinition,
     entityDefinitionTest as EntityDefinition,
     entityDefinitionTransformerDefinition as EntityDefinition,
+    entityDefinitionEndpoint as EntityDefinition,
     // jzodSchemajzodMiroirBootstrapSchema as any,
   ),[]);
 
@@ -358,6 +365,7 @@ export const RootComponent = (props: RootComponentProps) => {
                             parentName: "Deployment",
                             parentUuid: {
                               transformerType: "constantUuid",
+                              interpolation: "build",
                               value: entityDeployment.uuid,
                             },
                           },

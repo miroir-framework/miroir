@@ -185,8 +185,8 @@ export const defaultMiroirMetaModel: MetaModel = {
 function testLocalizeReferenceContext(
   testId: string,
   miroirFundamentalJzodSchema: JzodSchema,
-  testSchema: JzodReference,
-  // testValueObject: any,
+  // testSchema: JzodReference,
+  testSchema: JzodElement,
   expectedResult: JzodElement,
 ){
   console.log("######################################### running test", testId, "...")
@@ -196,7 +196,7 @@ function testLocalizeReferenceContext(
     // testValueObject,
     defaultMiroirMetaModel,
     defaultMiroirMetaModel,
-    testSchema.context
+    (testSchema as any)["context"]??{},
   )
     expect(testResult).toEqual(expectedResult);
 }
@@ -252,6 +252,7 @@ describe(
           entityDefinitionSelfApplicationDeploymentConfiguration as EntityDefinition,
           entityDefinitionTest as EntityDefinition,
           entityDefinitionTransformerDefinition as EntityDefinition,
+          entityDefinitionEndpoint as EntityDefinition,
           // jzodSchemajzodMiroirBootstrapSchema as any,
         );
         console.log(expect.getState().currentTestName, "called getMiroirFundamentalJzodSchema");

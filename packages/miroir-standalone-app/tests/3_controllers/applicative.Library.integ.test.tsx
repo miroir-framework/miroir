@@ -17,7 +17,6 @@ import {
   book6,
   ConfigurationService,
   defaultMiroirMetaModel,
-  displayTestSuiteResultsDetails,
   DomainControllerInterface,
   entityAuthor,
   entityBook,
@@ -192,15 +191,15 @@ beforeEach(
 // ################################################################################################
 // afterAll(
 //   async () => {
-//     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ deleteAndCloseApplicationDeployments")
-//     await deleteAndCloseApplicationDeployments(
-//       miroirConfig,
-//       domainController,
-//       [
-//         typedAdminConfigurationDeploymentMiroir
-//       ],
-//     );
-//     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done deleteAndCloseApplicationDeployments")
+//     // console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ deleteAndCloseApplicationDeployments")
+//     // await deleteAndCloseApplicationDeployments(
+//     //   miroirConfig,
+//     //   domainController,
+//     //   [
+//     //     typedAdminConfigurationDeploymentMiroir
+//     //   ],
+//     // );
+//     // console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done deleteAndCloseApplicationDeployments")
 
 //     // console.log("globalTestSuiteResults:\n", Object.values(globalTestSuiteResults).map((r) => "\"" + r.testLabel + "\": " + r.testResult).join("\n"));
 //     displayTestSuiteResultsDetails(expect,Object.keys(testTemplateSuites)[0]);
@@ -454,16 +453,10 @@ const testTemplateSuites: Record<string, TestActionParams> = {
                 transformerType: "spreadSheetToJzodSchema",
                 interpolation: "runtime",
                 spreadsheetContents: {
-                  // transformerType: "parameterReference",
                   transformerType: "contextReference",
                   interpolation: "runtime",
                   referenceName: "spreadsheetContents",
                 }
-                // spreadsheetContents: [
-                //   { a: "iso3166-1Alpha-2", b: "iso3166-1Alpha-3", c: "Name" },
-                //   { a: "US", b: "USA", c: "United States" },
-                //   { a: "DE", b: "DEU", c: "Germany" },
-                // ],
               },
               createEntity_newEntityDefinition: {
                 name: {
@@ -501,8 +494,6 @@ const testTemplateSuites: Record<string, TestActionParams> = {
                 deploymentUuid: {
                   transformerType: "parameterReference",
                   interpolation: "build",
-                  // transformerType: "",
-                  // interpolation: "runtime",
                   referenceName: "testAdminConfigurationDeploymentUuid",
                 },
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",

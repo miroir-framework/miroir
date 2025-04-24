@@ -13,6 +13,7 @@
         "parentName": "Deployment",
         "parentUuid": {
           "transformerType": "constantUuid",
+          "interpolation": "build",
           "value": "35c5608a-7678-4f07-a4ec-76fc5bc35424"
         }
       }

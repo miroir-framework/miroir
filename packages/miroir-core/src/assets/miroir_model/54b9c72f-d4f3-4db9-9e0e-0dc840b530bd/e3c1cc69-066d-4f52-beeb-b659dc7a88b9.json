@@ -163,6 +163,45 @@
                       }
                     }
                   },
+                  "actionImplementation": {
+                    "type": "union",
+                    "optional": true,
+                    "discriminator": "actionImplementationType",
+                    "definition": [
+                      {
+                        "type": "object",
+                        "definition": {
+                          "actionImplementationType": {
+                            "type": "literal",
+                            "definition": "libraryImplementation"
+                          },
+                          "inMemoryImplementationFunctionName": {
+                            "type": "string"
+                          },
+                          "sqlImplementationFunctionName": {
+                            "type": "string",
+                            "optional": true
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "definition": {
+                          "actionImplementationType": {
+                            "type": "literal",
+                            "definition": "compositeAction"
+                          },
+                          "definition": {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "compositeAction"
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
                   "errors": {
                     "type": "union",
                     "optional": true,
