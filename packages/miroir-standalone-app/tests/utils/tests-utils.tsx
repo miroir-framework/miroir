@@ -99,7 +99,7 @@ export type TestActionParams =
       testActionType: "testCompositeActionTemplateSuite";
       testActionLabel: string;
       deploymentUuid: Uuid;
-      testCompositeAction: TestCompositeActionTemplateSuite;
+      testCompositeActionSuite: TestCompositeActionTemplateSuite;
     }; 
 
 
@@ -889,7 +889,7 @@ export async function runTestOrTestSuite(
       // throw new Error("testCompositeActionTemplateSuite not implemented yet!");
       log.info("testCompositeActionTemplateSuite", fullTestName, "running for testActionParamValues", testActionParamValues);
       const queryResult: Action2ReturnType = await domainController.handleTestCompositeActionTemplateSuite(
-        testAction.testCompositeAction,
+        testAction.testCompositeActionSuite,
         testActionParamValues??{},
         localCache.currentModel(testAction.deploymentUuid)
       );

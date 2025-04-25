@@ -1,6 +1,8 @@
 
 // import entityDefinitionCountry from "../../src/assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/56628e31-3db5-4c5c-9328-4ff7ce54c36a.json" with { type: "json" };
 
+import { TransformerTestSuite } from "../../src/4_services/TestTools.js";
+
 // import folio from "../../src/assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/1f550a2a-33f5-4a56-83ee-302701039494.json" with { type: "json" };
 // import penguin from "../../src/assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/516a7366-39e7-4998-82cb-80199a7fa667.json" with { type: "json" };
 // import springer from "../../src/assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/c1c97d54-aba8-4599-883a-7fe8f3874095.json" with { type: "json" };
@@ -23,8 +25,6 @@
 // import publisher1 from "../../src/assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/1f550a2a-33f5-4a56-83ee-302701039494.json" with { type: "json" };
 // import publisher2 from "../../src/assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/516a7366-39e7-4998-82cb-80199a7fa667.json" with { type: "json" };
 // import publisher3 from "../../src/assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/c1c97d54-aba8-4599-883a-7fe8f3874095.json" with { type: "json" };
-import { transformer } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { TransformerTestSuite } from "./transformersTests_miroir.data";
 
 // // ################################################################################################
 // // export interface TransformerTestParams {
