@@ -1511,18 +1511,19 @@ export class DomainController implements DomainControllerInterface {
             "on action",
             JSON.stringify(currentAction, null, 2)
           );
-          throw new Error(
-            "handleCompositeAction error" +
-              JSON.stringify(actionResult, null, 2) +
-              "on action" +
-              JSON.stringify(currentAction, null, 2)
+          return new Action2Error(
+            "FailedTestAction",
+            "handleCompositeAction error: " + JSON.stringify(actionResult.errorMessage, null, 2),
+            [currentAction.actionLabel ?? currentAction.actionType, ...(actionResult.errorStack ?? [] as any)],
+            actionResult
           );
         }
       } catch (error) {
         log.error("handleCompositeAction caught error", error);
         return new Action2Error(
-          "FailedToDeployModule",
-          "handleCompositeAction caught error: " + JSON.stringify(error, null, 2)
+          "FailedTestAction",
+          "handleCompositeAction error: " + JSON.stringify(error, null, 2),
+          [currentAction.actionLabel ?? currentAction.actionType],
         );
       } finally {
         LoggerGlobalContext.setCompositeAction(undefined);
@@ -1971,6 +1972,13 @@ export class DomainController implements DomainControllerInterface {
         );
         if (beforeAllResult instanceof Action2Error) {
           log.error("Error on beforeAll", JSON.stringify(beforeAllResult, null, 2));
+          TestSuiteContext.setTest(undefined);
+          return new Action2Error(
+            "FailedToSetupTest",
+            "handleTestCompositeActionSuite beforeAll error: " + JSON.stringify(beforeAllResult.errorMessage, null, 2),
+            beforeAllResult.errorStack,
+            beforeAllResult
+          )
         }
         LoggerGlobalContext.setTest(undefined);
       } else {
@@ -1988,18 +1996,25 @@ export class DomainController implements DomainControllerInterface {
             testAction.beforeEach
           );
           LoggerGlobalContext.setTest(testCompositeAction[1].testLabel + ".beforeEach");
-          const beforeAllResult = await this.handleCompositeAction(
+          const beforeEachResult = await this.handleCompositeAction(
             testAction.beforeEach,
             localActionParams,
             currentModel
           );
-          if (beforeAllResult instanceof Action2Error) {
+          if (beforeEachResult instanceof Action2Error) {
             log.error(
               "handleTestCompositeActionSuite",
               testCompositeAction[0],
               "Error on beforeEach",
-              JSON.stringify(beforeAllResult, null, 2)
+              JSON.stringify(beforeEachResult, null, 2)
             );
+            TestSuiteContext.setTest(undefined);
+            return new Action2Error(
+              "FailedToSetupTest",
+              "handleTestCompositeActionSuite error: " + JSON.stringify(beforeEachResult.errorMessage, null, 2),
+              beforeEachResult.errorStack,
+              beforeEachResult
+            )
           }
           LoggerGlobalContext.setTest(undefined);
         } else {
@@ -2027,6 +2042,13 @@ export class DomainController implements DomainControllerInterface {
               "Error on beforeTestSetupAction",
               JSON.stringify(beforeTestResult, null, 2)
             );
+            TestSuiteContext.setTest(undefined);
+            return new Action2Error(
+              "FailedToSetupTest",
+              "handleTestCompositeActionSuite beforeTest error: " + JSON.stringify(beforeTestResult.errorMessage, null, 2),
+              beforeTestResult.errorStack,
+              beforeTestResult
+            )
           }
           TestSuiteContext.setTest(undefined);
         } else {
@@ -2050,6 +2072,15 @@ export class DomainController implements DomainControllerInterface {
           localActionParams,
           currentModel
         );
+        if (testResult instanceof Action2Error) {
+          TestSuiteContext.setTest(undefined);
+          return new Action2Error(
+            "FailedTestAction",
+            "handleTestCompositeActionSuite error: " + JSON.stringify(testResult.errorMessage, null, 2),
+            [testCompositeAction[1].testLabel??testCompositeAction[1].testType, ...(testResult.errorStack ?? [])],
+            testResult
+          )
+        }
         TestSuiteContext.setTest(undefined);
 
         if (testCompositeAction[1].afterTestCleanupAction) {
@@ -2070,8 +2101,15 @@ export class DomainController implements DomainControllerInterface {
             log.error(
               "handleTestCompositeAction",
               testCompositeAction[0],
-              "Error on beforeTestSetupAction",
+              "Error on afterTestCleanupAction",
               JSON.stringify(afterTestResult, null, 2)
+            );
+            TestSuiteContext.setTest(undefined);
+            return new Action2Error(
+              "FailedToTeardownTest",
+              "handleTestCompositeActionSuite afterTestCleanup error: " + JSON.stringify(afterTestResult.errorMessage, null, 2),
+              ["afterTestCleanupAction", ...afterTestResult.errorStack??[]],
+              afterTestResult
             );
           }
           TestSuiteContext.setTest(undefined);
@@ -2104,6 +2142,13 @@ export class DomainController implements DomainControllerInterface {
               "Error on afterEach",
               JSON.stringify(beforeAllResult, null, 2)
             );
+            TestSuiteContext.setTest(undefined);
+            return new Action2Error(
+              "FailedToTeardownTest",
+              "handleTestCompositeActionSuite afterEach error: " + JSON.stringify(beforeAllResult.errorMessage, null, 2),
+              beforeAllResult.errorStack,
+              beforeAllResult
+            )
           }
           TestSuiteContext.setTest(undefined);
         } else {
@@ -2125,6 +2170,13 @@ export class DomainController implements DomainControllerInterface {
         );
         if (afterAllResult instanceof Action2Error) {
           log.error("Error on afterAll", JSON.stringify(afterAllResult, null, 2));
+          TestSuiteContext.setTest(undefined);
+          return new Action2Error(
+            "FailedToTeardownTest",
+            "handleTestCompositeActionSuite afterAll error: " + JSON.stringify(afterAllResult.errorMessage, null, 2),
+            afterAllResult.errorStack,
+            afterAllResult
+          )
         }
         TestSuiteContext.setTest(undefined);
       } else {
@@ -2134,7 +2186,7 @@ export class DomainController implements DomainControllerInterface {
     } catch (error) {
       log.error("handleTestCompositeActionSuite caught error", error);
       return new Action2Error(
-        "FailedToDeployModule",
+        "FailedToTeardownTest",
         "handleTestCompositeActionSuite caught error: " + JSON.stringify(error, null, 2)
       );
     } finally {
@@ -2179,7 +2231,9 @@ export class DomainController implements DomainControllerInterface {
             resolveErrors.map((e) => e[0]),
             null,
             2
-          )
+          ),
+          [],
+          resolveErrors[0] as any
       );
     }
     log.info(

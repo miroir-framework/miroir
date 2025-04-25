@@ -1,5 +1,5 @@
 import { TransformerForBuild, TransformerForBuildOrRuntime, TransformerForRuntime } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement";
+import { Action2ReturnType, Action2Success, Domain2ElementFailed, Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement";
 import { Step, transformer_extended_apply_wrapper } from "../2_domain/TransformersForRuntime";
 import { ignorePostgresExtraAttributes } from "./otherTools";
 import { TestSuiteContext } from "./TestSuiteContext";
@@ -170,7 +170,192 @@ export async function runTransformerTestSuite(
   console.log(`@@@@@@@@@@@@@@@@@@@@ finished running transformer test suite ${JSON.stringify(testSuitePath)}`);
   // TestSuiteContext.resetContext();
 }
+// ################################################################################################
+function isJson(t:any) {
+  // return t == "json" || t == "json_array" || t == "tableOf1JsonColumn";
+  return typeof t == "object" && t !== null;
+}
 
+// ################################################################################################
+export function runTransformerIntegrationTest(
+  sqlDbDataStore: any,
+) {
+  return async (
+  vitest: any,
+  testNameArray: string[],
+  transformerTest: TransformerTest
+) => {
+  const testSuitePathName = TestSuiteContext.testSuitePathName(testNameArray);
+  const testRunStep = transformerTest.runTestStep ?? "runtime";
+  // const runAsSql = false;
+  const runAsSql = true;
+
+  console.log("runTransformerIntegrationTest called for", testSuitePathName, "START");
+
+  let queryResult: Action2ReturnType;
+  console.log(
+    "runTransformerIntegrationTest",
+    testSuitePathName,
+    "running runtime on sql transformerTest",
+    transformerTest
+  );
+
+  // resolve the transformer to be used in the test
+  const resolvedTransformer: Domain2QueryReturnType<TransformerForRuntime> =
+    transformer_extended_apply_wrapper(
+      "build",
+      (transformerTest.transformer as any)?.label,
+      transformerTest.transformer,
+      transformerTest.transformerParams,
+      transformerTest.transformerRuntimeContext ?? {},
+      "value" // resolveBuildTransformerTo
+    );
+
+  console.log(
+    "runTransformerIntegrationTest",
+    testSuitePathName,
+    "resolvedTransformer",
+    JSON.stringify(resolvedTransformer, null, 2)
+  );
+
+  if (resolvedTransformer instanceof Domain2ElementFailed) {
+    console.log(
+      "runTransformerIntegrationTest",
+      testSuitePathName,
+      "build step found failed: resolvedTransformer",
+      resolvedTransformer
+    );
+    try {
+      const resultToCompare = ignorePostgresExtraAttributes(
+        resolvedTransformer as any,
+        transformerTest.ignoreAttributes
+      );
+
+      vitest.expect(resultToCompare, testSuitePathName).toEqual(transformerTest.expectedValue);
+      TestSuiteContext.setTestAssertionResult({
+        assertionName: testSuitePathName,
+        assertionResult: "ok",
+      });
+    } catch (error) {
+      TestSuiteContext.setTestAssertionResult({
+        assertionName: testSuitePathName,
+        assertionResult: "error",
+        assertionExpectedValue: transformerTest.expectedValue,
+        assertionActualValue: resolvedTransformer,
+      });
+    }
+    return;
+  }
+
+  if (testRunStep == "build") {
+    queryResult = {
+      status: "ok",
+      returnedDomainElement: resolvedTransformer as any,
+    };
+  } else {
+    queryResult = await sqlDbDataStore.handleBoxedQueryAction({
+      actionType: "runBoxedQueryAction",
+      actionName: "runQuery",
+      deploymentUuid: "",
+      endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+      applicationSection: "data",
+      query: {
+        queryType: "boxedQueryWithExtractorCombinerTransformer",
+        runAsSql,
+        pageParams: {},
+        queryParams: {
+          ...transformerTest.transformerParams,
+          ...transformerTest.transformerRuntimeContext,
+        },
+        contextResults: runAsSql
+          ? Object.fromEntries(
+              // there's a trick for runAsSql in order to be able to test transformers taking context parameters
+              Object.entries(transformerTest.transformerRuntimeContext ?? {}).map(
+                (e: [string, any]) => [
+                  e[0],
+                  {
+                    type: isJson(e[1]) ? "json" : typeof e[1],
+                  },
+                ]
+              )
+            )
+          : transformerTest.transformerRuntimeContext ?? {},
+        deploymentUuid: "",
+        runtimeTransformers: {
+          // transformer: (transformerTest as any).transformer,
+          transformer: resolvedTransformer,
+        },
+      },
+    });
+  }
+
+  // console.log(testSuitePathName, "WWWWWWWWWWWWWWWWWW queryResult", JSON.stringify(queryResult, null, 2));
+  console.log(
+    testSuitePathName,
+    "WWWWWWWWWWWWWWWWWW queryResult",
+    JSON.stringify(queryResult, null, 2)
+  );
+  // console.log(testSuitePathName, "WWWWWWWWWWWWWWWWWW queryResult cannot use 'instanceof' to determine error", queryResult instanceof Action2Error, Object.hasOwn(queryResult,"errorType"));
+  let resultToCompare: any;
+  try {
+    // if (queryResult instanceof Action2Error) { // DOES NOT WORK, because we use the local version of the class, not the version of the class that is available in the miroir-core package
+    if (queryResult["status"] == "error") {
+      // cannot use 'instanceof' to determine error because we use the local version of the class, not the version of the class that is available in the miroir-core package
+      resultToCompare = ignorePostgresExtraAttributes(
+        (queryResult as any).innerError,
+        transformerTest.ignoreAttributes
+      );
+      console.log(
+        testSuitePathName,
+        "WWWWWWWWWWWWWWWWWW queryResult instance of Action2Error:",
+        JSON.stringify(resultToCompare, null, 2)
+      );
+
+      vitest
+        .expect(
+          resultToCompare,
+          testSuitePathName + "comparing received query error to expected result"
+        )
+        .toEqual(transformerTest.expectedValue);
+    } else {
+      console.log(testSuitePathName, "WWWWWWWWWWWWWWWWWW query Succeeded!");
+      resultToCompare =
+        testRunStep == "runtime"
+          ? ignorePostgresExtraAttributes(
+              (queryResult as Action2Success).returnedDomainElement.transformer,
+              transformerTest.ignoreAttributes
+            )
+          : (queryResult as Action2Success).returnedDomainElement;
+      console.log(testSuitePathName, "testResult", JSON.stringify(resultToCompare, null, 2));
+      console.log(testSuitePathName, "expectedValue", transformerTest.expectedValue);
+      vitest.expect(resultToCompare, testSuitePathName).toEqual(transformerTest.expectedValue);
+    }
+    TestSuiteContext.setTestAssertionResult({
+      assertionName: testSuitePathName,
+      assertionResult: "ok",
+    });
+  } catch (error) {
+    TestSuiteContext.setTestAssertionResult({
+      assertionName: testSuitePathName,
+      assertionResult: "error",
+      assertionExpectedValue: transformerTest.expectedValue,
+      assertionActualValue: resultToCompare,
+    });
+  }
+
+  console.log(testNameArray, "END");
+  }
+}
+
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
 // ################################################################################################
 export const testSuites = (transformerTestSuite: TransformerTestSuite):string[][] => {
   const result: string[][] = [];
@@ -278,3 +463,4 @@ export const transformerTestsDisplayResults = (
     TestSuiteContext.resetResults();
   }
 };
+

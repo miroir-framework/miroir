@@ -1,4 +1,5 @@
-import { describe, expect } from 'vitest';
+import * as vitest from 'vitest';
+// import { describe, expect } from 'vitest';
 
 import { v4 as uuidv4 } from "uuid";
 
@@ -78,17 +79,21 @@ import { CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction } from 'miroi
 import { CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js';
 import { entityReport } from 'miroir-core';
 import { displayTestSuiteResultsDetails } from 'miroir-core';
+import { runTransformerTestSuite } from 'miroir-core';
 
-let domainController: DomainControllerInterface;
-let localCache: LocalCacheInterface;
+let domainController: DomainControllerInterface | undefined = undefined;
+let localCache: LocalCacheInterface | undefined = undefined;
 // let localMiroirPersistenceStoreController: PersistenceStoreControllerInterface;
 // let localAppPersistenceStoreController: PersistenceStoreControllerInterface;
 let miroirContext: MiroirContext;
 let persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface;
 // let globalTestSuiteResults: TestSuiteResult = {};
 
+
 const env:any = (import.meta as any).env
 console.log("@@@@@@@@@@@@@@@@@@ env", env);
+
+const RUN_TEST= process.env.RUN_TEST
 
 const myConsoleLog = (...args: any[]) => console.log(fileName, ...args);
 const fileName = "DomainNewController.integ.test";
@@ -148,45 +153,46 @@ const typedAdminConfigurationDeploymentMiroir = {
 } as AdminApplicationDeploymentConfiguration;
 
 // ################################################################################################
-beforeAll(
-  async () => {
-    const {
-      persistenceStoreControllerManagerForClient: localpersistenceStoreControllerManager,
-      domainController: localdomainController,
-      localCache: locallocalCache,
-      miroirContext: localmiroirContext,
-    } = await setupMiroirTest(miroirConfig);
+// beforeAll(
+const beforeAll = async () => {
+  const {
+    persistenceStoreControllerManagerForClient: localpersistenceStoreControllerManager,
+    domainController: localdomainController,
+    localCache: locallocalCache,
+    miroirContext: localmiroirContext,
+  } = await setupMiroirTest(miroirConfig);
 
-    persistenceStoreControllerManager = localpersistenceStoreControllerManager;
-    domainController = localdomainController;
-    localCache = locallocalCache;
-    miroirContext = localmiroirContext;
+  persistenceStoreControllerManager = localpersistenceStoreControllerManager;
+  domainController = localdomainController;
+  localCache = locallocalCache;
+  miroirContext = localmiroirContext;
 
-    const createMiroirDeploymentCompositeAction = createDeploymentCompositeAction(
-      typedAdminConfigurationDeploymentMiroir.uuid,
-      typedAdminConfigurationDeploymentMiroir.configuration,
-    );
-    const createDeploymentResult = await domainController.handleCompositeAction(
-      createMiroirDeploymentCompositeAction,
-      defaultMiroirMetaModel
-    );
-    if (createDeploymentResult.status !== "ok") {
-      throw new Error("Failed to create Miroir deployment: " + JSON.stringify(createDeploymentResult));
-    }
-
-    return Promise.resolve();
+  const createMiroirDeploymentCompositeAction = createDeploymentCompositeAction(
+    typedAdminConfigurationDeploymentMiroir.uuid,
+    typedAdminConfigurationDeploymentMiroir.configuration,
+  );
+  const createDeploymentResult = await domainController.handleCompositeAction(
+    createMiroirDeploymentCompositeAction,
+    defaultMiroirMetaModel
+  );
+  if (createDeploymentResult.status !== "ok") {
+    throw new Error("Failed to create Miroir deployment: " + JSON.stringify(createDeploymentResult));
   }
-)
+
+  return Promise.resolve();
+}
 
 // ################################################################################################
-beforeEach(
-  async  () => {
-    await resetAndInitApplicationDeployment(domainController, [
-      selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
-    ]);
-    document.body.innerHTML = '';
+// beforeEach(
+const beforeEach = async  () => {
+  if (!domainController) {
+    throw new Error("beforeEach DomainController is not initialized");
   }
-)
+  await resetAndInitApplicationDeployment(domainController, [
+    selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
+  ]);
+  document.body.innerHTML = '';
+}
 
 // // ################################################################################################
 // afterEach(
@@ -217,7 +223,7 @@ afterAll(
 // ##############################################################################################
 // ##############################################################################################
 
-const testName: string = "applicative.Library.integ.test";
+const testSuiteName: string = "applicative.Library.integ.test";
 
 const libraryEntitesAndInstances = [
   {
@@ -785,7 +791,7 @@ const createReportsCompositeActionTemplate: CarryOn_fe9b7d99$f216$44de$bb6e$60e1
 };
 
 const testTemplateSuites: Record<string, TestActionParams> = {
-  [testName]: {
+  [testSuiteName]: {
     testActionType: "testCompositeActionTemplateSuite",
     deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
     testActionLabel: "applicative.Library.integ.test",
@@ -802,7 +808,7 @@ const testTemplateSuites: Record<string, TestActionParams> = {
         // libraryEntitesAndInstances
         []
       ),
-      // afterEach: testOnLibrary_resetLibraryDeployment(miroirConfig, testAdminConfigurationDeploymentUuid),
+      afterEach: testOnLibrary_resetLibraryDeployment(miroirConfig, testAdminConfigurationDeploymentUuid),
       // afterAll: testOnLibrary_deleteLibraryDeployment(miroirConfig, testAdminConfigurationDeploymentUuid),
       testCompositeActions: {
         // "create new Entity from spreadsheet": {
@@ -1041,6 +1047,20 @@ const testTemplateSuites: Record<string, TestActionParams> = {
             definition: [
               ...((createEntityCompositeActionTemplate as any).definition),
               createReportsCompositeActionTemplate,
+              // commit
+              {
+                actionType: "modelAction",
+                actionName: "commit",
+                actionLabel: "commit",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                deploymentUuid: {
+                  transformerType: "parameterReference",
+                  interpolation: "build",
+                  referenceName: "currentDeploymentUuid",
+                  // referenceName: "testAdminConfigurationDeploymentUuid",
+                },
+              },
+
               // test preparation: newApplicationReportList
               {
                 actionType: "compositeRunBoxedExtractorOrQueryAction",
@@ -1313,15 +1333,61 @@ const testTemplateSuites: Record<string, TestActionParams> = {
 
 // const display
 // TODO: duplicate test with ExtractorTemplatePersistenceStoreRunner.integ.test.tsx
-describe.sequential(testName, () => {
-  it.each(Object.entries(testTemplateSuites))(
-    "test %s",
-    async (currentTestSuiteName, testAction: TestActionParams) => {
-      const testSuiteResults = await runTestOrTestSuite(localCache, domainController, testAction);
-      if (testSuiteResults.status !== "ok") {
-        expect(testSuiteResults.status, `${currentTestSuiteName} failed!`).toBe("ok");
-      }
+if (RUN_TEST == testSuiteName) {
+  if (beforeAll) await beforeAll(); // beforeAll is a function, not the call to the jest/vitest hook
+  if (beforeEach) await beforeEach(); // beforeAll is a function, not the call to the jest/vitest hook
+  // await runTransformerTestSuite(vitest, [], currentTestSuite, runTransformerIntegrationTest);
+  if (!localCache) {
+    throw new Error("running test localCache is not defined!");
+  }
+  if (!domainController) {
+    throw new Error("running test domainController is not defined!");
+  }
+  for (const [currentTestSuiteName, testAction] of Object.entries(testTemplateSuites)) {
+    const testSuiteResults = await runTestOrTestSuite(localCache, domainController, testAction);
+    if (testSuiteResults.status !== "ok") {
+      vitest.expect(testSuiteResults.status, `${currentTestSuiteName} failed!`).toBe("ok");
     }
-  );
-});
+  }
+  // Object.entries(testTemplateSuites).forEach(
+  //   e => {
+  //   async (currentTestSuiteName, testAction: TestActionParams) => {
+  //     const testSuiteResults = await runTestOrTestSuite(localCache, domainController, testAction);
+  //     if (testSuiteResults.status !== "ok") {
+  //       expect(testSuiteResults.status, `${currentTestSuiteName} failed!`).toBe("ok");
+  //     }
+  //   }
+  // }
+  // );
+
+} else {
+  console.log("################################ skipping test suite:", testSuiteName, "RUN_TEST=", RUN_TEST);
+}
+
+// describe.sequential(testName, () => {
+//   it.each(Object.entries(testTemplateSuites))(
+//     "test %s",
+//     async (currentTestSuiteName, testAction: TestActionParams) => {
+//       const testSuiteResults = await runTestOrTestSuite(localCache, domainController, testAction);
+//       if (testSuiteResults.status !== "ok") {
+//         expect(testSuiteResults.status, `${currentTestSuiteName} failed!`).toBe("ok");
+//       }
+//     }
+//   );
+// });
+
+
+
+
+// describe.sequential(testName, () => {
+//   it.each(Object.entries(testTemplateSuites))(
+//     "test %s",
+//     async (currentTestSuiteName, testAction: TestActionParams) => {
+//       const testSuiteResults = await runTestOrTestSuite(localCache, domainController, testAction);
+//       if (testSuiteResults.status !== "ok") {
+//         expect(testSuiteResults.status, `${currentTestSuiteName} failed!`).toBe("ok");
+//       }
+//     }
+//   );
+// });
 

@@ -14,6 +14,7 @@ import { Provider } from 'react-redux';
 import {
   Action2Error,
   Action2ReturnType,
+  AdminApplicationDeploymentConfiguration,
   CompositeAction,
   ConfigurationService,
   DeploymentConfiguration,
@@ -22,7 +23,9 @@ import {
   DomainElementType,
   EntityDefinition,
   EntityInstance,
+  InitApplicationParameters,
   InstanceAction,
+  LocalCacheInterface,
   LoggerInterface,
   MetaEntity,
   MiroirConfigClient,
@@ -34,6 +37,7 @@ import {
   PersistenceStoreControllerManagerInterface,
   RestClient,
   RestClientInterface,
+  RestClientStub,
   RestPersistenceClientAndRestClientInterface,
   SelfApplicationDeploymentConfiguration,
   StoreUnitConfiguration,
@@ -42,7 +46,6 @@ import {
   TestCompositeActionTemplate,
   TestCompositeActionTemplateSuite,
   TestSuiteContext,
-  TransformerForBuild,
   Uuid,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
@@ -50,21 +53,17 @@ import {
   selfApplicationDeploymentLibrary,
   selfApplicationDeploymentMiroir
 } from "miroir-core";
-import { AdminApplicationDeploymentConfiguration } from "miroir-core";
-import { InitApplicationParameters } from "miroir-core";
-import { RestClientStub } from 'miroir-core';
 import {
   LocalCache,
   ReduxStoreWithUndoRedo,
+  RestPersistenceClientAndRestClient,
   setupMiroirDomainController
 } from "miroir-localcache-redux";
 import path from 'path';
-import { RestPersistenceClientAndRestClient } from 'miroir-localcache-redux';
 import { packageName } from '../../src/constants';
 import { MiroirContextReactProvider } from '../../src/miroir-fwk/4_view/MiroirContextReactProvider';
 import { cleanLevel } from '../../src/miroir-fwk/4_view/constants';
 import { ApplicationEntitiesAndInstances } from "./tests-utils-testOnLibrary";
-import { LocalCacheInterface } from 'miroir-core';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

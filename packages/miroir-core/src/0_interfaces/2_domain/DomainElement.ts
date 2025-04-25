@@ -87,18 +87,22 @@ export class Domain2ElementFailed implements IDomain2ElementFailed {
 
 export type errorType =
 | ("FailedToCreateStore" | "FailedToDeployModule")
-| "FailedToDeleteStore"
-| "FailedToResetAndInitMiroirAndApplicationDatabase"
-| "FailedToOpenStore"
+| "FailedTestAction"
 | "FailedToCloseStore"
 | "FailedToCreateInstance"
 | "FailedToDeleteInstance"
 | "FailedToDeleteInstanceWithCascade"
-| "FailedToUpdateInstance"
-| "FailedToLoadNewInstancesInLocalCache"
+| "FailedToDeleteStore"
 | "FailedToGetInstance"
 | "FailedToGetInstances"
-| "FailedToResolveTemplate";
+| "FailedToLoadNewInstancesInLocalCache"
+| "FailedToOpenStore"
+| "FailedToResetAndInitMiroirAndApplicationDatabase"
+| "FailedToResolveTemplate"
+| "FailedToUpdateInstance"
+| "FailedToSetupTest"
+| "FailedToTeardownTest"
+;
 
 export class Action2Error {
   public status: string = "error";
@@ -107,7 +111,7 @@ export class Action2Error {
     public errorType: errorType,
     public errorMessage?: string | undefined,
     public errorStack?: (string | undefined)[] | undefined,
-    public innerError?: ActionError | Domain2ElementFailed | undefined
+    public innerError?: Action2Error | ActionError | Domain2ElementFailed | undefined
   ){};
 }
 
