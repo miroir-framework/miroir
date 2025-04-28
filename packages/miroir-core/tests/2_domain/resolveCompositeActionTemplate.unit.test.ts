@@ -74,24 +74,29 @@ describe('resolveTestCompositeActionTemplate', () => {
           newEntityDefinition: {
             name: {
               transformerType: "parameterReference",
+              interpolation: "build",
               referenceName: "createEntity_newEntityName",
             },
             uuid: {
               transformerType: "parameterReference",
+              interpolation: "build",
               referenceName: "createEntity_newEntityDefinitionUuid",
             },
             parentName: "EntityDefinition",
             parentUuid: {
               transformerType: "mustacheStringTemplate",
+              interpolation: "build",
               definition: "{{entityEntityDefinition.uuid}}",
             },
             entityUuid: {
               transformerType: "mustacheStringTemplate",
+              interpolation: "build",
               definition: "{{createEntity_newEntity.uuid}}",
             },
             conceptLevel: "Model",
             defaultInstanceDetailsReportUuid: {
               transformerType: "parameterReference",
+              interpolation: "build",
               referenceName: "createEntity_newEntityDetailsReportUuid",
             },
             jzodSchema: {

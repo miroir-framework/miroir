@@ -162,7 +162,7 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
 };
 
 export const applicationTransformerDefinitions: Record<string, TransformerDefinition> = {
-  menu_addItem: transformer_menu_addItem,
+  transformer_menu_addItem: transformer_menu_addItem,
   // 
   spreadSheetToJzodSchema: transformer_spreadSheetToJzodSchema,
   count: transformer_count,
@@ -1953,6 +1953,35 @@ export function transformer_extended_apply(
               queryParameters: JSON.stringify(transformer),
             });
           }
+          // log.info(
+          //   "transformer_extended_apply foundApplicationTransformer",
+          //   JSON.stringify(foundApplicationTransformer, null, 2)
+          // );
+          // log.info(
+          //   "transformer_extended_apply foundApplicationTransformer.transformerImplementation",
+          //   JSON.stringify(foundApplicationTransformer.transformerImplementation, null, 2)
+          // );
+          if (
+            !foundApplicationTransformer.transformerImplementation
+          ) {
+            log.error(
+              "transformer_extended_apply failed for",
+              label,
+              "using to resolve build transformers for step:",
+              step,
+              "transformer",
+              JSON.stringify(transformer, null, 2)
+            );
+            preResult = new Domain2ElementFailed({
+              queryFailure: "QueryNotExecutable",
+              failureOrigin: ["transformer_extended_apply"],
+              queryContext:
+                "transformerImplementation for transformer" +
+                JSON.stringify(transformer) +
+                " not found",
+              queryParameters: transformer as any,
+            });
+          }
           switch (
             foundApplicationTransformer.transformerImplementation.transformerImplementationType
           ) {
@@ -2112,7 +2141,7 @@ export function transformer_extended_apply(
           );
         }
       } else {
-        // log.info("THERE2");
+        // log.info("THERE2", Object.keys(transformer));
         result = innerTransformer_plainObject_apply(
           step,
           label,

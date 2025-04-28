@@ -25,7 +25,11 @@ import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/LoggerFactory";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
-import { applyExtractorForSingleObjectListToSelectedInstancesListInMemory, applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory, applyExtractorTransformerInMemory } from "./QuerySelectors";
+import {
+  applyExtractorForSingleObjectListToSelectedInstancesListInMemory,
+  applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory,
+  applyExtractorTransformerInMemory,
+} from "./QuerySelectors";
 import { resolveExtractorTemplate } from "./Templates";
 import { applyTransformer } from "./TransformersForRuntime";
 
@@ -126,13 +130,18 @@ export async function asyncApplyExtractorTransformerInMemory(
 }
 
 // ################################################################################################
-export async function asyncInnerSelectElementFromQuery/*BoxedExtractorTemplateRunner*/(
+export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateRunner*/(
   newFetchedData: Record<string, any>,
   pageParams: Record<string, any>,
   queryParams: Record<string, any>,
-  extractorRunnerMap:AsyncBoxedExtractorOrQueryRunnerMap,
+  extractorRunnerMap: AsyncBoxedExtractorOrQueryRunnerMap,
   deploymentUuid: Uuid,
-  extractors: Record<string, BoxedExtractorOrCombinerReturningObjectList | BoxedExtractorOrCombinerReturningObject | BoxedQueryWithExtractorCombinerTransformer>,
+  extractors: Record<
+    string,
+    | BoxedExtractorOrCombinerReturningObjectList
+    | BoxedExtractorOrCombinerReturningObject
+    | BoxedQueryWithExtractorCombinerTransformer
+  >,
   extractorOrCombiner: ExtractorOrCombiner
 ): Promise<Domain2QueryReturnType<any>> {
   switch (extractorOrCombiner.extractorOrCombinerType) {
@@ -143,10 +152,14 @@ export async function asyncInnerSelectElementFromQuery/*BoxedExtractorTemplateRu
     // ############################################################################################
     // Impure Monads
     case "extractorByEntityReturningObjectList":
-    case "combinerByRelationReturningObjectList": 
+    case "combinerByRelationReturningObjectList":
     case "combinerByManyToManyRelationReturningObjectList": {
       // return extractorRunnerMap.extractEntityInstanceUuidIndexWithObjectListExtractor({
-      log.info("############ asyncInnerSelectElementFromQuery", extractorOrCombiner.extractorOrCombinerType, "start");
+      log.info(
+        "############ asyncInnerSelectElementFromQuery",
+        extractorOrCombiner.extractorOrCombinerType,
+        "start"
+      );
       const result = await extractorRunnerMap.extractEntityInstanceListWithObjectListExtractor({
         extractorRunnerMap,
         extractor: {
@@ -156,20 +169,28 @@ export async function asyncInnerSelectElementFromQuery/*BoxedExtractorTemplateRu
           pageParams: pageParams,
           queryParams,
           select: extractorOrCombiner.applicationSection
-          ? extractorOrCombiner
-          : {
-              ...extractorOrCombiner,
-              applicationSection: pageParams.applicationSection as ApplicationSection,
-            },
+            ? extractorOrCombiner
+            : {
+                ...extractorOrCombiner,
+                applicationSection: pageParams.applicationSection as ApplicationSection,
+              },
         },
       });
-      log.info("############ asyncInnerSelectElementFromQuery", extractorOrCombiner.extractorOrCombinerType, "done");
+      log.info(
+        "############ asyncInnerSelectElementFromQuery",
+        extractorOrCombiner.extractorOrCombinerType,
+        "done"
+      );
       return Promise.resolve(result);
       break;
     }
     case "combinerForObjectByRelation":
     case "extractorForObjectByDirectReference": {
-      log.info("############ asyncInnerSelectElementFromQuery", extractorOrCombiner.extractorOrCombinerType, "start");
+      log.info(
+        "############ asyncInnerSelectElementFromQuery",
+        extractorOrCombiner.extractorOrCombinerType,
+        "start"
+      );
       log.info("asyncInnerSelectElementFromQuery", JSON.stringify(extractorOrCombiner, null, 2));
       const result = await extractorRunnerMap.extractEntityInstance({
         extractorRunnerMap,
@@ -180,19 +201,24 @@ export async function asyncInnerSelectElementFromQuery/*BoxedExtractorTemplateRu
           pageParams,
           queryParams,
           select: extractorOrCombiner.applicationSection // TODO: UGLY!!! WHERE IS THE APPLICATION SECTION PLACED?
-          ? extractorOrCombiner
-          : {
-              ...extractorOrCombiner,
-              applicationSection: pageParams?.applicationSection as ApplicationSection,
-            },
-        }
+            ? extractorOrCombiner
+            : {
+                ...extractorOrCombiner,
+                applicationSection: pageParams?.applicationSection as ApplicationSection,
+              },
+        },
       });
-      log.info("############ asyncInnerSelectElementFromQuery", extractorOrCombiner.extractorOrCombinerType, "done");
+      log.info(
+        "############ asyncInnerSelectElementFromQuery",
+        extractorOrCombiner.extractorOrCombinerType,
+        "done"
+      );
       return Promise.resolve(result);
       break;
     }
     // ############################################################################################
-    case "extractorWrapperReturningObject": { // build object
+    case "extractorWrapperReturningObject": {
+      // build object
       const entries = Object.entries(extractorOrCombiner.definition);
       const results: Record<string, any> = {};
       for (const [key, extractor] of entries) {
@@ -210,7 +236,8 @@ export async function asyncInnerSelectElementFromQuery/*BoxedExtractorTemplateRu
       return results;
       break;
     }
-    case "extractorWrapperReturningList": { // List map
+    case "extractorWrapperReturningList": {
+      // List map
       const results = [];
       for (const e of extractorOrCombiner.definition) {
         const result = await asyncInnerSelectElementFromQuery(
@@ -227,7 +254,8 @@ export async function asyncInnerSelectElementFromQuery/*BoxedExtractorTemplateRu
       return results;
       break;
     }
-    case "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList": { // join
+    case "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList": {
+      // join
       const rootQueryResults =
         typeof extractorOrCombiner.rootExtractorOrReference === "string"
           ? await asyncInnerSelectElementFromQuery(
@@ -259,7 +287,12 @@ export async function asyncInnerSelectElementFromQuery/*BoxedExtractorTemplateRu
           const innerQueryParams = {
             ...queryParams,
             ...Object.fromEntries(
-              Object.entries(applyTransformer(extractorOrCombiner.subQueryTemplate.rootQueryObjectTransformer, instance))
+              Object.entries(
+                applyTransformer(
+                  extractorOrCombiner.subQueryTemplate.rootQueryObjectTransformer,
+                  instance
+                )
+              )
             ),
           };
 
@@ -269,7 +302,10 @@ export async function asyncInnerSelectElementFromQuery/*BoxedExtractorTemplateRu
             innerQueryParams
           );
           if ("QueryFailure" in resolvedQuery) {
-            results.push([(instance as any).uuid ?? "no uuid found for entry " + key, resolvedQuery]);
+            results.push([
+              (instance as any).uuid ?? "no uuid found for entry " + key,
+              resolvedQuery,
+            ]);
           } else {
             const result = await asyncInnerSelectElementFromQuery(
               newFetchedData,
@@ -298,18 +334,18 @@ export async function asyncInnerSelectElementFromQuery/*BoxedExtractorTemplateRu
         newFetchedData[extractorOrCombiner.extractorOrCombinerContextReference]
         ? Promise.resolve(newFetchedData[extractorOrCombiner.extractorOrCombinerContextReference])
         : Promise.resolve(
-          new Domain2ElementFailed({
-            queryFailure: "ReferenceNotFound",
-            failureOrigin: ["AsyncQuerySelectors", "asyncInnerSelectElementFromQuery"],
-            failureMessage:
-              "could not find extractorOrCombinerContextReference " +
-              extractorOrCombiner.extractorOrCombinerContextReference +
-              " in context" +
-              JSON.stringify(Object.keys(newFetchedData)),
-            queryContext: JSON.stringify(newFetchedData),
-            query: JSON.stringify(extractorOrCombiner),
-          })
-        );
+            new Domain2ElementFailed({
+              queryFailure: "ReferenceNotFound",
+              failureOrigin: ["AsyncQuerySelectors", "asyncInnerSelectElementFromQuery"],
+              failureMessage:
+                "could not find extractorOrCombinerContextReference " +
+                extractorOrCombiner.extractorOrCombinerContextReference +
+                " in context" +
+                JSON.stringify(Object.keys(newFetchedData)),
+              queryContext: JSON.stringify(newFetchedData),
+              query: JSON.stringify(extractorOrCombiner),
+            })
+          );
       break;
     }
     default: {

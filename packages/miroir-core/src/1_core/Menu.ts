@@ -35,7 +35,20 @@ export function handleTransformer_menu_AddItem(
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
 ): Domain2QueryReturnType<Menu> {
-// ): Domain2QueryReturnType<DomainElementSuccess> {
+  // TODO: DO A COPY OF THE MENU, DO NOT UPDATE VIA REFERENCE, IT MODIFIES THE "OLD" MENU
+  log.info(
+    "handleTransformer_menu_AddItem called with",
+    "objectName",
+    objectName,
+    "transformer",
+    transformer,
+    "resolveBuildTransformersTo",
+    resolveBuildTransformersTo,
+    // queryParams,
+    // Object.keys(contextResults??{}),
+    "contextResults",
+    contextResults,
+  );
   const menu =
     typeof transformer.menuReference == "string"
       ? (defaultTransformers.transformer_InnerReference_resolve(

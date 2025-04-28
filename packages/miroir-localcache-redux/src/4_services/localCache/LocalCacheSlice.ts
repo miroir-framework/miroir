@@ -331,7 +331,12 @@ function loadNewEntityInstancesInLocalCache(
       : i
   );
 
-  log.info('loadNewEntityInstancesInLocalCache loading instances',deploymentUuid,section,JSON.stringify(serializableInstances[0]));
+  // log.info(
+  //   "loadNewEntityInstancesInLocalCache loading instances",
+  //   deploymentUuid,
+  //   section,
+  //   JSON.stringify(serializableInstances[0])
+  // );
 
   (state as any).loading[instanceCollectionEntityIndex] = sliceEntityAdapter.setAll(
     (state as any).loading[instanceCollectionEntityIndex],
@@ -356,7 +361,8 @@ function handleInstanceAction(
   //   // JSON.stringify(action, null, 2)
   //   instanceAction
   // );
-  switch (instanceAction.actionName) {
+  try {
+    switch (instanceAction.actionName) {
     case "createInstance": {
       for (let instanceCollection of instanceAction.objects ?? ([] as EntityInstanceCollection[])) {
         const instanceCollectionEntityIndex = getDeploymentEntityStateIndex(
@@ -364,14 +370,14 @@ function handleInstanceAction(
           instanceAction.applicationSection,
           instanceCollection.parentUuid
         );
-        // log.debug(
-        //   "create for entity",
-        //   instanceCollection.parentName,
-        //   instanceCollection.parentUuid,
-        //   "instances",
-        //   instanceCollection.instances
-        //   // JSON.stringify(state)
-        // );
+        log.debug(
+          "create for entity",
+          instanceCollection.parentName,
+          instanceCollection.parentUuid,
+          "instances",
+          JSON.stringify(instanceCollection.instances, null, 2)
+          // JSON.stringify(state)
+        );
 
         const sliceEntityAdapter:EntityAdapter<EntityInstance, string> = initializeLocalCacheSliceStateWithEntityAdapter(
           instanceAction.deploymentUuid,
@@ -401,7 +407,7 @@ function handleInstanceAction(
             )
           );
         }
-        // log.info('create done',JSON.stringify(state[deploymentUuid][applicationSection]));
+        log.info('create done',JSON.stringify(state.current[instanceCollectionEntityIndex], null, 2));
       }
       break;
     }
@@ -503,7 +509,20 @@ function handleInstanceAction(
         instanceAction
       );
   }
-  return ACTION_OK
+} catch (error) {
+    log.error(
+      "localCacheSliceObject handleInstanceAction action could not be taken into account, error",
+      instanceAction,
+      error
+    );
+    return new Action2Error(
+      "FailedToHandleAction",
+      "localCacheSliceObject handleInstanceAction action could not be taken into account, error" + JSON.stringify(instanceAction),
+      ["handleInstanceAction"],
+      error as any
+    );
+  }
+return ACTION_OK
 }
 
 

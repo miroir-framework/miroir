@@ -431,7 +431,7 @@ export class DomainController implements DomainControllerInterface {
       log.warn("DomainController loadConfigurationFromPersistenceStore caught error:", error);
       // throw error;
       return new Action2Error(
-        "FailedToDeployModule",
+        "FailedToLoadNewInstancesInLocalCache",
         "DomainController loadConfigurationFromPersistenceStore caught error: " + error
       );
     }
@@ -833,7 +833,7 @@ export class DomainController implements DomainControllerInterface {
       "deployment",
       deploymentUuid,
       "action",
-      JSON.stringify(modelAction, null, 2)
+      modelAction.actionName != "initModel"?JSON.stringify(modelAction, null, 2): modelAction,
       // modelAction,
     );
     try {
@@ -1103,7 +1103,11 @@ export class DomainController implements DomainControllerInterface {
     //   JSON.stringify((domainAction as any)["objects"], null, 2)
     // );
 
-    log.debug("DomainController handleAction domainAction", domainAction);
+    if (domainAction.actionType != "modelAction" || domainAction.actionName != "initModel") {
+      log.debug("DomainController handleAction domainAction", JSON.stringify(domainAction, null, 2));
+    } else {
+      log.debug("DomainController handleAction domainAction", domainAction);
+    }
     // if (!domainAction.deploymentUuid) {
     //   throw new Error("waaaaa");
 
@@ -1253,7 +1257,7 @@ export class DomainController implements DomainControllerInterface {
     } catch (error) {
       log.error("DomainController handleAction caught error", error);
       return new Action2Error(
-        "FailedToDeployModule",
+        "FailedToHandleAction",
         "DomainController handleAction caught error: " + JSON.stringify(error, null, 2)
       );
     } finally {
@@ -1311,7 +1315,7 @@ export class DomainController implements DomainControllerInterface {
           case "transactionalInstanceAction":
           case "storeManagementAction":
           case "bundleAction": {
-            // case "domainAction": {
+            // these are PreActions, the runtime transformers present in them must be resolved before the action is executed
             if (
               currentAction.actionType !== "modelAction" ||
               currentAction.actionName !== "initModel"
@@ -1321,7 +1325,21 @@ export class DomainController implements DomainControllerInterface {
                 JSON.stringify(currentAction, null, 2)
               );
             }
-            actionResult = await this.handleAction(currentAction, currentModel);
+            const resolvedAction = transformer_extended_apply(
+              "runtime",
+              currentAction.actionLabel,
+              currentAction as any as TransformerForRuntime,
+              "value",
+              actionParamValues, // queryParams
+              localContext, // contextResults
+            );
+
+            log.info(
+              "handleCompositeAction resolvedAction action to handle",
+              JSON.stringify(resolvedAction, null, 2)
+            );
+            // actionResult = await this.handleAction(currentAction, currentModel);
+            actionResult = await this.handleAction(resolvedAction, currentModel);
             if (actionResult instanceof Action2Error) {
               log.error(
                 "handleCompositeAction Error on action",
@@ -1339,12 +1357,54 @@ export class DomainController implements DomainControllerInterface {
             break;
           }
           case "compositeRunBoxedQueryTemplateAction": {
-            // case "runBoxedQueryTemplateAction": {
-            actionResult = await this.handleCompositeRunBoxedQueryTemplateAction(
+            // actionResult = await this.handleCompositeRunBoxedQueryTemplateAction(
+            //   currentAction,
+            //   actionParamValues,
+            //   localContext
+            // );
+            log.info(
+              "handleCompositeRunBoxedQueryTemplateAction to handle",
               currentAction,
-              actionParamValues,
-              localContext
+              "with actionParamValues",
+              actionParamValues
             );
+        
+            if (currentAction.queryTemplate == undefined) {
+              throw new Error(
+                "handleCompositeRunBoxedQueryTemplateAction currentAction.queryTemplate is undefined"
+              );
+            }
+
+            actionResult = await this.handleQueryTemplateActionForServerONLY(
+              currentAction.queryTemplate
+            );
+            if (actionResult instanceof Action2Error) {
+              log.error(
+                "Error on handleCompositeRunBoxedQueryTemplateAction with nameGivenToResult",
+                currentAction.nameGivenToResult,
+                "query=",
+                JSON.stringify(actionResult, null, 2)
+              );
+            } else {
+              if (actionResult.returnedDomainElement instanceof Domain2ElementFailed) {
+                log.error(
+                  "Error on handleCompositeRunBoxedQueryTemplateAction with nameGivenToResult",
+                  currentAction.nameGivenToResult,
+                  "query=",
+                  JSON.stringify(actionResult, null, 2)
+                );
+              } else {
+                log.info(
+                  "handleCompositeActionTemplate handleCompositeRunBoxedQueryTemplateAction adding result to context as",
+                  currentAction.nameGivenToResult,
+                  "value",
+                  actionResult
+                );
+                localContext[currentAction.nameGivenToResult] = actionResult.returnedDomainElement;
+              }
+            }
+            // return actionResult;
+        
             break;
           }
           case "compositeRunBoxedExtractorTemplateAction": {
@@ -1582,55 +1642,55 @@ export class DomainController implements DomainControllerInterface {
     return actionResult;
   }
 
-  // ##############################################################################################
-  private async handleCompositeRunBoxedQueryTemplateAction(
-    currentAction: {
-      actionType: "compositeRunBoxedQueryTemplateAction";
-      actionLabel?: string | undefined;
-      nameGivenToResult: string;
-      queryTemplate: RunBoxedQueryTemplateAction;
-    },
-    actionParamValues: Record<string, any>,
-    // actionResult: Action2ReturnType | undefined,
-    localContext: Record<string, any>
-  ) {
-    log.info(
-      "handleCompositeRunBoxedQueryTemplateAction to handle",
-      currentAction,
-      "with actionParamValues",
-      actionParamValues
-    );
+  // // ##############################################################################################
+  // private async handleCompositeRunBoxedQueryTemplateAction(
+  //   currentAction: {
+  //     actionType: "compositeRunBoxedQueryTemplateAction";
+  //     actionLabel?: string | undefined;
+  //     nameGivenToResult: string;
+  //     queryTemplate: RunBoxedQueryTemplateAction;
+  //   },
+  //   actionParamValues: Record<string, any>,
+  //   // actionResult: Action2ReturnType | undefined,
+  //   localContext: Record<string, any>
+  // ) {
+  //   log.info(
+  //     "handleCompositeRunBoxedQueryTemplateAction to handle",
+  //     currentAction,
+  //     "with actionParamValues",
+  //     actionParamValues
+  //   );
 
-    const actionResult = await this.handleQueryTemplateActionForServerONLY(
-      currentAction.queryTemplate
-    );
-    if (actionResult instanceof Action2Error) {
-      log.error(
-        "Error on handleCompositeRunBoxedQueryTemplateAction with nameGivenToResult",
-        currentAction.nameGivenToResult,
-        "query=",
-        JSON.stringify(actionResult, null, 2)
-      );
-    } else {
-      if (actionResult.returnedDomainElement instanceof Domain2ElementFailed) {
-        log.error(
-          "Error on handleCompositeRunBoxedQueryTemplateAction with nameGivenToResult",
-          currentAction.nameGivenToResult,
-          "query=",
-          JSON.stringify(actionResult, null, 2)
-        );
-      } else {
-        log.info(
-          "handleCompositeActionTemplate handleCompositeRunBoxedQueryTemplateAction adding result to context as",
-          currentAction.nameGivenToResult,
-          "value",
-          actionResult
-        );
-        localContext[currentAction.nameGivenToResult] = actionResult.returnedDomainElement;
-      }
-    }
-    return actionResult;
-  }
+  //   const actionResult = await this.handleQueryTemplateActionForServerONLY(
+  //     currentAction.queryTemplate
+  //   );
+  //   if (actionResult instanceof Action2Error) {
+  //     log.error(
+  //       "Error on handleCompositeRunBoxedQueryTemplateAction with nameGivenToResult",
+  //       currentAction.nameGivenToResult,
+  //       "query=",
+  //       JSON.stringify(actionResult, null, 2)
+  //     );
+  //   } else {
+  //     if (actionResult.returnedDomainElement instanceof Domain2ElementFailed) {
+  //       log.error(
+  //         "Error on handleCompositeRunBoxedQueryTemplateAction with nameGivenToResult",
+  //         currentAction.nameGivenToResult,
+  //         "query=",
+  //         JSON.stringify(actionResult, null, 2)
+  //       );
+  //     } else {
+  //       log.info(
+  //         "handleCompositeActionTemplate handleCompositeRunBoxedQueryTemplateAction adding result to context as",
+  //         currentAction.nameGivenToResult,
+  //         "value",
+  //         actionResult
+  //       );
+  //       localContext[currentAction.nameGivenToResult] = actionResult.returnedDomainElement;
+  //     }
+  //   }
+  //   return actionResult;
+  // }
 
   // ##############################################################################################
   async handleCompositeActionTemplate(
@@ -1652,7 +1712,7 @@ export class DomainController implements DomainControllerInterface {
       // resolvedCompositeActionDefinition: CompositeActionDefinition;
       resolvedCompositeActionDefinition: CompositeAction;
       resolvedCompositeActionTemplates: Record<string, any>;
-    } = resolveCompositeActionTemplate(compositeAction, localActionParams, currentModel);
+    } = resolveCompositeActionTemplate(compositeAction, localActionParams, currentModel); // resolves "build" temp
 
     log.info("handleCompositeActionTemplate", actionLabel, "localActionParams", localActionParams);
     log.info(
@@ -1726,51 +1786,51 @@ export class DomainController implements DomainControllerInterface {
           break;
         }
         case "compositeRunBoxedQueryTemplateAction": {
-          const actionResult = await this.handleCompositeRunBoxedQueryTemplateAction(
-            currentAction,
-            actionParamValues,
-            // actionResult,
-            localContext
-          );
-          // log.info(
-          //   "handleCompositeActionTemplate",
-          //   actionLabel,
-          //   "resolved query action",
+          // const actionResult = await this.handleCompositeRunBoxedQueryTemplateAction(
           //   currentAction,
-          //   "with actionParamValues",
-          //   actionParamValues
+          //   actionParamValues,
+          //   // actionResult,
+          //   localContext
           // );
+          log.info(
+            "handleCompositeActionTemplate",
+            actionLabel,
+            "resolved query action",
+            currentAction,
+            "with actionParamValues",
+            actionParamValues
+          );
 
-          // const actionResult = await this.handleQueryTemplateActionForServerONLY(
-          //   currentAction.queryTemplate
-          // );
-          // if (actionResult instanceof Action2Error) {
-          //   log.error(
-          //     "handleCompositeActionTemplate compositeRunBoxedQueryTemplateAction error on action",
-          //     JSON.stringify(resolveCompositeActionTemplate, null, 2) +
-          //       "actionResult" +
-          //       JSON.stringify(actionResult, null, 2)
-          //   );
-          // } else {
-          //   if (actionResult.returnedDomainElement instanceof Domain2ElementFailed) {
-          //     log.error(
-          //       "handleCompositeActionTemplate compositeRunBoxedQueryTemplateAction error on action",
-          //       JSON.stringify(resolveCompositeActionTemplate, null, 2) +
-          //         "actionResult" +
-          //         JSON.stringify(actionResult, null, 2)
-          //     );
-          //   } else {
-          //     log.info(
-          //       "handleCompositeActionTemplate",
-          //       actionLabel,
-          //       "query adding result to context as",
-          //       currentAction.nameGivenToResult,
-          //       "value",
-          //       actionResult
-          //     );
-          //     localContext[currentAction.nameGivenToResult] = actionResult.returnedDomainElement;
-          //   }
-          // }
+          const actionResult = await this.handleQueryTemplateActionForServerONLY(
+            currentAction.queryTemplate
+          );
+          if (actionResult instanceof Action2Error) {
+            log.error(
+              "handleCompositeActionTemplate compositeRunBoxedQueryTemplateAction error on action",
+              JSON.stringify(resolveCompositeActionTemplate, null, 2) +
+                "actionResult" +
+                JSON.stringify(actionResult, null, 2)
+            );
+          } else {
+            if (actionResult.returnedDomainElement instanceof Domain2ElementFailed) {
+              log.error(
+                "handleCompositeActionTemplate compositeRunBoxedQueryTemplateAction error on action",
+                JSON.stringify(resolveCompositeActionTemplate, null, 2) +
+                  "actionResult" +
+                  JSON.stringify(actionResult, null, 2)
+              );
+            } else {
+              log.info(
+                "handleCompositeActionTemplate",
+                actionLabel,
+                "query adding result to context as",
+                currentAction.nameGivenToResult,
+                "value",
+                actionResult
+              );
+              localContext[currentAction.nameGivenToResult] = actionResult.returnedDomainElement;
+            }
+          }
           break;
         }
         case "compositeRunBoxedExtractorTemplateAction": {
@@ -2360,7 +2420,7 @@ export class DomainController implements DomainControllerInterface {
     return (
       actionResult ??
       new Action2Error(
-        "FailedToDeployModule",
+        "FailedToHandleCompositeActionTestAssertion",
         "handleTestCompositeActionAssertionNOTUSED compositeRunTestAssertion error: " +
           JSON.stringify(compositeRunTestAssertion)
       )

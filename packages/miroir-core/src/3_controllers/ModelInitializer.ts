@@ -284,14 +284,14 @@ export async function modelInitialize(
     await persistenceStoreController.upsertInstance("model", menuDefaultLibrary);
   }
 
-
-  log.info(
-    logHeader,
-    "modelInitialize done",
-    JSON.stringify({
-      model: await persistenceStoreController.getModelState(),
-      data: await persistenceStoreController.getDataState(),
-    })
-  );
+  // HUGE LOG!
+  // log.info(
+  //   logHeader,
+  //   "modelInitialize done",
+  //   JSON.stringify({
+  //     model: await persistenceStoreController.getModelState(),
+  //     data: await persistenceStoreController.getDataState(),
+  //   })
+  // );
   return Promise.resolve(undefined);
 }

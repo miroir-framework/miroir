@@ -29,7 +29,8 @@ export type QueryFailureType =
   | "InstanceNotFound"
   | "ReferenceNotFound"
   | "ReferenceFoundButUndefined"
-  | "ReferenceFoundButAttributeUndefinedOnFoundObject";
+  | "ReferenceFoundButAttributeUndefinedOnFoundObject"
+;
 
 export interface IDomain2ElementFailed {
   queryFailure: QueryFailureType;
@@ -85,7 +86,7 @@ export class Domain2ElementFailed implements IDomain2ElementFailed {
   // elementValue: QueryFailed;
 };
 
-export type errorType =
+export type ActionErrorType =
 | ("FailedToCreateStore" | "FailedToDeployModule")
 | "FailedTestAction"
 | "FailedToCloseStore"
@@ -95,10 +96,16 @@ export type errorType =
 | "FailedToDeleteStore"
 | "FailedToGetInstance"
 | "FailedToGetInstances"
+| "FailedToHandleAction"
+| "FailedToHandleCompositeActionTestAssertion"
+| "FailedToHandleLocalCacheAction"
+| "FailedToHandlePersistenceAction"
+| "FailedToHandlePersistenceActionForLocalPersistenceStore"
 | "FailedToLoadNewInstancesInLocalCache"
 | "FailedToOpenStore"
 | "FailedToResetAndInitMiroirAndApplicationDatabase"
 | "FailedToResolveTemplate"
+| "FailedToRunBoxedExtractorOrQueryAction"
 | "FailedToUpdateInstance"
 | "FailedToSetupTest"
 | "FailedToTeardownTest"
@@ -108,7 +115,7 @@ export class Action2Error {
   public status: string = "error";
 
   constructor(
-    public errorType: errorType,
+    public errorType: ActionErrorType,
     public errorMessage?: string | undefined,
     public errorStack?: (string | undefined)[] | undefined,
     public innerError?: Action2Error | ActionError | Domain2ElementFailed | undefined

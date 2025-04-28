@@ -63,6 +63,6 @@
   },
   "transformerImplementation": {
     "transformerImplementationType": "libraryImplementation",
-    "inMemoryImplementationFunctionName": "transformer_menu_addItem"
+    "inMemoryImplementationFunctionName": "handleTransformer_menu_AddItem"
   }
 }

@@ -80,6 +80,8 @@ import { CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction } from '
 import { entityReport } from 'miroir-core';
 import { displayTestSuiteResultsDetails } from 'miroir-core';
 import { runTransformerTestSuite } from 'miroir-core';
+import { TransformerForBuildOrRuntime } from 'miroir-core';
+import { entityMenu } from 'miroir-core';
 
 let domainController: DomainControllerInterface | undefined = undefined;
 let localCache: LocalCacheInterface | undefined = undefined;
@@ -624,6 +626,8 @@ const createEntityCompositeActionTemplate: CompositeActionTemplate = {
         },
       },
     },
+    // menu update
+    entityMenu,
   },
   definition: [
     // createEntity
@@ -652,100 +656,256 @@ const createEntityCompositeActionTemplate: CompositeActionTemplate = {
         },
       ],
     },
-    // // test preparation: fetch newApplicationEntityList
-    // {
-    //   actionType: "compositeRunBoxedExtractorOrQueryAction",
-    //   actionLabel: "getListOfEntities",
-    //   nameGivenToResult: "newApplicationEntityList",
-    //   query: {
-    //     actionType: "runBoxedExtractorOrQueryAction",
-    //     actionName: "runQuery",
-    //     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-    //     applicationSection: "model", // TODO: give only selfApplication section in individual queries?
-    //     deploymentUuid: {
-    //       transformerType: "parameterReference",
-    //       interpolation: "build",
-    //       referenceName: "testAdminConfigurationDeploymentUuid",
-    //     },
-    //     query: {
-    //       queryType: "boxedQueryWithExtractorCombinerTransformer",
-    //       deploymentUuid: {
-    //         transformerType: "parameterReference",
-    //         interpolation: "build",
-    //         referenceName: "testAdminConfigurationDeploymentUuid",
-    //       },
-    //       pageParams: {
-    //         currentDeploymentUuid: {
-    //           transformerType: "parameterReference",
-    //           interpolation: "build",
-    //           referenceName: "testAdminConfigurationDeploymentUuid",
-    //         },
-    //       },
-    //       queryParams: {},
-    //       contextResults: {},
-    //       extractors: {
-    //         entities: {
-    //           extractorOrCombinerType: "extractorByEntityReturningObjectList",
-    //           applicationSection: "model",
-    //           parentName: entityEntity.name,
-    //           parentUuid: entityEntity.uuid,
-    //           orderBy: {
-    //             attributeName: "name",
-    //             direction: "ASC",
-    //           },
-    //         },
-    //       },
-    //     },
-    //   },
-    // },
-    // // test preparation: fetch newApplicationEntityDefinitionList
-    // {
-    //   actionType: "compositeRunBoxedExtractorOrQueryAction",
-    //   actionLabel: "getListOfEntityDefinitions",
-    //   nameGivenToResult: "newApplicationEntityDefinitionList",
-    //   query: {
-    //     actionType: "runBoxedExtractorOrQueryAction",
-    //     actionName: "runQuery",
-    //     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-    //     applicationSection: "model", // TODO: give only selfApplication section in individual queries?
-    //     deploymentUuid: {
-    //       transformerType: "parameterReference",
-    //       interpolation: "build",
-    //       referenceName: "testAdminConfigurationDeploymentUuid",
-    //     },
-    //     query: {
-    //       queryType: "boxedQueryWithExtractorCombinerTransformer",
-    //       deploymentUuid: {
-    //         transformerType: "parameterReference",
-    //         interpolation: "build",
-    //         referenceName: "testAdminConfigurationDeploymentUuid",
-    //       },
-    //       pageParams: {
-    //         currentDeploymentUuid: {
-    //           transformerType: "parameterReference",
-    //           interpolation: "build",
-    //           referenceName: "testAdminConfigurationDeploymentUuid",
-    //         },
-    //       },
-    //       queryParams: {},
-    //       contextResults: {},
-    //       extractors: {
-    //         entityDefinitions: {
-    //           extractorOrCombinerType: "extractorByEntityReturningObjectList",
-    //           applicationSection: "model",
-    //           parentName: entityEntityDefinition.name,
-    //           parentUuid: entityEntityDefinition.uuid,
-    //           orderBy: {
-    //             attributeName: "name",
-    //             direction: "ASC",
-    //           },
-    //         },
-    //       },
-    //     },
-    //   },
-    // },
   ],
 };
+// const createEntityCompositeActionTemplatePrepActions: CompositeActionTemplate["definition"] = [
+const createEntityCompositeActionTemplatePrepActions: any[] = [
+  // test preparation: newApplicationEntityDefinitionList
+  {
+    actionType: "compositeRunBoxedExtractorOrQueryAction",
+    actionLabel: "getListOfEntityDefinitions",
+    nameGivenToResult: "newApplicationEntityDefinitionList",
+    query: {
+      actionType: "runBoxedExtractorOrQueryAction",
+      actionName: "runQuery",
+      endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+      applicationSection: "model", // TODO: give only selfApplication section in individual queries?
+      deploymentUuid: {
+        transformerType: "parameterReference",
+        interpolation: "build",
+        referenceName: "testAdminConfigurationDeploymentUuid",
+      },
+      query: {
+        queryType: "boxedQueryWithExtractorCombinerTransformer",
+        deploymentUuid: {
+          transformerType: "parameterReference",
+          interpolation: "build",
+          referenceName: "testAdminConfigurationDeploymentUuid",
+        },
+        pageParams: {
+          currentDeploymentUuid: {
+            transformerType: "parameterReference",
+            interpolation: "build",
+            referenceName: "testAdminConfigurationDeploymentUuid",
+          },
+        },
+        queryParams: {},
+        contextResults: {},
+        extractors: {
+          entityDefinitions: {
+            extractorOrCombinerType: "extractorByEntityReturningObjectList",
+            applicationSection: "model",
+            parentName: entityEntityDefinition.name,
+            parentUuid: entityEntityDefinition.uuid,
+            orderBy: {
+              attributeName: "name",
+              direction: "ASC",
+            },
+          },
+        },
+      },
+    },
+  },
+  // test preparation: newApplicationEntityList
+  {
+    actionType: "compositeRunBoxedExtractorOrQueryAction",
+    actionLabel: "getListOfEntities",
+    nameGivenToResult: "newApplicationEntityList",
+    query: {
+      actionType: "runBoxedExtractorOrQueryAction",
+      actionName: "runQuery",
+      endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+      applicationSection: "model", // TODO: give only selfApplication section in individual queries?
+      deploymentUuid: {
+        transformerType: "parameterReference",
+        interpolation: "build",
+        referenceName: "testAdminConfigurationDeploymentUuid",
+      },
+      query: {
+        queryType: "boxedQueryWithExtractorCombinerTransformer",
+        deploymentUuid: {
+          transformerType: "parameterReference",
+          interpolation: "build",
+          referenceName: "testAdminConfigurationDeploymentUuid",
+        },
+        pageParams: {
+          currentDeploymentUuid: {
+            transformerType: "parameterReference",
+            interpolation: "build",
+            referenceName: "testAdminConfigurationDeploymentUuid",
+          },
+        },
+        queryParams: {},
+        contextResults: {},
+        extractors: {
+          entities: {
+            extractorOrCombinerType: "extractorByEntityReturningObjectList",
+            applicationSection: "model",
+            parentName: entityEntity.name,
+            parentUuid: entityEntity.uuid,
+            orderBy: {
+              attributeName: "name",
+              direction: "ASC",
+            },
+          },
+        },
+      },
+    },
+  },
+];
+const createEntityCompositeActionTemplateAssertions = [
+  // check entities
+  {
+    actionType: "compositeRunTestAssertion",
+    actionLabel: "checkEntities",
+    nameGivenToResult: "checkEntityList",
+    testAssertion: {
+      testType: "testAssertion",
+      testLabel: "checkEntities",
+      definition: {
+        resultAccessPath: ["newApplicationEntityList", "entities"],
+        ignoreAttributes: ["author"],
+        expectedValue: [
+          // newEntity,
+          {
+            uuid: newEntityUuid,
+            parentUuid: entityEntity.uuid,
+            selfApplication: testSelfApplicationUuid,
+            description: createEntity_newEntityDescription,
+            name: newEntityName,
+          },
+        ],
+      },
+    },
+  },
+  // check entity definitions
+  {
+    actionType: "compositeRunTestAssertion",
+    actionLabel: "checkEntityDefinitions",
+    nameGivenToResult: "checkEntityDefinitionList",
+    testAssertion: {
+      testType: "testAssertion",
+      testLabel: "checkEntityDefinitions", // TODO: index testCompositeActionAssertions in an object, ensuring unique keys
+      definition: {
+        resultAccessPath: ["newApplicationEntityDefinitionList", "entityDefinitions"],
+        ignoreAttributes: ["author"],
+        expectedValue: [
+          // newEntityDefinition,
+          {
+            name: newEntityName,
+            uuid: newEntityDefinitionUuid,
+            parentName: "EntityDefinition",
+            parentUuid: entityEntityDefinition.uuid,
+            entityUuid: newEntityUuid,
+            conceptLevel: "Model",
+            defaultInstanceDetailsReportUuid: defaultInstanceDetailsReportUuid,
+            jzodSchema: newEntityJzodSchema,
+          },
+          // {
+          //   transformerType: "parameterReference",
+          //   referenceName: "createEntity_newEntityDefinition",
+          // },
+        ],
+      },
+    },
+  },
+];
+
+// ##############################################################################################
+const createReportsCompositeActionTemplatePrepActions: any[] = [
+  // test preparation: newApplicationReportList
+  {
+    actionType: "compositeRunBoxedExtractorOrQueryAction",
+    actionLabel: "getListOfReports",
+    nameGivenToResult: "newApplicationReportList",
+    query: {
+      actionType: "runBoxedExtractorOrQueryAction",
+      actionName: "runQuery",
+      endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+      applicationSection: "model", // TODO: give only selfApplication section in individual queries?
+      deploymentUuid: {
+        transformerType: "parameterReference",
+        interpolation: "build",
+        referenceName: "testAdminConfigurationDeploymentUuid",
+      },
+      query: {
+        queryType: "boxedQueryWithExtractorCombinerTransformer",
+        deploymentUuid: {
+          transformerType: "parameterReference",
+          interpolation: "build",
+          referenceName: "testAdminConfigurationDeploymentUuid",
+        },
+        pageParams: {
+          currentDeploymentUuid: {
+            transformerType: "parameterReference",
+            interpolation: "build",
+            referenceName: "testAdminConfigurationDeploymentUuid",
+          },
+        },
+        queryParams: {},
+        contextResults: {},
+        extractors: {
+          reports: {
+            extractorOrCombinerType: "extractorByEntityReturningObjectList",
+            applicationSection: "model",
+            parentName: entityReport.name,
+            parentUuid: entityReport.uuid,
+            orderBy: {
+              attributeName: "name",
+              direction: "ASC",
+            },
+          },
+        },
+      },
+    },
+  },
+  // test preparation: newReportList
+  {
+    actionType: "compositeRunBoxedExtractorOrQueryAction",
+    actionLabel: "getListOfEntities",
+    nameGivenToResult: "newApplicationEntityList",
+    query: {
+      actionType: "runBoxedExtractorOrQueryAction",
+      actionName: "runQuery",
+      endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+      applicationSection: "model", // TODO: give only selfApplication section in individual queries?
+      deploymentUuid: {
+        transformerType: "parameterReference",
+        interpolation: "build",
+        referenceName: "testAdminConfigurationDeploymentUuid",
+      },
+      query: {
+        queryType: "boxedQueryWithExtractorCombinerTransformer",
+        deploymentUuid: {
+          transformerType: "parameterReference",
+          interpolation: "build",
+          referenceName: "testAdminConfigurationDeploymentUuid",
+        },
+        pageParams: {
+          currentDeploymentUuid: {
+            transformerType: "parameterReference",
+            interpolation: "build",
+            referenceName: "testAdminConfigurationDeploymentUuid",
+          },
+        },
+        queryParams: {},
+        contextResults: {},
+        extractors: {
+          entities: {
+            extractorOrCombinerType: "extractorByEntityReturningObjectList",
+            applicationSection: "model",
+            parentName: entityReport.name,
+            parentUuid: entityReport.uuid,
+            orderBy: {
+              attributeName: "name",
+              direction: "ASC",
+            },
+          },
+        },
+      },
+    },
+  },
+]
 
 const createReportsCompositeActionTemplate: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction = {
   actionType: "transactionalInstanceAction",
@@ -808,7 +968,10 @@ const testTemplateSuites: Record<string, TestActionParams> = {
         // libraryEntitesAndInstances
         []
       ),
-      afterEach: testOnLibrary_resetLibraryDeployment(miroirConfig, testAdminConfigurationDeploymentUuid),
+      // afterEach: testOnLibrary_resetLibraryDeployment(
+      //   miroirConfig,
+      //   testAdminConfigurationDeploymentUuid
+      // ),
       // afterAll: testOnLibrary_deleteLibraryDeployment(miroirConfig, testAdminConfigurationDeploymentUuid),
       testCompositeActions: {
         // "create new Entity from spreadsheet": {
@@ -819,234 +982,249 @@ const testTemplateSuites: Record<string, TestActionParams> = {
         //     actionLabel: "selectEntityEntity",
         //     actionName: "sequence",
         //     templates: createEntityCompositeActionTemplate.templates,
-        //     // {
-        //     //   testAdminConfigurationDeploymentUuid,
-        //     //   // createEntity_newEntity: newEntity,
-        //     //   newEntityName,
-        //     //   newEntityUuid,
-        //     //   newEntityDefinitionUuid,
-        //     //   testSelfApplicationUuid,
-        //     //   defaultInstanceDetailsReportUuid,
-        //     //   createEntity_newEntityDescription,
-        //     //   createEntity_newEntity: {
-        //     //     uuid: {
-        //     //       transformerType: "contextReference",
-        //     //       referenceName: "newEntityUuid",
-        //     //     },
-        //     //     parentUuid: entityEntity.uuid,
-        //     //     selfApplication: {
-        //     //       transformerType: "contextReference",
-        //     //       referenceName: "testSelfApplicationUuid",
-        //     //     },
-        //     //     description: {
-        //     //       transformerType: "contextReference",
-        //     //       referenceName: "createEntity_newEntityDescription",
-        //     //     },
-        //     //     name: {
-        //     //       transformerType: "contextReference",
-        //     //       referenceName: "newEntityName",
-        //     //     },
-        //     //   },
-        //     //   spreadsheetContents:fileData,
-        //     //   newEntityJzodSchema: {
-        //     //     transformerType: "spreadSheetToJzodSchema",
-        //     //     interpolation: "runtime",
-        //     //     spreadsheetContents: {
-        //     //       transformerType: "contextReference",
-        //     //       interpolation: "runtime",
-        //     //       referenceName: "spreadsheetContents",
-        //     //     }
-        //     //   },
-        //     //   createEntity_newEntityDefinition: {
-        //     //     name: {
-        //     //       transformerType: "contextReference",
-        //     //       interpolation: "runtime",
-        //     //       referenceName: "newEntityName",
-        //     //     },
-        //     //     uuid: {
-        //     //       transformerType: "contextReference",
-        //     //       interpolation: "runtime",
-        //     //       referenceName: "newEntityDefinitionUuid",
-        //     //     },
-        //     //     parentName: "EntityDefinition",
-        //     //     parentUuid: entityEntityDefinition.uuid,
-        //     //     entityUuid: {
-        //     //       transformerType: "contextReference",
-        //     //       interpolation: "runtime",
-        //     //       referencePath: ["createEntity_newEntity","uuid"],
-        //     //     },
-        //     //     conceptLevel: "Model",
-        //     //     defaultInstanceDetailsReportUuid: defaultInstanceDetailsReportUuid,
-        //     //     jzodSchema: {
-        //     //       transformerType: "contextReference",
-        //     //       interpolation: "runtime",
-        //     //       referenceName: "newEntityJzodSchema",
-        //     //     }
-        //     //   },
-        //     // },
         //     definition: [
         //       ...((createEntityCompositeActionTemplate as any).definition),
-        //       // test preparation: newApplicationEntityList
-        //       {
-        //         actionType: "compositeRunBoxedExtractorOrQueryAction",
-        //         actionLabel: "getListOfEntities",
-        //         nameGivenToResult: "newApplicationEntityList",
-        //         query: {
-        //           actionType: "runBoxedExtractorOrQueryAction",
-        //           actionName: "runQuery",
-        //           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-        //           applicationSection: "model", // TODO: give only selfApplication section in individual queries?
-        //           deploymentUuid: {
-        //             transformerType: "parameterReference",
-        //             interpolation: "build",
-        //             referenceName: "testAdminConfigurationDeploymentUuid",
-        //           },
-        //           query: {
-        //             queryType: "boxedQueryWithExtractorCombinerTransformer",
-        //             deploymentUuid: {
-        //               transformerType: "parameterReference",
-        //               interpolation: "build",
-        //               referenceName: "testAdminConfigurationDeploymentUuid",
-        //             },
-        //             pageParams: {
-        //               currentDeploymentUuid: {
-        //                 transformerType: "parameterReference",
-        //                 interpolation: "build",
-        //                 referenceName: "testAdminConfigurationDeploymentUuid",
-        //               },
-        //             },
-        //             queryParams: {},
-        //             contextResults: {},
-        //             extractors: {
-        //               entities: {
-        //                 extractorOrCombinerType: "extractorByEntityReturningObjectList",
-        //                 applicationSection: "model",
-        //                 parentName: entityEntity.name,
-        //                 parentUuid: entityEntity.uuid,
-        //                 orderBy: {
-        //                   attributeName: "name",
-        //                   direction: "ASC",
-        //                 },
-        //               },
-        //             },
-        //           },
-        //         },
-        //       },
-        //       // newApplicationEntityDefinitionList
-        //       {
-        //         actionType: "compositeRunBoxedExtractorOrQueryAction",
-        //         actionLabel: "getListOfEntityDefinitions",
-        //         nameGivenToResult: "newApplicationEntityDefinitionList",
-        //         query: {
-        //           actionType: "runBoxedExtractorOrQueryAction",
-        //           actionName: "runQuery",
-        //           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-        //           applicationSection: "model", // TODO: give only selfApplication section in individual queries?
-        //           deploymentUuid: {
-        //             transformerType: "parameterReference",
-        //             interpolation: "build",
-        //             referenceName: "testAdminConfigurationDeploymentUuid",
-        //           },
-        //           query: {
-        //             queryType: "boxedQueryWithExtractorCombinerTransformer",
-        //             deploymentUuid: {
-        //               transformerType: "parameterReference",
-        //               interpolation: "build",
-        //               referenceName: "testAdminConfigurationDeploymentUuid",
-        //             },
-        //             pageParams: {
-        //               currentDeploymentUuid: {
-        //                 transformerType: "parameterReference",
-        //                 interpolation: "build",
-        //                 referenceName: "testAdminConfigurationDeploymentUuid",
-        //               },
-        //             },
-        //             queryParams: {},
-        //             contextResults: {},
-        //             extractors: {
-        //               entityDefinitions: {
-        //                 extractorOrCombinerType: "extractorByEntityReturningObjectList",
-        //                 applicationSection: "model",
-        //                 parentName: entityEntityDefinition.name,
-        //                 parentUuid: entityEntityDefinition.uuid,
-        //                 orderBy: {
-        //                   attributeName: "name",
-        //                   direction: "ASC",
-        //                 },
-        //               },
-        //             },
-        //           },
-        //         },
-        //       },
+        //       ...createEntityCompositeActionTemplatePrepActions,
         //     ],
         //   },
         //   testCompositeActionAssertions: [
-        //     {
-        //       actionType: "compositeRunTestAssertion",
-        //       actionLabel: "checkEntities",
-        //       nameGivenToResult: "checkEntityList",
-        //       testAssertion: {
-        //         testType: "testAssertion",
-        //         testLabel: "checkEntities",
-        //         definition: {
-        //           resultAccessPath: ["newApplicationEntityList", "entities"],
-        //           ignoreAttributes: ["author"],
-        //           expectedValue: [
-        //             // newEntity,
-        //             {
-        //               uuid: newEntityUuid,
-        //               parentUuid: entityEntity.uuid,
-        //               selfApplication: testSelfApplicationUuid,
-        //               description: createEntity_newEntityDescription,
-        //               name: newEntityName,
-        //             },
-        //           ],
+        //     ...createEntityCompositeActionTemplateAssertions,
+        //   ],
+        // },
+        // "create new Entity and reports from spreadsheet": {
+        //   testType: "testCompositeActionTemplate",
+        //   testLabel: "createEntityAndReportFromSpreadsheet",
+        //   compositeActionTemplate: {
+        //     actionType: "compositeAction",
+        //     actionLabel: "createEntityAndReportFromSpreadsheet",
+        //     actionName: "sequence",
+        //     templates: createEntityCompositeActionTemplate.templates,
+        //     definition: [
+        //       ...((createEntityCompositeActionTemplate as any).definition),
+        //       createReportsCompositeActionTemplate,
+        //       // commit
+        //       {
+        //         actionType: "modelAction",
+        //         actionName: "commit",
+        //         actionLabel: "commit",
+        //         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+        //         deploymentUuid: {
+        //           transformerType: "parameterReference",
+        //           interpolation: "build",
+        //           referenceName: "testAdminConfigurationDeploymentUuid",
         //         },
         //       },
-        //     },
+        //       ...createReportsCompositeActionTemplatePrepActions,
+        //       ...createEntityCompositeActionTemplatePrepActions,
+        //     ],
+        //   },
+        //   testCompositeActionAssertions: [
+        //     ...createEntityCompositeActionTemplateAssertions,
+        //     // check reports
         //     {
         //       actionType: "compositeRunTestAssertion",
-        //       actionLabel: "checkEntityDefinitions",
-        //       nameGivenToResult: "checkEntityDefinitionList",
+        //       actionLabel: "checkReports",
+        //       nameGivenToResult: "checkReportList",
         //       testAssertion: {
         //         testType: "testAssertion",
-        //         testLabel: "checkEntityDefinitions", // TODO: index testCompositeActionAssertions in an object, ensuring unique keys
+        //         testLabel: "checkReports",
         //         definition: {
-        //           resultAccessPath: ["newApplicationEntityDefinitionList", "entityDefinitions"],
+        //           resultAccessPath: ["newApplicationReportList", "reports"],
         //           ignoreAttributes: ["author"],
         //           expectedValue: [
-        //             // newEntityDefinition,
-        //             {
-        //               name: newEntityName,
-        //               uuid: newEntityDefinitionUuid,
-        //               parentName: "EntityDefinition",
-        //               parentUuid: entityEntityDefinition.uuid,
-        //               entityUuid: newEntityUuid,
-        //               conceptLevel: "Model",
-        //               defaultInstanceDetailsReportUuid: defaultInstanceDetailsReportUuid,
-        //               jzodSchema: newEntityJzodSchema,
-        //             },
-        //             // {
-        //             //   transformerType: "parameterReference",
-        //             //   referenceName: "createEntity_newEntityDefinition",
-        //             // },
+        //             newEntityDetailsReport,
+        //             newEntityListReport,
         //           ],
         //         },
         //       },
         //     },
         //   ],
         // },
-        "create new Entity and reports from spreadsheet": {
+        "create new Entity and reports from spreadsheet and update Menu": {
           testType: "testCompositeActionTemplate",
-          testLabel: "createEntityAndReportFromSpreadsheet",
+          testLabel: "createEntityAndReportFromSpreadsheetAndUpdateMenu",
           compositeActionTemplate: {
             actionType: "compositeAction",
-            actionLabel: "createEntityAndReportFromSpreadsheet",
+            actionLabel: "createEntityAndReportFromSpreadsheetAndUpdateMenu",
             actionName: "sequence",
             templates: createEntityCompositeActionTemplate.templates,
             definition: [
-              ...((createEntityCompositeActionTemplate as any).definition),
-              createReportsCompositeActionTemplate,
+              // ...(createEntityCompositeActionTemplate as any).definition,
+              // createReportsCompositeActionTemplate,
+              // // commit
+              // {
+              //   actionType: "modelAction",
+              //   actionName: "commit",
+              //   actionLabel: "commit",
+              //   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+              //   deploymentUuid: {
+              //     transformerType: "parameterReference",
+              //     interpolation: "build",
+              //     referenceName: "testAdminConfigurationDeploymentUuid",
+              //   },
+              // },
+              // ...createReportsCompositeActionTemplatePrepActions,
+              // ...createEntityCompositeActionTemplatePrepActions,
+              // // rollback / refresh
+              // {
+              //   actionName: "rollback",
+              //   actionType: "modelAction",
+              //   actionLabel: "rollback",
+              //   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+              //   deploymentUuid: {
+              //     transformerType: "parameterReference",
+              //     interpolation: "build",
+              //     referenceName: "testAdminConfigurationDeploymentUuid",
+              //   },
+              // },
+              // {
+              //   actionType: "modelAction",
+              //   actionName: "remoteLocalCacheRollback",
+              //   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+              //   deploymentUuid: {
+              //     transformerType: "parameterReference",
+              //     interpolation: "build",
+              //     referenceName: "testAdminConfigurationDeploymentUuid",
+              //   },
+              // },
+              // getMenu: fetch menuUpdateQueryResult
+              {
+                actionType: "compositeRunBoxedQueryTemplateAction",
+                actionLabel: "getMenu",
+                nameGivenToResult: "menuUpdateQueryResult",
+                queryTemplate: {
+                  // actionType: "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
+                  actionType: "runBoxedQueryTemplateAction",
+                  actionName: "runQuery",
+                  endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  applicationSection: "model",
+                  deploymentUuid: {
+                    transformerType: "parameterReference",
+                    interpolation: "build",
+                    referenceName: "testAdminConfigurationDeploymentUuid",
+                  },
+                  query: {
+                    queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+                    deploymentUuid: {
+                      transformerType: "parameterReference",
+                      interpolation: "build",
+                      referenceName: "testAdminConfigurationDeploymentUuid",
+                    },
+                    // runAsSql: true,
+                    pageParams: {},
+                    queryParams: {},
+                    contextResults: {},
+                    extractorTemplates: {
+                      menuList: {
+                        extractorTemplateType: "extractorTemplateForObjectListByEntity",
+                        applicationSection: "model",
+                        parentName: "Menu",
+                        parentUuid: {
+                          transformerType: "mustacheStringTemplate",
+                          interpolation: "build",
+                          definition: "{{entityMenu.uuid}}",
+                        },
+                      },
+                    },
+                    runtimeTransformers: {
+                      menu: {
+                        transformerType: "listPickElement",
+                        interpolation: "runtime",
+                        applyTo: {
+                          referenceType: "referencedTransformer",
+                          reference: {
+                            transformerType: "contextReference",
+                            interpolation: "runtime",
+                            referenceName: "menuList",
+                          },
+                        },
+                        index: 0,
+                      },
+                      menuItem: {
+                        transformerType: "freeObjectTemplate",
+                        definition: {
+                          reportUuid: {
+                            transformerType: "mustacheStringTemplate",
+                            interpolation: "build",
+                            definition: "{{createEntity_newEntityListReportUuid}}",
+                          },
+                          label: {
+                            transformerType: "mustacheStringTemplate",
+                            interpolation: "build",
+                            definition: "List of {{newEntityName}}",
+                          },
+                          section: "data",
+                          selfApplication: {
+                            transformerType: "mustacheStringTemplate",
+                            interpolation: "build",
+                            definition: "{{adminConfigurationDeploymentParis.uuid}}",
+                          }, // TODO: replace with selfApplication uuid, this is a deployment at the moment
+                          icon: "local_drink",
+                        },
+                      },
+                      updatedMenu: {
+                        transformerType: "transformer_menu_addItem",
+                        interpolation: "runtime",
+                        menuItemReference: {
+                          transformerType: "contextReference",
+                          interpolation: "runtime",
+                          referenceName: "menuItem",
+                        },
+                        menuReference: {
+                          transformerType: "contextReference",
+                          interpolation: "runtime",
+                          referenceName: "menu",
+                        },
+                        menuSectionItemInsertionIndex: -1,
+                      },
+                    },
+                  },
+                },
+              } as any,
+              // update current menu
+              {
+                actionType: "transactionalInstanceAction",
+                actionLabel: "updateMenu",
+                instanceAction: {
+                  actionType: "instanceAction",
+                  actionName: "updateInstance",
+                  applicationSection: "model",
+                  deploymentUuid: {
+                    transformerType: "parameterReference",
+                    interpolation: "build",
+                    referenceName: "testAdminConfigurationDeploymentUuid",
+                  },
+                  endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                  objects: [
+                    {
+                      parentName: entityMenu.name,
+                      parentUuid: entityMenu.uuid,
+                      applicationSection: "model",
+                      instances: [
+                        {
+                          // transformerType: "parameterReference",
+                          // interpolation: "build",
+                          transformerType: "contextReference",
+                          interpolation: "runtime",
+                          referencePath: ["menuUpdateQueryResult", "updatedMenu"],
+                        }
+                        // {
+                        //   transformerType: "objectDynamicAccess",
+                        //   interpolation: "runtime",
+                        //   objectAccessPath: [
+                        //     {
+                        //       transformerType: "contextReference",
+                        //       interpolation: "runtime",
+                        //       referenceName: "menuUpdateQueryResult",
+                        //     },
+                        //     "updatedMenu",
+                        //   ],
+                        // },
+                      ],
+                    },
+                  ],
+                },
+              },
               // commit
               {
                 actionType: "modelAction",
@@ -1056,269 +1234,204 @@ const testTemplateSuites: Record<string, TestActionParams> = {
                 deploymentUuid: {
                   transformerType: "parameterReference",
                   interpolation: "build",
-                  referenceName: "currentDeploymentUuid",
-                  // referenceName: "testAdminConfigurationDeploymentUuid",
+                  referenceName: "testAdminConfigurationDeploymentUuid",
                 },
               },
-
-              // test preparation: newApplicationReportList
+              // fetch menuUpdateQueryResult: current menu
               {
-                actionType: "compositeRunBoxedExtractorOrQueryAction",
-                actionLabel: "getListOfReports",
-                nameGivenToResult: "newApplicationReportList",
-                query: {
-                  actionType: "runBoxedExtractorOrQueryAction",
+                actionType: "compositeRunBoxedQueryTemplateAction",
+                actionLabel: "getNewMenuList",
+                nameGivenToResult: "newMenuList",
+                queryTemplate: {
+                  // actionType: "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
+                  actionType: "runBoxedQueryTemplateAction",
                   actionName: "runQuery",
                   endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                  applicationSection: "model", // TODO: give only selfApplication section in individual queries?
+                  applicationSection: "model",
                   deploymentUuid: {
                     transformerType: "parameterReference",
                     interpolation: "build",
                     referenceName: "testAdminConfigurationDeploymentUuid",
                   },
                   query: {
-                    queryType: "boxedQueryWithExtractorCombinerTransformer",
+                    queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
                     deploymentUuid: {
                       transformerType: "parameterReference",
                       interpolation: "build",
                       referenceName: "testAdminConfigurationDeploymentUuid",
                     },
-                    pageParams: {
-                      currentDeploymentUuid: {
-                        transformerType: "parameterReference",
-                        interpolation: "build",
-                        referenceName: "testAdminConfigurationDeploymentUuid",
-                      },
-                    },
+                    // runAsSql: true,
+                    pageParams: {},
                     queryParams: {},
                     contextResults: {},
-                    extractors: {
-                      reports: {
-                        extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                    extractorTemplates: {
+                      menuList: {
+                        extractorTemplateType: "extractorTemplateForObjectListByEntity",
                         applicationSection: "model",
-                        parentName: entityReport.name,
-                        parentUuid: entityReport.uuid,
-                        orderBy: {
-                          attributeName: "name",
-                          direction: "ASC",
+                        parentName: "Menu",
+                        parentUuid: {
+                          transformerType: "mustacheStringTemplate",
+                          interpolation: "build",
+                          definition: "{{entityMenu.uuid}}",
                         },
                       },
                     },
+                    // runtimeTransformers: {
+                    //   menu: {
+                    //     transformerType: "listPickElement",
+                    //     interpolation: "runtime",
+                    //     applyTo: {
+                    //       referenceType: "referencedTransformer",
+                    //       reference: {
+                    //         transformerType: "contextReference",
+                    //         interpolation: "runtime",
+                    //         referenceName: "menuList",
+                    //       },
+                    //     },
+                    //     index: 0,
+                    //   },
+                    //   menuItem: {
+                    //     transformerType: "freeObjectTemplate",
+                    //     definition: {
+                    //       reportUuid: {
+                    //         transformerType: "mustacheStringTemplate",
+                    //         interpolation: "build",
+                    //         definition: "{{createEntity_newEntityListReportUuid}}",
+                    //       },
+                    //       label: {
+                    //         transformerType: "mustacheStringTemplate",
+                    //         interpolation: "build",
+                    //         definition: "List of {{newEntityName}}",
+                    //       },
+                    //       section: "data",
+                    //       selfApplication: {
+                    //         transformerType: "mustacheStringTemplate",
+                    //         interpolation: "build",
+                    //         definition: "{{adminConfigurationDeploymentParis.uuid}}",
+                    //       }, // TODO: replace with selfApplication uuid, this is a deployment at the moment
+                    //       icon: "local_drink",
+                    //     },
+                    //   },
+                    //   updatedMenu: {
+                    //     transformerType: "transformer_menu_addItem",
+                    //     interpolation: "runtime",
+                    //     menuItemReference: {
+                    //       transformerType: "contextReference",
+                    //       interpolation: "runtime",
+                    //       referenceName: "menuItem",
+                    //     },
+                    //     menuReference: {
+                    //       transformerType: "contextReference",
+                    //       interpolation: "runtime",
+                    //       referenceName: "menu",
+                    //     },
+                    //     menuSectionItemInsertionIndex: -1,
+                    //   },
+                    // },
                   },
                 },
-              },
-              // test preparation: newReportList
-              {
-                actionType: "compositeRunBoxedExtractorOrQueryAction",
-                actionLabel: "getListOfEntities",
-                nameGivenToResult: "newApplicationEntityList",
-                query: {
-                  actionType: "runBoxedExtractorOrQueryAction",
-                  actionName: "runQuery",
-                  endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                  applicationSection: "model", // TODO: give only selfApplication section in individual queries?
-                  deploymentUuid: {
-                    transformerType: "parameterReference",
-                    interpolation: "build",
-                    referenceName: "testAdminConfigurationDeploymentUuid",
-                  },
-                  query: {
-                    queryType: "boxedQueryWithExtractorCombinerTransformer",
-                    deploymentUuid: {
-                      transformerType: "parameterReference",
-                      interpolation: "build",
-                      referenceName: "testAdminConfigurationDeploymentUuid",
-                    },
-                    pageParams: {
-                      currentDeploymentUuid: {
-                        transformerType: "parameterReference",
-                        interpolation: "build",
-                        referenceName: "testAdminConfigurationDeploymentUuid",
-                      },
-                    },
-                    queryParams: {},
-                    contextResults: {},
-                    extractors: {
-                      entities: {
-                        extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                        applicationSection: "model",
-                        parentName: entityReport.name,
-                        parentUuid: entityReport.uuid,
-                        orderBy: {
-                          attributeName: "name",
-                          direction: "ASC",
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-              // 
-              // 
-              // test preparation: newApplicationEntityDefinitionList
-              {
-                actionType: "compositeRunBoxedExtractorOrQueryAction",
-                actionLabel: "getListOfEntityDefinitions",
-                nameGivenToResult: "newApplicationEntityDefinitionList",
-                query: {
-                  actionType: "runBoxedExtractorOrQueryAction",
-                  actionName: "runQuery",
-                  endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                  applicationSection: "model", // TODO: give only selfApplication section in individual queries?
-                  deploymentUuid: {
-                    transformerType: "parameterReference",
-                    interpolation: "build",
-                    referenceName: "testAdminConfigurationDeploymentUuid",
-                  },
-                  query: {
-                    queryType: "boxedQueryWithExtractorCombinerTransformer",
-                    deploymentUuid: {
-                      transformerType: "parameterReference",
-                      interpolation: "build",
-                      referenceName: "testAdminConfigurationDeploymentUuid",
-                    },
-                    pageParams: {
-                      currentDeploymentUuid: {
-                        transformerType: "parameterReference",
-                        interpolation: "build",
-                        referenceName: "testAdminConfigurationDeploymentUuid",
-                      },
-                    },
-                    queryParams: {},
-                    contextResults: {},
-                    extractors: {
-                      entityDefinitions: {
-                        extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                        applicationSection: "model",
-                        parentName: entityEntityDefinition.name,
-                        parentUuid: entityEntityDefinition.uuid,
-                        orderBy: {
-                          attributeName: "name",
-                          direction: "ASC",
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-              // test preparation: newApplicationEntityList
-              {
-                actionType: "compositeRunBoxedExtractorOrQueryAction",
-                actionLabel: "getListOfEntities",
-                nameGivenToResult: "newApplicationEntityList",
-                query: {
-                  actionType: "runBoxedExtractorOrQueryAction",
-                  actionName: "runQuery",
-                  endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                  applicationSection: "model", // TODO: give only selfApplication section in individual queries?
-                  deploymentUuid: {
-                    transformerType: "parameterReference",
-                    interpolation: "build",
-                    referenceName: "testAdminConfigurationDeploymentUuid",
-                  },
-                  query: {
-                    queryType: "boxedQueryWithExtractorCombinerTransformer",
-                    deploymentUuid: {
-                      transformerType: "parameterReference",
-                      interpolation: "build",
-                      referenceName: "testAdminConfigurationDeploymentUuid",
-                    },
-                    pageParams: {
-                      currentDeploymentUuid: {
-                        transformerType: "parameterReference",
-                        interpolation: "build",
-                        referenceName: "testAdminConfigurationDeploymentUuid",
-                      },
-                    },
-                    queryParams: {},
-                    contextResults: {},
-                    extractors: {
-                      entities: {
-                        extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                        applicationSection: "model",
-                        parentName: entityEntity.name,
-                        parentUuid: entityEntity.uuid,
-                        orderBy: {
-                          attributeName: "name",
-                          direction: "ASC",
-                        },
-                      },
-                    },
-                  },
-                },
-              },
+              } as any,
             ],
           },
           testCompositeActionAssertions: [
-            // check entities
-            {
-              actionType: "compositeRunTestAssertion",
-              actionLabel: "checkEntities",
-              nameGivenToResult: "checkEntityList",
-              testAssertion: {
-                testType: "testAssertion",
-                testLabel: "checkEntities",
-                definition: {
-                  resultAccessPath: ["newApplicationEntityList", "entities"],
-                  ignoreAttributes: ["author"],
-                  expectedValue: [
-                    // newEntity,
-                    {
-                      uuid: newEntityUuid,
-                      parentUuid: entityEntity.uuid,
-                      selfApplication: testSelfApplicationUuid,
-                      description: createEntity_newEntityDescription,
-                      name: newEntityName,
-                    },
-                  ],
-                },
-              },
-            },
-            // check entity definitions
-            {
-              actionType: "compositeRunTestAssertion",
-              actionLabel: "checkEntityDefinitions",
-              nameGivenToResult: "checkEntityDefinitionList",
-              testAssertion: {
-                testType: "testAssertion",
-                testLabel: "checkEntityDefinitions", // TODO: index testCompositeActionAssertions in an object, ensuring unique keys
-                definition: {
-                  resultAccessPath: ["newApplicationEntityDefinitionList", "entityDefinitions"],
-                  ignoreAttributes: ["author"],
-                  expectedValue: [
-                    // newEntityDefinition,
-                    {
-                      name: newEntityName,
-                      uuid: newEntityDefinitionUuid,
-                      parentName: "EntityDefinition",
-                      parentUuid: entityEntityDefinition.uuid,
-                      entityUuid: newEntityUuid,
-                      conceptLevel: "Model",
-                      defaultInstanceDetailsReportUuid: defaultInstanceDetailsReportUuid,
-                      jzodSchema: newEntityJzodSchema,
-                    },
-                    // {
-                    //   transformerType: "parameterReference",
-                    //   referenceName: "createEntity_newEntityDefinition",
-                    // },
-                  ],
-                },
-              },
-            },
+            // ...createEntityCompositeActionTemplateAssertions,
             // check reports
             {
               actionType: "compositeRunTestAssertion",
-              actionLabel: "checkReports",
-              nameGivenToResult: "checkReportList",
+              actionLabel: "checkMenus",
+              nameGivenToResult: "checkMenuList",
               testAssertion: {
                 testType: "testAssertion",
-                testLabel: "checkReports",
+                testLabel: "checkMenus",
                 definition: {
-                  resultAccessPath: ["newApplicationReportList", "reports"],
+                  resultAccessPath: ["newMenuList", "menuList"],
                   ignoreAttributes: ["author"],
                   expectedValue: [
-                    newEntityDetailsReport,
-                    newEntityListReport,
+                    {
+                      uuid: "dd168e5a-2a21-4d2d-a443-032c6d15eb22",
+                      parentName: "Menu",
+                      parentUuid: "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
+                      parentDefinitionVersionUuid: null,
+                      name: "LibraryMenu",
+                      defaultLabel: "Meta-Model",
+                      description:
+                        "This is the default menu allowing to explore the Library SelfApplication.",
+                      definition: {
+                        menuType: "complexMenu",
+                        definition: [
+                          {
+                            items: [
+                              {
+                                icon: "category",
+                                label: "Library Entities",
+                                section: "model",
+                                reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9",
+                                selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+                              },
+                              {
+                                icon: "category",
+                                label: "Library Entity Definitions",
+                                section: "model",
+                                reportUuid: "f9aff35d-8636-4519-8361-c7648e0ddc68",
+                                selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+                              },
+                              {
+                                icon: "list",
+                                label: "Library Reports",
+                                section: "model",
+                                reportUuid: "1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855",
+                                selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+                              },
+                              {
+                                icon: "auto_stories",
+                                label: "Library Books",
+                                section: "data",
+                                reportUuid: "74b010b6-afee-44e7-8590-5f0849e4a5c9",
+                                selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+                              },
+                              {
+                                icon: "star",
+                                label: "Library Authors",
+                                section: "data",
+                                reportUuid: "66a09068-52c3-48bc-b8dd-76575bbc8e72",
+                                selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+                              },
+                              {
+                                icon: "account_balance",
+                                label: "Library Publishers",
+                                section: "data",
+                                reportUuid: "a77aa662-006d-46cd-9176-01f02a1a12dc",
+                                selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+                              },
+                              {
+                                icon: "flag",
+                                label: "Library countries",
+                                section: "data",
+                                reportUuid: "08176cc7-43ae-4fca-91b7-bf869d19e4b9",
+                                selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+                              },
+                              {
+                                icon: "person",
+                                label: "Library Users",
+                                section: "data",
+                                reportUuid: "3df9413d-5050-4357-910c-f764aacae7e6",
+                                selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+                              },
+                              {
+                                // reportUuid: "7802e89c-2e81-4ff5-b3dd-4c0e2d879748",
+                                reportUuid: createEntity_newEntityListReportUuid,
+                                label: "List of newEntityTest",
+                                section: "data",
+                                selfApplication: "",
+                                icon: "local_drink",
+                              },
+                            ],
+                            label: "library",
+                            title: "Library",
+                          },
+                        ],
+                      },
+                    },
                   ],
                 },
               },

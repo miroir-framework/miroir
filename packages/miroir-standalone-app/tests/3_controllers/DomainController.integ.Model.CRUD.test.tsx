@@ -65,6 +65,7 @@ import { AdminApplicationDeploymentConfiguration } from "miroir-core/src/0_inter
 import { LoggerOptions } from "miroir-core/src/0_interfaces/4-services/LoggerInterface.js";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { cleanLevel } from "./constants.js";
+import { LocalCacheInterface } from "miroir-core";
 
 const env: any = (import.meta as any).env;
 console.log("@@@@@@@@@@@@@@@@@@ env", env);
@@ -120,7 +121,7 @@ const typedAdminConfigurationDeploymentLibrary: AdminApplicationDeploymentConfig
   adminConfigurationDeploymentLibrary as any;
 
 let domainController: DomainControllerInterface;
-let localCache: LocalCache;
+let localCache: LocalCacheInterface;
 let miroirContext: MiroirContextInterface;
 let persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface;
 let globalTestSuiteResults: TestSuiteResult = {};
@@ -649,11 +650,11 @@ const testActions: Record<string, TestActionParams> = {
             // TODO: test length of entityBookList.books!
             {
               actionType: "compositeRunTestAssertion",
-              actionLabel: "checkNumberOfBooks",
+              actionLabel: "checkNumberOfEntitiesFromLocalCache",
               nameGivenToResult: "checkNumberOfEntitiesFromLocalCache",
               testAssertion: {
                 testType: "testAssertion",
-                testLabel: "checkNumberOfBooks",
+                testLabel: "checkNumberOfEntitiesFromLocalCache",
                 definition: {
                   resultAccessPath: ["0"],
                   resultTransformer: {
@@ -674,11 +675,11 @@ const testActions: Record<string, TestActionParams> = {
             },
             {
               actionType: "compositeRunTestAssertion",
-              actionLabel: "checkEntityBooks",
+              actionLabel: "checkEntitiesAreAuthorAndPublisher",
               nameGivenToResult: "checkEntityListFromLocalCache",
               testAssertion: {
                 testType: "testAssertion",
-                testLabel: "checkEntityBooks",
+                testLabel: "checkEntitiesAreAuthorAndPublisher",
                 definition: {
                   resultAccessPath: ["libraryEntityListFromLocalCache", "entities"],
                   ignoreAttributes: ["author"],
@@ -688,11 +689,11 @@ const testActions: Record<string, TestActionParams> = {
             },
             {
               actionType: "compositeRunTestAssertion",
-              actionLabel: "checkNumberOfBooks",
+              actionLabel: "checkNumberOfEntitiesFromPersistentStore",
               nameGivenToResult: "checkNumberOfEntitiesFromPersistentStore",
               testAssertion: {
                 testType: "testAssertion",
-                testLabel: "checkNumberOfBooks",
+                testLabel: "checkNumberOfEntitiesFromPersistentStore",
                 definition: {
                   resultAccessPath: ["0"],
                   resultTransformer: {
@@ -713,11 +714,11 @@ const testActions: Record<string, TestActionParams> = {
             },
             {
               actionType: "compositeRunTestAssertion",
-              actionLabel: "checkEntityBooks",
+              actionLabel: "checkEntityFromPersistentStore",
               nameGivenToResult: "checkEntityListFromPersistentStore",
               testAssertion: {
                 testType: "testAssertion",
-                testLabel: "checkEntityBooks",
+                testLabel: "checkEntityFromPersistentStore",
                 definition: {
                   resultAccessPath: ["libraryEntityListFromPersistentStore", "entities"],
                   ignoreAttributes: ["author"],

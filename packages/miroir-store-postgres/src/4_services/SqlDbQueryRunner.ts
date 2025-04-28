@@ -146,7 +146,8 @@ export class SqlDbQueryRunner {
           failureMessage: "could not generate SQL query for transformer",
           query: JSON.stringify(selectorParams),
           innerError: sqlQueryParams,
-        }))
+        })
+      );
     }
     
     const {

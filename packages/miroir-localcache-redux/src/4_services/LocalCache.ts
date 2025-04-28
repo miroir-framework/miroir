@@ -93,7 +93,7 @@ function exceptionToActionReturnType(f:()=>void): Action2ReturnType {
   try {
     f()
   } catch (e: any) {
-    return new Action2Error("FailedToDeployModule", e);
+    return new Action2Error("FailedToHandleLocalCacheAction", e);
   }
   return ACTION_OK;
 }
@@ -178,7 +178,8 @@ export class LocalCache implements LocalCacheInterface {
 
   // ###############################################################################
   handleLocalCacheAction(action: LocalCacheAction): Action2ReturnType {
-    log.info("LocalCache handleAction", JSON.stringify(action, undefined, 2));
+    log.info("LocalCache handleAction", action);
+    // log.info("LocalCache handleAction", JSON.stringify(action, undefined, 2));
 
     const result:Action2ReturnType = exceptionToActionReturnType(() =>
       this.innerReduxStore.dispatch(
@@ -222,7 +223,7 @@ export class LocalCache implements LocalCacheInterface {
      if (queryResult instanceof Domain2ElementFailed) {
       return {
         status: "error",
-        errorType: "FailedToDeployModule", // TODO: correct errorType
+        errorType: "FailedToRunBoxedExtractorOrQueryAction", // TODO: correct errorType
         errorMessage: queryResult.failureMessage,
         errorStack: queryResult.errorStack
       }

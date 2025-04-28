@@ -189,7 +189,7 @@ export async function restMethodsPostPutDeleteHandler(
 ) {
   // const foundParams = params ?? request.params;
   const foundParams = params;
-  log.debug("restMethodsPostPutDeleteHandler", method, effectiveUrl, "foundParams", foundParams, "body", body);
+  log.info("restMethodsPostPutDeleteHandler", method, effectiveUrl, "foundParams", foundParams, "body", body);
   // log.info("restMethodsPostPutDeleteHandler",method,url, "request",request,"foundParams",foundParams,"body",body);
   const deploymentUuid: string =
     typeof foundParams["deploymentUuid"] == "string" ? foundParams["deploymentUuid"] : foundParams["deploymentUuid"][0];
@@ -275,7 +275,6 @@ export async function restActionHandler(
     case "instanceAction": {
       if (useDomainControllerToHandleModelAndInstanceActions) {
         // we are on the server, the action has been received from remote client
-        // const domainController = persistenceStoreControllerManager.getServerDomainControllerDEFUNCT();
         if (action.actionType == "modelAction") {
           const result = await domainController.handleAction(action,defaultMiroirMetaModel)
           return continuationFunction(response)(result)
@@ -335,7 +334,7 @@ export async function queryActionHandler(
   const runBoxedExtractorOrQueryAction: RunBoxedExtractorOrQueryAction = body as RunBoxedExtractorOrQueryAction;
   log.info(
     "RestServer queryActionHandler",
-    domainController.getPersistenceStoreAccessMode(),+
+    domainController.getPersistenceStoreAccessMode(),
     "runBoxedExtractorOrQueryAction=",
     // "useDomainControllerToHandleModelAndInstanceActions",
     // useDomainControllerToHandleModelAndInstanceActions,
@@ -389,7 +388,6 @@ export async function queryTemplateActionHandler(
   // const domainController = persistenceStoreControllerManager.getServerDomainControllerDEFUNCT();
   if (useDomainControllerToHandleModelAndInstanceActions) {
     // we are on the server, the action has been received from remote client
-    // switch (runBoxedQueryTemplateOrBoxedExtractorTemplateAction.deploymentUuid) {
     const result = await domainController.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
       runBoxedQueryTemplateOrBoxedExtractorTemplateAction
     );

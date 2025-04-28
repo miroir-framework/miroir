@@ -128,7 +128,14 @@ export const selectEntityInstanceUuidIndexFromDomainState: SyncBoxedExtractorRun
   if (!domainState[deploymentUuid]) {
     return new Domain2ElementFailed({
       queryFailure: "DeploymentNotFound",
+      failureOrigin: ["selectEntityInstanceUuidIndexFromDomainState"],
+      failureMessage:
+        "Deployment not found in domainState, deploymentUuid=" +
+        deploymentUuid +
+        " known deployments=" +
+        JSON.stringify(Object.keys(domainState), null, 2),
       deploymentUuid,
+      // innerError
     });
   }
   if (!domainState[deploymentUuid][applicationSection]) {

@@ -295,14 +295,19 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
             "innerHandlePersistenceActionForLocalPersistenceStore could not find controller for deployment: " + action.deploymentUuid
           );
         }
-        log.info("PersistenceActionReduxSaga innerHandlePersistenceActionForLocalPersistenceStore", JSON.stringify(action, undefined, 2));
+        log.info(
+          "PersistenceActionReduxSaga innerHandlePersistenceActionForLocalPersistenceStore",
+          action
+          // JSON.stringify(action, undefined, 2)
+        );
         const localStoreResult = yield* call(() => localPersistenceStoreController.handleAction(action));
         break;
       }
       case "LocalPersistenceAction": {
         if (!localPersistenceStoreController) {
           throw new Error(
-            "innerHandlePersistenceActionForLocalPersistenceStore could not find controller for deployment: " + action.deploymentUuid
+            "innerHandlePersistenceActionForLocalPersistenceStore could not find controller for deployment: " +
+              action.deploymentUuid
           );
         }
         const actionMap: {
@@ -333,16 +338,23 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
         } as PersistenceStoreControllerAction;
         log.info(
           "PersistenceActionReduxSaga innerHandlePersistenceActionForLocalPersistenceStore handle RestPersistenceAction",
-          JSON.stringify(action, undefined, 2),
+          action,
           "localStoreAction=",
-          JSON.stringify(localStoreAction, undefined, 2)
+          localStoreAction
         );
+        // log.info(
+        //   "PersistenceActionReduxSaga innerHandlePersistenceActionForLocalPersistenceStore handle RestPersistenceAction",
+        //   JSON.stringify(action, undefined, 2),
+        //   "localStoreAction=",
+        //   JSON.stringify(localStoreAction, undefined, 2)
+        // );
         const localStoreResult: Action2ReturnType = yield* call(() =>
           localPersistenceStoreController.handleAction(localStoreAction)
         );
         log.info(
           "PersistenceActionReduxSaga innerHandlePersistenceActionForLocalPersistenceStore handle RestPersistenceAction result",
-          JSON.stringify(localStoreResult, undefined, 2)
+          localStoreResult
+          // JSON.stringify(localStoreResult, undefined, 2)
         );
         return yield localStoreResult;
         break;
@@ -696,7 +708,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
         } catch (e: any) {
           log.error("handlePersistenceAction exception", e);
           const result: Action2ReturnType = new Action2Error(
-            "FailedToDeployModule", // TODO: correct errorType!
+            "FailedToHandlePersistenceAction", // TODO: correct errorType!
             e["message"],
             e["errorType"],
             { status: "error", errorType: e["errorType"], errorMessage: e["message"], errorStack: [e["message"]] },
@@ -739,7 +751,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
           log.error("handlePersistenceAction exception", e);
           
           const result: Action2ReturnType = new Action2Error(
-            "FailedToDeployModule", // TODO: correct errorType!
+            "FailedToHandlePersistenceActionForLocalPersistenceStore", // TODO: correct errorType!
             e["message"],
             e["errorType"],
             { status: "error", errorType: e["errorType"], errorMessage: e["message"], errorStack: [e["message"]] },
