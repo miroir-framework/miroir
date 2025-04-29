@@ -1781,7 +1781,7 @@ export function innerTransformer_plainObject_apply(
   // );
   const attributeEntries: [string, Domain2QueryReturnType<DomainElementSuccess>][] = Object.entries(transformer).map(
     (objectTemplateEntry: [string, any]) => {
-      // log.info("transformer_apply converting attribute",JSON.stringify(objectTemplateEntry, null, 2));
+      log.info("transformer_apply converting attribute",JSON.stringify(objectTemplateEntry, null, 2));
       return [
         objectTemplateEntry[0],
         defaultTransformers.transformer_extended_apply(
@@ -1795,7 +1795,7 @@ export function innerTransformer_plainObject_apply(
       ];
     }
   );
-  const failureIndex = attributeEntries.findIndex((e) => e[1].elementType == "failure");
+  const failureIndex = attributeEntries.findIndex((e) => e[1] && e[1].elementType == "failure");
   if (failureIndex == -1) {
     const result = Object.fromEntries(
       attributeEntries.map((e) => [e[0], e[1]])
@@ -1852,7 +1852,7 @@ export function innerTransformer_array_apply(
   const subObject = transformer.map((e, index) =>
     transformer_extended_apply(step, index.toString(), e, resolveBuildTransformersTo, queryParams, contextResults)
   );
-  const failureIndex = subObject.findIndex((e) => e.elementType == "failure");
+  const failureIndex = subObject.findIndex((e) => e && e.elementType == "failure");
   if (failureIndex == -1) {
     return subObject;
   } else {
@@ -1888,7 +1888,7 @@ export function innerTransformer_array_apply(
 export function transformer_extended_apply(
   step: Step,
   label: string | undefined,
-  transformer: TransformerForBuild | TransformerForRuntime | ExtendedTransformerForRuntime,
+  transformer: TransformerForBuild | TransformerForRuntime | ExtendedTransformerForRuntime | undefined,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
@@ -1914,6 +1914,9 @@ export function transformer_extended_apply(
   // );
   let result: Domain2QueryReturnType<any> = undefined as any;
 
+  if (!transformer) {
+    return undefined;
+  }
 
   if (typeof transformer == "object") {
     if (transformer instanceof Array) {
@@ -1935,8 +1938,9 @@ export function transformer_extended_apply(
       if (transformer["transformerType"] != undefined) {
         if (step == "runtime" || (transformer as any)["interpolation"] == "build") {
           // log.info("transformer_extended_apply interpreting transformer!");
-          let preResult
-          const foundApplicationTransformer = applicationTransformerDefinitions[(transformer as any).transformerType];
+          let preResult;
+          const foundApplicationTransformer =
+            applicationTransformerDefinitions[(transformer as any).transformerType];
           if (!foundApplicationTransformer) {
             log.error(
               "transformer_extended_apply failed for",
@@ -1961,9 +1965,7 @@ export function transformer_extended_apply(
           //   "transformer_extended_apply foundApplicationTransformer.transformerImplementation",
           //   JSON.stringify(foundApplicationTransformer.transformerImplementation, null, 2)
           // );
-          if (
-            !foundApplicationTransformer.transformerImplementation
-          ) {
+          if (!foundApplicationTransformer.transformerImplementation) {
             log.error(
               "transformer_extended_apply failed for",
               label,
@@ -1987,9 +1989,11 @@ export function transformer_extended_apply(
           ) {
             case "libraryImplementation": {
               if (
-                !foundApplicationTransformer.transformerImplementation.inMemoryImplementationFunctionName ||
+                !foundApplicationTransformer.transformerImplementation
+                  .inMemoryImplementationFunctionName ||
                 !inMemoryTransformerImplementations[
-                  foundApplicationTransformer.transformerImplementation.inMemoryImplementationFunctionName
+                  foundApplicationTransformer.transformerImplementation
+                    .inMemoryImplementationFunctionName
                 ]
               ) {
                 log.error(
@@ -2005,12 +2009,16 @@ export function transformer_extended_apply(
                   failureOrigin: ["transformer_extended_apply"],
                   queryContext:
                     "transformerImplementation " +
-                    (transformer as any).transformerImplementation.inMemoryImplementationFunctionName +
+                    (transformer as any).transformerImplementation
+                      .inMemoryImplementationFunctionName +
                     " not found",
                   queryParameters: transformer as any,
                 });
               }
-              return inMemoryTransformerImplementations[foundApplicationTransformer.transformerImplementation.inMemoryImplementationFunctionName](
+              return inMemoryTransformerImplementations[
+                foundApplicationTransformer.transformerImplementation
+                  .inMemoryImplementationFunctionName
+              ](
                 step,
                 label,
                 transformer,
@@ -2110,12 +2118,15 @@ export function transformer_extended_apply(
             );
             return preResult;
           } else {
-            if ((transformer as any)["interpolation"] == "build" && resolveBuildTransformersTo == "constantTransformer") {
+            if (
+              (transformer as any)["interpolation"] == "build" &&
+              resolveBuildTransformersTo == "constantTransformer"
+            ) {
               // result = innerTransformer_plainObject_apply(step, label, preResult, queryParams, contextResults);
               const value = preResult;
               result = {
                 transformerType: "constant",
-                value: preResult
+                value: preResult,
               };
             } else {
               result = preResult;
@@ -2141,7 +2152,7 @@ export function transformer_extended_apply(
           );
         }
       } else {
-        // log.info("THERE2", Object.keys(transformer));
+        log.info("transformer_extended_apply handles plain object with keys:", Object.keys(transformer));
         result = innerTransformer_plainObject_apply(
           step,
           label,

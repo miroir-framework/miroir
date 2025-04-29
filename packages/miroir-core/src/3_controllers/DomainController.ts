@@ -1499,6 +1499,15 @@ export class DomainController implements DomainControllerInterface {
                     preValueToTest,
                     currentAction.testAssertion.definition.ignoreAttributes ?? []
                   );
+              const expectedValue = Array.isArray(currentAction.testAssertion.definition.expectedValue)
+                ? ignorePostgresExtraAttributesOnList(
+                    currentAction.testAssertion.definition.expectedValue,
+                    currentAction.testAssertion.definition.ignoreAttributes ?? []
+                  )
+                : ignorePostgresExtraAttributesOnObject(
+                    currentAction.testAssertion.definition.expectedValue,
+                    currentAction.testAssertion.definition.ignoreAttributes ?? []
+                  );
               log.info(
                 "handleCompositeAction compositeRunTestAssertion to handle",
                 JSON.stringify(currentAction.testAssertion, null, 2),
@@ -1516,7 +1525,7 @@ export class DomainController implements DomainControllerInterface {
               try {
                 ConfigurationService.testImplementation
                   .expect(valueToTest, currentAction.nameGivenToResult)
-                  .toEqual(currentAction.testAssertion.definition.expectedValue);
+                  .toEqual(expectedValue);
                 log.info(
                   "handleCompositeAction compositeRunTestAssertion test passed",
                   currentAction.testAssertion
@@ -1579,7 +1588,12 @@ export class DomainController implements DomainControllerInterface {
           );
         }
       } catch (error) {
-        log.error("handleCompositeAction caught error", error);
+        log.error(
+          "handleCompositeAction caught error",
+          error,
+          "for action",
+          JSON.stringify(currentAction, null, 2)
+        );
         return new Action2Error(
           "FailedTestAction",
           "handleCompositeAction error: " + JSON.stringify(error, null, 2),

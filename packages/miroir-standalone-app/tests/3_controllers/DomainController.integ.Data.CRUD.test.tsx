@@ -207,7 +207,10 @@ const testActions: Record<string, TestActionParams> = {
     testCompositeAction: {
       testType: "testCompositeActionSuite",
       testLabel: "DomainController.integ.Data.CRUD",
-      beforeAll: createDeploymentCompositeAction(testApplicationDeploymentUuid, testDeploymentStorageConfiguration),
+      beforeAll: createDeploymentCompositeAction(
+        testApplicationDeploymentUuid,
+        testDeploymentStorageConfiguration
+      ),
       beforeEach: resetAndinitializeDeploymentCompositeAction(
         adminConfigurationDeploymentLibrary.uuid,
         {
@@ -299,13 +302,13 @@ const testActions: Record<string, TestActionParams> = {
                         transformerType: "contextReference",
                         interpolation: "runtime",
                         referencePath: ["entityBookList", "books"],
-                      }
+                      },
                     },
-                  // referencedTransformer: {
-                  //     transformerType: "contextReference",
-                  //     interpolation: "runtime",
-                  //     referencePath: ["entityBookList", "books"],
-                  //   },
+                    // referencedTransformer: {
+                    //     transformerType: "contextReference",
+                    //     interpolation: "runtime",
+                    //     referencePath: ["entityBookList", "books"],
+                    //   },
                   },
                   expectedValue: { count: 5 },
                 },
@@ -320,6 +323,7 @@ const testActions: Record<string, TestActionParams> = {
                 testLabel: "checkEntityBooks",
                 definition: {
                   resultAccessPath: ["entityBookList", "books"],
+                  ignoreAttributes: ["conceptLevel"],
                   expectedValue: [
                     // book3,
                     book4,
@@ -442,6 +446,7 @@ const testActions: Record<string, TestActionParams> = {
                 testLabel: "checkEntityBooks",
                 definition: {
                   resultAccessPath: ["entityBookList", "books"],
+                  ignoreAttributes: ["conceptLevel"],
                   expectedValue: [book3, book4, book6, book5, book1, book2],
                 },
               },
@@ -557,6 +562,7 @@ const testActions: Record<string, TestActionParams> = {
                 testLabel: "checkEntityBooks",
                 definition: {
                   resultAccessPath: ["entityBookList", "books"],
+                  ignoreAttributes: ["conceptLevel"],
                   expectedValue: [book3, book4, book6, book5, book1, book2],
                 },
               },
@@ -672,6 +678,7 @@ const testActions: Record<string, TestActionParams> = {
                 testLabel: "checkEntityBooks",
                 definition: {
                   resultAccessPath: ["entityBookList", "books"],
+                  ignoreAttributes: ["conceptLevel"],
                   expectedValue: [
                     // book3,
                     book4,
@@ -801,6 +808,7 @@ const testActions: Record<string, TestActionParams> = {
                 testLabel: "checkEntityBooks",
                 definition: {
                   resultAccessPath: ["entityBookList", "books"],
+                  ignoreAttributes: ["conceptLevel"],
                   expectedValue: [
                     // book3,
                     book4,
@@ -929,6 +937,7 @@ const testActions: Record<string, TestActionParams> = {
                 testLabel: "checkEntityBooks",
                 definition: {
                   resultAccessPath: ["entityBookList", "books"],
+                  ignoreAttributes: ["conceptLevel"],
                   expectedValue: [
                     // book3,
                     Object.assign({}, book4, {

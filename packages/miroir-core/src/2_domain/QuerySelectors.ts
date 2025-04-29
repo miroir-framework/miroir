@@ -706,7 +706,6 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
               deploymentUuid,
               extractorOrCombiner.rootExtractorOrReference
             );
-      // if (["instanceUuidIndex", "object", "any"].includes(rootQueryResults.elementType)) {
       if (rootQueryResults instanceof Domain2ElementFailed) {
         return {
           elementType: "failure",

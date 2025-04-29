@@ -74,6 +74,7 @@ import { LoggerOptions } from "miroir-core/src/0_interfaces/4-services/LoggerInt
 import { packageName } from "../../src/constants.js";
 import { loglevelnext } from '../../src/loglevelnextImporter.js';
 import { cleanLevel } from "./constants.js";
+import { LocalCacheInterface } from "miroir-core";
 
 
 
@@ -125,7 +126,7 @@ const libraryDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConf
 console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 
 let domainController: DomainControllerInterface;
-let localCache: LocalCache;
+let localCache: LocalCacheInterface;
 let miroirContext: MiroirContextInterface;
 let persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface;
 
