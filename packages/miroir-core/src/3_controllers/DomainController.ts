@@ -1526,6 +1526,7 @@ export class DomainController implements DomainControllerInterface {
                 ConfigurationService.testImplementation
                   .expect(valueToTest, currentAction.nameGivenToResult)
                   .toEqual(expectedValue);
+                  // .toEqual(currentAction.testAssertion.definition.expectedValue);
                 log.info(
                   "handleCompositeAction compositeRunTestAssertion test passed",
                   currentAction.testAssertion

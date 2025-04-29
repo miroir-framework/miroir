@@ -883,16 +883,14 @@ export const runQuery = <StateType>(
     );
     // TODO: test for error!
     if (result instanceof Domain2ElementFailed) {
-      log.error("extractWithManyExtractor failed for extractor", extractor[0], "query", extractor[1], "result=", result);
+      log.error("runQuery failed for extractor", extractor[0], "query", extractor[1], "result=", result);
       context[extractor[0]] = result;
       return new Domain2ElementFailed({
         queryFailure: "ReferenceNotFound",
         failureOrigin: ["QuerySelector", "runQuery"],
         queryContext:
-          "extractWithManyExtractor could not find " +
-          extractor[0] +
-          " in " +
-          JSON.stringify(context),
+          "runQuery could not run extractor: " + extractor[0] ,
+        innerError: context[extractor[0]],
         query: JSON.stringify(extractor[1]),
       }
       );
@@ -900,7 +898,7 @@ export const runQuery = <StateType>(
       context[extractor[0]] = result; // does side effect!
     }
     log.info(
-      "extractWithManyExtractor done for extractors",
+      "runQuery done for extractors",
       extractor[0],
       "query",
       extractor[1],

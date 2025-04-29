@@ -73,8 +73,12 @@ const ignoreFailureAttributes:string[] = [
   "entityUuid",
   "instanceUuid",
   "errorStack",
+  "failureMessage",
+  "failureOrigin",
   "innerError",
+  // "queryContext",
   "queryParameters",
+  "queryReference",
   "query",
 ];
 
@@ -191,13 +195,10 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     ...testExtractorTools,
     testAssertions: {
       test1: {
+        // ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
         expectedResult: {
-          book: {
-            applicationSection: "data",
-            deploymentUuid: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
-            entityUuid: "XXXXXX",
-            queryFailure: "EntityNotFound",
-          },
+          queryFailure: "ReferenceNotFound",
+          queryContext: "runQuery could not run extractor: book",
         },
       },
     },
@@ -245,13 +246,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     testAssertions: {
       test1: {
         expectedResult: {
-          book: {
-            applicationSection: "data",
-            deploymentUuid: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
-            entityUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-            instanceUuid: "XXXXXXXXX",
-            queryFailure: "InstanceNotFound",
-          },
+          queryFailure: "ReferenceNotFound",
+          queryContext: "runQuery could not run extractor: book",
         },
       },
     },
@@ -1127,6 +1123,23 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
 };
 
 
+function cleanupResult(
+  preResult: Domain2QueryReturnType<Record<string, any>>,
+  testAssertionParams: { resultAccessPath?: string[]; expectedResult: any }
+) {
+  const resolvedPreResult = resolvePathOnObject(
+    preResult,
+    testAssertionParams.resultAccessPath ?? []
+  );
+  let result;
+  if (Object.hasOwn(resolvedPreResult, "queryFailure")) {
+    result = ignorePostgresExtraAttributes(resolvedPreResult, ignoreFailureAttributes);
+  } else {
+    result = resolvedPreResult;
+  }
+  return result;
+}
+
 describe("queries.unit", () => {
   // ###########################################################################################
   it.each(Object.entries(testExtractorParams))('test %s', (currentTestName, testParams:TestExtractorParams) => {
@@ -1147,13 +1160,9 @@ describe("queries.unit", () => {
           console.info(
             `############################################## running query for DOMAIN STATE test assertion: ${currentTestName} ${testAssertionName}`
           );
-          let result
-          if (preResult instanceof Domain2ElementFailed) {
-            result = ignorePostgresExtraAttributes(preResult, ignoreFailureAttributes);
-          } else {
-            result = resolvePathOnObject(preResult, testAssertionParams.resultAccessPath ?? []);
-          }
-          // console.info(`For test named ${currentTestName} ${testName} result: `, result);
+          console.info(`For test named ${currentTestName} ${testAssertionName} preResult: `, JSON.stringify(preResult, null, 2));
+          const result = cleanupResult(preResult, testAssertionParams);
+          console.info(`For test named ${currentTestName} ${testAssertionName} result: `, result);
           // console.info(`For test named ${currentTestName} ${testName} expected result: `, testParams.expectedResult);
           expect(result).toEqual(testAssertionParams.expectedResult);
         }
@@ -1166,7 +1175,8 @@ describe("queries.unit", () => {
         );
         for (const [testAssertionName, testAssertionParams] of Object.entries(testParams.testAssertions)) {
         console.info(`############################################## running query for DEPLOYMENT ENTITY STATE test assertion: ${currentTestName} ${testAssertionName}`);
-          const result = resolvePathOnObject(preResult, testAssertionParams.resultAccessPath ?? []);
+          const result = cleanupResult(preResult, testAssertionParams);
+          console.info(`For test named ${currentTestName} ${testAssertionName} result: `, result);
           // console.info(`For test named ${currentTestName} ${testName} result: `, result);
           // console.info(`For test named ${currentTestName} ${testName} expected result: `, testParams.expectedResult);
           expect(result).toEqual(testAssertionParams.expectedResult);
@@ -1187,7 +1197,9 @@ describe("queries.unit", () => {
         ) as any;
         for (const [testAssertionName, testAssertionParams] of Object.entries(testParams.testAssertions)) {
           console.info(`############################################## running query TEMPLATE for DOMAIN STATE test assertion: ${currentTestName} ${testAssertionName}`);
-          const result = resolvePathOnObject(preTemplateResult, testAssertionParams.resultAccessPath ?? []);
+          const result = cleanupResult(preTemplateResult, testAssertionParams);
+
+
           // console.info(`For test named ${currentTestName} ${testName} Template result: `, result);
           // console.info(`For test named ${currentTestName} ${testName} expected Template result: `, testParams.expectedResult);
           expect(result).toEqual(testAssertionParams.expectedResult);
@@ -1204,7 +1216,8 @@ describe("queries.unit", () => {
         ) as any;
         for (const [testAssertionName, testAssertionParams] of Object.entries(testParams.testAssertions)) {
           console.info(`############################################## running query TEMPLATE for DEPLOYMENT ENTITY STATE test assertion: ${currentTestName} ${testAssertionName}`);
-          const result = resolvePathOnObject(preTemplateResult, testAssertionParams.resultAccessPath ?? []);
+          const result = cleanupResult(preTemplateResult, testAssertionParams);
+
           // console.info(`For test named ${currentTestName} ${testName} Template result: `, result);
           // console.info(`For test named ${currentTestName} ${testName} expected Template result: `, testParams.expectedResult);
           expect(result).toEqual(testAssertionParams.expectedResult);
@@ -1214,3 +1227,4 @@ describe("queries.unit", () => {
 
   });
 });
+

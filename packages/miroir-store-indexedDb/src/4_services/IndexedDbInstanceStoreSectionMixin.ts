@@ -136,12 +136,14 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
           // ret
         } else {
           log.error(this.logHeader, "upsertInstance", instance.parentUuid, "does not exists.");
-          return Promise.resolve(new Action2Error("FailedToUpdateInstance", `upsertInstance could not update instance ${instance.uuid} of entity ${parentUuid}`));
+          // return Promise.resolve(new Action2Error("FailedToUpdateInstance", `upsertInstance could not update instance ${instance.uuid} of entity ${parentUuid}`));
+          return Promise.resolve(new Action2Error("FailedToUpdateInstance", `failed to upsert instance ${instance.uuid} of entity ${parentUuid}`));
         }
         // return Promise.resolve( { status: "ok", returnedDomainElement: { elementType: "void", elementValue: undefined } } );
       } catch (error) {
         log.error(this.logHeader, "upsertInstance", instance.parentUuid, "could not upsert instance", instance, error);
-        return Promise.resolve(new Action2Error("FailedToUpdateInstance", `upsertInstance could not update instance ${instance.uuid} of entity ${parentUuid}: `,error as any));
+        // return Promise.resolve(new Action2Error("FailedToUpdateInstance", `upsertInstance could not update instance ${instance.uuid} of entity ${parentUuid}: `,error as any));
+        return Promise.resolve(new Action2Error("FailedToUpdateInstance", `failed to upsert instance ${instance.uuid} of entity ${parentUuid}: `,error as any));
       }
     }
 

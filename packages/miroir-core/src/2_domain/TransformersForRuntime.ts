@@ -1381,7 +1381,9 @@ export function handleListPickElementTransformer(
       "index",
       transformer.index,
       "result",
-      result
+      result,
+      "transformer",
+      JSON.stringify(transformer, null, 2)
     );
     return result;
   }
@@ -1795,7 +1797,13 @@ export function innerTransformer_plainObject_apply(
       ];
     }
   );
-  const failureIndex = attributeEntries.findIndex((e) => e[1] && e[1].elementType == "failure");
+  const failureIndex = attributeEntries.findIndex(
+    (e) =>
+      typeof e[1] == "object" &&
+      e[1] != null &&
+      !Array.isArray(e[1]) &&
+      e[1].elementType == "failure"
+  );
   if (failureIndex == -1) {
     const result = Object.fromEntries(
       attributeEntries.map((e) => [e[0], e[1]])
@@ -1852,7 +1860,9 @@ export function innerTransformer_array_apply(
   const subObject = transformer.map((e, index) =>
     transformer_extended_apply(step, index.toString(), e, resolveBuildTransformersTo, queryParams, contextResults)
   );
-  const failureIndex = subObject.findIndex((e) => e && e.elementType == "failure");
+  const failureIndex = subObject.findIndex(
+    (e) => typeof e == "object" && e != null && !Array.isArray(e) && e.elementType == "failure"
+  );
   if (failureIndex == -1) {
     return subObject;
   } else {
@@ -1914,11 +1924,7 @@ export function transformer_extended_apply(
   // );
   let result: Domain2QueryReturnType<any> = undefined as any;
 
-  if (!transformer) {
-    return undefined;
-  }
-
-  if (typeof transformer == "object") {
+  if (typeof transformer == "object" && transformer != null) {
     if (transformer instanceof Array) {
       result = innerTransformer_array_apply(
         step,
@@ -2152,7 +2158,7 @@ export function transformer_extended_apply(
           );
         }
       } else {
-        log.info("transformer_extended_apply handles plain object with keys:", Object.keys(transformer));
+        // log.info("transformer_extended_apply handles plain object with keys:", Object.keys(transformer));
         result = innerTransformer_plainObject_apply(
           step,
           label,
