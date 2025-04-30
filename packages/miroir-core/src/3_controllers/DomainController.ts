@@ -38,6 +38,7 @@ import {
   RestPersistenceAction,
   RunBoxedExtractorOrQueryAction,
   RunBoxedExtractorTemplateAction,
+  RunBoxedQueryAction,
   RunBoxedQueryTemplateAction,
   RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
   SelfApplicationDeploymentConfiguration,
@@ -444,14 +445,14 @@ export class DomainController implements DomainControllerInterface {
   // used in Importer.tsx
   // used in scripts.ts
   // used in tests
-  async handleQueryActionOrBoxedExtractorAction(
-    runBoxedExtractorOrQueryAction: RunBoxedExtractorOrQueryAction
+  async handleBoxedExtractorOrQueryAction(
+    runBoxedExtractorOrQueryAction: RunBoxedQueryAction | RunBoxedExtractorOrQueryAction
   ): Promise<Action2ReturnType> {
     // let entityDomainAction:DomainAction | undefined = undefined;
     try {
       LoggerGlobalContext.setAction(runBoxedExtractorOrQueryAction.actionName);
       log.info(
-        "handleQueryActionOrBoxedExtractorAction",
+        "handleBoxedExtractorOrQueryAction",
         // "deploymentUuid",
         // runBoxedExtractorOrQueryAction.deploymentUuid,
         "persistenceStoreAccessMode=",
@@ -483,7 +484,7 @@ export class DomainController implements DomainControllerInterface {
         //   runBoxedExtractorOrQueryAction
         // );
         log.info(
-          "DomainController handleQueryActionOrBoxedExtractorAction runBoxedExtractorOrQueryAction callPersistenceAction Result=",
+          "DomainController handleBoxedExtractorOrQueryAction runBoxedExtractorOrQueryAction callPersistenceAction Result=",
           result
         );
         return result;
@@ -494,19 +495,20 @@ export class DomainController implements DomainControllerInterface {
         // while non-transactional accesses are limited to persistence store access (does this make sense?)
         // in both cases this enforces only the most up-to-date data is accessed.
         // log.info(
-        //   "DomainController handleQueryActionOrBoxedExtractorAction runBoxedExtractorOrQueryAction executing query",
+        //   "DomainController handleBoxedExtractorOrQueryAction runBoxedExtractorOrQueryAction executing query",
         //   "strategy",
         //   runBoxedExtractorOrQueryAction.queryExecutionStrategy,
         //   // JSON.stringify(runBoxedQueryTemplateOrBoxedExtractorTemplateAction)
         //   runBoxedExtractorOrQueryAction
         // );
         const executionStrategy =
-          runBoxedExtractorOrQueryAction.queryExecutionStrategy ?? "localCacheOrFail";
+          // runBoxedExtractorOrQueryAction.queryExecutionStrategy ?? "localCacheOrFail";
+          runBoxedExtractorOrQueryAction.queryExecutionStrategy ?? "storage";
         switch (executionStrategy) {
           case "ServerCache":
           case "localCacheOrFetch": {
             throw new Error(
-              "DomainController handleQueryActionOrBoxedExtractorAction could not handle queryExecutionStrategy " +
+              "DomainController handleBoxedExtractorOrQueryAction could not handle queryExecutionStrategy " +
                 runBoxedExtractorOrQueryAction.queryExecutionStrategy
             );
           }
@@ -516,7 +518,7 @@ export class DomainController implements DomainControllerInterface {
                 runBoxedExtractorOrQueryAction
               );
             log.info(
-              "handleQueryActionOrBoxedExtractorAction runBoxedExtractorOrQueryAction callPersistenceAction Result=",
+              "handleBoxedExtractorOrQueryAction runBoxedExtractorOrQueryAction callPersistenceAction Result=",
               result
             );
             return result;
@@ -536,7 +538,7 @@ export class DomainController implements DomainControllerInterface {
             //   runBoxedExtractorOrQueryAction
             // );
             log.info(
-              "handleQueryActionOrBoxedExtractorAction runBoxedExtractorOrQueryAction callPersistenceAction Result=",
+              "handleBoxedExtractorOrQueryAction runBoxedExtractorOrQueryAction callPersistenceAction Result=",
               result
             );
             return result;
@@ -544,7 +546,7 @@ export class DomainController implements DomainControllerInterface {
           }
           default: {
             throw new Error(
-              "DomainController handleQueryActionOrBoxedExtractorAction unknown queryExecutionStrategy " +
+              "DomainController handleBoxedExtractorOrQueryAction unknown queryExecutionStrategy " +
                 runBoxedExtractorOrQueryAction.queryExecutionStrategy
             );
             break;
@@ -552,7 +554,7 @@ export class DomainController implements DomainControllerInterface {
         }
         // const result = await this.persistenceStoreLocalOrRemote.handlePersistenceActionForLocalCache(runBoxedExtractorOrQueryAction)
         // log.info(
-        //   "handleQueryActionOrBoxedExtractorAction runBoxedExtractorOrQueryAction callPersistenceAction Result=",
+        //   "handleBoxedExtractorOrQueryAction runBoxedExtractorOrQueryAction callPersistenceAction Result=",
         //   result
         // );
         // return result;
@@ -560,7 +562,7 @@ export class DomainController implements DomainControllerInterface {
       }
     } catch (error) {
       log.error(
-        "DomainController handleQueryActionOrBoxedExtractorAction caught exception",
+        "DomainController handleBoxedExtractorOrQueryAction caught exception",
         error,
         "actionName",
         (runBoxedExtractorOrQueryAction as any).actionName,
@@ -661,7 +663,8 @@ export class DomainController implements DomainControllerInterface {
       JSON.stringify((runBoxedExtractorTemplateAction as any)["objects"], null, 2)
     );
 
-    if (this.persistenceStoreAccessMode == "remote") {
+    // if (this.persistenceStoreAccessMode == "remote") {
+    if (this.persistenceStoreAccessMode == "local") {
       /**
        * we're on the server side. Shall we execute the query on the localCache or on the persistentStore?
        */
@@ -741,7 +744,7 @@ export class DomainController implements DomainControllerInterface {
           runBoxedQueryTemplateOrBoxedExtractorTemplateAction
         );
       log.info(
-        "DomainController handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY runBoxedQueryTemplateOrBoxedExtractorTemplateAction callPersistenceAction Result=",
+        "DomainController handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY callPersistenceAction Result=",
         result
       );
       return result;
@@ -752,7 +755,7 @@ export class DomainController implements DomainControllerInterface {
       // while non-transactional accesses are limited to persistence store access (does this make sense?)
       // in both cases this enforces only the most up-to-date data is accessed.
       log.info(
-        "DomainController handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY runBoxedQueryTemplateOrBoxedExtractorTemplateAction sending query to server for execution",
+        "DomainController handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY sending query to server for execution",
         // JSON.stringify(runBoxedQueryTemplateOrBoxedExtractorTemplateAction)
         runBoxedQueryTemplateOrBoxedExtractorTemplateAction
       );
@@ -766,7 +769,7 @@ export class DomainController implements DomainControllerInterface {
         runBoxedQueryTemplateOrBoxedExtractorTemplateAction
       );
       log.info(
-        "handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY runBoxedQueryTemplateOrBoxedExtractorTemplateAction callPersistenceAction Result=",
+        "handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY callPersistenceAction Result=",
         result
       );
       return result["dataEntitiesFromModelSection"];
@@ -1356,7 +1359,7 @@ export class DomainController implements DomainControllerInterface {
             }
             break;
           }
-          case "compositeRunBoxedQueryTemplateAction": {
+          case "compositeRunBoxedQueryAction": {
             // actionResult = await this.handleCompositeRunBoxedQueryTemplateAction(
             //   currentAction,
             //   actionParamValues,
@@ -1375,7 +1378,8 @@ export class DomainController implements DomainControllerInterface {
               );
             }
 
-            actionResult = await this.handleQueryTemplateActionForServerONLY(
+            // actionResult = await this.handleQueryTemplateActionForServerONLY(
+            actionResult = await this.handleBoxedExtractorOrQueryAction(
               currentAction.queryTemplate
             );
             if (actionResult instanceof Action2Error) {
@@ -1407,14 +1411,14 @@ export class DomainController implements DomainControllerInterface {
         
             break;
           }
-          case "compositeRunBoxedExtractorTemplateAction": {
-            actionResult = await this.handleCompositeRunBoxedExtractorTemplateAction(
-              currentAction,
-              actionParamValues,
-              localContext
-            );
-            break;
-          }
+          // case "compositeRunBoxedExtractorTemplateAction": {
+          //   actionResult = await this.handleCompositeRunBoxedExtractorTemplateAction(
+          //     currentAction,
+          //     actionParamValues,
+          //     localContext
+          //   );
+          //   break;
+          // }
           case "compositeRunBoxedExtractorOrQueryAction": {
             // throw new Error(
             //   "handleCompositeAction can not handle query actions: " + JSON.stringify(currentAction)
@@ -1427,7 +1431,7 @@ export class DomainController implements DomainControllerInterface {
               actionParamValues
             );
 
-            actionResult = await this.handleQueryActionOrBoxedExtractorAction(currentAction.query);
+            actionResult = await this.handleBoxedExtractorOrQueryAction(currentAction.query);
             if (actionResult instanceof Action2Error) {
               log.error(
                 "Error on runBoxedExtractorOrQueryAction with nameGivenToResult",
@@ -1455,11 +1459,11 @@ export class DomainController implements DomainControllerInterface {
             }
             break;
           }
-          case "compositeRunBoxedQueryTemplateOrBoxedExtractorTemplateAction": {
-            throw new Error(
-              "handleCompositeAction can not handle query actions: " + JSON.stringify(currentAction)
-            );
-          }
+          // case "compositeRunBoxedQueryTemplateOrBoxedExtractorTemplateAction": {
+          //   throw new Error(
+          //     "handleCompositeAction can not handle query actions: " + JSON.stringify(currentAction)
+          //   );
+          // }
           case "compositeRunTestAssertion": {
             // return this.handleTestCompositeActionAssertion(
             //   currentAction,
@@ -1607,55 +1611,55 @@ export class DomainController implements DomainControllerInterface {
     return Promise.resolve(ACTION_OK);
   }
 
-  // ##############################################################################################
-  private async handleCompositeRunBoxedExtractorTemplateAction(
-    currentAction: {
-      actionType: "compositeRunBoxedExtractorTemplateAction";
-      actionLabel?: string | undefined;
-      nameGivenToResult: string;
-      queryTemplate: RunBoxedExtractorTemplateAction;
-    },
-    actionParamValues: Record<string, any>,
-    // actionResult: Action2ReturnType | undefined,
-    localContext: Record<string, any>
-  ) {
-    log.info(
-      "handleCompositeAction resolved extractorTemplate action",
-      currentAction,
-      "with actionParamValues",
-      actionParamValues
-    );
+  // // ##############################################################################################
+  // private async handleCompositeRunBoxedExtractorTemplateAction(
+  //   currentAction: {
+  //     actionType: "compositeRunBoxedExtractorTemplateAction";
+  //     actionLabel?: string | undefined;
+  //     nameGivenToResult: string;
+  //     queryTemplate: RunBoxedExtractorTemplateAction;
+  //   },
+  //   actionParamValues: Record<string, any>,
+  //   // actionResult: Action2ReturnType | undefined,
+  //   localContext: Record<string, any>
+  // ) {
+  //   log.info(
+  //     "handleCompositeAction resolved extractorTemplate action",
+  //     currentAction,
+  //     "with actionParamValues",
+  //     actionParamValues
+  //   );
 
-    const actionResult = await this.handleBoxedExtractorTemplateActionForServerONLY(
-      currentAction.queryTemplate
-    );
-    if (actionResult instanceof Action2Error) {
-      log.error(
-        "Error on runBoxedQueryTemplateAction with nameGivenToResult",
-        currentAction.nameGivenToResult,
-        "query=",
-        JSON.stringify(actionResult, null, 2)
-      );
-    } else {
-      if (actionResult.returnedDomainElement instanceof Domain2ElementFailed) {
-        log.error(
-          "Error on runBoxedQueryTemplateAction with nameGivenToResult",
-          currentAction.nameGivenToResult,
-          "query=",
-          JSON.stringify(actionResult, null, 2)
-        );
-      } else {
-        log.info(
-          "handleCompositeActionTemplate extractorTemplate adding result to context as",
-          currentAction.nameGivenToResult,
-          "value",
-          actionResult
-        );
-        localContext[currentAction.nameGivenToResult] = actionResult.returnedDomainElement;
-      }
-    }
-    return actionResult;
-  }
+  //   const actionResult = await this.handleBoxedExtractorTemplateActionForServerONLY(
+  //     currentAction.queryTemplate
+  //   );
+  //   if (actionResult instanceof Action2Error) {
+  //     log.error(
+  //       "Error on runBoxedQueryTemplateAction with nameGivenToResult",
+  //       currentAction.nameGivenToResult,
+  //       "query=",
+  //       JSON.stringify(actionResult, null, 2)
+  //     );
+  //   } else {
+  //     if (actionResult.returnedDomainElement instanceof Domain2ElementFailed) {
+  //       log.error(
+  //         "Error on runBoxedQueryTemplateAction with nameGivenToResult",
+  //         currentAction.nameGivenToResult,
+  //         "query=",
+  //         JSON.stringify(actionResult, null, 2)
+  //       );
+  //     } else {
+  //       log.info(
+  //         "handleCompositeActionTemplate extractorTemplate adding result to context as",
+  //         currentAction.nameGivenToResult,
+  //         "value",
+  //         actionResult
+  //       );
+  //       localContext[currentAction.nameGivenToResult] = actionResult.returnedDomainElement;
+  //     }
+  //   }
+  //   return actionResult;
+  // }
 
   // // ##############################################################################################
   // private async handleCompositeRunBoxedQueryTemplateAction(
@@ -1800,103 +1804,103 @@ export class DomainController implements DomainControllerInterface {
           }
           break;
         }
-        case "compositeRunBoxedQueryTemplateAction": {
-          // const actionResult = await this.handleCompositeRunBoxedQueryTemplateAction(
-          //   currentAction,
-          //   actionParamValues,
-          //   // actionResult,
-          //   localContext
-          // );
-          log.info(
-            "handleCompositeActionTemplate",
-            actionLabel,
-            "resolved query action",
-            currentAction,
-            "with actionParamValues",
-            actionParamValues
-          );
+        // case "compositeRunBoxedQueryTemplateAction": {
+        //   // const actionResult = await this.handleCompositeRunBoxedQueryTemplateAction(
+        //   //   currentAction,
+        //   //   actionParamValues,
+        //   //   // actionResult,
+        //   //   localContext
+        //   // );
+        //   log.info(
+        //     "handleCompositeActionTemplate",
+        //     actionLabel,
+        //     "resolved query action",
+        //     currentAction,
+        //     "with actionParamValues",
+        //     actionParamValues
+        //   );
 
-          const actionResult = await this.handleQueryTemplateActionForServerONLY(
-            currentAction.queryTemplate
-          );
-          if (actionResult instanceof Action2Error) {
-            log.error(
-              "handleCompositeActionTemplate compositeRunBoxedQueryTemplateAction error on action",
-              JSON.stringify(resolveCompositeActionTemplate, null, 2) +
-                "actionResult" +
-                JSON.stringify(actionResult, null, 2)
-            );
-          } else {
-            if (actionResult.returnedDomainElement instanceof Domain2ElementFailed) {
-              log.error(
-                "handleCompositeActionTemplate compositeRunBoxedQueryTemplateAction error on action",
-                JSON.stringify(resolveCompositeActionTemplate, null, 2) +
-                  "actionResult" +
-                  JSON.stringify(actionResult, null, 2)
-              );
-            } else {
-              log.info(
-                "handleCompositeActionTemplate",
-                actionLabel,
-                "query adding result to context as",
-                currentAction.nameGivenToResult,
-                "value",
-                actionResult
-              );
-              localContext[currentAction.nameGivenToResult] = actionResult.returnedDomainElement;
-            }
-          }
-          break;
-        }
-        case "compositeRunBoxedExtractorTemplateAction": {
-          const actionResult = await this.handleCompositeRunBoxedExtractorTemplateAction(
-            currentAction,
-            actionParamValues,
-            // actionResult,
-            localContext
-          );
+        //   const actionResult = await this.handleQueryTemplateActionForServerONLY(
+        //     currentAction.queryTemplate
+        //   );
+        //   if (actionResult instanceof Action2Error) {
+        //     log.error(
+        //       "handleCompositeActionTemplate compositeRunBoxedQueryTemplateAction error on action",
+        //       JSON.stringify(resolveCompositeActionTemplate, null, 2) +
+        //         "actionResult" +
+        //         JSON.stringify(actionResult, null, 2)
+        //     );
+        //   } else {
+        //     if (actionResult.returnedDomainElement instanceof Domain2ElementFailed) {
+        //       log.error(
+        //         "handleCompositeActionTemplate compositeRunBoxedQueryTemplateAction error on action",
+        //         JSON.stringify(resolveCompositeActionTemplate, null, 2) +
+        //           "actionResult" +
+        //           JSON.stringify(actionResult, null, 2)
+        //       );
+        //     } else {
+        //       log.info(
+        //         "handleCompositeActionTemplate",
+        //         actionLabel,
+        //         "query adding result to context as",
+        //         currentAction.nameGivenToResult,
+        //         "value",
+        //         actionResult
+        //       );
+        //       localContext[currentAction.nameGivenToResult] = actionResult.returnedDomainElement;
+        //     }
+        //   }
+        //   break;
+        // }
+        // case "compositeRunBoxedExtractorTemplateAction": {
+        //   const actionResult = await this.handleCompositeRunBoxedExtractorTemplateAction(
+        //     currentAction,
+        //     actionParamValues,
+        //     // actionResult,
+        //     localContext
+        //   );
 
-          // log.info(
-          //   "handleCompositeActionTemplate",
-          //   actionLabel,
-          //   "resolved query action",
-          //   currentAction,
-          //   "with actionParamValues",
-          //   actionParamValues
-          // );
+        //   // log.info(
+        //   //   "handleCompositeActionTemplate",
+        //   //   actionLabel,
+        //   //   "resolved query action",
+        //   //   currentAction,
+        //   //   "with actionParamValues",
+        //   //   actionParamValues
+        //   // );
 
-          // const actionResult = await this.handleBoxedExtractorTemplateActionForServerONLY(
-          //   currentAction.queryTemplate
-          // );
-          // if (actionResult instanceof Action2Error) {
-          //   log.error(
-          //     "handleCompositeActionTemplate Error on compositeRunBoxedExtractorTemplateAction with nameGivenToResult",
-          //     currentAction.nameGivenToResult,
-          //     "query=",
-          //     JSON.stringify(actionResult, null, 2)
-          //   );
-          // } else {
-          //   if (actionResult.returnedDomainElement instanceof Domain2ElementFailed) {
-          //     log.error(
-          //       "handleCompositeActionTemplate Error on compositeRunBoxedExtractorTemplateAction with nameGivenToResult",
-          //       currentAction.nameGivenToResult,
-          //       "query=",
-          //       JSON.stringify(actionResult, null, 2)
-          //     );
-          //   } else {
-          //     log.info(
-          //       "handleCompositeActionTemplate compositeRunBoxedExtractorTemplateAction",
-          //       actionLabel,
-          //       "query adding result to context as",
-          //       currentAction.nameGivenToResult,
-          //       "value",
-          //       actionResult
-          //     );
-          //     localContext[currentAction.nameGivenToResult] = actionResult.returnedDomainElement;
-          //   }
-          // }
-          break;
-        }
+        //   // const actionResult = await this.handleBoxedExtractorTemplateActionForServerONLY(
+        //   //   currentAction.queryTemplate
+        //   // );
+        //   // if (actionResult instanceof Action2Error) {
+        //   //   log.error(
+        //   //     "handleCompositeActionTemplate Error on compositeRunBoxedExtractorTemplateAction with nameGivenToResult",
+        //   //     currentAction.nameGivenToResult,
+        //   //     "query=",
+        //   //     JSON.stringify(actionResult, null, 2)
+        //   //   );
+        //   // } else {
+        //   //   if (actionResult.returnedDomainElement instanceof Domain2ElementFailed) {
+        //   //     log.error(
+        //   //       "handleCompositeActionTemplate Error on compositeRunBoxedExtractorTemplateAction with nameGivenToResult",
+        //   //       currentAction.nameGivenToResult,
+        //   //       "query=",
+        //   //       JSON.stringify(actionResult, null, 2)
+        //   //     );
+        //   //   } else {
+        //   //     log.info(
+        //   //       "handleCompositeActionTemplate compositeRunBoxedExtractorTemplateAction",
+        //   //       actionLabel,
+        //   //       "query adding result to context as",
+        //   //       currentAction.nameGivenToResult,
+        //   //       "value",
+        //   //       actionResult
+        //   //     );
+        //   //     localContext[currentAction.nameGivenToResult] = actionResult.returnedDomainElement;
+        //   //   }
+        //   // }
+        //   break;
+        // }
         default: {
           log.error(
             "handleCompositeActionTemplate",
@@ -2325,122 +2329,122 @@ export class DomainController implements DomainControllerInterface {
     );
   }
 
-  // ################################################################################################
-  async handleTestCompositeActionAssertionNOTUSED(
-    // compositeAction: CompositeAction,
-    compositeRunTestAssertion: {
-      actionType: "compositeRunTestAssertion";
-      actionLabel?: string | undefined;
-      nameGivenToResult: string;
-      testAssertion: TestAssertion;
-    },
-    actionParamValues: Record<string, any>,
-    currentModel: MetaModel
-  ): Promise<Action2VoidReturnType> {
-    let actionResult: Action2VoidReturnType | undefined = undefined;
-    const localActionParams = { ...actionParamValues };
-    let localContext: Record<string, any> = { ...actionParamValues };
+  // // ################################################################################################
+  // async handleTestCompositeActionAssertionNOTUSED(
+  //   // compositeAction: CompositeAction,
+  //   compositeRunTestAssertion: {
+  //     actionType: "compositeRunTestAssertion";
+  //     actionLabel?: string | undefined;
+  //     nameGivenToResult: string;
+  //     testAssertion: TestAssertion;
+  //   },
+  //   actionParamValues: Record<string, any>,
+  //   currentModel: MetaModel
+  // ): Promise<Action2VoidReturnType> {
+  //   let actionResult: Action2VoidReturnType | undefined = undefined;
+  //   const localActionParams = { ...actionParamValues };
+  //   let localContext: Record<string, any> = { ...actionParamValues };
 
-    if (!ConfigurationService.testImplementation) {
-      throw new Error(
-        "ConfigurationService.testImplementation is not set, please inject a test implementation using ConfigurationService.registerTestImplementation on startup if you want to run tests at runtime."
-      );
-    }
-    let valueToTest: any = undefined;
-    try {
-      TestSuiteContext.setTestAssertion(compositeRunTestAssertion.testAssertion.testLabel);
-      const prePreValueToTest = compositeRunTestAssertion.testAssertion.definition.resultTransformer
-        ? transformer_extended_apply(
-            "runtime",
-            undefined /**WHAT?? */,
-            compositeRunTestAssertion.testAssertion.definition.resultTransformer,
-            "value",
-            {},
-            localContext
-          )
-        : localContext;
+  //   if (!ConfigurationService.testImplementation) {
+  //     throw new Error(
+  //       "ConfigurationService.testImplementation is not set, please inject a test implementation using ConfigurationService.registerTestImplementation on startup if you want to run tests at runtime."
+  //     );
+  //   }
+  //   let valueToTest: any = undefined;
+  //   try {
+  //     TestSuiteContext.setTestAssertion(compositeRunTestAssertion.testAssertion.testLabel);
+  //     const prePreValueToTest = compositeRunTestAssertion.testAssertion.definition.resultTransformer
+  //       ? transformer_extended_apply(
+  //           "runtime",
+  //           undefined /**WHAT?? */,
+  //           compositeRunTestAssertion.testAssertion.definition.resultTransformer,
+  //           "value",
+  //           {},
+  //           localContext
+  //         )
+  //       : localContext;
 
-      const preValueToTest = resolvePathOnObject(
-        prePreValueToTest,
-        compositeRunTestAssertion.testAssertion.definition.resultAccessPath ?? []
-      );
+  //     const preValueToTest = resolvePathOnObject(
+  //       prePreValueToTest,
+  //       compositeRunTestAssertion.testAssertion.definition.resultAccessPath ?? []
+  //     );
 
-      valueToTest = Array.isArray(preValueToTest)
-        ? ignorePostgresExtraAttributesOnList(
-            preValueToTest,
-            compositeRunTestAssertion.testAssertion.definition.ignoreAttributes ?? []
-          )
-        : ignorePostgresExtraAttributesOnObject(
-            preValueToTest,
-            compositeRunTestAssertion.testAssertion.definition.ignoreAttributes ?? []
-          );
-      log.info(
-        "handleCompositeAction compositeRunTestAssertion to handle",
-        JSON.stringify(compositeRunTestAssertion.testAssertion, null, 2),
-        // "preValueToTest typeof", typeof preValueToTest,
-        // "preValueToTest instanceof Array", preValueToTest instanceof Array,
-        "preValueToTest is array",
-        Array.isArray(preValueToTest),
-        // "preValueToTest object proto is array", JSON.stringify(Object.prototype.toString.call(preValueToTest)),
-        // "preValueToTest constuctor is array", preValueToTest.constructor === Array,
-        "preValueToTest",
-        JSON.stringify(preValueToTest, null, 2),
-        "valueToTest",
-        JSON.stringify(valueToTest, null, 2)
-      );
-      try {
-        ConfigurationService.testImplementation
-          .expect(valueToTest, compositeRunTestAssertion.nameGivenToResult)
-          .toEqual(compositeRunTestAssertion.testAssertion.definition.expectedValue);
-        log.info(
-          "handleCompositeAction compositeRunTestAssertion test passed",
-          compositeRunTestAssertion.testAssertion
-        );
-        actionResult = ACTION_OK;
-        TestSuiteContext.setTestAssertionResult({
-          assertionName: compositeRunTestAssertion.testAssertion.testLabel,
-          assertionResult: "ok",
-          // assertionExpectedValue: compositeRunTestAssertion.testAssertion.definition.expectedValue,
-          // assertionActualValue: valueToTest,
-        });
-      } catch (error) {
-        TestSuiteContext.setTestAssertionResult({
-          assertionName: compositeRunTestAssertion.testAssertion.testLabel,
-          assertionResult: "error",
-          assertionExpectedValue: compositeRunTestAssertion.testAssertion.definition.expectedValue,
-          assertionActualValue: valueToTest,
-        });
-        return ACTION_OK;
-      }
-    } catch (error) {
-      log.error("handleCompositeAction compositeRunTestAssertion error", error);
-      // TODO: 2 try catch blocks, one for the expect, one for the rest
-      TestSuiteContext.setTestAssertionResult({
-        assertionName: compositeRunTestAssertion.testAssertion.testLabel,
-        assertionResult: "error",
-        // TODO: set error message
-        // assertionExpectedValue: compositeRunTestAssertion.testAssertion.definition.expectedValue,
-        // assertionActualValue: valueToTest,
-      });
-      // return {
-      //   status: "ok",
-      //   returnedDomainElement: { elementType: "void" },
-      // };
-      throw new Error(
-        "handleCompositeAction compositeRunTestAssertion error" + JSON.stringify(error, null, 2)
-      );
-    } finally {
-      TestSuiteContext.setTestAssertion(undefined);
-    }
-    return (
-      actionResult ??
-      new Action2Error(
-        "FailedToHandleCompositeActionTestAssertion",
-        "handleTestCompositeActionAssertionNOTUSED compositeRunTestAssertion error: " +
-          JSON.stringify(compositeRunTestAssertion)
-      )
-    );
-  }
+  //     valueToTest = Array.isArray(preValueToTest)
+  //       ? ignorePostgresExtraAttributesOnList(
+  //           preValueToTest,
+  //           compositeRunTestAssertion.testAssertion.definition.ignoreAttributes ?? []
+  //         )
+  //       : ignorePostgresExtraAttributesOnObject(
+  //           preValueToTest,
+  //           compositeRunTestAssertion.testAssertion.definition.ignoreAttributes ?? []
+  //         );
+  //     log.info(
+  //       "handleCompositeAction compositeRunTestAssertion to handle",
+  //       JSON.stringify(compositeRunTestAssertion.testAssertion, null, 2),
+  //       // "preValueToTest typeof", typeof preValueToTest,
+  //       // "preValueToTest instanceof Array", preValueToTest instanceof Array,
+  //       "preValueToTest is array",
+  //       Array.isArray(preValueToTest),
+  //       // "preValueToTest object proto is array", JSON.stringify(Object.prototype.toString.call(preValueToTest)),
+  //       // "preValueToTest constuctor is array", preValueToTest.constructor === Array,
+  //       "preValueToTest",
+  //       JSON.stringify(preValueToTest, null, 2),
+  //       "valueToTest",
+  //       JSON.stringify(valueToTest, null, 2)
+  //     );
+  //     try {
+  //       ConfigurationService.testImplementation
+  //         .expect(valueToTest, compositeRunTestAssertion.nameGivenToResult)
+  //         .toEqual(compositeRunTestAssertion.testAssertion.definition.expectedValue);
+  //       log.info(
+  //         "handleCompositeAction compositeRunTestAssertion test passed",
+  //         compositeRunTestAssertion.testAssertion
+  //       );
+  //       actionResult = ACTION_OK;
+  //       TestSuiteContext.setTestAssertionResult({
+  //         assertionName: compositeRunTestAssertion.testAssertion.testLabel,
+  //         assertionResult: "ok",
+  //         // assertionExpectedValue: compositeRunTestAssertion.testAssertion.definition.expectedValue,
+  //         // assertionActualValue: valueToTest,
+  //       });
+  //     } catch (error) {
+  //       TestSuiteContext.setTestAssertionResult({
+  //         assertionName: compositeRunTestAssertion.testAssertion.testLabel,
+  //         assertionResult: "error",
+  //         assertionExpectedValue: compositeRunTestAssertion.testAssertion.definition.expectedValue,
+  //         assertionActualValue: valueToTest,
+  //       });
+  //       return ACTION_OK;
+  //     }
+  //   } catch (error) {
+  //     log.error("handleCompositeAction compositeRunTestAssertion error", error);
+  //     // TODO: 2 try catch blocks, one for the expect, one for the rest
+  //     TestSuiteContext.setTestAssertionResult({
+  //       assertionName: compositeRunTestAssertion.testAssertion.testLabel,
+  //       assertionResult: "error",
+  //       // TODO: set error message
+  //       // assertionExpectedValue: compositeRunTestAssertion.testAssertion.definition.expectedValue,
+  //       // assertionActualValue: valueToTest,
+  //     });
+  //     // return {
+  //     //   status: "ok",
+  //     //   returnedDomainElement: { elementType: "void" },
+  //     // };
+  //     throw new Error(
+  //       "handleCompositeAction compositeRunTestAssertion error" + JSON.stringify(error, null, 2)
+  //     );
+  //   } finally {
+  //     TestSuiteContext.setTestAssertion(undefined);
+  //   }
+  //   return (
+  //     actionResult ??
+  //     new Action2Error(
+  //       "FailedToHandleCompositeActionTestAssertion",
+  //       "handleTestCompositeActionAssertionNOTUSED compositeRunTestAssertion error: " +
+  //         JSON.stringify(compositeRunTestAssertion)
+  //     )
+  //   );
+  // }
 
   // ##############################################################################################
   private actionHandler: ActionHandler;

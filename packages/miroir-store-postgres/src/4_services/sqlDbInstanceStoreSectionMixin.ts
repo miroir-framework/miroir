@@ -399,8 +399,16 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
         "######################################################### upsertInstance #####################################################"
       );
       try {
+        console.log(
+          "upsertInstance for instance:",
+          JSON.stringify(instance, null, 2)
+        );
         const sequelizeModel = this.sqlSchemaTableAccess[instance.parentUuid].sequelizeModel;
         const tmp = await sequelizeModel.upsert(instance as any);
+        console.log(
+          "upsertInstance sequelizeModel.upsert done:",
+          JSON.stringify(instance, null, 2)
+        );
       } catch (error: any) {
         const errorText: string = error.toString();
         log.error(

@@ -82,7 +82,7 @@ export type EntityInstancesUuidIndexEntityInstanceArraySelector = (entityInstanc
 // ###################################################################################
 export interface DomainControllerInterface {
   // handleAction(deploymentUuid: Uuid, action: DomainAction, currentModel?: MetaModel): Promise<void>;
-  handleQueryActionOrBoxedExtractorAction(
+  handleBoxedExtractorOrQueryAction(
     action: RunBoxedExtractorOrQueryAction,
     currentModel?: MetaModel
   ): Promise<Action2ReturnType>;

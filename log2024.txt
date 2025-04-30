@@ -2,7 +2,7 @@ commit 501c5edc99181ab2d90972eb621ce9acc0bda0a8
 Author: Miroir Framework <miroir-framework@protonmail.com>
 Date:   Sun Dec 29 23:19:26 2024 +0100
 
-    REFACTOR: in DomainController.handleQueryActionOrBoxedExtractorAction, using LocalCache by default to run queries, instead of callRemotePersistenceAction.
+    REFACTOR: in DomainController.handleBoxedExtractorOrQueryAction, using LocalCache by default to run queries, instead of callRemotePersistenceAction.
 
  24 files changed, 887 insertions(+), 581 deletions(-)
 

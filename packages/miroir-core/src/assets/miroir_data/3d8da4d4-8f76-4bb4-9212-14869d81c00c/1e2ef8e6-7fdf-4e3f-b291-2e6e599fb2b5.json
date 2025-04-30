@@ -127,14 +127,14 @@
                   {
                     "type": "object",
                     "definition": {
-                      "actionType": { "type": "literal", "definition": "compositeRunBoxedQueryTemplateAction" },
+                      "actionType": { "type": "literal", "definition": "compositeRunBoxedQueryAction" },
                       "actionLabel": { "type": "string", "optional": true },
                       "nameGivenToResult": { "type": "string" },
                       "queryTemplate": {
                         "type": "schemaReference",
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "runBoxedQueryTemplateAction"
+                          "relativePath": "runBoxedQueryAction"
                         }
                       }
                     }
@@ -142,14 +142,14 @@
                   {
                     "type": "object",
                     "definition": {
-                      "actionType": { "type": "literal", "definition": "compositeRunBoxedExtractorTemplateAction" },
+                      "actionType": { "type": "literal", "definition": "compositeRunBoxedExtractorAction" },
                       "actionLabel": { "type": "string", "optional": true },
                       "nameGivenToResult": { "type": "string" },
                       "queryTemplate": {
                         "type": "schemaReference",
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "runBoxedExtractorTemplateAction"
+                          "relativePath": "runBoxedExtractorAction"
                         }
                       }
                     }
@@ -165,21 +165,6 @@
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                           "relativePath": "runBoxedExtractorOrQueryAction"
-                        }
-                      }
-                    }
-                  },
-                  {
-                    "type": "object",
-                    "definition": {
-                      "actionType": { "type": "literal", "definition": "compositeRunBoxedQueryTemplateOrBoxedExtractorTemplateAction" },
-                      "actionLabel": { "type": "string", "optional": true },
-                      "nameGivenToResult": { "type": "string" },
-                      "queryTemplate": {
-                        "type": "schemaReference",
-                        "definition": {
-                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "runBoxedQueryTemplateOrBoxedExtractorTemplateAction"
                         }
                       }
                     }

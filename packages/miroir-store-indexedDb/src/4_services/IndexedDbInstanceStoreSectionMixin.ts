@@ -78,7 +78,7 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
 
     // #############################################################################################
     async handleBoxedExtractorTemplateActionForServerONLY(query: RunBoxedExtractorTemplateAction): Promise<Action2ReturnType> {
-      log.info(this.logHeader,'handleQueryTemplateActionForServerONLY', 'query',query);
+      log.info(this.logHeader,'handleBoxedExtractorTemplateActionForServerONLY', 'query',query);
       
       const result: Action2ReturnType = await this.extractorTemplateRunner.handleBoxedExtractorTemplateActionForServerONLY(query);
 

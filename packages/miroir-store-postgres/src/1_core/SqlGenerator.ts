@@ -2576,7 +2576,12 @@ export function sqlStringForRuntimeTransformer(
       }
       switch (foundApplicationTransformer.transformerImplementation.transformerImplementationType) {
         case "libraryImplementation": {
-          if (!sqlTransformerImplementations[foundApplicationTransformer.transformerImplementation.sqlImplementationFunctionName]) {
+          if (
+            !foundApplicationTransformer.transformerImplementation.sqlImplementationFunctionName ||
+            !sqlTransformerImplementations[
+              foundApplicationTransformer.transformerImplementation.sqlImplementationFunctionName
+            ]
+          ) {
             return new Domain2ElementFailed({
               queryFailure: "QueryNotExecutable",
               query: actionRuntimeTransformer as any,

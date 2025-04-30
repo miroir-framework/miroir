@@ -342,7 +342,7 @@ export async function queryActionHandler(
   );
   // USING THE LOCAL CACHE OR THE LOCAL PERSISTENCE STORE 
   // SHALL BE DETERMINED BY DOMAINCONTROLLER DEPENDING ON THE QUERY
-  const result = await domainController.handleQueryActionOrBoxedExtractorAction(runBoxedExtractorOrQueryAction)
+  const result = await domainController.handleBoxedExtractorOrQueryAction(runBoxedExtractorOrQueryAction)
   log.info(
     "RestServer queryActionHandler used domainController result=",
     JSON.stringify(result, undefined, 2)
