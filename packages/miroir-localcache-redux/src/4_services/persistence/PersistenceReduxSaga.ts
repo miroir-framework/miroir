@@ -224,6 +224,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
     return Promise.resolve(result);
   }
   
+  // ###############################################################################
   async handlePersistenceActionForLocalPersistenceStore(action: PersistenceAction): Promise<Action2ReturnType> {
     if (!this.localCache) {
       throw new Error(
@@ -545,7 +546,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
       );
     }
     // indirect access to a remote storeController through the network
-    // log.info("handlePersistenceAction calling remoteStoreNetworkClient on action",JSON.stringify(action));
+    log.info("handlePersistenceAction calling remoteStoreNetworkClient on action",JSON.stringify(action));
     const clientResult: RestClientCallReturnType = yield* call(() =>
       remotePersistenceStoreRestClient.handleNetworkPersistenceAction(action)
     );

@@ -57,6 +57,7 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
   } = {
     RestPersistenceAction: { "*": { attribute: "objects", result: "crudInstances" } },
     modelAction: { "*": { action: true } },
+    runBoxedQueryAction: { "*": { action: true } },
     runBoxedExtractorOrQueryAction: { "*": { action: true } },
     runBoxedQueryTemplateOrBoxedExtractorTemplateAction: { "*": { action: true } },
     runBoxedQueryTemplateAction: { "*": { action: true } },
@@ -67,7 +68,7 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
 
   // ##################################################################################
   getRestCallParams(
-    networkAction: PersistenceAction,
+    persistenceAction: PersistenceAction,
     rootApiUrl: string
   ): {
     operation: (rawUrl:string, endpoint: string, customConfig: any) => Promise<RestClientCallReturnType>;
@@ -77,40 +78,43 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
     const networkActionUrlMap: { [actionName: string]: string } = {
       read:
         "/" +
-        ((networkAction as RestPersistenceAction).uuid ?? (networkAction as RestPersistenceAction).parentUuid + "/all"),
-      create: "/" + ((networkAction as RestPersistenceAction).uuid ?? ""),
-      update: "/" + ((networkAction as RestPersistenceAction).uuid ?? ""),
-      delete: "/" + ((networkAction as RestPersistenceAction).uuid ?? ""),
+        ((persistenceAction as RestPersistenceAction).uuid ?? (persistenceAction as RestPersistenceAction).parentUuid + "/all"),
+      create: "/" + ((persistenceAction as RestPersistenceAction).uuid ?? ""),
+      update: "/" + ((persistenceAction as RestPersistenceAction).uuid ?? ""),
+      delete: "/" + ((persistenceAction as RestPersistenceAction).uuid ?? ""),
     };
 
     let args;
-    if (this.actionTypeArgsMap[networkAction.actionType]) {
-      if (this.actionTypeArgsMap[networkAction.actionType]["*"]) {
-        if (this.actionTypeArgsMap[networkAction.actionType]["*"]?.action) {
-          args = networkAction;
+    if (this.actionTypeArgsMap[persistenceAction.actionType]) {
+      if (this.actionTypeArgsMap[persistenceAction.actionType]["*"]) {
+        if (this.actionTypeArgsMap[persistenceAction.actionType]["*"]?.action) {
+          args = persistenceAction;
         } else {
           args = {
-            [this.actionTypeArgsMap[networkAction.actionType]["*"]?.result ?? "ERROR"]: (networkAction as any)[
-              this.actionTypeArgsMap[networkAction.actionType]["*"]?.attribute ?? "ERROR"
+            [this.actionTypeArgsMap[persistenceAction.actionType]["*"]?.result ?? "ERROR"]: (persistenceAction as any)[
+              this.actionTypeArgsMap[persistenceAction.actionType]["*"]?.attribute ?? "ERROR"
             ],
           };
         }
       } else {
-        args = this.actionTypeArgsMap[networkAction.actionType][networkAction.actionName]
+        args = this.actionTypeArgsMap[persistenceAction.actionType][persistenceAction.actionName]
           ? {
-              [this.actionTypeArgsMap[networkAction.actionType][networkAction.actionName]?.result ?? "ERROR"]: (
-                networkAction as any
-              )[this.actionTypeArgsMap[networkAction.actionType][networkAction.actionName]?.attribute ?? "ERROR"],
+              [this.actionTypeArgsMap[persistenceAction.actionType][persistenceAction.actionName]?.result ?? "ERROR"]: (
+                persistenceAction as any
+              )[this.actionTypeArgsMap[persistenceAction.actionType][persistenceAction.actionName]?.attribute ?? "ERROR"],
             }
           : {};
       }
     } else {
+      throw new Error(
+        "getRestCallParams could not find actionTypeArgsMap for actionType " + persistenceAction.actionType + "action" + JSON.stringify(persistenceAction, undefined, 2)
+      );
       args = {};
     }
 
     return {
-      operation: (this.operationMethod as any)[(actionHttpMethods as any)[networkAction.actionName] ?? "post"],
-      url: rootApiUrl + (networkActionUrlMap[networkAction.actionName] ?? ""),
+      operation: (this.operationMethod as any)[(actionHttpMethods as any)[persistenceAction.actionName] ?? "post"],
+      url: rootApiUrl + (networkActionUrlMap[persistenceAction.actionName] ?? ""),
       args,
     };
   }
@@ -138,7 +142,7 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
       case "runBoxedExtractorOrQueryAction":
       case "runBoxedQueryAction": {
         const callParams = this.getRestCallParams(action, this.rootApiUrl + "/query");
-        log.debug("handleNetworkPersistenceAction", action, "callParams", callParams);
+        log.info("handleNetworkPersistenceAction", action, "callParams", callParams);
         const result = await callParams.operation("/query",callParams.url, callParams.args);
         log.info("handleNetworkPersistenceAction", action, "result", result);
         return result;
@@ -155,6 +159,11 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
         break;
       }
       case "RestPersistenceAction": {
+        if (typeof action.deploymentUuid !== "string") {
+          throw new Error(
+            "handleNetworkPersistenceAction could not find deploymentUuid in action " + JSON.stringify(action, undefined, 2)
+          );
+        }
         const callParams = this.getRestCallParams(
           action,
           this.rootApiUrl + "/CRUD/" + action.deploymentUuid + "/" + action.section.toString() + "/entity"

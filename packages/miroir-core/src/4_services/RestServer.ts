@@ -290,7 +290,12 @@ export async function restActionHandler(
          *  */ 
         const localPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(action.deploymentUuid);
         if (!localPersistenceStoreController) {
-          throw new Error("could not find controller for deployment: " + action.deploymentUuid);
+          throw new Error(
+            "could not find controller for deployment: " +
+              action.deploymentUuid +
+              " action: " +
+              JSON.stringify(action, undefined, 2)
+          );
         }
           const result = await localPersistenceStoreController.handleAction(action)
         return continuationFunction(response)(result)

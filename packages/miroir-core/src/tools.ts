@@ -109,7 +109,7 @@ export function resolvePathOnObject(valueObject:any, path: ResultAccessPath) {
             " either attribute " +
             curr +
             " not found in " +
-            acc +
+            JSON.stringify(acc) +
             " or not last in path but leading to undefined " +
             (curr as any)[acc]
         );
@@ -127,7 +127,7 @@ export function resolvePathOnObject(valueObject:any, path: ResultAccessPath) {
             " either attribute " +
             curr +
             " not found in " +
-            acc +
+            JSON.stringify(acc) +
             " or not last in path but leading to undefined " +
             (curr as any)[acc]
         );

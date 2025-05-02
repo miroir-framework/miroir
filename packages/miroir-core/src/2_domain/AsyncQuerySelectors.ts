@@ -352,6 +352,10 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
       return Promise.resolve(
         new Domain2ElementFailed({
           queryFailure: "QueryNotExecutable",
+          failureOrigin: ["AsyncQuerySelectors", "asyncInnerSelectElementFromQuery"],
+          failureMessage:
+            "could not find extractorOrCombinerType for extractor: " +
+            JSON.stringify(extractorOrCombiner),
           query: extractorOrCombiner,
         })
       );

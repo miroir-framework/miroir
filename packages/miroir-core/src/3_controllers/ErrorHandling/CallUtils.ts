@@ -3,7 +3,7 @@ import {
   LocalCacheAction,
   PersistenceAction,
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { Action2ReturnType } from "../../0_interfaces/2_domain/DomainElement";
+import { Action2Error, Action2ReturnType } from "../../0_interfaces/2_domain/DomainElement";
 import { ErrorLogServiceInterface, MError } from "../../0_interfaces/3_controllers/ErrorLogServiceInterface";
 import { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface";
 import { PersistenceStoreLocalOrRemoteInterface } from "../../0_interfaces/4-services/PersistenceInterface";
@@ -75,31 +75,32 @@ export class CallUtils {
       expectedValue?: any;
     },
     action: PersistenceAction
-  ): Promise<Record<string, any>> {
+  ): Promise<Record<string, any> | Action2Error> {
     if (action.actionType !== "modelAction" || action.actionName !== "initModel") {
-      log.info("CallUtils callPersistenceAction called with",
+      log.info("CallUtils callRemotePersistenceAction called with",
         "action",
         JSON.stringify(action, null, 2)
       );
     } 
     // else {
-    //   log.info("CallUtils callPersistenceAction called with",
+    //   log.info("CallUtils callRemotePersistenceAction called with",
     //     "action",
     //     action.actionType,
     //     action.actionName
     //   );
     // }
     const result: Action2ReturnType = await this.persistenceStoreLocalOrRemote.handlePersistenceAction(action);
-    log.info("CallUtils callPersistenceAction received result", result);
+    log.info("CallUtils callRemotePersistenceAction received result", result);
     if (result["status"] == "error") {
       //ensure the proper persistence of errors in the local storage, for it to be accessible by view components.
       // Problem: what if the local storage is not accessible? => store it in a in-memory effect.
-      const error: MError = { errorMessage: result.errorMessage };
+      const error: MError = { errorMessage: JSON.stringify(result) };
       this.errorLogService.pushError(error);
-      throw error;
+      // throw error;
+      return result;
     } else {
-      // log.info("CallUtils callPersistenceAction ok", result);
-      // log.info("CallUtils callPersistenceAction continuation", continuation);
+      // log.info("CallUtils callRemotePersistenceAction ok", result);
+      // log.info("CallUtils callRemotePersistenceAction continuation", continuation);
       const transformedResult = continuation.resultTransformation
         ? continuation.resultTransformation(result, context)
         : result;

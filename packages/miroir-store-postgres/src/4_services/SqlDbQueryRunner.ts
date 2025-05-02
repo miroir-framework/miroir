@@ -131,7 +131,7 @@ export class SqlDbQueryRunner {
   asyncExtractWithQuery = async (
     selectorParams: AsyncQueryRunnerParams,
   ): Promise<Domain2QueryReturnType<Record<string, any>>> => {
-    log.info("########## asyncRunQuery begin, selectorParams", JSON.stringify(selectorParams, null, 2));
+    log.info("########## asyncExtractWithQuery begin, selectorParams", JSON.stringify(selectorParams, null, 2));
   
     // if (selectorParams.extractor.)
     const sqlQueryParams = sqlStringForQuery(
@@ -166,7 +166,12 @@ export class SqlDbQueryRunner {
   
       if (rawResult instanceof Action2Error || rawResult.returnedDomainElement instanceof Domain2ElementFailed) {
         // log.error("asyncExtractWithQuery rawResult", JSON.stringify(rawResult));
-        return Promise.resolve({ elementType: "failure", elementValue: { queryFailure: "QueryNotExecutable" } });
+        return Promise.resolve({
+          elementType: "failure",
+          failureOrigin: ["asyncExtractWithQuery"],
+          elementValue: { queryFailure: "QueryNotExecutable" },
+          innerError: rawResult,
+        });
       }
   
       const endResultPath =
@@ -208,7 +213,8 @@ export class SqlDbQueryRunner {
       log.error("asyncExtractWithQuery query FAILED with error", JSON.stringify(error, null, 2));
       return Promise.resolve(
         new Domain2ElementFailed({
-          queryFailure: "QueryNotExecutable",
+          // queryFailure: "QueryNotExecutable",
+          queryFailure: "FailedExtractor",
           failureOrigin: ["asyncExtractWithQuery"],
           query: JSON.stringify(selectorParams),
           failureMessage: error as any,

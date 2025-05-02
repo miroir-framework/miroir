@@ -263,6 +263,13 @@ export class DomainController implements DomainControllerInterface {
           }
         )
         .then(async (context) => {
+          if (context instanceof Action2Error) {
+            throw new Error(
+              "DomainController loadConfigurationFromPersistenceStore could not fetch entity instance list " +
+                JSON.stringify(context, undefined, 2)
+            );
+          }
+    
           log.info(
             "DomainController loadConfigurationFromPersistenceStore fetched list of Entities for deployment",
             deploymentUuid,
@@ -635,6 +642,9 @@ export class DomainController implements DomainControllerInterface {
         runBoxedQueryTemplateAction
       );
       log.info("handleQueryTemplateActionForServerONLY callPersistenceAction Result=", result);
+      if (result instanceof Action2Error) {
+        return result;
+      }
       return result["dataEntitiesFromModelSection"];
     }
 
@@ -702,6 +712,10 @@ export class DomainController implements DomainControllerInterface {
         "handleBoxedExtractorTemplateActionForServerONLY callPersistenceAction Result=",
         result
       );
+      if (result instanceof Action2Error) {
+        return result;
+      }
+
       return result["dataEntitiesFromModelSection"];
     }
 
@@ -772,6 +786,10 @@ export class DomainController implements DomainControllerInterface {
         "handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY callPersistenceAction Result=",
         result
       );
+      if (result instanceof Action2Error) {
+        return result;
+      }
+
       return result["dataEntitiesFromModelSection"];
     }
 
@@ -1280,7 +1298,7 @@ export class DomainController implements DomainControllerInterface {
 
     log.info(
       "handleCompositeAction compositeAction",
-      compositeAction,
+      JSON.stringify(compositeAction, null, 2),
       "localActionParams keys",
       Object.keys(localActionParams)
     );
@@ -1328,6 +1346,7 @@ export class DomainController implements DomainControllerInterface {
                 JSON.stringify(currentAction, null, 2)
               );
             }
+            // TODO: resolve runtime transformers for all composite actions. Should there be preserved areas?
             const resolvedAction = transformer_extended_apply(
               "runtime",
               currentAction.actionLabel,
@@ -1341,8 +1360,8 @@ export class DomainController implements DomainControllerInterface {
               "handleCompositeAction resolvedAction action to handle",
               JSON.stringify(resolvedAction, null, 2)
             );
-            // actionResult = await this.handleAction(currentAction, currentModel);
             actionResult = await this.handleAction(resolvedAction, currentModel);
+            // actionResult = await this.handleAction(currentAction, currentModel);
             if (actionResult instanceof Action2Error) {
               log.error(
                 "handleCompositeAction Error on action",
@@ -1365,16 +1384,16 @@ export class DomainController implements DomainControllerInterface {
             //   actionParamValues,
             //   localContext
             // );
-            log.info(
-              "handleCompositeRunBoxedQueryTemplateAction to handle",
-              currentAction,
-              "with actionParamValues",
-              actionParamValues
-            );
+            // log.info(
+            //   "handleCompositeAction to handle",
+            //   currentAction,
+            //   "with actionParamValues",
+            //   actionParamValues
+            // );
         
             if (currentAction.queryTemplate == undefined) {
               throw new Error(
-                "handleCompositeRunBoxedQueryTemplateAction currentAction.queryTemplate is undefined"
+                "handleCompositeAction currentAction.queryTemplate is undefined"
               );
             }
 
@@ -1384,7 +1403,7 @@ export class DomainController implements DomainControllerInterface {
             );
             if (actionResult instanceof Action2Error) {
               log.error(
-                "Error on handleCompositeRunBoxedQueryTemplateAction with nameGivenToResult",
+                "Error on handleCompositeAction with nameGivenToResult",
                 currentAction.nameGivenToResult,
                 "query=",
                 JSON.stringify(actionResult, null, 2)
@@ -1392,14 +1411,14 @@ export class DomainController implements DomainControllerInterface {
             } else {
               if (actionResult.returnedDomainElement instanceof Domain2ElementFailed) {
                 log.error(
-                  "Error on handleCompositeRunBoxedQueryTemplateAction with nameGivenToResult",
+                  "Error on handleCompositeAction with nameGivenToResult",
                   currentAction.nameGivenToResult,
                   "query=",
                   JSON.stringify(actionResult, null, 2)
                 );
               } else {
                 log.info(
-                  "handleCompositeActionTemplate handleCompositeRunBoxedQueryTemplateAction adding result to context as",
+                  "handleCompositeActionTemplate adding result to context as",
                   currentAction.nameGivenToResult,
                   "value",
                   actionResult
