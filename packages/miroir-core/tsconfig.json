@@ -9,6 +9,7 @@
     "rootDir": "./",
     "baseUrl": "./",
     "types": ["node", "jest"],
+    "allowSyntheticDefaultImports":true
   },
   "exclude": [
     "dist",

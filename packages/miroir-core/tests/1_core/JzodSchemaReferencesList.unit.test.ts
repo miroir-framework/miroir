@@ -1,24 +1,24 @@
 // import { describe, it, expect } from 'vitest';
 import type { JzodElement, JzodObject } from '@miroir-framework/jzod-ts';
-import { JzodSchemaReferences } from '../../src/1_core/jzod/JzodSchemaReferences';
+import { JzodSchemaReferencesList } from '../../src/1_core/jzod/JzodSchemaReferences';
 
-describe('JzodSchemaReferences', () => {
+describe('JzodSchemaReferencesList.unit', () => {
   it('returns empty array for a literal element', () => {
     const element: JzodElement = { type: 'literal', definition: 'testLiteral' };
-    const refs = JzodSchemaReferences(element);
+    const refs = JzodSchemaReferencesList(element);
     expect(refs).toEqual([]);
   });
 
   it('detects a direct schemaReference element', () => {
     const refElement: JzodElement = { type: 'schemaReference', definition: { relativePath: 'a' } };
-    const refs = JzodSchemaReferences(refElement);
+    const refs = JzodSchemaReferencesList(refElement);
     expect(refs).toEqual([refElement]);
   });
 
   it('detects schemaReference in an object extend (single value)', () => {
     const refElement: JzodElement = { type: 'schemaReference', definition: { relativePath: 'extended' } };
     const element: JzodElement = { type: 'object', extend: refElement, definition: { a: { type: "string" }} };
-    const refs = JzodSchemaReferences(element);
+    const refs = JzodSchemaReferencesList(element);
     expect(refs).toEqual([refElement]);
   });
 
@@ -27,7 +27,7 @@ describe('JzodSchemaReferences', () => {
     const refElement2: JzodElement = { type: 'schemaReference', definition: { relativePath: 'second' } };
     const nonRef: JzodElement = { type: 'literal', definition: 'no-ref' };
     const element: JzodObject = { type: 'object', extend: [refElement1, refElement2] as any, definition: { a: nonRef } };
-    const refs = JzodSchemaReferences(element);
+    const refs = JzodSchemaReferencesList(element);
     expect(refs).toEqual([refElement1, refElement2]);
   });
 
@@ -35,14 +35,22 @@ describe('JzodSchemaReferences', () => {
     const refElement1: JzodElement = { type: 'schemaReference', definition: { relativePath: 'first' } };
     const refElement2: JzodElement = { type: 'schemaReference', definition: { relativePath: 'second' } };
     const element: JzodObject = { type: 'object', extend: refElement1, definition: { a: refElement2 } };
-    const refs = JzodSchemaReferences(element);
+    const refs = JzodSchemaReferencesList(element);
     expect(refs).toEqual([refElement1, refElement2]);
+  });
+
+  it('detects schemaReference in an object definition without taking extend into account', () => {
+    const refElement1: JzodElement = { type: 'schemaReference', definition: { relativePath: 'first' } };
+    const refElement2: JzodElement = { type: 'schemaReference', definition: { relativePath: 'second' } };
+    const element: JzodObject = { type: 'object', extend: refElement1, definition: { a: refElement2 } };
+    const refs = JzodSchemaReferencesList(element, false);
+    expect(refs).toEqual([refElement2]);
   });
 
   it('recursively detects schemaReference in union definitions', () => {
     const refInUnion: JzodElement = { type: 'schemaReference', definition: { relativePath: 'unionRef' } };
     const element: JzodElement = { type: 'union', definition: [refInUnion, { type: 'number' }] };
-    const refs = JzodSchemaReferences(element);
+    const refs = JzodSchemaReferencesList(element);
     expect(refs).toEqual([refInUnion]);
   });
 
@@ -53,7 +61,7 @@ describe('JzodSchemaReferences', () => {
       type: 'intersection',
       definition: { left: leftRef, right: rightRef },
     };
-    const refs = JzodSchemaReferences(element);
+    const refs = JzodSchemaReferencesList(element);
     expect(refs).toEqual([leftRef, rightRef]);
   });
 
@@ -67,7 +75,7 @@ describe('JzodSchemaReferences', () => {
         returns: returnRef,
       },
     };
-    const refs = JzodSchemaReferences(element);
+    const refs = JzodSchemaReferencesList(element);
     expect(refs).toEqual([argRef, returnRef]);
   });
 
@@ -76,7 +84,7 @@ describe('JzodSchemaReferences', () => {
   //   const unionNode: JzodElement = { type: 'union', definition: [{ type: 'number' }, deepRef] };
   //   const arrayNode: JzodElement = { type: 'array', definition: unionNode };
   //   const objectNode: JzodElement = { type: 'object', extend: [{ type: 'literal', definition: 'ignore' }, arrayNode] };
-  //   const refs = JzodSchemaReferences(objectNode);
+  //   const refs = JzodSchemaReferencesList(objectNode);
   //   expect(refs).toEqual([deepRef]);
   // });
 });

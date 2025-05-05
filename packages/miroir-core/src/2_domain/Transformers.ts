@@ -118,16 +118,26 @@ const buildReferenceMap: Record<string, string> = {
   transformer_mustacheStringTemplate: "transformerForBuild_mustacheStringTemplate", // TODO: rename to transformer_mustacheStringTemplate
 };
 
-export const miroirTransformersForRuntime: Record<string,JzodElement> = Object.fromEntries(
+export const miroirTransformersForRuntime: Record<string, JzodElement> = Object.fromEntries(
   Object.entries(miroirTransformers).map(([key, transformer]) => [
     key,
-    transformerInterfaceFromDefinition(transformer, "runtime", runtimeReferenceMap, ["transformer_contextReference", "transformer_parameterReference"].includes(key)),
+    transformerInterfaceFromDefinition(
+      transformer,
+      "runtime",
+      runtimeReferenceMap,
+      ["transformer_contextReference", "transformer_parameterReference"].includes(key)
+    ),
   ])
 );
 
-export const miroirTransformersForBuild: Record<string,JzodElement> = Object.fromEntries(
+export const miroirTransformersForBuild: Record<string, JzodElement> = Object.fromEntries(
   Object.entries(miroirTransformers).map(([key, transformer]) => [
     key,
-    transformerInterfaceFromDefinition(transformer, "build", buildReferenceMap, key == "transformer_parameterReference"),
+    transformerInterfaceFromDefinition(
+      transformer,
+      "build",
+      buildReferenceMap,
+      key == "transformer_parameterReference"
+    ),
   ])
 );

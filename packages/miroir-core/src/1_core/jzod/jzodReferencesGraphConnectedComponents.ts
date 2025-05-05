@@ -1,11 +1,14 @@
 import { JzodElement, JzodReference } from "@miroir-framework/jzod-ts";
-import { JzodSchemaReferences } from "./JzodSchemaReferences";
+import { JzodSchemaReferencesList } from "./JzodSchemaReferencesList";
 import { Graph, alg } from "@dagrejs/graphlib";
 
-export function jzodReferencesGraphConnectedComponents(elements:Record<string,JzodElement>, filter?: string[]): string[][] | undefined {
+export function jzodReferencesGraphConnectedComponents(
+  elements: Record<string, JzodElement>,
+  filter?: string[]
+): string[][] | undefined {
   const graph = new Graph();
   for (const element of Object.entries(elements)) {
-    const refs:JzodReference[] = JzodSchemaReferences(element[1]);
+    const refs: JzodReference[] = JzodSchemaReferencesList(element[1]);
     if (!graph.hasNode(element[0])) {
       graph.setNode(element[0]);
     }
