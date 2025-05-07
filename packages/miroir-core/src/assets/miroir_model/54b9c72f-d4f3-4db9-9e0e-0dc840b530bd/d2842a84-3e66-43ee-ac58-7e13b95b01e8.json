@@ -1,7 +1,7 @@
 {
+  "parentName": "EntityDefinition",
   "name": "Test",
   "uuid": "d2842a84-3e66-43ee-ac58-7e13b95b01e8",
-  "parentName": "EntityDefinition",
   "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
   "entityUuid": "c37625c7-0b35-4d6a-811d-8181eb978301",
   "conceptLevel": "Model",
@@ -54,6 +54,51 @@
         "type": "union",
         "discriminator": "testType",
         "definition": [
+          {
+            "type": "object",
+            "definition": {
+              "testType": {
+                "type": "literal",
+                "definition": "testCompositeAction"
+              },
+              "testLabel": {
+                "type": "string"
+              },
+              "beforeTestSetupAction": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "compositeAction"
+                }
+              },
+              "afterTestCleanupAction": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "compositeAction"
+                }
+              },
+              "compositeAction": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "compositeAction"
+                }
+              },
+              "testCompositeActionAssertions": {
+                "type": "array",
+                "definition": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "compositeRunTestAssertion"
+                  }
+                }
+              }
+            }
+          },
           {
             "type": "object",
             "definition": {
@@ -113,7 +158,7 @@
             "definition": {
               "testType": {
                 "type": "literal",
-                "definition": "testCompositeAction"
+                "definition": "testRuntimeCompositeAction"
               },
               "testLabel": {
                 "type": "string"
@@ -138,7 +183,7 @@
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "compositeAction"
+                  "relativePath": "runtimeCompositeAction"
                 }
               },
               "testCompositeActionAssertions": {
@@ -148,6 +193,60 @@
                   "definition": {
                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                     "relativePath": "compositeRunTestAssertion"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "testType": {
+                "type": "literal",
+                "definition": "testRuntimeCompositeActionSuite"
+              },
+              "testLabel": {
+                "type": "string"
+              },
+              "beforeAll": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "compositeAction"
+                }
+              },
+              "beforeEach": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "compositeAction"
+                }
+              },
+              "afterEach": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "compositeAction"
+                }
+              },
+              "afterAll": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "compositeAction"
+                }
+              },
+              "testCompositeActions": {
+                "type": "record",
+                "definition": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "testRuntimeCompositeAction"
                   }
                 }
               }

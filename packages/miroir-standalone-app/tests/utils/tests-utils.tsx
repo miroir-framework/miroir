@@ -64,6 +64,7 @@ import { packageName } from '../../src/constants';
 import { MiroirContextReactProvider } from '../../src/miroir-fwk/4_view/MiroirContextReactProvider';
 import { cleanLevel } from '../../src/miroir-fwk/4_view/constants';
 import { ApplicationEntitiesAndInstances } from "./tests-utils-testOnLibrary";
+import { TestRuntimeCompositeAction, TestRuntimeCompositeActionSuite } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -87,6 +88,18 @@ export type TestActionParams =
       testActionLabel: string;
       deploymentUuid: Uuid;
       testCompositeAction: TestCompositeAction;
+    }
+  | {
+      testActionType: "testRuntimeCompositeActionSuite";
+      testActionLabel: string;
+      deploymentUuid: Uuid;
+      testCompositeAction: TestRuntimeCompositeActionSuite;
+    }
+  | {
+      testActionType: "testRuntimeCompositeAction";
+      testActionLabel: string;
+      deploymentUuid: Uuid;
+      testCompositeAction: TestRuntimeCompositeAction;
     }
   | {
       testActionType: "testCompositeActionTemplate";
@@ -848,9 +861,10 @@ export async function runTestOrTestSuite(
   log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ STARTING test:", fullTestName, testAction.testActionType);
 
   switch (testAction.testActionType) {
+    case "testRuntimeCompositeActionSuite": 
     case "testCompositeActionSuite": {
       const queryResult: Action2ReturnType = await domainController.handleTestCompositeActionSuite(
-        testAction.testCompositeAction,
+        testAction.testCompositeAction as any, // TODO: remove cast
         {},
         localCache.currentModel(testAction.deploymentUuid)
       );
@@ -870,9 +884,10 @@ export async function runTestOrTestSuite(
       // );
       return queryResult;
     }
+    case "testRuntimeCompositeAction": 
     case "testCompositeAction": {
       const queryResult: Action2ReturnType = await domainController.handleTestCompositeAction(
-        testAction.testCompositeAction,
+        testAction.testCompositeAction as any, // TODO: remove cast
         {},
         localCache.currentModel(testAction.deploymentUuid)
       );
@@ -884,6 +899,7 @@ export async function runTestOrTestSuite(
       );
       return queryResult;
     }
+    // case "testRuntimeCompositeActionTemplateSuite": {
     case "testCompositeActionTemplateSuite": {
       // throw new Error("testCompositeActionTemplateSuite not implemented yet!");
       log.info("testCompositeActionTemplateSuite", fullTestName, "running for testActionParamValues", testActionParamValues);

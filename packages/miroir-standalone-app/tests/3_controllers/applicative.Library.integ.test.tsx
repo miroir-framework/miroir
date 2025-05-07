@@ -967,13 +967,13 @@ const createReportsCompositeActionAssertions = [
 const testTemplateSuites: Record<string, TestActionParams> = {
   [testSuiteName]: {
     // testActionType: "testCompositeActionTemplateSuite",
-    testActionType: "testCompositeActionSuite",
+    testActionType: "testRuntimeCompositeActionSuite",
     deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
     testActionLabel: "applicative.Library.integ.test",
     // testCompositeActionSuite: {
     testCompositeAction: {
       // testType: "testCompositeActionTemplateSuite",
-      testType: "testCompositeActionSuite",
+      testType: "testRuntimeCompositeActionSuite",
       testLabel: "applicative.Library.integ.test",
       beforeAll: createDeploymentCompositeAction(
         testAdminConfigurationDeploymentUuid,
@@ -1010,10 +1010,11 @@ const testTemplateSuites: Record<string, TestActionParams> = {
         // },
         "create new Entity and reports from spreadsheet": {
           // testType: "testCompositeActionTemplate",
-          testType: "testCompositeAction",
+          testType: "testRuntimeCompositeAction",
           testLabel: "createEntityAndReportFromSpreadsheet",
           // compositeActionTemplate: {
           compositeAction: {
+            // actionType: "runtimeCompositeAction",
             actionType: "compositeAction",
             actionLabel: "createEntityAndReportFromSpreadsheet",
             actionName: "sequence",
@@ -1645,8 +1646,8 @@ if (RUN_TEST == testSuiteName) {
   }
   for (const [currentTestSuiteName, testAction] of Object.entries(testTemplateSuites)) {
     const testSuiteResults = await runTestOrTestSuite(localCache, domainController, testAction);
-    if (testSuiteResults.status !== "ok") {
-      vitest.expect(testSuiteResults.status, `${currentTestSuiteName} failed!`).toBe("ok");
+    if (!testSuiteResults || testSuiteResults.status !== "ok") {
+      vitest.expect(testSuiteResults?.status, `${currentTestSuiteName} failed!`).toBe("ok");
     }
   }
 

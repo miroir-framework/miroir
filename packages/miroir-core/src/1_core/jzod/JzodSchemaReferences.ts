@@ -236,7 +236,7 @@ export function jzodTransitiveDependencySet(
     if (!element) {
       throw new Error("element is undefined");
     }
-    console.log("jzodTransitiveDependencySet visiting element", element, "visitedSet", visitedSet.size);
+    // console.log("jzodTransitiveDependencySet visiting element", element, "visitedSet", visitedSet.size);
     toVisitSet.delete(element);
     visit(element, miroirFundamentalJzodSchema);
   }

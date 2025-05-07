@@ -309,7 +309,7 @@ async function generateSchemas(generateFundamentalJzodSchema = true) {
         },
       };
 
-      const startGenerateZodSchmaFileFromZodSchema = Date.now();
+      const startGenerateZodSchemaFileFromZodSchema = Date.now();
       // console.log("miroir-core generateSchemas main miroirFundamentalJzodSchema started");
       await generateTsTypeFileFromJzod(
         nonExtendedZodSchema,
@@ -323,7 +323,7 @@ async function generateSchemas(generateFundamentalJzodSchema = true) {
         "miroir-core GENERATED Zod schema file: ",
         targetFileName,
         "took",
-        Date.now() - startGenerateZodSchmaFileFromZodSchema,
+        Date.now() - startGenerateZodSchemaFileFromZodSchema,
         "ms"
       );
       // const oldTransformer = (miroirFundamentalJzodSchema as any).definition.context.transformerForBuild_unique;
