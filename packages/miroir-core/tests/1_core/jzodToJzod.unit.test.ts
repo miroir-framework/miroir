@@ -14,7 +14,7 @@ interface TestCase {
   testJzodSchema: JzodElement,
   carryOnJzodSchema: JzodObject,
   expectedReferences: Record<string,JzodElement>,
-  expectedResult: JzodElement,
+  expectedResult: {schema: JzodElement, hasBeenApplied: boolean},
   resolveJzodReference?: JzodReferenceResolutionFunction, // non-converted reference lookup
   convertedReferences?: Record<string, JzodElement>, // converted reference lookup
 }
@@ -24,7 +24,7 @@ function runTest(
   const testResult = applyLimitedCarryOnSchema(
     t.testJzodSchema,
     t.carryOnJzodSchema,
-    true, // limitPropagation
+    false, // alwaysPropagate
     undefined, // carryOnPrefix
     undefined, // prefixForReference
     undefined, // suffixForReference
@@ -36,8 +36,8 @@ function runTest(
   // console.log(t.name, "expectedResult=", JSON.stringify(t.expectedResult, null, 2))
   // console.log(t.name, "expectedReferences=", JSON.stringify(t.expectedReferences, null, 2))
   console.log("running test:", t.name)
-  expect(testResult.resultSchema).toEqual(t.expectedResult)
-  
+  expect(testResult.resultSchema).toEqual(t.expectedResult.schema)
+  expect(testResult.hasBeenApplied).toEqual(t.expectedResult.hasBeenApplied)
   expect(testResult.resolvedReferences).toEqual(t.expectedReferences)
 }
 
@@ -67,7 +67,10 @@ describe(
               },
             },
             expectedResult: {
-              type: "string",
+              schema: {
+                type: "string",
+              },
+              hasBeenApplied: false,
             },
             expectedReferences: undefined as any,
           },
@@ -85,22 +88,25 @@ describe(
               },
             },
             expectedResult: {
-              type: "union",
-              tag: { canBeTemplate: true } as any,
-              definition: [
-                {
-                  type: "string",
-                  tag: { canBeTemplate: true } as any
-                },
-                {
-                  type: "object",
-                  definition: {
-                    c: {
-                      type: "string",
+              schema: {
+                type: "union",
+                tag: { canBeTemplate: true } as any,
+                definition: [
+                  {
+                    type: "string",
+                    tag: { canBeTemplate: true } as any,
+                  },
+                  {
+                    type: "object",
+                    definition: {
+                      c: {
+                        type: "string",
+                      },
                     },
                   },
-                },
-              ],
+                ],
+              },
+              hasBeenApplied: true,
             },
             expectedReferences: undefined as any,
           },
@@ -130,57 +136,60 @@ describe(
               },
             },
             expectedResult: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "union",
-                  tag: { canBeTemplate: true } as any,
-                  definition: [
-                    {
-                      type: "string",
-                      tag: { canBeTemplate: true } as any,
-                    },
-                    {
-                      type: "object",
-                      definition: {
-                        c: {
-                          type: "string",
+              schema: {
+                type: "object",
+                definition: {
+                  a: {
+                    type: "union",
+                    tag: { canBeTemplate: true } as any,
+                    definition: [
+                      {
+                        type: "string",
+                        tag: { canBeTemplate: true } as any,
+                      },
+                      {
+                        type: "object",
+                        definition: {
+                          c: {
+                            type: "string",
+                          },
                         },
                       },
-                    },
-                  ],
-                },
-                b: {
-                  type: "object",
-                  definition: {
-                    b1: {
-                      type: "boolean",
-                      optional: true,
-                    },
-                    b2: {
-                      type: "array",
-                      definition: {
-                        type: "union",
-                        tag: { canBeTemplate: true } as any,
-                        definition: [
-                          {
-                            type: "boolean",
-                            tag: { canBeTemplate: true } as any,
-                          },
-                          {
-                            type: "object",
-                            definition: {
-                              c: {
-                                type: "string",
+                    ],
+                  },
+                  b: {
+                    type: "object",
+                    definition: {
+                      b1: {
+                        type: "boolean",
+                        optional: true,
+                      },
+                      b2: {
+                        type: "array",
+                        definition: {
+                          type: "union",
+                          tag: { canBeTemplate: true } as any,
+                          definition: [
+                            {
+                              type: "boolean",
+                              tag: { canBeTemplate: true } as any,
+                            },
+                            {
+                              type: "object",
+                              definition: {
+                                c: {
+                                  type: "string",
+                                },
                               },
                             },
-                          },
-                        ],
+                          ],
+                        },
                       },
                     },
                   },
                 },
               },
+              hasBeenApplied: true,
             },
             expectedReferences: {},
           },
