@@ -158,6 +158,105 @@
             "definition": {
               "testType": {
                 "type": "literal",
+                "definition": "testBuildCompositeAction"
+              },
+              "testLabel": {
+                "type": "string"
+              },
+              "beforeTestSetupAction": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "compositeAction"
+                }
+              },
+              "afterTestCleanupAction": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "compositeAction"
+                }
+              },
+              "compositeAction": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "buildCompositeAction"
+                }
+              },
+              "testCompositeActionAssertions": {
+                "type": "array",
+                "definition": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "compositeRunTestAssertion"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "testType": {
+                "type": "literal",
+                "definition": "testBuildCompositeActionSuite"
+              },
+              "testLabel": {
+                "type": "string"
+              },
+              "beforeAll": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "compositeAction"
+                }
+              },
+              "beforeEach": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "compositeAction"
+                }
+              },
+              "afterEach": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "compositeAction"
+                }
+              },
+              "afterAll": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "compositeAction"
+                }
+              },
+              "testCompositeActions": {
+                "type": "record",
+                "definition": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "testBuildCompositeAction"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "testType": {
+                "type": "literal",
                 "definition": "testRuntimeCompositeAction"
               },
               "testLabel": {
@@ -247,6 +346,105 @@
                   "definition": {
                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                     "relativePath": "testRuntimeCompositeAction"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "testType": {
+                "type": "literal",
+                "definition": "testBuildPlusRuntimeCompositeAction"
+              },
+              "testLabel": {
+                "type": "string"
+              },
+              "beforeTestSetupAction": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "compositeAction"
+                }
+              },
+              "afterTestCleanupAction": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "compositeAction"
+                }
+              },
+              "compositeAction": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "buildPlusRuntimeCompositeAction"
+                }
+              },
+              "testCompositeActionAssertions": {
+                "type": "array",
+                "definition": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "compositeRunTestAssertion"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "testType": {
+                "type": "literal",
+                "definition": "testBuildPlusRuntimeCompositeActionSuite"
+              },
+              "testLabel": {
+                "type": "string"
+              },
+              "beforeAll": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "compositeAction"
+                }
+              },
+              "beforeEach": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "compositeAction"
+                }
+              },
+              "afterEach": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "compositeAction"
+                }
+              },
+              "afterAll": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "compositeAction"
+                }
+              },
+              "testCompositeActions": {
+                "type": "record",
+                "definition": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "testBuildPlusRuntimeCompositeAction"
                   }
                 }
               }

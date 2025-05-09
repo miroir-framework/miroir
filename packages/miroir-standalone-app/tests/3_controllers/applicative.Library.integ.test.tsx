@@ -76,6 +76,8 @@ import {
 } from "../utils/tests-utils.js";
 import { cleanLevel, packageName } from './constants.js';
 import { adminConfigurationDeploymentParis } from '../../src/constants.js';
+import { transform } from 'typescript';
+import { CompositeRunTestAssertion } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js';
 
 let domainController: DomainControllerInterface | undefined = undefined;
 let localCache: LocalCacheInterface | undefined = undefined;
@@ -210,7 +212,7 @@ afterAll(
     // console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done deleteAndCloseApplicationDeployments")
 
     // console.log("globalTestSuiteResults:\n", Object.values(globalTestSuiteResults).map((r) => "\"" + r.testLabel + "\": " + r.testResult).join("\n"));
-    displayTestSuiteResultsDetails(expect,Object.keys(testTemplateSuites)[0]);
+    displayTestSuiteResultsDetails(expect,Object.keys(testSuites)[0]);
   }
 )
 
@@ -672,7 +674,7 @@ const createEntityCompositeActionPrepActions: any[] = [
     },
   },
 ];
-const createEntityCompositeActionAssertions = [
+const createEntityCompositeActionAssertions: CompositeRunTestAssertion[] = [
   // check entities
   {
     actionType: "compositeRunTestAssertion",
@@ -784,10 +786,19 @@ const newEntityDetailsReport = {
         parentName: newEntityName,
         parentUuid: newEntityUuid,
         instanceUuid: {
-          transformerType: "contextReference",
+          transformerType: "constantObject",
           interpolation: "runtime",
-          referenceName: "instanceUuid",
+          value: {
+            transformerType: "contextReference",
+            interpolation: "runtime",
+            referenceName: "instanceUuid",
+          },
         },
+        // instanceUuid: {
+        //   transformerType: "contextReference",
+        //   interpolation: "runtime",
+        //   referenceName: "instanceUuid",
+        // },
       },
     },
     section: {
@@ -933,12 +944,13 @@ const createReportsCompositeActionPrepActions: any[] = [
 ]
 
 
-const createReportsCompositeActionAssertions = [
+const createReportsCompositeActionAssertions: CompositeRunTestAssertion[] = [
   {
     actionType: "compositeRunTestAssertion",
     actionLabel: "checkReports",
     nameGivenToResult: "checkReportList",
     testAssertion: {
+      // testType: "testAssertion",
       testType: "testAssertion",
       testLabel: "checkReports",
       definition: {
@@ -946,8 +958,53 @@ const createReportsCompositeActionAssertions = [
         ignoreAttributes: ["author", "parentDefinitionVersionUuid", "type"],
         // expectedValue: [newEntityDetailsReport, newEntityListReport],
         expectedValue: [
-          newEntityListReport, 
-          newEntityDetailsReport
+          newEntityListReport,
+          // newEntityDetailsReport,
+          {
+            uuid: createEntity_newEntityDetailsReportUuid,
+            selfApplication: testSelfApplicationUuid,
+            parentName: entityReport.name,
+            parentUuid: entityReport.uuid,
+            conceptLevel: "Model",
+            name: `${newEntityName}Details`,
+            defaultLabel: `Details of ${newEntityName}`,
+            definition: {
+              extractorTemplates: {
+                elementToDisplay: {
+                  extractorTemplateType: "extractorForObjectByDirectReference",
+                  parentName: newEntityName,
+                  parentUuid: newEntityUuid,
+                  // instanceUuid: {
+                  //   transformerType: "constantObject",
+                  //   interpolation: "runtime",
+                  //   value: {
+                  //     transformerType: "contextReference",
+                  //     interpolation: "runtime",
+                  //     referenceName: "instanceUuid",
+                  //   },
+                  // },
+                  instanceUuid: {
+                    transformerType: "contextReference",
+                    interpolation: "runtime",
+                    referenceName: "instanceUuid",
+                  },
+                },
+              },
+              section: {
+                type: "list",
+                definition: [
+                  {
+                    type: "objectInstanceReportSection",
+                    definition: {
+                      label: `My ${newEntityName}`,
+                      parentUuid: newEntityUuid,
+                      fetchedDataReference: "elementToDisplay",
+                    },
+                  },
+                ],
+              },
+            },
+          },
         ],
       },
     },
@@ -964,7 +1021,7 @@ const createReportsCompositeActionAssertions = [
 // ###############################################################################################
 // ###############################################################################################
 // ###############################################################################################
-const testTemplateSuites: Record<string, TestActionParams> = {
+const testSuites: Record<string, TestActionParams> = {
   [testSuiteName]: {
     // testActionType: "testCompositeActionTemplateSuite",
     testActionType: "testRuntimeCompositeActionSuite",
@@ -1009,34 +1066,31 @@ const testTemplateSuites: Record<string, TestActionParams> = {
         //   ],
         // },
         "create new Entity and reports from spreadsheet": {
-          // testType: "testCompositeActionTemplate",
           testType: "testRuntimeCompositeAction",
           testLabel: "createEntityAndReportFromSpreadsheet",
-          // compositeActionTemplate: {
           compositeAction: {
-            // actionType: "runtimeCompositeAction",
             actionType: "compositeAction",
             actionLabel: "createEntityAndReportFromSpreadsheet",
             actionName: "sequence",
             // templates: createEntityCompositeAction.templates,
             definition: [
-              // ...(createEntityCompositeAction as any).definition,
-              // createReportsCompositeAction,
-              // // commit
-              // {
-              //   actionType: "modelAction",
-              //   actionName: "commit",
-              //   actionLabel: "commit",
-              //   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              //   deploymentUuid: testAdminConfigurationDeploymentUuid,
-              //   // deploymentUuid: {
-              //   //   transformerType: "parameterReference",
-              //   //   interpolation: "build",
-              //   //   referenceName: "testAdminConfigurationDeploymentUuid",
-              //   // },
-              // },
-              // ...createEntityCompositeActionPrepActions,
-              // ...createReportsCompositeActionPrepActions,
+              ...(createEntityCompositeAction as any).definition,
+              createReportsCompositeAction,
+              // commit
+              {
+                actionType: "modelAction",
+                actionName: "commit",
+                actionLabel: "commit",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                deploymentUuid: testAdminConfigurationDeploymentUuid,
+                // deploymentUuid: {
+                //   transformerType: "parameterReference",
+                //   interpolation: "build",
+                //   referenceName: "testAdminConfigurationDeploymentUuid",
+                // },
+              },
+              ...createEntityCompositeActionPrepActions,
+              ...createReportsCompositeActionPrepActions,
               // update menu
               {
                 // actionType: "compositeRunBoxedQueryTemplateAction",
@@ -1151,8 +1205,6 @@ const testTemplateSuites: Record<string, TestActionParams> = {
                 actionLabel: "getNewMenuList",
                 nameGivenToResult: "newMenuList",
                 queryTemplate: {
-                  // actionType: "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
-                  // actionType: "runBoxedQueryTemplateAction",
                   actionType: "runBoxedQueryAction",
                   actionName: "runQuery",
                   endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -1167,29 +1219,20 @@ const testTemplateSuites: Record<string, TestActionParams> = {
                     contextResults: {},
                     extractors: {
                       menuList: {
-                        // extractorTemplateType: "extractorByEntityReturningObjectList",
                         extractorOrCombinerType: "extractorByEntityReturningObjectList",
                         applicationSection: "model",
                         parentName: "Menu",
                         parentUuid: entityMenu.uuid,
                       },
                     },
-                    // extractorTemplates: {
-                    //   menuList: {
-                    //     extractorTemplateType: "extractorTemplateForObjectListByEntity",
-                    //     applicationSection: "model",
-                    //     parentName: "Menu",
-                    //     parentUuid: entityMenu.uuid,
-                    //   },
-                    // },
                   },
                 },
               },
             ],
           },
           testCompositeActionAssertions: [
-            // ...createEntityCompositeActionAssertions,
-            // ...createReportsCompositeActionAssertions,
+            ...createEntityCompositeActionAssertions,
+            ...createReportsCompositeActionAssertions,
             {
               actionType: "compositeRunTestAssertion",
               actionLabel: "checkMenus",
@@ -1644,7 +1687,7 @@ if (RUN_TEST == testSuiteName) {
   if (!domainController) {
     throw new Error("running test domainController is not defined!");
   }
-  for (const [currentTestSuiteName, testAction] of Object.entries(testTemplateSuites)) {
+  for (const [currentTestSuiteName, testAction] of Object.entries(testSuites)) {
     const testSuiteResults = await runTestOrTestSuite(localCache, domainController, testAction);
     if (!testSuiteResults || testSuiteResults.status !== "ok") {
       vitest.expect(testSuiteResults?.status, `${currentTestSuiteName} failed!`).toBe("ok");
