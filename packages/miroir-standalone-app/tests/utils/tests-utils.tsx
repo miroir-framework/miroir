@@ -64,7 +64,7 @@ import { packageName } from '../../src/constants';
 import { MiroirContextReactProvider } from '../../src/miroir-fwk/4_view/MiroirContextReactProvider';
 import { cleanLevel } from '../../src/miroir-fwk/4_view/constants';
 import { ApplicationEntitiesAndInstances } from "./tests-utils-testOnLibrary";
-import { TestRuntimeCompositeAction, TestRuntimeCompositeActionSuite } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType';
+import { TestBuildPlusRuntimeCompositeAction, TestBuildPlusRuntimeCompositeActionSuite, TestRuntimeCompositeAction, TestRuntimeCompositeActionSuite } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -100,6 +100,20 @@ export type TestActionParams =
       testActionLabel: string;
       deploymentUuid: Uuid;
       testCompositeAction: TestRuntimeCompositeAction;
+    }
+  | {
+      testActionType: "testBuildPlusRuntimeCompositeActionSuite";
+      testActionLabel: string;
+      deploymentUuid: Uuid;
+      testParams?: Record<string, any>;
+      testCompositeAction: TestBuildPlusRuntimeCompositeActionSuite;
+    }
+  | {
+      testActionType: "testBuildPlusRuntimeCompositeAction";
+      testActionLabel: string;
+      deploymentUuid: Uuid;
+      testParams?: Record<string, any>;
+      testCompositeAction: TestBuildPlusRuntimeCompositeAction;
     }
   | {
       testActionType: "testCompositeActionTemplate";
@@ -857,15 +871,23 @@ export async function runTestOrTestSuite(
   testAction: TestActionParams,
   testActionParamValues?: {[k:string]: any},
 ) {
-  const fullTestName = expect.getState().currentTestName ?? "no test name";
-  log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ STARTING test:", fullTestName, testAction.testActionType);
+  const fullTestName = testAction.testActionLabel??testAction.testActionType;
+  log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ STARTING test:", fullTestName);
 
   switch (testAction.testActionType) {
+    case 'testBuildPlusRuntimeCompositeActionSuite':
     case "testRuntimeCompositeActionSuite": 
     case "testCompositeActionSuite": {
+      const newParams = {...testActionParamValues??{}, ...(testAction.testCompositeAction as any)["testActionParams"]??{}};
+      log.info(
+        "running test testCompositeActionSuite",
+        fullTestName,
+        "with params",
+        JSON.stringify(newParams, null, 2)
+      );
       const queryResult: Action2ReturnType = await domainController.handleTestCompositeActionSuite(
         testAction.testCompositeAction as any, // TODO: remove cast
-        {},
+        newParams,
         localCache.currentModel(testAction.deploymentUuid)
       );
       log.info(
@@ -884,6 +906,7 @@ export async function runTestOrTestSuite(
       // );
       return queryResult;
     }
+    case 'testBuildPlusRuntimeCompositeAction':
     case "testRuntimeCompositeAction": 
     case "testCompositeAction": {
       const queryResult: Action2ReturnType = await domainController.handleTestCompositeAction(

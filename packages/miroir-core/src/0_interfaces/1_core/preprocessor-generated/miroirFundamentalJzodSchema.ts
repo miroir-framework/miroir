@@ -5809,6 +5809,13 @@ export const miroirFundamentalJzodSchema = {
           "testLabel": {
             "type": "string"
           },
+          "testParams": {
+            "type": "record",
+            "optional": true,
+            "definition": {
+              "type": "any"
+            }
+          },
           "beforeTestSetupAction": {
             "type": "schemaReference",
             "optional": true,
@@ -5853,6 +5860,13 @@ export const miroirFundamentalJzodSchema = {
           },
           "testLabel": {
             "type": "string"
+          },
+          "testParams": {
+            "type": "record",
+            "optional": true,
+            "definition": {
+              "type": "any"
+            }
           },
           "beforeAll": {
             "type": "schemaReference",
@@ -6394,6 +6408,13 @@ export const miroirFundamentalJzodSchema = {
                   "testLabel": {
                     "type": "string"
                   },
+                  "testParams": {
+                    "type": "record",
+                    "optional": true,
+                    "definition": {
+                      "type": "any"
+                    }
+                  },
                   "beforeTestSetupAction": {
                     "type": "schemaReference",
                     "optional": true,
@@ -6438,6 +6459,13 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "testLabel": {
                     "type": "string"
+                  },
+                  "testParams": {
+                    "type": "record",
+                    "optional": true,
+                    "definition": {
+                      "type": "any"
+                    }
                   },
                   "beforeAll": {
                     "type": "schemaReference",

@@ -26,6 +26,7 @@ const entitySelfApplicationVersion = require('../assets/miroir_model/16dbfe28-e1
 import {
   ApplicationSection,
   ApplicationVersion,
+  BuildPlusRuntimeCompositeAction,
   CompositeAction,
   CompositeActionDefinition,
   CompositeActionTemplate,
@@ -45,6 +46,8 @@ import {
   SelfApplicationDeploymentConfiguration,
   Test,
   TestAssertion,
+  TestBuildPlusRuntimeCompositeAction,
+  TestBuildPlusRuntimeCompositeActionSuite,
   TestCompositeAction,
   TestCompositeActionSuite,
   TestCompositeActionTemplateSuite,
@@ -1465,7 +1468,6 @@ export class DomainController implements DomainControllerInterface {
   }
 
   // ##############################################################################################
-  // TODO: used in tests only?!
   async handleRuntimeCompositeAction(
     runtimeCompositeAction: RuntimeCompositeAction,
     actionParamValues: Record<string, any>,
@@ -1565,14 +1567,6 @@ export class DomainController implements DomainControllerInterface {
 
             break;
           }
-          // case "compositeRunBoxedExtractorTemplateAction": {
-          //   actionResult = await this.handleCompositeRunBoxedExtractorTemplateAction(
-          //     currentAction,
-          //     actionParamValues,
-          //     localContext
-          //   );
-          //   break;
-          // }
           case "compositeRunBoxedExtractorOrQueryAction": {
             actionResult = await this.handleCompositeRunBoxedExtractorOrQueryAction(
               currentAction,
@@ -1582,11 +1576,6 @@ export class DomainController implements DomainControllerInterface {
             );
             break;
           }
-          // case "compositeRunBoxedQueryTemplateOrBoxedExtractorTemplateAction": {
-          //   throw new Error(
-          //     "handleCompositeAction can not handle query actions: " + JSON.stringify(currentAction)
-          //   );
-          // }
           case "compositeRunTestAssertion": {
             actionResult = this.handleTestCompositeActionAssertion(
               currentAction,
@@ -1633,6 +1622,52 @@ export class DomainController implements DomainControllerInterface {
         LoggerGlobalContext.setCompositeAction(undefined);
       }
     }
+    return Promise.resolve(ACTION_OK);
+  }
+
+  // ##############################################################################################
+  async handleBuildPlusRuntimeCompositeAction(
+    buildPlusRuntimeCompositeAction: BuildPlusRuntimeCompositeAction,
+    actionParamValues: Record<string, any>,
+    currentModel: MetaModel
+  ): Promise<Action2VoidReturnType> {
+    const localActionParams = { ...actionParamValues };
+    let localContext: Record<string, any> = { ...actionParamValues };
+
+    log.info(
+      "handleBuildPlusRuntimeCompositeAction compositeAction",
+      JSON.stringify(buildPlusRuntimeCompositeAction, null, 2),
+      "localActionParams keys",
+      Object.keys(localActionParams)
+    );
+    const resolvedAction: RuntimeCompositeAction = transformer_extended_apply(
+      "build",
+      buildPlusRuntimeCompositeAction.actionLabel,
+      buildPlusRuntimeCompositeAction as any as TransformerForRuntime,
+      "value",
+      actionParamValues, // queryParams
+      localContext // contextResults
+    );
+    if (resolvedAction instanceof Action2Error) {
+      log.error(
+        "handleCompositeAction Error on action",
+        JSON.stringify(buildPlusRuntimeCompositeAction, null, 2),
+        "actionResult",
+        JSON.stringify(buildPlusRuntimeCompositeAction, null, 2)
+      );
+      throw new Error(
+        "handleCompositeAction Error on action" +
+          JSON.stringify(buildPlusRuntimeCompositeAction, null, 2) +
+          "actionResult" +
+          JSON.stringify(buildPlusRuntimeCompositeAction, null, 2)
+      );
+    }
+
+    return this.handleRuntimeCompositeAction(
+      resolvedAction, //buildPlusRuntimeCompositeAction,
+      actionParamValues,
+      currentModel
+    );
     return Promise.resolve(ACTION_OK);
   }
 
@@ -2174,7 +2209,7 @@ export class DomainController implements DomainControllerInterface {
    */
   async handleTestCompositeAction(
     // testAction: TestAction_runTestCompositeAction,
-    testAction: TestCompositeAction | TestRuntimeCompositeAction,
+    testAction: TestCompositeAction | TestRuntimeCompositeAction | TestBuildPlusRuntimeCompositeAction,
     // testAction: TestCompositeAction,
     actionParamValues: Record<string, any>,
     currentModel: MetaModel
@@ -2271,7 +2306,7 @@ export class DomainController implements DomainControllerInterface {
   // ##############################################################################################
   async handleTestCompositeActionSuite(
     // testAction: TestCompositeActionSuite,
-    testAction: TestCompositeActionSuite | TestRuntimeCompositeActionSuite,
+    testAction: TestCompositeActionSuite | TestRuntimeCompositeActionSuite | TestBuildPlusRuntimeCompositeActionSuite,
     actionParamValues: Record<string, any>,
     currentModel: MetaModel
     // ): Promise<Action2VoidReturnType> {
@@ -2320,7 +2355,10 @@ export class DomainController implements DomainControllerInterface {
         log.info("handleTestCompositeActionSuite no beforeAll!");
       }
 
-      for (const testCompositeAction of Object.entries(testAction.testCompositeActions) as [string,(TestCompositeAction | TestRuntimeCompositeAction)][]) {
+      for (const testCompositeAction of Object.entries(testAction.testCompositeActions) as [
+        string,
+        TestCompositeAction | TestRuntimeCompositeAction | TestBuildPlusRuntimeCompositeAction
+      ][]) {
         // expect.getState().currentTestName = testCompositeAction[0];
         log.info("handleTestCompositeActionSuite test", testCompositeAction[0], "beforeEach");
 
@@ -2398,7 +2436,23 @@ export class DomainController implements DomainControllerInterface {
 
         let testResult: Action2ReturnType | undefined = undefined;
         switch (testCompositeAction[1].testType) {
-          case 'testRuntimeCompositeAction': {
+          case 'testBuildPlusRuntimeCompositeAction': {
+            const localTestCompositeAction: BuildPlusRuntimeCompositeAction = {
+              ...testCompositeAction[1].compositeAction,
+              definition: [
+                ...testCompositeAction[1].compositeAction.definition,
+                ...testCompositeAction[1].testCompositeActionAssertions,
+              ],
+            };
+            TestSuiteContext.setTest(testCompositeAction[1].testLabel);
+            testResult = await this.handleBuildPlusRuntimeCompositeAction(
+              localTestCompositeAction,
+              localActionParams,
+              currentModel
+            );
+            break;
+          }
+          case "testRuntimeCompositeAction": {
             const localTestCompositeAction: RuntimeCompositeAction = {
               ...testCompositeAction[1].compositeAction,
               definition: [
@@ -2414,7 +2468,7 @@ export class DomainController implements DomainControllerInterface {
             );
             break;
           }
-          case 'testCompositeAction': {
+          case "testCompositeAction": {
             const localTestCompositeAction: CompositeAction = {
               ...testCompositeAction[1].compositeAction,
               definition: [

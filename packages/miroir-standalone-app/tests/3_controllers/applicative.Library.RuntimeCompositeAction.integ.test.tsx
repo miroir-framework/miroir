@@ -57,6 +57,7 @@ import {
   StoreUnitConfiguration,
   Uuid
 } from "miroir-core";
+import { LoggerGlobalContext } from 'miroir-core';
 
 
 // import { packageName } from 'miroir-core';
@@ -78,6 +79,7 @@ import { cleanLevel, packageName } from './constants.js';
 import { adminConfigurationDeploymentParis } from '../../src/constants.js';
 import { transform } from 'typescript';
 import { CompositeRunTestAssertion } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js';
+import { testOnLibrary_deleteLibraryDeployment, testOnLibrary_resetLibraryDeployment } from '../utils/tests-utils-testOnLibrary.js';
 
 let domainController: DomainControllerInterface | undefined = undefined;
 let localCache: LocalCacheInterface | undefined = undefined;
@@ -153,6 +155,8 @@ const typedAdminConfigurationDeploymentMiroir = {
 // ################################################################################################
 // beforeAll(
 const beforeAll = async () => {
+  LoggerGlobalContext.setTest("beforeAll");
+  
   const {
     persistenceStoreControllerManagerForClient: localpersistenceStoreControllerManager,
     domainController: localdomainController,
@@ -176,13 +180,15 @@ const beforeAll = async () => {
   if (createDeploymentResult.status !== "ok") {
     throw new Error("Failed to create Miroir deployment: " + JSON.stringify(createDeploymentResult));
   }
-
+  LoggerGlobalContext.setTest(undefined);
   return Promise.resolve();
 }
 
 // ################################################################################################
 // beforeEach(
 const beforeEach = async  () => {
+  LoggerGlobalContext.setTest("beforeEach");
+  
   if (!domainController) {
     throw new Error("beforeEach DomainController is not initialized");
   }
@@ -190,6 +196,7 @@ const beforeEach = async  () => {
     selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
   ]);
   document.body.innerHTML = '';
+  LoggerGlobalContext.setTest(undefined);
 }
 
 // // ################################################################################################
@@ -201,6 +208,7 @@ const beforeEach = async  () => {
 // ################################################################################################
 afterAll(
   async () => {
+    LoggerGlobalContext.setTest("afterAll");
     // console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ deleteAndCloseApplicationDeployments")
     // await deleteAndCloseApplicationDeployments(
     //   miroirConfig,
@@ -213,6 +221,7 @@ afterAll(
 
     // console.log("globalTestSuiteResults:\n", Object.values(globalTestSuiteResults).map((r) => "\"" + r.testLabel + "\": " + r.testResult).join("\n"));
     displayTestSuiteResultsDetails(expect,Object.keys(testSuites)[0]);
+    LoggerGlobalContext.setTest(undefined);
   }
 )
 
@@ -221,7 +230,7 @@ afterAll(
 // ##############################################################################################
 // ##############################################################################################
 
-const testSuiteName: string = "applicative.Library.integ.test";
+const testSuiteName: string = "applicative.Library.RuntimeCompositeAction.integ.test";
 
 const libraryEntitesAndInstances = [
   {
@@ -1023,15 +1032,12 @@ const createReportsCompositeActionAssertions: CompositeRunTestAssertion[] = [
 // ###############################################################################################
 const testSuites: Record<string, TestActionParams> = {
   [testSuiteName]: {
-    // testActionType: "testCompositeActionTemplateSuite",
     testActionType: "testRuntimeCompositeActionSuite",
     deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-    testActionLabel: "applicative.Library.integ.test",
-    // testCompositeActionSuite: {
+    testActionLabel: testSuiteName,
     testCompositeAction: {
-      // testType: "testCompositeActionTemplateSuite",
       testType: "testRuntimeCompositeActionSuite",
-      testLabel: "applicative.Library.integ.test",
+      testLabel: testSuiteName,
       beforeAll: createDeploymentCompositeAction(
         testAdminConfigurationDeploymentUuid,
         testDeploymentStorageConfiguration
@@ -1039,7 +1045,6 @@ const testSuites: Record<string, TestActionParams> = {
       beforeEach: resetAndinitializeDeploymentCompositeAction(
         testAdminConfigurationDeploymentUuid,
         initParametersForTest,
-        // libraryEntitesAndInstances
         []
       ),
       // afterEach: testOnLibrary_resetLibraryDeployment(

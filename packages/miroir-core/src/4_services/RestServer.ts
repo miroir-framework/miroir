@@ -253,8 +253,15 @@ export async function restActionHandler(
 ):Promise<void> {
   console.log("restActionHandler called with method", method);
   console.log("restActionHandler called with effectiveUrl", effectiveUrl);
-  console.log("restActionHandler called with","body", JSON.stringify(body, undefined, 2));
-  console.log("restActionHandler called with params", JSON.stringify(params,undefined,2));
+  // console.log("restActionHandler called with params", JSON.stringify(params,undefined,2));
+  console.log("restActionHandler called with params", params);
+
+  if (body && ((body as any).actionType !== "modelAction" || (body as any).actionName !== "initModel")) {
+    console.log("restActionHandler called with","body", JSON.stringify(body, undefined, 2));
+  }
+  // else {
+  //   console.log("restActionHandler called");
+  // }
   const actionName: string = typeof params["actionName"] == "string" ? params["actionName"] : params["actionName"][0];
 
   // log.debug("restActionRunner params", params, "body", body);

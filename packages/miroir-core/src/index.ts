@@ -573,6 +573,7 @@ export {
   LoggerInterface,
   LoggerOptions,
   LogLevelOptions,
+  SpecificLoggerOptions,
   SpecificLoggerOptionsMap,
 } from "./0_interfaces/4-services/LoggerInterface";
 export {
@@ -785,6 +786,7 @@ export { ErrorLogService } from "./3_controllers/ErrorHandling/ErrorLogService.j
 export { ErrorModelStore } from "./3_controllers/ErrorHandling/ErrorModelStore.js";
 export { MiroirContext } from "./3_controllers/MiroirContext.js";
 export { modelInitialize } from "./3_controllers/ModelInitializer.js";
+export { LoggerGlobalContext } from "./4_services/LoggerContext.js";
 export { MiroirLoggerFactory, testLogger } from "./4_services/LoggerFactory.js";
 export {
   PersistenceStoreController,
