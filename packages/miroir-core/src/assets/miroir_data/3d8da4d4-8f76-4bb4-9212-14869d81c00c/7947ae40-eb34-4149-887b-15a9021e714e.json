@@ -410,6 +410,7 @@
                 "definition": {
                   "entity": {
                     "type": "schemaReference",
+                    "tag": { "canBeTemplate": true },
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "entity"
@@ -417,6 +418,7 @@
                   },
                   "entityDefinition": {
                     "type": "schemaReference",
+                    "tag": { "canBeTemplate": true },
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "entityDefinition"

@@ -61,7 +61,7 @@ import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { ACTION_OK } from "../1_core/constants";
 import { defaultMiroirMetaModel, metaModelEntities, miroirModelEntities } from "../1_core/Model";
 import { resolveCompositeActionTemplate } from "../2_domain/ResolveCompositeActionTemplate";
-import { transformer_extended_apply } from "../2_domain/TransformersForRuntime.js";
+import { transformer_extended_apply, transformer_extended_apply_wrapper } from "../2_domain/TransformersForRuntime.js";
 import { LoggerGlobalContext } from '../4_services/LoggerContext.js';
 import { MiroirLoggerFactory } from "../4_services/LoggerFactory";
 import { packageName } from "../constants";
@@ -1640,15 +1640,62 @@ export class DomainController implements DomainControllerInterface {
       "localActionParams keys",
       Object.keys(localActionParams)
     );
-    const resolvedAction: RuntimeCompositeAction = transformer_extended_apply(
+
+      const resolvedCompositeActionTemplates: any = {}
+      // going imperatively to handle inner references
+      if (buildPlusRuntimeCompositeAction.templates) {
+        log.info("handleBuildPlusRuntimeCompositeAction resolving templates", buildPlusRuntimeCompositeAction.templates);
+        for (const t of Object.entries(buildPlusRuntimeCompositeAction.templates)) {
+          const newLocalParameters: Record<string,any> = { ...localActionParams, ...resolvedCompositeActionTemplates };
+          log.info(
+            "buildPlusRuntimeCompositeAction",
+            buildPlusRuntimeCompositeAction.actionLabel,
+            "resolving template",
+            t[0],
+            // t[1],
+            "newLocalParameters",
+            newLocalParameters
+          );
+          const resolvedTemplate = transformer_extended_apply_wrapper(
+            "build",
+            // "runtime",
+            t[0],
+            t[1] as any,
+            newLocalParameters, // queryParams
+            {}, // contextResults
+            "value",
+          );
+          if (resolvedTemplate.elementType == "failure") {
+            log.error("handleBuildPlusRuntimeCompositeAction resolved template error", resolvedTemplate);
+            throw new Error(
+              "handleBuildPlusRuntimeCompositeAction error resolving template " +
+              " " + t[0] + " " + JSON.stringify(resolvedTemplate, null, 2)
+            );
+          } else {
+            log.info(
+              "handleBuildPlusRuntimeCompositeAction",
+              buildPlusRuntimeCompositeAction.actionLabel,
+              "resolved template",
+              t[0],
+              "has value",
+              resolvedTemplate
+            );
+            resolvedCompositeActionTemplates[t[0]] = resolvedTemplate;
+          }
+        }
+      }
+    
+
+    const resolvedActionDefinition: RuntimeCompositeAction = transformer_extended_apply(
       "build",
       buildPlusRuntimeCompositeAction.actionLabel,
       buildPlusRuntimeCompositeAction as any as TransformerForRuntime,
       "value",
-      actionParamValues, // queryParams
+      {...actionParamValues, ...resolvedCompositeActionTemplates}, // queryParams
       localContext // contextResults
     );
-    if (resolvedAction instanceof Action2Error) {
+
+    if (resolvedActionDefinition instanceof Action2Error) {
       log.error(
         "handleCompositeAction Error on action",
         JSON.stringify(buildPlusRuntimeCompositeAction, null, 2),
@@ -1662,6 +1709,14 @@ export class DomainController implements DomainControllerInterface {
           JSON.stringify(buildPlusRuntimeCompositeAction, null, 2)
       );
     }
+
+    const resolvedAction: RuntimeCompositeAction = {
+      actionType: "compositeAction",
+      actionName: buildPlusRuntimeCompositeAction.actionName,
+      actionLabel: buildPlusRuntimeCompositeAction.actionLabel,
+      definition: resolvedActionDefinition.definition,
+      templates: resolvedCompositeActionTemplates,
+    };
 
     return this.handleRuntimeCompositeAction(
       resolvedAction, //buildPlusRuntimeCompositeAction,
@@ -1843,7 +1898,7 @@ export class DomainController implements DomainControllerInterface {
       queryTemplate: RunBoxedQueryAction;
     },
     actionResult: Action2ReturnType | undefined,
-    localContext: Record<string, any>
+    localContext: Record<string, any> // TODO: REMOVE SIDE EFFECT ON LOCAL CONTEXT
   ) {
     if (currentAction.queryTemplate == undefined) {
       throw new Error("handleCompositeAction currentAction.queryTemplate is undefined");

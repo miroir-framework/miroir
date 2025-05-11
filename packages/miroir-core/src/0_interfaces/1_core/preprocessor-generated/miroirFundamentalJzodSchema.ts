@@ -11435,6 +11435,9 @@ export const miroirFundamentalJzodSchema = {
               "definition": {
                 "entity": {
                   "type": "schemaReference",
+                  "tag": {
+                    "canBeTemplate": true
+                  },
                   "definition": {
                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                     "relativePath": "entity"
@@ -11442,6 +11445,9 @@ export const miroirFundamentalJzodSchema = {
                 },
                 "entityDefinition": {
                   "type": "schemaReference",
+                  "tag": {
+                    "canBeTemplate": true
+                  },
                   "definition": {
                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                     "relativePath": "entityDefinition"
@@ -11966,6 +11972,9 @@ export const miroirFundamentalJzodSchema = {
                   "definition": {
                     "entity": {
                       "type": "schemaReference",
+                      "tag": {
+                        "canBeTemplate": true
+                      },
                       "definition": {
                         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                         "relativePath": "entity"
@@ -11973,6 +11982,9 @@ export const miroirFundamentalJzodSchema = {
                     },
                     "entityDefinition": {
                       "type": "schemaReference",
+                      "tag": {
+                        "canBeTemplate": true
+                      },
                       "definition": {
                         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                         "relativePath": "entityDefinition"
@@ -14420,7 +14432,7 @@ export const miroirFundamentalJzodSchema = {
                   "type": "schemaReference",
                   "definition": {
                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "runtimeDomainAction"
+                    "relativePath": "buildPlusRuntimeDomainAction"
                   }
                 },
                 {
@@ -21236,9 +21248,15 @@ export const miroirFundamentalJzodSchema = {
                           "definition": {
                             "entity": {
                               "type": "union",
+                              "tag": {
+                                "canBeTemplate": true
+                              },
                               "definition": [
                                 {
                                   "type": "schemaReference",
+                                  "tag": {
+                                    "canBeTemplate": true
+                                  },
                                   "definition": {
                                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                     "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity"
@@ -21255,9 +21273,15 @@ export const miroirFundamentalJzodSchema = {
                             },
                             "entityDefinition": {
                               "type": "union",
+                              "tag": {
+                                "canBeTemplate": true
+                              },
                               "definition": [
                                 {
                                   "type": "schemaReference",
+                                  "tag": {
+                                    "canBeTemplate": true
+                                  },
                                   "definition": {
                                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                     "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition"
@@ -39854,11 +39878,515 @@ export const miroirFundamentalJzodSchema = {
         }
       },
       "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction": {
-        "type": "schemaReference",
-        "definition": {
-          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "modelAction"
-        }
+        "type": "union",
+        "definition": [
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "definition": "modelAction"
+              },
+              "actionName": {
+                "type": "literal",
+                "definition": "initModel"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+              },
+              "deploymentUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Deployment",
+                    "editable": false
+                  }
+                }
+              },
+              "params": {
+                "type": "object",
+                "definition": {
+                  "metaModel": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_metaModel"
+                    }
+                  },
+                  "dataStoreType": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_dataStoreType"
+                    }
+                  },
+                  "selfApplication": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selfApplication"
+                    }
+                  },
+                  "applicationModelBranch": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance"
+                    }
+                  },
+                  "applicationVersion": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "definition": "modelAction"
+              },
+              "actionName": {
+                "type": "literal",
+                "definition": "commit"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+              },
+              "deploymentUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Deployment",
+                    "editable": false
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "definition": "modelAction"
+              },
+              "actionName": {
+                "type": "literal",
+                "definition": "rollback"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+              },
+              "deploymentUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Deployment",
+                    "editable": false
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "definition": "modelAction"
+              },
+              "actionName": {
+                "type": "literal",
+                "definition": "remoteLocalCacheRollback"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+              },
+              "deploymentUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Deployment",
+                    "editable": false
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "definition": "modelAction"
+              },
+              "actionName": {
+                "type": "literal",
+                "definition": "resetModel"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+              },
+              "deploymentUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Deployment",
+                    "editable": false
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "definition": "modelAction"
+              },
+              "actionName": {
+                "type": "literal",
+                "definition": "resetData"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+              },
+              "deploymentUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Deployment",
+                    "editable": false
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "definition": "modelAction"
+              },
+              "actionName": {
+                "type": "literal",
+                "definition": "alterEntityAttribute"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+              },
+              "transactional": {
+                "type": "boolean",
+                "optional": true
+              },
+              "deploymentUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Deployment",
+                    "editable": false
+                  }
+                }
+              },
+              "entityName": {
+                "type": "string"
+              },
+              "entityUuid": {
+                "type": "string",
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ]
+              },
+              "entityDefinitionUuid": {
+                "type": "string",
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ]
+              },
+              "addColumns": {
+                "type": "array",
+                "optional": true,
+                "definition": {
+                  "type": "object",
+                  "definition": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "definition": {
+                      "type": "schemaReference",
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement"
+                      }
+                    }
+                  }
+                }
+              },
+              "removeColumns": {
+                "type": "array",
+                "optional": true,
+                "definition": {
+                  "type": "string"
+                }
+              },
+              "update": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement"
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "definition": "modelAction"
+              },
+              "actionName": {
+                "type": "literal",
+                "definition": "renameEntity"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+              },
+              "transactional": {
+                "type": "boolean",
+                "optional": true
+              },
+              "deploymentUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Deployment",
+                    "editable": false
+                  }
+                }
+              },
+              "entityName": {
+                "type": "string",
+                "optional": true
+              },
+              "entityUuid": {
+                "type": "string",
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ]
+              },
+              "entityDefinitionUuid": {
+                "type": "string",
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ]
+              },
+              "targetValue": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "definition": "modelAction"
+              },
+              "actionName": {
+                "type": "literal",
+                "definition": "createEntity"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+              },
+              "transactional": {
+                "type": "boolean",
+                "optional": true
+              },
+              "deploymentUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Deployment",
+                    "editable": false
+                  }
+                }
+              },
+              "entities": {
+                "type": "array",
+                "definition": {
+                  "type": "object",
+                  "definition": {
+                    "entity": {
+                      "type": "union",
+                      "tag": {
+                        "canBeTemplate": true
+                      },
+                      "definition": [
+                        {
+                          "type": "schemaReference",
+                          "tag": {
+                            "canBeTemplate": true
+                          },
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity"
+                          },
+                          "context": {}
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "transformerForRuntime"
+                          }
+                        }
+                      ]
+                    },
+                    "entityDefinition": {
+                      "type": "union",
+                      "tag": {
+                        "canBeTemplate": true
+                      },
+                      "definition": [
+                        {
+                          "type": "schemaReference",
+                          "tag": {
+                            "canBeTemplate": true
+                          },
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition"
+                          },
+                          "context": {}
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "transformerForRuntime"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "definition": "modelAction"
+              },
+              "actionName": {
+                "type": "literal",
+                "definition": "dropEntity"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "transactional": {
+                "type": "boolean",
+                "optional": true
+              },
+              "deploymentUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Deployment",
+                    "editable": false
+                  }
+                }
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+              },
+              "entityUuid": {
+                "type": "string"
+              },
+              "entityDefinitionUuid": {
+                "type": "string"
+              }
+            }
+          }
+        ]
       },
       "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction": {
         "type": "union",
@@ -43348,11 +43876,515 @@ export const miroirFundamentalJzodSchema = {
         }
       },
       "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction": {
-        "type": "schemaReference",
-        "definition": {
-          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "modelAction"
-        }
+        "type": "union",
+        "definition": [
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "definition": "modelAction"
+              },
+              "actionName": {
+                "type": "literal",
+                "definition": "initModel"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+              },
+              "deploymentUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Deployment",
+                    "editable": false
+                  }
+                }
+              },
+              "params": {
+                "type": "object",
+                "definition": {
+                  "metaModel": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_metaModel"
+                    }
+                  },
+                  "dataStoreType": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_dataStoreType"
+                    }
+                  },
+                  "selfApplication": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selfApplication"
+                    }
+                  },
+                  "applicationModelBranch": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance"
+                    }
+                  },
+                  "applicationVersion": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "definition": "modelAction"
+              },
+              "actionName": {
+                "type": "literal",
+                "definition": "commit"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+              },
+              "deploymentUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Deployment",
+                    "editable": false
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "definition": "modelAction"
+              },
+              "actionName": {
+                "type": "literal",
+                "definition": "rollback"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+              },
+              "deploymentUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Deployment",
+                    "editable": false
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "definition": "modelAction"
+              },
+              "actionName": {
+                "type": "literal",
+                "definition": "remoteLocalCacheRollback"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+              },
+              "deploymentUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Deployment",
+                    "editable": false
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "definition": "modelAction"
+              },
+              "actionName": {
+                "type": "literal",
+                "definition": "resetModel"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+              },
+              "deploymentUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Deployment",
+                    "editable": false
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "definition": "modelAction"
+              },
+              "actionName": {
+                "type": "literal",
+                "definition": "resetData"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+              },
+              "deploymentUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Deployment",
+                    "editable": false
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "definition": "modelAction"
+              },
+              "actionName": {
+                "type": "literal",
+                "definition": "alterEntityAttribute"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+              },
+              "transactional": {
+                "type": "boolean",
+                "optional": true
+              },
+              "deploymentUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Deployment",
+                    "editable": false
+                  }
+                }
+              },
+              "entityName": {
+                "type": "string"
+              },
+              "entityUuid": {
+                "type": "string",
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ]
+              },
+              "entityDefinitionUuid": {
+                "type": "string",
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ]
+              },
+              "addColumns": {
+                "type": "array",
+                "optional": true,
+                "definition": {
+                  "type": "object",
+                  "definition": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "definition": {
+                      "type": "schemaReference",
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement"
+                      }
+                    }
+                  }
+                }
+              },
+              "removeColumns": {
+                "type": "array",
+                "optional": true,
+                "definition": {
+                  "type": "string"
+                }
+              },
+              "update": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement"
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "definition": "modelAction"
+              },
+              "actionName": {
+                "type": "literal",
+                "definition": "renameEntity"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+              },
+              "transactional": {
+                "type": "boolean",
+                "optional": true
+              },
+              "deploymentUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Deployment",
+                    "editable": false
+                  }
+                }
+              },
+              "entityName": {
+                "type": "string",
+                "optional": true
+              },
+              "entityUuid": {
+                "type": "string",
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ]
+              },
+              "entityDefinitionUuid": {
+                "type": "string",
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ]
+              },
+              "targetValue": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "definition": "modelAction"
+              },
+              "actionName": {
+                "type": "literal",
+                "definition": "createEntity"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+              },
+              "transactional": {
+                "type": "boolean",
+                "optional": true
+              },
+              "deploymentUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Deployment",
+                    "editable": false
+                  }
+                }
+              },
+              "entities": {
+                "type": "array",
+                "definition": {
+                  "type": "object",
+                  "definition": {
+                    "entity": {
+                      "type": "union",
+                      "tag": {
+                        "canBeTemplate": true
+                      },
+                      "definition": [
+                        {
+                          "type": "schemaReference",
+                          "tag": {
+                            "canBeTemplate": true
+                          },
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity"
+                          },
+                          "context": {}
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "transformerForBuildCarryOnObject"
+                          }
+                        }
+                      ]
+                    },
+                    "entityDefinition": {
+                      "type": "union",
+                      "tag": {
+                        "canBeTemplate": true
+                      },
+                      "definition": [
+                        {
+                          "type": "schemaReference",
+                          "tag": {
+                            "canBeTemplate": true
+                          },
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition"
+                          },
+                          "context": {}
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "transformerForBuildCarryOnObject"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "definition": "modelAction"
+              },
+              "actionName": {
+                "type": "literal",
+                "definition": "dropEntity"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "transactional": {
+                "type": "boolean",
+                "optional": true
+              },
+              "deploymentUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Deployment",
+                    "editable": false
+                  }
+                }
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+              },
+              "entityUuid": {
+                "type": "string"
+              },
+              "entityDefinitionUuid": {
+                "type": "string"
+              }
+            }
+          }
+        ]
       },
       "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction": {
         "type": "union",
@@ -46842,11 +47874,517 @@ export const miroirFundamentalJzodSchema = {
         }
       },
       "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction": {
-        "type": "schemaReference",
-        "definition": {
-          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "modelAction"
-        }
+        "type": "union",
+        "definition": [
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "definition": "modelAction"
+              },
+              "actionName": {
+                "type": "literal",
+                "definition": "initModel"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+              },
+              "deploymentUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Deployment",
+                    "editable": false
+                  }
+                }
+              },
+              "params": {
+                "type": "object",
+                "definition": {
+                  "metaModel": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_metaModel"
+                    }
+                  },
+                  "dataStoreType": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_dataStoreType"
+                    }
+                  },
+                  "selfApplication": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selfApplication"
+                    }
+                  },
+                  "applicationModelBranch": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance"
+                    }
+                  },
+                  "applicationVersion": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "definition": "modelAction"
+              },
+              "actionName": {
+                "type": "literal",
+                "definition": "commit"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+              },
+              "deploymentUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Deployment",
+                    "editable": false
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "definition": "modelAction"
+              },
+              "actionName": {
+                "type": "literal",
+                "definition": "rollback"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+              },
+              "deploymentUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Deployment",
+                    "editable": false
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "definition": "modelAction"
+              },
+              "actionName": {
+                "type": "literal",
+                "definition": "remoteLocalCacheRollback"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+              },
+              "deploymentUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Deployment",
+                    "editable": false
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "definition": "modelAction"
+              },
+              "actionName": {
+                "type": "literal",
+                "definition": "resetModel"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+              },
+              "deploymentUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Deployment",
+                    "editable": false
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "definition": "modelAction"
+              },
+              "actionName": {
+                "type": "literal",
+                "definition": "resetData"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+              },
+              "deploymentUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Deployment",
+                    "editable": false
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "definition": "modelAction"
+              },
+              "actionName": {
+                "type": "literal",
+                "definition": "alterEntityAttribute"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+              },
+              "transactional": {
+                "type": "boolean",
+                "optional": true
+              },
+              "deploymentUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Deployment",
+                    "editable": false
+                  }
+                }
+              },
+              "entityName": {
+                "type": "string"
+              },
+              "entityUuid": {
+                "type": "string",
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ]
+              },
+              "entityDefinitionUuid": {
+                "type": "string",
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ]
+              },
+              "addColumns": {
+                "type": "array",
+                "optional": true,
+                "definition": {
+                  "type": "object",
+                  "definition": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "definition": {
+                      "type": "schemaReference",
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement"
+                      }
+                    }
+                  }
+                }
+              },
+              "removeColumns": {
+                "type": "array",
+                "optional": true,
+                "definition": {
+                  "type": "string"
+                }
+              },
+              "update": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement"
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "definition": "modelAction"
+              },
+              "actionName": {
+                "type": "literal",
+                "definition": "renameEntity"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+              },
+              "transactional": {
+                "type": "boolean",
+                "optional": true
+              },
+              "deploymentUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Deployment",
+                    "editable": false
+                  }
+                }
+              },
+              "entityName": {
+                "type": "string",
+                "optional": true
+              },
+              "entityUuid": {
+                "type": "string",
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ]
+              },
+              "entityDefinitionUuid": {
+                "type": "string",
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ]
+              },
+              "targetValue": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "definition": "modelAction"
+              },
+              "actionName": {
+                "type": "literal",
+                "definition": "createEntity"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+              },
+              "transactional": {
+                "type": "boolean",
+                "optional": true
+              },
+              "deploymentUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Deployment",
+                    "editable": false
+                  }
+                }
+              },
+              "entities": {
+                "type": "array",
+                "definition": {
+                  "type": "object",
+                  "definition": {
+                    "entity": {
+                      "type": "union",
+                      "tag": {
+                        "canBeTemplate": true
+                      },
+                      "definition": [
+                        {
+                          "type": "schemaReference",
+                          "tag": {
+                            "canBeTemplate": true
+                          },
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity"
+                          },
+                          "context": {}
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "transformerForBuildPlusRuntimeCarryOnObject"
+                          }
+                        }
+                      ]
+                    },
+                    "entityDefinition": {
+                      "type": "union",
+                      "tag": {
+                        "canBeTemplate": true
+                      },
+                      "definition": [
+                        {
+                          "type": "schemaReference",
+                          "tag": {
+                            "canBeTemplate": true
+                          },
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition"
+                          },
+                          "context": {}
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "transformerForBuildPlusRuntimeCarryOnObject"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "definition": "modelAction"
+              },
+              "actionName": {
+                "type": "literal",
+                "definition": "dropEntity"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "transactional": {
+                "type": "boolean",
+                "optional": true
+              },
+              "deploymentUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Deployment",
+                    "editable": false
+                  }
+                }
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+              },
+              "entityUuid": {
+                "type": "string"
+              },
+              "entityDefinitionUuid": {
+                "type": "string"
+              }
+            }
+          }
+        ]
       },
       "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction": {
         "type": "union",
