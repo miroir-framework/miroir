@@ -254,7 +254,8 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
           if (!fs.existsSync(filePath)) {
             return Promise.resolve(new Action2Error(
               "FailedToDeleteInstance",
-              `could not find file to delete: ${filePath} entityUuid ${entityUuid} instance ${instance}`
+              // `could not find file to delete: ${filePath} entityUuid ${entityUuid} instance ${instance}`
+              `could not find entity ${entityUuid}`
             ));
           }
         }

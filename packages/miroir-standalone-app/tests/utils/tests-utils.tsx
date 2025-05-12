@@ -288,7 +288,7 @@ export function resetAndinitializeDeploymentCompositeAction(
   log.info("createDeploymentCompositeAction deploymentConfiguration", adminApplicationDeploymentUuid);
   return {
     actionType: "compositeAction",
-    actionLabel: "beforeAll",
+    actionLabel: "beforeEach",
     actionName: "sequence",
     definition: [
       {
@@ -874,76 +874,85 @@ export async function runTestOrTestSuite(
   const fullTestName = testAction.testActionLabel??testAction.testActionType;
   log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ STARTING test:", fullTestName);
 
-  switch (testAction.testActionType) {
-    case 'testBuildPlusRuntimeCompositeActionSuite':
-    case "testRuntimeCompositeActionSuite": 
-    case "testCompositeActionSuite": {
-      const newParams = {...testActionParamValues??{}, ...(testAction.testCompositeAction as any)["testActionParams"]??{}};
-      log.info(
-        "running test testCompositeActionSuite",
-        fullTestName,
-        "with params",
-        JSON.stringify(newParams, null, 2)
-      );
-      const queryResult: Action2ReturnType = await domainController.handleTestCompositeActionSuite(
-        testAction.testCompositeAction as any, // TODO: remove cast
-        newParams,
-        localCache.currentModel(testAction.deploymentUuid)
-      );
-      log.info(
-        "received results for test testCompositeActionSuite",
-        fullTestName,
-        ": queryResult=",
-        JSON.stringify(queryResult, null, 2),
-        "TestContextResults",
-        JSON.stringify(TestSuiteContext.getTestAssertionsResults(), null, 2)
-      );
-      // log.info(
-      //   "received results for test testCompositeActionSuite",
-      //   fullTestName,
-      //   ": queryResult=",
-      //   JSON.stringify(queryResult, null, 2)
-      // );
-      return queryResult;
+  try {
+    switch (testAction.testActionType) {
+      case 'testBuildPlusRuntimeCompositeActionSuite':
+      case "testRuntimeCompositeActionSuite": 
+      case "testCompositeActionSuite": {
+        const newParams = {...testActionParamValues??{}, ...(testAction.testCompositeAction as any)["testActionParams"]??{}};
+        log.info(
+          "running test testCompositeActionSuite",
+          fullTestName,
+          "with params",
+          JSON.stringify(newParams, null, 2)
+        );
+        const queryResult: Action2ReturnType = await domainController.handleTestCompositeActionSuite(
+          testAction.testCompositeAction as any, // TODO: remove cast
+          newParams,
+          localCache.currentModel(testAction.deploymentUuid)
+        );
+        log.info(
+          "received results for test testCompositeActionSuite",
+          fullTestName,
+          ": queryResult=",
+          JSON.stringify(queryResult, null, 2),
+          "TestContextResults",
+          JSON.stringify(TestSuiteContext.getTestAssertionsResults(), null, 2)
+        );
+        // log.info(
+        //   "received results for test testCompositeActionSuite",
+        //   fullTestName,
+        //   ": queryResult=",
+        //   JSON.stringify(queryResult, null, 2)
+        // );
+        return queryResult;
+      }
+      case 'testBuildPlusRuntimeCompositeAction':
+      case "testRuntimeCompositeAction": 
+      case "testCompositeAction": {
+        const queryResult: Action2ReturnType = await domainController.handleTestCompositeAction(
+          testAction.testCompositeAction as any, // TODO: remove cast
+          {},
+          localCache.currentModel(testAction.deploymentUuid)
+        );
+        log.info(
+          "test testCompositeAction",
+          fullTestName,
+          ": queryResult=",
+          JSON.stringify(queryResult, null, 2)
+        );
+        return queryResult;
+      }
+      // case "testRuntimeCompositeActionTemplateSuite": {
+      case "testCompositeActionTemplateSuite": {
+        // throw new Error("testCompositeActionTemplateSuite not implemented yet!");
+        log.info("testCompositeActionTemplateSuite", fullTestName, "running for testActionParamValues", testActionParamValues);
+        const queryResult: Action2ReturnType = await domainController.handleTestCompositeActionTemplateSuite(
+          testAction.testCompositeActionSuite,
+          testActionParamValues??{},
+          localCache.currentModel(testAction.deploymentUuid)
+        );
+        log.info(
+          "received results for test testCompositeActionSuite",
+          fullTestName,
+          ": queryResult=",
+          JSON.stringify(queryResult, null, 2),
+          "TestContextResults",
+          JSON.stringify(TestSuiteContext.getTestAssertionsResults(), null, 2)
+        );
+        return queryResult;
+      }
+      case "testCompositeActionTemplate": {
+        throw new Error("testCompositeActionTemplate not implemented yet!");
+      }
     }
-    case 'testBuildPlusRuntimeCompositeAction':
-    case "testRuntimeCompositeAction": 
-    case "testCompositeAction": {
-      const queryResult: Action2ReturnType = await domainController.handleTestCompositeAction(
-        testAction.testCompositeAction as any, // TODO: remove cast
-        {},
-        localCache.currentModel(testAction.deploymentUuid)
-      );
-      log.info(
-        "test testCompositeAction",
-        fullTestName,
-        ": queryResult=",
-        JSON.stringify(queryResult, null, 2)
-      );
-      return queryResult;
-    }
-    // case "testRuntimeCompositeActionTemplateSuite": {
-    case "testCompositeActionTemplateSuite": {
-      // throw new Error("testCompositeActionTemplateSuite not implemented yet!");
-      log.info("testCompositeActionTemplateSuite", fullTestName, "running for testActionParamValues", testActionParamValues);
-      const queryResult: Action2ReturnType = await domainController.handleTestCompositeActionTemplateSuite(
-        testAction.testCompositeActionSuite,
-        testActionParamValues??{},
-        localCache.currentModel(testAction.deploymentUuid)
-      );
-      log.info(
-        "received results for test testCompositeActionSuite",
-        fullTestName,
-        ": queryResult=",
-        JSON.stringify(queryResult, null, 2),
-        "TestContextResults",
-        JSON.stringify(TestSuiteContext.getTestAssertionsResults(), null, 2)
-      );
-      return queryResult;
-    }
-    case "testCompositeActionTemplate": {
-      throw new Error("testCompositeActionTemplate not implemented yet!");
-    }
+  } catch (error) {
+    log.error(
+      "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ERROR test:",
+      fullTestName,
+      "error",
+      error
+    );
   }
 }
 

@@ -821,16 +821,16 @@ export function transformer_resolveReference(
     // ReferenceNotFound
     // if (!Object.hasOwn(bank, transformerInnerReference.referenceName)) {
     if (!bank[transformerInnerReference.referenceName]) {
-      log.error(
-        "transformer_resolveReference failed, reference not found for step",
-        step,
-        "transformerInnerReference=",
-        transformerInnerReference,
-        "could not find",
-        transformerInnerReference.referenceName,
-        "in",
-        bank
-      );
+      // log.error(
+      //   "transformer_resolveReference failed, reference not found for step",
+      //   step,
+      //   "transformerInnerReference=",
+      //   transformerInnerReference,
+      //   "could not find",
+      //   transformerInnerReference.referenceName,
+      //   "in",
+      //   bank
+      // );
       return new Domain2ElementFailed({
         queryFailure: "ReferenceNotFound",
         failureOrigin: ["transformer_resolveReference"],
@@ -1022,28 +1022,27 @@ export function transformer_mustacheStringTemplate_apply(
   contextResults?: Record<string, any>,
 ): Domain2QueryReturnType<any> {
   try {
-    // const result = Mustache.render(transformer.definition, {...queryParams, ...contextResults});
-    log.info(
-      "transformer_mustacheStringTemplate_apply called for transformer",
-      transformer,
-      "queryParams",
-      JSON.stringify(queryParams, null, 2),
-      "contextResults",
-      JSON.stringify(contextResults, null, 2)
-    );
+    // log.info(
+    //   "transformer_mustacheStringTemplate_apply called for transformer",
+    //   transformer,
+    //   "queryParams",
+    //   JSON.stringify(queryParams, null, 2),
+    //   "contextResults",
+    //   JSON.stringify(contextResults, null, 2)
+    // );
     const result = mustache.render(transformer.definition, (transformer as any)["interpolation"] == "runtime"?contextResults: queryParams);
     return result;
   } catch (error: any) {
-    log.error(
-      "transformer_mustacheStringTemplate_apply error for",
-      transformer,
-      "queryParams",
-      JSON.stringify(queryParams, null, 2),
-      "contextResults",
-      JSON.stringify(contextResults, null, 2),
-      "error:",
-      error
-    );
+    // log.error(
+    //   "transformer_mustacheStringTemplate_apply error for",
+    //   transformer,
+    //   "queryParams",
+    //   JSON.stringify(queryParams, null, 2),
+    //   "contextResults",
+    //   JSON.stringify(contextResults, null, 2),
+    //   "error:",
+    //   error
+    // );
     return new Domain2ElementFailed({
       queryFailure: "FailedTransformer_mustache",
       failureOrigin: ["transformer_mustacheStringTemplate_apply"],
@@ -1077,17 +1076,17 @@ export function transformer_dynamicObjectAccess_apply(
             });
           }
           const innerResult = acc[currentPathElement]
-          log.info(
-            "innerTransformer_apply transformer_dynamicObjectAccess_apply (string) for",
-            transformer,
-            "path element",
-            currentPathElement,
-            "used as key",
-            "to be applied on acc",
-            acc,
-            "result",
-            innerResult
-          );
+          // log.info(
+          //   "innerTransformer_apply transformer_dynamicObjectAccess_apply (string) for",
+          //   transformer,
+          //   "path element",
+          //   currentPathElement,
+          //   "used as key",
+          //   "to be applied on acc",
+          //   acc,
+          //   "result",
+          //   innerResult
+          // );
           return innerResult;
           break;
         }
@@ -1116,18 +1115,18 @@ export function transformer_dynamicObjectAccess_apply(
             });
           }
           const innerResult = acc?acc[key]:key;
-          log.info(
-            "innerTransformer_apply transformer_dynamicObjectAccess_apply (object) for",
-            transformer,
-            "path element",
-            currentPathElement,
-            "resolved key",
-            key,
-            "to be applied on acc",
-            acc,
-            "result",
-            innerResult
-          );
+          // log.info(
+          //   "innerTransformer_apply transformer_dynamicObjectAccess_apply (object) for",
+          //   transformer,
+          //   "path element",
+          //   currentPathElement,
+          //   "resolved key",
+          //   key,
+          //   "to be applied on acc",
+          //   acc,
+          //   "result",
+          //   innerResult
+          // );
           return innerResult;
         }
         case "number":
@@ -1249,12 +1248,12 @@ export function handleUniqueTransformer(
     contextResults,
     label
   );
-  log.info(
-    "handleUniqueTransformer extractorTransformer unique",
-    label,
-    "resolvedReference",
-    resolvedReference
-  );
+  // log.info(
+  //   "handleUniqueTransformer extractorTransformer unique",
+  //   label,
+  //   "resolvedReference",
+  //   resolvedReference
+  // );
 
   if (resolvedReference instanceof Domain2ElementFailed) {
     log.error(
@@ -1783,7 +1782,7 @@ export function innerTransformer_plainObject_apply(
   // );
   const attributeEntries: [string, Domain2QueryReturnType<DomainElementSuccess>][] = Object.entries(transformer).map(
     (objectTemplateEntry: [string, any]) => {
-      log.info("transformer_apply converting attribute",JSON.stringify(objectTemplateEntry, null, 2));
+      // log.info("transformer_apply converting attribute",JSON.stringify(objectTemplateEntry, null, 2));
       return [
         objectTemplateEntry[0],
         defaultTransformers.transformer_extended_apply(
@@ -1810,22 +1809,27 @@ export function innerTransformer_plainObject_apply(
     )
     return result;
   } else {
-    log.error(
-      "innerTransformer_plainObject_apply failed converting plain object",
-      transformer,
-      "with params",
-      queryParams,
-      "error in",
-      label,
-      "in",
-      JSON.stringify(attributeEntries[failureIndex], null, 2)
-    );
-    return new Domain2ElementFailed({
+    // log.info(
+    //   "innerTransformer_plainObject_apply failed converting plain object",
+    //   transformer,
+    //   "with params",
+    //   queryParams,
+    //   "error in",
+    //   label,
+    //   "in",
+    //   JSON.stringify(attributeEntries[failureIndex], null, 2)
+    // );
+    const errorToReturn = new Domain2ElementFailed({
       queryFailure: "ReferenceNotFound",
       failureOrigin: ["innerTransformer_plainObject_apply"],
       innerError: attributeEntries[failureIndex][1] as any, // TODO: type!
       queryContext: "error in attribute: " + attributeEntries[failureIndex][0]
-    });
+    })
+    // log.info(
+    //   "innerTransformer_plainObject_apply failed converting plain object, errorToReturn",
+    //   JSON.stringify(errorToReturn, null, 2)
+    // )
+    return errorToReturn;
   }
 }
 
@@ -1866,15 +1870,24 @@ export function innerTransformer_array_apply(
   if (failureIndex == -1) {
     return subObject;
   } else {
-    log.error(
-      "innerTransformer_array_apply failed converting array",
-      transformer,
-      "with params",
-      queryParams,
-      "error in",
-      JSON.stringify(subObject[failureIndex], null, 2)
-    );
-    return new Domain2ElementFailed({
+    // log.error(
+    //   "innerTransformer_array_apply failed converting array",
+    //   "for step=",
+    //   step,
+    //   "array=",
+    //   JSON.stringify(transformer, null, 2),
+    //   "at index",
+    //   failureIndex,
+    //   "with params",
+    //   queryParams,
+    //   "error in",
+    //   JSON.stringify(subObject[failureIndex], null, 2)
+    // );
+    // log.error(
+    //   "innerTransformer_array_apply failed converting array 2",
+    // )
+
+    const errorToReturn = new Domain2ElementFailed({
       queryFailure: "ReferenceNotFound",
       failureOrigin: ["innerTransformer_array_apply"],
       innerError: subObject[failureIndex],
@@ -1884,9 +1897,21 @@ export function innerTransformer_array_apply(
         // " failure " +
         // JSON.stringify(subObject[failureIndex]) +
         " in transformer " +
-        transformer[failureIndex]
+        transformer
         // JSON.stringify(transformer[failureIndex]),
     });
+    // log.error(
+    //   "innerTransformer_array_apply failed converting array 3",
+    // )
+    // log.info(
+    //   "innerTransformer_array_apply failed converting array, errorToReturn",
+    //   JSON.stringify(errorToReturn, null, 2)
+    // );
+    // log.error(
+    //   "innerTransformer_array_apply failed converting array 4",
+    // )
+
+    return errorToReturn;
   }
 }
 
@@ -1934,6 +1959,10 @@ export function transformer_extended_apply(
         queryParams,
         contextResults
       );
+      // log.info(
+      //   "transformer_extended_apply innerTransformer_array_apply result",
+      //   JSON.stringify(result, null, 2)
+      // );
     } else {
       // TODO: improve test, refuse interpretation of build transformer in runtime step
       const newResolveBuildTransformersTo: ResolveBuildTransformersTo =
@@ -2128,7 +2157,6 @@ export function transformer_extended_apply(
               (transformer as any)["interpolation"] == "build" &&
               resolveBuildTransformersTo == "constantTransformer"
             ) {
-              // result = innerTransformer_plainObject_apply(step, label, preResult, queryParams, contextResults);
               const value = preResult;
               result = {
                 transformerType: "constant",
@@ -2156,6 +2184,12 @@ export function transformer_extended_apply(
             queryParams,
             contextResults
           );
+          // log.info(
+          //   "transformer_extended_apply called for",
+          //   label,
+          //   "innerTransformer_plainObject_apply result",
+          //   JSON.stringify(result, null, 2),
+          // );
         }
       } else {
         // log.info("transformer_extended_apply handles plain object with keys:", Object.keys(transformer));
@@ -2167,8 +2201,28 @@ export function transformer_extended_apply(
           queryParams,
           contextResults
         );
+        // log.info(
+        //   "transformer_extended_apply called for",
+        //   label,
+        //   "innerTransformer_plainObject_apply result",
+        //   JSON.stringify(result, null, 2),
+        // );
       }
     }
+    // log.info(
+    //   "transformer_extended_apply called for",
+    //   label,
+    //   // "step:",
+    //   // step,
+    //   // "transformer.interpolation:",
+    //   // (transformer as any)?.interpolation ?? "build",
+    //   // ((transformer as any)?.interpolation ?? "build") == step,
+    //   // typeof transformer,
+    //   // "transformer",
+    //   // JSON.stringify(transformer, null, 2),
+    //   "result",
+    //   JSON.stringify(result, null, 2),
+    // );
     return result;
   } else {
     // plain value
@@ -2198,45 +2252,52 @@ export function transformer_extended_apply(
   // return result
 }
 
-// ################################################################################################
-export function transformer_apply_wrapper(
-  step: Step,
-  label: string | undefined,
-  transformer: TransformerForBuild | TransformerForRuntime,
-  queryParams: Record<string, any>,
-  contextResults?: Record<string, any>,
-  resolveBuildTransformersTo: ResolveBuildTransformersTo = "constantTransformer",
-): Domain2QueryReturnType<any> {
-  // const result = transformer_extended_apply(step, label, transformer, queryParams, contextResults);
-  const result = transformer_extended_apply(
-    step,
-    label,
-    transformer,
-    resolveBuildTransformersTo,
-    queryParams,
-    contextResults
-  );
-  if (result instanceof Domain2ElementFailed) {
-    log.error(
-      "transformer_extended_apply failed for",
-      label,
-      "step",
-      step,
-      "transformer",
-      JSON.stringify(transformer, null, 2),
-      "result",
-      JSON.stringify(result, null, 2)
-    );
-    return new Domain2ElementFailed({
-      queryFailure: "QueryNotExecutable",
-      failureOrigin: ["transformer_extended_apply"],
-      innerError: result,
-      queryContext: "failed to transform object attribute",
-    });
-  } else {
-    return result;
-  }
-}
+// // ################################################################################################
+// export function transformer_apply_wrapper(
+//   step: Step,
+//   label: string | undefined,
+//   transformer: TransformerForBuild | TransformerForRuntime,
+//   queryParams: Record<string, any>,
+//   contextResults?: Record<string, any>,
+//   resolveBuildTransformersTo: ResolveBuildTransformersTo = "constantTransformer",
+// ): Domain2QueryReturnType<any> {
+//   // const result = transformer_extended_apply(step, label, transformer, queryParams, contextResults);
+//   const result = transformer_extended_apply(
+//     step,
+//     label,
+//     transformer,
+//     resolveBuildTransformersTo,
+//     queryParams,
+//     contextResults
+//   );
+//   log.info(
+//     "transformer_apply_wrapper called for",
+//     label,
+//     "transformer_extended_apply result",
+//     JSON.stringify(result, null, 2),
+//   );  
+
+//   if (result instanceof Domain2ElementFailed) {
+//     log.error(
+//       "transformer_apply_wrapper transformer_extended_apply failed for",
+//       label,
+//       "step",
+//       step,
+//       "transformer",
+//       JSON.stringify(transformer, null, 2),
+//       "result",
+//       JSON.stringify(result, null, 2)
+//     );
+//     return new Domain2ElementFailed({
+//       queryFailure: "QueryNotExecutable",
+//       failureOrigin: ["transformer_extended_apply"],
+//       innerError: result,
+//       queryContext: "failed to transform object attribute",
+//     });
+//   } else {
+//     return result;
+//   }
+// }
 
 // ################################################################################################
 export function transformer_extended_apply_wrapper(
@@ -2247,33 +2308,64 @@ export function transformer_extended_apply_wrapper(
   contextResults?: Record<string, any>,
   resolveBuildTransformersTo: ResolveBuildTransformersTo = "constantTransformer",
 ): Domain2QueryReturnType<any> {
-  const result = transformer_extended_apply(
-    step,
-    label,
-    transformer,
-    resolveBuildTransformersTo,
-    queryParams,
-    contextResults,
-  );
-  if (result instanceof Domain2ElementFailed) {
+  try {
+    const result = transformer_extended_apply(
+      step,
+      label,
+      transformer,
+      resolveBuildTransformersTo,
+      queryParams,
+      contextResults,
+    );
+    log.info(
+      "transformer_extended_apply_wrapper called for",
+      label,
+      "transformer_extended_apply result",
+      JSON.stringify(result, null, 2),
+    );  
+    if (result instanceof Domain2ElementFailed) {
+      log.error(
+        "transformer_extended_apply_wrapper failed for",
+        label??transformer.transformerType,
+        "step",
+        step,
+        "transformer",
+        JSON.stringify(transformer, null, 2),
+        "result",
+        JSON.stringify(result, null, 2)
+      );
+      return new Domain2ElementFailed({
+        queryFailure: "QueryNotExecutable",
+        failureOrigin: ["transformer_extended_apply"],
+        innerError: result,
+        queryContext: "failed to transform object attribute",
+      });
+    } else {
+      log.info(
+        "transformer_extended_apply_wrapper called for",
+        label,
+        "transformer_extended_apply result",
+        JSON.stringify(result, null, 2),
+      );
+      return result;
+    }
+  } catch (e) {
     log.error(
       "transformer_extended_apply_wrapper failed for",
-      label??transformer.transformerType,
+      label,
       "step",
       step,
       "transformer",
       JSON.stringify(transformer, null, 2),
-      "result",
-      JSON.stringify(result, null, 2)
+      "error",
+      e
     );
     return new Domain2ElementFailed({
       queryFailure: "QueryNotExecutable",
       failureOrigin: ["transformer_extended_apply"],
-      innerError: result,
+      innerError: e as any,
       queryContext: "failed to transform object attribute",
     });
-  } else {
-    return result;
   }
 }
 // ################################################################################################

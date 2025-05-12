@@ -8,7 +8,7 @@ import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/LoggerFactory";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
-import { transformer_apply_wrapper, transformer_extended_apply_wrapper } from "./TransformersForRuntime";
+import { transformer_extended_apply_wrapper } from "./TransformersForRuntime";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -52,7 +52,7 @@ export function resolveCompositeActionTemplate(
   const resolvedCompositeActionTemplates: any = {}
   // going imperatively to handle inner references
   if (localCompositeAction.templates) {
-    log.info("resolveCompositeActionTemplate resolving templates", localCompositeAction.templates);
+    // log.info("resolveCompositeActionTemplate resolving templates", localCompositeAction.templates);
     for (const t of Object.entries(localCompositeAction.templates)) {
       const newLocalParameters: Record<string,any> = { ...localActionParams, ...resolvedCompositeActionTemplates };
       // log.info(

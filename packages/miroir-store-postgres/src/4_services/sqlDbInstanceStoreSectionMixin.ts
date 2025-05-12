@@ -398,6 +398,19 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
       console.log(
         "######################################################### upsertInstance #####################################################"
       );
+      if (!this.sqlSchemaTableAccess || !instance.parentUuid || !this.sqlSchemaTableAccess[instance.parentUuid]) {
+        console.warn(
+          this.logHeader,
+          "upsertInstance",
+          "could not find entity in database: entityUuid",
+          instance.parentUuid
+        );
+        // return Promise.resolve(new Action2Error("FailedToUpdateInstance", `could not find entity ${instance.parentUuid} designated in 'parentUuid' attribute of instance ${instance}`));
+        return Promise.resolve(new Action2Error(
+          "FailedToUpdateInstance",
+          `failed to upsert instance ${instance.uuid} of entity ${instance.parentUuid}`
+        ));
+      }
       try {
         console.log(
           "upsertInstance for instance:",
@@ -411,7 +424,8 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
         );
       } catch (error: any) {
         const errorText: string = error.toString();
-        log.error(
+        // log.error(
+        console.log(
           this.logHeader,
           "upsertInstance error",
           "FAILED upserting into Parent",
@@ -425,6 +439,8 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           "error",
           errorText,
         );
+        // throw new Error("upsertInstance error: " + errorText);
+        
         return Promise.resolve(new Action2Error(
           "FailedToUpdateInstance",
           `failed to upsert instance ${instance.uuid} of entity ${instance.parentUuid}`

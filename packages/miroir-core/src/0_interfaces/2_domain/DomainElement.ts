@@ -90,6 +90,7 @@ export type ActionErrorType =
 | ("FailedToCreateStore" | "FailedToDeployModule")
 | "FailedTestAction"
 | "FailedToCloseStore"
+| "FailedToCommit"
 | "FailedToCreateInstance"
 | "FailedToDeleteInstance"
 | "FailedToDeleteInstanceWithCascade"
@@ -105,6 +106,7 @@ export type ActionErrorType =
 | "FailedToOpenStore"
 | "FailedToResetAndInitMiroirAndApplicationDatabase"
 | "FailedToResolveTemplate"
+| "FailedToResolveAction"
 | "FailedToRunBoxedExtractorOrQueryAction"
 | "FailedToUpdateInstance"
 | "FailedToSetupTest"
