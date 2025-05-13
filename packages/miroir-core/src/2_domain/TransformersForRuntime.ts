@@ -219,7 +219,14 @@ function resolveApplyTo(
         return transformer.applyTo;
       }
       if (transformer.applyTo.referenceType == "referencedExtractor") {
-        throw new Error("resolveApplyTo_legacy can not handle referencedExtractor");
+        // throw new Error("resolveApplyTo_legacy can not handle referencedExtractor");
+        return new Domain2ElementFailed({
+          queryFailure: "QueryNotExecutable",
+          failureOrigin: ["resolveApplyTo_legacy"],
+          failureMessage: "resolveApplyTo_legacy can not handle referencedExtractor",
+          queryContext: JSON.stringify(transformer),
+          queryParameters: queryParams as any,
+        });
       }
     
       const transformerReference = transformer.applyTo.reference;
@@ -262,7 +269,14 @@ function resolveApplyTo(
     case 'symbol':
     case 'function':
     default: {
-      throw new Error("resolveApplyTo_legacy failed, unknown type for transformer.applyTo=" + transformer.applyTo);
+      // throw new Error("resolveApplyTo_legacy failed, unknown type for transformer.applyTo=" + transformer.applyTo);
+      return new Domain2ElementFailed({
+        queryFailure: "QueryNotExecutable",
+        failureOrigin: ["resolveApplyTo"],
+        failureMessage: "resolveApplyTo failed, unknown type for transformer.applyTo=" + transformer.applyTo,
+        queryContext: JSON.stringify(transformer),
+        queryParameters: queryParams as any,
+      });
       break;
     }
   }
@@ -346,7 +360,14 @@ export function resolveApplyTo_legacy(
         return transformer.applyTo;
       }
       if (transformer.applyTo.referenceType == "referencedExtractor") {
-        throw new Error("resolveApplyTo_legacy can not handle referencedExtractor");
+        // throw new Error("resolveApplyTo_legacy can not handle referencedExtractor");
+        return new Domain2ElementFailed({
+          queryFailure: "QueryNotExecutable",
+          failureOrigin: ["resolveApplyTo_legacy"],
+          failureMessage: "resolveApplyTo_legacy can not handle referencedExtractor",
+          queryContext: JSON.stringify(transformer),
+          queryParameters: queryParams as any,
+        });
       }
     
       const transformerReference = transformer.applyTo.reference;
@@ -389,7 +410,14 @@ export function resolveApplyTo_legacy(
     case 'symbol':
     case 'function':
     default: {
-      throw new Error("resolveApplyTo_legacy failed, unknown type for transformer.applyTo=" + transformer.applyTo);
+      // throw new Error("resolveApplyTo_legacy failed, unknown type for transformer.applyTo=" + transformer.applyTo);
+      return new Domain2ElementFailed({
+        queryFailure: "QueryNotExecutable",
+        failureOrigin: ["resolveApplyTo"],
+        failureMessage: "resolveApplyTo failed, unknown type for transformer.applyTo=" + transformer.applyTo,
+        queryContext: JSON.stringify(transformer),
+        queryParameters: queryParams as any,
+      });
       break;
     }
   }
@@ -990,10 +1018,17 @@ export function transformer_InnerReference_resolve(
       break;
     }
     default: {
-      throw new Error(
-        "transformer_InnerReference_resolve failed, unknown transformerType for transformer=" +
-          transformerInnerReference
-      );
+      // throw new Error(
+      //   "transformer_InnerReference_resolve failed, unknown transformerType for transformer=" +
+      //     transformerInnerReference
+      // );
+      return new Domain2ElementFailed({
+        queryFailure: "QueryNotExecutable",
+        failureOrigin: ["transformer_InnerReference_resolve"],
+        failureMessage: "transformer_InnerReference_resolve failed, unknown transformerType for transformer=" + transformerInnerReference,
+        queryContext: "transformer_InnerReference_resolve failed, unknown transformerType for transformer=" + transformerInnerReference,
+        queryParameters: transformerInnerReference as any,
+      });
       break;
     }
   }
@@ -1069,7 +1104,7 @@ export function transformer_dynamicObjectAccess_apply(
         case "string": {
           if (!acc) {
             return new Domain2ElementFailed({
-              queryFailure: "ReferenceNotFound",
+              queryFailure: "FailedTransformer_dynamicObjectAccess",
               failureOrigin: ["transformer_dynamicObjectAccess_apply"],
               query: currentPathElement,
               queryContext: "error in transformer_dynamicObjectAccess_apply, could not find key: " + JSON.stringify(currentPathElement, null, 2),
@@ -1092,10 +1127,22 @@ export function transformer_dynamicObjectAccess_apply(
         }
         case "object": {
           if (Array.isArray(currentPathElement)) {
-            throw new Error("transformer_dynamicObjectAccess_apply can not handle arrays");
+            // throw new Error("transformer_dynamicObjectAccess_apply can not handle arrays");
+            return new Domain2ElementFailed({
+              queryFailure: "FailedTransformer_dynamicObjectAccess",
+              failureOrigin: ["transformer_dynamicObjectAccess_apply"],
+              query: transformer as any,
+              queryContext: "error in transformer_dynamicObjectAccess_apply, could not find key: " + JSON.stringify(currentPathElement, null, 2),
+            });
           }
           if (!currentPathElement.transformerType) {
-            throw new Error("transformer_dynamicObjectAccess_apply can not handle objects without transformerType");
+            // throw new Error("transformer_dynamicObjectAccess_apply can not handle objects without transformerType");
+            return new Domain2ElementFailed({
+              queryFailure: "FailedTransformer_dynamicObjectAccess",
+              failureOrigin: ["transformer_dynamicObjectAccess_apply"],
+              query: transformer as any,
+              queryContext: "error in transformer_dynamicObjectAccess_apply, could not find attribute transformerType in: " + JSON.stringify(currentPathElement, null, 2),
+            });
           }
           const key = defaultTransformers.transformer_extended_apply(
             step,
@@ -1107,7 +1154,7 @@ export function transformer_dynamicObjectAccess_apply(
           );
           if (key instanceof Domain2ElementFailed) {
             return new Domain2ElementFailed({
-              queryFailure: "ReferenceNotFound",
+              queryFailure: "FailedTransformer_dynamicObjectAccess",
               failureOrigin: ["transformer_dynamicObjectAccess_apply"],
               query: currentPathElement,
               queryContext:
@@ -1135,7 +1182,14 @@ export function transformer_dynamicObjectAccess_apply(
         case "symbol":
         case "undefined":
         case "function": {
-          throw new Error("transformer_dynamicObjectAccess_apply can not handle " + typeof currentPathElement);
+          // throw new Error("transformer_dynamicObjectAccess_apply can not handle " + typeof currentPathElement);
+          return new Domain2ElementFailed({
+            queryFailure: "FailedTransformer_dynamicObjectAccess",
+            failureOrigin: ["transformer_dynamicObjectAccess_apply"],
+            query: transformer as any,
+            queryContext: "error in transformer_dynamicObjectAccess_apply, could not find key: " + JSON.stringify(currentPathElement, null, 2),
+            queryParameters: currentPathElement,
+          });
         }
       }
     }) as (acc: any, current: any) => any,
@@ -2061,16 +2115,16 @@ export function transformer_extended_apply(
                 queryParams,
                 contextResults
               );
-              throw new Error(
-                "transformer_extended_apply failed for " +
-                  label +
-                  " using to resolve build transformers for step: " +
-                  step +
-                  " transformer " +
-                  JSON.stringify(transformer, null, 2) +
-                  " transformerImplementation " +
-                  JSON.stringify(foundApplicationTransformer.transformerImplementation, null, 2)
-              );
+              // throw new Error(
+              //   "transformer_extended_apply failed for " +
+              //     label +
+              //     " using to resolve build transformers for step: " +
+              //     step +
+              //     " transformer " +
+              //     JSON.stringify(transformer, null, 2) +
+              //     " transformerImplementation " +
+              //     JSON.stringify(foundApplicationTransformer.transformerImplementation, null, 2)
+              // );
               break;
             }
             case "transformer": {
@@ -2127,16 +2181,25 @@ export function transformer_extended_apply(
               break;
             }
             default: {
-              throw new Error(
-                "transformer_extended_apply failed for " +
-                  label +
-                  " using to resolve build transformers for step: " +
-                  step +
-                  " transformer " +
-                  JSON.stringify(transformer, null, 2) +
-                  " transformerImplementation " +
-                  JSON.stringify(foundApplicationTransformer.transformerImplementation, null, 2)
-              );
+              return new Domain2ElementFailed({
+                queryFailure: "QueryNotExecutable",
+                failureOrigin: ["transformer_extended_apply"],
+                queryContext:
+                  "transformerImplementation " +
+                  (transformer as any).transformerImplementation +
+                  " not found",
+                queryParameters: transformer as any,
+              });
+              // throw new Error(
+              //   "transformer_extended_apply failed for " +
+              //     label +
+              //     " using to resolve build transformers for step: " +
+              //     step +
+              //     " transformer " +
+              //     JSON.stringify(transformer, null, 2) +
+              //     " transformerImplementation " +
+              //     JSON.stringify(foundApplicationTransformer.transformerImplementation, null, 2)
+              // );
               break;
             }
           }

@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest';
 import type { JzodElement, JzodObject } from '@miroir-framework/jzod-ts';
-import { JzodSchemaReferencesList } from '../../src/1_core/jzod/JzodSchemaReferencesList';
 import { jzodReferencesGraphConnectedComponents } from '../../src/1_core/jzod/jzodReferencesGraphConnectedComponents';
 
 // import jzodSchemajzodMiroirBootstrapSchema from "../../src/assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/1e8dab4b-65a3-4686-922e-ce89a2d62aa9.json";

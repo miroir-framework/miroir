@@ -1,5 +1,5 @@
 import { JzodElement, JzodReference } from "@miroir-framework/jzod-ts";
-import { JzodSchemaReferencesList } from "./JzodSchemaReferencesList";
+import { JzodSchemaReferencesList } from "./JzodSchemaReferences";
 import { Graph, alg } from "@dagrejs/graphlib";
 
 export function jzodReferencesGraphConnectedComponents(

@@ -91,7 +91,8 @@ const sqlTransformerImplementations: Record<string, ITransformerHandler<any>> = 
 // ################################################################################################
 export interface SqlContextEntry {
   // type: "json" | "scalar" | "table"; resultAccessPath?: (string | number)[]
-  type: "json" | "scalar" | "table";
+  // type: "json" | "scalar" | "table";
+  type: "json" | "json_array" | "scalar" | "table";
   renameTo?: string;
   attributeResultAccessPath?: (string | number)[];
   // tableResultAccessPath?: ResultAccessPath;
@@ -410,7 +411,7 @@ const getConstantSql = (
       failureMessage: "getConstantSql targetType is table: " + JSON.stringify(transformer, null, 2),
     });
   }
-  return {
+  const result: SqlStringForTransformerElementValue = {
     type: targetType,
     sqlStringOrObject: topLevelTransformer
       ? `select $${paramIndex}::${sqlTargetType} AS "${label}"`
@@ -419,6 +420,22 @@ const getConstantSql = (
     resultAccessPath: topLevelTransformer ? [0, label] : undefined,
     columnNameContainingJsonValue: isJson(targetType) && topLevelTransformer ? label : undefined,
   };
+  log.info(
+    "getConstantSql called with",
+    "targetType",
+    targetType,
+    "sqlTargetType",
+    sqlTargetType,
+    "label",
+    label,
+    "topLevelTransformer",
+    topLevelTransformer,
+    "preparedStatementParametersCount",
+    preparedStatementParametersCount,
+    "result",
+    JSON.stringify(result, null, 2)
+  );
+  return result;
 };
 
 // ################################################################################################
@@ -848,7 +865,6 @@ function sqlStringForMapperListToListTransformer(
   // throw new Error("sqlStringForRuntimeTransformer mapperListToList not implemented");
   let newPreparedStatementParametersCount = preparedStatementParametersCount;
 
-  // const referenceName: string = (actionRuntimeTransformer as any).referencedTransformer;
   const transformerLabel: string = (actionRuntimeTransformer as any).label ?? actionRuntimeTransformer.transformerType;
   const referenceToOuterObjectRenamed: string =
     transformerLabel + "_" + actionRuntimeTransformer.referenceToOuterObject;
@@ -896,7 +912,6 @@ function sqlStringForMapperListToListTransformer(
     indentLevel + 2,
     queryParams,
     definedContextEntries,
-    // false,//useAccessPathForContextReference, // useAccessPathForContextReference,
     useAccessPathForContextReference,// false, // useAccessPathForContextReference,
     topLevelTransformer,
 );
@@ -2236,7 +2251,9 @@ function sqlStringForContextReferenceTransformer(
     "definedContextEntry",
     JSON.stringify(definedContextEntry, null, 2),
     "resultAccessPath",
-    JSON.stringify(resultAccessPath, null, 2)
+    JSON.stringify(resultAccessPath, null, 2),
+    "definedContextEntries",
+    JSON.stringify(definedContextEntries, null, 2),
   );
   // log.info("sqlStringForRuntimeTransformer contextReference",actionRuntimeTransformer.referencePath,"resultAccessPath", resultAccessPath);
   const resultAccessPathStringForTable = resultAccessPath
@@ -2257,18 +2274,15 @@ function sqlStringForContextReferenceTransformer(
         (resultAccessPath.length > 0
           ? (resultAccessPathStringForJson + ' AS "' + usedReferenceName + '"')
           : "*") +
-        // (resultAccessPathStringForJson.length > 0
-        //   ? (resultAccessPathStringForJson + ' AS "' + usedReferenceName + '"')
-        //   : "*") +
         flushAndIndent(indentLevel) +
         'FROM "' +
         usedReferenceName +
         '"',
       usedContextEntries: [usedReferenceName],
       resultAccessPath: [0, usedReferenceName],
-      columnNameContainingJsonValue: definedContextEntry.type ==  "json"?usedReferenceName: undefined,
+      columnNameContainingJsonValue: definedContextEntry.type == "json" || definedContextEntry.type =="json_array" ? usedReferenceName: undefined,
     };
-    log.info("sqlStringForContextReferenceTransformer topLevelTransformer=true", JSON.stringify(result, null, 2));
+    log.info("sqlStringForContextReferenceTransformer topLevelTransformer=true result=", JSON.stringify(result, null, 2));
     return result;
   } else { // topLevelTransformer == false
     const result: SqlStringForTransformerElementValue = {
@@ -2278,9 +2292,9 @@ function sqlStringForContextReferenceTransformer(
       `"${usedReferenceName}"${resultAccessPathStringForJson.length > 0 ? tokenSeparatorForTableColumn + resultAccessPathStringForJson : ""}`,
       resultAccessPath: [0, usedReferenceName],
       usedContextEntries: [usedReferenceName],
-      columnNameContainingJsonValue: definedContextEntry.type ==  "json"?usedReferenceName: undefined,
+      columnNameContainingJsonValue: definedContextEntry.type ==  "json" || definedContextEntry.type =="json_array" ? usedReferenceName: undefined,
     };
-    log.info("sqlStringForContextReferenceTransformer topLevelTransformer=false", JSON.stringify(result, null, 2));
+    log.info("sqlStringForContextReferenceTransformer topLevelTransformer=false result=", JSON.stringify(result, null, 2));
     return result;
   }
 }
@@ -2716,7 +2730,8 @@ export function sqlStringForQuery(
       return [
         q.name,
         {
-          type: isJson(q.convertedParam.type) ? "json" : (q.convertedParam.type as any),
+          // type: isJson(q.convertedParam.type) ? "json" : (q.convertedParam.type as any),
+          type: q.convertedParam.type as any,
           attributeResultAccessPath: (q.convertedParam.resultAccessPath as any)?.slice(1), // because resultAccessPath returns the path viewed from the end user, for which the result is always an array
         },
       ];

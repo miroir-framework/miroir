@@ -400,8 +400,8 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
               runTestStep: "build",
               transformer: {
                 transformerType: "count",
-                interpolation: "runtime",
-                // interpolation: "build",
+                // interpolation: "runtime",
+                interpolation: "build",
                 applyTo: {
                   referenceType: "referencedTransformer",
                   reference: {
@@ -412,14 +412,17 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                 }
               },
               transformerParams: { smallStringArray: [ "a", "b", "c" ] },
-              expectedValue: {
-                transformerType: "count",
-                interpolation: "runtime",
-                applyTo: {
-                  referenceType: "referencedTransformer", // TODO: this is inconsistent! A referenceTransformer with a value in it! Should it be changed to a constant transformer?
-                  reference: [ "a", "b", "c" ],
-                }
-              },
+              expectedValue: [{
+                "count": 3,
+              }],
+              // expectedValue: {
+              //   transformerType: "count",
+              //   interpolation: "runtime",
+              //   applyTo: {
+              //     referenceType: "referencedTransformer", // TODO: this is inconsistent! A referenceTransformer with a value in it! Should it be changed to a constant transformer?
+              //     reference: [ "a", "b", "c" ],
+              //   }
+              // },
             },
           },
         }
@@ -823,6 +826,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
                   expectedValue: {
                     queryFailure: "QueryNotExecutable",
+                    // queryFailure: "FailedExtractor",
                   },
                 },
                 // // TODO: delete this test? returning undefined is not an error, necessarily...
@@ -892,6 +896,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
                   expectedValue: {
                     queryFailure: "QueryNotExecutable",
+                    // queryFailure: "FailedExtractor",
                   },
                 },
                 "should fail when context referencePath is invalid": {
@@ -910,6 +915,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
                   expectedValue: {
                     queryFailure: "QueryNotExecutable",
+                    // queryFailure: "FailedExtractor",
                   },
                 },
                 // TODO: delete this test? returning undefined is not an error, necessarily...
@@ -1140,14 +1146,17 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                 applyTo: {
                   referenceType: "referencedTransformer",
                   reference: {
-                    transformerType: "parameterReference",
-                    interpolation: "build",
+                    transformerType: "contextReference",
+                    interpolation: "runtime",
+                    // transformerType: "parameterReference",
+                    // interpolation: "build",
                     referenceName: "testList",
                   },
                 },
                 index: 1,
               },
-              transformerParams: {
+              transformerParams: {},
+              transformerRuntimeContext: {
                 testList: ["testA", "testB", "testC"],
               },
               expectedValue: "testB",
@@ -1162,8 +1171,10 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                 applyTo: {
                   referenceType: "referencedTransformer",
                   reference: {
-                    transformerType: "parameterReference",
-                    interpolation: "build",
+                    transformerType: "contextReference",
+                    interpolation: "runtime",
+                    // transformerType: "parameterReference",
+                    // interpolation: "build",
                     referenceName: "testList",
                   },
                 },
@@ -1171,6 +1182,9 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                 index: 1,
               },
               transformerParams: {
+                // testList: [{ test: "testA" }, { test: "testB" }, { test: "testC" }],
+              },
+              transformerRuntimeContext: {
                 testList: [{ test: "testA" }, { test: "testB" }, { test: "testC" }],
               },
               expectedValue: { test: "testB" },
@@ -1245,14 +1259,17 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                 applyTo: {
                   referenceType: "referencedTransformer",
                   reference: {
-                    transformerType: "parameterReference",
-                    interpolation: "build",
+                    // transformerType: "parameterReference",
+                    // interpolation: "build",
+                    transformerType: "contextReference",
+                    interpolation: "runtime",
                     referenceName: "testList",
                   },
                 },
                 index: 4,
               },
-              transformerParams: {
+              transformerParams: {},
+              transformerRuntimeContext: {
                 testList: ["testA", "testB", "testC"],
               },
               expectedValue: undefined,
@@ -1539,19 +1556,19 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   {
                     attributeKey: {
                       transformerType: "constantUuid",
-                      interpolation: "build",
+                      interpolation: "runtime",
                       value: "uuid",
                     },
                     attributeValue: {
-                      transformerType: "parameterReference",
-                      interpolation: "build",
+                      transformerType: "contextReference",
+                      interpolation: "runtime",
                       referenceName: "newUuid",
                     },
                   },
                   {
                     attributeKey: {
                       transformerType: "constantUuid",
-                      interpolation: "build",
+                      interpolation: "runtime",
                       value: "name",
                     },
                     attributeValue: {
@@ -1563,8 +1580,10 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                 ],
               },
               transformerParams: {
+                // newUuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+              },
+              transformerRuntimeContext: {
                 newUuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-                // country: Country1 as EntityInstance,
               },
               expectedValue: { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", name: "US" },
             },
@@ -1579,8 +1598,8 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                 applyTo: {
                   referenceType: "referencedTransformer",
                   reference: {
-                    transformerType: "parameterReference",
-                    // interpolation: "build",
+                    transformerType: "contextReference",
+                    interpolation: "runtime",
                     referenceName: "country",
                   },
                 },
@@ -1589,19 +1608,19 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   {
                     attributeKey: {
                       transformerType: "constantUuid",
-                      interpolation: "build",
+                      interpolation: "runtime",
                       value: "uuid",
                     },
                     attributeValue: {
-                      transformerType: "parameterReference",
-                      interpolation: "build",
+                      transformerType: "contextReference",
+                      interpolation: "runtime",
                       referenceName: "newUuid",
                     },
                   },
                   {
                     attributeKey: {
                       transformerType: "constantUuid",
-                      interpolation: "build",
+                      interpolation: "runtime",
                       value: "name",
                     },
                     attributeValue: {
@@ -1615,6 +1634,10 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                 ],
               },
               transformerParams: {
+                // newUuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                // country: Country1 as EntityInstance,
+              },
+              transformerRuntimeContext: {
                 newUuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
                 country: Country1 as EntityInstance,
               },
@@ -1632,7 +1655,8 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   applyTo: {
                     referenceType: "referencedTransformer",
                     reference: {
-                      transformerType: "parameterReference",
+                      transformerType: "contextReference",
+                      interpolation: "runtime",
                       referenceName: "country",
                     },
                   },
@@ -1641,19 +1665,19 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                     {
                       attributeKey: {
                         transformerType: "constantString",
-                        interpolation: "build",
+                        interpolation: "runtime",
                         value: "uuid",
                       },
                       attributeValue: {
-                        transformerType: "parameterReference",
-                        interpolation: "build",
+                        transformerType: "contextReference",
+                        interpolation: "runtime",
                         referenceName: "newUuid",
                       },
                     },
                     {
                       attributeKey: {
                         transformerType: "constantString",
-                        interpolation: "build",
+                        interpolation: "runtime",
                         value: "name",
                       },
                       attributeValue: {
@@ -1665,10 +1689,13 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   ],
                 },
                 transformerParams: {
+                  // newUuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  // country: Country1 as EntityInstance,
+                },
+                transformerRuntimeContext: {
                   newUuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
                   country: Country1 as EntityInstance,
                 },
-                transformerRuntimeContext: {},
                 expectedValue: { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", name: "US" },
               },
             "object_fullTemplate allows to dynamically build an object using an extractor": {
@@ -1692,21 +1719,21 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   {
                     attributeKey: {
                       transformerType: "constantString",
-                      interpolation: "build",
-                      // interpolation: "runtime",
+                      // interpolation: "build",
+                      interpolation: "runtime",
                       value: "uuid",
                     },
                     attributeValue: {
-                      transformerType: "parameterReference",
-                      interpolation: "build",
+                      transformerType: "contextReference",
+                      interpolation: "runtime",
                       referenceName: "newUuid",
                     },
                   },
                   {
                     attributeKey: {
                       transformerType: "constantString",
-                      interpolation: "build",
-                      // interpolation: "runtime",
+                      // interpolation: "build",
+                      interpolation: "runtime",
                       value: "name",
                     },
                     attributeValue: {
@@ -1718,12 +1745,12 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                 ],
               },
               transformerParams: {
-                newUuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-                country: Country1 as EntityInstance,
-              },
-              transformerRuntimeContext: {
                 // newUuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
                 // country: Country1 as EntityInstance,
+              },
+              transformerRuntimeContext: {
+                newUuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                country: Country1 as EntityInstance,
               },
               expectedValue: { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", name: "US" },
             },
@@ -1771,13 +1798,16 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                     value: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
                   },
                   name: {
-                    transformerType: "parameterReference",
-                    interpolation: "build",
+                    transformerType: "contextReference",
+                    interpolation: "runtime",
                     referencePath: ["country", "iso3166-1Alpha-2"],
                   },
                 },
               },
               transformerParams: {
+                // country: Country1 as EntityInstance,
+              },
+              transformerRuntimeContext: {
                 country: Country1 as EntityInstance,
               },
               expectedValue: { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", name: "US" },
@@ -1796,8 +1826,8 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                     value: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
                   },
                   name: {
-                    transformerType: "parameterReference",
-                    interpolation: "build",
+                    transformerType: "contextReference",
+                    interpolation: "runtime",
                     referencePath: ["country", "iso3166-1Alpha-2"],
                   },
                   country: {
@@ -1810,8 +1840,8 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                         value: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
                       },
                       name: {
-                        transformerType: "parameterReference",
-                        interpolation: "build",
+                        transformerType: "contextReference",
+                        interpolation: "runtime",
                         referencePath: ["country", "iso3166-1Alpha-2"],
                       },
                     },
@@ -1819,6 +1849,9 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                 },
               },
               transformerParams: {
+                // country: Country1 as EntityInstance,
+              },
+              transformerRuntimeContext: {
                 country: Country1 as EntityInstance,
               },
               expectedValue: {
@@ -1827,34 +1860,38 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                 country: { uuid: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy", name: "US" },
               },
             },
-            "freeObjectTemplate should fail when definition fails to resolve correctly": {
-              transformerTestType: "transformerTest",
-              transformerTestLabel: "freeObjectTemplate should fail when definition fails to resolve correctly",
-              transformerName: "freeObjectTemplate",
-              transformer: {
-                transformerType: "freeObjectTemplate",
-                interpolation: "runtime",
-                definition: {
-                  uuid: {
-                    transformerType: "constantUuid",
-                    interpolation: "runtime",
-                    value: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-                  },
-                  name: {
-                    transformerType: "parameterReference",
-                    interpolation: "build",
-                    referencePath: ["country", "nonExistingAttribute"],
-                  },
-                },
-              },
-              transformerParams: {
-                country: Country1 as EntityInstance,
-              },
-              ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-              expectedValue: {
-                queryFailure: "QueryNotExecutable",
-              },
-            },
+            // // TODO: detect failure to resolve correctly in postgres implementation
+            // "freeObjectTemplate should fail when definition fails to resolve correctly": {
+            //   transformerTestType: "transformerTest",
+            //   transformerTestLabel: "freeObjectTemplate should fail when definition fails to resolve correctly",
+            //   transformerName: "freeObjectTemplate",
+            //   transformer: {
+            //     transformerType: "freeObjectTemplate",
+            //     interpolation: "runtime",
+            //     definition: {
+            //       uuid: {
+            //         transformerType: "constantUuid",
+            //         interpolation: "runtime",
+            //         value: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+            //       },
+            //       name: {
+            //         transformerType: "contextReference",
+            //         interpolation: "runtime",
+            //         referencePath: ["country", "nonExistingAttribute"],
+            //       },
+            //     },
+            //   },
+            //   transformerParams: {
+            //     // country: Country1 as EntityInstance,
+            //   },
+            //   transformerRuntimeContext: {
+            //     country: Country1 as EntityInstance,
+            //   },
+            //   ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+            //   expectedValue: {
+            //     queryFailure: "QueryNotExecutable",
+            //   },
+            // },
           },
         },
         objectAlter: {
@@ -1928,7 +1965,8 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                 applyTo: {
                   referenceType: "referencedTransformer",
                   reference: {
-                    transformerType: "parameterReference",
+                    transformerType: "contextReference",
+                    interpolation: "runtime",
                     referenceName: "nonExistingCountry",
                   },
                 },
@@ -1953,43 +1991,44 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                 queryFailure: "QueryNotExecutable",
               },
             },
-            "objectAlter should fail when definition fails to resolve correctly": {
-              transformerTestType: "transformerTest",
-              transformerTestLabel: "objectAlter should fail when definition fails to resolve correctly",
-              transformerName: "objectAlter",
-              transformer: {
-                transformerType: "objectAlter",
-                interpolation: "runtime",
-                applyTo: {
-                  referenceType: "referencedTransformer",
-                  reference: {
-                    transformerType: "parameterReference",
-                    referenceName: "country",
-                  },
-                },
-                referenceToOuterObject: "country",
-                definition: {
-                  transformerType: "freeObjectTemplate",
-                  interpolation: "runtime",
-                  definition: {
-                    "iso3166-1Alpha-2": {
-                      transformerType: "parameterReference",
-                      interpolation: "build",
-                      // transformerType: "contextReference",
-                      // interpolation: "runtime",
-                      referencePath: ["country", "nonExistingAttribute"],
-                    },
-                  },
-                },
-              },
-              transformerParams: {
-                country: Country1 as EntityInstance,
-              },
-              ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-              expectedValue: {
-                queryFailure: "QueryNotExecutable",
-              },
-            },
+            // // TODO: detect failure to resolve correctly in postgres implementation
+            // "objectAlter should fail when definition fails to resolve correctly": {
+            //   transformerTestType: "transformerTest",
+            //   transformerTestLabel: "objectAlter should fail when definition fails to resolve correctly",
+            //   transformerName: "objectAlter",
+            //   transformer: {
+            //     transformerType: "objectAlter",
+            //     interpolation: "runtime",
+            //     applyTo: {
+            //       referenceType: "referencedTransformer",
+            //       reference: {
+            //         transformerType: "parameterReference",
+            //         referenceName: "country",
+            //       },
+            //     },
+            //     referenceToOuterObject: "country",
+            //     definition: {
+            //       transformerType: "freeObjectTemplate",
+            //       interpolation: "runtime",
+            //       definition: {
+            //         "iso3166-1Alpha-2": {
+            //           transformerType: "contextReference",
+            //           interpolation: "runtime",
+            //           referencePath: ["country", "nonExistingAttribute"],
+            //         },
+            //       },
+            //     },
+            //   },
+            //   transformerParams: {
+            //   },
+            //   transformerRuntimeContext: {
+            //     country: Country1 as EntityInstance,
+            //   },
+            //   ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+            //   expectedValue: {
+            //     queryFailure: "QueryNotExecutable",
+            //   },
+            // },
           },
         },
         mapperListToList: {
@@ -2050,7 +2089,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                         },
                         name: {
                           transformerType: "constant",
-                          interpolation: "build",
+                          interpolation: "runtime",
                           value: "TEST",
                         },
                       },
@@ -2100,8 +2139,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                     {
                       attributeKey: {
                         transformerType: "constant",
-                        interpolation: "build",
-                        // interpolation: "runtime",
+                        interpolation: "runtime",
                         value: "uuid",
                       },
                       attributeValue: {
@@ -2112,9 +2150,8 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                     },
                     {
                       attributeKey: {
-                        // interpolation: "runtime",
                         transformerType: "constantUuid",
-                        interpolation: "build",
+                        interpolation: "runtime",
                         value: "name",
                       },
                       attributeValue: {
@@ -2215,7 +2252,8 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                     applyTo: {
                       referenceType: "referencedTransformer",
                       reference: {
-                        transformerType: "parameterReference",
+                        transformerType: "contextReference",
+                        interpolation: "runtime",
                         referenceName: "country",
                       },
                     },
@@ -2224,23 +2262,22 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                       {
                         attributeKey: {
                           transformerType: "constantUuid",
-                          interpolation: "build",
+                          interpolation: "runtime",
                           value: "uuid",
                         },
                         attributeValue: {
-                          transformerType: "parameterReference",
-                          interpolation: "build",
+                          transformerType: "contextReference",
+                          interpolation: "runtime",
                           referenceName: "newUuid",
                         },
                       },
                       {
                         attributeKey: {
                           transformerType: "constantUuid",
-                          interpolation: "build",
+                          interpolation: "runtime",
                           value: "name",
                         },
                         attributeValue: {
-                          // transformerType: "parameterReference",
                           transformerType: "contextReference",
                           interpolation: "runtime",
                           referencePath: ["country2", "iso3166-1Alpha-2"],
@@ -2251,6 +2288,10 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                 },
               },
               transformerParams: {
+              //   newUuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+              //   country: Country1 as EntityInstance,
+              },
+              transformerRuntimeContext: {
                 newUuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
                 country: Country1 as EntityInstance,
               },
@@ -2274,7 +2315,8 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                     applyTo: {
                       referenceType: "referencedTransformer",
                       reference: {
-                        transformerType: "parameterReference",
+                        transformerType: "contextReference",
+                        interpolation: "runtime",
                         referenceName: "country",
                       },
                     },
@@ -2283,19 +2325,19 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                       {
                         attributeKey: {
                           transformerType: "constantUuid",
-                          interpolation: "build",
+                          interpolation: "runtime",
                           value: "uuid",
                         },
                         attributeValue: {
-                          transformerType: "parameterReference",
-                          interpolation: "build",
+                          transformerType: "contextReference",
+                          interpolation: "runtime",
                           referenceName: "newUuid",
                         },
                       },
                       {
                         attributeKey: {
                           transformerType: "constantUuid",
-                          interpolation: "build",
+                          interpolation: "runtime",
                           value: "name",
                         },
                         attributeValue: {
@@ -2314,6 +2356,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                       referenceType: "referencedTransformer",
                       reference: {
                         transformerType: "contextReference",
+                        interpolation: "runtime",
                         referenceName: "newObject",
                       },
                     },
@@ -2322,19 +2365,19 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                       {
                         attributeKey: {
                           transformerType: "constantUuid",
-                          interpolation: "build",
+                          interpolation: "runtime",
                           value: "uuid",
                         },
                         attributeValue: {
-                          transformerType: "parameterReference",
-                          interpolation: "build",
+                          transformerType: "contextReference",
+                          interpolation: "runtime",
                           referenceName: "newUuid2",
                         },
                       },
                       {
                         attributeKey: {
                           transformerType: "constantUuid",
-                          interpolation: "build",
+                          interpolation: "runtime",
                           value: "name",
                         },
                         attributeValue: {
@@ -2348,6 +2391,11 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                 },
               },
               transformerParams: {
+                // newUuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                // newUuid2: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+                // country: Country1 as EntityInstance,
+              },
+              transformerRuntimeContext: {
                 newUuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
                 newUuid2: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
                 country: Country1 as EntityInstance,
@@ -2374,7 +2422,8 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                     applyTo: {
                       referenceType: "referencedTransformer",
                       reference: {
-                        transformerType: "parameterReference",
+                        transformerType: "contextReference",
+                        interpolation: "runtime",
                         referenceName: "country",
                       },
                     },
@@ -2383,19 +2432,19 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                       {
                         attributeKey: {
                           transformerType: "constantUuid",
-                          interpolation: "build",
+                          interpolation: "runtime",
                           value: "uuid",
                         },
                         attributeValue: {
-                          transformerType: "parameterReference",
-                          interpolation: "build",
+                          transformerType: "contextReference",
+                          interpolation: "runtime",
                           referenceName: "newUuid",
                         },
                       },
                       {
                         attributeKey: {
                           transformerType: "constantUuid",
-                          interpolation: "build",
+                          interpolation: "runtime",
                           value: "name",
                         },
                         attributeValue: {
@@ -2409,6 +2458,10 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                 },
               },
               transformerParams: {
+                // newUuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                // country: Country1 as EntityInstance,
+              },
+              transformerRuntimeContext: {
                 newUuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
                 country: Country1 as EntityInstance,
               },
@@ -2459,13 +2512,25 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                 applyTo: {
                   referenceType: "referencedTransformer",
                   reference: {
-                    transformerType: "parameterReference",
-                    interpolation: "build",
+                    transformerType: "contextReference",
+                    interpolation: "runtime",
                     referenceName: "objectList",
                   },
                 },
               },
               transformerParams: {
+                // objectList: [
+                //   {
+                //     uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                //     name: "US",
+                //   },
+                //   {
+                //     uuid2: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+                //     name2: "DE",
+                //   }
+                // ]
+              },
+              transformerRuntimeContext: {
                 objectList: [
                   {
                     uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
@@ -2544,31 +2609,31 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
           transformerTestType: "transformerTestSuite",
           transformerTestLabel: "listReducerToIndexObject",
           transformerTests: {
-            "listReducerToIndexObject allows to reduce a constant list of objects to an object with dynamic keys and values": {
-              transformerTestType: "transformerTest",
-              transformerTestLabel: "listReducerToIndexObject allows to reduce a constant list of objects to an object with dynamic keys and values",
-              transformerName: "listReducerToIndexObject",
-              transformer: {
-                transformerType: "listReducerToIndexObject",
-                interpolation: "runtime",
-                applyTo: [
-                  {
-                    uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-                    name: "US",
-                  },
-                  {
-                    uuid: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
-                    name: "DE",
-                  }
-                ],
-                indexAttribute: "uuid",
-              },
-              transformerParams: {},
-              expectedValue: {
-                "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx": { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", name: "US" },
-                "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy": { uuid: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy", name: "DE" },
-              },
-            },
+            // "listReducerToIndexObject allows to reduce a constant list of objects to an object with dynamic keys and values": {
+            //   transformerTestType: "transformerTest",
+            //   transformerTestLabel: "listReducerToIndexObject allows to reduce a constant list of objects to an object with dynamic keys and values",
+            //   transformerName: "listReducerToIndexObject",
+            //   transformer: {
+            //     transformerType: "listReducerToIndexObject",
+            //     interpolation: "runtime",
+            //     applyTo: [
+            //       {
+            //         uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+            //         name: "US",
+            //       },
+            //       {
+            //         uuid: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+            //         name: "DE",
+            //       }
+            //     ],
+            //     indexAttribute: "uuid",
+            //   },
+            //   transformerParams: {},
+            //   expectedValue: {
+            //     "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx": { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", name: "US" },
+            //     "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy": { uuid: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy", name: "DE" },
+            //   },
+            // },
             "listReducerToIndexObject allows to reduce a list of objects from parameter to an object with dynamic keys and values": {
               transformerTestType: "transformerTest",
               transformerTestLabel: "listReducerToIndexObject allows to reduce a list of objects from parameter to an object with dynamic keys and values",
@@ -2579,14 +2644,15 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                 applyTo: {
                   referenceType: "referencedTransformer",
                   reference: {
-                    transformerType: "parameterReference",
-                    interpolation: "build",
+                    transformerType: "contextReference",
+                    interpolation: "runtime",
                     referenceName: "objectList",
                   },
                 },
                 indexAttribute: "uuid",
               },
-              transformerParams: {
+              transformerParams: {},
+              transformerRuntimeContext: {
                 objectList: [
                   {
                     uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",

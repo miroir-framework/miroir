@@ -213,8 +213,8 @@ export class SqlDbQueryRunner {
       log.error("asyncExtractWithQuery query FAILED with error", JSON.stringify(error, null, 2));
       return Promise.resolve(
         new Domain2ElementFailed({
-          // queryFailure: "QueryNotExecutable",
-          queryFailure: "FailedExtractor",
+          queryFailure: "QueryNotExecutable",
+          // queryFailure: "FailedExtractor",
           failureOrigin: ["asyncExtractWithQuery"],
           query: JSON.stringify(selectorParams),
           failureMessage: error as any,

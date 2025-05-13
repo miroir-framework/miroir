@@ -10,6 +10,7 @@ import {
 
 export type QueryFailureType =
   | "FailedTransformer_mustache"
+  | "FailedTransformer_dynamicObjectAccess"
   | "FailedTransformer_objectEntries"
   | "FailedTransformer_constantArray"
   | "FailedTransformer_constantBigint"

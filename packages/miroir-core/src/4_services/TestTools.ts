@@ -135,11 +135,18 @@ export async function runTransformerTestSuite(
   // step: Step,
   testSuitePath: string[],
   transformerTestSuite: TransformerTestSuite,
-  runTransformerTest: (vitest: any, testSuitePath: string[], transformerTest: TransformerTest) => Promise<void>
+  runTransformerTest: (
+    vitest: any,
+    testSuitePath: string[],
+    transformerTest: TransformerTest
+  ) => Promise<void>
 ) {
   const testSuitePathAsString = TestSuiteContext.testSuitePathName(testSuitePath);
-  const testSuiteName = transformerTestSuite.transformerTestLabel??transformerTestSuite.transformerTestType;
-  console.log(`@@@@@@@@@@@@@@@@@@@@ running transformer test suite called ${testSuitePathAsString} transformerTestType=${transformerTestSuite.transformerTestType}`);
+  const testSuiteName =
+    transformerTestSuite.transformerTestLabel ?? transformerTestSuite.transformerTestType;
+  console.log(
+    `@@@@@@@@@@@@@@@@@@@@ running transformer test suite called ${testSuitePathAsString} transformerTestType=${transformerTestSuite.transformerTestType}`
+  );
   TestSuiteContext.setTestSuite(testSuitePathAsString);
   if (transformerTestSuite.transformerTestType == "transformerTest") {
     TestSuiteContext.setTest(transformerTestSuite.transformerTestLabel);
@@ -148,11 +155,19 @@ export async function runTransformerTestSuite(
   } else {
     // console.log(`running transformer test suite ${testSuiteName} with ${JSON.stringify(Object.keys(transformerTestSuite.transformerTests))} tests`);
 
-    console.log(`handling transformer test suite ${testSuitePath} with transformerTests=${JSON.stringify(Object.values(transformerTestSuite.transformerTests), null, 2)} tests`);
+    console.log(
+      `handling transformer test suite ${testSuitePath} with transformerTests=${JSON.stringify(
+        Object.values(transformerTestSuite.transformerTests),
+        null,
+        2
+      )} tests`
+    );
     await vitest.describe.each(Object.values(transformerTestSuite.transformerTests))(
       "test $currentTestSuiteName",
       async (transformerTestParam: TransformerTestSuite) => {
-        console.log(`calling inner transformer test suite of ${testSuitePath} called ${transformerTestParam.transformerTestLabel}`);
+        console.log(
+          `calling inner transformer test suite of ${testSuitePath} called ${transformerTestParam.transformerTestLabel}`
+        );
         // TestSuiteContext.setTestSuite(undefined);
         await runTransformerTestSuite(
           vitest,
@@ -167,13 +182,22 @@ export async function runTransformerTestSuite(
     );
     console.log(`finished running transformer subtests for test suite ${testSuitePath}`);
   }
-  console.log(`@@@@@@@@@@@@@@@@@@@@ finished running transformer test suite ${JSON.stringify(testSuitePath)}`);
+  console.log(
+    `@@@@@@@@@@@@@@@@@@@@ finished running transformer test suite ${JSON.stringify(testSuitePath)}`
+  );
   // TestSuiteContext.resetContext();
 }
 // ################################################################################################
 function isJson(t:any) {
   // return t == "json" || t == "json_array" || t == "tableOf1JsonColumn";
   return typeof t == "object" && t !== null;
+}
+
+// ################################################################################################
+function isJsonArray(t:any) {
+  // return t == "json" || t == "json_array" || t == "tableOf1JsonColumn";
+  return Array.isArray(t);
+  // return typeof t == "object" && t !== null && Array.isArray(t);
 }
 
 // ################################################################################################
@@ -274,7 +298,7 @@ export function runTransformerIntegrationTest(
                 (e: [string, any]) => [
                   e[0],
                   {
-                    type: isJson(e[1]) ? "json" : typeof e[1],
+                    type: isJsonArray(e[1]) ? "json_array" :isJson(e[1]) ? "json" : typeof e[1],
                   },
                 ]
               )

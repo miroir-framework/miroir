@@ -447,6 +447,7 @@ export const asyncRunQuery = async (
   if (extractorFailure) {
     return new Domain2ElementFailed({
       queryFailure: "FailedExtractor",
+      // queryFailure: "QueryNotExecutable",
       errorStack: extractorFailure as any,
     });
   }
