@@ -17,7 +17,7 @@
   "devDependencies": {
     "@babel/preset-typescript": "^7.25.7",
     "@jest/globals": "^29.3.1",
-    "@miroir-framework/jzod-ts": "^0.7.0",
+    "@miroir-framework/jzod-ts": "*",
     "@rollup/plugin-commonjs": "^24.0.1",
     "@rollup/plugin-json": "^6.0.0",
     "@rollup/plugin-node-resolve": "^15.0.1",
@@ -40,7 +40,8 @@
     "build4": "npm run build",
     "build5": "npm run build",
     "copy-files": "copyfiles -u 1 src/**/*.json src/**/*.css dist/src",
-    "test": "jest --verbose --silent=false -t"
+    "test": "jest --verbose --silent=false -t",
+    "generate-ts-types": "tsx ./scripts/postgres-generate-ts-types.ts"
   },
   "author": "Miroir Framework <miroir-framework@protonmail.com>",
   "license": "MIT"

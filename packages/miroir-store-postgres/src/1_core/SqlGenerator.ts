@@ -46,6 +46,7 @@ import {
   tokenSeparatorForWithRtn,
   protectedSqlAccessForPath,
 } from "./SqlGeneratorUtils";
+import { sqlSelectColumns, sqlColumnAccess, sqlNameQuote, sql_jsonb_object_agg, sqlDefineColumn, sqlQuery, sqlFrom, sql_jsonb_array_elements, sql_jsonb_each, sqlQueryNew } from "./SqlQueryBuilder";
 
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -89,8 +90,50 @@ const sqlTransformerImplementations: Record<string, ITransformerHandler<any>> = 
   sqlStringForUniqueTransformer,
 }
 
+// ##############################################################################################
+export type SqlStringForTransformerElementValueType = "json" | "scalar" | "table" | "json_array" | "tableOf1JsonColumn";
+/**
+ * * This type represents the structure of the SQL string or object that is generated for a transformer element.
+ * @param sqlStringOrObject - The SQL string or object generated for the transformer element.
+ * @param resultAccessPath - The path to access the result of the SQL string or object.
+ * @param columnNameContainingJsonValue - The name of the column containing JSON values, if applicable.
+ * @param encloseEndResultInArray - Indicates whether to enclose the end result in an array.
+ * @param extraWith - Additional SQL strings or objects to include in the result.
+ * @param usedContextEntries - The context entries used in the SQL string or object.
+ * @param type - The type of the SQL string or object generated.
+ * @param preparedStatementParameters - The parameters for the prepared statement, if applicable.
+ */
+export type SqlStringForTransformerElementValue = {
+  sqlStringOrObject: string;
+  // resultAccessPath?: (string | number)[];
+  resultAccessPath?: ResultAccessPath;
+  columnNameContainingJsonValue?: string;
+  encloseEndResultInArray?: boolean;
+  extraWith?: { name: string; sql: string; sqlResultAccessPath?: ResultAccessPath }[];
+  usedContextEntries?: string[]; // 
+  index?: number;
+  // This attribute is part of the `SqlStringForTransformerElementValue` interface. 
+  // It represents the type of the SQL string or object being generated. 
+  // The type can be one of the following: 
+  // - "json": A JSON object.
+  // - "scalar": A single scalar value.
+  // - "table": A table structure.
+  // - "json_array": An array of JSON objects.
+  // - "tableOf1JsonColumn": A table with one column containing JSON values.
+  type: SqlStringForTransformerElementValueType;
+  // type: "json" | "tableOf1JsonColumn"| "json_array" | "table" | "scalar";
+  preparedStatementParameters?: any[];
+};
+
+function isJson(t:SqlStringForTransformerElementValueType) {
+  return t == "json" || t == "json_array" || t == "tableOf1JsonColumn";
+}
 // ################################################################################################
 const queryFailureObjectSqlString = `'{"queryFailure": "FailedTransformer_contextReference"}'::jsonb`;
+
+// const sqlNameQuote = (name: string) => '"' + name + '"';
+// const sqlColumnAccess = (table:string, key: string)=> sqlNameQuote(table) + '.' + sqlNameQuote(key);
+// const sqlSelect = (elements: string[]) => elements.join(", ");
 
 // ################################################################################################
 export interface SqlContextEntry {
@@ -109,6 +152,7 @@ export interface SqlStringForCombinerReturnType {
   resultAccessPath?: ResultAccessPath;
 }
 
+// ################################################################################################
 function getSqlTypeForValue(
   value?: any,
   // actionRuntimeTransformer: { transformerType: "constant"; value?: any; interpolation: "runtime"; }, 
@@ -159,6 +203,107 @@ function getSqlTypeForValue(
   }
   return { sqlTargetType, label };
 }
+
+// ################################################################################################
+const getConstantSql = (
+  transformer: any,
+  preparedStatementParametersCount: number,
+  topLevelTransformer: boolean,
+  // targetType: "json" | "scalar",
+  targetType: SqlStringForTransformerElementValueType,
+  sqlTargetType: PostgresDataTypes,
+  label: string
+): Domain2QueryReturnType<SqlStringForTransformerElementValue> => {
+  const paramIndex = preparedStatementParametersCount + 1;
+  if (targetType == "table") {
+    return new Domain2ElementFailed({
+      queryFailure: "QueryNotExecutable",
+      query: transformer as any,
+      failureMessage: "getConstantSql targetType is table: " + JSON.stringify(transformer, null, 2),
+    });
+  }
+  const result: SqlStringForTransformerElementValue = {
+    type: targetType,
+    sqlStringOrObject: topLevelTransformer
+      ? `select $${paramIndex}::${sqlTargetType} AS "${label}"`
+      : `$${paramIndex}::${sqlTargetType}`,
+    preparedStatementParameters: [isJson(targetType) ? JSON.stringify(transformer.value) : transformer.value],
+    resultAccessPath: topLevelTransformer ? [0, label] : undefined,
+    columnNameContainingJsonValue: isJson(targetType) && topLevelTransformer ? label : undefined,
+  };
+  log.info(
+    "getConstantSql called with",
+    "targetType",
+    targetType,
+    "sqlTargetType",
+    sqlTargetType,
+    "label",
+    label,
+    "topLevelTransformer",
+    topLevelTransformer,
+    "preparedStatementParametersCount",
+    preparedStatementParametersCount,
+    "result",
+    JSON.stringify(result, null, 2)
+  );
+  return result;
+};
+
+// ################################################################################################
+// used only by legacy "typed" constants
+function sqlStringForConstantAnyTransformer(
+  actionRuntimeTransformer: TransformerForRuntime_constantArray,
+  preparedStatementParametersCount: number,
+  indentLevel: number,
+  queryParams: Record<string, any>,
+  definedContextEntries: Record<string, SqlContextEntry>,
+  useAccessPathForContextReference: boolean,
+  topLevelTransformer: boolean,
+  withClauseColumnName?: string,
+  iterateOn?: string,
+): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
+  const getSqlParams = getConstantSqlTypeMap[actionRuntimeTransformer.transformerType];
+  return getConstantSql(
+    actionRuntimeTransformer,
+    preparedStatementParametersCount,
+    topLevelTransformer,
+    getSqlParams.targetType,
+    getSqlParams.sqlTargetType,
+    withClauseColumnName??getSqlParams.label
+  );
+}
+
+// ################################################################################################
+function sqlStringForConstantTransformer(
+  actionRuntimeTransformer: TransformerForRuntime_constant,
+  preparedStatementParametersCount: number,
+  indentLevel: number,
+  queryParams: Record<string, any>,
+  definedContextEntries: Record<string, SqlContextEntry>,
+  useAccessPathForContextReference: boolean,
+  topLevelTransformer: boolean,
+  withClauseColumnName?: string,
+  iterateOn?: string,
+): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
+  const targetSqlType =
+    typeof actionRuntimeTransformer.value === "object"
+      ? Array.isArray(actionRuntimeTransformer.value)
+        ? "json_array"
+        : "json"
+      : "scalar";
+  // let sqlTargetType: PostgresDataTypes;
+  // let label: string;
+  const { sqlTargetType, label } = getSqlTypeForValue(actionRuntimeTransformer.value);
+  return getConstantSql(
+    actionRuntimeTransformer,
+    preparedStatementParametersCount,
+    topLevelTransformer,
+    targetSqlType,
+    sqlTargetType,
+    withClauseColumnName??label,
+  );
+}
+
 
 // ################################################################################################
 export function sqlStringForCombiner /*BoxedExtractorTemplateRunner*/(
@@ -248,44 +393,6 @@ export function sqlStringForExtractor(extractor: ExtractorOrCombiner, schema: st
   }
 }
 
-// ##############################################################################################
-export type SqlStringForTransformerElementValueType = "json" | "scalar" | "table" | "json_array" | "tableOf1JsonColumn";
-/**
- * * This type represents the structure of the SQL string or object that is generated for a transformer element.
- * @param sqlStringOrObject - The SQL string or object generated for the transformer element.
- * @param resultAccessPath - The path to access the result of the SQL string or object.
- * @param columnNameContainingJsonValue - The name of the column containing JSON values, if applicable.
- * @param encloseEndResultInArray - Indicates whether to enclose the end result in an array.
- * @param extraWith - Additional SQL strings or objects to include in the result.
- * @param usedContextEntries - The context entries used in the SQL string or object.
- * @param type - The type of the SQL string or object generated.
- * @param preparedStatementParameters - The parameters for the prepared statement, if applicable.
- */
-export type SqlStringForTransformerElementValue = {
-  sqlStringOrObject: string;
-  // resultAccessPath?: (string | number)[];
-  resultAccessPath?: ResultAccessPath;
-  columnNameContainingJsonValue?: string;
-  encloseEndResultInArray?: boolean;
-  extraWith?: { name: string; sql: string; sqlResultAccessPath?: ResultAccessPath }[];
-  usedContextEntries?: string[]; // 
-  index?: number;
-  // This attribute is part of the `SqlStringForTransformerElementValue` interface. 
-  // It represents the type of the SQL string or object being generated. 
-  // The type can be one of the following: 
-  // - "json": A JSON object.
-  // - "scalar": A single scalar value.
-  // - "table": A table structure.
-  // - "json_array": An array of JSON objects.
-  // - "tableOf1JsonColumn": A table with one column containing JSON values.
-  type: SqlStringForTransformerElementValueType;
-  // type: "json" | "tableOf1JsonColumn"| "json_array" | "table" | "scalar";
-  preparedStatementParameters?: any[];
-};
-
-function isJson(t:SqlStringForTransformerElementValueType) {
-  return t == "json" || t == "json_array" || t == "tableOf1JsonColumn";
-}
 
 // ################################################################################################
 function sqlStringForApplyTo(
@@ -397,51 +504,6 @@ function sqlStringForApplyTo(
     }
   }
 }
-
-// ################################################################################################
-const getConstantSql = (
-  transformer: any,
-  preparedStatementParametersCount: number,
-  topLevelTransformer: boolean,
-  // targetType: "json" | "scalar",
-  targetType: SqlStringForTransformerElementValueType,
-  sqlTargetType: PostgresDataTypes,
-  label: string
-): Domain2QueryReturnType<SqlStringForTransformerElementValue> => {
-  const paramIndex = preparedStatementParametersCount + 1;
-  if (targetType == "table") {
-    return new Domain2ElementFailed({
-      queryFailure: "QueryNotExecutable",
-      query: transformer as any,
-      failureMessage: "getConstantSql targetType is table: " + JSON.stringify(transformer, null, 2),
-    });
-  }
-  const result: SqlStringForTransformerElementValue = {
-    type: targetType,
-    sqlStringOrObject: topLevelTransformer
-      ? `select $${paramIndex}::${sqlTargetType} AS "${label}"`
-      : `$${paramIndex}::${sqlTargetType}`,
-    preparedStatementParameters: [isJson(targetType) ? JSON.stringify(transformer.value) : transformer.value],
-    resultAccessPath: topLevelTransformer ? [0, label] : undefined,
-    columnNameContainingJsonValue: isJson(targetType) && topLevelTransformer ? label : undefined,
-  };
-  log.info(
-    "getConstantSql called with",
-    "targetType",
-    targetType,
-    "sqlTargetType",
-    sqlTargetType,
-    "label",
-    label,
-    "topLevelTransformer",
-    topLevelTransformer,
-    "preparedStatementParametersCount",
-    preparedStatementParametersCount,
-    "result",
-    JSON.stringify(result, null, 2)
-  );
-  return result;
-};
 
 // ################################################################################################
 function indent(indentLevel: number) {
@@ -1958,7 +2020,10 @@ function sqlStringForListReducerToSpreadObjectTransformer(
   if (applyTo instanceof Domain2ElementFailed) {
     return applyTo;
   }
-  log.info("sqlStringForListReducerToSpreadObjectTransformer found definedContextEntries", JSON.stringify(definedContextEntries, null, 2));
+  log.info(
+    "sqlStringForListReducerToSpreadObjectTransformer found definedContextEntries",
+    JSON.stringify(definedContextEntries, null, 2)
+  );
   log.info("sqlStringForListReducerToSpreadObjectTransformer found applyTo", JSON.stringify(applyTo, null, 2));
   const applyToLabel = transformerLabel + "_applyTo";
   const applyToLabelElements = applyToLabel + "_elements";
@@ -1970,38 +2035,58 @@ function sqlStringForListReducerToSpreadObjectTransformer(
     },
   ];
   switch (applyTo.type) {
-    // case "json":
     case "json_array": {
-      const sqlResult =
-        "SELECT " +
-        'jsonb_object_agg("' +
-        applyToLabelPairs +
-        '"."key", ' +
-        '"' +
-        applyToLabelPairs +
-        '"."value")' +
-        ' AS "' +
-        transformerLabel +
-        '"' +
-        flushAndIndent(indentLevel) +
-        'FROM "' +
-        applyToLabel +
-        '"' +
-        ', jsonb_array_elements("' +
-        applyToLabel +
-        '"."' +
-        (applyTo as any).columnNameContainingJsonValue +
-        '") AS "' +
-        applyToLabelElements +
-        '"' +
-        ', jsonb_each("' +
-        applyToLabelElements +
-        '") AS "' +
-        applyToLabelPairs +
-        '"';
+      const sqlNewQuery = sqlQueryNew({
+        select: sqlDefineColumn(
+          sql_jsonb_object_agg(
+            sqlSelectColumns([
+              sqlColumnAccess(applyToLabelPairs, "key"),
+              sqlColumnAccess(applyToLabelPairs, "value"),
+            ])
+          ),
+          transformerLabel
+        ),
+        from: sqlFrom([
+          sqlNameQuote(applyToLabel),
+          sqlDefineColumn(
+            sql_jsonb_array_elements(
+              sqlColumnAccess(applyToLabel, (applyTo as any).columnNameContainingJsonValue)
+            ),
+            applyToLabelElements
+          ),
+          sqlDefineColumn(sql_jsonb_each(sqlNameQuote(applyToLabelElements)), applyToLabelPairs),
+        ]),
+      });
+      // const sqlNewQuery = sqlQuery(
+      //   sqlDefineColumn(
+      //     sql_jsonb_object_agg(
+      //       sqlSelectColumns([
+      //         sqlColumnAccess(applyToLabelPairs, "key"),
+      //         sqlColumnAccess(applyToLabelPairs, "value"),
+      //       ])
+      //     ),
+      //     transformerLabel
+      //   ),
+      //   sqlFrom([
+      //     sqlNameQuote(applyToLabel),
+      //     sqlDefineColumn(
+      //       sql_jsonb_array_elements(
+      //         sqlColumnAccess(applyToLabel, (applyTo as any).columnNameContainingJsonValue)
+      //       ),
+      //       applyToLabelElements
+      //     ),
+      //     sqlDefineColumn(
+      //       sql_jsonb_each(
+      //         sqlNameQuote(applyToLabelElements)
+      //       ),
+      //       applyToLabelPairs
+      //     )
+      //   ])
+      // );
+      log.info("@@@@@@@@@@@@@@@ sqlStringForListReducerToSpreadObjectTransformer json_array sqlNewQuery", sqlNewQuery);
       return {
         type: "json",
-        sqlStringOrObject: sqlResult,
+        sqlStringOrObject: sqlNewQuery,
         preparedStatementParameters: applyTo.preparedStatementParameters,
         resultAccessPath: [0, transformerLabel],
         columnNameContainingJsonValue: transformerLabel,
@@ -2010,16 +2095,18 @@ function sqlStringForListReducerToSpreadObjectTransformer(
     }
     case "json":
     case "tableOf1JsonColumn": {
+      // TODO: does this makle sense at all? should'nt this return a type error?
+      log.info("sqlStringForListReducerToSpreadObjectTransformer json or tableOf1JsonColumn");
       const returnValue = 'jsonb_object_agg(' +
-        '"' + applyToLabelPairs + '"' + 
-        '."key", ' +
-        '"' + applyToLabelPairs + '"' + 
-        '."value")'
+        sqlColumnAccess(applyToLabelPairs, "key") +
+        ', ' +
+        sqlColumnAccess(applyToLabelPairs, "value") +
+        ')'
       ;
       const checkForArrayAndReturnValue =	'case when jsonb_typeof(' + 
-        '"' + applyToLabel + '"' + 
+        sqlNameQuote(applyToLabel) +
         '.' +
-        '"' + (applyTo as any).columnNameContainingJsonValue + '"' +
+        sqlNameQuote((applyTo as any).columnNameContainingJsonValue) +
         ") = 'array' then " +
         returnValue +
       	`else ${queryFailureObjectSqlString} end`;
@@ -2226,60 +2313,6 @@ function sqlStringForDataflowObjectTransformer(
     resultAccessPath: (definitionSqlObject[actionRuntimeTransformer.target] as any).resultAccessPath,
     columnNameContainingJsonValue: definitionSqlObject[actionRuntimeTransformer.target].columnNameContainingJsonValue,
   };
-}
-
-// ################################################################################################
-function sqlStringForConstantAnyTransformer(
-  actionRuntimeTransformer: TransformerForRuntime_constantArray,
-  preparedStatementParametersCount: number,
-  indentLevel: number,
-  queryParams: Record<string, any>,
-  definedContextEntries: Record<string, SqlContextEntry>,
-  useAccessPathForContextReference: boolean,
-  topLevelTransformer: boolean,
-  withClauseColumnName?: string,
-  iterateOn?: string,
-): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
-  const getSqlParams = getConstantSqlTypeMap[actionRuntimeTransformer.transformerType];
-  return getConstantSql(
-    actionRuntimeTransformer,
-    preparedStatementParametersCount,
-    topLevelTransformer,
-    getSqlParams.targetType,
-    getSqlParams.sqlTargetType,
-    withClauseColumnName??getSqlParams.label
-  );
-}
-
-// ################################################################################################
-function sqlStringForConstantTransformer(
-  actionRuntimeTransformer: TransformerForRuntime_constant,
-  preparedStatementParametersCount: number,
-  indentLevel: number,
-  queryParams: Record<string, any>,
-  definedContextEntries: Record<string, SqlContextEntry>,
-  useAccessPathForContextReference: boolean,
-  topLevelTransformer: boolean,
-  withClauseColumnName?: string,
-  iterateOn?: string,
-): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
-  const targetSqlType =
-    typeof actionRuntimeTransformer.value === "object"
-      ? Array.isArray(actionRuntimeTransformer.value)
-        ? "json_array"
-        : "json"
-      : "scalar";
-  // let sqlTargetType: PostgresDataTypes;
-  // let label: string;
-  const { sqlTargetType, label } = getSqlTypeForValue(actionRuntimeTransformer.value);
-  return getConstantSql(
-    actionRuntimeTransformer,
-    preparedStatementParametersCount,
-    topLevelTransformer,
-    targetSqlType,
-    sqlTargetType,
-    withClauseColumnName??label,
-  );
 }
 
 // ################################################################################################
