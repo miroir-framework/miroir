@@ -901,7 +901,8 @@ export function transformer_resolveReference(
         bank
       );
       return new Domain2ElementFailed({
-        queryFailure: "ReferenceNotFound",
+        // queryFailure: "ReferenceNotFound",
+        queryFailure: "FailedTransformer_contextReference",
         failureOrigin: ["transformer_resolveReference"],
         queryReference: JSON.stringify(transformerInnerReference.referencePath),
         failureMessage:
@@ -2399,6 +2400,7 @@ export function transformer_extended_apply_wrapper(
       );
       return new Domain2ElementFailed({
         queryFailure: "QueryNotExecutable",
+        // queryFailure: result.queryFailure,
         failureOrigin: ["transformer_extended_apply"],
         innerError: result,
         queryContext: "failed to transform object attribute",

@@ -255,10 +255,10 @@ const beforeAll = async () => {
 afterAll(async () => {
   console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ afterAll");
   if (RUN_TEST == testSuiteName) {
-    await persistenceStoreController.deleteStore(testStoreConfig.data);
-    await persistenceStoreController.deleteStore(testStoreConfig.model);
-    await persistenceStoreController.deleteStore(testStoreConfig.admin);
-    await persistenceStoreController.close();
+    // await persistenceStoreController.deleteStore(testStoreConfig.data);
+    // await persistenceStoreController.deleteStore(testStoreConfig.model);
+    // await persistenceStoreController.deleteStore(testStoreConfig.admin);
+    // await persistenceStoreController.close();
     transformerTestsDisplayResults(currentTestSuite, RUN_TEST, testSuiteName);
   }
   console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ afterAll DONE");

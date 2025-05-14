@@ -138,6 +138,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   transformerParams: {},
                   expectedValue: 42,
                 },
+                // TODO: REMOVE?
                 // "failed constantNumber transformer for non-number value": {
                 //   transformerTestType: "transformerTest",
                 //   transformerTestLabel: "failed constantNumber transformer for non-number value",
@@ -146,7 +147,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                 //   transformer: {
                 //     transformerType: "constantNumber",
                 //     interpolation: "build",
-                //     value: "test" as any,
+                //     value: "test" as any, // DOES NOT MAKE ANY SENSE, THIS SHALL BE HANDLED AT THE PARSER/TYPE-CHECKER LEVEL
                 //   },
                 //   transformerParams: {},
                 //   ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
@@ -173,6 +174,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   transformerParams: {},
                   expectedValue: 42n,
                 },
+                // TODO: REMOVE? This makes no sense, the type-checker should handle this
                 // "failed constantBigint transformer for non-bigint value": {
                 //   transformerTestType: "transformerTest",
                 //   transformerTestLabel: "failed constantBigint transformer for non-bigint value",
@@ -208,6 +210,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   transformerParams: {},
                   expectedValue: "test",
                 },
+                // REMOVE? This makes no sense, the type-checker should handle this
                 // "constantString build transformer for non-string value": {
                 //   transformerTestType: "transformerTest",
                 //   transformerTestLabel: "constantString build transformer for non-string value",
@@ -240,7 +243,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   transformerParams: {},
                   expectedValue: { test: "test" },
                 },
-                // // TODO: in postgres, conversion to ::jsonb succeeds for string input, it does not require to be an object
+                // TODO: in postgres, conversion to ::jsonb succeeds for string input, it does not require to be an object
                 // "failed constantObject transformer for non-object value before runtime": {
                 //   transformerTestType: "transformerTest",
                 //   transformerTestLabel: "failed constantObject transformer for non-object value before runtime",
@@ -249,7 +252,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                 //   transformer: {
                 //     transformerType: "constantObject",
                 //     interpolation: "build",
-                //     value: "test" as any,
+                //     value: "{)" as any,
                 //   },
                 //   transformerParams: {},
                 //   ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
@@ -400,7 +403,6 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
               runTestStep: "build",
               transformer: {
                 transformerType: "count",
-                // interpolation: "runtime",
                 interpolation: "build",
                 applyTo: {
                   referenceType: "referencedTransformer",
@@ -415,14 +417,6 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
               expectedValue: [{
                 "count": 3,
               }],
-              // expectedValue: {
-              //   transformerType: "count",
-              //   interpolation: "runtime",
-              //   applyTo: {
-              //     referenceType: "referencedTransformer", // TODO: this is inconsistent! A referenceTransformer with a value in it! Should it be changed to a constant transformer?
-              //     reference: [ "a", "b", "c" ],
-              //   }
-              // },
             },
           },
         }
@@ -829,24 +823,6 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                     // queryFailure: "FailedExtractor",
                   },
                 },
-                // // TODO: delete this test? returning undefined is not an error, necessarily...
-                // "should fail when parameter reference value is undefined": {
-                //   transformerTestType: "transformerTest",
-                //   transformerTestLabel: "should fail when parameter reference value is undefined",
-                //   transformerName: "parameterReference",
-                //   transformer: {
-                //     transformerType: "parameterReference",
-                //     interpolation: "runtime",
-                //     referenceName: "referenceFoundButUndefined",
-                //   },
-                //   transformerParams: {
-                //     referenceFoundButUndefined: undefined,
-                //   },
-                //   ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-                //   expectedValue: {
-                //     queryFailure: "QueryNotExecutable",
-                //   },
-                // },
               },
             },
             contextReference: {
@@ -896,6 +872,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
                   expectedValue: {
                     queryFailure: "QueryNotExecutable",
+                    // queryFailure: "ReferenceNotFound",
                     // queryFailure: "FailedExtractor",
                   },
                 },
@@ -910,33 +887,13 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   },
                   transformerParams: {},
                   transformerRuntimeContext: {
-                    a: "test",
+                    // a: "test", // if root element is not an object this is the simpler case.
+                    a: { b: "test"},
                   },
                   ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-                  expectedValue: {
-                    queryFailure: "QueryNotExecutable",
-                    // queryFailure: "FailedExtractor",
-                  },
+                  expectedValue: {"queryFailure": "QueryNotExecutable"},
+                  // expectedValue: {"queryFailure": "FailedTransformer_contextReference"},
                 },
-                // TODO: delete this test? returning undefined is not an error, necessarily...
-                // // "should fail when context reference value is undefined": {
-                // //   transformerTestType: "transformerTest",
-                // //   transformerTestLabel: "should fail when context reference value is undefined",
-                // //   transformerName: "contextReference",
-                // //   transformer: {
-                // //     transformerType: "contextReference",
-                // //     interpolation: "runtime",
-                // //     referenceName: "referenceFoundButUndefined",
-                // //   },
-                // //   transformerParams: {},
-                // //   transformerRuntimeContext: {
-                // //     referenceFoundButUndefined: undefined,
-                // //   },
-                // //   ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-                // //   expectedValue: {
-                // //     queryFailure: "QueryNotExecutable",
-                // //   },
-                // // },
               },
             },
           },
@@ -1148,8 +1105,6 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   reference: {
                     transformerType: "contextReference",
                     interpolation: "runtime",
-                    // transformerType: "parameterReference",
-                    // interpolation: "build",
                     referenceName: "testList",
                   },
                 },
@@ -1173,8 +1128,6 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   reference: {
                     transformerType: "contextReference",
                     interpolation: "runtime",
-                    // transformerType: "parameterReference",
-                    // interpolation: "build",
                     referenceName: "testList",
                   },
                 },
@@ -1182,7 +1135,6 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                 index: 1,
               },
               transformerParams: {
-                // testList: [{ test: "testA" }, { test: "testB" }, { test: "testC" }],
               },
               transformerRuntimeContext: {
                 testList: [{ test: "testA" }, { test: "testB" }, { test: "testC" }],
@@ -1259,8 +1211,6 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                 applyTo: {
                   referenceType: "referencedTransformer",
                   reference: {
-                    // transformerType: "parameterReference",
-                    // interpolation: "build",
                     transformerType: "contextReference",
                     interpolation: "runtime",
                     referenceName: "testList",
@@ -1303,31 +1253,6 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
           transformerTestType: "transformerTestSuite",
           transformerTestLabel: "unique",
           transformerTests: {
-            // TODO
-            // "unique returns list of unique objects before runtime": {
-            //   transformerTestType: "transformerTest",
-            //   transformerTestLabel: "unique returns list of unique objects before runtime",
-            //   transformerName: "uniqueBeforeRuntime",
-            //   transformer: {
-            //     transformerType: "unique",
-            //     // interpolation: "runtime",
-            //     attribute: "a",
-            //     applyTo: {
-            //       referenceType: "referencedTransformer",
-            //       reference: {
-            //         transformerType: "parameterReference",
-            //         // interpolation: "runtime",
-            //         referenceName: "testList",
-            //       },
-            //     },
-            //   },
-            //   transformerParams: {
-            //     // testList: ["testA", "testB", "testA", "testC"],
-            //     testList: [ { a: "testA" }, { a: "testB" }, { a: "testA" }, { a: "testC" } ],
-            //   },
-            //   // expectedValue: ["testA", "testB", "testC"],
-            //   expectedValue: [ { a: "testA" }, { a: "testB" }, { a: "testC" } ],
-            // },
             "unique returns list of unique objects from constant array at runtime": {
               transformerTestType: "transformerTest",
               transformerTestLabel: "unique returns list of unique objects from constant array at runtime",
@@ -1356,18 +1281,14 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   reference: {
                     transformerType: "contextReference",
                     interpolation: "runtime",
-                    // transformerType: "parameterReference",
-                    // interpolation: "build",
                     referenceName: "testList",
                   },
                 },
               },
               transformerParams: {},
               transformerRuntimeContext: {
-                // testList: ["testA", "testB", "testA", "testC"],
                 testList: [{ a: "testA" }, { a: "testB" }, { a: "testA" }, { a: "testC" }],
               },
-              // expectedValue: ["testA", "testB", "testC"],
               expectedValue: [{ a: "testA" }, { a: "testB" }, { a: "testC" }],
             },
             "unique returns list of unique objects from extractor at runtime": {
@@ -1624,8 +1545,6 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                       value: "name",
                     },
                     attributeValue: {
-                      // transformerType: "mustacheStringTemplate",
-                      // definition: "{{country.iso3166-1Alpha-2}}",
                       transformerType: "contextReference",
                       interpolation: "runtime",
                       referencePath: ["country", "iso3166-1Alpha-2"],
@@ -1688,10 +1607,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                     },
                   ],
                 },
-                transformerParams: {
-                  // newUuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-                  // country: Country1 as EntityInstance,
-                },
+                transformerParams: {},
                 transformerRuntimeContext: {
                   newUuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
                   country: Country1 as EntityInstance,
@@ -1804,9 +1720,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                   },
                 },
               },
-              transformerParams: {
-                // country: Country1 as EntityInstance,
-              },
+              transformerParams: {},
               transformerRuntimeContext: {
                 country: Country1 as EntityInstance,
               },
@@ -1860,38 +1774,85 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                 country: { uuid: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy", name: "US" },
               },
             },
-            // // TODO: detect failure to resolve correctly in postgres implementation
-            // "freeObjectTemplate should fail when definition fails to resolve correctly": {
-            //   transformerTestType: "transformerTest",
-            //   transformerTestLabel: "freeObjectTemplate should fail when definition fails to resolve correctly",
-            //   transformerName: "freeObjectTemplate",
-            //   transformer: {
-            //     transformerType: "freeObjectTemplate",
-            //     interpolation: "runtime",
-            //     definition: {
-            //       uuid: {
-            //         transformerType: "constantUuid",
-            //         interpolation: "runtime",
-            //         value: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-            //       },
-            //       name: {
-            //         transformerType: "contextReference",
-            //         interpolation: "runtime",
-            //         referencePath: ["country", "nonExistingAttribute"],
-            //       },
-            //     },
-            //   },
-            //   transformerParams: {
-            //     // country: Country1 as EntityInstance,
-            //   },
-            //   transformerRuntimeContext: {
-            //     country: Country1 as EntityInstance,
-            //   },
-            //   ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-            //   expectedValue: {
-            //     queryFailure: "QueryNotExecutable",
-            //   },
-            // },
+            // TODO: detect failure to resolve correctly in postgres implementation
+            "freeObjectTemplate should fail when definition fails to resolve correctly": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel: "freeObjectTemplate should fail when definition fails to resolve correctly",
+              transformerName: "freeObjectTemplate",
+              transformer: {
+                transformerType: "freeObjectTemplate",
+                interpolation: "runtime",
+                definition: {
+                  uuid: {
+                    transformerType: "constantUuid",
+                    interpolation: "runtime",
+                    value: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  },
+                  name: {
+                    transformerType: "contextReference",
+                    interpolation: "runtime",
+                    referencePath: ["country", "nonExistingAttribute"],
+                  },
+                },
+              },
+              transformerParams: {
+                // country: Country1 as EntityInstance,
+              },
+              transformerRuntimeContext: {
+                country: Country1 as EntityInstance,
+              },
+              ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+              expectedValue: {
+                queryFailure: "QueryNotExecutable",
+              },
+            },
+            "freeObjectTemplate should fail when sub-definition fails to resolve correctly": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel: "freeObjectTemplate should fail when sub-definition fails to resolve correctly",
+              transformerName: "freeObjectTemplate",
+              transformer: {
+                transformerType: "freeObjectTemplate",
+                interpolation: "runtime",
+                definition: {
+                  uuid: {
+                    transformerType: "constantUuid",
+                    interpolation: "runtime",
+                    value: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  },
+                  name: {
+                    transformerType: "contextReference",
+                    interpolation: "runtime",
+                    referencePath: ["country", "name"],
+                  },
+                  country: {
+                    transformerType: "freeObjectTemplate",
+                    interpolation: "runtime",
+                    definition: {
+                      uuid: {
+                        transformerType: "constantUuid",
+                        interpolation: "runtime",
+                        value: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+                      },
+                      name: {
+                        transformerType: "contextReference",
+                        interpolation: "runtime",
+                        referencePath: ["country", "nonExistingAttribute"],
+                      },
+                    },
+                  },
+                },
+              },
+              transformerParams: {
+                // country: Country1 as EntityInstance,
+              },
+              transformerRuntimeContext: {
+                country: Country1 as EntityInstance,
+              },
+              ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+              expectedValue: {
+                queryFailure: "QueryNotExecutable",
+              },
+            },
           },
         },
         objectAlter: {
@@ -2550,31 +2511,34 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
               },
             },
             // TODO error cases
-            // "listReducerToSpreadObject fails when input is not a list": {
-            //   transformerTestType: "transformerTest",
-            //   transformerTestLabel: "listReducerToSpreadObject fails when input is not a list",
-            //   transformerName: "listReducerToSpreadObject",
-            //   transformer: {
-            //     transformerType: "listReducerToSpreadObject",
-            //     applyTo: {
-            //       referenceType: "referencedTransformer",
-            //       reference: {
-            //         transformerType: "parameterReference",
-            //         referenceName: "objectList",
-            //       },
-            //     },
-            //   },
-            //   transformerParams: {
-            //     objectList: {
-            //       uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-            //       name: "US",
-            //     }
-            //   },
-            //   ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-            //   expectedValue: {
-            //     queryFailure: "QueryNotExecutable",
-            //   },
-            // },
+            "listReducerToSpreadObject fails when input is not a list": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel: "listReducerToSpreadObject fails when input is not a list",
+              transformerName: "listReducerToSpreadObject",
+              transformer: {
+                transformerType: "listReducerToSpreadObject",
+                interpolation: "runtime",
+                applyTo: {
+                  referenceType: "referencedTransformer",
+                  reference: {
+                    transformerType: "contextReference",
+                    interpolation: "runtime",
+                    referenceName: "objectList",
+                  },
+                },
+              },
+              transformerParams: {},
+              transformerRuntimeContext: {
+                objectList: {
+                  uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  name: "US",
+                }
+              },
+              ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+              expectedValue: {
+                queryFailure: "QueryNotExecutable",
+              },
+            },
             // "listReducerToSpreadObject fails when non-objects are included in the list": {
             //   transformerTestType: "transformerTest",
             //   transformerTestLabel: "listReducerToSpreadObject fails when non-objects are included in the list",
@@ -2605,101 +2569,101 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
             // }
           },
         },
-        listReducerToIndexObject: {
-          transformerTestType: "transformerTestSuite",
-          transformerTestLabel: "listReducerToIndexObject",
-          transformerTests: {
-            // "listReducerToIndexObject allows to reduce a constant list of objects to an object with dynamic keys and values": {
-            //   transformerTestType: "transformerTest",
-            //   transformerTestLabel: "listReducerToIndexObject allows to reduce a constant list of objects to an object with dynamic keys and values",
-            //   transformerName: "listReducerToIndexObject",
-            //   transformer: {
-            //     transformerType: "listReducerToIndexObject",
-            //     interpolation: "runtime",
-            //     applyTo: [
-            //       {
-            //         uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-            //         name: "US",
-            //       },
-            //       {
-            //         uuid: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
-            //         name: "DE",
-            //       }
-            //     ],
-            //     indexAttribute: "uuid",
-            //   },
-            //   transformerParams: {},
-            //   expectedValue: {
-            //     "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx": { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", name: "US" },
-            //     "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy": { uuid: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy", name: "DE" },
-            //   },
-            // },
-            "listReducerToIndexObject allows to reduce a list of objects from parameter to an object with dynamic keys and values": {
-              transformerTestType: "transformerTest",
-              transformerTestLabel: "listReducerToIndexObject allows to reduce a list of objects from parameter to an object with dynamic keys and values",
-              transformerName: "listReducerToIndexObject",
-              transformer: {
-                transformerType: "listReducerToIndexObject",
-                interpolation: "runtime",
-                applyTo: {
-                  referenceType: "referencedTransformer",
-                  reference: {
-                    transformerType: "contextReference",
-                    interpolation: "runtime",
-                    referenceName: "objectList",
-                  },
-                },
-                indexAttribute: "uuid",
-              },
-              transformerParams: {},
-              transformerRuntimeContext: {
-                objectList: [
-                  {
-                    uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-                    name: "US",
-                  },
-                  {
-                    uuid: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
-                    name: "DE",
-                  }
-                ]
-              },
-              expectedValue: {
-                "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx": { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", name: "US" },
-                "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy": { uuid: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy", name: "DE" },
-              },
-            }
-              // TODO add test for listReducerToIndexObject with parameter
-            // "listReducerToIndexObject fails when input is not a list": {
-            //   transformerTestType: "transformerTest",
-            //   transformerTestLabel: "listReducerToIndexObject fails when input is not a list",
-            //   transformerName: "listReducerToIndexObject",
-            //   transformer: {
-            //     transformerType: "listReducerToIndexObject",
-            //     interpolation: "runtime",
-            //     applyTo: {
-            //       referenceType: "referencedTransformer",
-            //       reference: {
-            //         transformerType: "parameterReference",
-            //         interpolation: "build",
-            //         referenceName: "objectNotList",
-            //       },
-            //     },
-            //     indexAttribute: "uuid",
-            //   },
-            //   transformerParams: {
-            //     objectNotList: {
-            //       uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-            //       name: "US",
-            //     }
-            //   },
-            //   ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-            //   expectedValue: {
-            //     queryFailure: "QueryNotExecutable",
-            //   },
-            // },
-          },
-        }
+        // listReducerToIndexObject: {
+        //   transformerTestType: "transformerTestSuite",
+        //   transformerTestLabel: "listReducerToIndexObject",
+        //   transformerTests: {
+        //     "listReducerToIndexObject allows to reduce a constant list of objects to an object with dynamic keys and values": {
+        //       transformerTestType: "transformerTest",
+        //       transformerTestLabel: "listReducerToIndexObject allows to reduce a constant list of objects to an object with dynamic keys and values",
+        //       transformerName: "listReducerToIndexObject",
+        //       transformer: {
+        //         transformerType: "listReducerToIndexObject",
+        //         interpolation: "runtime",
+        //         applyTo: [
+        //           {
+        //             uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        //             name: "US",
+        //           },
+        //           {
+        //             uuid: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+        //             name: "DE",
+        //           }
+        //         ],
+        //         indexAttribute: "uuid",
+        //       },
+        //       transformerParams: {},
+        //       expectedValue: {
+        //         "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx": { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", name: "US" },
+        //         "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy": { uuid: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy", name: "DE" },
+        //       },
+        //     },
+        //     "listReducerToIndexObject allows to reduce a list of objects from parameter to an object with dynamic keys and values": {
+        //       transformerTestType: "transformerTest",
+        //       transformerTestLabel: "listReducerToIndexObject allows to reduce a list of objects from parameter to an object with dynamic keys and values",
+        //       transformerName: "listReducerToIndexObject",
+        //       transformer: {
+        //         transformerType: "listReducerToIndexObject",
+        //         interpolation: "runtime",
+        //         applyTo: {
+        //           referenceType: "referencedTransformer",
+        //           reference: {
+        //             transformerType: "contextReference",
+        //             interpolation: "runtime",
+        //             referenceName: "objectList",
+        //           },
+        //         },
+        //         indexAttribute: "uuid",
+        //       },
+        //       transformerParams: {},
+        //       transformerRuntimeContext: {
+        //         objectList: [
+        //           {
+        //             uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        //             name: "US",
+        //           },
+        //           {
+        //             uuid: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+        //             name: "DE",
+        //           }
+        //         ]
+        //       },
+        //       expectedValue: {
+        //         "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx": { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", name: "US" },
+        //         "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy": { uuid: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy", name: "DE" },
+        //       },
+        //     }
+        //       // TODO add test for listReducerToIndexObject with parameter
+        //     // "listReducerToIndexObject fails when input is not a list": {
+        //     //   transformerTestType: "transformerTest",
+        //     //   transformerTestLabel: "listReducerToIndexObject fails when input is not a list",
+        //     //   transformerName: "listReducerToIndexObject",
+        //     //   transformer: {
+        //     //     transformerType: "listReducerToIndexObject",
+        //     //     interpolation: "runtime",
+        //     //     applyTo: {
+        //     //       referenceType: "referencedTransformer",
+        //     //       reference: {
+        //     //         transformerType: "parameterReference",
+        //     //         interpolation: "build",
+        //     //         referenceName: "objectNotList",
+        //     //       },
+        //     //     },
+        //     //     indexAttribute: "uuid",
+        //     //   },
+        //     //   transformerParams: {
+        //     //     objectNotList: {
+        //     //       uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        //     //       name: "US",
+        //     //     }
+        //     //   },
+        //     //   ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+        //     //   expectedValue: {
+        //     //     queryFailure: "QueryNotExecutable",
+        //     //   },
+        //     // },
+        //   },
+        // }
       }
     },
   }

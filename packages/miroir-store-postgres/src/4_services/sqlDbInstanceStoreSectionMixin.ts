@@ -69,12 +69,12 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
       log.info(this.logHeader, "######## executeRawQuery", "query", query, "values", values);
       // const rawResult = await this.sequelize.query({query, values: values??[]});
       const rawResult = await this.sequelize.query(query, {bind: Array.isArray(values) ? values: []});
-      log.info(this.logHeader, "######## executeRawQuery", "query", query, "rawResult", rawResult);
+      // log.info(this.logHeader, "######## executeRawQuery", "query", query, "rawResult", rawResult);
       const result: Action2ReturnType = {
         status: "ok",
         returnedDomainElement: rawResult[0],
       };
-      log.info(this.logHeader, "######## executeRawQuery", "query", query, "result", JSON.stringify(result));
+      // log.info(this.logHeader, "######## executeRawQuery", "query", query, "result", JSON.stringify(result));
       return Promise.resolve(result);
     }
 

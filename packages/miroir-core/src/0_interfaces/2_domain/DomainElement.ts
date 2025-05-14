@@ -19,6 +19,7 @@ export type QueryFailureType =
   | "FailedTransformer_constantBoolean"
   | "FailedTransformer_constantObject"
   | "FailedTransformer_constant"
+  | "FailedTransformer_contextReference"
   | "FailedTransformer_listPickElement"
   | "FailedExtractor"
   | "QueryNotExecutable"

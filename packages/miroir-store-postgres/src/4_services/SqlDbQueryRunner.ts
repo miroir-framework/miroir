@@ -160,18 +160,16 @@ export class SqlDbQueryRunner {
     } = sqlQueryParams;
 
     try {
-      log.info("asyncExtractWithQuery calling QUERY", query, "with parameters", JSON.stringify(preparedStatementParameters));
+      // log.info("asyncExtractWithQuery calling QUERY", query, "with parameters", JSON.stringify(preparedStatementParameters));
       const rawResult = await this.persistenceStoreController.executeRawQuery(query, preparedStatementParameters);
-      log.info("asyncExtractWithQuery innerFullObjectTemplate #####RAWRESULT", JSON.stringify(rawResult, null, 2));
+      log.info("##### asyncExtractWithQuery innerFullObjectTemplate ##### RAWRESULT RAWRESULT RAWRESULT RAWRESULT", JSON.stringify(rawResult, null, 2));
   
       if (rawResult instanceof Action2Error || rawResult.returnedDomainElement instanceof Domain2ElementFailed) {
-        // log.error("asyncExtractWithQuery rawResult", JSON.stringify(rawResult));
-        return Promise.resolve({
-          elementType: "failure",
+        return Promise.resolve(new Domain2ElementFailed({
           failureOrigin: ["asyncExtractWithQuery"],
-          elementValue: { queryFailure: "QueryNotExecutable" },
-          innerError: rawResult,
-        });
+          queryFailure: "QueryNotExecutable",
+          innerError: rawResult as any,
+        }));
       }
   
       const endResultPath =
@@ -205,7 +203,16 @@ export class SqlDbQueryRunner {
             : safeResolvePathOnObject(rawResult.returnedDomainElement, endResultPath)
           : rawResult.returnedDomainElement;
       log.info("asyncExtractWithQuery preSqlResult", JSON.stringify(preSqlResult));
+      if (typeof preSqlResult == "object" && !Array.isArray(preSqlResult) && preSqlResult.queryFailure) {
+        // log.error("asyncExtractWithQuery rawResult", JSON.stringify(rawResult));
+        return Promise.resolve(new Domain2ElementFailed({
+          failureOrigin: ["asyncExtractWithQuery"],
+          queryFailure: "QueryNotExecutable",
+          innerError: rawResult as any,
+        }));
+      }
       const sqlResult = preSqlResult == null ? undefined : preSqlResult;
+
       const result: Domain2QueryReturnType<any> = {[endResultName]:sqlResult}
       log.info("asyncExtractWithQuery returning result", JSON.stringify(result));
       return Promise.resolve(result);
