@@ -49,9 +49,9 @@ import {
   sql_jsonb_array_elements,
   sql_jsonb_each,
   sql_jsonb_object_agg,
-  sqlColumnAccess,
+  sqlColumnAccessOld,
   sqlDefineColumn,
-  sqlFrom,
+  sqlFromOld,
   sqlNameQuote,
   sqlQuery,
   sqlSelectColumns,
@@ -2037,37 +2037,90 @@ function sqlStringForListReducerToSpreadObjectTransformer(
   ];
   switch (applyTo.type) {
     case "json_array": {
+      // const sqlNewQuery = sqlQuery(0, {
+      //   queryPart: "query",
+      //   select: [
+      //     {
+      //       queryPart: "defineColumn",
+      //       value: {
+      //         queryPart: "bypass",
+      //         value: sql_jsonb_object_agg(
+      //           sqlSelectColumns([
+      //             sqlColumnAccessOld(applyToLabelPairs, "key"),
+      //             sqlColumnAccessOld(applyToLabelPairs, "value"),
+      //           ])
+      //         ),
+      //       },
+      //       as: transformerLabel,
+      //     },
+      //   ],
+      //   from: sqlFromOld([
+      //     sqlNameQuote(applyToLabel),
+      //     sqlDefineColumn(
+      //       0,
+      //       {
+      //         queryPart: "defineColumn",
+      //         value: sql_jsonb_array_elements(
+      //           sqlColumnAccessOld(applyToLabel, (applyTo as any).columnNameContainingJsonValue)
+      //         ),
+      //         as: applyToLabelElements,
+      //       }
+      //     ),
+      //     sqlDefineColumn(0, {queryPart: "defineColumn", value: sql_jsonb_each(sqlNameQuote(applyToLabelElements)), as: applyToLabelPairs}),
+      //   ]),
+      // });
       const sqlNewQuery = sqlQuery(0, {
         queryPart: "query",
         select: [
           {
             queryPart: "defineColumn",
             value: {
-              queryPart: "expr",
+              queryPart: "bypass",
               value: sql_jsonb_object_agg(
                 sqlSelectColumns([
-                  sqlColumnAccess(applyToLabelPairs, "key"),
-                  sqlColumnAccess(applyToLabelPairs, "value"),
+                  sqlColumnAccessOld(applyToLabelPairs, "key"),
+                  sqlColumnAccessOld(applyToLabelPairs, "value"),
                 ])
               ),
             },
             as: transformerLabel,
           },
         ],
-        from: sqlFrom([
-          sqlNameQuote(applyToLabel),
-          sqlDefineColumn(
-            0,
-            {
-              queryPart: "defineColumn",
-              value: sql_jsonb_array_elements(
-                sqlColumnAccess(applyToLabel, (applyTo as any).columnNameContainingJsonValue)
-              ),
-              as: applyToLabelElements,
-            }
-          ),
-          sqlDefineColumn(0, {queryPart: "defineColumn", value: sql_jsonb_each(sqlNameQuote(applyToLabelElements)), as: applyToLabelPairs}),
-        ]),
+        from: [
+          {
+            queryPart: "tableLiteral",
+            name: applyToLabel,
+          },
+          {
+            queryPart: "hereTable",
+            definition: {
+              queryPart: "call",
+              fct: "jsonb_array_elements",
+              params: [
+                {
+                  queryPart: "tableColumnAccess",
+                  table: { queryPart: "tableLiteral", name: applyToLabel},
+                  col: (applyTo as any).columnNameContainingJsonValue,
+                },
+              ],
+            },
+            as: applyToLabelElements,
+          },
+          {
+            queryPart: "hereTable",
+            definition: {
+              queryPart: "call",
+              fct: "jsonb_each",
+              params: [
+                {
+                  queryPart: "tableLiteral",
+                  name: applyToLabelElements,
+                },
+              ],
+            },
+            as: applyToLabelPairs,
+          },
+        ],
       });
       log.info("@@@@@@@@@@@@@@@ sqlStringForListReducerToSpreadObjectTransformer json_array sqlNewQuery", sqlNewQuery);
       return {
@@ -2084,9 +2137,9 @@ function sqlStringForListReducerToSpreadObjectTransformer(
       // TODO: does this makle sense at all? should'nt this return a type error?
       log.info("sqlStringForListReducerToSpreadObjectTransformer json or tableOf1JsonColumn");
       const returnValue = 'jsonb_object_agg(' +
-        sqlColumnAccess(applyToLabelPairs, "key") +
+        sqlColumnAccessOld(applyToLabelPairs, "key") +
         ', ' +
-        sqlColumnAccess(applyToLabelPairs, "value") +
+        sqlColumnAccessOld(applyToLabelPairs, "value") +
         ')'
       ;
       const checkForArrayAndReturnValue =	'case when jsonb_typeof(' + 

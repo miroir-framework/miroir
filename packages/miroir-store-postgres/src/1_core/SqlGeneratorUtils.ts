@@ -24,10 +24,10 @@ export function protectedSqlAccessForPath(
 
   console.log("pathParts", pathParts);
   // Build the CASE WHEN expression to check each step
-  let expr = pathParts[0];
+  let bypass = pathParts[0];
   let checks: string[] = [];
-  let resultExpression = expr;
-  let checkExpression = expr;
+  let resultExpression = bypass;
+  let checkExpression = bypass;
 
   for (let i = 1; i < pathParts.length; i++) {
     // SIDE EFFECTS!!
