@@ -35,6 +35,24 @@ export const sqlColumnAccessOld = (table: string, key: string, as?: string) =>
   sqlNameQuote(table) + "." + sqlNameQuote(key) + (as ? " AS " + sqlNameQuote(as) : "");
 
 // ################################################################################################
+export function sqlQueryTableLiteral(q: SqlQueryTableLiteralSchema) {
+  if (typeof q == "string") {
+    return q;
+  }
+  switch (q.queryPart) {
+    case "tableLiteral": {
+      return sqlNameQuote(q.name);
+    }
+    case "bypass": {
+      return q.value;
+    }
+    default: {
+      throw new Error("Unknown query part: " + JSON.stringify(q));
+    }
+  }
+}
+
+// ################################################################################################
 export function sqlColumnAccess(q: SqlQueryTableColumnAccessSchema) {
   if (typeof q == "string") {
     return q;
@@ -43,13 +61,6 @@ export function sqlColumnAccess(q: SqlQueryTableColumnAccessSchema) {
   return sqlQueryTableLiteral(q.table) + "." + sqlNameQuote(q.col); // + (as ? " AS " + sqlNameQuote(as) : "");
 }
 
-// ################################################################################################
-export function sqlQueryTableLiteral(q: SqlQueryTableLiteralSchema) {
-  if (typeof q == "string") {
-    return q;
-  }
-  return sqlNameQuote(q.name)
-}
 
 // ################################################################################################
 export function sqlSelectExpression(
@@ -126,7 +137,7 @@ export function sqlQueryHereTableExpression(
 export function sqlQueryHereTableDefinition(
   indentLevel: number | undefined, 
   q: SqlQueryHereTableDefinitionSchema
-) {
+): string {
   if (typeof q == "string") {
     return q;
   }
@@ -144,9 +155,25 @@ export function sqlQueryHereTableDefinition(
       if (typeof q.definition == "string") {
         result = q.definition + (q.as ? " AS " + sqlNameQuote(q.as) : "");
       } else {
-        result = `${indent(indentLevel)}${sqlQueryHereTableExpression(indentLevel, q.definition)}${
-          q.as ? " AS " + sqlNameQuote(q.as) : ""
-        }`;
+        switch (q.definition.queryPart) {
+          case "query": {
+            result = '(' + sqlQuery(indentLevel??0 + 1, q.definition) + ')' + (q.as ? " AS " + sqlNameQuote(q.as) : "");
+            break;
+          }
+          case "bypass":
+          case "tableLiteral":
+          case "tableColumnAccess":
+          case "call": {
+            result = `${indent(indentLevel)}${sqlQueryHereTableExpression(indentLevel, q.definition)}${
+              q.as ? " AS " + sqlNameQuote(q.as) : ""
+            }`;
+            break;
+          }
+          default: {
+            throw new Error("Unknown query part: " + JSON.stringify(q.definition));
+            break;
+          }
+        }
       }
       break;
     }
@@ -168,27 +195,49 @@ export function sqlQuery(indentLevel: number | undefined, q: SqlQuerySelectSchem
           .map((item) => typeof item == "string"?item:sqlDefineColumn(indentLevel, item))
           .join(", ");
   console.log("sqlQuery selectParts", selectParts);
-  const fromParts = !q.from
-    ? ""
-    : typeof q.from == "string"
-    ? q.from
-    : q.from
-        .map((item) => {
-          return sqlQueryHereTableDefinition(indentLevel, item);
-        })
-        .join(", ");
-  return `SELECT ${selectParts}${flushAndIndent(indentLevel)}FROM ${fromParts}${q.where ? `${flushAndIndent(indentLevel)}WHERE ${q.where}` : ""}`;
+  const fromParts =
+    (q.from == undefined || (Array.isArray(q.from) && q.from.length == 0))
+      ? ""
+      : ("FROM " +
+        (typeof q.from == "string"
+          ? q.from
+          : q.from
+              .map((item) => {
+                return sqlQueryHereTableDefinition(indentLevel, item);
+              })
+              .join(", ")));
+
+  console.log("sqlQuery fromParts", fromParts);
+  return `SELECT ${selectParts}${flushAndIndent(indentLevel)}${fromParts}${q.where ? `${flushAndIndent(indentLevel)}WHERE ${q.where}` : ""}`;
 }
 
 // #################################################################################################
 export const sqlQuerySelectSchema: JzodReference = {
   type: "schemaReference",
   context: {
+    sqlQueryByPass: {
+      type: "object",
+      definition: {
+        queryPart: {
+          type: "literal",
+          definition: "bypass",
+        },
+        value: {
+          type: "string",
+        },
+      },
+    },
     sqlQueryTableLiteralSchema: {
       type: "union",
       definition: [
         {
           type: "string",
+        },
+        {
+          type: "schemaReference",
+          definition: {
+            relativePath: "sqlQueryByPass",
+          },
         },
         {
           type: "object",
@@ -200,10 +249,6 @@ export const sqlQuerySelectSchema: JzodReference = {
             name: {
               type: "string",
             },
-            // as: {
-            //   type: "string",
-            //   optional: true,
-            // },
           },
         },
       ],
@@ -429,10 +474,21 @@ export const sqlQuerySelectSchema: JzodReference = {
               definition: "hereTable",
             },
             definition: {
-              type: "schemaReference",
-              definition: {
-                relativePath: "sqlQueryHereTableExpressionSchema",
-              },
+              type: "union",
+              definition: [
+                {
+                  type: "schemaReference",
+                  definition: {
+                    relativePath: "sqlQueryHereTableExpressionSchema",
+                  },
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    relativePath: "rootSqlQuery",
+                  },
+                },
+              ],
             },
             as: {
               type: "string",
@@ -483,32 +539,13 @@ export const sqlQuerySelectSchema: JzodReference = {
                 {
                   type: "array",
                   definition: {
-                    // type: "union",
-                    // definition: [
-                    //   // {
-                    //   //   type: "schemaReference",
-                    //   //   definition: {
-                    //   //     relativePath: "sqlQueryTableLiteralSchema",
-                    //   //   },
-                    //   // },
-                      // {
-                        type: "schemaReference",
-                        definition: {
-                          relativePath: "sqlQueryHereTableDefinitionSchema",
-                        },
-                      // },
-                  //   ],
+                    type: "schemaReference",
+                    definition: {
+                      relativePath: "sqlQueryHereTableDefinitionSchema",
+                    },
                   },
                 },
               ],
-              // }
-              // type: "string",
-              // type: "array",
-              // // label: "The name of the table to select from.",
-              // definition: {
-              //   type: "string",
-              //   // description: "The name of the table to select from.",
-              // },
             },
             where: {
               type: "string",

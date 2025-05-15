@@ -313,7 +313,28 @@ FROM y, z`);
       ).toBe(`SELECT x
 FROM "y", z`);
     });
+    it("builds query subquery", () => {
+      expect(
+        sqlQuery(0, {
+          queryPart: "query",
+          select: [{ queryPart: "defineColumn", value: { queryPart: "bypass", value: "x" } }],
+          from: [
+            {
+              queryPart: "hereTable",
+              definition: {
+                queryPart: "query",
+                select: [{ queryPart: "defineColumn", value: { queryPart: "bypass", value: "y" } }],
+                from: ["z"],
+              },
+              as: "alias",
+            },
+          ],
+        })
+      ).toBe(`SELECT x
+FROM (SELECT y
+FROM z) AS "alias"`);
   }); 
+});
 
   // #################################################################################################
   describe("ListReducerToSpreadObjectTransformer", () => {

@@ -1672,189 +1672,189 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
         //     },
         //   },
         // },
-        // freeObjectTemplate: {
-        //   transformerTestType: "transformerTestSuite",
-        //   transformerTestLabel: "freeObjectTemplate",
-        //   transformerTests: {
-        //     "freeObjectTemplate allows to build a simple object with static values": {
-        //       transformerTestType: "transformerTest",
-        //       transformerTestLabel: "freeObjectTemplate allows to build a simple object with static values",
-        //       transformerName: "freeObjectTemplate",
-        //       transformer: {
-        //         transformerType: "freeObjectTemplate",
-        //         interpolation: "runtime",
-        //         definition: {
-        //           uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-        //           name: "US",
-        //           isEntity: false,
-        //           allocation: 1234,
-        //         },
-        //       },
-        //       transformerParams: {
-        //         country: Country1 as EntityInstance,
-        //       },
-        //       expectedValue: { 
-        //         uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-        //         name: "US",
-        //         isEntity: false,
-        //         allocation: 1234,
-        //       },
-        //     },
-        //     "freeObjectTemplate allows to build a simple object with dynamic values": {
-        //       transformerTestType: "transformerTest",
-        //       transformerTestLabel: "freeObjectTemplate allows to build a simple object with dynamic values",
-        //       transformerName: "freeObjectTemplate",
-        //       transformer: {
-        //         transformerType: "freeObjectTemplate",
-        //         interpolation: "runtime",
-        //         definition: {
-        //           uuid: {
-        //             transformerType: "constantUuid",
-        //             interpolation: "runtime",
-        //             value: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-        //           },
-        //           name: {
-        //             transformerType: "contextReference",
-        //             interpolation: "runtime",
-        //             referencePath: ["country", "iso3166-1Alpha-2"],
-        //           },
-        //         },
-        //       },
-        //       transformerParams: {},
-        //       transformerRuntimeContext: {
-        //         country: Country1 as EntityInstance,
-        //       },
-        //       expectedValue: { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", name: "US" },
-        //     },
-        //     "freeObjectTemplate allows to build a 2-level object with dynamic values": {
-        //       transformerTestType: "transformerTest",
-        //       transformerTestLabel: "freeObjectTemplate allows to build a 2-level object with dynamic values",
-        //       transformerName: "freeObjectTemplate",
-        //       transformer: {
-        //         transformerType: "freeObjectTemplate",
-        //         interpolation: "runtime",
-        //         definition: {
-        //           uuid: {
-        //             transformerType: "constantUuid",
-        //             interpolation: "runtime",
-        //             value: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-        //           },
-        //           name: {
-        //             transformerType: "contextReference",
-        //             interpolation: "runtime",
-        //             referencePath: ["country", "iso3166-1Alpha-2"],
-        //           },
-        //           country: {
-        //             transformerType: "freeObjectTemplate",
-        //             interpolation: "runtime",
-        //             definition: {
-        //               uuid: {
-        //                 transformerType: "constantUuid",
-        //                 interpolation: "runtime",
-        //                 value: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
-        //               },
-        //               name: {
-        //                 transformerType: "contextReference",
-        //                 interpolation: "runtime",
-        //                 referencePath: ["country", "iso3166-1Alpha-2"],
-        //               },
-        //             },
-        //           },
-        //         },
-        //       },
-        //       transformerParams: {
-        //         // country: Country1 as EntityInstance,
-        //       },
-        //       transformerRuntimeContext: {
-        //         country: Country1 as EntityInstance,
-        //       },
-        //       expectedValue: {
-        //         uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-        //         name: "US",
-        //         country: { uuid: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy", name: "US" },
-        //       },
-        //     },
-        //     // TODO: detect failure to resolve correctly in postgres implementation
-        //     "freeObjectTemplate should fail when definition fails to resolve correctly": {
-        //       transformerTestType: "transformerTest",
-        //       transformerTestLabel: "freeObjectTemplate should fail when definition fails to resolve correctly",
-        //       transformerName: "freeObjectTemplate",
-        //       transformer: {
-        //         transformerType: "freeObjectTemplate",
-        //         interpolation: "runtime",
-        //         definition: {
-        //           uuid: {
-        //             transformerType: "constantUuid",
-        //             interpolation: "runtime",
-        //             value: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-        //           },
-        //           name: {
-        //             transformerType: "contextReference",
-        //             interpolation: "runtime",
-        //             referencePath: ["country", "nonExistingAttribute"],
-        //           },
-        //         },
-        //       },
-        //       transformerParams: {
-        //         // country: Country1 as EntityInstance,
-        //       },
-        //       transformerRuntimeContext: {
-        //         country: Country1 as EntityInstance,
-        //       },
-        //       ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-        //       expectedValue: {
-        //         queryFailure: "QueryNotExecutable",
-        //       },
-        //     },
-        //     "freeObjectTemplate should fail when sub-definition fails to resolve correctly": {
-        //       transformerTestType: "transformerTest",
-        //       transformerTestLabel: "freeObjectTemplate should fail when sub-definition fails to resolve correctly",
-        //       transformerName: "freeObjectTemplate",
-        //       transformer: {
-        //         transformerType: "freeObjectTemplate",
-        //         interpolation: "runtime",
-        //         definition: {
-        //           uuid: {
-        //             transformerType: "constantUuid",
-        //             interpolation: "runtime",
-        //             value: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-        //           },
-        //           name: {
-        //             transformerType: "contextReference",
-        //             interpolation: "runtime",
-        //             referencePath: ["country", "name"],
-        //           },
-        //           country: {
-        //             transformerType: "freeObjectTemplate",
-        //             interpolation: "runtime",
-        //             definition: {
-        //               uuid: {
-        //                 transformerType: "constantUuid",
-        //                 interpolation: "runtime",
-        //                 value: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
-        //               },
-        //               name: {
-        //                 transformerType: "contextReference",
-        //                 interpolation: "runtime",
-        //                 referencePath: ["country", "nonExistingAttribute"],
-        //               },
-        //             },
-        //           },
-        //         },
-        //       },
-        //       transformerParams: {
-        //         // country: Country1 as EntityInstance,
-        //       },
-        //       transformerRuntimeContext: {
-        //         country: Country1 as EntityInstance,
-        //       },
-        //       ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-        //       expectedValue: {
-        //         queryFailure: "QueryNotExecutable",
-        //       },
-        //     },
-        //   },
-        // },
+        freeObjectTemplate: {
+          transformerTestType: "transformerTestSuite",
+          transformerTestLabel: "freeObjectTemplate",
+          transformerTests: {
+            "freeObjectTemplate allows to build a simple object with static values": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel: "freeObjectTemplate allows to build a simple object with static values",
+              transformerName: "freeObjectTemplate",
+              transformer: {
+                transformerType: "freeObjectTemplate",
+                interpolation: "runtime",
+                definition: {
+                  uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  name: "US",
+                  isEntity: false,
+                  allocation: 1234,
+                },
+              },
+              transformerParams: {
+                country: Country1 as EntityInstance,
+              },
+              expectedValue: { 
+                uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                name: "US",
+                isEntity: false,
+                allocation: 1234,
+              },
+            },
+            "freeObjectTemplate allows to build a simple object with dynamic values": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel: "freeObjectTemplate allows to build a simple object with dynamic values",
+              transformerName: "freeObjectTemplate",
+              transformer: {
+                transformerType: "freeObjectTemplate",
+                interpolation: "runtime",
+                definition: {
+                  uuid: {
+                    transformerType: "constantUuid",
+                    interpolation: "runtime",
+                    value: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  },
+                  name: {
+                    transformerType: "contextReference",
+                    interpolation: "runtime",
+                    referencePath: ["country", "iso3166-1Alpha-2"],
+                  },
+                },
+              },
+              transformerParams: {},
+              transformerRuntimeContext: {
+                country: Country1 as EntityInstance,
+              },
+              expectedValue: { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", name: "US" },
+            },
+            "freeObjectTemplate allows to build a 2-level object with dynamic values": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel: "freeObjectTemplate allows to build a 2-level object with dynamic values",
+              transformerName: "freeObjectTemplate",
+              transformer: {
+                transformerType: "freeObjectTemplate",
+                interpolation: "runtime",
+                definition: {
+                  uuid: {
+                    transformerType: "constantUuid",
+                    interpolation: "runtime",
+                    value: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  },
+                  name: {
+                    transformerType: "contextReference",
+                    interpolation: "runtime",
+                    referencePath: ["country", "iso3166-1Alpha-2"],
+                  },
+                  country: {
+                    transformerType: "freeObjectTemplate",
+                    interpolation: "runtime",
+                    definition: {
+                      uuid: {
+                        transformerType: "constantUuid",
+                        interpolation: "runtime",
+                        value: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+                      },
+                      name: {
+                        transformerType: "contextReference",
+                        interpolation: "runtime",
+                        referencePath: ["country", "iso3166-1Alpha-2"],
+                      },
+                    },
+                  },
+                },
+              },
+              transformerParams: {
+                // country: Country1 as EntityInstance,
+              },
+              transformerRuntimeContext: {
+                country: Country1 as EntityInstance,
+              },
+              expectedValue: {
+                uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                name: "US",
+                country: { uuid: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy", name: "US" },
+              },
+            },
+            // TODO: detect failure to resolve correctly in postgres implementation
+            "freeObjectTemplate should fail when definition fails to resolve correctly": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel: "freeObjectTemplate should fail when definition fails to resolve correctly",
+              transformerName: "freeObjectTemplate",
+              transformer: {
+                transformerType: "freeObjectTemplate",
+                interpolation: "runtime",
+                definition: {
+                  uuid: {
+                    transformerType: "constantUuid",
+                    interpolation: "runtime",
+                    value: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  },
+                  name: {
+                    transformerType: "contextReference",
+                    interpolation: "runtime",
+                    referencePath: ["country", "nonExistingAttribute"],
+                  },
+                },
+              },
+              transformerParams: {
+                // country: Country1 as EntityInstance,
+              },
+              transformerRuntimeContext: {
+                country: Country1 as EntityInstance,
+              },
+              ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+              expectedValue: {
+                queryFailure: "QueryNotExecutable",
+              },
+            },
+            "freeObjectTemplate should fail when sub-definition fails to resolve correctly": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel: "freeObjectTemplate should fail when sub-definition fails to resolve correctly",
+              transformerName: "freeObjectTemplate",
+              transformer: {
+                transformerType: "freeObjectTemplate",
+                interpolation: "runtime",
+                definition: {
+                  uuid: {
+                    transformerType: "constantUuid",
+                    interpolation: "runtime",
+                    value: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  },
+                  name: {
+                    transformerType: "contextReference",
+                    interpolation: "runtime",
+                    referencePath: ["country", "name"],
+                  },
+                  country: {
+                    transformerType: "freeObjectTemplate",
+                    interpolation: "runtime",
+                    definition: {
+                      uuid: {
+                        transformerType: "constantUuid",
+                        interpolation: "runtime",
+                        value: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+                      },
+                      name: {
+                        transformerType: "contextReference",
+                        interpolation: "runtime",
+                        referencePath: ["country", "nonExistingAttribute"],
+                      },
+                    },
+                  },
+                },
+              },
+              transformerParams: {
+                // country: Country1 as EntityInstance,
+              },
+              transformerRuntimeContext: {
+                country: Country1 as EntityInstance,
+              },
+              ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+              expectedValue: {
+                queryFailure: "QueryNotExecutable",
+              },
+            },
+          },
+        },
         // objectAlter: {
         //   transformerTestType: "transformerTestSuite",
         //   transformerTestLabel: "object_alter",
@@ -2433,142 +2433,142 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
         //     },
         //   },
         // },
-        listReducerToSpreadObject: {
-          transformerTestType: "transformerTestSuite",
-          transformerTestLabel: "listReducerToSpreadObject",
-          transformerTests: {
-            // "listReducerToSpreadObject allows to reduce a constant list of objects to a single object": {
-            //   transformerTestType: "transformerTest",
-            //   transformerTestLabel: "listReducerToSpreadObject allows to reduce a constant list of objects to a single object",
-            //   transformerName: "listReducerToSpreadObject",
-            //   transformer: {
-            //     transformerType: "listReducerToSpreadObject",
-            //     interpolation: "runtime",
-            //     applyTo: [
-            //       {
-            //         uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-            //         name: "US",
-            //       },
-            //       {
-            //         uuid2: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
-            //         name2: "DE",
-            //       }
-            //     ],
-            //   },
-            //   transformerParams: {},
-            //   expectedValue: {
-            //     uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-            //     name: "US",
-            //     uuid2: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
-            //     name2: "DE",
-            //   },
-            // },
-            "listReducerToSpreadObject allows to reduce a list of objects from parameter to a single object": {
-              transformerTestType: "transformerTest",
-              transformerTestLabel: "listReducerToSpreadObject allows to reduce a list of objects from parameter to a single object",
-              transformerName: "listReducerToSpreadObject",
-              transformer: {
-                transformerType: "listReducerToSpreadObject",
-                interpolation: "runtime",
-                applyTo: {
-                  referenceType: "referencedTransformer",
-                  reference: {
-                    transformerType: "contextReference",
-                    interpolation: "runtime",
-                    referenceName: "objectList",
-                  },
-                },
-              },
-              transformerParams: {
-                // objectList: [
-                //   {
-                //     uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-                //     name: "US",
-                //   },
-                //   {
-                //     uuid2: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
-                //     name2: "DE",
-                //   }
-                // ]
-              },
-              transformerRuntimeContext: {
-                objectList: [
-                  {
-                    uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-                    name: "US",
-                  },
-                  {
-                    uuid2: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
-                    name2: "DE",
-                  }
-                ]
-              },
-              expectedValue: {
-                uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-                name: "US",
-                uuid2: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
-                name2: "DE",
-              },
-            },
-            // "listReducerToSpreadObject fails when input is not a list": {
-            //   transformerTestType: "transformerTest",
-            //   transformerTestLabel: "listReducerToSpreadObject fails when input is not a list",
-            //   transformerName: "listReducerToSpreadObject",
-            //   transformer: {
-            //     transformerType: "listReducerToSpreadObject",
-            //     interpolation: "runtime",
-            //     applyTo: {
-            //       referenceType: "referencedTransformer",
-            //       reference: {
-            //         transformerType: "contextReference",
-            //         interpolation: "runtime",
-            //         referenceName: "objectList",
-            //       },
-            //     },
-            //   },
-            //   transformerParams: {},
-            //   transformerRuntimeContext: {
-            //     objectList: {
-            //       uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-            //       name: "US",
-            //     }
-            //   },
-            //   ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-            //   expectedValue: {
-            //     queryFailure: "QueryNotExecutable",
-            //   },
-            // },
-            // TODO error cases
-            // "listReducerToSpreadObject fails when non-objects are included in the list": {
-            //   transformerTestType: "transformerTest",
-            //   transformerTestLabel: "listReducerToSpreadObject fails when non-objects are included in the list",
-            //   transformerName: "listReducerToSpreadObject",
-            //   transformer: {
-            //     transformerType: "listReducerToSpreadObject",
-            //     applyTo: {
-            //       referenceType: "referencedTransformer",
-            //       reference: {
-            //         transformerType: "parameterReference",
-            //         referenceName: "objectList",
-            //       },
-            //     },
-            //   },
-            //   transformerParams: {
-            //     objectList: [
-            //       {
-            //         uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-            //         name: "US",
-            //       },
-            //       "DE",
-            //     ]
-            //   },
-            //   ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-            //   expectedValue: {
-            //     queryFailure: "QueryNotExecutable",
-            //   },
-            // }
-          },
-        },
+        // listReducerToSpreadObject: {
+        //   transformerTestType: "transformerTestSuite",
+        //   transformerTestLabel: "listReducerToSpreadObject",
+        //   transformerTests: {
+        //     // "listReducerToSpreadObject allows to reduce a constant list of objects to a single object": {
+        //     //   transformerTestType: "transformerTest",
+        //     //   transformerTestLabel: "listReducerToSpreadObject allows to reduce a constant list of objects to a single object",
+        //     //   transformerName: "listReducerToSpreadObject",
+        //     //   transformer: {
+        //     //     transformerType: "listReducerToSpreadObject",
+        //     //     interpolation: "runtime",
+        //     //     applyTo: [
+        //     //       {
+        //     //         uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        //     //         name: "US",
+        //     //       },
+        //     //       {
+        //     //         uuid2: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+        //     //         name2: "DE",
+        //     //       }
+        //     //     ],
+        //     //   },
+        //     //   transformerParams: {},
+        //     //   expectedValue: {
+        //     //     uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        //     //     name: "US",
+        //     //     uuid2: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+        //     //     name2: "DE",
+        //     //   },
+        //     // },
+        //     "listReducerToSpreadObject allows to reduce a list of objects from parameter to a single object": {
+        //       transformerTestType: "transformerTest",
+        //       transformerTestLabel: "listReducerToSpreadObject allows to reduce a list of objects from parameter to a single object",
+        //       transformerName: "listReducerToSpreadObject",
+        //       transformer: {
+        //         transformerType: "listReducerToSpreadObject",
+        //         interpolation: "runtime",
+        //         applyTo: {
+        //           referenceType: "referencedTransformer",
+        //           reference: {
+        //             transformerType: "contextReference",
+        //             interpolation: "runtime",
+        //             referenceName: "objectList",
+        //           },
+        //         },
+        //       },
+        //       transformerParams: {
+        //         // objectList: [
+        //         //   {
+        //         //     uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        //         //     name: "US",
+        //         //   },
+        //         //   {
+        //         //     uuid2: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+        //         //     name2: "DE",
+        //         //   }
+        //         // ]
+        //       },
+        //       transformerRuntimeContext: {
+        //         objectList: [
+        //           {
+        //             uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        //             name: "US",
+        //           },
+        //           {
+        //             uuid2: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+        //             name2: "DE",
+        //           }
+        //         ]
+        //       },
+        //       expectedValue: {
+        //         uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        //         name: "US",
+        //         uuid2: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+        //         name2: "DE",
+        //       },
+        //     },
+        //     // "listReducerToSpreadObject fails when input is not a list": {
+        //     //   transformerTestType: "transformerTest",
+        //     //   transformerTestLabel: "listReducerToSpreadObject fails when input is not a list",
+        //     //   transformerName: "listReducerToSpreadObject",
+        //     //   transformer: {
+        //     //     transformerType: "listReducerToSpreadObject",
+        //     //     interpolation: "runtime",
+        //     //     applyTo: {
+        //     //       referenceType: "referencedTransformer",
+        //     //       reference: {
+        //     //         transformerType: "contextReference",
+        //     //         interpolation: "runtime",
+        //     //         referenceName: "objectList",
+        //     //       },
+        //     //     },
+        //     //   },
+        //     //   transformerParams: {},
+        //     //   transformerRuntimeContext: {
+        //     //     objectList: {
+        //     //       uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        //     //       name: "US",
+        //     //     }
+        //     //   },
+        //     //   ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+        //     //   expectedValue: {
+        //     //     queryFailure: "QueryNotExecutable",
+        //     //   },
+        //     // },
+        //     // TODO error cases
+        //     // "listReducerToSpreadObject fails when non-objects are included in the list": {
+        //     //   transformerTestType: "transformerTest",
+        //     //   transformerTestLabel: "listReducerToSpreadObject fails when non-objects are included in the list",
+        //     //   transformerName: "listReducerToSpreadObject",
+        //     //   transformer: {
+        //     //     transformerType: "listReducerToSpreadObject",
+        //     //     applyTo: {
+        //     //       referenceType: "referencedTransformer",
+        //     //       reference: {
+        //     //         transformerType: "parameterReference",
+        //     //         referenceName: "objectList",
+        //     //       },
+        //     //     },
+        //     //   },
+        //     //   transformerParams: {
+        //     //     objectList: [
+        //     //       {
+        //     //         uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        //     //         name: "US",
+        //     //       },
+        //     //       "DE",
+        //     //     ]
+        //     //   },
+        //     //   ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+        //     //   expectedValue: {
+        //     //     queryFailure: "QueryNotExecutable",
+        //     //   },
+        //     // }
+        //   },
+        // },
         // listReducerToIndexObject: {
         //   transformerTestType: "transformerTestSuite",
         //   transformerTestLabel: "listReducerToIndexObject",

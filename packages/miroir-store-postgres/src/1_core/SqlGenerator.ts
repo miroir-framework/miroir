@@ -824,12 +824,18 @@ function sqlStringForFreeObjectTransformer(
   });
   const selectFromString =
     selectFromList.length > 0
-      ? "FROM\n" +
+      // ? "FROM\n" +
+      ? "\n" +
         indent(indentLevel + 2) +
         selectFromList
           .map((e) => `(SELECT ROW_NUMBER() OVER () AS row_num, "${e}".* FROM "${e}") AS "${e}"`)
           .join(tokenSeparatorForSelect + "\n" + indent(indentLevel + 2))
-      : "";
+      : undefined;
+
+  log.info(
+    "sqlStringForRuntimeTransformer freeObjectTemplate selectFromString",
+    selectFromString
+  );
   const testForAttributeError = castObjectAttributes
     .filter((e) => e[1].type == "json" || e[1].type == "json_array" || e[1].type == "tableOf1JsonColumn")
     .map((e) => { 
@@ -844,19 +850,92 @@ function sqlStringForFreeObjectTransformer(
     :
     `jsonb_build_object(${attributeElementsJsonBuild.join(tokenSeparatorForSelect)})`;
   if (topLevelTransformer) {
+    const sqlNewQuery: string = sqlQuery(0, {
+      queryPart: "query",
+      select: [
+        {
+          queryPart: "defineColumn",
+          value: testAndReturnValue,
+          as: "object_freeObjectTemplate",
+        },
+      ],
+      from: [
+        {
+          queryPart: "hereTable",
+          definition: {
+            queryPart: "query",
+            select:
+              // indent(indentLevel + 1) +
+              // `SELECT ${attributeElementsSelect.join(tokenSeparatorForSelect)}\n` +
+              `${attributeElementsSelect.join(tokenSeparatorForSelect)}\n`
+              // indent(indentLevel + 2)
+              ,
+            from: selectFromString,
+          },
+          as: "object_freeObjectTemplate_sub",
+        },
+      ],
+      //   "(\n" +
+      // indent(indentLevel + 1) +
+      // `SELECT ${attributeElementsSelect.join(tokenSeparatorForSelect)}\n` +
+      // indent(indentLevel + 2) +
+      // selectFromString + "\n" +
+      // indent(indentLevel + 1) +
+      // `) AS "object_freeObjectTemplate_sub" `
+      // [
+      //   {
+      //     queryPart: "tableLiteral",
+      //     name: applyToLabel,
+      //   },
+      //   {
+      //     queryPart: "hereTable",
+      //     definition: {
+      //       queryPart: "call",
+      //       fct: "jsonb_array_elements",
+      //       params: [
+      //         {
+      //           queryPart: "tableColumnAccess",
+      //           table: { queryPart: "tableLiteral", name: applyToLabel},
+      //           col: (applyTo as any).columnNameContainingJsonValue,
+      //         },
+      //       ],
+      //     },
+      //     as: applyToLabelElements,
+      //   },
+      //   {
+      //     queryPart: "hereTable",
+      //     definition: {
+      //       queryPart: "call",
+      //       fct: "jsonb_each",
+      //       params: [
+      //         {
+      //           queryPart: "tableLiteral",
+      //           name: applyToLabelElements,
+      //         },
+      //       ],
+      //     },
+      //     as: applyToLabelPairs,
+      //   },
+      // ],
+    });
+    log.info(
+      "sqlStringForRuntimeTransformer freeObjectTemplate sqlNewQuery",
+      sqlNewQuery
+    );
     return {
       type: "json",
-      sqlStringOrObject:
-        `SELECT ` + testAndReturnValue + ` AS "object_freeObjectTemplate"` +
-        "\n" +
-        "FROM (\n" +
-        indent(indentLevel + 1) +
-        `SELECT ${attributeElementsSelect.join(tokenSeparatorForSelect)}\n` +
-        indent(indentLevel + 2) +
-        selectFromString + "\n" +
-        indent(indentLevel + 1) +
-        `) AS "object_freeObjectTemplate_sub" `
-      ,
+      sqlStringOrObject: sqlNewQuery,
+      // sqlStringOrObject:
+      //   `SELECT ` + testAndReturnValue + ` AS "object_freeObjectTemplate"` +
+      //   "\n" +
+      //   "FROM (\n" +
+      //   indent(indentLevel + 1) +
+      //   `SELECT ${attributeElementsSelect.join(tokenSeparatorForSelect)}\n` +
+      //   indent(indentLevel + 2) +
+      //   selectFromString + "\n" +
+      //   indent(indentLevel + 1) +
+      //   `) AS "object_freeObjectTemplate_sub" `
+      // ,
       preparedStatementParameters,
       extraWith: subQueryExtraWith,
       resultAccessPath: [0, "object_freeObjectTemplate"],
@@ -879,7 +958,7 @@ function sqlStringForFreeObjectTransformer(
             indent(indentLevel + 1) +
             `SELECT ${attributeElementsSelect.join(tokenSeparatorForSelect)}\n` +
             indent(indentLevel + 2) +
-            selectFromString +
+            "FROM " + selectFromString +
             "\n" +
             indent(indentLevel + 1) +
             `) AS "object_freeObjectTemplate_sub" `,
@@ -2037,38 +2116,6 @@ function sqlStringForListReducerToSpreadObjectTransformer(
   ];
   switch (applyTo.type) {
     case "json_array": {
-      // const sqlNewQuery = sqlQuery(0, {
-      //   queryPart: "query",
-      //   select: [
-      //     {
-      //       queryPart: "defineColumn",
-      //       value: {
-      //         queryPart: "bypass",
-      //         value: sql_jsonb_object_agg(
-      //           sqlSelectColumns([
-      //             sqlColumnAccessOld(applyToLabelPairs, "key"),
-      //             sqlColumnAccessOld(applyToLabelPairs, "value"),
-      //           ])
-      //         ),
-      //       },
-      //       as: transformerLabel,
-      //     },
-      //   ],
-      //   from: sqlFromOld([
-      //     sqlNameQuote(applyToLabel),
-      //     sqlDefineColumn(
-      //       0,
-      //       {
-      //         queryPart: "defineColumn",
-      //         value: sql_jsonb_array_elements(
-      //           sqlColumnAccessOld(applyToLabel, (applyTo as any).columnNameContainingJsonValue)
-      //         ),
-      //         as: applyToLabelElements,
-      //       }
-      //     ),
-      //     sqlDefineColumn(0, {queryPart: "defineColumn", value: sql_jsonb_each(sqlNameQuote(applyToLabelElements)), as: applyToLabelPairs}),
-      //   ]),
-      // });
       const sqlNewQuery = sqlQuery(0, {
         queryPart: "query",
         select: [
