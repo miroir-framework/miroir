@@ -7,46 +7,56 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   ResultAccessPath,
-  transformer_mustacheStringTemplate_apply,
   transformer_resolveReference,
-  TransformerForRuntime,
-  TransformerForRuntime_count,
-  // TransformerForRuntime_innerFullObjectTemplate,
-  TransformerForRuntime_mapperListToList,
-  TransformerForRuntime_listPickElement,
-  TransformerForRuntime_objectAlter,
-  TransformerForRuntime_freeObjectTemplate,
-  TransformerForRuntime_listReducerToSpreadObject,
-  TransformerForRuntime_objectEntries,
-  TransformerForRuntime_objectValues,
-  TransformerForRuntime_unique,
   TransformerForBuild_freeObjectTemplate,
   TransformerForBuild_object_fullTemplate,
-  TransformerForRuntime_object_fullTemplate,
-  TransformerForRuntime_listReducerToIndexObject,
-  TransformerForRuntime_dataflowObject,
-  TransformerForRuntime_constantArray,
+  TransformerForRuntime,
   TransformerForRuntime_constant,
-  TransformerForRuntime_contextReference,
-  TransformerForRuntime_objectDynamicAccess,
+  TransformerForRuntime_constantArray,
   TransformerForRuntime_constantAsExtractor,
-  TransformerForRuntime_newUuid
+  TransformerForRuntime_contextReference,
+  TransformerForRuntime_count,
+  TransformerForRuntime_dataflowObject,
+  TransformerForRuntime_freeObjectTemplate,
+  TransformerForRuntime_listPickElement,
+  TransformerForRuntime_listReducerToIndexObject,
+  TransformerForRuntime_listReducerToSpreadObject,
+  // TransformerForRuntime_innerFullObjectTemplate,
+  TransformerForRuntime_mapperListToList,
+  TransformerForRuntime_newUuid,
+  TransformerForRuntime_object_fullTemplate,
+  TransformerForRuntime_objectAlter,
+  TransformerForRuntime_objectDynamicAccess,
+  TransformerForRuntime_objectEntries,
+  TransformerForRuntime_objectValues,
+  TransformerForRuntime_unique
 } from "miroir-core";
 import { RecursiveStringRecords } from "../4_services/SqlDbQueryTemplateRunner";
 import { cleanLevel } from "../4_services/constants";
 import { packageName } from "../constants";
 import { getConstantSqlTypeMap, PostgresDataTypes } from "./Postgres";
-import { getAttributeTypesFromJzodSchema, jzodToPostgresTypeMap } from "./jzodSchema";
 import {
-  tokenSeparatorForSelect,
-  tokenStringQuote,
-  tokenNameQuote,
-  tokenSeparatorForTableColumn,
-  tokenSeparatorForJsonAttributeAccess,
-  tokenSeparatorForWithRtn,
   protectedSqlAccessForPath,
+  tokenNameQuote,
+  tokenSeparatorForSelect,
+  tokenSeparatorForTableColumn,
+  tokenSeparatorForWithRtn,
+  tokenStringQuote
 } from "./SqlGeneratorUtils";
-import { sqlSelectColumns, sqlColumnAccess, sqlNameQuote, sql_jsonb_object_agg, sqlDefineColumn, sqlQuery, sqlFrom, sql_jsonb_array_elements, sql_jsonb_each, sqlQueryNew } from "./SqlQueryBuilder";
+import {
+  flushAndIndent,
+  indent,
+  sql_jsonb_array_elements,
+  sql_jsonb_each,
+  sql_jsonb_object_agg,
+  sqlColumnAccess,
+  sqlDefineColumn,
+  sqlFrom,
+  sqlNameQuote,
+  sqlQuery,
+  sqlSelectColumns,
+} from "./SqlQueryBuilder";
+import { getAttributeTypesFromJzodSchema, jzodToPostgresTypeMap } from "./jzodSchema";
 
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -503,15 +513,6 @@ function sqlStringForApplyTo(
       break;
     }
   }
-}
-
-// ################################################################################################
-function indent(indentLevel: number) {
-  return "  ".repeat(indentLevel);
-}
-// ################################################################################################
-function flushAndIndent(indentLevel: number) {
-  return "\n" + indent(indentLevel);
 }
 
 // ################################################################################################
@@ -2036,53 +2037,38 @@ function sqlStringForListReducerToSpreadObjectTransformer(
   ];
   switch (applyTo.type) {
     case "json_array": {
-      const sqlNewQuery = sqlQueryNew({
-        select: sqlDefineColumn(
-          sql_jsonb_object_agg(
-            sqlSelectColumns([
-              sqlColumnAccess(applyToLabelPairs, "key"),
-              sqlColumnAccess(applyToLabelPairs, "value"),
-            ])
-          ),
-          transformerLabel
-        ),
+      const sqlNewQuery = sqlQuery(0, {
+        queryPart: "query",
+        select: [
+          {
+            queryPart: "defineColumn",
+            value: {
+              queryPart: "expr",
+              value: sql_jsonb_object_agg(
+                sqlSelectColumns([
+                  sqlColumnAccess(applyToLabelPairs, "key"),
+                  sqlColumnAccess(applyToLabelPairs, "value"),
+                ])
+              ),
+            },
+            as: transformerLabel,
+          },
+        ],
         from: sqlFrom([
           sqlNameQuote(applyToLabel),
           sqlDefineColumn(
-            sql_jsonb_array_elements(
-              sqlColumnAccess(applyToLabel, (applyTo as any).columnNameContainingJsonValue)
-            ),
-            applyToLabelElements
+            0,
+            {
+              queryPart: "defineColumn",
+              value: sql_jsonb_array_elements(
+                sqlColumnAccess(applyToLabel, (applyTo as any).columnNameContainingJsonValue)
+              ),
+              as: applyToLabelElements,
+            }
           ),
-          sqlDefineColumn(sql_jsonb_each(sqlNameQuote(applyToLabelElements)), applyToLabelPairs),
+          sqlDefineColumn(0, {queryPart: "defineColumn", value: sql_jsonb_each(sqlNameQuote(applyToLabelElements)), as: applyToLabelPairs}),
         ]),
       });
-      // const sqlNewQuery = sqlQuery(
-      //   sqlDefineColumn(
-      //     sql_jsonb_object_agg(
-      //       sqlSelectColumns([
-      //         sqlColumnAccess(applyToLabelPairs, "key"),
-      //         sqlColumnAccess(applyToLabelPairs, "value"),
-      //       ])
-      //     ),
-      //     transformerLabel
-      //   ),
-      //   sqlFrom([
-      //     sqlNameQuote(applyToLabel),
-      //     sqlDefineColumn(
-      //       sql_jsonb_array_elements(
-      //         sqlColumnAccess(applyToLabel, (applyTo as any).columnNameContainingJsonValue)
-      //       ),
-      //       applyToLabelElements
-      //     ),
-      //     sqlDefineColumn(
-      //       sql_jsonb_each(
-      //         sqlNameQuote(applyToLabelElements)
-      //       ),
-      //       applyToLabelPairs
-      //     )
-      //   ])
-      // );
       log.info("@@@@@@@@@@@@@@@ sqlStringForListReducerToSpreadObjectTransformer json_array sqlNewQuery", sqlNewQuery);
       return {
         type: "json",
