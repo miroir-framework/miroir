@@ -54,9 +54,11 @@ import {
   sqlFromOld,
   sqlNameQuote,
   sqlQuery,
+  sqlQueryHereTableDefinition,
   sqlSelectColumns,
 } from "./SqlQueryBuilder";
 import { getAttributeTypesFromJzodSchema, jzodToPostgresTypeMap } from "./jzodSchema";
+import { SqlQuerySelectExpressionSchema } from "../generated";
 
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -142,7 +144,7 @@ function isJson(t:SqlStringForTransformerElementValueType) {
 const queryFailureObjectSqlString = `'{"queryFailure": "FailedTransformer_contextReference"}'::jsonb`;
 
 // const sqlNameQuote = (name: string) => '"' + name + '"';
-// const sqlColumnAccess = (table:string, key: string)=> sqlNameQuote(table) + '.' + sqlNameQuote(key);
+// const sqlTableColumnAccess = (table:string, key: string)=> sqlNameQuote(table) + '.' + sqlNameQuote(key);
 // const sqlSelect = (elements: string[]) => elements.join(", ");
 
 // ################################################################################################
@@ -603,6 +605,55 @@ FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo",
 }
 
 // ################################################################################################
+function getFreeObjectAttributesSql(
+  subTableName: string,
+  objectAttributes: [string, SqlStringForTransformerElementValue][],
+  failureObjectSqlString: string = queryFailureObjectSqlString
+): SqlQuerySelectExpressionSchema {
+  const testForAttributeError = objectAttributes
+    .filter(
+      (e) => e[1].type == "json" || e[1].type == "json_array" || e[1].type == "tableOf1JsonColumn"
+    )
+    .map((e) => {
+      if (e[1].index == undefined) {
+        throw new Error(
+          subTableName +
+            ": index is not defined for attribute " +
+            e[0] +
+            " " +
+            JSON.stringify(e[1], null, 2)
+        );
+      }
+      return `NOT ("object_freeObjectTemplate_sub"."A${2 * e[1].index + 1}" ? 'queryFailure')`;
+    }) // we take the expression not the index (thus +1)
+    .join(" AND ");
+  const attributeElementsJsonBuild = objectAttributes.flatMap((e, index) => {
+    return [`"${subTableName}"."A${2 * index}"`, `"${subTableName}"."A${2 * index + 1}"`];
+  });
+  const testAndReturnValue: SqlQuerySelectExpressionSchema =
+    testForAttributeError.length > 0
+      ? {
+          queryPart: "case",
+          when: testForAttributeError,
+          then: {
+            queryPart: "call",
+            fct: "jsonb_build_object",
+            params: attributeElementsJsonBuild,
+          },
+          else: {
+            queryPart: "bypass",
+            value: failureObjectSqlString,
+          },
+        }
+      : {
+          queryPart: "call",
+          fct: "jsonb_build_object",
+          params: attributeElementsJsonBuild,
+        };
+  return testAndReturnValue;
+}
+
+// ################################################################################################
 function sqlStringForFreeObjectTransformer(
   actionRuntimeTransformer:
     | TransformerForBuild_freeObjectTemplate
@@ -777,19 +828,6 @@ function sqlStringForFreeObjectTransformer(
     ).values()
   );
 
-  const objectAttributesSql: string[] = castObjectAttributes
-    .map(
-      (e: [string, SqlStringForTransformerElementValue]) =>
-        tokenStringQuote +
-        e[0] +
-        tokenStringQuote +
-        tokenSeparatorForSelect +
-        " " +
-        e[1].sqlStringOrObject +
-        (e[1].extraWith && e[1].extraWith.length > 0
-          ? '."' + e[1].extraWith[0].sqlResultAccessPath?.slice(1) + '"'
-          : "")
-    );
   log.info(
     "sqlStringForRuntimeTransformer freeObjectTemplate",
     "topLevelTransformer",
@@ -798,150 +836,87 @@ function sqlStringForFreeObjectTransformer(
     JSON.stringify(objectAttributes, null, 2)
     // JSON.stringify(objectAttributesSql, null, 2)
   );
-  log.info(
-    "sqlStringForRuntimeTransformer freeObjectTemplate",
-    "topLevelTransformer",
-    topLevelTransformer,
-    "objectAttributesSql",
-    // JSON.stringify(objectAttributes, null, 2)
-    JSON.stringify(objectAttributesSql, null, 2)
-  );
 
-  const attributeElementsSelect = castObjectAttributes.flatMap((e, index) => {
-    return [
-      `'${e[0]}' AS "A${2 * index}"`,
-      `${
-        e[1].sqlStringOrObject +
-        (e[1].extraWith && e[1].extraWith.length > 0
-          ? '."' + e[1].extraWith[0].sqlResultAccessPath?.slice(1) + '"'
-          : "")
-      } AS "A${2 * index + 1}"`,
-    ];
+
+  const sqlNewQuery: string = sqlQuery(0, {
+    queryPart: "query",
+    select: [
+      {
+        queryPart: "defineColumn",
+        value: getFreeObjectAttributesSql(
+          "object_freeObjectTemplate_sub",
+          castObjectAttributes,
+          queryFailureObjectSqlString
+        ),
+        as: "object_freeObjectTemplate",
+      },
+    ],
+    from: [
+      {
+        queryPart: "hereTable",
+        definition: {
+          queryPart: "query",
+          select: castObjectAttributes.flatMap((e, index) => {
+            return [
+              {
+                queryPart: "defineColumn",
+                value: `'${e[0]}'`, // single quotes for the name of the attribute, which is always a string
+                as: `A${2 * index}`,
+              },
+              {
+                queryPart: "defineColumn",
+                value:
+                  e[1].sqlStringOrObject +
+                  (e[1].extraWith && e[1].extraWith.length > 0 // TODO: does this work? is it useful? (this is apparently for the case when sqlStringOrObject is a reference to a table)
+                    ? '."' + e[1].extraWith[0].sqlResultAccessPath?.slice(1) + '"'
+                    : ""),
+                as: `A${2 * index + 1}`,
+              },
+            ];
+          }),
+          from:
+            selectFromList.length > 0
+              ? selectFromList.map((e) => ({
+                  queryPart: "hereTable",
+                  definition: {
+                    queryPart: "query",
+                    select: [
+                      "ROW_NUMBER() OVER () AS row_num",
+                      {
+                        queryPart: "defineColumn",
+                        value: {
+                          queryPart: "tableColumnAccess",
+                          table: e,
+                        },
+                      },
+                    ],
+                    from: [
+                      {
+                        queryPart: "tableLiteral",
+                        name: e,
+                      },
+                    ],
+                  },
+                  as: e,
+                }))
+              : undefined,
+        },
+        as: "object_freeObjectTemplate_sub",
+      },
+    ],
   });
-
-  const attributeElementsJsonBuild = castObjectAttributes.flatMap((e, index) => {
-    return [`"object_freeObjectTemplate_sub"."A${2*index}"`, `"object_freeObjectTemplate_sub"."A${2*index + 1}"`];
-  });
-  const selectFromString =
-    selectFromList.length > 0
-      // ? "FROM\n" +
-      ? "\n" +
-        indent(indentLevel + 2) +
-        selectFromList
-          .map((e) => `(SELECT ROW_NUMBER() OVER () AS row_num, "${e}".* FROM "${e}") AS "${e}"`)
-          .join(tokenSeparatorForSelect + "\n" + indent(indentLevel + 2))
-      : undefined;
-
-  log.info(
-    "sqlStringForRuntimeTransformer freeObjectTemplate selectFromString",
-    selectFromString
-  );
-  const testForAttributeError = castObjectAttributes
-    .filter((e) => e[1].type == "json" || e[1].type == "json_array" || e[1].type == "tableOf1JsonColumn")
-    .map((e) => { 
-      if (e[1].index == undefined) {
-        throw new Error("sqlStringFo###########rFreeObjectTransformer: index is not defined for attribute " + e[0] + " " + JSON.stringify(e[1], null, 2));
-      }
-      return `NOT ("object_freeObjectTemplate_sub"."A${2*e[1].index + 1}" ? 'queryFailure')`}) // we take the expression not the index (thus +1)
-    .join(" AND ");
-
-  const testAndReturnValue = testForAttributeError.length > 0?
-    `CASE WHEN ${testForAttributeError} THEN jsonb_build_object(${attributeElementsJsonBuild.join(tokenSeparatorForSelect)}) ELSE ${queryFailureObjectSqlString} END`
-    :
-    `jsonb_build_object(${attributeElementsJsonBuild.join(tokenSeparatorForSelect)})`;
   if (topLevelTransformer) {
-    const sqlNewQuery: string = sqlQuery(0, {
-      queryPart: "query",
-      select: [
-        {
-          queryPart: "defineColumn",
-          value: testAndReturnValue,
-          as: "object_freeObjectTemplate",
-        },
-      ],
-      from: [
-        {
-          queryPart: "hereTable",
-          definition: {
-            queryPart: "query",
-            select:
-              // indent(indentLevel + 1) +
-              // `SELECT ${attributeElementsSelect.join(tokenSeparatorForSelect)}\n` +
-              `${attributeElementsSelect.join(tokenSeparatorForSelect)}\n`
-              // indent(indentLevel + 2)
-              ,
-            from: selectFromString,
-          },
-          as: "object_freeObjectTemplate_sub",
-        },
-      ],
-      //   "(\n" +
-      // indent(indentLevel + 1) +
-      // `SELECT ${attributeElementsSelect.join(tokenSeparatorForSelect)}\n` +
-      // indent(indentLevel + 2) +
-      // selectFromString + "\n" +
-      // indent(indentLevel + 1) +
-      // `) AS "object_freeObjectTemplate_sub" `
-      // [
-      //   {
-      //     queryPart: "tableLiteral",
-      //     name: applyToLabel,
-      //   },
-      //   {
-      //     queryPart: "hereTable",
-      //     definition: {
-      //       queryPart: "call",
-      //       fct: "jsonb_array_elements",
-      //       params: [
-      //         {
-      //           queryPart: "tableColumnAccess",
-      //           table: { queryPart: "tableLiteral", name: applyToLabel},
-      //           col: (applyTo as any).columnNameContainingJsonValue,
-      //         },
-      //       ],
-      //     },
-      //     as: applyToLabelElements,
-      //   },
-      //   {
-      //     queryPart: "hereTable",
-      //     definition: {
-      //       queryPart: "call",
-      //       fct: "jsonb_each",
-      //       params: [
-      //         {
-      //           queryPart: "tableLiteral",
-      //           name: applyToLabelElements,
-      //         },
-      //       ],
-      //     },
-      //     as: applyToLabelPairs,
-      //   },
-      // ],
-    });
-    log.info(
-      "sqlStringForRuntimeTransformer freeObjectTemplate sqlNewQuery",
-      sqlNewQuery
-    );
     return {
       type: "json",
       sqlStringOrObject: sqlNewQuery,
-      // sqlStringOrObject:
-      //   `SELECT ` + testAndReturnValue + ` AS "object_freeObjectTemplate"` +
-      //   "\n" +
-      //   "FROM (\n" +
-      //   indent(indentLevel + 1) +
-      //   `SELECT ${attributeElementsSelect.join(tokenSeparatorForSelect)}\n` +
-      //   indent(indentLevel + 2) +
-      //   selectFromString + "\n" +
-      //   indent(indentLevel + 1) +
-      //   `) AS "object_freeObjectTemplate_sub" `
-      // ,
       preparedStatementParameters,
       extraWith: subQueryExtraWith,
       resultAccessPath: [0, "object_freeObjectTemplate"],
       columnNameContainingJsonValue: "object_freeObjectTemplate",
     };
   } else {
+    log.info(
+      "sqlStringForRuntimeTransformer freeObjectTemplate for !topLevelTransformer");
     return {
       type: "tableOf1JsonColumn",
       sqlStringOrObject: `"object_subfreeObjectTemplate"`, // TODO: REMOVE DOUBLE QUOTES
@@ -949,24 +924,7 @@ function sqlStringForFreeObjectTransformer(
         ...subQueryExtraWith,
         {
           name: "object_subfreeObjectTemplate",
-          sql:
-            `SELECT ` +
-            testAndReturnValue +
-            ` AS "object_freeObjectTemplate"` +
-            "\n" +
-            "FROM (\n" +
-            indent(indentLevel + 1) +
-            `SELECT ${attributeElementsSelect.join(tokenSeparatorForSelect)}\n` +
-            indent(indentLevel + 2) +
-            "FROM " + selectFromString +
-            "\n" +
-            indent(indentLevel + 1) +
-            `) AS "object_freeObjectTemplate_sub" `,
-          // sql:
-          //   `SELECT jsonb_build_object(${objectAttributesSql.join(tokenSeparatorForSelect)}) AS "object_freeObjectTemplate"` +
-          //   "\n" +
-          //   indent(indentLevel + 1) +
-          //   selectFromString,
+          sql: sqlNewQuery,
           sqlResultAccessPath: [0, "object_freeObjectTemplate"],
         },
       ],

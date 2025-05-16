@@ -17,9 +17,16 @@ export function indent(indentLevel: number | undefined) {
 export function indentOrSpace(indentLevel: number | undefined) {
   return indentLevel?"  ".repeat(indentLevel): " ";
 }
+
 // ################################################################################################
 export function flushAndIndent(indentLevel: number | undefined) {
+  return indentLevel != undefined?"\n" + indent(indentLevel): "";
+}
+
+// ################################################################################################
+export function flushAndIndentOrSpace(indentLevel: number | undefined) {
   return indentLevel != undefined?"\n" + indent(indentLevel): " ";
+  // return indentLevel != undefined?"\n" + indent(indentLevel): " ";
 }
 
 // ################################################################################################
@@ -37,7 +44,7 @@ export const sqlColumnAccessOld = (table: string, key: string, as?: string) =>
 // ################################################################################################
 export function sqlQueryTableLiteral(q: SqlQueryTableLiteralSchema) {
   if (typeof q == "string") {
-    return q;
+    return sqlNameQuote(q);
   }
   switch (q.queryPart) {
     case "tableLiteral": {
@@ -53,12 +60,11 @@ export function sqlQueryTableLiteral(q: SqlQueryTableLiteralSchema) {
 }
 
 // ################################################################################################
-export function sqlColumnAccess(q: SqlQueryTableColumnAccessSchema) {
+export function sqlTableColumnAccess(q: SqlQueryTableColumnAccessSchema) {
   if (typeof q == "string") {
     return q;
   }
-  // return sqlColumnAccessOld(sqlQueryTableLiteral(q.table), q.col);
-  return sqlQueryTableLiteral(q.table) + "." + sqlNameQuote(q.col); // + (as ? " AS " + sqlNameQuote(as) : "");
+  return sqlQueryTableLiteral(q.table) + "." + (q.col?sqlNameQuote(q.col):"*"); // + (as ? " AS " + sqlNameQuote(as) : "");
 }
 
 
@@ -83,8 +89,17 @@ export function sqlSelectExpression(
         .join(", ")})`;
       break;
     }
+    case "case": {
+      const indentNext = indentLevel != undefined ? indentLevel + 1 : undefined;
+      // console.log("sqlSelectExpression", q.queryPart, "indentLevel", indentLevel, "indentNext", indentNext);
+      result = `${indent(indentLevel)}CASE${flushAndIndentOrSpace(indentNext)}WHEN ${sqlSelectExpression(undefined, q.when)}${flushAndIndentOrSpace(indentNext)}THEN ${sqlSelectExpression(
+        undefined,
+        q.then
+      )}${flushAndIndentOrSpace(indentNext)}ELSE ${sqlSelectExpression(undefined, q.else)}${flushAndIndentOrSpace(indentLevel)}END`;
+      break;
+    }
     case "tableColumnAccess": {
-      return `${indent(indentLevel)}${sqlColumnAccessOld(sqlQueryTableLiteral(q.table), q.col)}`;
+      return sqlTableColumnAccess(q);
       break;
     }
   }
@@ -116,7 +131,7 @@ export function sqlQueryHereTableExpression(
       break;
     }
     case "tableColumnAccess": {
-      result = sqlColumnAccess(q);
+      result = sqlTableColumnAccess(q);
       break;
     }
     case "bypass": {
@@ -208,7 +223,7 @@ export function sqlQuery(indentLevel: number | undefined, q: SqlQuerySelectSchem
               .join(", ")));
 
   console.log("sqlQuery fromParts", fromParts);
-  return `SELECT ${selectParts}${flushAndIndent(indentLevel)}${fromParts}${q.where ? `${flushAndIndent(indentLevel)}WHERE ${q.where}` : ""}`;
+  return `SELECT ${selectParts}${flushAndIndentOrSpace(indentLevel)}${fromParts}${q.where ? `${flushAndIndentOrSpace(indentLevel)}WHERE ${q.where}` : ""}`;
 }
 
 // #################################################################################################
@@ -274,6 +289,7 @@ export const sqlQuerySelectSchema: JzodReference = {
             },
             col: {
               type: "string",
+              optional: true, // "*" if not present
             },
           },
         },
@@ -301,6 +317,33 @@ export const sqlQuerySelectSchema: JzodReference = {
           type: "schemaReference",
           definition: {
             relativePath: "sqlQueryTableColumnAccessSchema",
+          },
+        },
+        {
+          type: "object",
+          definition: {
+            queryPart: {
+              type: "literal",
+              definition: "case",
+            },
+            when: {
+              type: "schemaReference",
+              definition: {
+                relativePath: "sqlQuerySelectExpressionSchema",
+              },
+            },
+            then: {
+              type: "schemaReference",
+              definition: {
+                relativePath: "sqlQuerySelectExpressionSchema",
+              },
+            },
+            else: {
+              type: "schemaReference",
+              definition: {
+                relativePath: "sqlQuerySelectExpressionSchema",
+              },
+            },
           },
         },
         {

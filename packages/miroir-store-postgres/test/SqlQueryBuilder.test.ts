@@ -3,7 +3,7 @@ import {
   sql_jsonb_array_elements,
   sql_jsonb_each,
   sql_jsonb_object_agg,
-  sqlColumnAccess,
+  sqlTableColumnAccess,
   sqlColumnAccessOld,
   sqlDefineColumn,
   sqlSelectExpression,
@@ -12,7 +12,8 @@ import {
   sqlQuery,
   sqlQueryHereTableDefinition,
   sqlSelectColumns,
-  sqlQueryHereTableExpression
+  sqlQueryHereTableExpression,
+  sqlQueryTableLiteral
 } from "../src/1_core/SqlQueryBuilder";
 
 describe("SqlQueryBuilder", () => {
@@ -64,25 +65,54 @@ describe("SqlQueryBuilder", () => {
 
   // #################################################################################################
   describe("sqlQueryTableLiteral", () => {
-    it("returns table literal as is", () => {
-      expect(sqlQuery(undefined, "toto")).toBe("toto");
+    it("returns table literal as quoted string (that is a table name) by default", () => {
+      expect(sqlQueryTableLiteral("toto")).toBe('"toto"');
+    });
+    it("returns bypass value", () => {
+      expect(sqlQueryTableLiteral({ queryPart: "bypass", value: "toto" })).toBe("toto");
+    });
+    it("returns quoted name", () => {
+      expect(sqlQueryTableLiteral({ queryPart: "tableLiteral", name: "toto" })).toBe('"toto"');
     });
   });
 
   // #################################################################################################
-  describe("sqlColumnAccess", () => {
-    it("returns quoted table and column", () => {
+  describe("sqlTableColumnAccess", () => {
+    it("returns quoted table when using plain string", () => {
       expect(
-        sqlColumnAccess({
+        sqlTableColumnAccess({
+          queryPart: "tableColumnAccess",
+          table: "users",
+          col: "id",
+        })
+      ).toBe('"users"."id"');
+    });
+    it("returns quoted table when using tableLiteral", () => {
+      expect(
+        sqlTableColumnAccess({
           queryPart: "tableColumnAccess",
           table: { queryPart: "tableLiteral", name: "users" },
           col: "id",
         })
       ).toBe('"users"."id"');
     });
-    // it("adds AS clause if provided", () => {
-    //   expect(sqlColumnAccessOld("users", "id", "userId")).toBe('"users"."id" AS "userId"');
-    // });
+    it("returns bypassed table name", () => {
+      expect(
+        sqlTableColumnAccess({
+          queryPart: "tableColumnAccess",
+          table: { queryPart: "bypass", value: '"users"' },
+          col: "id",
+        })
+      ).toBe('"users"."id"');
+    });
+    it("returns '*' as column name by default", () => {
+      expect(
+        sqlTableColumnAccess({
+          queryPart: "tableColumnAccess",
+          table: "users",
+        })
+      ).toBe('"users".*');
+    });
   });
 
 
@@ -105,7 +135,35 @@ describe("SqlQueryBuilder", () => {
         })
       ).toBe("jsonb_object_agg(key, value)");
     });
+    it("returns case expression with WHEN and THEN", () => {
+      expect(
+        sqlSelectExpression(undefined, {
+          queryPart: "case",
+          when: "x=1",
+          then: "y",
+          // when: [
+          //   { condition: "x=1", then: "y" },
+          //   { condition: "x=2", then: "z" },
+          // ],
+          else: "default",
+        })
+      ).toBe(`CASE WHEN x=1 THEN y ELSE default END`);
   });
+  it("indented_returns case expression with WHEN and THEN", () => {
+    expect(
+      sqlSelectExpression(0, {
+        queryPart: "case",
+        when: "x=1",
+        then: "y",
+        else: "default",
+      })
+    ).toBe(`CASE
+  WHEN x=1
+  THEN y
+  ELSE default
+END`);
+  });
+});
 
   // #################################################################################################
   describe("sqlDefineColumn", () => {
