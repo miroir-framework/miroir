@@ -1961,7 +1961,14 @@ function sqlStringForListReducerToIndexObjectTransformer(
         extraWith,
       };
     }
-    case "json":
+    case "json": {
+      return new Domain2ElementFailed({
+        queryFailure: "QueryNotExecutable",
+        query: actionRuntimeTransformer as any,
+        queryParameters: JSON.stringify(applyTo) as any,
+        failureMessage: "sqlStringForRuntimeTransformer listReducerToIndexObject can not be applied to a json object, it can only be applied to a json array or an array of json objects",
+      });
+    }
     case "tableOf1JsonColumn": {
       throw new Error(
         "sqlStringForRuntimeTransformer listReducerToIndexObject not implemented for applyTo type:" + applyTo.type

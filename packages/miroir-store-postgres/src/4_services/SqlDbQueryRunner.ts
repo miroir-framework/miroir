@@ -189,8 +189,8 @@ export class SqlDbQueryRunner {
         selectorParams.extractor.runtimeTransformers &&
           Array.isArray(transformerRawQueriesObject[endResultName].resultAccessPath),
           "endResultName", endResultName,
+          "endResultPath", endResultPath, endResultPath!==undefined, !!selectorParams.extractor.runtimeTransformers,
           "transformerRawQueriesObject", JSON.stringify(transformerRawQueriesObject, null, 2),
-          "endResultPath", endResultPath, endResultPath!==undefined, !!selectorParams.extractor.runtimeTransformers
       );
       if (Array.isArray(rawResult.returnedDomainElement) && rawResult.returnedDomainElement.length === 0) {
         log.warn("asyncExtractWithQuery query returned empty result", JSON.stringify(rawResult));

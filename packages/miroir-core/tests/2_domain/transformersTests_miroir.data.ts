@@ -1952,44 +1952,43 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                 queryFailure: "QueryNotExecutable",
               },
             },
-            // // TODO: detect failure to resolve correctly in postgres implementation
-            // "objectAlter should fail when definition fails to resolve correctly": {
-            //   transformerTestType: "transformerTest",
-            //   transformerTestLabel: "objectAlter should fail when definition fails to resolve correctly",
-            //   transformerName: "objectAlter",
-            //   transformer: {
-            //     transformerType: "objectAlter",
-            //     interpolation: "runtime",
-            //     applyTo: {
-            //       referenceType: "referencedTransformer",
-            //       reference: {
-            //         transformerType: "parameterReference",
-            //         referenceName: "country",
-            //       },
-            //     },
-            //     referenceToOuterObject: "country",
-            //     definition: {
-            //       transformerType: "freeObjectTemplate",
-            //       interpolation: "runtime",
-            //       definition: {
-            //         "iso3166-1Alpha-2": {
-            //           transformerType: "contextReference",
-            //           interpolation: "runtime",
-            //           referencePath: ["country", "nonExistingAttribute"],
-            //         },
-            //       },
-            //     },
-            //   },
-            //   transformerParams: {
-            //   },
-            //   transformerRuntimeContext: {
-            //     country: Country1 as EntityInstance,
-            //   },
-            //   ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-            //   expectedValue: {
-            //     queryFailure: "QueryNotExecutable",
-            //   },
-            // },
+            "objectAlter should fail when definition fails to resolve correctly": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel: "objectAlter should fail when definition fails to resolve correctly",
+              transformerName: "objectAlter",
+              transformer: {
+                transformerType: "objectAlter",
+                interpolation: "runtime",
+                applyTo: {
+                  referenceType: "referencedTransformer",
+                  reference: {
+                    transformerType: "parameterReference",
+                    referenceName: "country",
+                  },
+                },
+                referenceToOuterObject: "country",
+                definition: {
+                  transformerType: "freeObjectTemplate",
+                  interpolation: "runtime",
+                  definition: {
+                    "iso3166-1Alpha-2": {
+                      transformerType: "contextReference",
+                      interpolation: "runtime",
+                      referencePath: ["country", "nonExistingAttribute"],
+                    },
+                  },
+                },
+              },
+              transformerParams: {
+              },
+              transformerRuntimeContext: {
+                country: Country1 as EntityInstance,
+              },
+              ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+              expectedValue: {
+                queryFailure: "QueryNotExecutable",
+              },
+            },
           },
         },
         mapperListToList: {
@@ -2437,32 +2436,32 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
           transformerTestType: "transformerTestSuite",
           transformerTestLabel: "listReducerToSpreadObject",
           transformerTests: {
-            // "listReducerToSpreadObject allows to reduce a constant list of objects to a single object": {
-            //   transformerTestType: "transformerTest",
-            //   transformerTestLabel: "listReducerToSpreadObject allows to reduce a constant list of objects to a single object",
-            //   transformerName: "listReducerToSpreadObject",
-            //   transformer: {
-            //     transformerType: "listReducerToSpreadObject",
-            //     interpolation: "runtime",
-            //     applyTo: [
-            //       {
-            //         uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-            //         name: "US",
-            //       },
-            //       {
-            //         uuid2: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
-            //         name2: "DE",
-            //       }
-            //     ],
-            //   },
-            //   transformerParams: {},
-            //   expectedValue: {
-            //     uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-            //     name: "US",
-            //     uuid2: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
-            //     name2: "DE",
-            //   },
-            // },
+            "listReducerToSpreadObject allows to reduce a constant list of objects to a single object": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel: "listReducerToSpreadObject allows to reduce a constant list of objects to a single object",
+              transformerName: "listReducerToSpreadObject",
+              transformer: {
+                transformerType: "listReducerToSpreadObject",
+                interpolation: "runtime",
+                applyTo: [
+                  {
+                    uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                    name: "US",
+                  },
+                  {
+                    uuid2: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+                    name2: "DE",
+                  }
+                ],
+              },
+              transformerParams: {},
+              expectedValue: {
+                uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                name: "US",
+                uuid2: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+                name2: "DE",
+              },
+            },
             "listReducerToSpreadObject allows to reduce a list of objects from parameter to a single object": {
               transformerTestType: "transformerTest",
               transformerTestLabel: "listReducerToSpreadObject allows to reduce a list of objects from parameter to a single object",
@@ -2510,63 +2509,66 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                 name2: "DE",
               },
             },
-            // "listReducerToSpreadObject fails when input is not a list": {
-            //   transformerTestType: "transformerTest",
-            //   transformerTestLabel: "listReducerToSpreadObject fails when input is not a list",
-            //   transformerName: "listReducerToSpreadObject",
-            //   transformer: {
-            //     transformerType: "listReducerToSpreadObject",
-            //     interpolation: "runtime",
-            //     applyTo: {
-            //       referenceType: "referencedTransformer",
-            //       reference: {
-            //         transformerType: "contextReference",
-            //         interpolation: "runtime",
-            //         referenceName: "objectList",
-            //       },
-            //     },
-            //   },
-            //   transformerParams: {},
-            //   transformerRuntimeContext: {
-            //     objectList: {
-            //       uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-            //       name: "US",
-            //     }
-            //   },
-            //   ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-            //   expectedValue: {
-            //     queryFailure: "QueryNotExecutable",
-            //   },
-            // },
+            "listReducerToSpreadObject fails when input is not a list": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel: "listReducerToSpreadObject fails when input is not a list",
+              transformerName: "listReducerToSpreadObject",
+              transformer: {
+                transformerType: "listReducerToSpreadObject",
+                interpolation: "runtime",
+                applyTo: {
+                  referenceType: "referencedTransformer",
+                  reference: {
+                    transformerType: "contextReference",
+                    interpolation: "runtime",
+                    referenceName: "objectList",
+                  },
+                },
+              },
+              transformerParams: {},
+              transformerRuntimeContext: {
+                objectList: {
+                  uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  name: "US",
+                }
+              },
+              ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+              expectedValue: {
+                queryFailure: "QueryNotExecutable",
+              },
+            },
             // TODO error cases
-            // "listReducerToSpreadObject fails when non-objects are included in the list": {
-            //   transformerTestType: "transformerTest",
-            //   transformerTestLabel: "listReducerToSpreadObject fails when non-objects are included in the list",
-            //   transformerName: "listReducerToSpreadObject",
-            //   transformer: {
-            //     transformerType: "listReducerToSpreadObject",
-            //     applyTo: {
-            //       referenceType: "referencedTransformer",
-            //       reference: {
-            //         transformerType: "parameterReference",
-            //         referenceName: "objectList",
-            //       },
-            //     },
-            //   },
-            //   transformerParams: {
-            //     objectList: [
-            //       {
-            //         uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-            //         name: "US",
-            //       },
-            //       "DE",
-            //     ]
-            //   },
-            //   ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-            //   expectedValue: {
-            //     queryFailure: "QueryNotExecutable",
-            //   },
-            // }
+            "listReducerToSpreadObject fails when non-objects are included in the list": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel: "listReducerToSpreadObject fails when non-objects are included in the list",
+              transformerName: "listReducerToSpreadObject",
+              transformer: {
+                transformerType: "listReducerToSpreadObject",
+                interpolation: "runtime",
+                applyTo: {
+                  referenceType: "referencedTransformer",
+                  reference: {
+                    transformerType: "contextReference",
+                    interpolation: "runtime",
+                    referenceName: "objectList",
+                  },
+                },
+              },
+              transformerParams: {},
+              transformerRuntimeContext: {
+                objectList: [
+                  {
+                    uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                    name: "US",
+                  },
+                  "DE",
+                ]
+              },
+              ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+              expectedValue: {
+                queryFailure: "QueryNotExecutable",
+              },
+            }
           },
         },
         listReducerToIndexObject: {
@@ -2632,36 +2634,37 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = {
                 "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx": { uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", name: "US" },
                 "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy": { uuid: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy", name: "DE" },
               },
-            }
-              // TODO add test for listReducerToIndexObject with parameter
-            // "listReducerToIndexObject fails when input is not a list": {
-            //   transformerTestType: "transformerTest",
-            //   transformerTestLabel: "listReducerToIndexObject fails when input is not a list",
-            //   transformerName: "listReducerToIndexObject",
-            //   transformer: {
-            //     transformerType: "listReducerToIndexObject",
-            //     interpolation: "runtime",
-            //     applyTo: {
-            //       referenceType: "referencedTransformer",
-            //       reference: {
-            //         transformerType: "parameterReference",
-            //         interpolation: "build",
-            //         referenceName: "objectNotList",
-            //       },
-            //     },
-            //     indexAttribute: "uuid",
-            //   },
-            //   transformerParams: {
-            //     objectNotList: {
-            //       uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-            //       name: "US",
-            //     }
-            //   },
-            //   ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-            //   expectedValue: {
-            //     queryFailure: "QueryNotExecutable",
-            //   },
-            // },
+            },
+            // TODO add test for listReducerToIndexObject with parameter
+            "listReducerToIndexObject fails when input is not a list": {
+              transformerTestType: "transformerTest",
+              transformerTestLabel: "listReducerToIndexObject fails when input is not a list",
+              transformerName: "listReducerToIndexObject",
+              transformer: {
+                transformerType: "listReducerToIndexObject",
+                interpolation: "runtime",
+                applyTo: {
+                  referenceType: "referencedTransformer",
+                  reference: {
+                    transformerType: "contextReference",
+                    interpolation: "runtime",
+                    referenceName: "objectNotList",
+                  },
+                },
+                indexAttribute: "uuid",
+              },
+              transformerParams: {},
+              transformerRuntimeContext: {
+                objectNotList: {
+                  uuid: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  name: "US",
+                }
+              },
+              ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+              expectedValue: {
+                queryFailure: "QueryNotExecutable",
+              },
+            },
           },
         }
       }
