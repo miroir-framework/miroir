@@ -102,6 +102,10 @@ export function sqlSelectExpression(
       return sqlTableColumnAccess(q);
       break;
     }
+    case "tableLiteral": {
+      result = sqlQueryTableLiteral(q);
+      break;
+    }
   }
   // console.log(`indent(${indentLevel})="${indent(indentLevel)}"`);
   // console.log("sqlSelectExpression", q.queryPart, "returns", result);
@@ -317,6 +321,12 @@ export const sqlQuerySelectSchema: JzodReference = {
           type: "schemaReference",
           definition: {
             relativePath: "sqlQueryTableColumnAccessSchema",
+          },
+        },
+        {
+          type: "schemaReference",
+          definition: {
+            relativePath: "sqlQueryTableLiteralSchema",
           },
         },
         {

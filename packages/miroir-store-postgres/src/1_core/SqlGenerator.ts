@@ -1921,40 +1921,53 @@ function sqlStringForListReducerToIndexObjectTransformer(
     },
   ];
   switch (applyTo.type) {
-    // case "json":
     case "json_array": {
-      const sqlResult =
-        "SELECT " +
-        'jsonb_object_agg("' +
-        applyToLabelElements +
-        '" ->> \'' + actionRuntimeTransformer.indexAttribute + '\', ' +
-        '"' +
-        applyToLabelElements +
-        '")' +
-        ' AS "' +
-        transformerLabel +
-        '"' +
-        flushAndIndent(indentLevel) +
-        'FROM "' +
-        applyToLabel +
-        '"' +
-        ', jsonb_array_elements("' +
-        applyToLabel +
-        '"."' +
-        (applyTo as any).columnNameContainingJsonValue +
-        '") AS "' +
-        applyToLabelElements +
-        '"'
-        // +
-        // ', jsonb_each("' +
-        // applyToLabelElements +
-        // '") AS "' +
-        // applyToLabelPairs +
-        // '"'
-        ;
+      const sqlResultNew = sqlQuery(0, {
+        queryPart: "query",
+        select: [
+          {
+            queryPart: "defineColumn",
+            value: {
+              queryPart: "call",
+              fct: "jsonb_object_agg",
+              params: [
+                '"' + applyToLabelElements +"\"" + " ->> " +
+                "'" + actionRuntimeTransformer.indexAttribute + "'",// json_array_index_access
+                {
+                  queryPart: "tableLiteral",
+                  name: applyToLabelElements,
+                }
+              ],
+            },
+            as: transformerLabel,
+          },
+        ],
+        from: [
+          {
+            queryPart: "tableLiteral",
+            name: applyToLabel,
+          },
+          {
+            queryPart: "hereTable",
+            definition: {
+              queryPart: "call",
+              fct: "jsonb_array_elements",
+              params: [
+                {
+                  queryPart: "tableColumnAccess",
+                  table: applyToLabel,
+                  col: (applyTo as any).columnNameContainingJsonValue
+                },
+              ],
+            },
+            as: applyToLabelElements,
+          }
+        ]
+      });
       return {
         type: "json",
-        sqlStringOrObject: sqlResult,
+        // sqlStringOrObject: sqlResult,
+        sqlStringOrObject: sqlResultNew,
         preparedStatementParameters: applyTo.preparedStatementParameters,
         resultAccessPath: [0, transformerLabel],
         columnNameContainingJsonValue: transformerLabel,

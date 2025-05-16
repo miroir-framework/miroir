@@ -18,7 +18,7 @@ export type SqlQueryTableColumnAccessSchema = string | {
 export type SqlQuerySelectExpressionSchema = string | {
     queryPart: "bypass";
     value: string;
-} | SqlQueryTableColumnAccessSchema | {
+} | SqlQueryTableColumnAccessSchema | SqlQueryTableLiteralSchema | {
     queryPart: "case";
     when: SqlQuerySelectExpressionSchema;
     then: SqlQuerySelectExpressionSchema;
@@ -65,7 +65,7 @@ export type SqlQuerySelectSchema = RootSqlQuery;
 export const sqlQueryByPass: z.ZodType<SqlQueryByPass> = z.object({queryPart:z.literal("bypass"), value:z.string()}).strict();
 export const sqlQueryTableLiteralSchema: z.ZodType<SqlQueryTableLiteralSchema> = z.union([z.string(), z.lazy(() =>sqlQueryByPass), z.object({queryPart:z.literal("tableLiteral"), name:z.string()}).strict()]);
 export const sqlQueryTableColumnAccessSchema: z.ZodType<SqlQueryTableColumnAccessSchema> = z.union([z.string(), z.object({queryPart:z.literal("tableColumnAccess"), table:z.lazy(() =>sqlQueryTableLiteralSchema), col:z.string().optional()}).strict()]);
-export const sqlQuerySelectExpressionSchema: z.ZodType<SqlQuerySelectExpressionSchema> = z.union([z.string(), z.object({queryPart:z.literal("bypass"), value:z.string()}).strict(), z.lazy(() =>sqlQueryTableColumnAccessSchema), z.object({queryPart:z.literal("case"), when:z.lazy(() =>sqlQuerySelectExpressionSchema), then:z.lazy(() =>sqlQuerySelectExpressionSchema), else:z.lazy(() =>sqlQuerySelectExpressionSchema)}).strict(), z.object({queryPart:z.literal("call"), fct:z.string(), params:z.array(z.lazy(() =>sqlQuerySelectExpressionSchema))}).strict()]);
+export const sqlQuerySelectExpressionSchema: z.ZodType<SqlQuerySelectExpressionSchema> = z.union([z.string(), z.object({queryPart:z.literal("bypass"), value:z.string()}).strict(), z.lazy(() =>sqlQueryTableColumnAccessSchema), z.lazy(() =>sqlQueryTableLiteralSchema), z.object({queryPart:z.literal("case"), when:z.lazy(() =>sqlQuerySelectExpressionSchema), then:z.lazy(() =>sqlQuerySelectExpressionSchema), else:z.lazy(() =>sqlQuerySelectExpressionSchema)}).strict(), z.object({queryPart:z.literal("call"), fct:z.string(), params:z.array(z.lazy(() =>sqlQuerySelectExpressionSchema))}).strict()]);
 export const sqlQueryDefineColumnSchema: z.ZodType<SqlQueryDefineColumnSchema> = z.union([z.string(), z.object({queryPart:z.literal("defineColumn"), value:z.lazy(() =>sqlQuerySelectExpressionSchema), as:z.string().optional()}).strict()]);
 export const sqlWhereItemSchema: z.ZodType<SqlWhereItemSchema> = z.object({what:z.lazy(() =>sqlQuerySelectSchema), as:z.string()}).strict();
 export const sqlQueryFromSchema: z.ZodType<SqlQueryFromSchema> = z.union([z.string(), z.array(z.lazy(() =>sqlQueryTableLiteralSchema))]);

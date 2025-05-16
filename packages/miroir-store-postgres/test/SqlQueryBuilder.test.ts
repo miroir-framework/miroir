@@ -163,6 +163,23 @@ describe("SqlQueryBuilder", () => {
   ELSE default
 END`);
   });
+  it("returns table column access expression", () => {
+    expect(
+      sqlSelectExpression(undefined, {
+        queryPart: "tableColumnAccess",
+        table: { queryPart: "tableLiteral", name: "users" },
+        col: "id",
+      })
+    ).toBe('"users"."id"');
+  });
+  it("return table access expression", () => {
+    expect(
+      sqlSelectExpression(undefined, {
+        queryPart: "tableLiteral",
+        name: "users",
+      })
+    ).toBe('"users"');
+  });
 });
 
   // #################################################################################################
