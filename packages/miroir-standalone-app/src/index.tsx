@@ -9,6 +9,7 @@ import {
   RouterProvider
 } from "react-router-dom";
 
+
 import {
   ConfigurationService,
   LoggerInterface,
@@ -42,6 +43,7 @@ import miroirConfigRealServerSql from "./assets/miroirConfig-realServer-sql.json
 import miroirConfig from "./assets/miroirConfig.json" assert { type: "json" };
 import { ConceptPage } from "./miroir-fwk/4_view/routes/Concept.js";
 import { ToolsPage } from "./miroir-fwk/4_view/routes/Tools.js";
+import { expect } from "./miroir-fwk/4-tests/test-expect.js";
 
 const specificLoggerOptions: SpecificLoggerOptionsMap = {
   // "5_miroir-core_DomainController": {level:defaultLevels.INFO, template:"[{{time}}] {{level}} ({{name}}) BBBBB-"},
@@ -263,6 +265,10 @@ async function startWebApp(root:Root) {
 
 
   if (process.env.NODE_ENV === "development") {
+
+    // ConfigurationService.registerTestImplementation({expect: vitest.expect as any});
+    ConfigurationService.registerTestImplementation({expect: expect as any});
+
     const miroirContext = new MiroirContext(currentMiroirConfig);
 
     const client: RestClient = new RestClient(window.fetch.bind(window));

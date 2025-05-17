@@ -53,6 +53,7 @@ import {
   jzodSchemajzodMiroirBootstrapSchema,
   localCacheEndpointVersionV1,
   LoggerInterface,
+  miroirFundamentalJzodSchema,
   MiroirLoggerFactory,
   modelEndpointV1,
   persistenceEndpointVersionV1,
@@ -170,9 +171,16 @@ styled(
 
 const boxParams = { display: 'flex', flexGrow: 1, flexDirection:"column" };
 
+let count = 0;
 export const RootComponent = (props: RootComponentProps) => {
   // const params = useParams<any>() as Readonly<Params<ReportUrlParamKeys>>;
+  count++;
   const [drawerIsOpen, setDrawerIsOpen] = useState(true);
+  log.info(
+    "##################################### rendering root component",
+    "count",
+    count,
+  );
 
   const domainController: DomainControllerInterface = useDomainControllerService();
   const context = useMiroirContextService();
@@ -184,69 +192,40 @@ export const RootComponent = (props: RootComponentProps) => {
   }
 
   // ##############################################################################################
-  const displayedDeploymentUuid = context.deploymentUuid;
-  const setDisplayedDeploymentUuid = context.setDeploymentUuid;
-  const displayedApplicationSection = context.applicationSection;
-  const setDisplayedApplicationSection = context.setApplicationSection;
+  // TODO: are these useMemo needed? This is dubious use, direct from a useMiroirContextService() call
+  const displayedDeploymentUuid = useMemo(() => context.deploymentUuid, [context]);
+  const setDisplayedDeploymentUuid = useMemo(() => context.setDeploymentUuid, [context]);
+  // const displayedApplicationSection = useMemo(() => context.applicationSection, [context]);
+  const setDisplayedApplicationSection = useMemo(() => context.setApplicationSection, [context]);
 
-  // ##############################################################################################
+  // ###############################################################################################
+  useEffect(() => context.setMiroirFundamentalJzodSchema(miroirFundamentalJzodSchema as any));
+  // ###############################################################################################
 
-  const miroirFundamentalJzodSchema: JzodReference = useMemo(() => getMiroirFundamentalJzodSchema(
-    entityDefinitionBundleV1 as EntityDefinition,
-    entityDefinitionCommit as EntityDefinition,
-    modelEndpointV1,
-    storeManagementEndpoint,
-    instanceEndpointVersionV1,
-    undoRedoEndpointVersionV1,
-    localCacheEndpointVersionV1,
-    domainEndpointVersionV1,
-    queryEndpointVersionV1,
-    persistenceEndpointVersionV1,
-    testEndpointVersionV1,
-    jzodSchemajzodMiroirBootstrapSchema as JzodSchema,
-    transformerJzodSchema as JzodSchema,
-    [transformerMenuV1],
-    entityDefinitionAdminApplication as EntityDefinition,
-    entityDefinitionSelfApplication as EntityDefinition,
-    entityDefinitionSelfApplicationVersion as EntityDefinition,
-    entityDefinitionDeployment as EntityDefinition,
-    entityDefinitionEntity as EntityDefinition,
-    entityDefinitionEntityDefinition as EntityDefinition,
-    entityDefinitionJzodSchema as EntityDefinition,
-    entityDefinitionMenu  as EntityDefinition,
-    entityDefinitionQueryVersionV1 as EntityDefinition,
-    entityDefinitionReport as EntityDefinition,
-    entityDefinitionSelfApplicationDeploymentConfiguration as EntityDefinition,
-    entityDefinitionTest as EntityDefinition,
-    entityDefinitionTransformerDefinition as EntityDefinition,
-    entityDefinitionEndpoint as EntityDefinition,
-    // jzodSchemajzodMiroirBootstrapSchema as any,
-  ),[]);
-
-  useEffect(() => context.setMiroirFundamentalJzodSchema(miroirFundamentalJzodSchema));
-
-  const handleDrawerOpen = () => {
+  const handleDrawerOpen = useMemo(() => () => {
     setDrawerIsOpen(true);
-  };
+  }, [setDrawerIsOpen]);
 
-  const handleDrawerClose = () => {
+  const handleDrawerClose = useMemo(() => () => {
     setDrawerIsOpen(false);
-  };
+  }, [setDrawerIsOpen]);
 
-  const handleChangeDisplayedDeployment = (event: SelectChangeEvent) => {
+  const handleChangeDisplayedDeployment = useMemo(() => (event: SelectChangeEvent) => {
     event.stopPropagation();
     log.info('handleChangeDisplayedDeployment',event);
     setDisplayedDeploymentUuid(event.target.value);
     log.info('handleChangeDisplayedDeployment',displayedDeploymentUuid);
     setDisplayedApplicationSection('data');
     // setDisplayedReportUuid("");
-  };
+  }, [setDisplayedDeploymentUuid, setDisplayedApplicationSection]);
 
 
   return (
     <div>
       {/* <PersistentDrawerLeft></PersistentDrawerLeft> */}
       {/* <Box sx={{ display: 'flex', flexDirection:"column", flexGrow: 1 }}> */}
+      {/* Root loaded {loaded} */}
+      {/* <p /> */}
       <MuiBox sx={boxParams}>
         {/* <CssBaseline /> */}
         <Grid container direction="column">
@@ -266,6 +245,7 @@ export const RootComponent = (props: RootComponentProps) => {
                 <p />
                   <div>uuid: {uuidv4()}</div>
                   <div>transactions: {JSON.stringify(transactions)}</div>
+                  <div>loaded: {count}</div>
                 <p />
                 <div>
                   <FormControl fullWidth>

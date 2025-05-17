@@ -2,6 +2,7 @@ export {
   getMiroirFundamentalJzodSchema,
   miroirFundamentalJzodSchemaUuid,
 } from "../src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema";
+
 export {
   ActionEntityInstanceCollectionReturnType,
   actionEntityInstanceCollectionReturnType,
@@ -425,6 +426,10 @@ export {
   UndoRedoAction,
   undoRedoAction,
 } from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+
+export {
+  miroirFundamentalJzodSchema
+} from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
 
 console.log("miroir-core: loading miroirFundamentalType.js");
 console.log("miroir-core: loading miroirFundamentalType.js DONE");

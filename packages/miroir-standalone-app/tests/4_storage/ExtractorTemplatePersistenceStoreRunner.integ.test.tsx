@@ -67,7 +67,7 @@ import {
   resetApplicationDeployments,
   selfApplicationDeploymentConfigurations,
   setupMiroirTest
-} from "../utils/tests-utils.js";
+} from "../../src/miroir-fwk/4-tests/tests-utils.js";
 
 let domainController: DomainControllerInterface;
 let localCache: LocalCacheInterface;

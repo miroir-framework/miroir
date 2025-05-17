@@ -74,12 +74,12 @@ import {
   runTestOrTestSuite,
   setupMiroirTest,
   TestActionParams
-} from "../utils/tests-utils.js";
+} from "../../src/miroir-fwk/4-tests/tests-utils.js";
 import { cleanLevel, packageName } from './constants.js';
 import { adminConfigurationDeploymentParis } from '../../src/constants.js';
 import { transform } from 'typescript';
 import { CompositeRunTestAssertion } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js';
-import { testOnLibrary_deleteLibraryDeployment, testOnLibrary_resetLibraryDeployment } from '../utils/tests-utils-testOnLibrary.js';
+import { testOnLibrary_deleteLibraryDeployment, testOnLibrary_resetLibraryDeployment } from '../../src/miroir-fwk/4-tests/tests-utils-testOnLibrary.js';
 
 let domainController: DomainControllerInterface | undefined = undefined;
 let localCache: LocalCacheInterface | undefined = undefined;

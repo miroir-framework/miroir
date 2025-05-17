@@ -39,7 +39,7 @@ import {
   resetApplicationDeployments,
   selfApplicationDeploymentConfigurations,
   setupMiroirTest
-} from "../utils/tests-utils.js";
+} from "../../src/miroir-fwk/4-tests/tests-utils.js";
 
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";

@@ -1,7 +1,6 @@
-
 import type { RenderOptions } from '@testing-library/react';
 import { render } from '@testing-library/react';
-import { expect } from 'vitest';
+// import { expect } from 'vitest';
 
 
 // import { SetupWorkerApi } from 'msw/browser';
@@ -59,12 +58,16 @@ import {
   RestPersistenceClientAndRestClient,
   setupMiroirDomainController
 } from "miroir-localcache-redux";
-import path from 'path';
-import { packageName } from '../../src/constants';
-import { MiroirContextReactProvider } from '../../src/miroir-fwk/4_view/MiroirContextReactProvider';
-import { cleanLevel } from '../../src/miroir-fwk/4_view/constants';
+import { packageName } from '../../constants';
+import { MiroirContextReactProvider } from '../4_view/MiroirContextReactProvider';
+import { cleanLevel } from '../4_view/constants';
 import { ApplicationEntitiesAndInstances } from "./tests-utils-testOnLibrary";
-import { TestBuildPlusRuntimeCompositeAction, TestBuildPlusRuntimeCompositeActionSuite, TestRuntimeCompositeAction, TestRuntimeCompositeActionSuite } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType';
+import {
+  TestBuildPlusRuntimeCompositeAction,
+  TestBuildPlusRuntimeCompositeActionSuite,
+  TestRuntimeCompositeAction,
+  TestRuntimeCompositeActionSuite,
+} from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -709,164 +712,11 @@ export async function deleteAndCloseApplicationDeployments(
   return Promise.resolve();
 }
 
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-export async function loadTestSingleConfigFile( fileName:string): Promise<MiroirConfigClient> {
-  try {
-    const pwd = process.env["PWD"]??""
-    console.log("@@@@@@@@@@@@@@@@@@ loadTestSingleConfigFile pwd", pwd, "fileName", fileName);
-    // log.info("@@@@@@@@@@@@@@@@@@ env", process.env["npm_config_env"]);
-    // const configFilePath = path.join(pwd, "./packages/miroir-standalone-app/tests/" + fileName + ".json")
-    const configFilePath = path.join(pwd, fileName + ".json")
-    console.log("@@@@@@@@@@@@@@@@@@ loadTestSingleConfigFile configFilePath", configFilePath);
-    const configFileContents = await import(configFilePath);
-    // const configFileContents = JSON.parse(fs.readFileSync(new URL(configFilePath, import.meta.url)).toString());
-    // const configFileContents = JSON.parse(fs.readFileSync(new URL(configFilePath)).toString());
-    console.log("@@@@@@@@@@@@@@@@@@ loadTestSingleConfigFile configFileContents", configFileContents);
-  
-    const miroirConfig:MiroirConfigClient = configFileContents as MiroirConfigClient;
-  
-    console.log("@@@@@@@@@@@@@@@@@@ loadTestSingleConfigFile miroirConfig", JSON.stringify(miroirConfig, null, 2));
-    return Promise.resolve(miroirConfig);
-  } catch (error) {
-    console.error("@@@@@@@@@@@@@@@@@@ loadTestConfigFile error", error);
-    throw error;
-  }
 
-}
-// ################################################################################################
-export async function loadTestConfigFiles(env:any) {
-  try {
-    console.log("@@@@@@@@@@@@@@@@@@ loadTestConfigFiles started", JSON.stringify(env, null, 2));
-    let miroirConfig:MiroirConfigClient
-    if (env.VITE_MIROIR_TEST_CONFIG_FILENAME) {
-      miroirConfig = await loadTestSingleConfigFile(env.VITE_MIROIR_TEST_CONFIG_FILENAME??"");
-      // log.info("@@@@@@@@@@@@@@@@@@ config file contents:", miroirConfig)
-    } else {
-      throw new Error("Environment variable VITE_MIROIR_TEST_CONFIG_FILENAME not found. Tests must find this variable, pointing to a valid test configuration file");
-    }
-    
-    let logConfig:any
-    if (env.VITE_MIROIR_LOG_CONFIG_FILENAME) {
-      logConfig = await loadTestSingleConfigFile(env.VITE_MIROIR_LOG_CONFIG_FILENAME ?? "specificLoggersConfig_warn");
-      // console.info("@@@@@@@@@@@@@@@@@@ log config file contents:", miroirConfig)
-    
-      // MiroirLoggerFactory.setEffectiveLoggerFactoryWithLogLevelNext(
-      //   loglevelnext,
-      //   defaultLevels[logConfig.defaultLevel],
-      //   logConfig.defaultTemplate,
-      //   logConfig.specificLoggerOptions
-      // );
-      
-      
-    } else {
-      throw new Error("Environment variable VITE_MIROIR_LOG_CONFIG_FILENAME not found. Tests must find this variable, pointing to a valid test configuration file");
-    }
-    console.log("@@@@@@@@@@@@@@@@@@ loadTestConfigFiles config file contents:", JSON.stringify(miroirConfig, null, 2));
-    return Promise.resolve({miroirConfig,logConfig})
-  } catch (error) {
-    console.error("@@@@@@@@@@@@@@@@@@ loadTestConfigFiles error", error);
-    throw error;    
-  }
-}
-
-// ################################################################################################
-export const chainVitestSteps = async (
-  stepName: string,
-  context: {[k:string]: any},
-  functionCallingActionToTest: () => Promise<Action2ReturnType>,
-  resultTransformation?: (a:Action2ReturnType,p:{[k:string]: any}) => any,
-  addResultToContextAsName?: string,
-  expectedDomainElementType?: DomainElementType,
-  expectedValue?: any,
-): Promise<{[k:string]: any}> => {
-  log.info(
-    "########################################### chainTestAsyncDomainCalls",
-    stepName,
-    "previousResult:",
-    JSON.stringify(context, undefined, 2)
-  );
-  const domainElement = await functionCallingActionToTest();
-  log.info(
-    "########################################### chainTestAsyncDomainCalls",
-    stepName,
-    "result:",
-    JSON.stringify(domainElement, undefined, 2)
-  );
-  let testResult
-  if (!(domainElement instanceof Action2Error)) {
-    testResult = resultTransformation
-      ? resultTransformation(domainElement, context)
-      : domainElement?.returnedDomainElement;
-
-    log.info(
-      "########################################### chainTestAsyncDomainCalls",
-      stepName,
-      "testResult that will be compared",
-      JSON.stringify(testResult, null, 2)
-    );
-    if (expectedDomainElementType) {
-      if (domainElement.returnedDomainElement?.elementType != expectedDomainElementType) {
-        expect(
-          domainElement.returnedDomainElement?.elementType,
-          stepName + "received wrong type for result: " + domainElement.returnedDomainElement?.elementType + " expected: " + expectedDomainElementType
-        ).toEqual(expectedDomainElementType); // fails
-      } else {
-        if (expectedValue) {
-          expect(testResult).toEqual(expectedValue);
-        } else {
-          // no test to be done
-        }
-      }
-    } else {
-      if (expectedValue) {
-        expect(testResult).toEqual(expectedValue);
-      } else {
-        // no test to be done
-      }
-   // no test to be done 
-    //  log.info(
-    //    "########################################### chainTestAsyncDomainCalls",
-    //    stepName,
-    //    "no test done because expectedDomainElementType is undefined",
-    //    expectedDomainElementType
-    //  );
-    }
-  } else {
-    log.info(
-      "########################################### chainTestAsyncDomainCalls",
-      stepName,
-      "error:",
-      JSON.stringify(domainElement, undefined, 2)
-    );
-    expect(
-      domainElement.status,
-      domainElement.errorType ?? "no errorType" + ": " + (domainElement.errorMessage ?? "no errorMessage")
-    ).toEqual("ok");
-  }
-  log.info(
-    "########################################### chainTestAsyncDomainCalls",
-    stepName,
-    "testResult:",
-    JSON.stringify(testResult, undefined, 2)
-  );
-  if (testResult && addResultToContextAsName) {
-    return {...context, [addResultToContextAsName]: testResult}
-  } else {
-    return context
-  }
-}
 
 // ################################################################################################
 export async function runTestOrTestSuite(
-  localCache: LocalCacheInterface,
+  // localCache: LocalCacheInterface,
   domainController: DomainControllerInterface,
   testAction: TestActionParams,
   testActionParamValues?: {[k:string]: any},
@@ -889,7 +739,7 @@ export async function runTestOrTestSuite(
         const queryResult: Action2ReturnType = await domainController.handleTestCompositeActionSuite(
           testAction.testCompositeAction as any, // TODO: remove cast
           newParams,
-          localCache.currentModel(testAction.deploymentUuid)
+          domainController.currentModel(testAction.deploymentUuid)
         );
         log.info(
           "received results for test testCompositeActionSuite",
@@ -913,7 +763,7 @@ export async function runTestOrTestSuite(
         const queryResult: Action2ReturnType = await domainController.handleTestCompositeAction(
           testAction.testCompositeAction as any, // TODO: remove cast
           {},
-          localCache.currentModel(testAction.deploymentUuid)
+          domainController.currentModel(testAction.deploymentUuid)
         );
         log.info(
           "test testCompositeAction",
@@ -930,7 +780,7 @@ export async function runTestOrTestSuite(
         const queryResult: Action2ReturnType = await domainController.handleTestCompositeActionTemplateSuite(
           testAction.testCompositeActionSuite,
           testActionParamValues??{},
-          localCache.currentModel(testAction.deploymentUuid)
+          domainController.currentModel(testAction.deploymentUuid)
         );
         log.info(
           "received results for test testCompositeActionSuite",

@@ -63,7 +63,7 @@ import { LocalCacheInterface, miroirCoreStartup } from 'miroir-core';
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { miroirAppStartup } from '../../src/startup.js';
 import { cleanLevel, packageName } from '../3_controllers/constants.js';
-import { ApplicationEntitiesAndInstances } from '../utils/tests-utils-testOnLibrary.js';
+import { ApplicationEntitiesAndInstances } from '../../src/miroir-fwk/4-tests/tests-utils-testOnLibrary.js';
 import {
   chainVitestSteps,
   createDeploymentCompositeAction,
@@ -75,7 +75,7 @@ import {
   resetApplicationDeployments,
   selfApplicationDeploymentConfigurations,
   setupMiroirTest
-} from "../utils/tests-utils.js";
+} from "../../src/miroir-fwk/4-tests/tests-utils.js";
 
 let domainController: DomainControllerInterface;
 let localCache: LocalCacheInterface;

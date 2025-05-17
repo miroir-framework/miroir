@@ -70,9 +70,9 @@ import {
   runTestOrTestSuite,
   setupMiroirTest,
   TestActionParams
-} from "../utils/tests-utils.js";
+} from "../../src/miroir-fwk/4-tests/tests-utils.js";
 import { cleanLevel, packageName } from './constants.js';
-import { testOnLibrary_deleteLibraryDeployment, testOnLibrary_resetLibraryDeployment } from '../utils/tests-utils-testOnLibrary.js';
+import { testOnLibrary_deleteLibraryDeployment, testOnLibrary_resetLibraryDeployment } from '../../src/miroir-fwk/4-tests/tests-utils-testOnLibrary.js';
 import { CompositeActionTemplate } from 'miroir-core';
 import { TransactionalInstanceAction } from 'miroir-core';
 import { CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction } from 'miroir-core';

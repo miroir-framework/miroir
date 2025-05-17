@@ -161,6 +161,51 @@ export async function resetAndInitApplicationDeployment(
 export class DomainController implements DomainControllerInterface {
   private callUtil: CallUtils;
 
+    // ##############################################################################################
+  constructor(
+    private persistenceStoreAccessMode: "local" | "remote",
+    // public persistenceStoreAccessMode: "local" | "remote",
+    private miroirContext: MiroirContextInterface,
+    private localCache: LocalCacheInterface,
+    private persistenceStoreLocalOrRemote: PersistenceStoreLocalOrRemoteInterface, // instance of PersistenceReduxSaga
+    private endpoint: Endpoint
+  ) {
+    this.callUtil = new CallUtils(miroirContext.errorLogService, persistenceStoreLocalOrRemote);
+    const boundRemotePersistenceAction = this.callUtil.callRemotePersistenceAction.bind(
+      this.callUtil
+    );
+    // actionType -> actionName -> actionHandlerKind -> handler
+    this.actionHandler = {
+      storeManagementAction: {
+        resetAndInitApplicationDeployment: { "*": resetAndInitApplicationDeployment },
+        "*": {
+          local: this.persistenceStoreLocalOrRemote.handleStoreOrBundleActionForLocalStore.bind(
+            this.persistenceStoreLocalOrRemote
+          ),
+          // remote: this.callUtil.callRemotePersistenceAction.bind(this.callUtil),
+          remote: boundRemotePersistenceAction,
+        },
+      },
+      bundleAction: {
+        // TODO: not used, not tested!
+        "*": {
+          "*": this.handleDomainUndoRedoAction.bind(this),
+        },
+      },
+      modelAction: {
+        resetModel: {
+          "*": boundRemotePersistenceAction,
+        },
+        resetData: {
+          "*": boundRemotePersistenceAction,
+        },
+        initModel: {
+          "*": boundRemotePersistenceAction,
+        },
+      },
+    };
+  }
+
   getPersistenceStoreAccessMode(): "local" | "remote" {
     return this.persistenceStoreAccessMode;
   }
@@ -169,6 +214,11 @@ export class DomainController implements DomainControllerInterface {
   getRemoteStore(): PersistenceStoreLocalOrRemoteInterface {
     return this.persistenceStoreLocalOrRemote;
   }
+  // ##############################################################################################
+  currentModel(uuid: string): MetaModel {
+    return this.localCache.currentModel(uuid);
+  }
+
   // ##############################################################################################
   currentTransaction(): (TransactionalInstanceAction | ModelAction)[] {
     return this.localCache.currentTransaction();
@@ -3008,50 +3058,6 @@ export class DomainController implements DomainControllerInterface {
     return actionHandler(...actionHandlerArgs);
   }
 
-  // ##############################################################################################
-  constructor(
-    private persistenceStoreAccessMode: "local" | "remote",
-    // public persistenceStoreAccessMode: "local" | "remote",
-    private miroirContext: MiroirContextInterface,
-    private localCache: LocalCacheInterface,
-    private persistenceStoreLocalOrRemote: PersistenceStoreLocalOrRemoteInterface, // instance of PersistenceReduxSaga
-    private endpoint: Endpoint
-  ) {
-    this.callUtil = new CallUtils(miroirContext.errorLogService, persistenceStoreLocalOrRemote);
-    const boundRemotePersistenceAction = this.callUtil.callRemotePersistenceAction.bind(
-      this.callUtil
-    );
-    // actionType -> actionName -> actionHandlerKind -> handler
-    this.actionHandler = {
-      storeManagementAction: {
-        resetAndInitApplicationDeployment: { "*": resetAndInitApplicationDeployment },
-        "*": {
-          local: this.persistenceStoreLocalOrRemote.handleStoreOrBundleActionForLocalStore.bind(
-            this.persistenceStoreLocalOrRemote
-          ),
-          // remote: this.callUtil.callRemotePersistenceAction.bind(this.callUtil),
-          remote: boundRemotePersistenceAction,
-        },
-      },
-      bundleAction: {
-        // TODO: not used, not tested!
-        "*": {
-          "*": this.handleDomainUndoRedoAction.bind(this),
-        },
-      },
-      modelAction: {
-        resetModel: {
-          "*": boundRemotePersistenceAction,
-        },
-        resetData: {
-          "*": boundRemotePersistenceAction,
-        },
-        initModel: {
-          "*": boundRemotePersistenceAction,
-        },
-      },
-    };
-  }
 } // class DomainController
 
 type AsyncHandlerFunction = (...props: any[]) => Promise<Action2VoidReturnType>

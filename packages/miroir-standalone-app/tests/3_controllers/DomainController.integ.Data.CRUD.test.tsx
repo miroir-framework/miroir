@@ -52,7 +52,7 @@ import {
   runTestOrTestSuite,
   setupMiroirTest,
   TestActionParams,
-} from "../utils/tests-utils.js";
+} from "../../src/miroir-fwk/4-tests/tests-utils.js";
 
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
@@ -68,7 +68,7 @@ import {
   ApplicationEntitiesAndInstances,
   testOnLibrary_deleteLibraryDeployment,
   testOnLibrary_resetLibraryDeployment,
-} from "../utils/tests-utils-testOnLibrary.js";
+} from "../../src/miroir-fwk/4-tests/tests-utils-testOnLibrary.js";
 import { cleanLevel, packageName } from "./constants.js";
 
 const env: any = (import.meta as any).env;

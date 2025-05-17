@@ -43,7 +43,7 @@ import {
   runTestOrTestSuite,
   setupMiroirTest,
   TestActionParams
-} from "../utils/tests-utils.js";
+} from "../../src/miroir-fwk/4-tests/tests-utils.js";
 
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
@@ -59,7 +59,7 @@ import {
   ApplicationEntitiesAndInstances,
   testOnLibrary_deleteLibraryDeployment,
   testOnLibrary_resetLibraryDeployment,
-} from "../utils/tests-utils-testOnLibrary.js";
+} from "../../src/miroir-fwk/4-tests/tests-utils-testOnLibrary.js";
 // import { loglevelnext } from '../../src/loglevelnextImporter.js';
 import { AdminApplicationDeploymentConfiguration } from "miroir-core/src/0_interfaces/1_core/StorageConfiguration.js";
 import { LoggerOptions } from "miroir-core/src/0_interfaces/4-services/LoggerInterface.js";
