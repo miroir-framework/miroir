@@ -293,7 +293,12 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
       case "modelAction": {
         if (!localPersistenceStoreController) {
           throw new Error(
-            "innerHandlePersistenceActionForLocalPersistenceStore could not find controller for deployment: " + action.deploymentUuid
+            // "innerHandlePersistenceActionForLocalPersistenceStore could not find controller for deployment: " + action.deploymentUuid
+            "PersistenceActionReduxSaga could not find controller for deployment: " +
+            action.deploymentUuid
+            // " available controllers: " +
+            // this.persistenceStoreControllerManager.getPersistenceStoreControllers()
+
           );
         }
         log.info(

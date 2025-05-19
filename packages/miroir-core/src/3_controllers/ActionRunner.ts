@@ -120,7 +120,12 @@ export async function storeActionOrBundleActionStoreRunner(
 
       const localAppPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(action.deploymentUuid);
       if (!localAppPersistenceStoreController) {
-        throw new Error("could not find controller:" + localAppPersistenceStoreController);
+        throw new Error(
+          "storeActionOrBundleActionStoreRunner could not find controller for deployment: " +
+            action.deploymentUuid +
+            " available controllers: " +
+            persistenceStoreControllerManager.getPersistenceStoreControllers()
+        );
       }
 
       // await persistenceStoreControllerManager.addPersistenceStoreController(action.deploymentUuid, action.configuration)
@@ -151,7 +156,12 @@ export async function storeActionOrBundleActionStoreRunner(
 
       const localAppPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(action.deploymentUuid);
       if (!localAppPersistenceStoreController) {
-        throw new Error("could not find controller:" + localAppPersistenceStoreController);
+        throw new Error(
+          "storeActionOrBundleActionStoreRunner could not find controller for deployment: " +
+            action.deploymentUuid +
+            " available controllers: " +
+            persistenceStoreControllerManager.getPersistenceStoreControllers()
+        );
       }
 
       // await persistenceStoreControllerManager.addPersistenceStoreController(action.deploymentUuid, action.configuration)

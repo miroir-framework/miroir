@@ -10,8 +10,6 @@ const MyReactCodeMirror: any = ReactCodeMirror // TODO: solve the mystery: it wa
 
 import {
   ActionHandler,
-  AdminApplicationDeploymentConfiguration,
-  CompositeActionTemplate,
   DomainAction,
   DomainControllerInterface,
   JzodElement,
@@ -22,18 +20,19 @@ import {
   MiroirLoggerFactory,
   StoreUnitConfiguration,
   adminConfigurationDeploymentAdmin,
-  adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
-  displayTestSuiteResultsDetails,
   entityApplicationForAdmin,
   entityDeployment,
   entityMenu,
   entitySelfApplication,
-  resetAndInitApplicationDeployment,
   resolveReferencesForJzodSchemaAndValueObject
 } from "miroir-core";
 
 import { adminConfigurationDeploymentParis, applicationParis, packageName } from "../../../constants.js";
+import { getTestSuitesForBuildPlusRuntimeCompositeAction } from "../../4-tests/applicative.Library.BuildPlusRuntimeCompositeAction.js";
+import { expect } from "../../4-tests/test-expect.js";
+import { testOnLibrary_deleteLibraryDeployment } from "../../4-tests/tests-utils-testOnLibrary.js";
+import { TestActionParams, runTestOrTestSuite } from "../../4-tests/tests-utils.js";
 import {
   useDomainControllerService,
   useErrorLogService,
@@ -44,9 +43,6 @@ import {
 import { useCurrentModel } from "../ReduxHooks.js";
 import { JzodObjectEditor } from "../components/JzodObjectEditor.js";
 import { cleanLevel } from "../constants.js";
-import { createDeploymentCompositeAction, runTestOrTestSuite } from "../../4-tests/tests-utils.js";
-import { getTestSuitesForBuildPlusRuntimeCompositeAction } from "../../4-tests/applicative.Library.BuildPlusRuntimeCompositeAction.js";
-import { expect } from "../../4-tests/test-expect.js";
 
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -185,6 +181,7 @@ export const ToolsPage: React.FC<any> = (
 
   // const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
 
+  // DOES NOTHING
   const actionHandlerCreateApplication: ActionHandler = useMemo(()=> ({
     interface: {
       actionJzodObjectSchema: {
@@ -294,30 +291,31 @@ export const ToolsPage: React.FC<any> = (
   }),[])
 
 
-  const miroirStoreUnitConfigurationForTest: StoreUnitConfiguration = {
-  "admin": {
-    "emulatedServerType": "filesystem",
-    "directory":"./tests/tmp/miroir_admin"
-  },
-  "model": {
-    "emulatedServerType": "filesystem",
-    "directory":"./tests/tmp/miroir_model"
-  },
-  "data": {
-    "emulatedServerType": "filesystem",
-    "directory":"./tests/tmp/miroir_data"
-  }
-}
+//   const miroirStoreUnitConfigurationForTest: StoreUnitConfiguration = {
+//   "admin": {
+//     "emulatedServerType": "filesystem",
+//     "directory":"./tests/tmp/miroir_admin"
+//   },
+//   "model": {
+//     "emulatedServerType": "filesystem",
+//     "directory":"./tests/tmp/miroir_model"
+//   },
+//   "data": {
+//     "emulatedServerType": "filesystem",
+//     "directory":"./tests/tmp/miroir_data"
+//   }
+// }
 
-  const typedAdminConfigurationDeploymentMiroir = {
-    ...adminConfigurationDeploymentMiroir,
-    configuration: miroirStoreUnitConfigurationForTest,
-  } as AdminApplicationDeploymentConfiguration;
-  
-  const createNewApplication: CompositeActionTemplate = createDeploymentCompositeAction(
-    typedAdminConfigurationDeploymentMiroir.uuid,
-    typedAdminConfigurationDeploymentMiroir.configuration,
-  );
+//   const typedAdminConfigurationDeploymentMiroir = {
+//     ...adminConfigurationDeploymentMiroir,
+//     configuration: miroirStoreUnitConfigurationForTest,
+//   } as AdminApplicationDeploymentConfiguration;
+
+  // const createNewApplicationDeployment: CompositeActionTemplate = createDeploymentCompositeAction(
+  //   typedAdminConfigurationDeploymentMiroir.uuid,
+  //   typedAdminConfigurationDeploymentMiroir.configuration,
+  // );
+
   // const createNewApplication: CompositeActionTemplate = useMemo(
   //   () => ({
   //     actionType: "compositeAction",
@@ -731,6 +729,8 @@ export const ToolsPage: React.FC<any> = (
   //   }),
   //   []
   // );
+
+  // ??
   const [rawSchema, setRawSchema] = useState<JzodElement>(
     actionHandlerCreateApplication.interface.actionJzodObjectSchema
   );
@@ -815,7 +815,7 @@ export const ToolsPage: React.FC<any> = (
           "newAdminAppApplicationUuid",
           actionCreateSchemaParamValues.newAdminAppApplicationUuid
         );
-
+        
         const paramsForTemplates = {
           ...actionCreateSchemaParamValues,
           entityApplicationForAdmin,
@@ -831,73 +831,107 @@ export const ToolsPage: React.FC<any> = (
           paramsForTemplates
         );
 
-        const createNewApplicationResult = await domainController.handleCompositeActionTemplate(
-          createNewApplication,
-          paramsForTemplates,
-          currentModel
-        );
-        log.info(
-          "store opened with uuid",
-          actionCreateSchemaParamValues.newDeploymentUuid,
-          JSON.stringify(createNewApplicationResult, null, 2)
-        );
+          const testStoreUnitConfiguration: StoreUnitConfiguration = {
+            admin: {
+              emulatedServerType: "filesystem",
+              directory: "./tests/tmp/miroir_admin",
+            },
+            model: {
+              emulatedServerType: "filesystem",
+              directory: "./tests/tmp/miroir_model",
+            },
+            data: {
+              emulatedServerType: "filesystem",
+              directory: "./tests/tmp/miroir_data",
+            },
+          };
+
+          const testMiroirConfig: MiroirConfigClient = {
+            miroirConfigType: "client",
+            client: {
+              emulateServer: true,
+              rootApiUrl: "http://localhost:3080",
+              deploymentStorageConfig: {
+                "10ff36f2-50a3-48d8-b80f-e48e5d13af8e": {
+                  admin: {
+                    emulatedServerType: "sql",
+                    connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+                    schema: "miroirAdmin",
+                  },
+                  model: {
+                    emulatedServerType: "sql",
+                    connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+                    schema: "miroir",
+                  },
+                  data: {
+                    emulatedServerType: "sql",
+                    connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+                    schema: "miroir",
+                  },
+                },
+                "f714bb2f-a12d-4e71-a03b-74dcedea6eb4": {
+                  admin: {
+                    emulatedServerType: "sql",
+                    connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+                    schema: "miroirAdmin",
+                  },
+                  model: {
+                    emulatedServerType: "sql",
+                    connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+                    schema: "library",
+                  },
+                  data: {
+                    emulatedServerType: "sql",
+                    connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+                    schema: "library",
+                  },
+                },
+              },
+              // deploymentMode: "monoUser",
+              // monoUserAutentification: false,
+              // monoUserVersionControl: false,
+              // versionControlForDataConceptLevel: false,
+            },
+          };
+
+        const {
+          testSuitesForBuildPlusRuntimeCompositeAction,
+          testDeploymentStorageConfiguration,
+          testDeploymentUuid,
+        }: Record<string, any> = getTestSuitesForBuildPlusRuntimeCompositeAction(testMiroirConfig);
+
+        // NOT NEEDED, admin storage already exists
+        //   const miroirAdminDeploymentConfiguration = {
+        //     ...adminConfigurationDeploymentMiroir,
+        //     configuration: miroirStoreUnitConfigurationForTest,
+        //   } as AdminApplicationDeploymentConfiguration;
+
+        // const createNewApplicationDeployment: CompositeActionTemplate =
+        //   createDeploymentCompositeAction(
+        //     miroirAdminDeploymentConfiguration.uuid,
+        //     miroirAdminDeploymentConfiguration.configuration
+        //   );
+
+        // const createNewApplicationResult = await domainController.handleCompositeActionTemplate(
+        //   createNewApplicationDeployment,
+        //   paramsForTemplates,
+        //   currentModel
+        // );
+        // log.info(
+        //   "store opened with uuid",
+        //   actionCreateSchemaParamValues.newDeploymentUuid,
+        //   JSON.stringify(createNewApplicationResult, null, 2)
+        // );
 
         /* not needed, this is already done when executing from the GUI */
         // await resetAndInitApplicationDeployment(domainController, [
         //   selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
         // ]);
 
-        const testMiroirConfig: MiroirConfigClient = {
-          miroirConfigType: "client",
-          client: {
-            emulateServer: true,
-            rootApiUrl: "http://localhost:3080",
-            deploymentStorageConfig: {
-              "10ff36f2-50a3-48d8-b80f-e48e5d13af8e": {
-                admin: {
-                  emulatedServerType: "sql",
-                  connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
-                  schema: "miroirAdmin",
-                },
-                model: {
-                  emulatedServerType: "sql",
-                  connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
-                  schema: "miroir",
-                },
-                data: {
-                  emulatedServerType: "sql",
-                  connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
-                  schema: "miroir",
-                },
-              },
-              "f714bb2f-a12d-4e71-a03b-74dcedea6eb4": {
-                admin: {
-                  emulatedServerType: "sql",
-                  connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
-                  schema: "miroirAdmin",
-                },
-                model: {
-                  emulatedServerType: "sql",
-                  connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
-                  schema: "library",
-                },
-                data: {
-                  emulatedServerType: "sql",
-                  connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
-                  schema: "library",
-                },
-              },
-            },
-            // deploymentMode: "monoUser",
-            // monoUserAutentification: false,
-            // monoUserVersionControl: false,
-            // versionControlForDataConceptLevel: false,
-          },
-        };
-        const testSuitesForBuildPlusRuntimeCompositeAction: Record<string, any> =
-          getTestSuitesForBuildPlusRuntimeCompositeAction(testMiroirConfig);
         
-        for (const [currentTestSuiteName, testSuite] of Object.entries(testSuitesForBuildPlusRuntimeCompositeAction)) {
+        for (const [currentTestSuiteName, testSuite] of Object.entries(
+          testSuitesForBuildPlusRuntimeCompositeAction as Record<string, TestActionParams>
+        )) {
           const testSuiteResults = await runTestOrTestSuite(
             // localCache,
             domainController,
@@ -909,13 +943,42 @@ export const ToolsPage: React.FC<any> = (
             currentTestSuiteName,
             testSuiteResults,
             "testSuite",
-            testSuite,
+            testSuite
           );
           if (!testSuiteResults || testSuiteResults.status !== "ok") {
             expect(testSuiteResults?.status, `${currentTestSuiteName} failed!`).toBe("ok");
           }
         }
-        displayTestSuiteResultsDetails(expect,Object.keys(testSuitesForBuildPlusRuntimeCompositeAction)[0]);
+
+        const deleteNewApplicationResult = await domainController.handleCompositeActionTemplate(
+          testOnLibrary_deleteLibraryDeployment({
+          miroirConfigType: "client",
+          client: {
+            emulateServer: true,
+            rootApiUrl: "http://localhost:3080",
+            deploymentStorageConfig: {
+              [actionCreateSchemaParamValues.newDeploymentUuid]:testDeploymentStorageConfiguration
+              },
+            }}, actionCreateSchemaParamValues.newDeploymentUuid),
+          paramsForTemplates,
+          currentModel
+        );
+
+        // log.info(
+        //   "store deleted with uuid",
+        //   actionCreateSchemaParamValues.newDeploymentUuid,
+        //   JSON.stringify(deleteNewApplicationResult, null, 2)
+        // );
+        // not needed in the GUI, the admin and miroir models stay there.
+        // await deleteAndCloseApplicationDeployments(
+        //   miroirConfig,
+        //   domainController,
+        //   [
+        //     typedAdminConfigurationDeploymentMiroir
+        //   ],
+        // );
+    
+        // displayTestSuiteResultsDetails(expect,Object.keys(testSuitesForBuildPlusRuntimeCompositeAction)[0]);
 
 
         // log.info("created Deployment instance in Admin App deployment");
@@ -932,7 +995,7 @@ export const ToolsPage: React.FC<any> = (
         formikFunctions.setSubmitting(false);
       }
     },
-    [createNewApplication]
+    []
   ); // end onSubmit()
 
   // ##############################################################################################

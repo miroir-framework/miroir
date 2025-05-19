@@ -33,6 +33,7 @@ import {
   entityReport,
   adminConfigurationDeploymentLibrary,
   entityMenu,
+  MiroirConfigClient,
 } from "miroir-core";
 import {
   BuildCompositeAction,
@@ -46,7 +47,7 @@ import {
   createDeploymentCompositeAction,
   resetAndinitializeDeploymentCompositeAction,
 } from "./tests-utils";
-import { testOnLibrary_resetLibraryDeployment } from "./tests-utils-testOnLibrary";
+import { testOnLibrary_deleteLibraryDeployment, testOnLibrary_resetLibraryDeployment } from "./tests-utils-testOnLibrary";
 
 // const libraryEntitesAndInstances = [
 //   {
@@ -82,7 +83,7 @@ export const testSuiteNameForBuildPlusRuntimeCompositeAction: string = "applicat
 // ################################################################################################
 
 const testSelfApplicationUuid: Uuid = uuidv4();
-const testAdminConfigurationDeploymentUuid: Uuid = uuidv4();
+const testDeploymentUuid: Uuid = uuidv4();
 const testApplicationModelBranchUuid: Uuid = uuidv4();
 const testApplicationVersionUuid: Uuid = uuidv4();
 
@@ -97,7 +98,7 @@ const testDeploymentStorageConfiguration: StoreUnitConfiguration = getBasicStore
 const initParametersForTest: InitApplicationParameters = getBasicApplicationConfiguration(
   "Test",
   testSelfApplicationUuid,
-  testAdminConfigurationDeploymentUuid,
+  testDeploymentUuid,
   testApplicationModelBranchUuid,
   testApplicationVersionUuid
 );
@@ -192,7 +193,7 @@ const createEntityCompositeAction: BuildCompositeAction = {
       actionType: "modelAction",
       actionName: "createEntity",
       actionLabel: "createEntity",
-      deploymentUuid: testAdminConfigurationDeploymentUuid,
+      deploymentUuid: testDeploymentUuid,
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       entities: [
         {
@@ -225,12 +226,12 @@ const createEntityCompositeActionPrepActions: any[] = [
       actionName: "runQuery",
       endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
       applicationSection: "model", // TODO: give only selfApplication section in individual queries?
-      deploymentUuid: testAdminConfigurationDeploymentUuid,
+      deploymentUuid: testDeploymentUuid,
       query: {
         queryType: "boxedQueryWithExtractorCombinerTransformer",
-        deploymentUuid: testAdminConfigurationDeploymentUuid,
+        deploymentUuid: testDeploymentUuid,
         pageParams: {
-          currentDeploymentUuid: testAdminConfigurationDeploymentUuid,
+          currentDeploymentUuid: testDeploymentUuid,
         },
         queryParams: {},
         contextResults: {},
@@ -259,12 +260,12 @@ const createEntityCompositeActionPrepActions: any[] = [
       actionName: "runQuery",
       endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
       applicationSection: "model", // TODO: give only selfApplication section in individual queries?
-      deploymentUuid: testAdminConfigurationDeploymentUuid,
+      deploymentUuid: testDeploymentUuid,
       query: {
         queryType: "boxedQueryWithExtractorCombinerTransformer",
-        deploymentUuid: testAdminConfigurationDeploymentUuid,
+        deploymentUuid: testDeploymentUuid,
         pageParams: {
-          currentDeploymentUuid: testAdminConfigurationDeploymentUuid,
+          currentDeploymentUuid: testDeploymentUuid,
         },
         queryParams: {},
         contextResults: {},
@@ -426,7 +427,7 @@ const createReportsCompositeAction: BuildPlusRuntimeDomainAction = {
     actionType: "instanceAction",
     actionName: "createInstance",
     applicationSection: "model",
-    deploymentUuid: testAdminConfigurationDeploymentUuid,
+    deploymentUuid: testDeploymentUuid,
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
     objects: [
       {
@@ -462,12 +463,12 @@ const createReportsCompositeActionPrepActions: any[] = [
       actionName: "runQuery",
       endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
       applicationSection: "model", // TODO: give only selfApplication section in individual queries?
-      deploymentUuid: testAdminConfigurationDeploymentUuid,
+      deploymentUuid: testDeploymentUuid,
       query: {
         queryType: "boxedQueryWithExtractorCombinerTransformer",
-        deploymentUuid: testAdminConfigurationDeploymentUuid,
+        deploymentUuid: testDeploymentUuid,
         pageParams: {
-          currentDeploymentUuid: testAdminConfigurationDeploymentUuid,
+          currentDeploymentUuid: testDeploymentUuid,
         },
         runAsSql: true,
         queryParams: {},
@@ -516,6 +517,17 @@ const createReportsCompositeActionAssertions: CompositeRunTestAssertion[] = [
 // ###############################################################################################
 // ###############################################################################################
 // ###############################################################################################
+
+const testDeploymentConfiguration: MiroirConfigClient = {
+  miroirConfigType: "client",
+  client: {
+    emulateServer: true,
+    rootApiUrl: "http://localhost:3080",
+    deploymentStorageConfig: {
+      [testDeploymentUuid]: testDeploymentStorageConfiguration,
+    },
+  },
+};
 export function getTestSuitesForBuildPlusRuntimeCompositeAction(
   miroirConfig: any,
 ) {
@@ -536,25 +548,25 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(
         testSelfApplicationUuid,
         entityMenu,
         entityReport,
-        testAdminConfigurationDeploymentUuid,
+        testAdminConfigurationDeploymentUuid: testDeploymentUuid,
       },
       testCompositeAction: {
         testType: "testBuildPlusRuntimeCompositeActionSuite",
         testLabel: testSuiteNameForBuildPlusRuntimeCompositeAction,
         beforeAll: createDeploymentCompositeAction(
-          testAdminConfigurationDeploymentUuid,
+          testDeploymentUuid,
           testDeploymentStorageConfiguration
         ),
         beforeEach: resetAndinitializeDeploymentCompositeAction(
-          testAdminConfigurationDeploymentUuid,
+          testDeploymentUuid,
           initParametersForTest,
           []
         ),
         afterEach: testOnLibrary_resetLibraryDeployment(
-          miroirConfig,
-          testAdminConfigurationDeploymentUuid
+          testDeploymentConfiguration,
+          testDeploymentUuid
         ),
-        // afterAll: testOnLibrary_deleteLibraryDeployment(miroirConfig, testAdminConfigurationDeploymentUuid),
+        afterAll: testOnLibrary_deleteLibraryDeployment(testDeploymentConfiguration, testDeploymentUuid),
         testCompositeActions: {
           "create new Entity and reports from spreadsheet": {
             testType: "testBuildPlusRuntimeCompositeAction",
@@ -1052,5 +1064,5 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(
       // } as TestActionParams,
     },
   };
-  return testSuitesForBuildPlusRuntimeCompositeAction;
+  return {testSuitesForBuildPlusRuntimeCompositeAction, testDeploymentStorageConfiguration, testDeploymentUuid};
 }

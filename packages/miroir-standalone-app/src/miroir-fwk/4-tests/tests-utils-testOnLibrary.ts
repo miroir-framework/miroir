@@ -93,7 +93,7 @@ export function testOnLibrary_deleteLibraryDeployment(
   console.log("testOnLibrary_deleteLibraryDeployment", deploymentUuid,  JSON.stringify(miroirConfig, null, 2));
   return {
     actionType: "compositeAction",
-    actionLabel: "afterEach",
+    actionLabel: "deleteLibraryDeployment",
     actionName: "sequence",
     definition: [
       {

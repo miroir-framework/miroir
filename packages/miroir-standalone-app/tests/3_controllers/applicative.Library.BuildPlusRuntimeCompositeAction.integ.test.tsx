@@ -138,27 +138,36 @@ const beforeAll = async () => {
     createMiroirDeploymentCompositeAction,
     defaultMiroirMetaModel
   );
+
   if (createDeploymentResult.status !== "ok") {
     throw new Error("Failed to create Miroir deployment: " + JSON.stringify(createDeploymentResult));
   }
+
+  const resetAndInitResult = await resetAndInitApplicationDeployment(domainController, [
+    selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
+  ]);
+
+  if (resetAndInitResult.status !== "ok") {
+    throw new Error("Failed to reset and init Miroir deployment: " + JSON.stringify(resetAndInitResult));
+  }
+
   LoggerGlobalContext.setTest(undefined);
   return Promise.resolve();
 }
 
 // ################################################################################################
-// beforeEach(
-const beforeEach = async  () => {
-  LoggerGlobalContext.setTest("beforeEach");
+// const beforeEach = async  () => {
+//   LoggerGlobalContext.setTest("beforeEach");
   
-  if (!domainController) {
-    throw new Error("beforeEach DomainController is not initialized");
-  }
-  await resetAndInitApplicationDeployment(domainController, [
-    selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
-  ]);
-  document.body.innerHTML = '';
-  LoggerGlobalContext.setTest(undefined);
-}
+//   if (!domainController) {
+//     throw new Error("beforeEach DomainController is not initialized");
+//   }
+//   await resetAndInitApplicationDeployment(domainController, [
+//     selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
+//   ]);
+//   document.body.innerHTML = '';
+//   LoggerGlobalContext.setTest(undefined);
+// }
 
 // // ################################################################################################
 // afterEach(
@@ -169,7 +178,7 @@ const beforeEach = async  () => {
 // ################################################################################################
 const afterAll = (
   async () => {
-    LoggerGlobalContext.setTest("afterAll");
+    LoggerGlobalContext.setTest("afterAll-integTest");
     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ deleteAndCloseApplicationDeployments")
     if (!domainController) {
       throw new Error("DomainController is not initialized");
@@ -194,16 +203,17 @@ const afterAll = (
 // ##############################################################################################
 // ##############################################################################################
 
-const testSuitesForBuildPlusRuntimeCompositeAction: Record<string, any> =
+const {testSuitesForBuildPlusRuntimeCompositeAction, testDeploymentStorageConfiguration, testDeploymentUuid} =
   getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig);
+// const testSuitesForBuildPlusRuntimeCompositeAction: Record<string, any> =
+//   getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig);
 
 
 // const display
 // TODO: duplicate test with ExtractorTemplatePersistenceStoreRunner.integ.test.tsx
 if (RUN_TEST == testSuiteNameForBuildPlusRuntimeCompositeAction) {
   if (beforeAll) await beforeAll(); // beforeAll is a function, not the call to the jest/vitest hook
-  if (beforeEach) await beforeEach(); // beforeAll is a function, not the call to the jest/vitest hook
-  // await runTransformerTestSuite(vitest, [], currentTestSuite, runTransformerIntegrationTest);
+  // if (beforeEach) await beforeEach(); // beforeAll is a function, not the call to the jest/vitest hook
   if (!localCache) {
     throw new Error("running test localCache is not defined!");
   }
@@ -211,6 +221,7 @@ if (RUN_TEST == testSuiteNameForBuildPlusRuntimeCompositeAction) {
     throw new Error("running test domainController is not defined!");
   }
   for (const [currentTestSuiteName, testSuite] of Object.entries(testSuitesForBuildPlusRuntimeCompositeAction)) {
+    console.log("################################ running test suite:", currentTestSuiteName);
     const testSuiteResults = await runTestOrTestSuite(
       domainController,
       testSuite,

@@ -722,7 +722,8 @@ export async function runTestOrTestSuite(
   testActionParamValues?: {[k:string]: any},
 ) {
   const fullTestName = testAction.testActionLabel??testAction.testActionType;
-  log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ STARTING test:", fullTestName);
+  log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ STARTING test:", fullTestName, );
+  // log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ STARTING test:", fullTestName, "testAction", testAction, );
 
   try {
     switch (testAction.testActionType) {
