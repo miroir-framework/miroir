@@ -612,7 +612,6 @@ export {
   StoreSectionFactoryRegister,
 } from "./0_interfaces/4-services/PersistenceStoreControllerInterface";
 export { PersistenceStoreControllerManagerInterface } from "./0_interfaces/4-services/PersistenceStoreControllerManagerInterface";
-export { TestResult, TestSuiteResult } from "./0_interfaces/4-services/TestInterface";
 export { getApplicationSection } from "./1_core/AdminApplication.js";
 export { alterObjectAtPath, deleteObjectAtPath } from "./1_core/alterObjectAtPath.js";
 export { ACTION_OK } from "./1_core/constants.js";
@@ -833,6 +832,10 @@ export {
   safeResolvePathOnObject,
   stringTuple,
 } from "./tools";
+
+export {
+  testSuitesResultsSchema
+} from "./0_interfaces/4-services/TestInterface.js";
 
 console.log("miroir-core: DONE exports");
 

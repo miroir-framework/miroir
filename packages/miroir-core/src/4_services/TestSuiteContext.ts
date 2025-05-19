@@ -1,10 +1,17 @@
+// import {
+//   TestAssertionResult,
+//   TestAssertionsResults,
+//   TestResult,
+//   TestsResults,
+//   TestSuiteResult
+// } from "../0_interfaces/4-services/TestInterface";
 import {
   TestAssertionResult,
   TestAssertionsResults,
   TestResult,
   TestsResults,
-  TestSuiteResult
-} from "../0_interfaces/4-services/TestInterface";
+  TestSuiteResult,
+} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerGlobalContext } from "./LoggerContext";
 
 export class TestSuiteContext {
@@ -71,6 +78,7 @@ export class TestSuiteContext {
     };
   }
 
+  // ##############################################################################################
   public static getTestSuiteResult(testSuite: string): TestSuiteResult {
     if (!TestSuiteContext.testAssertionsResults[testSuite]) {
       throw new Error("TestSuite is not defined: " + testSuite + " in results " + JSON.stringify(TestSuiteContext.testAssertionsResults, null, 2));

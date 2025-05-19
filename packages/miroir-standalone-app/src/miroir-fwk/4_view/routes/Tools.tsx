@@ -10,6 +10,7 @@ const MyReactCodeMirror: any = ReactCodeMirror // TODO: solve the mystery: it wa
 
 import {
   ActionHandler,
+  ApplicationSection,
   DomainAction,
   DomainControllerInterface,
   JzodElement,
@@ -19,13 +20,17 @@ import {
   MiroirConfigClient,
   MiroirLoggerFactory,
   StoreUnitConfiguration,
+  TestSuiteContext,
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentMiroir,
+  displayTestSuiteResultsDetails,
   entityApplicationForAdmin,
   entityDeployment,
   entityMenu,
   entitySelfApplication,
-  resolveReferencesForJzodSchemaAndValueObject
+  miroirFundamentalJzodSchema,
+  resolveReferencesForJzodSchemaAndValueObject,
+  testSuitesResultsSchema
 } from "miroir-core";
 
 import { adminConfigurationDeploymentParis, applicationParis, packageName } from "../../../constants.js";
@@ -43,6 +48,9 @@ import {
 import { useCurrentModel } from "../ReduxHooks.js";
 import { JzodObjectEditor } from "../components/JzodObjectEditor.js";
 import { cleanLevel } from "../constants.js";
+import { JzodElementDisplay } from "../components/JzodElementDisplay.js";
+import { Entity, TestSuiteResult, testSuitesResults } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { getCurrentEnumJzodSchemaResolver, JzodEnumSchemaToJzodElementResolver } from "../../JzodTools.js";
 
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -176,8 +184,30 @@ export const ToolsPage: React.FC<any> = (
     context.applicationSection == "data" ? context.deploymentUuid : adminConfigurationDeploymentMiroir.uuid
   );
   const currentMiroirModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
+  const currentReportDeploymentSectionEntities: Entity[] = currentModel.entities; // Entities are always defined in the 'model' section
 
   const [formState,setFormState] = useState<{[k:string]:any}>(initialValues)
+  // const [testResults,setTestResults] = useState<TestSuiteResult | undefined>(undefined)
+  const [testResults, setTestResults] = useState<TestSuiteResult | undefined>(
+    undefined
+  //   {
+  //   // "applicative.Library.BuildPlusRuntimeCompositeAction.integ.test": {
+  //   //   createEntityAndReportFromSpreadsheet: {
+  //   //     testLabel: "createEntityAndReportFromSpreadsheet",
+  //   //     testResult: "ok",
+  //   //     testAssertionsResults: {
+  //   //       checkEntities: { assertionName: "checkEntities", assertionResult: "ok" },
+  //   //       checkEntityDefinitions: {
+  //   //         assertionName: "checkEntityDefinitions",
+  //   //         assertionResult: "ok",
+  //   //       },
+  //   //       checkReports: { assertionName: "checkReports", assertionResult: "ok" },
+  //   //       checkMenus: { assertionName: "checkMenus", assertionResult: "ok" },
+  //   //     },
+  //   //   },
+  //   // },
+  // }
+);
 
   // const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
 
@@ -774,7 +804,7 @@ export const ToolsPage: React.FC<any> = (
 
   const resolvedJzodSchema:JzodElement = useMemo(
     () => {
-      if (context.miroirFundamentalJzodSchema.name == "dummyJzodSchema") {
+      if (context.miroirFundamentalJzodSchema == undefined || context.miroirFundamentalJzodSchema.name == "dummyJzodSchema") {
         return defaultObject
       } else {
         const configuration = resolveReferencesForJzodSchemaAndValueObject(
@@ -789,10 +819,57 @@ export const ToolsPage: React.FC<any> = (
         return configuration.status == "ok"? configuration.element : defaultObject;
       }
     },
-    [context.miroirFundamentalJzodSchema, rawSchema, formState]
+    [context, rawSchema, formState]
   );
 
-  log.info("resolvedJzodSchema", resolvedJzodSchema, context.miroirFundamentalJzodSchema.name, "rawSchema", rawSchema)
+  log.info(
+    "called resolveReferencesForJzodSchemaAndValueObject: resolvedJzodSchema",
+    resolvedJzodSchema,
+    "miroirFundamentalJzodSchema",
+    context.miroirFundamentalJzodSchema,
+    // context.miroirFundamentalJzodSchema.name,
+    "rawSchema",
+    rawSchema
+  );
+
+  const resolvedTestResultsJzodSchema: JzodElement | undefined = useMemo(() => {
+    if (
+      testResults &&
+      context.miroirFundamentalJzodSchema != undefined &&
+      (testSuitesResultsSchema != undefined && testSuitesResultsSchema.context != undefined)
+    ) {
+      const configuration = resolveReferencesForJzodSchemaAndValueObject(
+        context.miroirFundamentalJzodSchema,
+        // testSuitesResultsSchema.context.innerTestSuitesResults,
+        // testSuitesResultsSchema.context.testsResults,
+        (miroirFundamentalJzodSchema.definition.context as any).testsResults,
+        testResults["applicative.Library.BuildPlusRuntimeCompositeAction.integ.test"],
+        currentModel,
+        currentMiroirModel,
+        emptyObject
+      );
+
+      return configuration.status == "ok" ? configuration.element : defaultObject;
+    }
+  }, [context.miroirFundamentalJzodSchema, rawSchema, testResults]);
+
+  log.info(
+    "called resolveReferencesForJzodSchemaAndValueObject: resolvedTestResultsJzodSchema",
+    resolvedTestResultsJzodSchema,
+    context.miroirFundamentalJzodSchema,
+    "rawSchema",
+    rawSchema
+  );
+
+  const currentEnumJzodSchemaResolver: JzodEnumSchemaToJzodElementResolver | undefined = useMemo(
+    () =>
+      context.miroirFundamentalJzodSchema
+        ? getCurrentEnumJzodSchemaResolver(currentMiroirModel, context.miroirFundamentalJzodSchema)
+        : undefined,
+    [context.miroirFundamentalJzodSchema, currentMiroirModel]
+  );
+  
+
   // ##############################################################################################
   const onSubmit = useCallback(
     async (
@@ -964,11 +1041,11 @@ export const ToolsPage: React.FC<any> = (
           currentModel
         );
 
-        // log.info(
-        //   "store deleted with uuid",
-        //   actionCreateSchemaParamValues.newDeploymentUuid,
-        //   JSON.stringify(deleteNewApplicationResult, null, 2)
-        // );
+        log.info(
+          "store deleted with uuid",
+          actionCreateSchemaParamValues.newDeploymentUuid,
+          JSON.stringify(deleteNewApplicationResult, null, 2)
+        );
         // not needed in the GUI, the admin and miroir models stay there.
         // await deleteAndCloseApplicationDeployments(
         //   miroirConfig,
@@ -978,7 +1055,11 @@ export const ToolsPage: React.FC<any> = (
         //   ],
         // );
     
-        // displayTestSuiteResultsDetails(expect,Object.keys(testSuitesForBuildPlusRuntimeCompositeAction)[0]);
+        const globalTestSuiteResults = TestSuiteContext.getTestSuiteResult(Object.keys(testSuitesForBuildPlusRuntimeCompositeAction)[0]);
+        setTestResults(globalTestSuiteResults);
+        log.info("testResults", globalTestSuiteResults);
+
+        displayTestSuiteResultsDetails(expect,Object.keys(testSuitesForBuildPlusRuntimeCompositeAction)[0]);
 
 
         // log.info("created Deployment instance in Admin App deployment");
@@ -1005,11 +1086,81 @@ export const ToolsPage: React.FC<any> = (
     log.info('edit code done');
   }, []);
 
+  log.info(
+    "Tools.tsx render",
+    currentEnumJzodSchemaResolver,
+    testResults,
+    testSuitesResultsSchema,
+    testSuitesResultsSchema.context,
+    resolvedTestResultsJzodSchema,
+    (resolvedTestResultsJzodSchema as any)?.element,
+  );
   return (
     <>
+      <div>Hello World!</div>
+      {/* <div>{testResults ? JSON.stringify(testResults, null, 2) : ""}</div> */}
       <div>
-        Hello World!
+        {
+        currentEnumJzodSchemaResolver != undefined &&
+        testResults &&
+        testSuitesResultsSchema != undefined &&
+        testSuitesResultsSchema.context != undefined &&
+        resolvedTestResultsJzodSchema != undefined
+        // &&
+        // (resolvedTestResultsJzodSchema as any).element != undefined 
+        ? (
+          <div>
+            <div>Test results:</div>
+            <JzodElementDisplay
+              path={"applicative.Library.BuildPlusRuntimeCompositeAction.integ.test"}
+              name={"applicative.Library.BuildPlusRuntimeCompositeAction.integ.test"}
+              deploymentUuid={props.deploymentUuid}
+              // prop drilling!
+              applicationSection={context.applicationSection as ApplicationSection}
+              entityUuid={props.entityUuid}
+              element={testResults["applicative.Library.BuildPlusRuntimeCompositeAction.integ.test"]}
+              // rootJzodSchema={testSuitesResultsSchema.context.innerTestSuitesResults as JzodElement}
+              elementJzodSchema={testSuitesResultsSchema.context.innerTestSuitesResults}
+              resolvedElementJzodSchema={resolvedTestResultsJzodSchema}
+              currentReportDeploymentSectionEntities={currentReportDeploymentSectionEntities}
+              currentEnumJzodSchemaResolver={currentEnumJzodSchemaResolver}
+            ></JzodElementDisplay>
+          </div>
+        ) : (
+          <div>could not display test results!</div>
+          
+        )}
       </div>
+      {/* <div>
+        {testResults ? (
+          <table border={1} cellPadding={4} cellSpacing={0}>
+            <thead>
+              <tr>
+                <th>Test Suite Name</th>
+                <th>Status</th>
+                <th>Details</th>
+              </tr>
+            </thead>
+            <tbody>
+              {Object.entries(
+                testResults["applicative.Library.BuildPlusRuntimeCompositeAction.integ.test"] || {}
+              ).map(([testName, result]: [string, any]) => (
+                <tr key={testName}>
+                  <td>{testName}</td>
+                  <td>{result.testResult}</td>
+                  <td>
+                    <pre style={{ margin: 0, whiteSpace: "pre-wrap" }}>
+                      {JSON.stringify(result.testAssertionsResults, null, 2)}
+                    </pre>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <div>No test results</div>
+        )}
+      </div> */}
       <div>
         {
           // props.defaultFormValuesObject?
@@ -1030,87 +1181,80 @@ export const ToolsPage: React.FC<any> = (
           enableReinitialize={true}
           // initialValues={dialogOuterFormObject}
           initialValues={formState}
-          onSubmit={
-            onSubmit
-          }
-          handleChange= {
-            async (e: ChangeEvent<any>):Promise<void> => {
-              log.info("onChange formik", e);
-          //     // try {
-          //     //   //  Send values somehow
-          //     //   if (props.onCreateFormObject) {
-          //     //     await props.onCreateFormObject(values)
-          //     //     await props.onSubmit(values);
-          //     //   } else {
-          //     //     await handleAddObjectDialogFormSubmit(values)
-          //     //   }
-          //     // } catch (e) {
-          //     //   log.error(e)
-          //     //   //  Map and show the errors in your form
-          //     //   // const [formErrors, unknownErrors] = mapErrorsFromRequest(e)
-          
-          //     //   // setErrors(formErrors)
-          //     //   // this.setState({
-          //     //   //   unknownErrors,
-          //     //   // })
-          //     // } finally {
-          //     //   setSubmitting(false)
-          //     // }
-            }
-          }
+          onSubmit={onSubmit}
+          handleChange={async (e: ChangeEvent<any>): Promise<void> => {
+            log.info("onChange formik", e);
+            //     // try {
+            //     //   //  Send values somehow
+            //     //   if (props.onCreateFormObject) {
+            //     //     await props.onCreateFormObject(values)
+            //     //     await props.onSubmit(values);
+            //     //   } else {
+            //     //     await handleAddObjectDialogFormSubmit(values)
+            //     //   }
+            //     // } catch (e) {
+            //     //   log.error(e)
+            //     //   //  Map and show the errors in your form
+            //     //   // const [formErrors, unknownErrors] = mapErrorsFromRequest(e)
+
+            //     //   // setErrors(formErrors)
+            //     //   // this.setState({
+            //     //   //   unknownErrors,
+            //     //   // })
+            //     // } finally {
+            //     //   setSubmitting(false)
+            //     // }
+          }}
         >
-          {
-            (
-              formik
-            ) => (
-              <>
-                {/* <span>Tools: {count}</span> */}
-                {/* <br /> */}
-                {/* <span>formState: {JSON.stringify(formState)}</span> */}
-                {/* <br /> */}
-                {/* <span>resolvedJzodSchema:{JSON.stringify(resolvedJzodSchema)}</span> */}
-                <form
-                  id={"form." + pageLabel}
-                  // onSubmit={handleSubmit(handleAddObjectDialogFormSubmit)}
-                  onSubmit={formik.handleSubmit}
-                >
-                  {/* {
+          {(formik) => (
+            <>
+              {/* <span>Tools: {count}</span> */}
+              {/* <br /> */}
+              {/* <span>formState: {JSON.stringify(formState)}</span> */}
+              {/* <br /> */}
+              {/* <span>resolvedJzodSchema:{JSON.stringify(resolvedJzodSchema)}</span> */}
+              <form
+                id={"form." + pageLabel}
+                // onSubmit={handleSubmit(handleAddObjectDialogFormSubmit)}
+                onSubmit={formik.handleSubmit}
+              >
+                {/* {
                     // props.defaultFormValuesObject?
                     dialogOuterFormObject?
                     <CodeMirror value={JSON.stringify(dialogOuterFormObject, null, 2)} height="200px" extensions={[javascript({ jsx: true })]} onChange={onCodeEditorChange} />
                     :<></>
                   } */}
-                  {
-                    resolvedJzodSchema === defaultObject?
-                    <div>no object definition found!</div>
-                    :
-                    <>
-                      <JzodObjectEditor
-                        name={'ROOT'}
-                        listKey={'ROOT'}
-                        rootLesslistKey={emptyString}
-                        rootLesslistKeyArray={emptyList}
-                        label={pageLabel}
-                        currentDeploymentUuid={emptyString}
-                        currentApplicationSection={dataSection}
-                        // resolvedJzodSchema={actionsJzodSchema}
-                        rawJzodSchema={rawSchema}
-                        resolvedJzodSchema={resolvedJzodSchema}
-                        foreignKeyObjects={emptyObject}
-                        handleChange={formik.handleChange as any}
-                        formik={formik}
-                        setFormState={setFormState}
-                        formState={formState}
-                      />
-                      <button type="submit" name={pageLabel} form={"form." + pageLabel}>submit form.{pageLabel}</button>
-                    </>
-                  }
-                </form>
-              </>
-            )
-          }
+                {resolvedJzodSchema === defaultObject ? (
+                  <div>no object definition found!</div>
+                ) : (
+                  <>
+                    <JzodObjectEditor
+                      name={"ROOT"}
+                      listKey={"ROOT"}
+                      rootLesslistKey={emptyString}
+                      rootLesslistKeyArray={emptyList}
+                      label={pageLabel}
+                      currentDeploymentUuid={emptyString}
+                      currentApplicationSection={dataSection}
+                      // resolvedJzodSchema={actionsJzodSchema}
+                      rawJzodSchema={rawSchema}
+                      resolvedJzodSchema={resolvedJzodSchema}
+                      foreignKeyObjects={emptyObject}
+                      handleChange={formik.handleChange as any}
+                      formik={formik}
+                      setFormState={setFormState}
+                      formState={formState}
+                    />
+                    <button type="submit" name={pageLabel} form={"form." + pageLabel}>
+                      submit form.{pageLabel}
+                    </button>
+                  </>
+                )}
+              </form>
+            </>
+          )}
         </Formik>
       </div>
     </>
-  )
+  );
 }

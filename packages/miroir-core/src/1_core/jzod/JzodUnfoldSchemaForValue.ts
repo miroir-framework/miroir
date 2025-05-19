@@ -110,12 +110,12 @@ export function resolveReferencesForJzodSchemaAndValueObject(
   miroirMetaModel: MetaModel,
   relativeReferenceJzodContext: {[k:string]: JzodElement},
 ): ResolvedJzodSchemaReturnType {
-  // log.info(
-  //   "resolveReferencesForJzodSchemaAndValueObject called for valueObject",
-  //   JSON.stringify(valueObject, null, 2),
-  //   "schema",
-  //   JSON.stringify(jzodSchema, null, 2)
-  // );
+  log.info(
+    "resolveReferencesForJzodSchemaAndValueObject called for valueObject",
+    JSON.stringify(valueObject, null, 2),
+    "schema",
+    JSON.stringify(jzodSchema, null, 2)
+  );
   switch (jzodSchema?.type) {
     case "schemaReference": {
       const newContext = {...relativeReferenceJzodContext, ...jzodSchema.context}

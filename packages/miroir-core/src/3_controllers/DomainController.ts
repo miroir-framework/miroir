@@ -51,6 +51,7 @@ import {
   TestCompositeAction,
   TestCompositeActionSuite,
   TestCompositeActionTemplateSuite,
+  TestResult,
   TestRuntimeCompositeAction,
   TestRuntimeCompositeActionSuite,
   TransactionalInstanceAction,
@@ -85,7 +86,6 @@ import {
   Domain2ElementFailed,
   Domain2QueryReturnType,
 } from "../0_interfaces/2_domain/DomainElement.js";
-import { TestResult } from '../0_interfaces/4-services/TestInterface.js';
 import { ignorePostgresExtraAttributesOnList, ignorePostgresExtraAttributesOnObject } from '../4_services/otherTools.js';
 import { ConfigurationService } from './ConfigurationService.js';
 

@@ -78,9 +78,9 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
 
   const currentMiroirModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
 
-  const currentEnumJzodSchemaResolver: JzodEnumSchemaToJzodElementResolver = useMemo(
-    () => getCurrentEnumJzodSchemaResolver(currentMiroirModel,context.miroirFundamentalJzodSchema),
-    [currentMiroirModel]
+  const currentEnumJzodSchemaResolver: JzodEnumSchemaToJzodElementResolver | undefined = useMemo(
+    () => context.miroirFundamentalJzodSchema? getCurrentEnumJzodSchemaResolver(currentMiroirModel,context.miroirFundamentalJzodSchema): undefined,
+    [context.miroirFundamentalJzodSchema, currentMiroirModel]
   );
 
   log.info("ReportSectionEntityInstance instance", instance);
@@ -113,8 +113,9 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
         </h1>
         {
           currentReportTargetEntity 
+          && currentEnumJzodSchemaResolver
           && currentReportTargetEntityDefinition 
-          && context.applicationSection 
+          && context.applicationSection
           && resolvedJzodSchema?.status == "ok"? (
           <div>
             <JzodElementDisplay
@@ -125,7 +126,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
               applicationSection={context.applicationSection as ApplicationSection}
               entityUuid={props.entityUuid}
               element={instance}
-              rootJzodSchema={currentReportTargetEntityDefinition?.jzodSchema}
+              // rootJzodSchema={currentReportTargetEntityDefinition?.jzodSchema}
               elementJzodSchema={currentReportTargetEntityDefinition?.jzodSchema}
               resolvedElementJzodSchema={resolvedJzodSchema.element}
               currentReportDeploymentSectionEntities={currentReportDeploymentSectionEntities}

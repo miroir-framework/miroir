@@ -45,7 +45,7 @@ export interface MiroirReactContext {
   setformHelperState: React.Dispatch<React.SetStateAction<any>>,
   deploymentUuidToReportsEntitiesDefinitionsMapping: DeploymentUuidToReportsEntitiesDefinitionsMapping,
   setDeploymentUuidToReportsEntitiesDefinitionsMapping: React.Dispatch<React.SetStateAction<DeploymentUuidToReportsEntitiesDefinitionsMapping>>,
-  miroirFundamentalJzodSchema: JzodSchema,
+  miroirFundamentalJzodSchema: JzodSchema | undefined,
   setMiroirFundamentalJzodSchema: React.Dispatch<React.SetStateAction<JzodElement>>,
 }
 
@@ -72,7 +72,8 @@ export function MiroirContextReactProvider(props: {
   const [deploymentUuidToReportsEntitiesDefinitionsMapping, setDeploymentUuidToReportsEntitiesDefinitionsMapping] =
     useState<DeploymentUuidToReportsEntitiesDefinitionsMapping>({});
   const [miroirFundamentalJzodSchema, setMiroirFundamentalJzodSchema] =
-    useState<JzodSchema>({name: "dummyJzodSchema", parentName: "JzodSchema", parentUuid:"", uuid: ""});
+    // useState<JzodSchema>({name: "dummyJzodSchema", parentName: "JzodSchema", parentUuid:"", uuid: ""});
+    useState<JzodSchema | undefined>(undefined);
 
   // const value = useMemo<MiroirReactContext>(()=>({
   const value = useMemo<MiroirReactContext>(

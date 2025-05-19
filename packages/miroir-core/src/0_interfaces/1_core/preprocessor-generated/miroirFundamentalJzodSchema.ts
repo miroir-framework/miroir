@@ -4682,6 +4682,104 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
+      "______________________________________________tests_____________________________________________": {
+        "type": "never"
+      },
+      "testAssertionResult": {
+        "type": "object",
+        "definition": {
+          "assertionName": {
+            "type": "string"
+          },
+          "assertionResult": {
+            "type": "enum",
+            "definition": [
+              "ok",
+              "error"
+            ]
+          },
+          "assertionExpectedValue": {
+            "type": "any"
+          },
+          "assertionActualValue": {
+            "type": "any"
+          }
+        }
+      },
+      "testAssertionsResults": {
+        "type": "record",
+        "definition": {
+          "type": "schemaReference",
+          "definition": {
+            "relativePath": "testAssertionResult",
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+          },
+          "context": {}
+        }
+      },
+      "testResult": {
+        "type": "object",
+        "definition": {
+          "testLabel": {
+            "type": "string"
+          },
+          "testResult": {
+            "type": "enum",
+            "definition": [
+              "ok",
+              "error"
+            ]
+          },
+          "testAssertionsResults": {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "testAssertionsResults",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            },
+            "context": {}
+          }
+        }
+      },
+      "testsResults": {
+        "type": "record",
+        "definition": {
+          "type": "schemaReference",
+          "definition": {
+            "relativePath": "testResult",
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+          },
+          "context": {}
+        }
+      },
+      "testSuiteResult": {
+        "type": "record",
+        "definition": {
+          "type": "schemaReference",
+          "definition": {
+            "relativePath": "testsResults",
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+          },
+          "context": {}
+        }
+      },
+      "innerTestSuitesResults": {
+        "type": "record",
+        "definition": {
+          "type": "schemaReference",
+          "definition": {
+            "relativePath": "testSuiteResult",
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+          },
+          "context": {}
+        }
+      },
+      "testSuitesResults": {
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "innerTestSuitesResults"
+        }
+      },
       "______________________________________________entities_____________________________________________": {
         "type": "never"
       },

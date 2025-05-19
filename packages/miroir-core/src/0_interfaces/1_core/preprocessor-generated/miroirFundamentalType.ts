@@ -1665,6 +1665,31 @@ export type EntityInstancesUuidIndex = {
 export type EntityInstancesUuidIndexUuidIndex = {
     [x: string]: EntityInstancesUuidIndex;
 };
+export type ______________________________________________tests_____________________________________________ = never;
+export type TestAssertionResult = {
+    assertionName: string;
+    assertionResult: "ok" | "error";
+    assertionExpectedValue?: any;
+    assertionActualValue?: any;
+};
+export type TestAssertionsResults = {
+    [x: string]: TestAssertionResult;
+};
+export type TestResult = {
+    testLabel: string;
+    testResult: "ok" | "error";
+    testAssertionsResults: TestAssertionsResults;
+};
+export type TestsResults = {
+    [x: string]: TestResult;
+};
+export type TestSuiteResult = {
+    [x: string]: TestsResults;
+};
+export type InnerTestSuitesResults = {
+    [x: string]: TestSuiteResult;
+};
+export type TestSuitesResults = InnerTestSuitesResults;
 export type ______________________________________________entities_____________________________________________ = never;
 export type AdminApplication = {
     uuid: string;
@@ -7890,6 +7915,14 @@ export const dataStoreType: z.ZodType<DataStoreType> = z.enum(["miroir","app"]);
 export const entityInstanceUuid: z.ZodType<EntityInstanceUuid> = z.string();
 export const entityInstancesUuidIndex: z.ZodType<EntityInstancesUuidIndex> = z.record(z.string(),z.lazy(() =>entityInstance));
 export const entityInstancesUuidIndexUuidIndex: z.ZodType<EntityInstancesUuidIndexUuidIndex> = z.record(z.string(),z.lazy(() =>entityInstancesUuidIndex));
+export const ______________________________________________tests_____________________________________________: z.ZodType<______________________________________________tests_____________________________________________> = z.never();
+export const testAssertionResult: z.ZodType<TestAssertionResult> = z.object({assertionName:z.string(), assertionResult:z.enum(["ok","error"]), assertionExpectedValue:z.any(), assertionActualValue:z.any()}).strict();
+export const testAssertionsResults: z.ZodType<TestAssertionsResults> = z.record(z.string(),z.lazy(() =>testAssertionResult));
+export const testResult: z.ZodType<TestResult> = z.object({testLabel:z.string(), testResult:z.enum(["ok","error"]), testAssertionsResults:z.lazy(() =>testAssertionsResults)}).strict();
+export const testsResults: z.ZodType<TestsResults> = z.record(z.string(),z.lazy(() =>testResult));
+export const testSuiteResult: z.ZodType<TestSuiteResult> = z.record(z.string(),z.lazy(() =>testsResults));
+export const innerTestSuitesResults: z.ZodType<InnerTestSuitesResults> = z.record(z.string(),z.lazy(() =>testSuiteResult));
+export const testSuitesResults: z.ZodType<TestSuitesResults> = z.lazy(() =>innerTestSuitesResults);
 export const ______________________________________________entities_____________________________________________: z.ZodType<______________________________________________entities_____________________________________________> = z.never();
 export const adminApplication: z.ZodType<AdminApplication> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), name:z.string(), defaultLabel:z.string(), description:z.string().optional(), selfApplication:z.string().uuid()}).strict();
 export const selfApplication: z.ZodType<SelfApplication> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), name:z.string(), defaultLabel:z.string(), description:z.string().optional()}).strict();

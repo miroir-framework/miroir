@@ -1,23 +1,89 @@
-// export interface TestResult {
+import { JzodReference } from "../1_core/preprocessor-generated/miroirFundamentalType";
 
-export interface TestAssertionResult {
-  assertionName: string;
-  assertionResult: "ok" | "error";
-  assertionExpectedValue?: any;
-  assertionActualValue?: any;
-}
-
-export type TestAssertionsResults = Record<string, TestAssertionResult>;
-
-export interface TestResult {
-  testLabel: string;
-  testResult: "ok" | "error";
-  // testAssertionResults: TestAssertionResult[];
-  testAssertionsResults: TestAssertionsResults;
-}
-
-export type TestsResults = Record<string, TestResult>;
-
-export type TestSuiteResult = Record<string, TestsResults>;
-
-export type TestSuitesResults = Record<string, TestSuiteResult>;
+export const testSuitesResultsSchema: JzodReference = {
+  type: "schemaReference",
+  context: {
+    testAssertionResult: {
+      type: "object",
+      definition: {
+        assertionName: {
+          type: "string",
+          // description: "The name of the assertion",
+        },
+        assertionResult: {
+          type: "enum",
+          // description: "The result of the assertion",
+          definition: ["ok", "error"],
+        },
+        assertionExpectedValue: {
+          type: "any",
+          // description: "The expected value of the assertion",
+        },
+        assertionActualValue: {
+          type: "any",
+          // description: "The actual value of the assertion",
+        },
+      },
+    },
+    testAssertionsResults: {
+      type: "record",
+      definition: {
+        type: "schemaReference",
+        definition: {
+          relativePath: "testAssertionResult",
+        },
+      },
+    },
+    testResult: {
+      type: "object",
+      definition: {
+        testLabel: {
+          type: "string",
+          // description: "The label of the test",
+        },
+        testResult: {
+          type: "enum",
+          // description: "The result of the test",
+          definition: ["ok", "error"],
+        },
+        testAssertionsResults: {
+          // description: "The results of the assertions of the test",
+          type: "schemaReference",
+          definition: {
+            relativePath: "testAssertionsResults",
+          },
+        },
+      },
+    },
+    testsResults: {
+      type: "record",
+      definition: {
+        type: "schemaReference",
+        definition: {
+          relativePath: "testResult",
+        },
+      },
+    },
+    testSuiteResult: {
+      type: "record",
+      definition: {
+        type: "schemaReference",
+        definition: {
+          relativePath: "testsResults",
+        },
+      },
+    },
+    innerTestSuitesResults: {
+      type: "record",
+      definition: {
+        type: "schemaReference",
+        definition: {
+          relativePath: "testSuiteResult",
+        },
+      },
+    },
+  },
+  definition: {
+    relativePath: "innerTestSuitesResults",
+  },
+};

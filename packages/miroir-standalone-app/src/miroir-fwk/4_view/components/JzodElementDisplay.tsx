@@ -28,13 +28,12 @@ MiroirLoggerFactory.registerLoggerToStart(
 export interface JzodElementDisplayProps {
   name: string;
   path: string;
-  rootJzodSchema: JzodObject;
   deploymentUuid?: Uuid,
   applicationSection?: ApplicationSection,
   entityUuid?: Uuid,
-  // instanceUuid?: Uuid,
   element: any,
-  elementJzodSchema: JzodElement,
+  // rootJzodSchema: JzodObject;
+  elementJzodSchema: JzodElement, // used only for displaying error messages
   resolvedElementJzodSchema: JzodElement,
   // currentReportDeploymentSectionEntities?: MetaEntity[],
   currentReportDeploymentSectionEntities?: Entity[],
@@ -59,6 +58,13 @@ export function JzodElementDisplay(props: JzodElementDisplayProps){
     }),
     []
   );
+  log.info(
+    "JzodElementDisplay",
+    "props",
+    props,
+    "targetJzodSchema",
+    targetJzodSchema,
+  )
   // log.info(
   //   "~~~~~~~~~~~~~~~~~~~~~~~~~~~~ path",
   //   props.path,
@@ -119,7 +125,7 @@ export function JzodElementDisplay(props: JzodElementDisplayProps){
                             elementJzodSchema={(props.resolvedElementJzodSchema as JzodRecord).definition}
                             entityUuid={props.entityUuid}
                             // instanceUuid={props.instanceUuid}
-                            rootJzodSchema={props.rootJzodSchema}
+                            // rootJzodSchema={props.rootJzodSchema}
                             currentEnumJzodSchemaResolver={props.currentEnumJzodSchemaResolver}
                             resolvedElementJzodSchema={(props.resolvedElementJzodSchema as JzodRecord).definition}
                             element={attribute[1]}
@@ -184,7 +190,7 @@ export function JzodElementDisplay(props: JzodElementDisplayProps){
                             deploymentUuid={props.deploymentUuid}
                             elementJzodSchema={(props.resolvedElementJzodSchema as JzodObject)?.definition[attribute[0]]}
                             entityUuid={props.entityUuid}
-                            rootJzodSchema={props.rootJzodSchema}
+                            // rootJzodSchema={props.rootJzodSchema}
                             currentEnumJzodSchemaResolver={props.currentEnumJzodSchemaResolver}
                             resolvedElementJzodSchema={(props.resolvedElementJzodSchema as JzodObject).definition[attribute[0]]}
                             element={attribute[1]}

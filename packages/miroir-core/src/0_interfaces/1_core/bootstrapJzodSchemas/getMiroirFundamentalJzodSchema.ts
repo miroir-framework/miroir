@@ -24,6 +24,7 @@ import {
 import { MiroirLoggerFactory } from "../../../4_services/LoggerFactory";
 import { packageName } from "../../../constants";
 import { LoggerInterface } from "../../4-services/LoggerInterface";
+import { testSuitesResultsSchema } from "../../4-services/TestInterface";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -1041,6 +1042,22 @@ export function getMiroirFundamentalJzodSchema(
               absolutePath: miroirFundamentalJzodSchemaUuid,
               relativePath: "entityInstancesUuidIndex",
             },
+          },
+        },
+        ______________________________________________tests_____________________________________________:
+          {
+            type: "never",
+          },
+        ...makeReferencesAbsolute(
+          testSuitesResultsSchema,
+          miroirFundamentalJzodSchemaUuid,
+          true
+        ).context,
+        testSuitesResults: {
+          type: "schemaReference",
+          definition: {
+            absolutePath: miroirFundamentalJzodSchemaUuid,
+            relativePath: testSuitesResultsSchema.definition.relativePath,
           },
         },
         ______________________________________________entities_____________________________________________:
