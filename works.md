@@ -185,7 +185,7 @@ Global review of approach, reframed for the use of a meta-language (Jzod).
 
 ### development: 109 commits (miroir)
 
-- industrialization: **creating a clean compilation / Continuous Integration environment**, having serverless tests pass on CI platform
+- industrialization: **creating a clean build / Continuous Integration environment**, having serverless tests pass on CI platform
 - industrialization: adding custom logger, configurable each software layer.
 - factored Rest service in webapp and server: **almost** the same code is executed in both cases.
 - consolidation: various refactorings / simplifications / cleanup.
@@ -201,7 +201,7 @@ Global review of approach, reframed for the use of a meta-language (Jzod).
 
 ### development: 52 commits (miroir)
 
-- refactor domain level: introducing Actions and Endpoints.
+- **refactor domain level: introducing Actions and Endpoints**.
 - transferring store parameters to client-defined configuration.
 - first version of "delpoyApplication" action.
 - technical: using vite 4.5, tsup for build.
@@ -224,7 +224,7 @@ Remark: continued teaching the "Website design & implementation" class.
 
 ### development: 77 commits (miroir)
 
-- Miroir Query Language!!! Queries!
+- added initial version of **Miroir Query Language (MQL)**!!! Queries!
 - have Query interface on REST
 - implement basic blocs for alterEntityAttribute ModelAction
 - refactor existing code to ModelActions (tbc.)
@@ -233,8 +233,163 @@ Remark: continued teaching the "Website design & implementation" class.
 
 ### studies & design
 
-### development: 34 commits (miroir)
+### development: 48 commits (miroir)
 
-- Refactor ("simplify") LocalStoreController and DomainController: use ModelActions (continued)
+- added **many-to-many joins in MQL**
+- Refactor ("simplify") LocalStoreController and DomainController: use ModelActions (continued), **start using DomainController on Server**
 - started using styled components
+- Display based on JzodSchema: JzodElementEditor, MtableComponent
+
+## 2024-04
+
+### studies & design
+
+Try to answer:
+- what is a Miroir Application?
+- what is Miroir Action Script (MAS)?
+
+### development: 48 commits (miroir)
+
+- **create & deploy a new application** ([EXPERIMENT: create & deploy a new Application](https://github.com/miroir-framework/miroir/issues/26))
+
+## 2024-05
+
+### studies & design
+
+### development: 15 commits (miroir)
+
+- initialization of **Miroir Action Script (MAS)** ([EXPERIMENT: create basic elements for Miroir Action Script (MAS), migrate Tools.submit to MAS #28](https://github.com/miroir-framework/miroir/issues/28))
+- GUI: taking the decalred JzodSchema of an element to facilitate editing this element [Form / JzodElementEditor: allow to extend an Entity Instance based on the Entity's known structure #29](https://github.com/miroir-framework/miroir/issues/29)
+
+## 2024-06
+
+### studies & design
+
+### development: 16 commits (miroir), 7 commits (Jzod), 5 commits (Jzod-ts),
+
+- released Jzod 0.7.0 started 0.8.0: carry-on types, heteronomous unions [add carry-on types and manyfold object union types #8](https://github.com/miroir-framework/jzod/issues/8)
+- migrate Miroir to Jzod 0.7.0
+- **added QueryTemplates**: generate queries from parameters, using carryOn types.
+
+## 2024-07
+
+### studies & design
+
+### development: 13 commits (miroir)
+
+- Miroir Action Script
+- 
+## 2024-08
+
+### studies & design
+
+The Extractor / Combiner / Transformer architecture for Queries.
+
+### development: 26 commits (miroir)
+
+- Miroir Action Script: implement extractors on many storages (sql, filesytem, indexedDb), separate joins (combiners) from extractors
+- **added count / unique / distinct / goup by / order by operations for MQL (in-memory)**
+
+## 2024-09
+
+### studies & design
+
+Using Transformers in Queries: pure functions (Transformers) shall be used everywhere needed (Actions, Queries, Templates), no other computational mechanism shall exist.
+
+### development: 26 commits (miroir)
+
+- MAS
+
+## From now on, the main topic becomes PRAGMATIC aspects:
+
+- what is the shape of the MAS / MQL, especially regarding to their use of Transformers, and the use of Transformers in general?
+- How to chain (ie compose via Composite) Actions?
+- how can tests be included in the development process, in and out of the GUI?
+- how do Actions and Queries interact with Transactions? What constitutes an Applicative Transaction, at Miroir Level?
+
+
+## 2024-10
+
+### studies & design
+
+
+### development: 32 commits (miroir)
+
+- [FEATURE: execute Queries on relational database #10](https://github.com/miroir-framework/miroir/issues/10)
+- [EXPERIMENT: create basic elements for Miroir Action Script (MAS), migrate Tools.submit to MAS #28](https://github.com/miroir-framework/miroir/issues/28)
+
+
+## 2024-11
+
+### studies & design
+
+
+### development: 26 commits (miroir)
+
+- [FEATURE: allow to compose CompositeActions #38](https://github.com/miroir-framework/miroir/issues/38)
+- removed QueryTemplates, parameterization of Queries shall happen through Transformers.
+
+## 2024-12
+
+### studies & design
+
+
+### development: 43 commits (miroir)
+
+- [FEATURE: add run-time Tests #16](https://github.com/miroir-framework/miroir/issues/16)
+- [REFACTOR: refactor existing tests to elicit test interface #39](https://github.com/miroir-framework/miroir/issues/39)
+
+
+
+## 2025-01
+
+### studies & design
+
+Practical issue: too many logs when running integration tests!
+
+### development: 31 commits (miroir)
+
+- [REFACTOR: refactor existing tests to elicit test interface #39](https://github.com/miroir-framework/miroir/issues/39)
+- [FEATURE: have "business"-oriented log management #42](https://github.com/miroir-framework/miroir/issues/42)
+
+## 2025-02
+
+### studies & design
+
+
+### development: 25 commits (miroir)
+
+- [FEATURE: execute Queries on relational database #10](https://github.com/miroir-framework/miroir/issues/10)
+
+## 2025-03
+
+### studies & design
+
+
+### development: 30 commits (miroir)
+
+- [push Transformers to 1st class citizen and create Menu Transformer, with miroir-core implementation #36](https://github.com/miroir-framework/miroir/issues/36)
+- [FEATURE: execute Queries on relational database #10](https://github.com/miroir-framework/miroir/issues/10)
+
+## 2025-04
+
+### studies & design
+
+
+### development: 54 commits (miroir)
+
+- Added Transformer Implementation, that can be "libraryImplementation" or "transformer" [push Transformers to 1st class citizen and create Menu Transformer, with miroir-core implementation #36](https://github.com/miroir-framework/miroir/issues/36)
+- [FEATURE: allow to compose CompositeActions #38](https://github.com/miroir-framework/miroir/issues/38)
+-
+
+
+## 2025-05
+
+### studies & design
+
+
+### development: ?? commits (miroir)
+
+- Make applicative.Library.integ.test with CreateNewEntity action executable from the standalone webapp and the Vitest CLI [#50 FEATURE: enable the creation of custom actions in MAS](https://github.com/miroir-framework/miroir/issues/50)
+- Make applicative.Library.integ.test with CreateNewEntity action executable from the standalone webapp and the Vitest CLI [Improve error handling in Transformer SQL implementation #51](https://github.com/miroir-framework/miroir/issues/51)
 - 
