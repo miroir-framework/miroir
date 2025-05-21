@@ -1897,105 +1897,110 @@ export type Test = {
     parentName?: string | undefined;
     parentUuid: string;
     definition: {
-        testType: "testCompositeAction";
-        testLabel: string;
-        beforeTestSetupAction?: CompositeAction | undefined;
-        afterTestCleanupAction?: CompositeAction | undefined;
-        compositeAction: CompositeAction;
-        testCompositeActionAssertions: CompositeRunTestAssertion[];
-    } | {
-        testType: "testCompositeActionSuite";
-        testLabel: string;
-        beforeAll?: CompositeAction | undefined;
-        beforeEach?: CompositeAction | undefined;
-        afterEach?: CompositeAction | undefined;
-        afterAll?: CompositeAction | undefined;
-        testCompositeActions: {
+        testCompositeActions?: {
             [x: string]: TestCompositeAction;
-        };
-    } | {
-        testType: "testBuildCompositeAction";
-        testLabel: string;
-        beforeTestSetupAction?: CompositeAction | undefined;
-        afterTestCleanupAction?: CompositeAction | undefined;
-        compositeAction: BuildCompositeAction;
-        testCompositeActionAssertions: CompositeRunTestAssertion[];
-    } | {
-        testType: "testBuildCompositeActionSuite";
-        testLabel: string;
-        beforeAll?: CompositeAction | undefined;
-        beforeEach?: CompositeAction | undefined;
-        afterEach?: CompositeAction | undefined;
-        afterAll?: CompositeAction | undefined;
-        testCompositeActions: {
-            [x: string]: TestBuildCompositeAction;
-        };
-    } | {
-        testType: "testRuntimeCompositeAction";
-        testLabel: string;
-        beforeTestSetupAction?: CompositeAction | undefined;
-        afterTestCleanupAction?: CompositeAction | undefined;
-        compositeAction: RuntimeCompositeAction;
-        testCompositeActionAssertions: CompositeRunTestAssertion[];
-    } | {
-        testType: "testRuntimeCompositeActionSuite";
-        testLabel: string;
-        beforeAll?: CompositeAction | undefined;
-        beforeEach?: CompositeAction | undefined;
-        afterEach?: CompositeAction | undefined;
-        afterAll?: CompositeAction | undefined;
-        testCompositeActions: {
-            [x: string]: TestRuntimeCompositeAction;
-        };
-    } | {
-        testType: "testBuildPlusRuntimeCompositeAction";
-        testLabel: string;
-        testParams?: {
-            [x: string]: any;
         } | undefined;
-        beforeTestSetupAction?: CompositeAction | undefined;
-        afterTestCleanupAction?: CompositeAction | undefined;
-        compositeAction: BuildPlusRuntimeCompositeAction;
-        testCompositeActionAssertions: CompositeRunTestAssertion[];
-    } | {
-        testType: "testBuildPlusRuntimeCompositeActionSuite";
-        testLabel: string;
-        testParams?: {
-            [x: string]: any;
-        } | undefined;
-        beforeAll?: CompositeAction | undefined;
-        beforeEach?: CompositeAction | undefined;
-        afterEach?: CompositeAction | undefined;
-        afterAll?: CompositeAction | undefined;
-        testCompositeActions: {
-            [x: string]: TestBuildPlusRuntimeCompositeAction;
-        };
-    } | {
-        testType: "testCompositeActionTemplate";
-        testLabel: string;
-        beforeTestSetupAction?: CompositeActionTemplate | undefined;
-        afterTestCleanupAction?: CompositeActionTemplate | undefined;
-        compositeActionTemplate: CompositeActionTemplate;
-        testCompositeActionAssertions: CompositeRunTestAssertion[];
-    } | {
-        testType: "testCompositeActionTemplateSuite";
-        testLabel: string;
-        beforeAll?: CompositeActionTemplate | undefined;
-        beforeEach?: CompositeActionTemplate | undefined;
-        afterEach?: CompositeActionTemplate | undefined;
-        afterAll?: CompositeActionTemplate | undefined;
-        testCompositeActions: {
-            [x: string]: TestCompositeActionTemplate;
-        };
-    } | {
-        testType: "testAssertion";
-        testLabel: string;
-        definition: {
-            resultAccessPath?: string[] | undefined;
-            resultTransformer?: ExtendedTransformerForRuntime | undefined;
-            ignoreAttributes?: string[] | undefined;
-            expectedValue?: any;
-        };
+        fullTestDefinition?: ({
+            testType: "testCompositeAction";
+            testLabel: string;
+            beforeTestSetupAction?: CompositeAction | undefined;
+            afterTestCleanupAction?: CompositeAction | undefined;
+            compositeAction: CompositeAction;
+            testCompositeActionAssertions: CompositeRunTestAssertion[];
+        } | {
+            testType: "testCompositeActionSuite";
+            testLabel: string;
+            beforeAll?: CompositeAction | undefined;
+            beforeEach?: CompositeAction | undefined;
+            afterEach?: CompositeAction | undefined;
+            afterAll?: CompositeAction | undefined;
+            testCompositeActions: {
+                [x: string]: TestCompositeAction;
+            };
+        } | {
+            testType: "testBuildCompositeAction";
+            testLabel: string;
+            beforeTestSetupAction?: CompositeAction | undefined;
+            afterTestCleanupAction?: CompositeAction | undefined;
+            compositeAction: BuildCompositeAction;
+            testCompositeActionAssertions: CompositeRunTestAssertion[];
+        } | {
+            testType: "testBuildCompositeActionSuite";
+            testLabel: string;
+            beforeAll?: CompositeAction | undefined;
+            beforeEach?: CompositeAction | undefined;
+            afterEach?: CompositeAction | undefined;
+            afterAll?: CompositeAction | undefined;
+            testCompositeActions: {
+                [x: string]: TestBuildCompositeAction;
+            };
+        } | {
+            testType: "testRuntimeCompositeAction";
+            testLabel: string;
+            beforeTestSetupAction?: CompositeAction | undefined;
+            afterTestCleanupAction?: CompositeAction | undefined;
+            compositeAction: RuntimeCompositeAction;
+            testCompositeActionAssertions: CompositeRunTestAssertion[];
+        } | {
+            testType: "testRuntimeCompositeActionSuite";
+            testLabel: string;
+            beforeAll?: CompositeAction | undefined;
+            beforeEach?: CompositeAction | undefined;
+            afterEach?: CompositeAction | undefined;
+            afterAll?: CompositeAction | undefined;
+            testCompositeActions: {
+                [x: string]: TestRuntimeCompositeAction;
+            };
+        } | {
+            testType: "testBuildPlusRuntimeCompositeAction";
+            testLabel: string;
+            testParams?: {
+                [x: string]: any;
+            } | undefined;
+            beforeTestSetupAction?: CompositeAction | undefined;
+            afterTestCleanupAction?: CompositeAction | undefined;
+            compositeAction: BuildPlusRuntimeCompositeAction;
+            testCompositeActionAssertions: CompositeRunTestAssertion[];
+        } | {
+            testType: "testBuildPlusRuntimeCompositeActionSuite";
+            testLabel: string;
+            testParams?: {
+                [x: string]: any;
+            } | undefined;
+            beforeAll?: CompositeAction | undefined;
+            beforeEach?: CompositeAction | undefined;
+            afterEach?: CompositeAction | undefined;
+            afterAll?: CompositeAction | undefined;
+            testCompositeActions: {
+                [x: string]: TestBuildPlusRuntimeCompositeAction;
+            };
+        } | {
+            testType: "testCompositeActionTemplate";
+            testLabel: string;
+            beforeTestSetupAction?: CompositeActionTemplate | undefined;
+            afterTestCleanupAction?: CompositeActionTemplate | undefined;
+            compositeActionTemplate: CompositeActionTemplate;
+            testCompositeActionAssertions: CompositeRunTestAssertion[];
+        } | {
+            testType: "testCompositeActionTemplateSuite";
+            testLabel: string;
+            beforeAll?: CompositeActionTemplate | undefined;
+            beforeEach?: CompositeActionTemplate | undefined;
+            afterEach?: CompositeActionTemplate | undefined;
+            afterAll?: CompositeActionTemplate | undefined;
+            testCompositeActions: {
+                [x: string]: TestCompositeActionTemplate;
+            };
+        } | {
+            testType: "testAssertion";
+            testLabel: string;
+            definition: {
+                resultAccessPath?: string[] | undefined;
+                resultTransformer?: ExtendedTransformerForRuntime | undefined;
+                ignoreAttributes?: string[] | undefined;
+                expectedValue?: any;
+            };
+        }) | undefined;
     };
 };
 export type SelfApplicationDeploymentConfiguration = {
@@ -7715,7 +7720,35 @@ export type BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_tr
 export type BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_optional_Abstract = TransformerForBuild_optional_Abstract;
 export type BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodEnumAttributeTypes = JzodEnumAttributeTypes;
 export type BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodEnumElementTypes = JzodEnumElementTypes;
-export type TransformerForBuildCarryOnObject = TransformerForBuild_menu_addItem | TransformerForBuild_constant | TransformerForBuild_constantArray | TransformerForBuild_constantBoolean | TransformerForBuild_constantNumber | TransformerForBuild_constantObject | TransformerForBuild_constantString | TransformerForBuild_constantUuid | TransformerForBuild_constantAsExtractor | TransformerForBuild_count | TransformerForBuild_dataflowObject | TransformerForBuild_freeObjectTemplate | TransformerForBuild_listPickElement | TransformerForBuild_listReducerToIndexObject | TransformerForBuild_listReducerToSpreadObject | TransformerForBuild_mapperListToList | TransformerForBuild_mustacheStringTemplate | TransformerForBuild_newUuid | TransformerForBuild_objectAlter | TransformerForBuild_objectDynamicAccess | TransformerForBuild_objectEntries | TransformerForBuild_objectValues | TransformerForBuild_object_fullTemplate | TransformerForBuild_parameterReference | TransformerForBuild_unique | TransformerForBuild_constantBigint | TransformerForBuild_InnerReference | TransformerForBuild_dataflowSequence;
+export type TransformerForBuildCarryOnObject =
+  | TransformerForBuild_menu_addItem
+  | TransformerForBuild_constant
+  | TransformerForBuild_constantArray
+  | TransformerForBuild_constantBoolean
+  | TransformerForBuild_constantNumber
+  | TransformerForBuild_constantObject
+  | TransformerForBuild_constantString
+  | TransformerForBuild_constantUuid
+  | TransformerForBuild_constantAsExtractor
+  | TransformerForBuild_count
+  | TransformerForBuild_dataflowObject
+  | TransformerForBuild_freeObjectTemplate
+  | TransformerForBuild_listPickElement
+  | TransformerForBuild_listReducerToIndexObject
+  | TransformerForBuild_listReducerToSpreadObject
+  | TransformerForBuild_mapperListToList
+  | TransformerForBuild_mustacheStringTemplate
+  | TransformerForBuild_newUuid
+  | TransformerForBuild_objectAlter
+  | TransformerForBuild_objectDynamicAccess
+  | TransformerForBuild_objectEntries
+  | TransformerForBuild_objectValues
+  | TransformerForBuild_object_fullTemplate
+  | TransformerForBuild_parameterReference
+  | TransformerForBuild_unique
+  | TransformerForBuild_constantBigint
+  | TransformerForBuild_InnerReference
+  | TransformerForBuild_dataflowSequence;
 export type TransformerForRuntimeCarryOnObject = TransformerForBuild_menu_addItem | TransformerForBuild_constant | TransformerForBuild_constantArray | TransformerForBuild_constantBoolean | TransformerForBuild_constantNumber | TransformerForBuild_constantObject | TransformerForBuild_constantString | TransformerForBuild_constantUuid | TransformerForBuild_constantAsExtractor | TransformerForBuild_count | TransformerForBuild_dataflowObject | TransformerForBuild_freeObjectTemplate | TransformerForBuild_listPickElement | TransformerForBuild_listReducerToIndexObject | TransformerForBuild_listReducerToSpreadObject | TransformerForBuild_mapperListToList | TransformerForBuild_mustacheStringTemplate | TransformerForBuild_newUuid | TransformerForBuild_objectAlter | TransformerForBuild_objectDynamicAccess | TransformerForBuild_objectEntries | TransformerForBuild_objectValues | TransformerForBuild_object_fullTemplate | TransformerForBuild_parameterReference | TransformerForBuild_unique | TransformerForBuild_constantBigint | TransformerForBuild_InnerReference | TransformerForBuild_dataflowSequence;
 export type TransformerForBuildPlusRuntimeCarryOnObject = TransformerForBuild | TransformerForRuntime;
 export type BuildDomainAction = BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction | BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeOrBundleAction | BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction | BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction | {
@@ -7788,41 +7821,56 @@ export type RuntimeDomainAction = RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60
         testAssertion: RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion;
     })[];
 };
-export type BuildPlusRuntimeDomainAction = BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction | BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeOrBundleAction | BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction | BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction | {
-    actionType: "transactionalInstanceAction";
-    actionLabel?: string | undefined;
-    deploymentUuid?: string | undefined;
-    instanceAction: BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction;
-} | {
-    actionType: "compositeAction";
-    actionName: "sequence";
-    actionLabel?: string | undefined;
-    deploymentUuid?: string | undefined;
-    templates?: {
-        [x: string]: any;
-    } | undefined;
-    definition: (BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction | BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction | {
-        actionType: "compositeRunBoxedQueryAction";
-        actionLabel?: string | undefined;
-        nameGivenToResult: string;
-        queryTemplate: BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryAction;
-    } | {
-        actionType: "compositeRunBoxedExtractorAction";
-        actionLabel?: string | undefined;
-        nameGivenToResult: string;
-        queryTemplate: BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorAction;
-    } | {
-        actionType: "compositeRunBoxedExtractorOrQueryAction";
-        actionLabel?: string | undefined;
-        nameGivenToResult: string;
-        query: BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction;
-    } | {
-        actionType: "compositeRunTestAssertion";
-        actionLabel?: string | undefined;
-        nameGivenToResult: string;
-        testAssertion: BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion;
-    })[];
-};
+export type BuildPlusRuntimeDomainAction =
+  | BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction
+  | BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeOrBundleAction
+  | BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction
+  | BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction
+  | {
+      actionType: "transactionalInstanceAction";
+      actionLabel?: string | undefined;
+      deploymentUuid?: string | undefined;
+      instanceAction: BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction;
+    }
+  | {
+      actionType: "compositeAction";
+      actionName: "sequence";
+      actionLabel?: string | undefined;
+      deploymentUuid?: string | undefined;
+      templates?:
+        | {
+            [x: string]: any;
+          }
+        | undefined;
+      definition: (
+        | BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction
+        | BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction
+        | {
+            actionType: "compositeRunBoxedQueryAction";
+            actionLabel?: string | undefined;
+            nameGivenToResult: string;
+            queryTemplate: BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryAction;
+          }
+        | {
+            actionType: "compositeRunBoxedExtractorAction";
+            actionLabel?: string | undefined;
+            nameGivenToResult: string;
+            queryTemplate: BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorAction;
+          }
+        | {
+            actionType: "compositeRunBoxedExtractorOrQueryAction";
+            actionLabel?: string | undefined;
+            nameGivenToResult: string;
+            query: BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction;
+          }
+        | {
+            actionType: "compositeRunTestAssertion";
+            actionLabel?: string | undefined;
+            nameGivenToResult: string;
+            testAssertion: BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion;
+          }
+      )[];
+    };
 export type CompositeActionTemplate = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction | TransformerForBuildCarryOnObject;
 export type MiroirFundamentalType = JzodElement;
 
@@ -7942,7 +7990,7 @@ export const testBuildPlusRuntimeCompositeActionSuite: z.ZodType<TestBuildPlusRu
 export const testCompositeActionTemplate: z.ZodType<TestCompositeActionTemplate> = z.object({testType:z.literal("testCompositeActionTemplate"), testLabel:z.string(), beforeTestSetupAction:z.lazy(() =>compositeActionTemplate).optional(), afterTestCleanupAction:z.lazy(() =>compositeActionTemplate).optional(), compositeActionTemplate:z.lazy(() =>compositeActionTemplate), testCompositeActionAssertions:z.array(z.lazy(() =>compositeRunTestAssertion))}).strict();
 export const testCompositeActionTemplateSuite: z.ZodType<TestCompositeActionTemplateSuite> = z.object({testType:z.literal("testCompositeActionTemplateSuite"), testLabel:z.string(), beforeAll:z.lazy(() =>compositeActionTemplate).optional(), beforeEach:z.lazy(() =>compositeActionTemplate).optional(), afterEach:z.lazy(() =>compositeActionTemplate).optional(), afterAll:z.lazy(() =>compositeActionTemplate).optional(), testCompositeActions:z.record(z.string(),z.lazy(() =>testCompositeActionTemplate))}).strict();
 export const testAssertion: z.ZodType<TestAssertion> = z.object({testType:z.literal("testAssertion"), testLabel:z.string(), definition:z.object({resultAccessPath:z.array(z.string()).optional(), resultTransformer:z.lazy(() =>extendedTransformerForRuntime).optional(), ignoreAttributes:z.array(z.string()).optional(), expectedValue:z.any()}).strict()}).strict();
-export const test: z.ZodType<Test> = z.object({uuid:z.string(), parentName:z.string().optional(), parentUuid:z.string(), definition:z.union([z.object({testType:z.literal("testCompositeAction"), testLabel:z.string(), beforeTestSetupAction:z.lazy(() =>compositeAction).optional(), afterTestCleanupAction:z.lazy(() =>compositeAction).optional(), compositeAction:z.lazy(() =>compositeAction), testCompositeActionAssertions:z.array(z.lazy(() =>compositeRunTestAssertion))}).strict(), z.object({testType:z.literal("testCompositeActionSuite"), testLabel:z.string(), beforeAll:z.lazy(() =>compositeAction).optional(), beforeEach:z.lazy(() =>compositeAction).optional(), afterEach:z.lazy(() =>compositeAction).optional(), afterAll:z.lazy(() =>compositeAction).optional(), testCompositeActions:z.record(z.string(),z.lazy(() =>testCompositeAction))}).strict(), z.object({testType:z.literal("testBuildCompositeAction"), testLabel:z.string(), beforeTestSetupAction:z.lazy(() =>compositeAction).optional(), afterTestCleanupAction:z.lazy(() =>compositeAction).optional(), compositeAction:z.lazy(() =>buildCompositeAction), testCompositeActionAssertions:z.array(z.lazy(() =>compositeRunTestAssertion))}).strict(), z.object({testType:z.literal("testBuildCompositeActionSuite"), testLabel:z.string(), beforeAll:z.lazy(() =>compositeAction).optional(), beforeEach:z.lazy(() =>compositeAction).optional(), afterEach:z.lazy(() =>compositeAction).optional(), afterAll:z.lazy(() =>compositeAction).optional(), testCompositeActions:z.record(z.string(),z.lazy(() =>testBuildCompositeAction))}).strict(), z.object({testType:z.literal("testRuntimeCompositeAction"), testLabel:z.string(), beforeTestSetupAction:z.lazy(() =>compositeAction).optional(), afterTestCleanupAction:z.lazy(() =>compositeAction).optional(), compositeAction:z.lazy(() =>runtimeCompositeAction), testCompositeActionAssertions:z.array(z.lazy(() =>compositeRunTestAssertion))}).strict(), z.object({testType:z.literal("testRuntimeCompositeActionSuite"), testLabel:z.string(), beforeAll:z.lazy(() =>compositeAction).optional(), beforeEach:z.lazy(() =>compositeAction).optional(), afterEach:z.lazy(() =>compositeAction).optional(), afterAll:z.lazy(() =>compositeAction).optional(), testCompositeActions:z.record(z.string(),z.lazy(() =>testRuntimeCompositeAction))}).strict(), z.object({testType:z.literal("testBuildPlusRuntimeCompositeAction"), testLabel:z.string(), testParams:z.record(z.string(),z.any()).optional(), beforeTestSetupAction:z.lazy(() =>compositeAction).optional(), afterTestCleanupAction:z.lazy(() =>compositeAction).optional(), compositeAction:z.lazy(() =>buildPlusRuntimeCompositeAction), testCompositeActionAssertions:z.array(z.lazy(() =>compositeRunTestAssertion))}).strict(), z.object({testType:z.literal("testBuildPlusRuntimeCompositeActionSuite"), testLabel:z.string(), testParams:z.record(z.string(),z.any()).optional(), beforeAll:z.lazy(() =>compositeAction).optional(), beforeEach:z.lazy(() =>compositeAction).optional(), afterEach:z.lazy(() =>compositeAction).optional(), afterAll:z.lazy(() =>compositeAction).optional(), testCompositeActions:z.record(z.string(),z.lazy(() =>testBuildPlusRuntimeCompositeAction))}).strict(), z.object({testType:z.literal("testCompositeActionTemplate"), testLabel:z.string(), beforeTestSetupAction:z.lazy(() =>compositeActionTemplate).optional(), afterTestCleanupAction:z.lazy(() =>compositeActionTemplate).optional(), compositeActionTemplate:z.lazy(() =>compositeActionTemplate), testCompositeActionAssertions:z.array(z.lazy(() =>compositeRunTestAssertion))}).strict(), z.object({testType:z.literal("testCompositeActionTemplateSuite"), testLabel:z.string(), beforeAll:z.lazy(() =>compositeActionTemplate).optional(), beforeEach:z.lazy(() =>compositeActionTemplate).optional(), afterEach:z.lazy(() =>compositeActionTemplate).optional(), afterAll:z.lazy(() =>compositeActionTemplate).optional(), testCompositeActions:z.record(z.string(),z.lazy(() =>testCompositeActionTemplate))}).strict(), z.object({testType:z.literal("testAssertion"), testLabel:z.string(), definition:z.object({resultAccessPath:z.array(z.string()).optional(), resultTransformer:z.lazy(() =>extendedTransformerForRuntime).optional(), ignoreAttributes:z.array(z.string()).optional(), expectedValue:z.any()}).strict()}).strict()])}).strict();
+export const test: z.ZodType<Test> = z.object({uuid:z.string(), parentName:z.string().optional(), parentUuid:z.string(), definition:z.object({testCompositeActions:z.record(z.string(),z.lazy(() =>testCompositeAction)).optional(), fullTestDefinition:z.union([z.object({testType:z.literal("testCompositeAction"), testLabel:z.string(), beforeTestSetupAction:z.lazy(() =>compositeAction).optional(), afterTestCleanupAction:z.lazy(() =>compositeAction).optional(), compositeAction:z.lazy(() =>compositeAction), testCompositeActionAssertions:z.array(z.lazy(() =>compositeRunTestAssertion))}).strict(), z.object({testType:z.literal("testCompositeActionSuite"), testLabel:z.string(), beforeAll:z.lazy(() =>compositeAction).optional(), beforeEach:z.lazy(() =>compositeAction).optional(), afterEach:z.lazy(() =>compositeAction).optional(), afterAll:z.lazy(() =>compositeAction).optional(), testCompositeActions:z.record(z.string(),z.lazy(() =>testCompositeAction))}).strict(), z.object({testType:z.literal("testBuildCompositeAction"), testLabel:z.string(), beforeTestSetupAction:z.lazy(() =>compositeAction).optional(), afterTestCleanupAction:z.lazy(() =>compositeAction).optional(), compositeAction:z.lazy(() =>buildCompositeAction), testCompositeActionAssertions:z.array(z.lazy(() =>compositeRunTestAssertion))}).strict(), z.object({testType:z.literal("testBuildCompositeActionSuite"), testLabel:z.string(), beforeAll:z.lazy(() =>compositeAction).optional(), beforeEach:z.lazy(() =>compositeAction).optional(), afterEach:z.lazy(() =>compositeAction).optional(), afterAll:z.lazy(() =>compositeAction).optional(), testCompositeActions:z.record(z.string(),z.lazy(() =>testBuildCompositeAction))}).strict(), z.object({testType:z.literal("testRuntimeCompositeAction"), testLabel:z.string(), beforeTestSetupAction:z.lazy(() =>compositeAction).optional(), afterTestCleanupAction:z.lazy(() =>compositeAction).optional(), compositeAction:z.lazy(() =>runtimeCompositeAction), testCompositeActionAssertions:z.array(z.lazy(() =>compositeRunTestAssertion))}).strict(), z.object({testType:z.literal("testRuntimeCompositeActionSuite"), testLabel:z.string(), beforeAll:z.lazy(() =>compositeAction).optional(), beforeEach:z.lazy(() =>compositeAction).optional(), afterEach:z.lazy(() =>compositeAction).optional(), afterAll:z.lazy(() =>compositeAction).optional(), testCompositeActions:z.record(z.string(),z.lazy(() =>testRuntimeCompositeAction))}).strict(), z.object({testType:z.literal("testBuildPlusRuntimeCompositeAction"), testLabel:z.string(), testParams:z.record(z.string(),z.any()).optional(), beforeTestSetupAction:z.lazy(() =>compositeAction).optional(), afterTestCleanupAction:z.lazy(() =>compositeAction).optional(), compositeAction:z.lazy(() =>buildPlusRuntimeCompositeAction), testCompositeActionAssertions:z.array(z.lazy(() =>compositeRunTestAssertion))}).strict(), z.object({testType:z.literal("testBuildPlusRuntimeCompositeActionSuite"), testLabel:z.string(), testParams:z.record(z.string(),z.any()).optional(), beforeAll:z.lazy(() =>compositeAction).optional(), beforeEach:z.lazy(() =>compositeAction).optional(), afterEach:z.lazy(() =>compositeAction).optional(), afterAll:z.lazy(() =>compositeAction).optional(), testCompositeActions:z.record(z.string(),z.lazy(() =>testBuildPlusRuntimeCompositeAction))}).strict(), z.object({testType:z.literal("testCompositeActionTemplate"), testLabel:z.string(), beforeTestSetupAction:z.lazy(() =>compositeActionTemplate).optional(), afterTestCleanupAction:z.lazy(() =>compositeActionTemplate).optional(), compositeActionTemplate:z.lazy(() =>compositeActionTemplate), testCompositeActionAssertions:z.array(z.lazy(() =>compositeRunTestAssertion))}).strict(), z.object({testType:z.literal("testCompositeActionTemplateSuite"), testLabel:z.string(), beforeAll:z.lazy(() =>compositeActionTemplate).optional(), beforeEach:z.lazy(() =>compositeActionTemplate).optional(), afterEach:z.lazy(() =>compositeActionTemplate).optional(), afterAll:z.lazy(() =>compositeActionTemplate).optional(), testCompositeActions:z.record(z.string(),z.lazy(() =>testCompositeActionTemplate))}).strict(), z.object({testType:z.literal("testAssertion"), testLabel:z.string(), definition:z.object({resultAccessPath:z.array(z.string()).optional(), resultTransformer:z.lazy(() =>extendedTransformerForRuntime).optional(), ignoreAttributes:z.array(z.string()).optional(), expectedValue:z.any()}).strict()}).strict()]).optional()}).strict()}).strict();
 export const selfApplicationDeploymentConfiguration: z.ZodType<SelfApplicationDeploymentConfiguration> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), name:z.string(), defaultLabel:z.string(), description:z.string().optional(), selfApplication:z.string().uuid()}).strict();
 export const miroirMenuItem: z.ZodType<MiroirMenuItem> = z.object({label:z.string(), section:z.lazy(() =>applicationSection), selfApplication:z.string(), reportUuid:z.string(), instanceUuid:z.string().optional(), icon:z.string()}).strict();
 export const menuItemArray: z.ZodType<MenuItemArray> = z.array(z.lazy(() =>miroirMenuItem));

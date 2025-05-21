@@ -1106,8 +1106,6 @@ export const ToolsPage: React.FC<any> = (
         testSuitesResultsSchema != undefined &&
         testSuitesResultsSchema.context != undefined &&
         resolvedTestResultsJzodSchema != undefined
-        // &&
-        // (resolvedTestResultsJzodSchema as any).element != undefined 
         ? (
           <div>
             <div>Test results:</div>
@@ -1119,7 +1117,6 @@ export const ToolsPage: React.FC<any> = (
               applicationSection={context.applicationSection as ApplicationSection}
               entityUuid={props.entityUuid}
               element={testResults["applicative.Library.BuildPlusRuntimeCompositeAction.integ.test"]}
-              // rootJzodSchema={testSuitesResultsSchema.context.innerTestSuitesResults as JzodElement}
               elementJzodSchema={testSuitesResultsSchema.context.innerTestSuitesResults}
               resolvedElementJzodSchema={resolvedTestResultsJzodSchema}
               currentReportDeploymentSectionEntities={currentReportDeploymentSectionEntities}

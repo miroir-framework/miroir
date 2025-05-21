@@ -1073,57 +1073,57 @@ export function getMiroirFundamentalJzodSchema(
         entityDefinition: entityDefinitionEntityDefinitionV1.jzodSchema as any,
         testCompositeAction: (
           entityDefinitionTest.jzodSchema as any
-        ).definition.definition.definition.find(
+        ).definition.definition.definition.fullTestDefinition.definition.find(
           (e: any) => e.definition.testType.definition == "testCompositeAction"
         ),
         testCompositeActionSuite: (
           entityDefinitionTest.jzodSchema as any
-        ).definition.definition.definition.find(
+        ).definition.definition.definition.fullTestDefinition.definition.find(
           (e: any) => e.definition.testType.definition == "testCompositeActionSuite"
         ),
         testBuildCompositeAction: (
           entityDefinitionTest.jzodSchema as any
-        ).definition.definition.definition.find(
+        ).definition.definition.definition.fullTestDefinition.definition.find(
           (e: any) => e.definition.testType.definition == "testBuildCompositeAction"
         ),
         testBuildCompositeActionSuite: (
           entityDefinitionTest.jzodSchema as any
-        ).definition.definition.definition.find(
+        ).definition.definition.definition.fullTestDefinition.definition.find(
           (e: any) => e.definition.testType.definition == "testBuildCompositeActionSuite"
         ),
         testRuntimeCompositeAction: (
           entityDefinitionTest.jzodSchema as any
-        ).definition.definition.definition.find(
+        ).definition.definition.definition.fullTestDefinition.definition.find(
           (e: any) => e.definition.testType.definition == "testRuntimeCompositeAction"
         ),
         testRuntimeCompositeActionSuite: (
           entityDefinitionTest.jzodSchema as any
-        ).definition.definition.definition.find(
+        ).definition.definition.definition.fullTestDefinition.definition.find(
           (e: any) => e.definition.testType.definition == "testRuntimeCompositeActionSuite"
         ),
         testBuildPlusRuntimeCompositeAction: (
           entityDefinitionTest.jzodSchema as any
-        ).definition.definition.definition.find(
+        ).definition.definition.definition.fullTestDefinition.definition.find(
           (e: any) => e.definition.testType.definition == "testBuildPlusRuntimeCompositeAction"
         ),
         testBuildPlusRuntimeCompositeActionSuite: (
           entityDefinitionTest.jzodSchema as any
-        ).definition.definition.definition.find(
+        ).definition.definition.definition.fullTestDefinition.definition.find(
           (e: any) => e.definition.testType.definition == "testBuildPlusRuntimeCompositeActionSuite"
         ),
         testCompositeActionTemplate: (
           entityDefinitionTest.jzodSchema as any
-        ).definition.definition.definition.find(
+        ).definition.definition.definition.fullTestDefinition.definition.find(
           (e: any) => e.definition.testType.definition == "testCompositeActionTemplate"
         ),
         testCompositeActionTemplateSuite: (
           entityDefinitionTest.jzodSchema as any
-        ).definition.definition.definition.find(
+        ).definition.definition.definition.fullTestDefinition.definition.find(
           (e: any) => e.definition.testType.definition == "testCompositeActionTemplateSuite"
         ),
         testAssertion: (
           entityDefinitionTest.jzodSchema as any
-        ).definition.definition.definition.find(
+        ).definition.definition.definition.fullTestDefinition.definition.find(
           (e: any) => e.definition.testType.definition == "testAssertion"
         ),
         test: entityDefinitionTest.jzodSchema as any,

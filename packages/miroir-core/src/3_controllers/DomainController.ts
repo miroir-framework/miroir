@@ -1595,6 +1595,35 @@ export class DomainController implements DomainControllerInterface {
         //   "localContext keys",
         //   Object.keys(localContext),
         // );
+
+        // TODO: resolve runtime transformers for all composite actions. Should there be preserved areas?
+        // const resolvedAction = transformer_extended_apply(
+        //   "runtime",
+        //   currentAction.actionLabel,
+        //   currentAction as any as TransformerForRuntime,
+        //   "value",
+        //   actionParamValues, // queryParams
+        //   localContext // contextResults
+        // );
+
+        // log.info(
+        //   "handleRuntimeCompositeAction resolvedAction action to handle",
+        //   JSON.stringify(resolvedAction, null, 2)
+        // );
+
+        // if (resolvedAction instanceof Domain2ElementFailed) {
+        //   log.error(
+        //     "handleRuntimeCompositeAction resolvedAction error",
+        //     JSON.stringify(resolvedAction, null, 2)
+        //   );
+        //   return new Action2Error(
+        //     "FailedToResolveTemplate",
+        //     "handleRuntimeCompositeAction error resolving action " +
+        //       JSON.stringify(resolvedAction, null, 2),
+        //     [currentAction.actionLabel ?? currentAction.actionType]
+        //   );
+        // }
+
         switch (currentAction.actionType) {
           case "compositeAction": {
             // composite pattern, recursive call
@@ -1625,7 +1654,7 @@ export class DomainController implements DomainControllerInterface {
                 JSON.stringify(currentAction, null, 2)
               );
             }
-            // TODO: resolve runtime transformers for all composite actions. Should there be preserved areas?
+            // // TODO: resolve runtime transformers for all composite actions. Should there be preserved areas?
             const resolvedAction = transformer_extended_apply(
               "runtime",
               currentAction.actionLabel,
@@ -1671,8 +1700,20 @@ export class DomainController implements DomainControllerInterface {
             break;
           }
           case "compositeRunBoxedQueryAction": {
+            // const resolvedActionWithProtectedRuntimeTranformers = currentAction.queryTemplate.query.runtimeTransformers?
+            //   {
+            //     ...resolvedAction,
+            //     queryTemplate: {
+            //       ...resolvedAction.queryTemplate,
+            //       query: {
+            //         ...resolvedAction.queryTemplate.query,
+            //         runtimeTransformers: currentAction.queryTemplate.query.runtimeTransformers,
+            //       },
+            //     },
+            //   }: resolvedAction;
             actionResult = await this.handleCompositeRunBoxedQueryAction(
               currentAction,
+              // resolvedActionWithProtectedRuntimeTranformers, //currentAction,
               actionResult,
               localContext
             );
@@ -1680,8 +1721,20 @@ export class DomainController implements DomainControllerInterface {
             break;
           }
           case "compositeRunBoxedExtractorOrQueryAction": {
+            // const resolvedActionWithProtectedRuntimeTranformers = (currentAction.query.query as any).runtimeTransformers?
+            //   {
+            //     ...resolvedAction,
+            //     query: {
+            //       ...resolvedAction.query,
+            //       query: {
+            //         ...resolvedAction.query.query,
+            //         runtimeTransformers: (currentAction.query.query as any).runtimeTransformers,
+            //       },
+            //     },
+            //   }: resolvedAction;
             actionResult = await this.handleCompositeRunBoxedExtractorOrQueryAction(
               currentAction,
+              // resolvedActionWithProtectedRuntimeTranformers, //currentAction,
               actionParamValues,
               actionResult,
               localContext
@@ -1689,8 +1742,35 @@ export class DomainController implements DomainControllerInterface {
             break;
           }
           case "compositeRunTestAssertion": {
+            const resolvedAction = transformer_extended_apply(
+              "runtime",
+              currentAction.actionLabel,
+              currentAction as any as TransformerForRuntime,
+              "value",
+              actionParamValues, // queryParams
+              localContext // contextResults
+            );
+
+            log.info(
+              "handleRuntimeCompositeAction resolvedAction action to handle",
+              JSON.stringify(resolvedAction, null, 2)
+            );
+
+            if (resolvedAction instanceof Domain2ElementFailed) {
+              log.error(
+                "handleRuntimeCompositeAction resolvedAction error",
+                JSON.stringify(resolvedAction, null, 2)
+              );
+              return new Action2Error(
+                "FailedToResolveTemplate",
+                "handleRuntimeCompositeAction error resolving action " +
+                  JSON.stringify(resolvedAction, null, 2),
+                [currentAction.actionLabel ?? currentAction.actionType]
+              );
+            }
+
             actionResult = this.handleTestCompositeActionAssertion(
-              currentAction,
+              resolvedAction, //currentAction,
               localContext,
               actionResult
             );
@@ -1885,6 +1965,8 @@ export class DomainController implements DomainControllerInterface {
     let valueToTest: any = undefined;
     try {
       TestSuiteContext.setTestAssertion(currentAction.testAssertion.testLabel);
+
+      // TODO: shall there be an interpretation at all?
       const prePreValueToTest = currentAction.testAssertion.definition.resultTransformer
         ? transformer_extended_apply(
             "runtime",
@@ -1920,7 +2002,7 @@ export class DomainController implements DomainControllerInterface {
             currentAction.testAssertion.definition.ignoreAttributes ?? []
           );
       log.info(
-        "handleCompositeAction compositeRunTestAssertion to handle",
+        "handleTestCompositeActionAssertion compositeRunTestAssertion to handle",
         JSON.stringify(currentAction.testAssertion, null, 2),
         // "preValueToTest typeof", typeof preValueToTest,
         // "preValueToTest instanceof Array", preValueToTest instanceof Array,
@@ -1939,7 +2021,7 @@ export class DomainController implements DomainControllerInterface {
           .toEqual(expectedValue);
         // .toEqual(currentAction.testAssertion.definition.expectedValue);
         log.info(
-          "handleCompositeAction compositeRunTestAssertion test passed",
+          "handleTestCompositeActionAssertion compositeRunTestAssertion test passed",
           currentAction.testAssertion
         );
         actionResult = {
@@ -1963,7 +2045,7 @@ export class DomainController implements DomainControllerInterface {
         actionResult = ACTION_OK;
       }
     } catch (error) {
-      log.error("handleCompositeAction compositeRunTestAssertion error", error);
+      log.error("handleTestCompositeActionAssertion compositeRunTestAssertion error", error);
       // TODO: 2 try catch blocks, one for the expect, one for the rest
       TestSuiteContext.setTestAssertionResult({
         assertionName: currentAction.testAssertion.testLabel,
@@ -1973,7 +2055,7 @@ export class DomainController implements DomainControllerInterface {
         // assertionActualValue: valueToTest,
       });
       throw new Error(
-        "handleCompositeAction compositeRunTestAssertion error" + JSON.stringify(error, null, 2)
+        "handleTestCompositeActionAssertion compositeRunTestAssertion error" + JSON.stringify(error, null, 2)
       );
     } finally {
       TestSuiteContext.setTestAssertion(undefined);
@@ -2868,123 +2950,6 @@ export class DomainController implements DomainControllerInterface {
       currentModel
     );
   }
-
-  // // ################################################################################################
-  // async handleTestCompositeActionAssertion(
-  //   // compositeAction: CompositeAction,
-  //   compositeRunTestAssertion: {
-  //     actionType: "compositeRunTestAssertion";
-  //     actionLabel?: string | undefined;
-  //     nameGivenToResult: string;
-  //     testAssertion: TestAssertion;
-  //   },
-  //   actionParamValues: Record<string, any>,
-  //   currentModel: MetaModel
-  // ): Promise<Action2VoidReturnType> {
-  //   let actionResult: Action2VoidReturnType | undefined = undefined;
-  //   const localActionParams = { ...actionParamValues };
-  //   let localContext: Record<string, any> = { ...actionParamValues };
-
-  //   if (!ConfigurationService.testImplementation) {
-  //     throw new Error(
-  //       "ConfigurationService.testImplementation is not set, please inject a test implementation using ConfigurationService.registerTestImplementation on startup if you want to run tests at runtime."
-  //     );
-  //   }
-  //   let valueToTest: any = undefined;
-  //   try {
-  //     TestSuiteContext.setTestAssertion(compositeRunTestAssertion.testAssertion.testLabel);
-  //     const prePreValueToTest = compositeRunTestAssertion.testAssertion.definition.resultTransformer
-  //       ? transformer_extended_apply(
-  //           "runtime",
-  //           undefined /**WHAT?? */,
-  //           compositeRunTestAssertion.testAssertion.definition.resultTransformer,
-  //           "value",
-  //           {},
-  //           localContext
-  //         )
-  //       : localContext;
-
-  //     const preValueToTest = resolvePathOnObject(
-  //       prePreValueToTest,
-  //       compositeRunTestAssertion.testAssertion.definition.resultAccessPath ?? []
-  //     );
-
-  //     valueToTest = Array.isArray(preValueToTest)
-  //       ? ignorePostgresExtraAttributesOnList(
-  //           preValueToTest,
-  //           compositeRunTestAssertion.testAssertion.definition.ignoreAttributes ?? []
-  //         )
-  //       : ignorePostgresExtraAttributesOnObject(
-  //           preValueToTest,
-  //           compositeRunTestAssertion.testAssertion.definition.ignoreAttributes ?? []
-  //         );
-  //     log.info(
-  //       "handleCompositeAction compositeRunTestAssertion to handle",
-  //       JSON.stringify(compositeRunTestAssertion.testAssertion, null, 2),
-  //       // "preValueToTest typeof", typeof preValueToTest,
-  //       // "preValueToTest instanceof Array", preValueToTest instanceof Array,
-  //       "preValueToTest is array",
-  //       Array.isArray(preValueToTest),
-  //       // "preValueToTest object proto is array", JSON.stringify(Object.prototype.toString.call(preValueToTest)),
-  //       // "preValueToTest constuctor is array", preValueToTest.constructor === Array,
-  //       "preValueToTest",
-  //       JSON.stringify(preValueToTest, null, 2),
-  //       "valueToTest",
-  //       JSON.stringify(valueToTest, null, 2)
-  //     );
-  //     try {
-  //       ConfigurationService.testImplementation
-  //         .expect(valueToTest, compositeRunTestAssertion.nameGivenToResult)
-  //         .toEqual(compositeRunTestAssertion.testAssertion.definition.expectedValue);
-  //       log.info(
-  //         "handleCompositeAction compositeRunTestAssertion test passed",
-  //         compositeRunTestAssertion.testAssertion
-  //       );
-  //       actionResult = ACTION_OK;
-  //       TestSuiteContext.setTestAssertionResult({
-  //         assertionName: compositeRunTestAssertion.testAssertion.testLabel,
-  //         assertionResult: "ok",
-  //         // assertionExpectedValue: compositeRunTestAssertion.testAssertion.definition.expectedValue,
-  //         // assertionActualValue: valueToTest,
-  //       });
-  //     } catch (error) {
-  //       TestSuiteContext.setTestAssertionResult({
-  //         assertionName: compositeRunTestAssertion.testAssertion.testLabel,
-  //         assertionResult: "error",
-  //         assertionExpectedValue: compositeRunTestAssertion.testAssertion.definition.expectedValue,
-  //         assertionActualValue: valueToTest,
-  //       });
-  //       return ACTION_OK;
-  //     }
-  //   } catch (error) {
-  //     log.error("handleCompositeAction compositeRunTestAssertion error", error);
-  //     // TODO: 2 try catch blocks, one for the expect, one for the rest
-  //     TestSuiteContext.setTestAssertionResult({
-  //       assertionName: compositeRunTestAssertion.testAssertion.testLabel,
-  //       assertionResult: "error",
-  //       // TODO: set error message
-  //       // assertionExpectedValue: compositeRunTestAssertion.testAssertion.definition.expectedValue,
-  //       // assertionActualValue: valueToTest,
-  //     });
-  //     // return {
-  //     //   status: "ok",
-  //     //   returnedDomainElement: { elementType: "void" },
-  //     // };
-  //     throw new Error(
-  //       "handleCompositeAction compositeRunTestAssertion error" + JSON.stringify(error, null, 2)
-  //     );
-  //   } finally {
-  //     TestSuiteContext.setTestAssertion(undefined);
-  //   }
-  //   return (
-  //     actionResult ??
-  //     new Action2Error(
-  //       "FailedToHandleCompositeActionTestAssertion",
-  //       "handleTestCompositeActionAssertionNOTUSED compositeRunTestAssertion error: " +
-  //         JSON.stringify(compositeRunTestAssertion)
-  //     )
-  //   );
-  // }
 
   // ##############################################################################################
   private actionHandler: ActionHandler;

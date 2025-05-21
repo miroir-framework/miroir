@@ -46,6 +46,13 @@
             "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
             "reportUuid": "ace3d5c9-b6a7-43e6-a277-595329e7532a",
             "icon": "list"
+          },
+          {
+            "label": "Miroir Tests",
+            "section": "data",
+            "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+            "reportUuid": "683ba925-835e-4f9d-845b-7fae500316ad",
+            "icon": "list"
           }
         ]
       }
