@@ -97,11 +97,11 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
           };
         }
       } else {
-        args = this.actionTypeArgsMap[persistenceAction.actionType][persistenceAction.actionName]
+        args = this.actionTypeArgsMap[persistenceAction.actionType][(persistenceAction as any)?.actionName??"*"]
           ? {
-              [this.actionTypeArgsMap[persistenceAction.actionType][persistenceAction.actionName]?.result ?? "ERROR"]: (
+              [(this.actionTypeArgsMap as any)[persistenceAction.actionType][(persistenceAction as any)?.actionName??"*"].result ?? "ERROR"]: (
                 persistenceAction as any
-              )[this.actionTypeArgsMap[persistenceAction.actionType][persistenceAction.actionName]?.attribute ?? "ERROR"],
+              )[this.actionTypeArgsMap[persistenceAction.actionType][(persistenceAction as any)?.actionName??"*"]?.attribute ?? "ERROR"],
             }
           : {};
       }
@@ -113,8 +113,16 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
     }
 
     return {
-      operation: (this.operationMethod as any)[(actionHttpMethods as any)[persistenceAction.actionName] ?? "post"],
-      url: rootApiUrl + (networkActionUrlMap[persistenceAction.actionName] ?? ""),
+      operation: (this.operationMethod as any)[
+        (actionHttpMethods as any)[
+          (persistenceAction as any).actionName ?? persistenceAction.actionType
+        ] ?? "post"
+      ],
+      url:
+        rootApiUrl +
+        (networkActionUrlMap[
+          (persistenceAction as any).actionName ?? persistenceAction.actionType
+        ] ?? ""),
       args,
     };
   }
@@ -122,11 +130,19 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
   // ##################################################################################
   async handleNetworkPersistenceAction(action: PersistenceAction): Promise<RestClientCallReturnType> {
     switch (action.actionType) {
-      case "instanceAction":
+      // case "instanceAction":
+      case "createInstance":
+      case "deleteInstance":
+      case "deleteInstanceWithCascade":
+      case "updateInstance":
+      case "loadNewInstancesInLocalCache":
+      case "getInstance":
+      case "getInstances":
+      // 
       case "bundleAction":
       case "modelAction":
       case "storeManagementAction": {
-        const callParams = this.getRestCallParams(action, this.rootApiUrl + "/action/" + action.actionName);
+        const callParams = this.getRestCallParams(action, this.rootApiUrl + "/action/" + ((action as any).actionName??action.actionType));
         log.debug("handleNetworkPersistenceAction", action, "callParams", callParams);
         const result = await callParams.operation("/action/:actionName", callParams.url, callParams.args);
         log.info("handleNetworkPersistenceAction", action, "result", result);

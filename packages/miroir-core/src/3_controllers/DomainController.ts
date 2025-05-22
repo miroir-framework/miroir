@@ -461,8 +461,7 @@ export class DomainController implements DomainControllerInterface {
                   context, // context
                   {}, // context update
                   {
-                    actionType: "instanceAction",
-                    actionName: "loadNewInstancesInLocalCache",
+                    actionType: "loadNewInstancesInLocalCache",
                     deploymentUuid,
                     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                     objects: [latestInstances],
@@ -1058,7 +1057,7 @@ export class DomainController implements DomainControllerInterface {
                     {
                       actionType: "RestPersistenceAction",
                       actionName:
-                        replayAction.instanceAction.actionName.toString() as CRUDActionName,
+                        replayAction.instanceAction.actionType.toString() as CRUDActionName,
                       endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
                       deploymentUuid,
                       section: replayAction.instanceAction.applicationSection,
@@ -1128,8 +1127,7 @@ export class DomainController implements DomainControllerInterface {
                   {}, // context
                   {}, // context update
                   {
-                    actionType: "instanceAction",
-                    actionName: "createInstance",
+                    actionType: "createInstance",
                     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                     deploymentUuid: modelAction.deploymentUuid,
                     applicationSection: "model",
@@ -1260,7 +1258,14 @@ export class DomainController implements DomainControllerInterface {
           }
           return this.handleModelAction(domainAction.deploymentUuid, domainAction, currentModel);
         }
-        case "instanceAction": {
+        // case "instanceAction": {
+        case 'createInstance':
+        case 'deleteInstance':
+        case 'deleteInstanceWithCascade':
+        case 'updateInstance':
+        case 'loadNewInstancesInLocalCache':
+        case 'getInstance':
+        case 'getInstances': {
           return this.handleInstanceAction(domainAction.deploymentUuid, domainAction);
         }
         case "storeManagementAction": {
@@ -1439,9 +1444,17 @@ export class DomainController implements DomainControllerInterface {
             );
             break;
           }
+          // case "instanceAction":
+          case 'createInstance':
+          case 'deleteInstance':
+          case 'deleteInstanceWithCascade':
+          case 'updateInstance':
+          case 'loadNewInstancesInLocalCache':
+          case 'getInstance':
+          case 'getInstances':
+          // 
           case "undoRedoAction":
           case "modelAction":
-          case "instanceAction":
           case "transactionalInstanceAction":
           case "storeManagementAction":
           case "bundleAction": {
@@ -1525,6 +1538,7 @@ export class DomainController implements DomainControllerInterface {
             );
             break;
           }
+          case 'compositeRunBoxedExtractorAction':
           default: {
             log.error("handleCompositeAction unknown actionType", currentAction);
             break;
@@ -1638,9 +1652,17 @@ export class DomainController implements DomainControllerInterface {
             );
             break;
           }
+          // case "instanceAction":
+          case 'createInstance':
+          case 'deleteInstance':
+          case 'deleteInstanceWithCascade':
+          case 'updateInstance':
+          case 'loadNewInstancesInLocalCache':
+          case 'getInstance':
+          case 'getInstances':
+          // 
           case "undoRedoAction":
           case "modelAction":
-          case "instanceAction":
           case "transactionalInstanceAction":
           case "storeManagementAction":
           case "bundleAction": {
@@ -1776,6 +1798,7 @@ export class DomainController implements DomainControllerInterface {
             );
             break;
           }
+          case 'compositeRunBoxedExtractorAction':
           default: {
             log.error("handleRuntimeCompositeAction unknown actionType", currentAction);
             break;
@@ -2304,9 +2327,17 @@ export class DomainController implements DomainControllerInterface {
         localContext
       );
       switch (currentAction.actionType) {
+        // case "instanceAction":
+        case 'createInstance':
+        case 'deleteInstance':
+        case 'deleteInstanceWithCascade':
+        case 'updateInstance':
+        case 'loadNewInstancesInLocalCache':
+        case 'getInstance':
+        case 'getInstances':
+        // 
         case "undoRedoAction":
         case "modelAction":
-        case "instanceAction":
         case "transactionalInstanceAction":
         case "compositeAction":
         case "storeManagementAction":
@@ -2446,6 +2477,10 @@ export class DomainController implements DomainControllerInterface {
         //   // }
         //   break;
         // }
+        case 'compositeRunBoxedQueryAction':
+        case 'compositeRunBoxedExtractorAction':
+        case 'compositeRunBoxedExtractorOrQueryAction':
+        case 'compositeRunTestAssertion':
         default: {
           log.error(
             "handleCompositeActionTemplate",

@@ -151,7 +151,15 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
     }
     switch (action.actionType) {
       case 'modelAction':
-      case 'instanceAction':
+      // case 'instanceAction':
+      case 'createInstance':
+      case 'deleteInstance':
+      case 'deleteInstanceWithCascade':
+      case 'updateInstance':
+      case 'loadNewInstancesInLocalCache':
+      case 'getInstance':
+      case 'getInstances':
+      // 
       case 'LocalPersistenceAction':
       case 'RestPersistenceAction':
       case 'bundleAction':
@@ -289,7 +297,14 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
         // );
         break;
       }
-      case "instanceAction":
+      // case "instanceAction":
+      case 'createInstance':
+      case 'deleteInstance':
+      case 'deleteInstanceWithCascade':
+      case 'updateInstance':
+      case 'loadNewInstancesInLocalCache':
+      case 'getInstance':
+      case 'getInstances':
       case "modelAction": {
         if (!localPersistenceStoreController) {
           throw new Error(
@@ -325,8 +340,8 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
           read: "getInstances",
         };
         const localStoreAction: PersistenceStoreControllerAction = {
-          actionType: "instanceAction",
-          actionName: actionMap[action.actionName],
+          // actionType: "instanceAction",
+          actionType: actionMap[action.actionName],
           applicationSection: action.section,
           parentName: action.parentName ?? "",
           parentUuid: action.parentUuid ?? "",
@@ -615,7 +630,15 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
         break;
       }
       case "bundleAction":
-      case "instanceAction":
+      // case "instanceAction":
+      case 'createInstance':
+      case 'deleteInstance':
+      case 'deleteInstanceWithCascade':
+      case 'updateInstance':
+      case 'loadNewInstancesInLocalCache':
+      case 'getInstance':
+      case 'getInstances':
+      // 
       case "modelAction":
       case "storeManagementAction":
       case "LocalPersistenceAction":

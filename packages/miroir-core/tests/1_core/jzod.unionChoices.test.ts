@@ -1005,8 +1005,7 @@ describe("unionChoices", () => {
     //               actionType: "transactionalInstanceAction",
     //               actionLabel: "createReports",
     //               instanceAction: {
-    //                 actionType: "instanceAction",
-    //                 actionName: "createInstance",
+    //                 actionType: "createInstance",
     //                 applicationSection: "model",
     //                 deploymentUuid: {
     //                   transformerType: "parameterReference",
@@ -1314,8 +1313,7 @@ describe("unionChoices", () => {
     //               actionType: "transactionalInstanceAction",
     //               actionLabel: "updateMenu",
     //               instanceAction: {
-    //                 actionType: "instanceAction",
-    //                 actionName: "updateInstance",
+    //                 actionType: "updateInstance",
     //                 applicationSection: "model",
     //                 deploymentUuid: {
     //                   transformerType: "parameterReference",

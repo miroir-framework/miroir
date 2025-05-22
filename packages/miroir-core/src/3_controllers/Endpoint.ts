@@ -1,5 +1,5 @@
 import { InstanceAction } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { EndpointInterface } from "../0_interfaces/3_controllers/EndpointInterface";
+import { EndpointInterfaceNOTUSED } from "../0_interfaces/3_controllers/EndpointInterface";
 import { LocalCacheInterface } from "../0_interfaces/4-services/LocalCacheInterface";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/LoggerFactory";
@@ -12,15 +12,15 @@ MiroirLoggerFactory.registerLoggerToStart(
 ).then((logger: LoggerInterface) => {log = logger});
 
 
-export class Endpoint implements EndpointInterface {
+export class Endpoint implements EndpointInterfaceNOTUSED {
   constructor(private localCache: LocalCacheInterface) {
 
   }
 
-  handleAction(action: InstanceAction): void {
+  handleActionNOTUSED(action: InstanceAction): void {
     log.info("Endpoint.handleAction called", JSON.stringify(action, null, 2))
     // return this.localCache.handleEndpointAction(action);
-    switch (action.actionName) {
+    switch (action.actionType) {
       case "createInstance": {
         // this.localCache.createInstance(action.deploymentUuid, action.applicationSection, action.objects);
         // log.info("Endpoint.handleAction called", action)
@@ -36,7 +36,7 @@ export class Endpoint implements EndpointInterface {
     }
   }
 
-  async handleAsyncAction(action: InstanceAction): Promise<void> {
+  async handleAsyncActionNOTUSED(action: InstanceAction): Promise<void> {
     return Promise.resolve();
   }
 }

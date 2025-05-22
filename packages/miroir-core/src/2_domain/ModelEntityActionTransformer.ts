@@ -36,8 +36,8 @@ export class ModelEntityActionTransformer{
       case "createEntity": {
         return [
           {
-            actionType: "instanceAction",
-            actionName: "createInstance",
+            actionType: "createInstance",
+            // actionName: "createInstance",
             deploymentUuid: modelAction.deploymentUuid,
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             applicationSection: "model",
@@ -66,8 +66,8 @@ export class ModelEntityActionTransformer{
       case "dropEntity": {
         return [
           {
-            actionType: "instanceAction",
-            actionName: "deleteInstance",
+            // actionType: "instanceAction",
+            actionType: "deleteInstance",
             deploymentUuid: modelAction.deploymentUuid,
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             applicationSection: "model",
@@ -115,8 +115,7 @@ export class ModelEntityActionTransformer{
           ];
           const result: InstanceAction[] = [
             {
-              actionType: "instanceAction",
-              actionName: "updateInstance",
+              actionType: "updateInstance",
               endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
               deploymentUuid,
               applicationSection: "model",
@@ -175,8 +174,7 @@ export class ModelEntityActionTransformer{
           ];
           const result: InstanceAction[] = [
             {
-              actionType: "instanceAction",
-              actionName: "updateInstance",
+              actionType: "updateInstance",
               deploymentUuid: modelAction.deploymentUuid,
               endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
               applicationSection: "model",

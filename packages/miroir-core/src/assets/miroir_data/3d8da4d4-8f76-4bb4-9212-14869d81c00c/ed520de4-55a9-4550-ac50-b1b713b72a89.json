@@ -14,10 +14,6 @@
           "definition": {
             "actionType": {
               "type": "literal",
-              "definition": "instanceAction"
-            },
-            "actionName": {
-              "type": "literal",
               "definition": "createInstance"
             },
             "actionLabel": { "type": "string", "optional": true },
@@ -72,10 +68,6 @@
           "type": "object",
           "definition": {
             "actionType": {
-              "type": "literal",
-              "definition": "instanceAction"
-            },
-            "actionName": {
               "type": "literal",
               "definition": "deleteInstance"
             },
@@ -135,10 +127,6 @@
           "type": "object",
           "definition": {
             "actionType": {
-              "type": "literal",
-              "definition": "instanceAction"
-            },
-            "actionName": {
               "type": "literal",
               "definition": "deleteInstanceWithCascade"
             },
@@ -200,10 +188,6 @@
           "definition": {
             "actionType": {
               "type": "literal",
-              "definition": "instanceAction"
-            },
-            "actionName": {
-              "type": "literal",
               "definition": "updateInstance"
             },
             "actionLabel": { "type": "string", "optional": true },
@@ -264,10 +248,6 @@
           "definition": {
             "actionType": {
               "type": "literal",
-              "definition": "instanceAction"
-            },
-            "actionName": {
-              "type": "literal",
               "definition": "loadNewInstancesInLocalCache"
             },
             "actionLabel": { "type": "string", "optional": true },
@@ -315,10 +295,6 @@
           "type": "object",
           "definition": {
             "actionType": {
-              "type": "literal",
-              "definition": "instanceAction"
-            },
-            "actionName": {
               "type": "literal",
               "definition": "getInstance"
             },
@@ -376,10 +352,6 @@
           "type": "object",
           "definition": {
             "actionType": {
-              "type": "literal",
-              "definition": "instanceAction"
-            },
-            "actionName": {
               "type": "literal",
               "definition": "getInstances"
             },

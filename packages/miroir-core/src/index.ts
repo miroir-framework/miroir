@@ -564,7 +564,7 @@ export {
   DataStoreApplicationType,
   DataStoreApplicationTypeSchema,
 } from "./0_interfaces/3_controllers/ApplicationControllerInterface.js";
-export { EndpointInterface } from "./0_interfaces/3_controllers/EndpointInterface.js";
+export { EndpointInterfaceNOTUSED } from "./0_interfaces/3_controllers/EndpointInterface.js";
 export {
   ErrorLogServiceInterface,
   MError,

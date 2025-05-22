@@ -259,47 +259,81 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     
         break;
       }
-      case "instanceAction": {
-        // TODO: check await calls for errors!
-        switch (persistenceStoreControllerAction.actionName) {
-          case "updateInstance": 
-          case "createInstance": {
-            for (const instanceCollection of persistenceStoreControllerAction.objects) {
-              for (const instance of instanceCollection.instances) {
-                await this.upsertInstance(instanceCollection.applicationSection,instance)
-              }
-            }
-            break;
+      // case "instanceAction": {
+      case "createInstance":
+      case "updateInstance": {
+        for (const instanceCollection of persistenceStoreControllerAction.objects) {
+          for (const instance of instanceCollection.instances) {
+            await this.upsertInstance(instanceCollection.applicationSection,instance)
           }
-          case "deleteInstance": {
-            for (const instanceCollection of persistenceStoreControllerAction.objects) {
-              await this.deleteInstances(instanceCollection.applicationSection,instanceCollection.instances)
-            }
-            break;
-          }
-          case "loadNewInstancesInLocalCache": {
-            throw new Error("PersistenceStoreController handleAction can not handle loadNewInstancesInLocalCache action!");
-            break;
-          }
-          case "getInstance": {
-            return this.getInstance(
-              persistenceStoreControllerAction.applicationSection,
-              persistenceStoreControllerAction.parentUuid,
-              persistenceStoreControllerAction.uuid
-            );
-            break;
-          }
-          case "getInstances": {
-            return this.getInstances(
-              persistenceStoreControllerAction.applicationSection,
-              persistenceStoreControllerAction.parentUuid
-            );
-            break;
-          }
-          default:
-            break;
         }
         break;
+      }
+      case "deleteInstance": {
+        for (const instanceCollection of persistenceStoreControllerAction.objects) {
+          await this.deleteInstances(instanceCollection.applicationSection,instanceCollection.instances)
+        }
+        break;
+      }
+      case "deleteInstanceWithCascade":
+      case "loadNewInstancesInLocalCache":{
+        throw new Error("PersistenceStoreController handleAction can not handle loadNewInstancesInLocalCache action!");
+        break;
+      }
+      case "getInstance": {
+        return this.getInstance(
+          persistenceStoreControllerAction.applicationSection,
+          persistenceStoreControllerAction.parentUuid,
+          persistenceStoreControllerAction.uuid
+        );
+        break;
+      }
+      case "getInstances": {
+        return this.getInstances(
+          persistenceStoreControllerAction.applicationSection,
+          persistenceStoreControllerAction.parentUuid
+        );
+        break;
+        // TODO: check await calls for errors!
+        // switch (persistenceStoreControllerAction.actionName) {
+        //   case "updateInstance": 
+        //   case "createInstance": {
+        //     for (const instanceCollection of persistenceStoreControllerAction.objects) {
+        //       for (const instance of instanceCollection.instances) {
+        //         await this.upsertInstance(instanceCollection.applicationSection,instance)
+        //       }
+        //     }
+        //     break;
+        //   }
+        //   case "deleteInstance": {
+        //     for (const instanceCollection of persistenceStoreControllerAction.objects) {
+        //       await this.deleteInstances(instanceCollection.applicationSection,instanceCollection.instances)
+        //     }
+        //     break;
+        //   }
+        //   case "loadNewInstancesInLocalCache": {
+        //     throw new Error("PersistenceStoreController handleAction can not handle loadNewInstancesInLocalCache action!");
+        //     break;
+        //   }
+        //   case "getInstance": {
+        //     return this.getInstance(
+        //       persistenceStoreControllerAction.applicationSection,
+        //       persistenceStoreControllerAction.parentUuid,
+        //       persistenceStoreControllerAction.uuid
+        //     );
+        //     break;
+        //   }
+        //   case "getInstances": {
+        //     return this.getInstances(
+        //       persistenceStoreControllerAction.applicationSection,
+        //       persistenceStoreControllerAction.parentUuid
+        //     );
+        //     break;
+        //   }
+        //   default:
+        //     break;
+        // }
+        // break;
       }
       default: {
         throw new Error("PersistenceStoreController handleAction could not handleAction " + persistenceStoreControllerAction);

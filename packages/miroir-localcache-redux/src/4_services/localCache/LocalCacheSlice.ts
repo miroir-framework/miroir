@@ -362,7 +362,8 @@ function handleInstanceAction(
   //   instanceAction
   // );
   try {
-    switch (instanceAction.actionName) {
+    // switch (instanceAction.actionName) {
+    switch (instanceAction.actionType) {
     case "createInstance": {
       for (let instanceCollection of instanceAction.objects ?? ([] as EntityInstanceCollection[])) {
         const instanceCollectionEntityIndex = getDeploymentEntityStateIndex(
@@ -654,7 +655,14 @@ function handleAction(
       return handleInstanceAction(state, action.instanceAction);
       break;
     }
-    case "instanceAction": {
+    // case "instanceAction": {
+    case "createInstance":
+    case "deleteInstance":
+    case "deleteInstanceWithCascade":
+    case "updateInstance":
+    case "loadNewInstancesInLocalCache":
+    case "getInstance":
+    case "getInstances": {
       return handleInstanceAction(state, action);
       break;
     }

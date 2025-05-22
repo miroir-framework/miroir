@@ -290,7 +290,8 @@ function handleInstanceAction(
     futureModelPatches,
     queriesResultsCache,
   } = state;
-  switch (action.payload.actionName) {
+  // switch (action.payload.actionName) {
+  switch (action.payload.actionType) {
     case "loadNewInstancesInLocalCache": {
       const next = callNextReducer(innerReducer, state, action as PayloadAction<InstanceAction>);
       return {
@@ -418,7 +419,14 @@ export function createUndoRedoReducer(innerReducer: InnerReducerInterface): Redu
             return handleModelAction(innerReducer, state, action as PayloadAction<ModelAction>)
             break;
           }
-          case "instanceAction": {
+          // case "instanceAction": {
+          case "createInstance":
+          case "deleteInstance":
+          case "deleteInstanceWithCascade":
+          case "updateInstance":
+          case "loadNewInstancesInLocalCache":
+          case "getInstance":
+          case "getInstances": {
             return handleInstanceAction(innerReducer, state, action as PayloadAction<InstanceAction>)
             break;
           }
@@ -434,6 +442,7 @@ export function createUndoRedoReducer(innerReducer: InnerReducerInterface): Redu
             return handleUndoRedoAction(innerReducer, state, action as PayloadAction<UndoRedoAction>)
             break;
           }
+          case "RestPersistenceAction": 
           default: {
             throw new Error(
               "reduceWithUndoRedo handleAction accepts only actionType=modelAction, found " +

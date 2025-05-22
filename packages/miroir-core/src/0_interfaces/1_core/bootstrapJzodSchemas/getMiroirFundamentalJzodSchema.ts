@@ -2767,13 +2767,14 @@ export function getMiroirFundamentalJzodSchema(
           definition: instanceEndpointVersionV1.definition.actions
             .filter((e: any) =>
               ["createInstance", "updateInstance", "deleteInstance"].includes(
-                e.actionParameters.definition.actionName.definition
+                e.actionParameters.definition.actionType.definition
               )
             )
             .map((e: any) => e.actionParameters),
         },
         instanceAction: {
           type: "union",
+          discriminator: "actionType",
           definition: instanceEndpointVersionV1.definition.actions.map(
             (e: any) => e.actionParameters
           ),

@@ -6205,7 +6205,7 @@ export const miroirFundamentalJzodSchema = {
                   "type": "schemaReference",
                   "definition": {
                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "testCompositeAction"
+                    "relativePath": "testBuildPlusRuntimeCompositeAction"
                   }
                 }
               },
@@ -12243,10 +12243,6 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "actionType": {
                 "type": "literal",
-                "definition": "instanceAction"
-              },
-              "actionName": {
-                "type": "literal",
                 "definition": "createInstance"
               },
               "actionLabel": {
@@ -12298,10 +12294,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "object",
             "definition": {
               "actionType": {
-                "type": "literal",
-                "definition": "instanceAction"
-              },
-              "actionName": {
                 "type": "literal",
                 "definition": "deleteInstance"
               },
@@ -12358,10 +12350,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "object",
             "definition": {
               "actionType": {
-                "type": "literal",
-                "definition": "instanceAction"
-              },
-              "actionName": {
                 "type": "literal",
                 "definition": "updateInstance"
               },
@@ -12421,15 +12409,12 @@ export const miroirFundamentalJzodSchema = {
       },
       "instanceAction": {
         "type": "union",
+        "discriminator": "actionType",
         "definition": [
           {
             "type": "object",
             "definition": {
               "actionType": {
-                "type": "literal",
-                "definition": "instanceAction"
-              },
-              "actionName": {
                 "type": "literal",
                 "definition": "createInstance"
               },
@@ -12482,10 +12467,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "object",
             "definition": {
               "actionType": {
-                "type": "literal",
-                "definition": "instanceAction"
-              },
-              "actionName": {
                 "type": "literal",
                 "definition": "deleteInstance"
               },
@@ -12543,10 +12524,6 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "actionType": {
                 "type": "literal",
-                "definition": "instanceAction"
-              },
-              "actionName": {
-                "type": "literal",
                 "definition": "deleteInstanceWithCascade"
               },
               "actionLabel": {
@@ -12602,10 +12579,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "object",
             "definition": {
               "actionType": {
-                "type": "literal",
-                "definition": "instanceAction"
-              },
-              "actionName": {
                 "type": "literal",
                 "definition": "updateInstance"
               },
@@ -12666,10 +12639,6 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "actionType": {
                 "type": "literal",
-                "definition": "instanceAction"
-              },
-              "actionName": {
-                "type": "literal",
                 "definition": "loadNewInstancesInLocalCache"
               },
               "actionLabel": {
@@ -12714,10 +12683,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "object",
             "definition": {
               "actionType": {
-                "type": "literal",
-                "definition": "instanceAction"
-              },
-              "actionName": {
                 "type": "literal",
                 "definition": "getInstance"
               },
@@ -12772,10 +12737,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "object",
             "definition": {
               "actionType": {
-                "type": "literal",
-                "definition": "instanceAction"
-              },
-              "actionName": {
                 "type": "literal",
                 "definition": "getInstances"
               },
@@ -21574,26 +21535,12 @@ export const miroirFundamentalJzodSchema = {
       },
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction": {
         "type": "union",
+        "discriminator": "actionType",
         "definition": [
           {
             "type": "object",
             "definition": {
               "actionType": {
-                "type": "union",
-                "definition": [
-                  {
-                    "type": "literal",
-                    "definition": "instanceAction"
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "transformerForBuildCarryOnObject"
-                    }
-                  }
-                ]
-              },
-              "actionName": {
                 "type": "union",
                 "definition": [
                   {
@@ -21740,21 +21687,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "object",
             "definition": {
               "actionType": {
-                "type": "union",
-                "definition": [
-                  {
-                    "type": "literal",
-                    "definition": "instanceAction"
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "transformerForBuildCarryOnObject"
-                    }
-                  }
-                ]
-              },
-              "actionName": {
                 "type": "union",
                 "definition": [
                   {
@@ -21921,21 +21853,6 @@ export const miroirFundamentalJzodSchema = {
                 "definition": [
                   {
                     "type": "literal",
-                    "definition": "instanceAction"
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "transformerForBuildCarryOnObject"
-                    }
-                  }
-                ]
-              },
-              "actionName": {
-                "type": "union",
-                "definition": [
-                  {
-                    "type": "literal",
                     "definition": "deleteInstanceWithCascade"
                   },
                   {
@@ -22094,21 +22011,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "object",
             "definition": {
               "actionType": {
-                "type": "union",
-                "definition": [
-                  {
-                    "type": "literal",
-                    "definition": "instanceAction"
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "transformerForBuildCarryOnObject"
-                    }
-                  }
-                ]
-              },
-              "actionName": {
                 "type": "union",
                 "definition": [
                   {
@@ -22281,21 +22183,6 @@ export const miroirFundamentalJzodSchema = {
                 "definition": [
                   {
                     "type": "literal",
-                    "definition": "instanceAction"
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "transformerForBuildCarryOnObject"
-                    }
-                  }
-                ]
-              },
-              "actionName": {
-                "type": "union",
-                "definition": [
-                  {
-                    "type": "literal",
                     "definition": "loadNewInstancesInLocalCache"
                   },
                   {
@@ -22419,21 +22306,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "object",
             "definition": {
               "actionType": {
-                "type": "union",
-                "definition": [
-                  {
-                    "type": "literal",
-                    "definition": "instanceAction"
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "transformerForBuildCarryOnObject"
-                    }
-                  }
-                ]
-              },
-              "actionName": {
                 "type": "union",
                 "definition": [
                   {
@@ -22592,21 +22464,6 @@ export const miroirFundamentalJzodSchema = {
                 "definition": [
                   {
                     "type": "literal",
-                    "definition": "instanceAction"
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "transformerForBuildCarryOnObject"
-                    }
-                  }
-                ]
-              },
-              "actionName": {
-                "type": "union",
-                "definition": [
-                  {
-                    "type": "literal",
                     "definition": "getInstances"
                   },
                   {
@@ -22740,21 +22597,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "object",
             "definition": {
               "actionType": {
-                "type": "union",
-                "definition": [
-                  {
-                    "type": "literal",
-                    "definition": "instanceAction"
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "transformerForBuildCarryOnObject"
-                    }
-                  }
-                ]
-              },
-              "actionName": {
                 "type": "union",
                 "definition": [
                   {
@@ -22901,21 +22743,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "object",
             "definition": {
               "actionType": {
-                "type": "union",
-                "definition": [
-                  {
-                    "type": "literal",
-                    "definition": "instanceAction"
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "transformerForBuildCarryOnObject"
-                    }
-                  }
-                ]
-              },
-              "actionName": {
                 "type": "union",
                 "definition": [
                   {
@@ -23078,21 +22905,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "object",
             "definition": {
               "actionType": {
-                "type": "union",
-                "definition": [
-                  {
-                    "type": "literal",
-                    "definition": "instanceAction"
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "transformerForBuildCarryOnObject"
-                    }
-                  }
-                ]
-              },
-              "actionName": {
                 "type": "union",
                 "definition": [
                   {
@@ -40505,15 +40317,12 @@ export const miroirFundamentalJzodSchema = {
       },
       "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction": {
         "type": "union",
+        "discriminator": "actionType",
         "definition": [
           {
             "type": "object",
             "definition": {
               "actionType": {
-                "type": "literal",
-                "definition": "instanceAction"
-              },
-              "actionName": {
                 "type": "literal",
                 "definition": "createInstance"
               },
@@ -40566,10 +40375,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "object",
             "definition": {
               "actionType": {
-                "type": "literal",
-                "definition": "instanceAction"
-              },
-              "actionName": {
                 "type": "literal",
                 "definition": "deleteInstance"
               },
@@ -40627,10 +40432,6 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "actionType": {
                 "type": "literal",
-                "definition": "instanceAction"
-              },
-              "actionName": {
-                "type": "literal",
                 "definition": "deleteInstanceWithCascade"
               },
               "actionLabel": {
@@ -40686,10 +40487,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "object",
             "definition": {
               "actionType": {
-                "type": "literal",
-                "definition": "instanceAction"
-              },
-              "actionName": {
                 "type": "literal",
                 "definition": "updateInstance"
               },
@@ -40765,10 +40562,6 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "actionType": {
                 "type": "literal",
-                "definition": "instanceAction"
-              },
-              "actionName": {
-                "type": "literal",
                 "definition": "loadNewInstancesInLocalCache"
               },
               "actionLabel": {
@@ -40813,10 +40606,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "object",
             "definition": {
               "actionType": {
-                "type": "literal",
-                "definition": "instanceAction"
-              },
-              "actionName": {
                 "type": "literal",
                 "definition": "getInstance"
               },
@@ -40872,10 +40661,6 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "actionType": {
                 "type": "literal",
-                "definition": "instanceAction"
-              },
-              "actionName": {
-                "type": "literal",
                 "definition": "getInstances"
               },
               "actionLabel": {
@@ -40924,10 +40709,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "object",
             "definition": {
               "actionType": {
-                "type": "literal",
-                "definition": "instanceAction"
-              },
-              "actionName": {
                 "type": "literal",
                 "definition": "createInstance"
               },
@@ -40980,10 +40761,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "object",
             "definition": {
               "actionType": {
-                "type": "literal",
-                "definition": "instanceAction"
-              },
-              "actionName": {
                 "type": "literal",
                 "definition": "deleteInstance"
               },
@@ -41040,10 +40817,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "object",
             "definition": {
               "actionType": {
-                "type": "literal",
-                "definition": "instanceAction"
-              },
-              "actionName": {
                 "type": "literal",
                 "definition": "updateInstance"
               },
@@ -44503,15 +44276,12 @@ export const miroirFundamentalJzodSchema = {
       },
       "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction": {
         "type": "union",
+        "discriminator": "actionType",
         "definition": [
           {
             "type": "object",
             "definition": {
               "actionType": {
-                "type": "literal",
-                "definition": "instanceAction"
-              },
-              "actionName": {
                 "type": "literal",
                 "definition": "createInstance"
               },
@@ -44564,10 +44334,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "object",
             "definition": {
               "actionType": {
-                "type": "literal",
-                "definition": "instanceAction"
-              },
-              "actionName": {
                 "type": "literal",
                 "definition": "deleteInstance"
               },
@@ -44625,10 +44391,6 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "actionType": {
                 "type": "literal",
-                "definition": "instanceAction"
-              },
-              "actionName": {
-                "type": "literal",
                 "definition": "deleteInstanceWithCascade"
               },
               "actionLabel": {
@@ -44684,10 +44446,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "object",
             "definition": {
               "actionType": {
-                "type": "literal",
-                "definition": "instanceAction"
-              },
-              "actionName": {
                 "type": "literal",
                 "definition": "updateInstance"
               },
@@ -44763,10 +44521,6 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "actionType": {
                 "type": "literal",
-                "definition": "instanceAction"
-              },
-              "actionName": {
-                "type": "literal",
                 "definition": "loadNewInstancesInLocalCache"
               },
               "actionLabel": {
@@ -44811,10 +44565,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "object",
             "definition": {
               "actionType": {
-                "type": "literal",
-                "definition": "instanceAction"
-              },
-              "actionName": {
                 "type": "literal",
                 "definition": "getInstance"
               },
@@ -44870,10 +44620,6 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "actionType": {
                 "type": "literal",
-                "definition": "instanceAction"
-              },
-              "actionName": {
-                "type": "literal",
                 "definition": "getInstances"
               },
               "actionLabel": {
@@ -44922,10 +44668,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "object",
             "definition": {
               "actionType": {
-                "type": "literal",
-                "definition": "instanceAction"
-              },
-              "actionName": {
                 "type": "literal",
                 "definition": "createInstance"
               },
@@ -44978,10 +44720,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "object",
             "definition": {
               "actionType": {
-                "type": "literal",
-                "definition": "instanceAction"
-              },
-              "actionName": {
                 "type": "literal",
                 "definition": "deleteInstance"
               },
@@ -45038,10 +44776,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "object",
             "definition": {
               "actionType": {
-                "type": "literal",
-                "definition": "instanceAction"
-              },
-              "actionName": {
                 "type": "literal",
                 "definition": "updateInstance"
               },
@@ -48503,15 +48237,12 @@ export const miroirFundamentalJzodSchema = {
       },
       "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction": {
         "type": "union",
+        "discriminator": "actionType",
         "definition": [
           {
             "type": "object",
             "definition": {
               "actionType": {
-                "type": "literal",
-                "definition": "instanceAction"
-              },
-              "actionName": {
                 "type": "literal",
                 "definition": "createInstance"
               },
@@ -48564,10 +48295,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "object",
             "definition": {
               "actionType": {
-                "type": "literal",
-                "definition": "instanceAction"
-              },
-              "actionName": {
                 "type": "literal",
                 "definition": "deleteInstance"
               },
@@ -48625,10 +48352,6 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "actionType": {
                 "type": "literal",
-                "definition": "instanceAction"
-              },
-              "actionName": {
-                "type": "literal",
                 "definition": "deleteInstanceWithCascade"
               },
               "actionLabel": {
@@ -48684,10 +48407,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "object",
             "definition": {
               "actionType": {
-                "type": "literal",
-                "definition": "instanceAction"
-              },
-              "actionName": {
                 "type": "literal",
                 "definition": "updateInstance"
               },
@@ -48764,10 +48483,6 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "actionType": {
                 "type": "literal",
-                "definition": "instanceAction"
-              },
-              "actionName": {
-                "type": "literal",
                 "definition": "loadNewInstancesInLocalCache"
               },
               "actionLabel": {
@@ -48812,10 +48527,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "object",
             "definition": {
               "actionType": {
-                "type": "literal",
-                "definition": "instanceAction"
-              },
-              "actionName": {
                 "type": "literal",
                 "definition": "getInstance"
               },
@@ -48871,10 +48582,6 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "actionType": {
                 "type": "literal",
-                "definition": "instanceAction"
-              },
-              "actionName": {
-                "type": "literal",
                 "definition": "getInstances"
               },
               "actionLabel": {
@@ -48923,10 +48630,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "object",
             "definition": {
               "actionType": {
-                "type": "literal",
-                "definition": "instanceAction"
-              },
-              "actionName": {
                 "type": "literal",
                 "definition": "createInstance"
               },
@@ -48979,10 +48682,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "object",
             "definition": {
               "actionType": {
-                "type": "literal",
-                "definition": "instanceAction"
-              },
-              "actionName": {
                 "type": "literal",
                 "definition": "deleteInstance"
               },
@@ -49039,10 +48738,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "object",
             "definition": {
               "actionType": {
-                "type": "literal",
-                "definition": "instanceAction"
-              },
-              "actionName": {
                 "type": "literal",
                 "definition": "updateInstance"
               },

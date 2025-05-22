@@ -279,7 +279,14 @@ export async function restActionHandler(
       break;
     }
     case "modelAction": 
-    case "instanceAction": {
+    // case "instanceAction": {
+    case "createInstance":
+    case "deleteInstance":
+    case "deleteInstanceWithCascade":
+    case "updateInstance":
+    case "loadNewInstancesInLocalCache":
+    case "getInstance":
+    case "getInstances": {
       if (useDomainControllerToHandleModelAndInstanceActions) {
         // we are on the server, the action has been received from remote client
         if (action.actionType == "modelAction") {
