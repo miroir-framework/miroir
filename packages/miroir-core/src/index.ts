@@ -905,6 +905,7 @@ const entityDefinitionTransformerDefinition = require("./assets/miroir_model/54b
 
 const miroirJzodSchemaBootstrap = require("./assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/1e8dab4b-65a3-4686-922e-ce89a2d62aa9.json");
 const transformerJzodSchema = require("./assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/a97756cf-dd93-42b9-a021-91a629b187b9.json");
+const test_createEntityAndReportFromSpreadsheetAndUpdateMenu = require("./assets/miroir_data/c37625c7-0b35-4d6a-811d-8181eb978301/ffe6ab3c-8296-4293-8aaf-ebbad1f0ac9a.json");
 
 // const entityDefinitionSelfApplicationV1 = require("../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/9460420b-f176-4918-bd45-894ab195ffe9.json"); //assert { type: "json" };
 // const entityDefinitionSelfApplicationVersionV1 = require("../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/27046fce-742f-4cc4-bb95-76b271f490a5.json"); //assert { type: "json" };
@@ -1013,6 +1014,7 @@ export {
   selfApplicationVersionInitialMiroirVersion,
   storeManagementEndpoint,
   testEndpointVersionV1,
+  test_createEntityAndReportFromSpreadsheetAndUpdateMenu,
   //
   transformerJzodSchema,
   transformerMenuV1,

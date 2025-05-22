@@ -1,0 +1,14944 @@
+import { describe, it, expect } from 'vitest';
+import type {
+  JzodElement,
+  JzodObject,
+  JzodReference,
+  JzodSchema,
+  JzodUnion,
+  MetaModel,
+} from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+// } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+// import { unionChoices } from "./JzodUnfoldSchemaForValue";
+import currentModel from "./currentModel.json";
+import currentMiroirModel from "./currentMiroirModel.json";
+import { resolveJzodSchemaReferenceInContext, unionChoices } from "../../src/1_core/jzod/JzodUnfoldSchemaForValue";
+import { miroirFundamentalJzodSchema } from '../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema';
+
+// Minimal mocks for MetaModel and JzodSchema
+const mockMetaModel: MetaModel = {} as MetaModel;
+const mockJzodSchema: JzodSchema = {
+  uuid: "mock",
+  definition: { context: {} }
+} as JzodSchema;
+
+describe("unionChoices", () => {
+  // it("returns only object types from a flat union", () => {
+  //   const obj1: JzodObject = { type: "object", definition: { a: { type: "string" } } };
+  //   const obj2: JzodObject = { type: "object", definition: { b: { type: "number" } } };
+  //   const union: JzodUnion = { type: "union", definition: [obj1, obj2, { type: "string" }] };
+
+  //   const result = unionChoices(
+  //     union.definition,
+  //     mockJzodSchema,
+  //     mockMetaModel,
+  //     mockMetaModel,
+  //     {}
+  //   );
+  //   expect(result).toEqual([obj1, obj2]);
+  // });
+
+  // it("resolves schemaReferences (with relativePath) in unions", () => {
+  //   // Simulate a schemaReference to an object
+  //   const referencedObj: JzodObject = { type: "object", definition: { d: { type: "string" } } };
+  //   const schemaReference: JzodReference = {
+  //     type: "schemaReference",
+  //     // definition: { absolutePath: "mock", relativePath: "refObj" },
+  //     definition: { relativePath: "refObj" },
+  //     context: {}
+  //   };
+  //   const union: JzodUnion = { type: "union", definition: [schemaReference, { type: "string" }] };
+
+  //   // Patch resolveJzodSchemaReferenceInContext to return referencedObj
+  //   // const original = resolveJzodSchemaReferenceInContext;
+  //   // (globalThis as any).resolveJzodSchemaReferenceInContext = () => referencedObj;
+
+  //   const result = unionChoices(
+  //     union.definition,
+  //     mockJzodSchema,
+  //     mockMetaModel,
+  //     mockMetaModel,
+  //     { refObj: referencedObj }
+  //   );
+  //   expect(result).toEqual([referencedObj]);
+
+  //   // Restore original
+  //   // (globalThis as any).resolveJzodSchemaReferenceInContext = original;
+  // });
+
+  // // ##############################################################################################
+  // it("flattens nested unions and returns all object types", () => {
+  //   const obj1: JzodObject = { type: "object", definition: { a: { type: "string" } } };
+  //   const obj2: JzodObject = { type: "object", definition: { b: { type: "number" } } };
+  //   const obj3: JzodObject = { type: "object", definition: { c: { type: "boolean" } } };
+  //   const nestedUnion: JzodUnion = { type: "union", definition: [obj2, obj3] };
+  //   const union: JzodUnion = { type: "union", definition: [obj1, nestedUnion, { type: "string" }] };
+
+  //   const result = unionChoices(
+  //     union.definition,
+  //     mockJzodSchema,
+  //     mockMetaModel,
+  //     mockMetaModel,
+  //     {}
+  //   );
+  //   expect(result).toEqual([obj1, obj2, obj3]);
+  // });
+
+  // // // ##############################################################################################
+  // // it("resolves schemaReferences in nested unions", () => {
+  // //   // Simulate a schemaReference to an object
+  // //   const referencedObj: JzodObject = { type: "object", definition: { d: { type: "string" } } };
+  // //   const schemaReference: JzodReference = {
+  // //     type: "schemaReference",
+  // //     definition: { absolutePath: "mock", relativePath: "refObj" },
+  // //     context: {}
+  // //   };
+  // //   const nestedUnion: JzodUnion = { type: "union", definition: [schemaReference] };
+  // //   const union: JzodUnion = { type: "union", definition: [nestedUnion] };
+
+  // //   // Patch resolveJzodSchemaReferenceInContext to return referencedObj
+  // //   // const { resolveJzodSchemaReferenceInContext } = await import("./JzodUnfoldSchemaForValue");
+  // //   // const original = resolveJzodSchemaReferenceInContext;
+  // //   // (globalThis as any).resolveJzodSchemaReferenceInContext = () => referencedObj;
+
+  // //   const result = unionChoices(
+  // //     union.definition,
+  // //     mockJzodSchema,
+  // //     mockMetaModel,
+  // //     mockMetaModel,
+  // //     { refObj: referencedObj }
+  // //   );
+  // //   expect(result).toEqual([referencedObj]);
+
+  // //   // Restore original
+  // //   // (globalThis as any).resolveJzodSchemaReferenceInContext = original;
+  // // });
+
+  // // ##############################################################################################
+  // it("returns empty array if no object types are present", () => {
+  //   const union: JzodUnion = { type: "union", definition: [{ type: "string" }, { type: "number" }] };
+  //   const result = unionChoices(
+  //     union.definition,
+  //     mockJzodSchema,
+  //     mockMetaModel,
+  //     mockMetaModel,
+  //     {}
+  //   );
+  //   expect(result).toEqual([]);
+  // });
+
+  it("choices for Test instance", () => {
+    // const currentReportTargetEntityDefinition: JzodElement = {
+    const currentReportTargetEntityDefinition = {
+      type: "object",
+      definition: {
+        uuid: {
+          type: "string",
+          validations: [
+            {
+              type: "uuid",
+            },
+          ],
+          tag: {
+            value: {
+              id: 1,
+              defaultLabel: "Uuid",
+              editable: false,
+            },
+          },
+        },
+        parentName: {
+          type: "string",
+          optional: true,
+          tag: {
+            value: {
+              id: 1,
+              defaultLabel: "Uuid",
+              editable: false,
+            },
+          },
+        },
+        parentUuid: {
+          type: "string",
+          validations: [
+            {
+              type: "uuid",
+            },
+          ],
+          tag: {
+            value: {
+              id: 1,
+              defaultLabel: "parentUuid",
+              editable: false,
+            },
+          },
+        },
+        definition: {
+          type: "object",
+          definition: {
+            testCompositeActions: {
+              type: "record",
+              optional: true,
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  relativePath: "testCompositeAction",
+                },
+              },
+            },
+            fullTestDefinition: {
+              type: "union",
+              optional: true,
+              discriminator: "testType",
+              definition: [
+                {
+                  type: "object",
+                  definition: {
+                    testType: {
+                      type: "literal",
+                      definition: "testCompositeAction",
+                    },
+                    testLabel: {
+                      type: "string",
+                    },
+                    beforeTestSetupAction: {
+                      type: "schemaReference",
+                      optional: true,
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath: "compositeAction",
+                      },
+                    },
+                    afterTestCleanupAction: {
+                      type: "schemaReference",
+                      optional: true,
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath: "compositeAction",
+                      },
+                    },
+                    compositeAction: {
+                      type: "schemaReference",
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath: "compositeAction",
+                      },
+                    },
+                    testCompositeActionAssertions: {
+                      type: "array",
+                      definition: {
+                        type: "schemaReference",
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "compositeRunTestAssertion",
+                        },
+                      },
+                    },
+                  },
+                },
+                {
+                  type: "object",
+                  definition: {
+                    testType: {
+                      type: "literal",
+                      definition: "testCompositeActionSuite",
+                    },
+                    testLabel: {
+                      type: "string",
+                    },
+                    beforeAll: {
+                      type: "schemaReference",
+                      optional: true,
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath: "compositeAction",
+                      },
+                    },
+                    beforeEach: {
+                      type: "schemaReference",
+                      optional: true,
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath: "compositeAction",
+                      },
+                    },
+                    afterEach: {
+                      type: "schemaReference",
+                      optional: true,
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath: "compositeAction",
+                      },
+                    },
+                    afterAll: {
+                      type: "schemaReference",
+                      optional: true,
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath: "compositeAction",
+                      },
+                    },
+                    testCompositeActions: {
+                      type: "record",
+                      definition: {
+                        type: "schemaReference",
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "testCompositeAction",
+                        },
+                      },
+                    },
+                  },
+                },
+                {
+                  type: "object",
+                  definition: {
+                    testType: {
+                      type: "literal",
+                      definition: "testBuildCompositeAction",
+                    },
+                    testLabel: {
+                      type: "string",
+                    },
+                    beforeTestSetupAction: {
+                      type: "schemaReference",
+                      optional: true,
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath: "compositeAction",
+                      },
+                    },
+                    afterTestCleanupAction: {
+                      type: "schemaReference",
+                      optional: true,
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath: "compositeAction",
+                      },
+                    },
+                    compositeAction: {
+                      type: "schemaReference",
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath: "buildCompositeAction",
+                      },
+                    },
+                    testCompositeActionAssertions: {
+                      type: "array",
+                      definition: {
+                        type: "schemaReference",
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "compositeRunTestAssertion",
+                        },
+                      },
+                    },
+                  },
+                },
+                {
+                  type: "object",
+                  definition: {
+                    testType: {
+                      type: "literal",
+                      definition: "testBuildCompositeActionSuite",
+                    },
+                    testLabel: {
+                      type: "string",
+                    },
+                    beforeAll: {
+                      type: "schemaReference",
+                      optional: true,
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath: "compositeAction",
+                      },
+                    },
+                    beforeEach: {
+                      type: "schemaReference",
+                      optional: true,
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath: "compositeAction",
+                      },
+                    },
+                    afterEach: {
+                      type: "schemaReference",
+                      optional: true,
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath: "compositeAction",
+                      },
+                    },
+                    afterAll: {
+                      type: "schemaReference",
+                      optional: true,
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath: "compositeAction",
+                      },
+                    },
+                    testCompositeActions: {
+                      type: "record",
+                      definition: {
+                        type: "schemaReference",
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "testBuildCompositeAction",
+                        },
+                      },
+                    },
+                  },
+                },
+                {
+                  type: "object",
+                  definition: {
+                    testType: {
+                      type: "literal",
+                      definition: "testRuntimeCompositeAction",
+                    },
+                    testLabel: {
+                      type: "string",
+                    },
+                    beforeTestSetupAction: {
+                      type: "schemaReference",
+                      optional: true,
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath: "compositeAction",
+                      },
+                    },
+                    afterTestCleanupAction: {
+                      type: "schemaReference",
+                      optional: true,
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath: "compositeAction",
+                      },
+                    },
+                    compositeAction: {
+                      type: "schemaReference",
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath: "runtimeCompositeAction",
+                      },
+                    },
+                    testCompositeActionAssertions: {
+                      type: "array",
+                      definition: {
+                        type: "schemaReference",
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "compositeRunTestAssertion",
+                        },
+                      },
+                    },
+                  },
+                },
+                {
+                  type: "object",
+                  definition: {
+                    testType: {
+                      type: "literal",
+                      definition: "testRuntimeCompositeActionSuite",
+                    },
+                    testLabel: {
+                      type: "string",
+                    },
+                    beforeAll: {
+                      type: "schemaReference",
+                      optional: true,
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath: "compositeAction",
+                      },
+                    },
+                    beforeEach: {
+                      type: "schemaReference",
+                      optional: true,
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath: "compositeAction",
+                      },
+                    },
+                    afterEach: {
+                      type: "schemaReference",
+                      optional: true,
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath: "compositeAction",
+                      },
+                    },
+                    afterAll: {
+                      type: "schemaReference",
+                      optional: true,
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath: "compositeAction",
+                      },
+                    },
+                    testCompositeActions: {
+                      type: "record",
+                      definition: {
+                        type: "schemaReference",
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "testRuntimeCompositeAction",
+                        },
+                      },
+                    },
+                  },
+                },
+                {
+                  type: "object",
+                  definition: {
+                    testType: {
+                      type: "literal",
+                      definition: "testBuildPlusRuntimeCompositeAction",
+                    },
+                    testLabel: {
+                      type: "string",
+                    },
+                    testParams: {
+                      type: "record",
+                      optional: true,
+                      definition: {
+                        type: "any",
+                      },
+                    },
+                    beforeTestSetupAction: {
+                      type: "schemaReference",
+                      optional: true,
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath: "compositeAction",
+                      },
+                    },
+                    afterTestCleanupAction: {
+                      type: "schemaReference",
+                      optional: true,
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath: "compositeAction",
+                      },
+                    },
+                    compositeAction: {
+                      type: "schemaReference",
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath: "buildPlusRuntimeCompositeAction",
+                      },
+                    },
+                    testCompositeActionAssertions: {
+                      type: "array",
+                      definition: {
+                        type: "schemaReference",
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "compositeRunTestAssertion",
+                        },
+                      },
+                    },
+                  },
+                },
+                {
+                  type: "object",
+                  definition: {
+                    testType: {
+                      type: "literal",
+                      definition: "testBuildPlusRuntimeCompositeActionSuite",
+                    },
+                    testLabel: {
+                      type: "string",
+                    },
+                    testParams: {
+                      type: "record",
+                      optional: true,
+                      definition: {
+                        type: "any",
+                      },
+                    },
+                    beforeAll: {
+                      type: "schemaReference",
+                      optional: true,
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath: "compositeAction",
+                      },
+                    },
+                    beforeEach: {
+                      type: "schemaReference",
+                      optional: true,
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath: "compositeAction",
+                      },
+                    },
+                    afterEach: {
+                      type: "schemaReference",
+                      optional: true,
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath: "compositeAction",
+                      },
+                    },
+                    afterAll: {
+                      type: "schemaReference",
+                      optional: true,
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath: "compositeAction",
+                      },
+                    },
+                    testCompositeActions: {
+                      type: "record",
+                      definition: {
+                        type: "schemaReference",
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "testBuildPlusRuntimeCompositeAction",
+                        },
+                      },
+                    },
+                  },
+                },
+                {
+                  type: "object",
+                  definition: {
+                    testType: {
+                      type: "literal",
+                      definition: "testCompositeActionTemplate",
+                    },
+                    testLabel: {
+                      type: "string",
+                    },
+                    beforeTestSetupAction: {
+                      type: "schemaReference",
+                      optional: true,
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath: "compositeActionTemplate",
+                      },
+                    },
+                    afterTestCleanupAction: {
+                      type: "schemaReference",
+                      optional: true,
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath: "compositeActionTemplate",
+                      },
+                    },
+                    compositeActionTemplate: {
+                      type: "schemaReference",
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath: "compositeActionTemplate",
+                      },
+                    },
+                    testCompositeActionAssertions: {
+                      type: "array",
+                      definition: {
+                        type: "schemaReference",
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "compositeRunTestAssertion",
+                        },
+                      },
+                    },
+                  },
+                },
+                {
+                  type: "object",
+                  definition: {
+                    testType: {
+                      type: "literal",
+                      definition: "testCompositeActionTemplateSuite",
+                    },
+                    testLabel: {
+                      type: "string",
+                    },
+                    beforeAll: {
+                      type: "schemaReference",
+                      optional: true,
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath: "compositeActionTemplate",
+                      },
+                    },
+                    beforeEach: {
+                      type: "schemaReference",
+                      optional: true,
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath: "compositeActionTemplate",
+                      },
+                    },
+                    afterEach: {
+                      type: "schemaReference",
+                      optional: true,
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath: "compositeActionTemplate",
+                      },
+                    },
+                    afterAll: {
+                      type: "schemaReference",
+                      optional: true,
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath: "compositeActionTemplate",
+                      },
+                    },
+                    testCompositeActions: {
+                      type: "record",
+                      definition: {
+                        type: "schemaReference",
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "testCompositeActionTemplate",
+                        },
+                      },
+                    },
+                  },
+                },
+                {
+                  type: "object",
+                  definition: {
+                    testType: {
+                      type: "literal",
+                      definition: "testAssertion",
+                    },
+                    testLabel: {
+                      type: "string",
+                    },
+                    definition: {
+                      type: "object",
+                      definition: {
+                        resultAccessPath: {
+                          type: "array",
+                          optional: true,
+                          definition: {
+                            type: "string",
+                          },
+                        },
+                        resultTransformer: {
+                          type: "schemaReference",
+                          optional: true,
+                          definition: {
+                            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            relativePath: "extendedTransformerForRuntime",
+                          },
+                        },
+                        ignoreAttributes: {
+                          type: "array",
+                          optional: true,
+                          definition: {
+                            type: "string",
+                          },
+                        },
+                        expectedValue: {
+                          type: "any",
+                        },
+                      },
+                    },
+                  },
+                },
+              ],
+            },
+          },
+        },
+      },
+    };
+    // const testInstance: any = {
+    //   uuid: "ffe6ab3c-8296-4293-8aaf-ebbad1f0ac9a",
+    //   parentName: "Test",
+    //   parentUuid: "c37625c7-0b35-4d6a-811d-8181eb978301",
+    //   name: "createEntityAndReportFromSpreadsheetAndUpdateMenu",
+    //   selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+    //   branch: "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+    //   description: "First Test",
+    //   definition: {
+    //     testCompositeActions: {
+    //       "create new Entity and reports from spreadsheet": {
+    //         testType: "testBuildPlusRuntimeCompositeAction",
+    //         testLabel: "createEntityAndReportFromSpreadsheetAndUpdateMenu",
+    //         compositeAction: {
+    //           actionType: "compositeAction",
+    //           actionLabel: "createEntityAndReportFromSpreadsheetAndUpdateMenu",
+    //           actionName: "sequence",
+    //           templates: {
+    //             createEntity_newEntity: {
+    //               uuid: {
+    //                 transformerType: "parameterReference",
+    //                 interpolation: "build",
+    //                 referenceName: "newEntityUuid",
+    //               },
+    //               parentUuid: {
+    //                 transformerType: "parameterReference",
+    //                 interpolation: "build",
+    //                 referencePath: ["entityEntity", "uuid"],
+    //               },
+    //               selfApplication: {
+    //                 transformerType: "parameterReference",
+    //                 interpolation: "build",
+    //                 referenceName: "testSelfApplicationUuid",
+    //               },
+    //               description: {
+    //                 transformerType: "parameterReference",
+    //                 interpolation: "build",
+    //                 referenceName: "createEntity_newEntityDescription",
+    //               },
+    //               name: {
+    //                 transformerType: "parameterReference",
+    //                 interpolation: "build",
+    //                 referenceName: "newEntityName",
+    //               },
+    //             },
+    //             createEntity_newEntityDefinition: {
+    //               name: {
+    //                 transformerType: "parameterReference",
+    //                 interpolation: "build",
+    //                 referenceName: "newEntityName",
+    //               },
+    //               uuid: {
+    //                 transformerType: "parameterReference",
+    //                 interpolation: "build",
+    //                 referenceName: "newEntityDefinitionUuid",
+    //               },
+    //               parentName: "EntityDefinition",
+    //               parentUuid: {
+    //                 transformerType: "parameterReference",
+    //                 interpolation: "build",
+    //                 referencePath: ["entityEntityDefinition", "uuid"],
+    //               },
+    //               entityUuid: {
+    //                 transformerType: "parameterReference",
+    //                 interpolation: "build",
+    //                 referencePath: ["createEntity_newEntity", "uuid"],
+    //               },
+    //               conceptLevel: "Model",
+    //               defaultInstanceDetailsReportUuid: {
+    //                 transformerType: "parameterReference",
+    //                 interpolation: "build",
+    //                 referenceName: "defaultInstanceDetailsReportUuid",
+    //               },
+    //               jzodSchema: {
+    //                 transformerType: "parameterReference",
+    //                 interpolation: "build",
+    //                 referenceName: "newEntityJzodSchema",
+    //               },
+    //             },
+    //             newEntityListReport: {
+    //               uuid: {
+    //                 transformerType: "parameterReference",
+    //                 interpolation: "build",
+    //                 referenceName: "createEntity_newEntityListReportUuid",
+    //               },
+    //               selfApplication: {
+    //                 transformerType: "parameterReference",
+    //                 interpolation: "build",
+    //                 referenceName: "testSelfApplicationUuid",
+    //               },
+    //               parentName: "Report",
+    //               parentUuid: {
+    //                 transformerType: "mustacheStringTemplate",
+    //                 interpolation: "build",
+    //                 definition: "{{entityReport.uuid}}",
+    //               },
+    //               conceptLevel: "Model",
+    //               name: {
+    //                 transformerType: "mustacheStringTemplate",
+    //                 interpolation: "build",
+    //                 definition: "{{newEntityName}}List",
+    //               },
+    //               defaultLabel: {
+    //                 transformerType: "mustacheStringTemplate",
+    //                 interpolation: "build",
+    //                 definition: "List of {{newEntityName}}s",
+    //               },
+    //               type: "list",
+    //               definition: {
+    //                 extractors: {
+    //                   instanceList: {
+    //                     extractorOrCombinerType: "extractorByEntityReturningObjectList",
+    //                     parentName: {
+    //                       transformerType: "parameterReference",
+    //                       interpolation: "build",
+    //                       referenceName: "newEntityName",
+    //                     },
+    //                     parentUuid: {
+    //                       transformerType: "mustacheStringTemplate",
+    //                       interpolation: "build",
+    //                       definition: "{{createEntity_newEntity.uuid}}",
+    //                     },
+    //                   },
+    //                 },
+    //                 section: {
+    //                   type: "objectListReportSection",
+    //                   definition: {
+    //                     label: {
+    //                       transformerType: "mustacheStringTemplate",
+    //                       interpolation: "build",
+    //                       definition: "{{newEntityName}}s",
+    //                     },
+    //                     parentUuid: {
+    //                       transformerType: "mustacheStringTemplate",
+    //                       interpolation: "build",
+    //                       definition: "{{createEntity_newEntity.uuid}}",
+    //                     },
+    //                     fetchedDataReference: "instanceList",
+    //                   },
+    //                 },
+    //               },
+    //             },
+    //             newEntityDetailsReport: {
+    //               uuid: {
+    //                 transformerType: "parameterReference",
+    //                 interpolation: "build",
+    //                 referenceName: "createEntity_newEntityDetailsReportUuid",
+    //               },
+    //               selfApplication: {
+    //                 transformerType: "parameterReference",
+    //                 interpolation: "build",
+    //                 referenceName: "testSelfApplicationUuid",
+    //               },
+    //               parentName: {
+    //                 transformerType: "mustacheStringTemplate",
+    //                 interpolation: "build",
+    //                 definition: "{{entityReport.name}}",
+    //               },
+    //               parentUuid: {
+    //                 transformerType: "mustacheStringTemplate",
+    //                 interpolation: "build",
+    //                 definition: "{{entityReport.uuid}}",
+    //               },
+    //               conceptLevel: "Model",
+    //               name: {
+    //                 transformerType: "mustacheStringTemplate",
+    //                 interpolation: "build",
+    //                 definition: "{{newEntityName}}Details",
+    //               },
+    //               defaultLabel: {
+    //                 transformerType: "mustacheStringTemplate",
+    //                 interpolation: "build",
+    //                 definition: "Details of {{newEntityName}}",
+    //               },
+    //               definition: {
+    //                 extractorTemplates: {
+    //                   elementToDisplay: {
+    //                     transformerType: "constant",
+    //                     interpolation: "build",
+    //                     value: {
+    //                       extractorTemplateType: "extractorForObjectByDirectReference",
+    //                       parentName: {
+    //                         transformerType: "contextReference",
+    //                         interpolation: "build",
+    //                         referenceName: "newEntityName",
+    //                       },
+    //                       parentUuid: {
+    //                         transformerType: "mustacheStringTemplate",
+    //                         interpolation: "build",
+    //                         definition: "{{newEntityUuid}}",
+    //                       },
+    //                       instanceUuid: {
+    //                         transformerType: "constant",
+    //                         interpolation: "runtime",
+    //                         value: {
+    //                           transformerType: "contextReference",
+    //                           interpolation: "runtime",
+    //                           referenceName: "instanceUuid",
+    //                         },
+    //                       },
+    //                     },
+    //                   },
+    //                 },
+    //                 section: {
+    //                   type: "list",
+    //                   definition: [
+    //                     {
+    //                       type: "objectInstanceReportSection",
+    //                       definition: {
+    //                         label: {
+    //                           transformerType: "mustacheStringTemplate",
+    //                           interpolation: "build",
+    //                           definition: "My {{newEntityName}}",
+    //                         },
+    //                         parentUuid: {
+    //                           transformerType: "mustacheStringTemplate",
+    //                           interpolation: "build",
+    //                           definition: "{{newEntityUuid}}",
+    //                         },
+    //                         fetchedDataReference: "elementToDisplay",
+    //                       },
+    //                     },
+    //                   ],
+    //                 },
+    //               },
+    //             },
+    //           },
+    //           definition: [
+    //             {
+    //               actionType: "modelAction",
+    //               actionName: "createEntity",
+    //               actionLabel: "createEntity",
+    //               deploymentUuid: {
+    //                 transformerType: "parameterReference",
+    //                 interpolation: "build",
+    //                 referenceName: "testDeploymentUuid",
+    //               },
+    //               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+    //               entities: [
+    //                 {
+    //                   entity: {
+    //                     transformerType: "parameterReference",
+    //                     interpolation: "build",
+    //                     referenceName: "createEntity_newEntity",
+    //                   },
+    //                   entityDefinition: {
+    //                     transformerType: "parameterReference",
+    //                     interpolation: "build",
+    //                     referenceName: "createEntity_newEntityDefinition",
+    //                   },
+    //                 },
+    //               ],
+    //             },
+    //             {
+    //               actionType: "transactionalInstanceAction",
+    //               actionLabel: "createReports",
+    //               instanceAction: {
+    //                 actionType: "instanceAction",
+    //                 actionName: "createInstance",
+    //                 applicationSection: "model",
+    //                 deploymentUuid: {
+    //                   transformerType: "parameterReference",
+    //                   interpolation: "build",
+    //                   referenceName: "testDeploymentUuid",
+    //                 },
+    //                 endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+    //                 objects: [
+    //                   {
+    //                     parentName: {
+    //                       transformerType: "parameterReference",
+    //                       interpolation: "build",
+    //                       referencePath: ["newEntityListReport", "parentName"],
+    //                     },
+    //                     parentUuid: {
+    //                       transformerType: "parameterReference",
+    //                       interpolation: "build",
+    //                       referencePath: ["newEntityListReport", "parentUuid"],
+    //                     },
+    //                     applicationSection: "model",
+    //                     instances: [
+    //                       {
+    //                         transformerType: "parameterReference",
+    //                         interpolation: "build",
+    //                         referenceName: "newEntityListReport",
+    //                       },
+    //                       {
+    //                         transformerType: "parameterReference",
+    //                         interpolation: "build",
+    //                         referenceName: "newEntityDetailsReport",
+    //                       },
+    //                     ],
+    //                   },
+    //                 ],
+    //               },
+    //             },
+    //             {
+    //               actionType: "modelAction",
+    //               actionName: "commit",
+    //               actionLabel: "commit",
+    //               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+    //               deploymentUuid: {
+    //                 transformerType: "parameterReference",
+    //                 interpolation: "build",
+    //                 referenceName: "testDeploymentUuid",
+    //               },
+    //             },
+    //             {
+    //               actionType: "compositeRunBoxedExtractorOrQueryAction",
+    //               actionLabel: "getListOfEntityDefinitions",
+    //               nameGivenToResult: "newApplicationEntityDefinitionList",
+    //               query: {
+    //                 actionType: "runBoxedExtractorOrQueryAction",
+    //                 actionName: "runQuery",
+    //                 endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+    //                 applicationSection: "model",
+    //                 deploymentUuid: {
+    //                   transformerType: "parameterReference",
+    //                   interpolation: "build",
+    //                   referenceName: "testDeploymentUuid",
+    //                 },
+    //                 query: {
+    //                   queryType: "boxedQueryWithExtractorCombinerTransformer",
+    //                   deploymentUuid: {
+    //                     transformerType: "parameterReference",
+    //                     interpolation: "build",
+    //                     referenceName: "testDeploymentUuid",
+    //                   },
+    //                   pageParams: {
+    //                     currentDeploymentUuid: {
+    //                       transformerType: "parameterReference",
+    //                       interpolation: "build",
+    //                       referenceName: "testDeploymentUuid",
+    //                     },
+    //                   },
+    //                   queryParams: {},
+    //                   contextResults: {},
+    //                   extractors: {
+    //                     entityDefinitions: {
+    //                       extractorOrCombinerType: "extractorByEntityReturningObjectList",
+    //                       applicationSection: "model",
+    //                       parentName: {
+    //                         transformerType: "parameterReference",
+    //                         interpolation: "build",
+    //                         referencePath: ["entityEntityDefinition", "name"],
+    //                       },
+    //                       parentUuid: {
+    //                         transformerType: "parameterReference",
+    //                         interpolation: "build",
+    //                         referencePath: ["entityEntityDefinition", "uuid"],
+    //                       },
+    //                       orderBy: {
+    //                         attributeName: "name",
+    //                         direction: "ASC",
+    //                       },
+    //                     },
+    //                   },
+    //                 },
+    //               },
+    //             },
+    //             {
+    //               actionType: "compositeRunBoxedExtractorOrQueryAction",
+    //               actionLabel: "getListOfEntities",
+    //               nameGivenToResult: "newApplicationEntityList",
+    //               query: {
+    //                 actionType: "runBoxedExtractorOrQueryAction",
+    //                 actionName: "runQuery",
+    //                 endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+    //                 applicationSection: "model",
+    //                 deploymentUuid: {
+    //                   transformerType: "parameterReference",
+    //                   interpolation: "build",
+    //                   referenceName: "testDeploymentUuid",
+    //                 },
+    //                 query: {
+    //                   queryType: "boxedQueryWithExtractorCombinerTransformer",
+    //                   deploymentUuid: {
+    //                     transformerType: "parameterReference",
+    //                     interpolation: "build",
+    //                     referenceName: "testDeploymentUuid",
+    //                   },
+    //                   pageParams: {
+    //                     currentDeploymentUuid: {
+    //                       transformerType: "parameterReference",
+    //                       interpolation: "build",
+    //                       referenceName: "testDeploymentUuid",
+    //                     },
+    //                   },
+    //                   queryParams: {},
+    //                   contextResults: {},
+    //                   extractors: {
+    //                     entities: {
+    //                       extractorOrCombinerType: "extractorByEntityReturningObjectList",
+    //                       applicationSection: "model",
+    //                       parentName: {
+    //                         transformerType: "parameterReference",
+    //                         interpolation: "build",
+    //                         referencePath: ["entityEntity", "name"],
+    //                       },
+    //                       parentUuid: {
+    //                         transformerType: "parameterReference",
+    //                         interpolation: "build",
+    //                         referencePath: ["entityEntity", "uuid"],
+    //                       },
+    //                       orderBy: {
+    //                         attributeName: "name",
+    //                         direction: "ASC",
+    //                       },
+    //                     },
+    //                   },
+    //                 },
+    //               },
+    //             },
+    //             {
+    //               actionType: "compositeRunBoxedExtractorOrQueryAction",
+    //               actionLabel: "getListOfReports",
+    //               nameGivenToResult: "newApplicationReportList",
+    //               query: {
+    //                 actionType: "runBoxedExtractorOrQueryAction",
+    //                 actionName: "runQuery",
+    //                 endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+    //                 applicationSection: "model",
+    //                 deploymentUuid: {
+    //                   transformerType: "parameterReference",
+    //                   interpolation: "build",
+    //                   referenceName: "testDeploymentUuid",
+    //                 },
+    //                 query: {
+    //                   queryType: "boxedQueryWithExtractorCombinerTransformer",
+    //                   deploymentUuid: {
+    //                     transformerType: "parameterReference",
+    //                     interpolation: "build",
+    //                     referenceName: "testDeploymentUuid",
+    //                   },
+    //                   pageParams: {
+    //                     currentDeploymentUuid: {
+    //                       transformerType: "parameterReference",
+    //                       interpolation: "build",
+    //                       referenceName: "testDeploymentUuid",
+    //                     },
+    //                   },
+    //                   runAsSql: true,
+    //                   queryParams: {},
+    //                   contextResults: {},
+    //                   extractors: {
+    //                     reports: {
+    //                       extractorOrCombinerType: "extractorByEntityReturningObjectList",
+    //                       applicationSection: "model",
+    //                       parentName: {
+    //                         transformerType: "parameterReference",
+    //                         interpolation: "build",
+    //                         referencePath: ["entityReport", "name"],
+    //                       },
+    //                       parentUuid: {
+    //                         transformerType: "parameterReference",
+    //                         interpolation: "build",
+    //                         referencePath: ["entityReport", "uuid"],
+    //                       },
+    //                       orderBy: {
+    //                         attributeName: "name",
+    //                         direction: "ASC",
+    //                       },
+    //                     },
+    //                   },
+    //                 },
+    //               },
+    //             },
+    //             {
+    //               actionType: "compositeRunBoxedQueryAction",
+    //               actionLabel: "getMenu",
+    //               nameGivenToResult: "menuUpdateQueryResult",
+    //               queryTemplate: {
+    //                 actionType: "runBoxedQueryAction",
+    //                 actionName: "runQuery",
+    //                 endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+    //                 applicationSection: "model",
+    //                 deploymentUuid: {
+    //                   transformerType: "parameterReference",
+    //                   interpolation: "build",
+    //                   referenceName: "testDeploymentUuid",
+    //                 },
+    //                 query: {
+    //                   queryType: "boxedQueryWithExtractorCombinerTransformer",
+    //                   deploymentUuid: {
+    //                     transformerType: "parameterReference",
+    //                     interpolation: "build",
+    //                     referenceName: "testDeploymentUuid",
+    //                   },
+    //                   pageParams: {},
+    //                   queryParams: {},
+    //                   contextResults: {},
+    //                   extractors: {
+    //                     menuList: {
+    //                       extractorOrCombinerType: "extractorByEntityReturningObjectList",
+    //                       applicationSection: "model",
+    //                       parentName: {
+    //                         transformerType: "parameterReference",
+    //                         interpolation: "build",
+    //                         referencePath: ["entityMenu", "name"],
+    //                       },
+    //                       parentUuid: {
+    //                         transformerType: "parameterReference",
+    //                         interpolation: "build",
+    //                         referencePath: ["entityMenu", "uuid"],
+    //                       },
+    //                     },
+    //                   },
+    //                   runtimeTransformers: {
+    //                     menu: {
+    //                       transformerType: "listPickElement",
+    //                       interpolation: "runtime",
+    //                       applyTo: {
+    //                         referenceType: "referencedTransformer",
+    //                         reference: {
+    //                           transformerType: "contextReference",
+    //                           interpolation: "runtime",
+    //                           referenceName: "menuList",
+    //                         },
+    //                       },
+    //                       index: 0,
+    //                     },
+    //                     menuItem: {
+    //                       transformerType: "freeObjectTemplate",
+    //                       interpolation: "runtime",
+    //                       definition: {
+    //                         reportUuid: {
+    //                           transformerType: "parameterReference",
+    //                           interpolation: "build",
+    //                           referenceName: "createEntity_newEntityListReportUuid",
+    //                         },
+    //                         label: {
+    //                           transformerType: "mustacheStringTemplate",
+    //                           interpolation: "build",
+    //                           definition: "List of {{newEntityName}}s",
+    //                         },
+    //                         section: "data",
+    //                         selfApplication: {
+    //                           transformerType: "parameterReference",
+    //                           interpolation: "build",
+    //                           referencePath: ["adminConfigurationDeploymentParis", "uuid"],
+    //                         },
+    //                         icon: "local_drink",
+    //                       },
+    //                     },
+    //                     updatedMenu: {
+    //                       transformerType: "transformer_menu_addItem",
+    //                       interpolation: "runtime",
+    //                       menuItemReference: {
+    //                         transformerType: "contextReference",
+    //                         interpolation: "runtime",
+    //                         referenceName: "menuItem",
+    //                       },
+    //                       menuReference: {
+    //                         transformerType: "contextReference",
+    //                         interpolation: "runtime",
+    //                         referenceName: "menu",
+    //                       },
+    //                       menuSectionItemInsertionIndex: -1,
+    //                     },
+    //                   },
+    //                 },
+    //               },
+    //             },
+    //             {
+    //               actionType: "transactionalInstanceAction",
+    //               actionLabel: "updateMenu",
+    //               instanceAction: {
+    //                 actionType: "instanceAction",
+    //                 actionName: "updateInstance",
+    //                 applicationSection: "model",
+    //                 deploymentUuid: {
+    //                   transformerType: "parameterReference",
+    //                   interpolation: "build",
+    //                   referenceName: "testDeploymentUuid",
+    //                 },
+    //                 endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+    //                 objects: [
+    //                   {
+    //                     parentName: {
+    //                       transformerType: "parameterReference",
+    //                       interpolation: "build",
+    //                       referencePath: ["entityMenu", "name"],
+    //                     },
+    //                     parentUuid: {
+    //                       transformerType: "parameterReference",
+    //                       interpolation: "build",
+    //                       referencePath: ["entityMenu", "uuid"],
+    //                     },
+    //                     applicationSection: "model",
+    //                     instances: [
+    //                       {
+    //                         transformerType: "contextReference",
+    //                         interpolation: "runtime",
+    //                         referencePath: ["menuUpdateQueryResult", "updatedMenu"],
+    //                       },
+    //                     ],
+    //                   },
+    //                 ],
+    //               },
+    //             },
+    //             {
+    //               actionType: "modelAction",
+    //               actionName: "commit",
+    //               actionLabel: "commit",
+    //               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+    //               deploymentUuid: {
+    //                 transformerType: "parameterReference",
+    //                 interpolation: "build",
+    //                 referenceName: "testDeploymentUuid",
+    //               },
+    //             },
+    //             {
+    //               actionType: "compositeRunBoxedQueryAction",
+    //               actionLabel: "getNewMenuList",
+    //               nameGivenToResult: "newMenuList",
+    //               queryTemplate: {
+    //                 actionType: "runBoxedQueryAction",
+    //                 actionName: "runQuery",
+    //                 endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+    //                 applicationSection: "model",
+    //                 deploymentUuid: {
+    //                   transformerType: "parameterReference",
+    //                   interpolation: "build",
+    //                   referenceName: "testDeploymentUuid",
+    //                 },
+    //                 query: {
+    //                   queryType: "boxedQueryWithExtractorCombinerTransformer",
+    //                   deploymentUuid: {
+    //                     transformerType: "parameterReference",
+    //                     interpolation: "build",
+    //                     referenceName: "testDeploymentUuid",
+    //                   },
+    //                   pageParams: {},
+    //                   queryParams: {},
+    //                   contextResults: {},
+    //                   extractors: {
+    //                     menuList: {
+    //                       extractorOrCombinerType: "extractorByEntityReturningObjectList",
+    //                       applicationSection: "model",
+    //                       parentName: "Menu",
+    //                       parentUuid: {
+    //                         transformerType: "parameterReference",
+    //                         interpolation: "build",
+    //                         referencePath: ["entityMenu", "uuid"],
+    //                       },
+    //                     },
+    //                   },
+    //                 },
+    //               },
+    //             },
+    //           ],
+    //         },
+    //         testCompositeActionAssertions: [
+    //           {
+    //             actionType: "compositeRunTestAssertion",
+    //             actionLabel: "checkEntities",
+    //             nameGivenToResult: "checkEntityList",
+    //             testAssertion: {
+    //               testType: "testAssertion",
+    //               testLabel: "checkEntities",
+    //               definition: {
+    //                 resultAccessPath: ["newApplicationEntityList", "entities"],
+    //                 ignoreAttributes: [
+    //                   "author",
+    //                   "conceptLevel",
+    //                   "parentDefinitionVersionUuid",
+    //                   "parentName",
+    //                 ],
+    //                 expectedValue: [
+    //                   {
+    //                     uuid: {
+    //                       transformerType: "parameterReference",
+    //                       interpolation: "build",
+    //                       referenceName: "newEntityUuid",
+    //                     },
+    //                     parentUuid: {
+    //                       transformerType: "parameterReference",
+    //                       interpolation: "build",
+    //                       referencePath: ["entityEntity", "uuid"],
+    //                     },
+    //                     selfApplication: {
+    //                       transformerType: "parameterReference",
+    //                       interpolation: "build",
+    //                       referenceName: "testSelfApplicationUuid",
+    //                     },
+    //                     description: {
+    //                       transformerType: "parameterReference",
+    //                       interpolation: "build",
+    //                       referenceName: "createEntity_newEntityDescription",
+    //                     },
+    //                     name: {
+    //                       transformerType: "parameterReference",
+    //                       interpolation: "build",
+    //                       referenceName: "newEntityName",
+    //                     },
+    //                   },
+    //                 ],
+    //               },
+    //             },
+    //           },
+    //           {
+    //             actionType: "compositeRunTestAssertion",
+    //             actionLabel: "checkEntityDefinitions",
+    //             nameGivenToResult: "checkEntityDefinitionList",
+    //             testAssertion: {
+    //               testType: "testAssertion",
+    //               testLabel: "checkEntityDefinitions",
+    //               definition: {
+    //                 resultAccessPath: ["newApplicationEntityDefinitionList", "entityDefinitions"],
+    //                 ignoreAttributes: [
+    //                   "author",
+    //                   "conceptLevel",
+    //                   "description",
+    //                   "icon",
+    //                   "parentDefinitionVersionUuid",
+    //                   "parentName",
+    //                   "viewAttributes",
+    //                 ],
+    //                 expectedValue: [
+    //                   {
+    //                     name: {
+    //                       transformerType: "parameterReference",
+    //                       interpolation: "build",
+    //                       referenceName: "newEntityName",
+    //                     },
+    //                     uuid: {
+    //                       transformerType: "parameterReference",
+    //                       interpolation: "build",
+    //                       referenceName: "newEntityDefinitionUuid",
+    //                     },
+    //                     parentName: "EntityDefinition",
+    //                     parentUuid: {
+    //                       transformerType: "parameterReference",
+    //                       interpolation: "build",
+    //                       referencePath: ["entityEntityDefinition", "uuid"],
+    //                     },
+    //                     entityUuid: {
+    //                       transformerType: "parameterReference",
+    //                       interpolation: "build",
+    //                       referencePath: ["newEntityUuid"],
+    //                     },
+    //                     conceptLevel: "Model",
+    //                     defaultInstanceDetailsReportUuid: {
+    //                       transformerType: "parameterReference",
+    //                       interpolation: "build",
+    //                       referenceName: "defaultInstanceDetailsReportUuid",
+    //                     },
+    //                     jzodSchema: {
+    //                       transformerType: "parameterReference",
+    //                       interpolation: "build",
+    //                       referenceName: "newEntityJzodSchema",
+    //                     },
+    //                   },
+    //                 ],
+    //               },
+    //             },
+    //           },
+    //           {
+    //             actionType: "compositeRunTestAssertion",
+    //             actionLabel: "checkReports",
+    //             nameGivenToResult: "checkReportList",
+    //             testAssertion: {
+    //               testType: "testAssertion",
+    //               testLabel: "checkReports",
+    //               definition: {
+    //                 resultAccessPath: ["newApplicationReportList", "reports"],
+    //                 ignoreAttributes: ["author", "parentDefinitionVersionUuid", "type"],
+    //                 expectedValue: [
+    //                   {
+    //                     transformerType: "parameterReference",
+    //                     interpolation: "build",
+    //                     referenceName: "newEntityListReport",
+    //                   },
+    //                   {
+    //                     transformerType: "parameterReference",
+    //                     interpolation: "build",
+    //                     referenceName: "newEntityDetailsReport",
+    //                   },
+    //                 ],
+    //               },
+    //             },
+    //           },
+    //           {
+    //             actionType: "compositeRunTestAssertion",
+    //             actionLabel: "checkMenus",
+    //             nameGivenToResult: "checkMenuList",
+    //             testAssertion: {
+    //               testType: "testAssertion",
+    //               testLabel: "checkMenus",
+    //               definition: {
+    //                 resultAccessPath: ["newMenuList", "menuList"],
+    //                 ignoreAttributes: ["author"],
+    //                 expectedValue: [
+    //                   {
+    //                     uuid: "dd168e5a-2a21-4d2d-a443-032c6d15eb22",
+    //                     parentName: "Menu",
+    //                     parentUuid: "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
+    //                     parentDefinitionVersionUuid: null,
+    //                     name: "LibraryMenu",
+    //                     defaultLabel: "Meta-Model",
+    //                     description:
+    //                       "This is the default menu allowing to explore the Library SelfApplication.",
+    //                     definition: {
+    //                       menuType: "complexMenu",
+    //                       definition: [
+    //                         {
+    //                           items: [
+    //                             {
+    //                               icon: "category",
+    //                               label: "Library Entities",
+    //                               section: "model",
+    //                               reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9",
+    //                               selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+    //                             },
+    //                             {
+    //                               icon: "category",
+    //                               label: "Library Entity Definitions",
+    //                               section: "model",
+    //                               reportUuid: "f9aff35d-8636-4519-8361-c7648e0ddc68",
+    //                               selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+    //                             },
+    //                             {
+    //                               icon: "list",
+    //                               label: "Library Reports",
+    //                               section: "model",
+    //                               reportUuid: "1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855",
+    //                               selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+    //                             },
+    //                             {
+    //                               icon: "auto_stories",
+    //                               label: "Library Books",
+    //                               section: "data",
+    //                               reportUuid: "74b010b6-afee-44e7-8590-5f0849e4a5c9",
+    //                               selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+    //                             },
+    //                             {
+    //                               icon: "star",
+    //                               label: "Library Authors",
+    //                               section: "data",
+    //                               reportUuid: "66a09068-52c3-48bc-b8dd-76575bbc8e72",
+    //                               selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+    //                             },
+    //                             {
+    //                               icon: "account_balance",
+    //                               label: "Library Publishers",
+    //                               section: "data",
+    //                               reportUuid: "a77aa662-006d-46cd-9176-01f02a1a12dc",
+    //                               selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+    //                             },
+    //                             {
+    //                               icon: "flag",
+    //                               label: "Library countries",
+    //                               section: "data",
+    //                               reportUuid: "08176cc7-43ae-4fca-91b7-bf869d19e4b9",
+    //                               selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+    //                             },
+    //                             {
+    //                               icon: "person",
+    //                               label: "Library Users",
+    //                               section: "data",
+    //                               reportUuid: "3df9413d-5050-4357-910c-f764aacae7e6",
+    //                               selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+    //                             },
+    //                             {
+    //                               reportUuid: {
+    //                                 transformerType: "parameterReference",
+    //                                 interpolation: "build",
+    //                                 referenceName: "createEntity_newEntityListReportUuid",
+    //                               },
+    //                               label: {
+    //                                 transformerType: "mustacheStringTemplate",
+    //                                 interpolation: "build",
+    //                                 definition: "List of {{newEntityName}}s",
+    //                               },
+    //                               section: "data",
+    //                               selfApplication: {
+    //                                 transformerType: "parameterReference",
+    //                                 interpolation: "build",
+    //                                 referencePath: ["adminConfigurationDeploymentParis", "uuid"],
+    //                               },
+    //                               icon: "local_drink",
+    //                             },
+    //                           ],
+    //                           label: "library",
+    //                           title: "Library",
+    //                         },
+    //                       ],
+    //                     },
+    //                   },
+    //                 ],
+    //               },
+    //             },
+    //           },
+    //         ],
+    //       },
+    //     },
+    //   },
+    // };
+    console.log(
+      "miroirFundamentalJzodSchema.definition.context.buildPlusRuntimeCompositeAction.definition.definition.definition",
+      JSON.stringify(
+        miroirFundamentalJzodSchema.definition.context.buildPlusRuntimeCompositeAction.definition
+          .definition.definition,
+        null,
+        2
+      )
+    );
+    const compositeActionSchema = currentReportTargetEntityDefinition.definition.definition.definition.testCompositeActions;
+    const jzodSchema = miroirFundamentalJzodSchema.definition.context.buildPlusRuntimeCompositeAction.definition
+          .definition.definition as JzodUnion;
+    const concreteJzodSchemas: JzodElement[] = jzodSchema.definition.map((a: JzodElement) =>
+      a.type == "schemaReference"
+        ? resolveJzodSchemaReferenceInContext(
+            miroirFundamentalJzodSchema as any,
+            a,
+            currentModel as any,
+            currentMiroirModel as any,
+            a.context
+          )
+        : a
+    );
+    console.log("concreteJzodSchemas", JSON.stringify(concreteJzodSchemas, null, 2));
+    const result = unionChoices(
+      // [currentReportTargetEntityDefinition],
+      // [{
+      //   type: "record",
+      //   definition: miroirFundamentalJzodSchema.definition.context.testBuildPlusRuntimeCompositeAction as any
+      // }],
+      [miroirFundamentalJzodSchema.definition.context.buildPlusRuntimeCompositeAction.definition.definition.definition as any],
+      miroirFundamentalJzodSchema as any,
+      currentModel as any,
+      currentMiroirModel as any,
+      {},
+      // { refObj: referencedObj }
+    );
+    console.log("result", JSON.stringify(result, null, 2));
+    expect(result).toEqual([]);
+
+  });
+});
+
+// // ################################################################################################
+// // ################################################################################################
+// // ################################################################################################
+// // ################################################################################################
+// // ################################################################################################
+// // ################################################################################################
+// // ################################################################################################
+// const currentModel: MetaModel = {
+//   applicationVersions: [
+//     {
+//       uuid: "695826c2-aefa-4f5f-a131-dee46fe21c13",
+//       parentName: "ApplicationVersion",
+//       parentUuid: "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+//       name: "Initial",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       branch: "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+//       description: "Initial datastore Miroir selfApplication version",
+//       modelStructureMigration: [],
+//       modelCUDMigration: [],
+//     },
+//   ],
+//   applicationVersionCrossEntityDefinition: [],
+//   configuration: [
+//     {
+//       uuid: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       parentName: "Configuration",
+//       parentUuid: "7990c0c9-86c3-40a1-a121-036c91b55ed7",
+//       name: "Reference",
+//       defaultLabel: "The reference configuration for the database.",
+//       definition: {
+//         currentApplicationVersion: "695826c2-aefa-4f5f-a131-dee46fe21c13",
+//       },
+//     },
+//   ],
+//   entities: [
+//     {
+//       uuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+//       parentName: "Entity",
+//       parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+//       parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
+//       name: "Entity",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       conceptLevel: "MetaModel",
+//       description: "The Metaclass for entities.",
+//     },
+//     {
+//       uuid: "35c5608a-7678-4f07-a4ec-76fc5bc35424",
+//       parentName: "Entity",
+//       parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+//       parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
+//       name: "SelfApplicationDeploymentConfiguration",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       conceptLevel: "Model",
+//       description: "An SelfApplication Deployment",
+//     },
+//     {
+//       uuid: "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
+//       parentName: "Entity",
+//       parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+//       parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
+//       name: "Endpoint",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       conceptLevel: "Model",
+//       description: "An Endpoint, servicing Actions that are part of a Domain Specific Language",
+//     },
+//     {
+//       uuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+//       parentName: "Entity",
+//       parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+//       parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
+//       name: "Report",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       conceptLevel: "Model",
+//       description: "Report, allowing to display model instances",
+//     },
+//     {
+//       uuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+//       parentName: "Entity",
+//       parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+//       parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
+//       name: "EntityDefinition",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       conceptLevel: "MetaModel",
+//       description: "The Metaclass for the definition of entities.",
+//     },
+//     {
+//       uuid: "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+//       parentName: "Entity",
+//       parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+//       parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
+//       name: "JzodSchema",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       conceptLevel: "Model",
+//       description: "Common Jzod Schema definitions, available to all Entity definitions",
+//     },
+//     {
+//       uuid: "73bb0c69-e636-4e3b-a230-51f25469c089",
+//       parentName: "Entity",
+//       parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+//       parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
+//       name: "Commit",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       conceptLevel: "MetaModel",
+//       description: "A concurrent versioning transaction commit.",
+//     },
+//     {
+//       uuid: "7990c0c9-86c3-40a1-a121-036c91b55ed7",
+//       parentName: "Entity",
+//       parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+//       parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
+//       name: "StoreBasedConfiguration",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       conceptLevel: "Model",
+//       description: "A configuration of storage-related aspects of a Model.",
+//     },
+//     {
+//       uuid: "8bec933d-6287-4de7-8a88-5c24216de9f4",
+//       parentName: "Entity",
+//       parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+//       parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
+//       name: "ApplicationVersionCrossEntityDefinition",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       conceptLevel: "Model",
+//       description:
+//         "The (many-to-many) sssociation among ApplicationVersions and EntityDefinitions.",
+//     },
+//     {
+//       uuid: "a557419d-a288-4fb8-8a1e-971c86c113b8",
+//       parentName: "Entity",
+//       parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+//       parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
+//       name: "TransformerDefinition",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       conceptLevel: "Model",
+//       description:
+//         "A Transformer definition, enabling transformations on Entity Instances that are part of a Domain Specific Language",
+//     },
+//     {
+//       uuid: "a659d350-dd97-4da9-91de-524fa01745dc",
+//       parentName: "Entity",
+//       parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+//       parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
+//       name: "SelfApplication",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       conceptLevel: "Model",
+//       description: "Self SelfApplication",
+//     },
+//     {
+//       uuid: "c37625c7-0b35-4d6a-811d-8181eb978301",
+//       parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+//       selfApplication: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+//       description: "Description of the new entity",
+//       name: "Test",
+//     },
+//     {
+//       uuid: "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+//       parentName: "Entity",
+//       parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+//       parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
+//       name: "SelfApplicationVersion",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       conceptLevel: "Model",
+//       description: "A Version of the Self SelfApplication",
+//     },
+//     {
+//       uuid: "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
+//       parentName: "Entity",
+//       parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+//       parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
+//       name: "ApplicationModelBranch",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       conceptLevel: "Model",
+//       description: "A Branch of an SelfApplication Model",
+//     },
+//     {
+//       uuid: "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
+//       parentName: "Entity",
+//       parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+//       parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
+//       name: "Menu",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       conceptLevel: "Model",
+//       description: "Menu, allowing to display elements useful to navigate the selfApplication",
+//     },
+//     {
+//       uuid: "e4320b9e-ab45-4abe-85d8-359604b3c62f",
+//       parentName: "Entity",
+//       parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+//       parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
+//       name: "Query",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       conceptLevel: "Model",
+//       description: "A Query",
+//     },
+//   ],
+//   entityDefinitions: [
+//     {
+//       uuid: "0f421b2f-2fdc-47ee-8232-62121ea46350",
+//       parentName: "EntityDefinition",
+//       parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+//       parentDefinitionVersionUuid: "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+//       entityUuid: "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
+//       conceptLevel: "Model",
+//       name: "Menu",
+//       icon: "Interests",
+//       viewAttributes: ["name", "defaultLabel", "description", "uuid"],
+//       jzodSchema: {
+//         type: "object",
+//         definition: {
+//           uuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 1,
+//                 defaultLabel: "Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentName: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 2,
+//                 defaultLabel: "Entity Name",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentUuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 3,
+//                 defaultLabel: "Entity Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentDefinitionVersionUuid: {
+//             type: "uuid",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 4,
+//                 defaultLabel: "Entity Definition Version Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           name: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 5,
+//                 defaultLabel: "Name",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           defaultLabel: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 6,
+//                 defaultLabel: "Default Label",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           description: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 7,
+//                 defaultLabel: "Description",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           definition: {
+//             type: "schemaReference",
+//             context: {
+//               miroirMenuItem: {
+//                 type: "object",
+//                 definition: {
+//                   label: {
+//                     type: "string",
+//                   },
+//                   section: {
+//                     type: "schemaReference",
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "applicationSection",
+//                     },
+//                   },
+//                   selfApplication: {
+//                     type: "string",
+//                     validations: [
+//                       {
+//                         type: "uuid",
+//                       },
+//                     ],
+//                     tag: {
+//                       value: {
+//                         id: 1,
+//                         defaultLabel: "SelfApplication",
+//                         editable: false,
+//                       },
+//                     },
+//                   },
+//                   reportUuid: {
+//                     type: "string",
+//                     validations: [
+//                       {
+//                         type: "uuid",
+//                       },
+//                     ],
+//                     tag: {
+//                       value: {
+//                         id: 1,
+//                         defaultLabel: "Report",
+//                         editable: false,
+//                       },
+//                     },
+//                   },
+//                   instanceUuid: {
+//                     type: "string",
+//                     optional: true,
+//                     validations: [
+//                       {
+//                         type: "uuid",
+//                       },
+//                     ],
+//                     tag: {
+//                       value: {
+//                         id: 1,
+//                         defaultLabel: "Instance",
+//                         editable: false,
+//                       },
+//                     },
+//                   },
+//                   icon: {
+//                     type: "string",
+//                     validations: [
+//                       {
+//                         type: "uuid",
+//                       },
+//                     ],
+//                   },
+//                 },
+//               },
+//               menuItemArray: {
+//                 type: "array",
+//                 definition: {
+//                   type: "schemaReference",
+//                   definition: {
+//                     relativePath: "miroirMenuItem",
+//                   },
+//                 },
+//               },
+//               sectionOfMenu: {
+//                 type: "object",
+//                 definition: {
+//                   title: {
+//                     type: "string",
+//                   },
+//                   label: {
+//                     type: "string",
+//                   },
+//                   items: {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "menuItemArray",
+//                     },
+//                   },
+//                 },
+//               },
+//               simpleMenu: {
+//                 type: "object",
+//                 definition: {
+//                   menuType: {
+//                     type: "literal",
+//                     definition: "simpleMenu",
+//                   },
+//                   definition: {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "menuItemArray",
+//                     },
+//                   },
+//                 },
+//               },
+//               complexMenu: {
+//                 type: "object",
+//                 definition: {
+//                   menuType: {
+//                     type: "literal",
+//                     definition: "complexMenu",
+//                   },
+//                   definition: {
+//                     type: "array",
+//                     definition: {
+//                       type: "schemaReference",
+//                       definition: {
+//                         relativePath: "sectionOfMenu",
+//                       },
+//                     },
+//                   },
+//                 },
+//               },
+//               menuDefinition: {
+//                 type: "union",
+//                 discriminator: "menuType",
+//                 definition: [
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "simpleMenu",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "complexMenu",
+//                     },
+//                   },
+//                 ],
+//               },
+//             },
+//             definition: {
+//               relativePath: "menuDefinition",
+//             },
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "15407b85-f2c8-4a34-bfa7-89f044ba2407",
+//       parentName: "EntityDefinition",
+//       parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+//       parentDefinitionVersionUuid: "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+//       entityUuid: "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+//       conceptLevel: "Model",
+//       name: "JzodSchema",
+//       icon: "Interests",
+//       jzodSchema: {
+//         type: "object",
+//         definition: {
+//           uuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 1,
+//                 defaultLabel: "Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentName: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 2,
+//                 defaultLabel: "Entity Name",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentUuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 3,
+//                 defaultLabel: "Entity Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentDefinitionVersionUuid: {
+//             type: "uuid",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 4,
+//                 defaultLabel: "Entity Definition Version Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           name: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 5,
+//                 defaultLabel: "Name",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           conceptLevel: {
+//             type: "enum",
+//             definition: ["MetaModel", "Model", "Data"],
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 6,
+//                 defaultLabel: "Concept Level",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           defaultLabel: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 7,
+//                 defaultLabel: "Default Label",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           description: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 8,
+//                 defaultLabel: "Description",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           definition: {
+//             type: "schemaReference",
+//             context: {
+//               jzodObjectOrReference: {
+//                 type: "union",
+//                 definition: [
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                       relativePath: "jzodReference",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                       relativePath: "jzodObject",
+//                     },
+//                   },
+//                 ],
+//               },
+//             },
+//             definition: {
+//               relativePath: "jzodObjectOrReference",
+//             },
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 9,
+//                 defaultLabel: "Definition",
+//                 editable: true,
+//               },
+//             },
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "27046fce-742f-4cc4-bb95-76b271f490a5",
+//       parentName: "EntityDefinition",
+//       parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+//       parentDefinitionVersionUuid: "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+//       entityUuid: "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+//       conceptLevel: "Model",
+//       name: "SelfApplicationVersion",
+//       icon: "Interests",
+//       jzodSchema: {
+//         type: "object",
+//         definition: {
+//           uuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 1,
+//                 defaultLabel: "Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentName: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 2,
+//                 defaultLabel: "Entity Name",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentUuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 3,
+//                 defaultLabel: "Entity Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentDefinitionVersionUuid: {
+//             type: "uuid",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 4,
+//                 defaultLabel: "Entity Definition Version Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           name: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 5,
+//                 defaultLabel: "Name",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           defaultLabel: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 6,
+//                 defaultLabel: "Default Label",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           description: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 7,
+//                 defaultLabel: "Description",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           type: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 8,
+//                 defaultLabel: "Type of Report",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           selfApplication: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 9,
+//                 defaultLabel: "SelfApplication",
+//                 targetEntity: "a659d350-dd97-4da9-91de-524fa01745dc",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           branch: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 10,
+//                 defaultLabel: "Branch",
+//                 description: "The Branch of this SelfApplication Version",
+//                 targetEntity: "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           previousVersion: {
+//             type: "uuid",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 11,
+//                 defaultLabel: "Previous SelfApplication Version",
+//                 description: "Previous version of the selfApplication on this Branch.",
+//                 targetEntity: "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           modelStructureMigration: {
+//             type: "array",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 12,
+//                 defaultLabel: "Structure Migration from Previous Version",
+//                 editable: true,
+//               },
+//             },
+//             definition: {
+//               type: "record",
+//               definition: {
+//                 type: "any",
+//               },
+//             },
+//           },
+//           modelCUDMigration: {
+//             type: "array",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 13,
+//                 defaultLabel: "Create-Update-Delete Migration from Previous Version",
+//                 editable: true,
+//               },
+//             },
+//             definition: {
+//               type: "record",
+//               definition: {
+//                 type: "any",
+//               },
+//             },
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "359f1f9b-7260-4d76-a864-72c839b9711b",
+//       parentName: "EntityDefinition",
+//       parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+//       parentDefinitionVersionUuid: "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+//       entityUuid: "e4320b9e-ab45-4abe-85d8-359604b3c62f",
+//       name: "Query",
+//       conceptLevel: "MetaModel",
+//       description: "Definition of a Query",
+//       jzodSchema: {
+//         type: "object",
+//         definition: {
+//           uuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 1,
+//                 defaultLabel: "Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentName: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 2,
+//                 defaultLabel: "Entity Name",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentUuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 3,
+//                 defaultLabel: "Entity Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentDefinitionVersionUuid: {
+//             type: "uuid",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 4,
+//                 defaultLabel: "Entity Definition Version Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           name: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 5,
+//                 defaultLabel: "Name",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           description: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 6,
+//                 defaultLabel: "Description",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           definition: {
+//             type: "schemaReference",
+//             tag: {
+//               value: {
+//                 id: 7,
+//                 defaultLabel: "Query Version definition",
+//                 editable: true,
+//               },
+//             },
+//             context: {
+//               queryFailed: {
+//                 type: "object",
+//                 definition: {
+//                   queryFailure: {
+//                     type: "enum",
+//                     definition: [
+//                       "FailedTransformer_objectEntries",
+//                       "FailedExtractor",
+//                       "QueryNotExecutable",
+//                       "DomainStateNotLoaded",
+//                       "IncorrectParameters",
+//                       "DeploymentNotFound",
+//                       "ApplicationSectionNotFound",
+//                       "EntityNotFound",
+//                       "InstanceNotFound",
+//                       "ReferenceNotFound",
+//                       "ReferenceFoundButUndefined",
+//                       "ReferenceFoundButAttributeUndefinedOnFoundObject",
+//                     ],
+//                   },
+//                   query: {
+//                     type: "string",
+//                     optional: true,
+//                   },
+//                   failureOrigin: {
+//                     type: "array",
+//                     optional: true,
+//                     definition: {
+//                       type: "string",
+//                     },
+//                   },
+//                   failureMessage: {
+//                     type: "string",
+//                     optional: true,
+//                   },
+//                   queryReference: {
+//                     type: "string",
+//                     optional: true,
+//                   },
+//                   queryParameters: {
+//                     type: "string",
+//                     optional: true,
+//                   },
+//                   queryContext: {
+//                     type: "string",
+//                     optional: true,
+//                   },
+//                   deploymentUuid: {
+//                     type: "string",
+//                     optional: true,
+//                   },
+//                   errorStack: {
+//                     type: "array",
+//                     optional: true,
+//                     definition: {
+//                       type: "string",
+//                     },
+//                   },
+//                   innerError: {
+//                     type: "any",
+//                     optional: true,
+//                   },
+//                   applicationSection: {
+//                     type: "schemaReference",
+//                     optional: true,
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "applicationSection",
+//                     },
+//                   },
+//                   entityUuid: {
+//                     type: "string",
+//                     optional: true,
+//                   },
+//                   instanceUuid: {
+//                     type: "string",
+//                     optional: true,
+//                   },
+//                 },
+//               },
+//               extractorTemplateRoot: {
+//                 type: "object",
+//                 definition: {
+//                   label: {
+//                     type: "string",
+//                     optional: true,
+//                     tag: {
+//                       value: {
+//                         id: 1,
+//                         defaultLabel: "Label",
+//                         editable: false,
+//                       },
+//                     },
+//                   },
+//                   applicationSection: {
+//                     type: "schemaReference",
+//                     optional: true,
+//                     tag: {
+//                       value: {
+//                         id: 2,
+//                         defaultLabel: "SelfApplication Section",
+//                         editable: false,
+//                       },
+//                     },
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "applicationSection",
+//                     },
+//                   },
+//                   parentName: {
+//                     type: "string",
+//                     optional: true,
+//                     tag: {
+//                       value: {
+//                         id: 3,
+//                         defaultLabel: "Parent Name",
+//                         editable: false,
+//                       },
+//                     },
+//                   },
+//                   parentUuid: {
+//                     type: "schemaReference",
+//                     tag: {
+//                       value: {
+//                         id: 4,
+//                         defaultLabel: "Parent Uuid",
+//                         editable: false,
+//                       },
+//                     },
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "transformerForBuild_InnerReference",
+//                     },
+//                   },
+//                 },
+//               },
+//               extractorTemplateCombinerForObjectByRelation: {
+//                 type: "object",
+//                 extend: {
+//                   type: "schemaReference",
+//                   definition: {
+//                     eager: true,
+//                     relativePath: "extractorTemplateRoot",
+//                   },
+//                 },
+//                 definition: {
+//                   extractorTemplateType: {
+//                     type: "literal",
+//                     definition: "combinerForObjectByRelation",
+//                   },
+//                   objectReference: {
+//                     type: "schemaReference",
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "transformerForRuntime_InnerReference",
+//                     },
+//                   },
+//                   AttributeOfObjectToCompareToReferenceUuid: {
+//                     type: "string",
+//                   },
+//                 },
+//               },
+//               extractorTemplateExtractorForObjectByDirectReference: {
+//                 type: "object",
+//                 extend: {
+//                   type: "schemaReference",
+//                   definition: {
+//                     eager: true,
+//                     relativePath: "extractorTemplateRoot",
+//                   },
+//                 },
+//                 definition: {
+//                   extractorTemplateType: {
+//                     type: "literal",
+//                     definition: "extractorForObjectByDirectReference",
+//                   },
+//                   instanceUuid: {
+//                     type: "schemaReference",
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "transformerForBuild_InnerReference",
+//                     },
+//                   },
+//                 },
+//               },
+//               extractorTemplateReturningObject: {
+//                 type: "union",
+//                 discriminator: "queryType",
+//                 definition: [
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorTemplateCombinerForObjectByRelation",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorTemplateExtractorForObjectByDirectReference",
+//                     },
+//                   },
+//                 ],
+//               },
+//               extractorTemplateForObjectListByEntity: {
+//                 type: "object",
+//                 extend: {
+//                   type: "schemaReference",
+//                   definition: {
+//                     eager: true,
+//                     relativePath: "extractorTemplateRoot",
+//                   },
+//                 },
+//                 definition: {
+//                   extractorTemplateType: {
+//                     type: "literal",
+//                     definition: "extractorTemplateForObjectListByEntity",
+//                   },
+//                   orderBy: {
+//                     type: "object",
+//                     optional: true,
+//                     definition: {
+//                       attributeName: {
+//                         type: "string",
+//                       },
+//                       direction: {
+//                         type: "enum",
+//                         optional: true,
+//                         definition: ["ASC", "DESC"],
+//                       },
+//                     },
+//                   },
+//                   filter: {
+//                     type: "object",
+//                     optional: true,
+//                     definition: {
+//                       attributeName: {
+//                         type: "string",
+//                       },
+//                       value: {
+//                         type: "schemaReference",
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "transformerForRuntime_constantString",
+//                         },
+//                       },
+//                     },
+//                   },
+//                 },
+//               },
+//               extractorTemplateByRelationReturningObjectList: {
+//                 type: "object",
+//                 extend: {
+//                   type: "schemaReference",
+//                   definition: {
+//                     eager: true,
+//                     relativePath: "extractorTemplateRoot",
+//                   },
+//                 },
+//                 definition: {
+//                   extractorTemplateType: {
+//                     type: "literal",
+//                     definition: "combinerByRelationReturningObjectList",
+//                   },
+//                   orderBy: {
+//                     type: "object",
+//                     optional: true,
+//                     definition: {
+//                       attributeName: {
+//                         type: "string",
+//                       },
+//                       direction: {
+//                         type: "enum",
+//                         optional: true,
+//                         definition: ["ASC", "DESC"],
+//                       },
+//                     },
+//                   },
+//                   objectReference: {
+//                     type: "schemaReference",
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "transformerForRuntime_InnerReference",
+//                     },
+//                   },
+//                   objectReferenceAttribute: {
+//                     type: "string",
+//                     optional: true,
+//                   },
+//                   AttributeOfListObjectToCompareToReferenceUuid: {
+//                     type: "string",
+//                   },
+//                 },
+//               },
+//               extractorTemplateByManyToManyRelationReturningObjectList: {
+//                 type: "object",
+//                 extend: {
+//                   type: "schemaReference",
+//                   definition: {
+//                     eager: true,
+//                     relativePath: "extractorTemplateRoot",
+//                   },
+//                 },
+//                 definition: {
+//                   extractorTemplateType: {
+//                     type: "literal",
+//                     definition: "combinerByManyToManyRelationReturningObjectList",
+//                   },
+//                   orderBy: {
+//                     type: "object",
+//                     optional: true,
+//                     definition: {
+//                       attributeName: {
+//                         type: "string",
+//                       },
+//                       direction: {
+//                         type: "enum",
+//                         optional: true,
+//                         definition: ["ASC", "DESC"],
+//                       },
+//                     },
+//                   },
+//                   objectListReference: {
+//                     type: "schemaReference",
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "transformerForRuntime_contextReference",
+//                     },
+//                   },
+//                   objectListReferenceAttribute: {
+//                     type: "string",
+//                     optional: true,
+//                   },
+//                   AttributeOfRootListObjectToCompareToListReferenceUuid: {
+//                     type: "string",
+//                     optional: true,
+//                   },
+//                 },
+//               },
+//               extractorTemplateReturningObjectList: {
+//                 type: "union",
+//                 discriminator: "queryType",
+//                 definition: [
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorTemplateForObjectListByEntity",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorTemplateByRelationReturningObjectList",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorTemplateByManyToManyRelationReturningObjectList",
+//                     },
+//                   },
+//                 ],
+//               },
+//               extractorTemplateReturningObjectOrObjectList: {
+//                 type: "union",
+//                 discriminator: "extractorOrCombinerType",
+//                 definition: [
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorTemplateReturningObject",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorTemplateReturningObjectList",
+//                     },
+//                   },
+//                 ],
+//               },
+//               extractorTemplateByExtractorCombiner: {
+//                 type: "object",
+//                 definition: {
+//                   extractorTemplateType: {
+//                     type: "literal",
+//                     definition:
+//                       "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList",
+//                   },
+//                   rootExtractorOrReference: {
+//                     type: "union",
+//                     definition: [
+//                       {
+//                         type: "schemaReference",
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "extractorOrCombinerTemplate",
+//                         },
+//                       },
+//                       {
+//                         type: "string",
+//                       },
+//                     ],
+//                   },
+//                   subQueryTemplate: {
+//                     type: "object",
+//                     definition: {
+//                       query: {
+//                         type: "schemaReference",
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "extractorOrCombinerTemplate",
+//                         },
+//                       },
+//                       rootQueryObjectTransformer: {
+//                         type: "schemaReference",
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "recordOfTransformers",
+//                         },
+//                       },
+//                     },
+//                   },
+//                 },
+//               },
+//               extractorTemplateByExtractorWrapperReturningObject: {
+//                 type: "object",
+//                 definition: {
+//                   extractorTemplateType: {
+//                     type: "literal",
+//                     definition: "extractorTemplateByExtractorWrapperReturningObject",
+//                   },
+//                   definition: {
+//                     type: "record",
+//                     definition: {
+//                       type: "schemaReference",
+//                       definition: {
+//                         relativePath: "transformer_contextOrParameterReferenceTO_REMOVE",
+//                       },
+//                     },
+//                   },
+//                 },
+//               },
+//               extractorTemplateByExtractorWrapperReturningList: {
+//                 type: "object",
+//                 definition: {
+//                   extractorTemplateType: {
+//                     type: "literal",
+//                     definition: "extractorTemplateByExtractorWrapperReturningList",
+//                   },
+//                   definition: {
+//                     type: "array",
+//                     definition: {
+//                       type: "schemaReference",
+//                       definition: {
+//                         relativePath: "transformer_contextOrParameterReferenceTO_REMOVE",
+//                       },
+//                     },
+//                   },
+//                 },
+//               },
+//               extractorTemplateByExtractorWrapper: {
+//                 type: "union",
+//                 discriminator: "queryType",
+//                 definition: [
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorTemplateByExtractorWrapperReturningObject",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorTemplateByExtractorWrapperReturningList",
+//                     },
+//                   },
+//                 ],
+//               },
+//               extractorOrCombinerTemplate: {
+//                 type: "union",
+//                 discriminator: "queryType",
+//                 definition: [
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorTemplateByExtractorWrapper",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorTemplateExtractorForObjectByDirectReference",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorTemplateReturningObjectList",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorTemplateCombinerForObjectByRelation",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorTemplateByRelationReturningObjectList",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorTemplateByManyToManyRelationReturningObjectList",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorTemplateByExtractorCombiner",
+//                     },
+//                   },
+//                   {
+//                     type: "object",
+//                     definition: {
+//                       extractorTemplateType: {
+//                         type: "literal",
+//                         definition: "literal",
+//                       },
+//                       definition: {
+//                         type: "string",
+//                       },
+//                     },
+//                   },
+//                 ],
+//               },
+//               extractorOrCombinerTemplateRecord: {
+//                 type: "record",
+//                 definition: {
+//                   type: "schemaReference",
+//                   definition: {
+//                     relativePath: "extractorOrCombinerTemplate",
+//                   },
+//                 },
+//               },
+//               extractorOrCombinerRoot: {
+//                 type: "object",
+//                 definition: {
+//                   label: {
+//                     type: "string",
+//                     optional: true,
+//                     tag: {
+//                       value: {
+//                         id: 1,
+//                         defaultLabel: "Label",
+//                         editable: false,
+//                       },
+//                     },
+//                   },
+//                   applicationSection: {
+//                     type: "schemaReference",
+//                     optional: true,
+//                     tag: {
+//                       value: {
+//                         id: 2,
+//                         defaultLabel: "SelfApplication Section",
+//                         editable: false,
+//                       },
+//                     },
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "applicationSection",
+//                     },
+//                   },
+//                   parentName: {
+//                     type: "string",
+//                     optional: true,
+//                     tag: {
+//                       value: {
+//                         id: 3,
+//                         defaultLabel: "Parent Name",
+//                         editable: false,
+//                       },
+//                     },
+//                   },
+//                   parentUuid: {
+//                     type: "uuid",
+//                     tag: {
+//                       value: {
+//                         id: 4,
+//                         defaultLabel: "Parent Uuid",
+//                         editable: false,
+//                       },
+//                     },
+//                   },
+//                 },
+//               },
+//               extractorOrCombinerContextReference: {
+//                 type: "object",
+//                 definition: {
+//                   extractorOrCombinerType: {
+//                     type: "literal",
+//                     definition: "extractorOrCombinerContextReference",
+//                   },
+//                   extractorOrCombinerContextReference: {
+//                     type: "string",
+//                   },
+//                 },
+//               },
+//               combinerForObjectByRelation: {
+//                 type: "object",
+//                 extend: {
+//                   type: "schemaReference",
+//                   definition: {
+//                     eager: true,
+//                     relativePath: "extractorOrCombinerRoot",
+//                   },
+//                 },
+//                 definition: {
+//                   extractorOrCombinerType: {
+//                     type: "literal",
+//                     definition: "combinerForObjectByRelation",
+//                   },
+//                   objectReference: {
+//                     type: "string",
+//                   },
+//                   AttributeOfObjectToCompareToReferenceUuid: {
+//                     type: "string",
+//                   },
+//                 },
+//               },
+//               extractorForObjectByDirectReference: {
+//                 type: "object",
+//                 extend: {
+//                   type: "schemaReference",
+//                   definition: {
+//                     eager: true,
+//                     relativePath: "extractorOrCombinerRoot",
+//                   },
+//                 },
+//                 definition: {
+//                   extractorOrCombinerType: {
+//                     type: "literal",
+//                     definition: "extractorForObjectByDirectReference",
+//                   },
+//                   instanceUuid: {
+//                     type: "uuid",
+//                   },
+//                 },
+//               },
+//               extractorOrCombinerReturningObject: {
+//                 type: "union",
+//                 discriminator: "extractorOrCombinerType",
+//                 definition: [
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorForObjectByDirectReference",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "combinerForObjectByRelation",
+//                     },
+//                   },
+//                 ],
+//               },
+//               extractorByEntityReturningObjectList: {
+//                 type: "object",
+//                 extend: {
+//                   type: "schemaReference",
+//                   definition: {
+//                     eager: true,
+//                     relativePath: "extractorOrCombinerRoot",
+//                   },
+//                 },
+//                 definition: {
+//                   extractorOrCombinerType: {
+//                     type: "literal",
+//                     definition: "extractorByEntityReturningObjectList",
+//                   },
+//                   orderBy: {
+//                     type: "object",
+//                     optional: true,
+//                     definition: {
+//                       attributeName: {
+//                         type: "string",
+//                       },
+//                       direction: {
+//                         type: "enum",
+//                         optional: true,
+//                         definition: ["ASC", "DESC"],
+//                       },
+//                     },
+//                   },
+//                   filter: {
+//                     type: "object",
+//                     optional: true,
+//                     definition: {
+//                       attributeName: {
+//                         type: "string",
+//                       },
+//                       value: {
+//                         type: "any",
+//                       },
+//                     },
+//                   },
+//                 },
+//               },
+//               extractor: {
+//                 type: "union",
+//                 discriminator: "extractorOrCombinerType",
+//                 definition: [
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorForObjectByDirectReference",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorByEntityReturningObjectList",
+//                     },
+//                   },
+//                 ],
+//               },
+//               combinerByRelationReturningObjectList: {
+//                 type: "object",
+//                 extend: {
+//                   type: "schemaReference",
+//                   definition: {
+//                     eager: true,
+//                     relativePath: "extractorOrCombinerRoot",
+//                   },
+//                 },
+//                 definition: {
+//                   extractorOrCombinerType: {
+//                     type: "literal",
+//                     definition: "combinerByRelationReturningObjectList",
+//                   },
+//                   orderBy: {
+//                     type: "object",
+//                     optional: true,
+//                     definition: {
+//                       attributeName: {
+//                         type: "string",
+//                       },
+//                       direction: {
+//                         type: "enum",
+//                         optional: true,
+//                         definition: ["ASC", "DESC"],
+//                       },
+//                     },
+//                   },
+//                   objectReference: {
+//                     type: "string",
+//                   },
+//                   objectReferenceAttribute: {
+//                     type: "string",
+//                     optional: true,
+//                   },
+//                   AttributeOfListObjectToCompareToReferenceUuid: {
+//                     type: "string",
+//                   },
+//                 },
+//               },
+//               combinerByManyToManyRelationReturningObjectList: {
+//                 type: "object",
+//                 extend: {
+//                   type: "schemaReference",
+//                   definition: {
+//                     eager: true,
+//                     relativePath: "extractorOrCombinerRoot",
+//                   },
+//                 },
+//                 definition: {
+//                   extractorOrCombinerType: {
+//                     type: "literal",
+//                     definition: "combinerByManyToManyRelationReturningObjectList",
+//                   },
+//                   orderBy: {
+//                     type: "object",
+//                     optional: true,
+//                     definition: {
+//                       attributeName: {
+//                         type: "string",
+//                       },
+//                       direction: {
+//                         type: "enum",
+//                         optional: true,
+//                         definition: ["ASC", "DESC"],
+//                       },
+//                     },
+//                   },
+//                   objectListReference: {
+//                     type: "string",
+//                   },
+//                   objectListReferenceAttribute: {
+//                     type: "string",
+//                     optional: true,
+//                   },
+//                   AttributeOfRootListObjectToCompareToListReferenceUuid: {
+//                     type: "string",
+//                     optional: true,
+//                   },
+//                 },
+//               },
+//               extractorOrCombinerReturningObjectList: {
+//                 type: "union",
+//                 discriminator: "extractorOrCombinerType",
+//                 definition: [
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorByEntityReturningObjectList",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "combinerByRelationReturningObjectList",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "combinerByManyToManyRelationReturningObjectList",
+//                     },
+//                   },
+//                 ],
+//               },
+//               extractorOrCombinerReturningObjectOrObjectList: {
+//                 type: "union",
+//                 discriminator: "extractorOrCombinerType",
+//                 definition: [
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorOrCombinerReturningObject",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorOrCombinerReturningObjectList",
+//                     },
+//                   },
+//                 ],
+//               },
+//               extractorCombinerByHeteronomousManyToManyReturningListOfObjectList: {
+//                 type: "object",
+//                 definition: {
+//                   extractorOrCombinerType: {
+//                     type: "literal",
+//                     definition:
+//                       "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList",
+//                   },
+//                   orderBy: {
+//                     type: "object",
+//                     optional: true,
+//                     definition: {
+//                       attributeName: {
+//                         type: "string",
+//                       },
+//                       direction: {
+//                         type: "enum",
+//                         optional: true,
+//                         definition: ["ASC", "DESC"],
+//                       },
+//                     },
+//                   },
+//                   rootExtractorOrReference: {
+//                     type: "union",
+//                     definition: [
+//                       {
+//                         type: "schemaReference",
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "extractor",
+//                         },
+//                       },
+//                       {
+//                         type: "string",
+//                       },
+//                     ],
+//                   },
+//                   subQueryTemplate: {
+//                     type: "object",
+//                     definition: {
+//                       query: {
+//                         type: "schemaReference",
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "extractorOrCombinerTemplate",
+//                         },
+//                       },
+//                       rootQueryObjectTransformer: {
+//                         type: "schemaReference",
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "recordOfTransformers",
+//                         },
+//                       },
+//                     },
+//                   },
+//                 },
+//               },
+//               extractorWrapperReturningObject: {
+//                 type: "object",
+//                 definition: {
+//                   extractorOrCombinerType: {
+//                     type: "literal",
+//                     definition: "extractorWrapperReturningObject",
+//                   },
+//                   definition: {
+//                     type: "record",
+//                     definition: {
+//                       type: "union",
+//                       definition: [
+//                         {
+//                           type: "schemaReference",
+//                           definition: {
+//                             relativePath: "extractorOrCombinerContextReference",
+//                           },
+//                         },
+//                         {
+//                           type: "schemaReference",
+//                           definition: {
+//                             relativePath: "extractorOrCombiner",
+//                           },
+//                         },
+//                       ],
+//                     },
+//                   },
+//                 },
+//               },
+//               extractorWrapperReturningList: {
+//                 type: "object",
+//                 definition: {
+//                   extractorOrCombinerType: {
+//                     type: "literal",
+//                     definition: "extractorWrapperReturningList",
+//                   },
+//                   definition: {
+//                     type: "array",
+//                     definition: {
+//                       type: "union",
+//                       definition: [
+//                         {
+//                           type: "schemaReference",
+//                           definition: {
+//                             relativePath: "extractorOrCombinerContextReference",
+//                           },
+//                         },
+//                         {
+//                           type: "schemaReference",
+//                           definition: {
+//                             relativePath: "extractorOrCombiner",
+//                           },
+//                         },
+//                       ],
+//                     },
+//                   },
+//                 },
+//               },
+//               extractorWrapper: {
+//                 type: "union",
+//                 discriminator: "extractorOrCombinerType",
+//                 definition: [
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorWrapperReturningObject",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorWrapperReturningList",
+//                     },
+//                   },
+//                 ],
+//               },
+//               extractorOrCombiner: {
+//                 type: "union",
+//                 discriminator: "extractorOrCombinerType",
+//                 definition: [
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorOrCombinerContextReference",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorOrCombinerReturningObject",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorOrCombinerReturningObjectList",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorWrapper",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath:
+//                         "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList",
+//                     },
+//                   },
+//                   {
+//                     type: "object",
+//                     definition: {
+//                       extractorOrCombinerType: {
+//                         type: "literal",
+//                         definition: "literal",
+//                       },
+//                       definition: {
+//                         type: "string",
+//                       },
+//                     },
+//                   },
+//                 ],
+//               },
+//               extractorOrCombinerRecord: {
+//                 type: "record",
+//                 definition: {
+//                   type: "schemaReference",
+//                   definition: {
+//                     relativePath: "extractorOrCombiner",
+//                   },
+//                 },
+//               },
+//             },
+//             definition: {
+//               eager: true,
+//               relativePath: "extractorOrCombinerTemplateRecord",
+//             },
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
+//       parentName: "EntityDefinition",
+//       parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+//       parentDefinitionVersionUuid: "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+//       entityUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+//       name: "Entity",
+//       conceptLevel: "MetaModel",
+//       description: "Entities",
+//       defaultInstanceDetailsReportUuid: "074d1de9-594d-42d6-8848-467baeb6f3e0",
+//       viewAttributes: ["name", "conceptLevel", "description", "selfApplication", "uuid"],
+//       jzodSchema: {
+//         type: "object",
+//         definition: {
+//           uuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 1,
+//                 defaultLabel: "Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentName: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 2,
+//                 defaultLabel: "Entity Name",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentUuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 3,
+//                 defaultLabel: "Entity Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentDefinitionVersionUuid: {
+//             type: "uuid",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 4,
+//                 defaultLabel: "Entity Definition Version Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           conceptLevel: {
+//             type: "enum",
+//             definition: ["MetaModel", "Model", "Data"],
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 5,
+//                 defaultLabel: "Concept Level",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           selfApplication: {
+//             type: "uuid",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 6,
+//                 defaultLabel: "SelfApplication",
+//                 targetEntity: "a659d350-dd97-4da9-91de-524fa01745dc",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           name: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 7,
+//                 defaultLabel: "Name",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           author: {
+//             type: "uuid",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 8,
+//                 defaultLabel: "SelfApplication",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           description: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 9,
+//                 defaultLabel: "Description",
+//                 editable: true,
+//               },
+//             },
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
+//       parentName: "EntityDefinition",
+//       parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+//       parentDefinitionVersionUuid: "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+//       entityUuid: "a557419d-a288-4fb8-8a1e-971c86c113b8",
+//       conceptLevel: "Model",
+//       name: "TransformerDefinition",
+//       icon: "Interests",
+//       viewAttributes: ["name", "defaultLabel", "selfApplication", "uuid"],
+//       jzodSchema: {
+//         type: "object",
+//         definition: {
+//           uuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 1,
+//                 defaultLabel: "Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentName: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 2,
+//                 defaultLabel: "Entity Name",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentUuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 3,
+//                 defaultLabel: "Entity Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentDefinitionVersionUuid: {
+//             type: "uuid",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 4,
+//                 defaultLabel: "Entity Definition Version Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           name: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 5,
+//                 defaultLabel: "Name",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           defaultLabel: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 6,
+//                 defaultLabel: "Default Label",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           description: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 7,
+//                 defaultLabel: "Description",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           transformerInterface: {
+//             type: "object",
+//             definition: {
+//               transformerParameterSchema: {
+//                 type: "object",
+//                 definition: {
+//                   transformerType: {
+//                     type: "schemaReference",
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "jzodLiteral",
+//                     },
+//                   },
+//                   transformerDefinition: {
+//                     type: "schemaReference",
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "jzodObject",
+//                     },
+//                   },
+//                 },
+//               },
+//               transformerResultSchema: {
+//                 type: "schemaReference",
+//                 optional: true,
+//                 definition: {
+//                   absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                   relativePath: "jzodElement",
+//                 },
+//               },
+//             },
+//           },
+//           transformerImplementation: {
+//             type: "union",
+//             discriminator: "transformerImplementationType",
+//             definition: [
+//               {
+//                 type: "object",
+//                 definition: {
+//                   transformerImplementationType: {
+//                     type: "literal",
+//                     definition: "libraryImplementation",
+//                   },
+//                   inMemoryImplementationFunctionName: {
+//                     type: "string",
+//                   },
+//                   sqlImplementationFunctionName: {
+//                     type: "string",
+//                     optional: true,
+//                   },
+//                 },
+//               },
+//               {
+//                 type: "object",
+//                 definition: {
+//                   transformerImplementationType: {
+//                     type: "literal",
+//                     definition: "transformer",
+//                   },
+//                   definition: {
+//                     type: "schemaReference",
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "transformerForBuildOrRuntime",
+//                     },
+//                   },
+//                 },
+//               },
+//             ],
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "69bf7c03-a1df-4d1c-88c1-44363feeea87",
+//       parentName: "EntityDefinition",
+//       parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+//       parentDefinitionVersionUuid: "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+//       entityUuid: "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
+//       conceptLevel: "Model",
+//       name: "ApplicationModelBranch",
+//       icon: "Interests",
+//       jzodSchema: {
+//         type: "object",
+//         definition: {
+//           uuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 1,
+//                 defaultLabel: "Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentName: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 2,
+//                 defaultLabel: "Entity Name",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentUuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 3,
+//                 defaultLabel: "Entity Uuid",
+//                 targetEntityApplicationSection: "model",
+//                 targetEntity: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentDefinitionVersionUuid: {
+//             type: "uuid",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 4,
+//                 defaultLabel: "Entity Definition Version Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           conceptLevel: {
+//             type: "enum",
+//             definition: ["MetaModel", "Model", "Data"],
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 5,
+//                 defaultLabel: "Concept Level",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           name: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 6,
+//                 defaultLabel: "Name",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           defaultLabel: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 7,
+//                 defaultLabel: "Name",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           selfApplication: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 8,
+//                 defaultLabel: "SelfApplication",
+//                 targetEntity: "a659d350-dd97-4da9-91de-524fa01745dc",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           headVersion: {
+//             type: "uuid",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 9,
+//                 defaultLabel: "Head Version",
+//                 targetEntity: "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           description: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 10,
+//                 defaultLabel: "Description",
+//                 editable: true,
+//               },
+//             },
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "9460420b-f176-4918-bd45-894ab195ffe9",
+//       parentName: "EntityDefinition",
+//       parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+//       parentDefinitionVersionUuid: "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+//       entityUuid: "a659d350-dd97-4da9-91de-524fa01745dc",
+//       conceptLevel: "Model",
+//       name: "SelfApplication",
+//       icon: "Interests",
+//       viewAttributes: ["name", "defaultLabel", "selfApplication", "uuid"],
+//       jzodSchema: {
+//         type: "object",
+//         definition: {
+//           uuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 1,
+//                 defaultLabel: "Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentName: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 2,
+//                 defaultLabel: "Entity Name",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentUuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 3,
+//                 defaultLabel: "Entity Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentDefinitionVersionUuid: {
+//             type: "uuid",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 4,
+//                 defaultLabel: "Entity Definition Version Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           name: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 5,
+//                 defaultLabel: "Name",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           defaultLabel: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 6,
+//                 defaultLabel: "Default Label",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           description: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 7,
+//                 defaultLabel: "Description",
+//                 editable: true,
+//               },
+//             },
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "952d2c65-4da2-45c2-9394-a0920ceedfb6",
+//       parentName: "EntityDefinition",
+//       parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+//       parentDefinitionVersionUuid: "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+//       entityUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+//       conceptLevel: "Model",
+//       name: "Report",
+//       icon: "Interests",
+//       defaultInstanceDetailsReportUuid: "ef57aada-6b77-4384-8007-12f13eddd337",
+//       viewAttributes: ["name", "defaultLabel", "type", "selfApplication", "uuid"],
+//       jzodSchema: {
+//         type: "object",
+//         definition: {
+//           uuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 1,
+//                 defaultLabel: "Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentName: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 2,
+//                 defaultLabel: "Entity Name",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentUuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 3,
+//                 defaultLabel: "Entity Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentDefinitionVersionUuid: {
+//             type: "uuid",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 4,
+//                 defaultLabel: "Entity Definition Version Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           conceptLevel: {
+//             type: "enum",
+//             definition: ["MetaModel", "Model", "Data"],
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 5,
+//                 defaultLabel: "Concept Level",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           name: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 6,
+//                 defaultLabel: "Name",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           defaultLabel: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 7,
+//                 defaultLabel: "Default Label",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           type: {
+//             type: "enum",
+//             definition: ["list", "grid"],
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 8,
+//                 defaultLabel: "Type of Report",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           selfApplication: {
+//             type: "uuid",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 9,
+//                 defaultLabel: "SelfApplication",
+//                 targetEntity: "a659d350-dd97-4da9-91de-524fa01745dc",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           definition: {
+//             type: "schemaReference",
+//             context: {
+//               objectInstanceReportSection: {
+//                 type: "object",
+//                 definition: {
+//                   type: {
+//                     type: "literal",
+//                     definition: "objectInstanceReportSection",
+//                   },
+//                   combinerTemplates: {
+//                     type: "schemaReference",
+//                     optional: true,
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "extractorOrCombinerTemplateRecord",
+//                     },
+//                   },
+//                   runtimeTransformers: {
+//                     type: "record",
+//                     optional: true,
+//                     definition: {
+//                       type: "schemaReference",
+//                       definition: {
+//                         absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                         relativePath: "transformerForRuntime",
+//                       },
+//                     },
+//                   },
+//                   definition: {
+//                     type: "object",
+//                     definition: {
+//                       label: {
+//                         type: "string",
+//                         optional: true,
+//                         tag: {
+//                           value: {
+//                             id: 1,
+//                             defaultLabel: "Label",
+//                             editable: false,
+//                           },
+//                         },
+//                       },
+//                       parentUuid: {
+//                         type: "string",
+//                         validations: [
+//                           {
+//                             type: "uuid",
+//                           },
+//                         ],
+//                         tag: {
+//                           value: {
+//                             id: 2,
+//                             defaultLabel: "Entity Uuid",
+//                             editable: false,
+//                           },
+//                         },
+//                       },
+//                       fetchedDataReference: {
+//                         type: "string",
+//                         optional: true,
+//                         tag: {
+//                           value: {
+//                             id: 3,
+//                             defaultLabel: "Fetched Data Reference",
+//                             editable: false,
+//                           },
+//                         },
+//                       },
+//                       query: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "extractorTemplateReturningObject",
+//                         },
+//                       },
+//                     },
+//                   },
+//                 },
+//               },
+//               objectListReportSection: {
+//                 type: "object",
+//                 definition: {
+//                   type: {
+//                     type: "literal",
+//                     definition: "objectListReportSection",
+//                   },
+//                   definition: {
+//                     type: "object",
+//                     definition: {
+//                       label: {
+//                         type: "string",
+//                         optional: true,
+//                         tag: {
+//                           value: {
+//                             id: 1,
+//                             defaultLabel: "Label",
+//                             editable: false,
+//                           },
+//                         },
+//                       },
+//                       parentName: {
+//                         type: "string",
+//                         optional: true,
+//                         tag: {
+//                           value: {
+//                             id: 2,
+//                             defaultLabel: "Entity Name",
+//                             editable: false,
+//                           },
+//                         },
+//                       },
+//                       parentUuid: {
+//                         type: "uuid",
+//                         tag: {
+//                           value: {
+//                             id: 2,
+//                             defaultLabel: "Entity Uuid",
+//                             targetEntity: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+//                             editable: false,
+//                           },
+//                         },
+//                       },
+//                       fetchedDataReference: {
+//                         type: "string",
+//                         optional: true,
+//                         tag: {
+//                           value: {
+//                             id: 3,
+//                             defaultLabel: "Fetched Data Reference",
+//                             editable: false,
+//                           },
+//                         },
+//                       },
+//                       query: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "extractorTemplateReturningObject",
+//                         },
+//                       },
+//                       sortByAttribute: {
+//                         type: "string",
+//                         optional: true,
+//                       },
+//                     },
+//                   },
+//                 },
+//               },
+//               gridReportSection: {
+//                 type: "object",
+//                 definition: {
+//                   type: {
+//                     type: "literal",
+//                     definition: "grid",
+//                   },
+//                   combinerTemplates: {
+//                     type: "schemaReference",
+//                     optional: true,
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "extractorOrCombinerTemplateRecord",
+//                     },
+//                   },
+//                   runtimeTransformers: {
+//                     type: "record",
+//                     optional: true,
+//                     definition: {
+//                       type: "schemaReference",
+//                       definition: {
+//                         absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                         relativePath: "transformerForRuntime",
+//                       },
+//                     },
+//                   },
+//                   selectData: {
+//                     type: "schemaReference",
+//                     optional: true,
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "extractorOrCombinerTemplateRecord",
+//                     },
+//                   },
+//                   definition: {
+//                     type: "array",
+//                     definition: {
+//                       type: "array",
+//                       definition: {
+//                         type: "schemaReference",
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "reportSection",
+//                         },
+//                       },
+//                     },
+//                   },
+//                 },
+//               },
+//               listReportSection: {
+//                 type: "object",
+//                 definition: {
+//                   type: {
+//                     type: "literal",
+//                     definition: "list",
+//                   },
+//                   combinerTemplates: {
+//                     type: "schemaReference",
+//                     optional: true,
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "extractorOrCombinerTemplateRecord",
+//                     },
+//                   },
+//                   runtimeTransformers: {
+//                     type: "record",
+//                     optional: true,
+//                     definition: {
+//                       type: "schemaReference",
+//                       definition: {
+//                         absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                         relativePath: "transformerForRuntime",
+//                       },
+//                     },
+//                   },
+//                   selectData: {
+//                     type: "schemaReference",
+//                     optional: true,
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "extractorOrCombinerTemplateRecord",
+//                     },
+//                   },
+//                   definition: {
+//                     type: "array",
+//                     definition: {
+//                       type: "union",
+//                       discriminator: "type",
+//                       definition: [
+//                         {
+//                           type: "schemaReference",
+//                           definition: {
+//                             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                             relativePath: "objectInstanceReportSection",
+//                           },
+//                         },
+//                         {
+//                           type: "schemaReference",
+//                           definition: {
+//                             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                             relativePath: "objectListReportSection",
+//                           },
+//                         },
+//                       ],
+//                     },
+//                   },
+//                 },
+//               },
+//               reportSection: {
+//                 type: "union",
+//                 discriminator: "type",
+//                 definition: [
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "gridReportSection",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "listReportSection",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "objectListReportSection",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "objectInstanceReportSection",
+//                     },
+//                   },
+//                 ],
+//               },
+//               parameterTransformer: {
+//                 type: "string",
+//               },
+//               rootReport: {
+//                 type: "object",
+//                 definition: {
+//                   reportParametersToFetchQueryParametersTransformer: {
+//                     type: "record",
+//                     optional: true,
+//                     definition: {
+//                       type: "string",
+//                     },
+//                   },
+//                   reportParameters: {
+//                     type: "record",
+//                     optional: true,
+//                     definition: {
+//                       type: "string",
+//                     },
+//                   },
+//                   extractorTemplates: {
+//                     type: "schemaReference",
+//                     optional: true,
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "extractorOrCombinerTemplateRecord",
+//                     },
+//                   },
+//                   extractors: {
+//                     type: "schemaReference",
+//                     optional: true,
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "extractorOrCombinerRecord",
+//                     },
+//                   },
+//                   combiners: {
+//                     type: "schemaReference",
+//                     optional: true,
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "extractorOrCombinerRecord",
+//                     },
+//                   },
+//                   combinerTemplates: {
+//                     type: "schemaReference",
+//                     optional: true,
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "extractorOrCombinerTemplateRecord",
+//                     },
+//                   },
+//                   runtimeTransformers: {
+//                     type: "record",
+//                     optional: true,
+//                     definition: {
+//                       type: "schemaReference",
+//                       definition: {
+//                         absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                         relativePath: "transformerForRuntime",
+//                       },
+//                     },
+//                   },
+//                   section: {
+//                     type: "schemaReference",
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "reportSection",
+//                     },
+//                   },
+//                 },
+//               },
+//             },
+//             definition: {
+//               relativePath: "rootReport",
+//             },
+//             tag: {
+//               value: {
+//                 id: 9,
+//                 defaultLabel: "Definition",
+//                 editable: true,
+//               },
+//             },
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "b17d5e9e-12f2-4ed8-abdb-2576c01514a4",
+//       parentName: "EntityDefinition",
+//       parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+//       parentDefinitionVersionUuid: "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+//       entityUuid: "73bb0c69-e636-4e3b-a230-51f25469c089",
+//       name: "Commit",
+//       conceptLevel: "MetaModel",
+//       description: "Commits",
+//       jzodSchema: {
+//         type: "object",
+//         definition: {
+//           uuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 1,
+//                 defaultLabel: "Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentName: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 2,
+//                 defaultLabel: "Entity Name",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentUuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 3,
+//                 defaultLabel: "Entity Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentDefinitionVersionUuid: {
+//             type: "uuid",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 4,
+//                 defaultLabel: "Entity Definition Version Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           date: {
+//             type: "date",
+//             tag: {
+//               value: {
+//                 id: 5,
+//                 defaultLabel: "Date",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           selfApplication: {
+//             type: "uuid",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 6,
+//                 defaultLabel: "SelfApplication",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           name: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 7,
+//                 defaultLabel: "Name",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           preceding: {
+//             type: "uuid",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 8,
+//                 defaultLabel: "Previous Commit",
+//                 targetEntity: "73bb0c69-e636-4e3b-a230-51f25469c089",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           branch: {
+//             type: "uuid",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 9,
+//                 defaultLabel: "Author",
+//                 targetEntity: "",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           author: {
+//             type: "uuid",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 10,
+//                 defaultLabel: "Author",
+//                 targetEntity: "",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           description: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 11,
+//                 defaultLabel: "Description",
+//                 editable: true,
+//               },
+//             },
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "bd303ae8-6bce-4b44-a63c-815b9ebf728b",
+//       parentName: "EntityDefinition",
+//       parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+//       parentDefinitionVersionUuid: "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+//       entityUuid: "35c5608a-7678-4f07-a4ec-76fc5bc35424",
+//       conceptLevel: "Model",
+//       name: "SelfApplicationDeploymentConfiguration",
+//       icon: "Interests",
+//       jzodSchema: {
+//         type: "object",
+//         definition: {
+//           uuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 1,
+//                 defaultLabel: "Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentName: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 2,
+//                 defaultLabel: "Entity Name",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentUuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 3,
+//                 defaultLabel: "Entity Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentDefinitionVersionUuid: {
+//             type: "uuid",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 4,
+//                 defaultLabel: "Entity Definition Version Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           name: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 5,
+//                 defaultLabel: "Name",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           defaultLabel: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 6,
+//                 defaultLabel: "Default Label",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           description: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 7,
+//                 defaultLabel: "Description",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           selfApplication: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 8,
+//                 defaultLabel: "SelfApplication",
+//                 description: "The SelfApplication of the Branch.",
+//                 targetEntity: "a659d350-dd97-4da9-91de-524fa01745dc",
+//                 editable: false,
+//               },
+//             },
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+//       parentName: "EntityDefinition",
+//       parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+//       parentDefinitionVersionUuid: "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+//       entityUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+//       name: "EntityDefinition",
+//       conceptLevel: "MetaModel",
+//       description: "definition of an entity",
+//       defaultInstanceDetailsReportUuid: "acd55b04-84df-427e-b219-cf0e01a6881b",
+//       viewAttributes: ["name", "description", "entityUuid", "viewAttributes", "uuid"],
+//       jzodSchema: {
+//         type: "object",
+//         definition: {
+//           uuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 1,
+//                 defaultLabel: "Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentName: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 2,
+//                 defaultLabel: "Entity Name",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentUuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 3,
+//                 defaultLabel: "Entity Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentDefinitionVersionUuid: {
+//             type: "uuid",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 4,
+//                 defaultLabel: "Entity Definition Version Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           name: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 5,
+//                 defaultLabel: "Name",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           entityUuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 6,
+//                 defaultLabel: "Entity Uuid of the Entity which this definition is the definition",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           conceptLevel: {
+//             type: "enum",
+//             definition: ["MetaModel", "Model", "Data"],
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 7,
+//                 defaultLabel: "Concept Level",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           description: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 8,
+//                 defaultLabel: "Description",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           defaultInstanceDetailsReportUuid: {
+//             type: "uuid",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 9,
+//                 defaultLabel: "Default Report used to display instances of this Entity",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           viewAttributes: {
+//             type: "array",
+//             optional: true,
+//             definition: {
+//               type: "string",
+//             },
+//             tag: {
+//               value: {
+//                 id: 10,
+//                 defaultLabel: "Attributes to display by default",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           icon: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 11,
+//                 defaultLabel: "Icon used to represent instances of this Entity",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           jzodSchema: {
+//             type: "schemaReference",
+//             definition: {
+//               absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//               relativePath: "jzodObject",
+//             },
+//             tag: {
+//               value: {
+//                 id: 12,
+//                 defaultLabel: "Jzod Schema",
+//                 editable: true,
+//               },
+//             },
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "c0b71083-8cc8-43db-bf52-572f1f03bbb5",
+//       parentName: "EntityDefinition",
+//       parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+//       parentDefinitionVersionUuid: "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+//       entityUuid: "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+//       conceptLevel: "Model",
+//       name: "ApplicationVersionCrossEntityDefinition",
+//       description: "The mapping among SelfApplication Versions and Entity Definitions",
+//       icon: "Interests",
+//       jzodSchema: {
+//         type: "object",
+//         definition: {
+//           uuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 1,
+//                 defaultLabel: "Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentName: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 2,
+//                 defaultLabel: "Entity Name",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentUuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 3,
+//                 defaultLabel: "Entity Uuid",
+//                 description: "The Parent Entity of this Instance",
+//                 targetEntity: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentDefinitionVersionUuid: {
+//             type: "uuid",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 4,
+//                 defaultLabel: "Entity Definition Version Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           name: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 5,
+//                 defaultLabel: "Name",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           defaultLabel: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 6,
+//                 defaultLabel: "Default Label",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           description: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 7,
+//                 defaultLabel: "Description",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           selfApplication: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 8,
+//                 defaultLabel: "SelfApplication",
+//                 description: "The SelfApplication of the Branch.",
+//                 targetEntity: "a659d350-dd97-4da9-91de-524fa01745dc",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           applicationVersion: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 9,
+//                 defaultLabel: "SelfApplication Version",
+//                 description: "The SelfApplication Version of this mapping.",
+//                 targetEntity: "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           entity: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 10,
+//                 defaultLabel: "Entity",
+//                 description: "The Entity definition of this mapping.",
+//                 targetEntity: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+//                 editable: false,
+//               },
+//             },
+//           },
+//         },
+//       },
+//     },
+//     {
+//       parentName: "EntityDefinition",
+//       name: "Test",
+//       uuid: "d2842a84-3e66-43ee-ac58-7e13b95b01e8",
+//       parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+//       entityUuid: "c37625c7-0b35-4d6a-811d-8181eb978301",
+//       conceptLevel: "Model",
+//       defaultInstanceDetailsReportUuid: "d65d8dc8-2a7f-4111-81b1-0324e816c1a8",
+//       jzodSchema: {
+//         type: "object",
+//         definition: {
+//           uuid: {
+//             type: "string",
+//             validations: [
+//               {
+//                 type: "uuid",
+//               },
+//             ],
+//             tag: {
+//               value: {
+//                 id: 1,
+//                 defaultLabel: "Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentName: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 1,
+//                 defaultLabel: "Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentUuid: {
+//             type: "string",
+//             validations: [
+//               {
+//                 type: "uuid",
+//               },
+//             ],
+//             tag: {
+//               value: {
+//                 id: 1,
+//                 defaultLabel: "parentUuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           definition: {
+//             type: "object",
+//             definition: {
+//               testCompositeActions: {
+//                 type: "record",
+//                 optional: true,
+//                 definition: {
+//                   type: "schemaReference",
+//                   definition: {
+//                     absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                     relativePath: "testCompositeAction",
+//                   },
+//                 },
+//               },
+//               fullTestDefinition: {
+//                 type: "union",
+//                 optional: true,
+//                 discriminator: "testType",
+//                 definition: [
+//                   {
+//                     type: "object",
+//                     definition: {
+//                       testType: {
+//                         type: "literal",
+//                         definition: "testCompositeAction",
+//                       },
+//                       testLabel: {
+//                         type: "string",
+//                       },
+//                       beforeTestSetupAction: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeAction",
+//                         },
+//                       },
+//                       afterTestCleanupAction: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeAction",
+//                         },
+//                       },
+//                       compositeAction: {
+//                         type: "schemaReference",
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeAction",
+//                         },
+//                       },
+//                       testCompositeActionAssertions: {
+//                         type: "array",
+//                         definition: {
+//                           type: "schemaReference",
+//                           definition: {
+//                             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                             relativePath: "compositeRunTestAssertion",
+//                           },
+//                         },
+//                       },
+//                     },
+//                   },
+//                   {
+//                     type: "object",
+//                     definition: {
+//                       testType: {
+//                         type: "literal",
+//                         definition: "testCompositeActionSuite",
+//                       },
+//                       testLabel: {
+//                         type: "string",
+//                       },
+//                       beforeAll: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeAction",
+//                         },
+//                       },
+//                       beforeEach: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeAction",
+//                         },
+//                       },
+//                       afterEach: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeAction",
+//                         },
+//                       },
+//                       afterAll: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeAction",
+//                         },
+//                       },
+//                       testCompositeActions: {
+//                         type: "record",
+//                         definition: {
+//                           type: "schemaReference",
+//                           definition: {
+//                             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                             relativePath: "testCompositeAction",
+//                           },
+//                         },
+//                       },
+//                     },
+//                   },
+//                   {
+//                     type: "object",
+//                     definition: {
+//                       testType: {
+//                         type: "literal",
+//                         definition: "testBuildCompositeAction",
+//                       },
+//                       testLabel: {
+//                         type: "string",
+//                       },
+//                       beforeTestSetupAction: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeAction",
+//                         },
+//                       },
+//                       afterTestCleanupAction: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeAction",
+//                         },
+//                       },
+//                       compositeAction: {
+//                         type: "schemaReference",
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "buildCompositeAction",
+//                         },
+//                       },
+//                       testCompositeActionAssertions: {
+//                         type: "array",
+//                         definition: {
+//                           type: "schemaReference",
+//                           definition: {
+//                             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                             relativePath: "compositeRunTestAssertion",
+//                           },
+//                         },
+//                       },
+//                     },
+//                   },
+//                   {
+//                     type: "object",
+//                     definition: {
+//                       testType: {
+//                         type: "literal",
+//                         definition: "testBuildCompositeActionSuite",
+//                       },
+//                       testLabel: {
+//                         type: "string",
+//                       },
+//                       beforeAll: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeAction",
+//                         },
+//                       },
+//                       beforeEach: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeAction",
+//                         },
+//                       },
+//                       afterEach: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeAction",
+//                         },
+//                       },
+//                       afterAll: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeAction",
+//                         },
+//                       },
+//                       testCompositeActions: {
+//                         type: "record",
+//                         definition: {
+//                           type: "schemaReference",
+//                           definition: {
+//                             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                             relativePath: "testBuildCompositeAction",
+//                           },
+//                         },
+//                       },
+//                     },
+//                   },
+//                   {
+//                     type: "object",
+//                     definition: {
+//                       testType: {
+//                         type: "literal",
+//                         definition: "testRuntimeCompositeAction",
+//                       },
+//                       testLabel: {
+//                         type: "string",
+//                       },
+//                       beforeTestSetupAction: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeAction",
+//                         },
+//                       },
+//                       afterTestCleanupAction: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeAction",
+//                         },
+//                       },
+//                       compositeAction: {
+//                         type: "schemaReference",
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "runtimeCompositeAction",
+//                         },
+//                       },
+//                       testCompositeActionAssertions: {
+//                         type: "array",
+//                         definition: {
+//                           type: "schemaReference",
+//                           definition: {
+//                             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                             relativePath: "compositeRunTestAssertion",
+//                           },
+//                         },
+//                       },
+//                     },
+//                   },
+//                   {
+//                     type: "object",
+//                     definition: {
+//                       testType: {
+//                         type: "literal",
+//                         definition: "testRuntimeCompositeActionSuite",
+//                       },
+//                       testLabel: {
+//                         type: "string",
+//                       },
+//                       beforeAll: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeAction",
+//                         },
+//                       },
+//                       beforeEach: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeAction",
+//                         },
+//                       },
+//                       afterEach: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeAction",
+//                         },
+//                       },
+//                       afterAll: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeAction",
+//                         },
+//                       },
+//                       testCompositeActions: {
+//                         type: "record",
+//                         definition: {
+//                           type: "schemaReference",
+//                           definition: {
+//                             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                             relativePath: "testRuntimeCompositeAction",
+//                           },
+//                         },
+//                       },
+//                     },
+//                   },
+//                   {
+//                     type: "object",
+//                     definition: {
+//                       testType: {
+//                         type: "literal",
+//                         definition: "testBuildPlusRuntimeCompositeAction",
+//                       },
+//                       testLabel: {
+//                         type: "string",
+//                       },
+//                       testParams: {
+//                         type: "record",
+//                         optional: true,
+//                         definition: {
+//                           type: "any",
+//                         },
+//                       },
+//                       beforeTestSetupAction: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeAction",
+//                         },
+//                       },
+//                       afterTestCleanupAction: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeAction",
+//                         },
+//                       },
+//                       compositeAction: {
+//                         type: "schemaReference",
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "buildPlusRuntimeCompositeAction",
+//                         },
+//                       },
+//                       testCompositeActionAssertions: {
+//                         type: "array",
+//                         definition: {
+//                           type: "schemaReference",
+//                           definition: {
+//                             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                             relativePath: "compositeRunTestAssertion",
+//                           },
+//                         },
+//                       },
+//                     },
+//                   },
+//                   {
+//                     type: "object",
+//                     definition: {
+//                       testType: {
+//                         type: "literal",
+//                         definition: "testBuildPlusRuntimeCompositeActionSuite",
+//                       },
+//                       testLabel: {
+//                         type: "string",
+//                       },
+//                       testParams: {
+//                         type: "record",
+//                         optional: true,
+//                         definition: {
+//                           type: "any",
+//                         },
+//                       },
+//                       beforeAll: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeAction",
+//                         },
+//                       },
+//                       beforeEach: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeAction",
+//                         },
+//                       },
+//                       afterEach: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeAction",
+//                         },
+//                       },
+//                       afterAll: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeAction",
+//                         },
+//                       },
+//                       testCompositeActions: {
+//                         type: "record",
+//                         definition: {
+//                           type: "schemaReference",
+//                           definition: {
+//                             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                             relativePath: "testBuildPlusRuntimeCompositeAction",
+//                           },
+//                         },
+//                       },
+//                     },
+//                   },
+//                   {
+//                     type: "object",
+//                     definition: {
+//                       testType: {
+//                         type: "literal",
+//                         definition: "testCompositeActionTemplate",
+//                       },
+//                       testLabel: {
+//                         type: "string",
+//                       },
+//                       beforeTestSetupAction: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeActionTemplate",
+//                         },
+//                       },
+//                       afterTestCleanupAction: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeActionTemplate",
+//                         },
+//                       },
+//                       compositeActionTemplate: {
+//                         type: "schemaReference",
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeActionTemplate",
+//                         },
+//                       },
+//                       testCompositeActionAssertions: {
+//                         type: "array",
+//                         definition: {
+//                           type: "schemaReference",
+//                           definition: {
+//                             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                             relativePath: "compositeRunTestAssertion",
+//                           },
+//                         },
+//                       },
+//                     },
+//                   },
+//                   {
+//                     type: "object",
+//                     definition: {
+//                       testType: {
+//                         type: "literal",
+//                         definition: "testCompositeActionTemplateSuite",
+//                       },
+//                       testLabel: {
+//                         type: "string",
+//                       },
+//                       beforeAll: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeActionTemplate",
+//                         },
+//                       },
+//                       beforeEach: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeActionTemplate",
+//                         },
+//                       },
+//                       afterEach: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeActionTemplate",
+//                         },
+//                       },
+//                       afterAll: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeActionTemplate",
+//                         },
+//                       },
+//                       testCompositeActions: {
+//                         type: "record",
+//                         definition: {
+//                           type: "schemaReference",
+//                           definition: {
+//                             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                             relativePath: "testCompositeActionTemplate",
+//                           },
+//                         },
+//                       },
+//                     },
+//                   },
+//                   {
+//                     type: "object",
+//                     definition: {
+//                       testType: {
+//                         type: "literal",
+//                         definition: "testAssertion",
+//                       },
+//                       testLabel: {
+//                         type: "string",
+//                       },
+//                       definition: {
+//                         type: "object",
+//                         definition: {
+//                           resultAccessPath: {
+//                             type: "array",
+//                             optional: true,
+//                             definition: {
+//                               type: "string",
+//                             },
+//                           },
+//                           resultTransformer: {
+//                             type: "schemaReference",
+//                             optional: true,
+//                             definition: {
+//                               absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                               relativePath: "extendedTransformerForRuntime",
+//                             },
+//                           },
+//                           ignoreAttributes: {
+//                             type: "array",
+//                             optional: true,
+//                             definition: {
+//                               type: "string",
+//                             },
+//                           },
+//                           expectedValue: {
+//                             type: "any",
+//                           },
+//                         },
+//                       },
+//                     },
+//                   },
+//                 ],
+//               },
+//             },
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "e3c1cc69-066d-4f52-beeb-b659dc7a88b9",
+//       parentName: "EntityDefinition",
+//       parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+//       parentDefinitionVersionUuid: "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+//       entityUuid: "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
+//       name: "Endpoint",
+//       conceptLevel: "MetaModel",
+//       description: "definition of an Endpoint",
+//       viewAttributes: ["name", "description", "transactionalEndpoint", "uuid"],
+//       jzodSchema: {
+//         type: "object",
+//         definition: {
+//           uuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 1,
+//                 defaultLabel: "Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentName: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 2,
+//                 defaultLabel: "Entity Name",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentUuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 3,
+//                 defaultLabel: "Entity Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentDefinitionVersionUuid: {
+//             type: "uuid",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 4,
+//                 defaultLabel: "Entity Definition Version Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           name: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 6,
+//                 defaultLabel: "Name",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           version: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 7,
+//                 defaultLabel: "Version",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           description: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 8,
+//                 defaultLabel: "Description",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           transactionalEndpoint: {
+//             type: "boolean",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 9,
+//                 defaultLabel: "Transactional Endpoint",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           definition: {
+//             type: "object",
+//             tag: {
+//               value: {
+//                 id: 10,
+//                 defaultLabel: "Definition",
+//                 editable: true,
+//               },
+//             },
+//             definition: {
+//               actions: {
+//                 type: "schemaReference",
+//                 context: {
+//                   action: {
+//                     type: "object",
+//                     definition: {
+//                       actionParameters: {
+//                         type: "object",
+//                         definition: {
+//                           actionType: {
+//                             type: "schemaReference",
+//                             definition: {
+//                               absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                               relativePath: "jzodLiteral",
+//                             },
+//                           },
+//                           actionName: {
+//                             type: "schemaReference",
+//                             definition: {
+//                               absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                               relativePath: "jzodLiteral",
+//                             },
+//                           },
+//                           actionLabel: {
+//                             type: "schemaReference",
+//                             optional: true,
+//                             definition: {
+//                               absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                               relativePath: "jzodAttributePlainStringWithValidations",
+//                             },
+//                           },
+//                           endpoint: {
+//                             type: "schemaReference",
+//                             definition: {
+//                               absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                               relativePath: "jzodLiteral",
+//                             },
+//                           },
+//                           configuration: {
+//                             type: "schemaReference",
+//                             definition: {
+//                               absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                               relativePath: "jzodElement",
+//                             },
+//                           },
+//                           deploymentUuid: {
+//                             type: "schemaReference",
+//                             definition: {
+//                               absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                               relativePath: "jzodAttributePlainStringWithValidations",
+//                             },
+//                           },
+//                         },
+//                       },
+//                       actionImplementation: {
+//                         type: "union",
+//                         optional: true,
+//                         discriminator: "actionImplementationType",
+//                         definition: [
+//                           {
+//                             type: "object",
+//                             definition: {
+//                               actionImplementationType: {
+//                                 type: "literal",
+//                                 definition: "libraryImplementation",
+//                               },
+//                               inMemoryImplementationFunctionName: {
+//                                 type: "string",
+//                               },
+//                               sqlImplementationFunctionName: {
+//                                 type: "string",
+//                                 optional: true,
+//                               },
+//                             },
+//                           },
+//                           {
+//                             type: "object",
+//                             definition: {
+//                               actionImplementationType: {
+//                                 type: "literal",
+//                                 definition: "compositeAction",
+//                               },
+//                               definition: {
+//                                 type: "schemaReference",
+//                                 definition: {
+//                                   absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                                   relativePath: "compositeAction",
+//                                 },
+//                               },
+//                             },
+//                           },
+//                         ],
+//                       },
+//                       errors: {
+//                         type: "union",
+//                         optional: true,
+//                         definition: [
+//                           {
+//                             type: "schemaReference",
+//                             definition: {
+//                               absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                               relativePath: "jzodEnum",
+//                             },
+//                           },
+//                           {
+//                             type: "schemaReference",
+//                             definition: {
+//                               absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                               relativePath: "jzodLiteral",
+//                             },
+//                           },
+//                         ],
+//                       },
+//                     },
+//                   },
+//                   actionsArray: {
+//                     type: "array",
+//                     definition: {
+//                       type: "schemaReference",
+//                       definition: {
+//                         relativePath: "action",
+//                       },
+//                     },
+//                   },
+//                   actionsUnion: {
+//                     type: "object",
+//                     extend: {
+//                       type: "schemaReference",
+//                       definition: {
+//                         eager: true,
+//                         absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                         relativePath: "jzodBaseObject",
+//                       },
+//                     },
+//                     definition: {
+//                       type: {
+//                         type: "literal",
+//                         definition: "union",
+//                       },
+//                       discriminator: {
+//                         type: "string",
+//                         optional: true,
+//                       },
+//                       definition: {
+//                         type: "array",
+//                         definition: {
+//                           type: "schemaReference",
+//                           definition: {
+//                             relativePath: "action",
+//                           },
+//                         },
+//                       },
+//                     },
+//                   },
+//                 },
+//                 definition: {
+//                   relativePath: "actionsArray",
+//                 },
+//                 tag: {
+//                   value: {
+//                     id: 10,
+//                     defaultLabel: "Endpoint Parameter",
+//                     editable: true,
+//                   },
+//                 },
+//               },
+//               actionDefinition: {
+//                 type: "schemaReference",
+//                 optional: true,
+//                 definition: {
+//                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                   relativePath: "jzodObject",
+//                 },
+//                 tag: {
+//                   value: {
+//                     id: 11,
+//                     defaultLabel: "Endpoint Definition",
+//                     editable: true,
+//                   },
+//                 },
+//               },
+//               actionTransformer: {
+//                 type: "any",
+//                 optional: true,
+//               },
+//               actionMigrations: {
+//                 type: "any",
+//                 optional: true,
+//               },
+//             },
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "f93af951-ea13-4815-a2e3-ec0cab1fadd2",
+//       parentName: "EntityDefinition",
+//       parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+//       parentDefinitionVersionUuid: "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+//       entityUuid: "7990c0c9-86c3-40a1-a121-036c91b55ed7",
+//       conceptLevel: "Model",
+//       name: "StoreBasedConfiguration",
+//       icon: "Interests",
+//       jzodSchema: {
+//         type: "object",
+//         definition: {
+//           uuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 1,
+//                 defaultLabel: "Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentName: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 2,
+//                 defaultLabel: "Entity Name",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentUuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 3,
+//                 defaultLabel: "Entity Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentDefinitionVersionUuid: {
+//             type: "uuid",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 4,
+//                 defaultLabel: "Entity Definition Version Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           name: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 5,
+//                 defaultLabel: "Name",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           defaultLabel: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 6,
+//                 defaultLabel: "Default Label",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           definition: {
+//             type: "object",
+//             optional: true,
+//             definition: {
+//               currentApplicationVersion: {
+//                 type: "string",
+//               },
+//             },
+//             tag: {
+//               value: {
+//                 id: 7,
+//                 defaultLabel: "The configuration itself",
+//                 editable: true,
+//               },
+//             },
+//           },
+//         },
+//       },
+//     },
+//   ],
+//   jzodSchemas: [
+//     {
+//       uuid: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//       parentName: "JzodSchema",
+//       parentUuid: "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+//       name: "jzodMiroirBootstrapSchema",
+//       defaultLabel: "The Jzod Schema for Miroir Jzod Schemas. Parses itself.",
+//       definition: {
+//         type: "schemaReference",
+//         context: {
+//           jzodBaseObject: {
+//             type: "object",
+//             tag: {
+//               optional: true,
+//               schema: {
+//                 optional: true,
+//                 metaSchema: {
+//                   type: "object",
+//                   optional: true,
+//                   definition: {
+//                     optional: {
+//                       type: "boolean",
+//                       optional: true,
+//                     },
+//                     metaSchema: {
+//                       type: "schemaReference",
+//                       optional: true,
+//                       definition: {
+//                         relativePath: "jzodElement",
+//                       },
+//                     },
+//                     valueSchema: {
+//                       type: "schemaReference",
+//                       optional: true,
+//                       definition: {
+//                         relativePath: "jzodElement",
+//                       },
+//                     },
+//                   },
+//                 },
+//                 valueSchema: {
+//                   type: "object",
+//                   optional: true,
+//                   definition: {
+//                     id: {
+//                       type: "number",
+//                       optional: true,
+//                     },
+//                     defaultLabel: {
+//                       type: "string",
+//                       optional: true,
+//                     },
+//                     initializeTo: {
+//                       type: "any",
+//                       optional: true,
+//                     },
+//                     targetEntity: {
+//                       type: "string",
+//                       optional: true,
+//                     },
+//                     editable: {
+//                       type: "boolean",
+//                       optional: true,
+//                     },
+//                   },
+//                 },
+//               },
+//             },
+//             definition: {
+//               optional: {
+//                 type: "boolean",
+//                 optional: true,
+//               },
+//               nullable: {
+//                 type: "boolean",
+//                 optional: true,
+//               },
+//             },
+//           },
+//           jzodArray: {
+//             type: "object",
+//             extend: {
+//               type: "schemaReference",
+//               definition: {
+//                 eager: true,
+//                 absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                 relativePath: "jzodBaseObject",
+//               },
+//             },
+//             definition: {
+//               type: {
+//                 type: "literal",
+//                 definition: "array",
+//               },
+//               definition: {
+//                 type: "schemaReference",
+//                 definition: {
+//                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                   relativePath: "jzodElement",
+//                 },
+//               },
+//             },
+//           },
+//           jzodPlainAttribute: {
+//             type: "object",
+//             extend: {
+//               type: "schemaReference",
+//               definition: {
+//                 eager: true,
+//                 absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                 relativePath: "jzodBaseObject",
+//               },
+//             },
+//             definition: {
+//               type: {
+//                 type: "enum",
+//                 definition: [
+//                   "any",
+//                   "bigint",
+//                   "boolean",
+//                   "never",
+//                   "null",
+//                   "uuid",
+//                   "undefined",
+//                   "unknown",
+//                   "void",
+//                 ],
+//               },
+//               coerce: {
+//                 type: "boolean",
+//                 optional: true,
+//               },
+//             },
+//           },
+//           jzodAttributeDateValidations: {
+//             type: "object",
+//             definition: {
+//               type: {
+//                 type: "enum",
+//                 definition: ["min", "max"],
+//               },
+//               parameter: {
+//                 type: "any",
+//               },
+//             },
+//           },
+//           jzodAttributePlainDateWithValidations: {
+//             type: "object",
+//             extend: {
+//               type: "schemaReference",
+//               definition: {
+//                 eager: true,
+//                 absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                 relativePath: "jzodBaseObject",
+//               },
+//             },
+//             definition: {
+//               type: {
+//                 type: "literal",
+//                 definition: "date",
+//               },
+//               coerce: {
+//                 type: "boolean",
+//                 optional: true,
+//               },
+//               validations: {
+//                 type: "array",
+//                 optional: true,
+//                 definition: {
+//                   type: "schemaReference",
+//                   definition: {
+//                     absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                     relativePath: "jzodAttributeDateValidations",
+//                   },
+//                 },
+//               },
+//             },
+//           },
+//           jzodAttributeNumberValidations: {
+//             type: "object",
+//             definition: {
+//               type: {
+//                 type: "enum",
+//                 definition: [
+//                   "gt",
+//                   "gte",
+//                   "lt",
+//                   "lte",
+//                   "int",
+//                   "positive",
+//                   "nonpositive",
+//                   "negative",
+//                   "nonnegative",
+//                   "multipleOf",
+//                   "finite",
+//                   "safe",
+//                 ],
+//               },
+//               parameter: {
+//                 type: "any",
+//               },
+//             },
+//           },
+//           jzodAttributePlainNumberWithValidations: {
+//             type: "object",
+//             extend: {
+//               type: "schemaReference",
+//               definition: {
+//                 eager: true,
+//                 absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                 relativePath: "jzodBaseObject",
+//               },
+//             },
+//             definition: {
+//               type: {
+//                 type: "literal",
+//                 definition: "number",
+//               },
+//               coerce: {
+//                 type: "boolean",
+//                 optional: true,
+//               },
+//               validations: {
+//                 type: "array",
+//                 optional: true,
+//                 definition: {
+//                   type: "schemaReference",
+//                   definition: {
+//                     absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                     relativePath: "jzodAttributeNumberValidations",
+//                   },
+//                 },
+//               },
+//             },
+//           },
+//           jzodAttributeStringValidations: {
+//             type: "object",
+//             definition: {
+//               type: {
+//                 type: "enum",
+//                 definition: [
+//                   "max",
+//                   "min",
+//                   "length",
+//                   "email",
+//                   "url",
+//                   "emoji",
+//                   "uuid",
+//                   "cuid",
+//                   "cuid2",
+//                   "ulid",
+//                   "regex",
+//                   "includes",
+//                   "startsWith",
+//                   "endsWith",
+//                   "datetime",
+//                   "ip",
+//                 ],
+//               },
+//               parameter: {
+//                 type: "any",
+//               },
+//             },
+//           },
+//           jzodAttributePlainStringWithValidations: {
+//             type: "object",
+//             extend: {
+//               type: "schemaReference",
+//               definition: {
+//                 eager: true,
+//                 absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                 relativePath: "jzodBaseObject",
+//               },
+//             },
+//             definition: {
+//               type: {
+//                 type: "literal",
+//                 definition: "string",
+//               },
+//               coerce: {
+//                 type: "boolean",
+//                 optional: true,
+//               },
+//               validations: {
+//                 type: "array",
+//                 optional: true,
+//                 definition: {
+//                   type: "schemaReference",
+//                   definition: {
+//                     absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                     relativePath: "jzodAttributeStringValidations",
+//                   },
+//                 },
+//               },
+//             },
+//           },
+//           jzodElement: {
+//             type: "union",
+//             discriminator: "type",
+//             definition: [
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                   relativePath: "jzodArray",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                   relativePath: "jzodPlainAttribute",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                   relativePath: "jzodAttributePlainDateWithValidations",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                   relativePath: "jzodAttributePlainNumberWithValidations",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                   relativePath: "jzodAttributePlainStringWithValidations",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                   relativePath: "jzodEnum",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                   relativePath: "jzodFunction",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                   relativePath: "jzodLazy",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                   relativePath: "jzodLiteral",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                   relativePath: "jzodIntersection",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                   relativePath: "jzodMap",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                   relativePath: "jzodObject",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                   relativePath: "jzodPromise",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                   relativePath: "jzodRecord",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                   relativePath: "jzodReference",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                   relativePath: "jzodSet",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                   relativePath: "jzodTuple",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                   relativePath: "jzodUnion",
+//                 },
+//               },
+//             ],
+//           },
+//           jzodEnum: {
+//             type: "object",
+//             extend: {
+//               type: "schemaReference",
+//               definition: {
+//                 eager: true,
+//                 absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                 relativePath: "jzodBaseObject",
+//               },
+//             },
+//             definition: {
+//               type: {
+//                 type: "literal",
+//                 definition: "enum",
+//               },
+//               definition: {
+//                 type: "array",
+//                 definition: {
+//                   type: "string",
+//                 },
+//               },
+//             },
+//           },
+//           jzodEnumAttributeTypes: {
+//             type: "enum",
+//             definition: [
+//               "any",
+//               "bigint",
+//               "boolean",
+//               "date",
+//               "never",
+//               "null",
+//               "number",
+//               "string",
+//               "uuid",
+//               "undefined",
+//               "unknown",
+//               "void",
+//             ],
+//           },
+//           jzodEnumElementTypes: {
+//             type: "enum",
+//             definition: [
+//               "array",
+//               "date",
+//               "enum",
+//               "function",
+//               "lazy",
+//               "literal",
+//               "intersection",
+//               "map",
+//               "number",
+//               "object",
+//               "promise",
+//               "record",
+//               "schemaReference",
+//               "set",
+//               "string",
+//               "tuple",
+//               "union",
+//             ],
+//           },
+//           jzodFunction: {
+//             type: "object",
+//             extend: {
+//               type: "schemaReference",
+//               definition: {
+//                 eager: true,
+//                 absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                 relativePath: "jzodBaseObject",
+//               },
+//             },
+//             definition: {
+//               type: {
+//                 type: "literal",
+//                 definition: "function",
+//               },
+//               definition: {
+//                 type: "object",
+//                 definition: {
+//                   args: {
+//                     type: "array",
+//                     definition: {
+//                       type: "schemaReference",
+//                       definition: {
+//                         absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                         relativePath: "jzodElement",
+//                       },
+//                     },
+//                   },
+//                   returns: {
+//                     type: "schemaReference",
+//                     definition: {
+//                       absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                       relativePath: "jzodElement",
+//                     },
+//                     optional: true,
+//                   },
+//                 },
+//               },
+//             },
+//           },
+//           jzodLazy: {
+//             type: "object",
+//             extend: {
+//               type: "schemaReference",
+//               definition: {
+//                 eager: true,
+//                 absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                 relativePath: "jzodBaseObject",
+//               },
+//             },
+//             definition: {
+//               type: {
+//                 type: "literal",
+//                 definition: "lazy",
+//               },
+//               definition: {
+//                 type: "schemaReference",
+//                 definition: {
+//                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                   relativePath: "jzodFunction",
+//                 },
+//               },
+//             },
+//           },
+//           jzodLiteral: {
+//             type: "object",
+//             extend: {
+//               type: "schemaReference",
+//               definition: {
+//                 eager: true,
+//                 absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                 relativePath: "jzodBaseObject",
+//               },
+//             },
+//             definition: {
+//               type: {
+//                 type: "literal",
+//                 definition: "literal",
+//               },
+//               definition: {
+//                 type: "union",
+//                 definition: [
+//                   {
+//                     type: "string",
+//                   },
+//                   {
+//                     type: "number",
+//                   },
+//                   {
+//                     type: "bigint",
+//                   },
+//                   {
+//                     type: "boolean",
+//                   },
+//                 ],
+//               },
+//             },
+//           },
+//           jzodIntersection: {
+//             type: "object",
+//             extend: {
+//               type: "schemaReference",
+//               definition: {
+//                 eager: true,
+//                 absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                 relativePath: "jzodBaseObject",
+//               },
+//             },
+//             definition: {
+//               type: {
+//                 type: "literal",
+//                 definition: "intersection",
+//               },
+//               definition: {
+//                 type: "object",
+//                 definition: {
+//                   left: {
+//                     type: "schemaReference",
+//                     definition: {
+//                       absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                       relativePath: "jzodElement",
+//                     },
+//                   },
+//                   right: {
+//                     type: "schemaReference",
+//                     definition: {
+//                       absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                       relativePath: "jzodElement",
+//                     },
+//                   },
+//                 },
+//               },
+//             },
+//           },
+//           jzodMap: {
+//             type: "object",
+//             extend: {
+//               type: "schemaReference",
+//               definition: {
+//                 eager: true,
+//                 absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                 relativePath: "jzodBaseObject",
+//               },
+//             },
+//             definition: {
+//               type: {
+//                 type: "literal",
+//                 definition: "map",
+//               },
+//               definition: {
+//                 type: "tuple",
+//                 definition: [
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                       relativePath: "jzodElement",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                       relativePath: "jzodElement",
+//                     },
+//                   },
+//                 ],
+//               },
+//             },
+//           },
+//           jzodObject: {
+//             type: "object",
+//             extend: {
+//               type: "schemaReference",
+//               definition: {
+//                 eager: true,
+//                 absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                 relativePath: "jzodBaseObject",
+//               },
+//             },
+//             definition: {
+//               extend: {
+//                 type: "union",
+//                 optional: true,
+//                 definition: [
+//                   {
+//                     type: "union",
+//                     optional: true,
+//                     definition: [
+//                       {
+//                         type: "schemaReference",
+//                         definition: {
+//                           relativePath: "jzodReference",
+//                         },
+//                       },
+//                       {
+//                         type: "schemaReference",
+//                         definition: {
+//                           relativePath: "jzodObject",
+//                         },
+//                       },
+//                     ],
+//                   },
+//                   {
+//                     type: "array",
+//                     definition: {
+//                       type: "union",
+//                       optional: true,
+//                       definition: [
+//                         {
+//                           type: "schemaReference",
+//                           definition: {
+//                             relativePath: "jzodReference",
+//                           },
+//                         },
+//                         {
+//                           type: "schemaReference",
+//                           definition: {
+//                             relativePath: "jzodObject",
+//                           },
+//                         },
+//                       ],
+//                     },
+//                   },
+//                 ],
+//               },
+//               type: {
+//                 type: "literal",
+//                 definition: "object",
+//               },
+//               nonStrict: {
+//                 type: "boolean",
+//                 optional: true,
+//               },
+//               partial: {
+//                 type: "boolean",
+//                 optional: true,
+//               },
+//               carryOn: {
+//                 type: "union",
+//                 optional: true,
+//                 definition: [
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                       relativePath: "jzodObject",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                       relativePath: "jzodUnion",
+//                     },
+//                   },
+//                 ],
+//               },
+//               definition: {
+//                 type: "record",
+//                 definition: {
+//                   type: "schemaReference",
+//                   definition: {
+//                     absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                     relativePath: "jzodElement",
+//                   },
+//                 },
+//               },
+//             },
+//           },
+//           jzodPromise: {
+//             type: "object",
+//             extend: {
+//               type: "schemaReference",
+//               definition: {
+//                 eager: true,
+//                 absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                 relativePath: "jzodBaseObject",
+//               },
+//             },
+//             definition: {
+//               type: {
+//                 type: "literal",
+//                 definition: "promise",
+//               },
+//               definition: {
+//                 type: "schemaReference",
+//                 definition: {
+//                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                   relativePath: "jzodElement",
+//                 },
+//               },
+//             },
+//           },
+//           jzodRecord: {
+//             type: "object",
+//             extend: {
+//               type: "schemaReference",
+//               definition: {
+//                 eager: true,
+//                 absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                 relativePath: "jzodBaseObject",
+//               },
+//             },
+//             definition: {
+//               type: {
+//                 type: "literal",
+//                 definition: "record",
+//               },
+//               definition: {
+//                 type: "schemaReference",
+//                 definition: {
+//                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                   relativePath: "jzodElement",
+//                 },
+//               },
+//             },
+//           },
+//           jzodReference: {
+//             type: "object",
+//             extend: {
+//               type: "schemaReference",
+//               definition: {
+//                 eager: true,
+//                 absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                 relativePath: "jzodBaseObject",
+//               },
+//             },
+//             definition: {
+//               type: {
+//                 type: "literal",
+//                 definition: "schemaReference",
+//               },
+//               context: {
+//                 type: "record",
+//                 optional: true,
+//                 definition: {
+//                   type: "schemaReference",
+//                   definition: {
+//                     absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                     relativePath: "jzodElement",
+//                   },
+//                 },
+//               },
+//               carryOn: {
+//                 type: "union",
+//                 optional: true,
+//                 definition: [
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                       relativePath: "jzodObject",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                       relativePath: "jzodUnion",
+//                     },
+//                   },
+//                 ],
+//               },
+//               definition: {
+//                 type: "object",
+//                 definition: {
+//                   eager: {
+//                     type: "boolean",
+//                     optional: true,
+//                   },
+//                   partial: {
+//                     type: "boolean",
+//                     optional: true,
+//                   },
+//                   relativePath: {
+//                     type: "string",
+//                     optional: true,
+//                   },
+//                   absolutePath: {
+//                     type: "string",
+//                     optional: true,
+//                   },
+//                 },
+//               },
+//             },
+//           },
+//           jzodSet: {
+//             type: "object",
+//             extend: {
+//               type: "schemaReference",
+//               definition: {
+//                 eager: true,
+//                 absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                 relativePath: "jzodBaseObject",
+//               },
+//             },
+//             definition: {
+//               type: {
+//                 type: "literal",
+//                 definition: "set",
+//               },
+//               definition: {
+//                 type: "schemaReference",
+//                 definition: {
+//                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                   relativePath: "jzodElement",
+//                 },
+//               },
+//             },
+//           },
+//           jzodTuple: {
+//             type: "object",
+//             extend: {
+//               type: "schemaReference",
+//               definition: {
+//                 eager: true,
+//                 absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                 relativePath: "jzodBaseObject",
+//               },
+//             },
+//             definition: {
+//               type: {
+//                 type: "literal",
+//                 definition: "tuple",
+//               },
+//               definition: {
+//                 type: "array",
+//                 definition: {
+//                   type: "schemaReference",
+//                   definition: {
+//                     absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                     relativePath: "jzodElement",
+//                   },
+//                 },
+//               },
+//             },
+//           },
+//           jzodUnion: {
+//             type: "object",
+//             extend: {
+//               type: "schemaReference",
+//               definition: {
+//                 eager: true,
+//                 absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                 relativePath: "jzodBaseObject",
+//               },
+//             },
+//             definition: {
+//               type: {
+//                 type: "literal",
+//                 definition: "union",
+//               },
+//               discriminator: {
+//                 type: "string",
+//                 optional: true,
+//               },
+//               discriminatorNew: {
+//                 type: "union",
+//                 optional: true,
+//                 definition: [
+//                   {
+//                     type: "object",
+//                     definition: {
+//                       discriminatorType: {
+//                         type: "literal",
+//                         definition: "string",
+//                       },
+//                       value: {
+//                         type: "string",
+//                       },
+//                     },
+//                   },
+//                   {
+//                     type: "object",
+//                     definition: {
+//                       discriminatorType: {
+//                         type: "literal",
+//                         definition: "array",
+//                       },
+//                       value: {
+//                         type: "array",
+//                         definition: {
+//                           type: "string",
+//                         },
+//                       },
+//                     },
+//                   },
+//                 ],
+//               },
+//               carryOn: {
+//                 optional: true,
+//                 type: "schemaReference",
+//                 definition: {
+//                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                   relativePath: "jzodObject",
+//                 },
+//               },
+//               definition: {
+//                 type: "array",
+//                 definition: {
+//                   type: "schemaReference",
+//                   definition: {
+//                     absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                     relativePath: "jzodElement",
+//                   },
+//                 },
+//               },
+//             },
+//           },
+//         },
+//         definition: {
+//           absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//           relativePath: "jzodElement",
+//         },
+//       },
+//     },
+//     {
+//       uuid: "a97756cf-dd93-42b9-a021-91a629b187b9",
+//       parentName: "JzodSchema",
+//       parentUuid: "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+//       name: "transformerJzodSchema",
+//       defaultLabel:
+//         "The Jzod Schema for Miroir Transformers: build objects & other values on the fly from a given set of parameters.",
+//       definition: {
+//         type: "schemaReference",
+//         context: {
+//           transformer_inner_label: {
+//             type: "object",
+//             definition: {
+//               label: {
+//                 type: "string",
+//                 optional: true,
+//               },
+//             },
+//           },
+//           transformer_orderBy: {
+//             type: "object",
+//             extend: {
+//               type: "schemaReference",
+//               definition: {
+//                 eager: true,
+//                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                 relativePath: "transformer_inner_label",
+//               },
+//             },
+//             definition: {
+//               orderBy: {
+//                 type: "string",
+//                 optional: true,
+//               },
+//             },
+//           },
+//           transformerForBuild_Abstract: {
+//             type: "object",
+//             extend: {
+//               type: "schemaReference",
+//               definition: {
+//                 eager: true,
+//                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                 relativePath: "transformer_inner_label",
+//               },
+//             },
+//             definition: {
+//               interpolation: {
+//                 type: "literal",
+//                 definition: "build",
+//               },
+//             },
+//           },
+//           transformerForRuntime_Abstract: {
+//             type: "object",
+//             extend: {
+//               type: "schemaReference",
+//               definition: {
+//                 eager: true,
+//                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                 relativePath: "transformer_inner_label",
+//               },
+//             },
+//             definition: {
+//               interpolation: {
+//                 type: "literal",
+//                 definition: "runtime",
+//               },
+//             },
+//           },
+//           transformerForBuild_optional_Abstract: {
+//             type: "object",
+//             extend: {
+//               type: "schemaReference",
+//               definition: {
+//                 eager: true,
+//                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                 relativePath: "transformer_inner_label",
+//               },
+//             },
+//             definition: {
+//               interpolation: {
+//                 type: "literal",
+//                 optional: true,
+//                 definition: "build",
+//               },
+//             },
+//           },
+//           transformerForRuntime_optional_Abstract: {
+//             type: "object",
+//             extend: {
+//               type: "schemaReference",
+//               definition: {
+//                 eager: true,
+//                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                 relativePath: "transformer_inner_label",
+//               },
+//             },
+//             definition: {
+//               interpolation: {
+//                 type: "literal",
+//                 optional: true,
+//                 definition: "runtime",
+//               },
+//             },
+//           },
+//           transformer_inner_referenced_extractor: {
+//             type: "object",
+//             definition: {
+//               referenceType: {
+//                 type: "literal",
+//                 definition: "referencedExtractor",
+//               },
+//               reference: {
+//                 type: "union",
+//                 definition: [
+//                   {
+//                     type: "string",
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "transformer_extractors",
+//                     },
+//                   },
+//                 ],
+//               },
+//             },
+//           },
+//           transformer_extractors: {
+//             type: "schemaReference",
+//             definition: {
+//               relativePath: "transformer_constantListAsExtractor",
+//             },
+//           },
+//           transformer_constantListAsExtractor: {
+//             type: "object",
+//             definition: {
+//               transformerType: {
+//                 type: "literal",
+//                 definition: "constantListAsExtractor",
+//               },
+//               value: {
+//                 type: "array",
+//                 definition: {
+//                   type: "any",
+//                 },
+//               },
+//             },
+//           },
+//           transformer_inner_referenced_transformerForBuild: {
+//             type: "object",
+//             definition: {
+//               referenceType: {
+//                 type: "literal",
+//                 definition: "referencedTransformer",
+//               },
+//               reference: {
+//                 type: "union",
+//                 definition: [
+//                   {
+//                     type: "string",
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "transformerForBuild",
+//                     },
+//                   },
+//                 ],
+//               },
+//             },
+//           },
+//           transformer_inner_referenced_transformerForRuntime: {
+//             type: "object",
+//             definition: {
+//               referenceType: {
+//                 type: "literal",
+//                 definition: "referencedTransformer",
+//               },
+//               reference: {
+//                 type: "union",
+//                 definition: [
+//                   {
+//                     type: "string",
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "transformerForRuntime",
+//                     },
+//                   },
+//                 ],
+//               },
+//             },
+//           },
+//           transformer_inner_elementTransformer_transformerForBuild: {
+//             type: "union",
+//             definition: [
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForRuntime",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForBuild",
+//                 },
+//               },
+//             ],
+//           },
+//           transformer_inner_elementTransformer_transformerForRuntime: {
+//             type: "schemaReference",
+//             definition: {
+//               relativePath: "transformerForRuntime",
+//             },
+//           },
+//           transformer_contextOrParameterReferenceTO_REMOVE: {
+//             type: "union",
+//             discriminator: "transformerType",
+//             definition: [
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForRuntime_contextReference",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForBuild_parameterReference",
+//                 },
+//               },
+//             ],
+//           },
+//           transformerForRuntime_constants: {
+//             type: "union",
+//             discriminator: "transformerType",
+//             definition: [
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForRuntime_constant",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForRuntime_constantAsExtractor",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForRuntime_constantArray",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForRuntime_constantBigint",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForRuntime_constantBoolean",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForRuntime_constantUuid",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForRuntime_constantObject",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForRuntime_constantNumber",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForRuntime_constantString",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForRuntime_newUuid",
+//                 },
+//               },
+//             ],
+//           },
+//           transformerForBuild_InnerReference: {
+//             type: "union",
+//             discriminator: "transformerType",
+//             definition: [
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForBuild_mustacheStringTemplate",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForBuild_constant",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForBuild_parameterReference",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForBuild_constantUuid",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForBuild_constantObject",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForBuild_constantString",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForBuild_newUuid",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForBuild_objectDynamicAccess",
+//                 },
+//               },
+//             ],
+//           },
+//           transformerForRuntime_InnerReference: {
+//             type: "union",
+//             discriminator: "transformerType",
+//             definition: [
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForRuntime_constant",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForRuntime_constantUuid",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForRuntime_constantObject",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForRuntime_constantString",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForRuntime_newUuid",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForRuntime_contextReference",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForRuntime_objectDynamicAccess",
+//                 },
+//               },
+//             ],
+//           },
+//           transformerForBuild_dataflowSequence: {
+//             type: "object",
+//             extend: [
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   eager: true,
+//                   absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                   relativePath: "transformerForBuild_Abstract",
+//                 },
+//               },
+//             ],
+//             definition: {
+//               transformerType: {
+//                 type: "literal",
+//                 definition: "dataflowSequence",
+//               },
+//               definition: {
+//                 type: "array",
+//                 definition: {
+//                   type: "schemaReference",
+//                   definition: {
+//                     relativePath: "transformerForBuild",
+//                   },
+//                 },
+//               },
+//             },
+//           },
+//           transformerForRuntime_dataflowSequence: {
+//             type: "object",
+//             extend: [
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   eager: true,
+//                   relativePath: "transformerForRuntime_Abstract",
+//                 },
+//               },
+//             ],
+//             definition: {
+//               transformerType: {
+//                 type: "literal",
+//                 definition: "dataflowSequence",
+//               },
+//               definition: {
+//                 type: "array",
+//                 definition: {
+//                   type: "schemaReference",
+//                   definition: {
+//                     relativePath: "transformerForRuntime",
+//                   },
+//                 },
+//               },
+//             },
+//           },
+//           transformerForBuildOrRuntime: {
+//             type: "union",
+//             discriminator: "transformerType",
+//             definition: [
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForBuild",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForRuntime",
+//                 },
+//               },
+//             ],
+//           },
+//           recordOfTransformers: {
+//             type: "object",
+//             definition: {
+//               transformerType: {
+//                 type: "literal",
+//                 definition: "recordOfTransformers",
+//               },
+//               definition: {
+//                 type: "record",
+//                 definition: {
+//                   type: "schemaReference",
+//                   definition: {
+//                     absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                     relativePath: "transformer",
+//                   },
+//                 },
+//               },
+//             },
+//           },
+//           transformer: {
+//             type: "union",
+//             definition: [
+//               {
+//                 type: "object",
+//                 definition: {
+//                   transformerType: {
+//                     type: "literal",
+//                     definition: "objectTransformer",
+//                   },
+//                   attributeName: {
+//                     type: "string",
+//                   },
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                   relativePath: "recordOfTransformers",
+//                 },
+//               },
+//             ],
+//           },
+//           actionHandler: {
+//             type: "object",
+//             definition: {
+//               interface: {
+//                 type: "object",
+//                 definition: {
+//                   actionJzodObjectSchema: {
+//                     type: "schemaReference",
+//                     definition: {
+//                       absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                       relativePath: "jzodObject",
+//                     },
+//                   },
+//                 },
+//               },
+//               implementation: {
+//                 type: "object",
+//                 definition: {
+//                   templates: {
+//                     type: "record",
+//                     optional: true,
+//                     definition: {
+//                       type: "any",
+//                     },
+//                   },
+//                   compositeActionTemplate: {
+//                     type: "schemaReference",
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "compositeActionTemplate",
+//                     },
+//                   },
+//                 },
+//               },
+//             },
+//           },
+//         },
+//         definition: {
+//           relativePath: "transformerForBuild",
+//         },
+//       },
+//     },
+//   ],
+//   menus: [
+//     {
+//       uuid: "eaac459c-6c2b-475c-8ae4-c6c3032dae00",
+//       parentName: "Menu",
+//       parentUuid: "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
+//       name: "MiroirMenu",
+//       defaultLabel: "Meta-Model",
+//       description: "This is the default menu allowing to explore the Miroir Meta-Model.",
+//       definition: {
+//         menuType: "complexMenu",
+//         definition: [
+//           {
+//             title: "Miroir",
+//             label: "miroir",
+//             items: [
+//               {
+//                 label: "Miroir Entities",
+//                 section: "model",
+//                 selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+//                 reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9",
+//                 icon: "category",
+//               },
+//               {
+//                 label: "Miroir Entity Definitions",
+//                 section: "model",
+//                 selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+//                 reportUuid: "f9aff35d-8636-4519-8361-c7648e0ddc68",
+//                 icon: "category",
+//               },
+//               {
+//                 label: "Miroir Reports",
+//                 section: "data",
+//                 selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+//                 reportUuid: "1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855",
+//                 icon: "list",
+//               },
+//               {
+//                 label: "Miroir Menus",
+//                 section: "data",
+//                 selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+//                 reportUuid: "ecfd8787-09cc-417d-8d2c-173633c9f998",
+//                 icon: "list",
+//               },
+//               {
+//                 label: "Miroir Endpoints",
+//                 section: "data",
+//                 selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+//                 reportUuid: "ace3d5c9-b6a7-43e6-a277-595329e7532a",
+//                 icon: "list",
+//               },
+//               {
+//                 label: "Miroir Tests",
+//                 section: "data",
+//                 selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+//                 reportUuid: "683ba925-835e-4f9d-845b-7fae500316ad",
+//                 icon: "list",
+//               },
+//             ],
+//           },
+//         ],
+//       },
+//     },
+//   ],
+//   reports: [
+//     {
+//       uuid: "074d1de9-594d-42d6-8848-467baeb6f3e0",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       parentName: "Report",
+//       parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+//       conceptLevel: "Model",
+//       name: "EntityDetails",
+//       defaultLabel: "Detailed information about an Entity",
+//       definition: {
+//         extractorTemplates: {
+//           entity: {
+//             extractorTemplateType: "extractorForObjectByDirectReference",
+//             applicationSection: "model",
+//             parentName: "Entity",
+//             parentUuid: {
+//               transformerType: "constantUuid",
+//               value: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+//             },
+//             instanceUuid: {
+//               transformerType: "parameterReference",
+//               referenceName: "instanceUuid",
+//             },
+//           },
+//         },
+//         section: {
+//           type: "list",
+//           definition: [
+//             {
+//               type: "objectInstanceReportSection",
+//               definition: {
+//                 label: "My Entity",
+//                 parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+//                 fetchedDataReference: "entity",
+//               },
+//             },
+//           ],
+//         },
+//       },
+//     },
+//     {
+//       uuid: "0810de28-fdab-4baf-8935-7e04a8f779a9",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       parentName: "Report",
+//       parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+//       name: "ApplicationVersionList",
+//       defaultLabel: "SelfApplication Versions",
+//       type: "list",
+//       definition: {
+//         reportParameters: {},
+//         extractorTemplates: {
+//           applicationVersions: {
+//             extractorTemplateType: "extractorTemplateForObjectListByEntity",
+//             parentName: "ApplicationVersion",
+//             parentUuid: {
+//               transformerType: "constantUuid",
+//               value: "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+//             },
+//           },
+//         },
+//         section: {
+//           type: "objectListReportSection",
+//           definition: {
+//             label: "SelfApplication Versions",
+//             parentName: "ApplicationVersion",
+//             parentUuid: "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+//             fetchedDataReference: "applicationVersions",
+//             sortByAttribute: "name",
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "0e4cf674-3a26-422a-8618-09e32302ac0c",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       parentName: "Report",
+//       parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+//       name: "ApplicationList",
+//       defaultLabel: "Applications",
+//       definition: {
+//         reportParameters: {},
+//         extractorTemplates: {
+//           applications: {
+//             extractorTemplateType: "extractorTemplateForObjectListByEntity",
+//             parentUuid: {
+//               transformerType: "constantUuid",
+//               value: "a659d350-dd97-4da9-91de-524fa01745dc",
+//             },
+//           },
+//         },
+//         section: {
+//           type: "objectListReportSection",
+//           definition: {
+//             label: "Applications",
+//             parentName: "SelfApplication",
+//             parentUuid: "a659d350-dd97-4da9-91de-524fa01745dc",
+//             fetchedDataReference: "applications",
+//             sortByAttribute: "name",
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       parentName: "Report",
+//       parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+//       name: "ReportList",
+//       defaultLabel: "Reports",
+//       type: "list",
+//       definition: {
+//         reportParameters: {},
+//         extractorTemplates: {
+//           reports: {
+//             extractorTemplateType: "extractorTemplateForObjectListByEntity",
+//             parentName: "Report",
+//             parentUuid: {
+//               transformerType: "constantUuid",
+//               value: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+//             },
+//           },
+//         },
+//         section: {
+//           type: "objectListReportSection",
+//           definition: {
+//             label: "Reports",
+//             parentName: "Report",
+//             parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+//             fetchedDataReference: "reports",
+//             sortByAttribute: "name",
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "43f04807-8f96-43f9-876f-9a0210f7b99c",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       parentName: "Report",
+//       parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+//       name: "StoreBasedConfigurationList",
+//       defaultLabel: "Store-based Configurations",
+//       definition: {
+//         reportParameters: {},
+//         extractorTemplates: {
+//           storeBasedConfigurations: {
+//             extractorTemplateType: "extractorTemplateForObjectListByEntity",
+//             parentName: "StoreBasedConfiguration",
+//             parentUuid: {
+//               transformerType: "constantUuid",
+//               value: "7990c0c9-86c3-40a1-a121-036c91b55ed7",
+//             },
+//           },
+//         },
+//         section: {
+//           type: "objectListReportSection",
+//           definition: {
+//             label: "Store-based Configurations",
+//             parentName: "StoreBasedConfiguration",
+//             parentUuid: "7990c0c9-86c3-40a1-a121-036c91b55ed7",
+//             fetchedDataReference: "storeBasedConfigurations",
+//             sortByAttribute: "name",
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "60648b22-e2c6-4b74-8031-53884f597d63",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       parentName: "Report",
+//       parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+//       name: "ApplicationModelBranchList",
+//       defaultLabel: "SelfApplication Model Branches",
+//       definition: {
+//         reportParameters: {},
+//         extractorTemplates: {
+//           applicationModelBranches: {
+//             extractorTemplateType: "extractorTemplateForObjectListByEntity",
+//             parentName: "ApplicationModelBranch",
+//             parentUuid: {
+//               transformerType: "constantUuid",
+//               value: "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
+//             },
+//           },
+//         },
+//         section: {
+//           type: "objectListReportSection",
+//           definition: {
+//             label: "SelfApplication Model Branches",
+//             parentName: "ApplicationModelBranch",
+//             parentUuid: "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
+//             fetchedDataReference: "applicationModelBranches",
+//             sortByAttribute: "name",
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "683ba925-835e-4f9d-845b-7fae500316ad",
+//       selfApplication: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+//       parentName: "Report",
+//       parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+//       conceptLevel: "Model",
+//       name: "TestList",
+//       defaultLabel: "List of Tests",
+//       type: "list",
+//       definition: {
+//         extractors: {
+//           instanceList: {
+//             extractorOrCombinerType: "extractorByEntityReturningObjectList",
+//             parentName: "Test",
+//             parentUuid: "c37625c7-0b35-4d6a-811d-8181eb978301",
+//           },
+//         },
+//         section: {
+//           type: "objectListReportSection",
+//           definition: {
+//             label: "Tests",
+//             parentUuid: "c37625c7-0b35-4d6a-811d-8181eb978301",
+//             fetchedDataReference: "instanceList",
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "7947ae40-eb34-4149-887b-15a9021e714e",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       parentName: "Report",
+//       parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+//       name: "CommitList",
+//       defaultLabel: "Commits",
+//       type: "list",
+//       definition: {
+//         reportParameters: {},
+//         extractorTemplates: {
+//           commits: {
+//             extractorTemplateType: "extractorTemplateForObjectListByEntity",
+//             parentName: "Commit",
+//             parentUuid: {
+//               transformerType: "constantUuid",
+//               value: "73bb0c69-e636-4e3b-a230-51f25469c089",
+//             },
+//           },
+//         },
+//         section: {
+//           type: "objectListReportSection",
+//           definition: {
+//             label: "Commits",
+//             parentName: "Entity",
+//             parentUuid: "73bb0c69-e636-4e3b-a230-51f25469c089",
+//             fetchedDataReference: "commits",
+//             sortByAttribute: "name",
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "7aed09a9-8a2d-4437-95ab-62966e38352c",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       parentName: "Report",
+//       parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+//       name: "QueryList",
+//       defaultLabel: "Queries",
+//       definition: {
+//         reportParameters: {},
+//         extractorTemplates: {
+//           queries: {
+//             extractorTemplateType: "extractorTemplateForObjectListByEntity",
+//             parentName: "Query",
+//             parentUuid: {
+//               transformerType: "constantUuid",
+//               value: "e4320b9e-ab45-4abe-85d8-359604b3c62f",
+//             },
+//           },
+//         },
+//         section: {
+//           type: "objectListReportSection",
+//           definition: {
+//             label: "Queries",
+//             parentName: "Query",
+//             parentUuid: "e4320b9e-ab45-4abe-85d8-359604b3c62f",
+//             fetchedDataReference: "queries",
+//             sortByAttribute: "name",
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "8b22e84e-9374-4121-b2a7-d13d947a0ba2",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       parentName: "Report",
+//       parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+//       name: "JzodSchemaList",
+//       defaultLabel: "Jzod Schemas",
+//       definition: {
+//         reportParameters: {},
+//         extractorTemplates: {
+//           jzodSchemas: {
+//             extractorTemplateType: "extractorTemplateForObjectListByEntity",
+//             parentName: "JzodSchema",
+//             parentUuid: {
+//               transformerType: "constantUuid",
+//               value: "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+//             },
+//           },
+//         },
+//         section: {
+//           type: "objectListReportSection",
+//           definition: {
+//             label: "Jzod Schemas",
+//             parentName: "JzodSchema",
+//             parentUuid: "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+//             fetchedDataReference: "jzodSchemas",
+//             sortByAttribute: "name",
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "acd55b04-84df-427e-b219-cf0e01a6881b",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       parentName: "Report",
+//       parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+//       conceptLevel: "Model",
+//       name: "EntityDefinitionDetails",
+//       defaultLabel: "Detailed information about an Entity Definition",
+//       definition: {
+//         extractorTemplates: {
+//           entityDefinition: {
+//             extractorTemplateType: "extractorForObjectByDirectReference",
+//             applicationSection: "model",
+//             parentName: "EntityDefinition",
+//             parentUuid: {
+//               transformerType: "constantUuid",
+//               value: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+//             },
+//             instanceUuid: {
+//               transformerType: "parameterReference",
+//               referenceName: "instanceUuid",
+//             },
+//           },
+//         },
+//         section: {
+//           type: "list",
+//           definition: [
+//             {
+//               type: "objectInstanceReportSection",
+//               definition: {
+//                 label: "My Entity",
+//                 parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+//                 fetchedDataReference: "entityDefinition",
+//               },
+//             },
+//           ],
+//         },
+//       },
+//     },
+//     {
+//       uuid: "ace3d5c9-b6a7-43e6-a277-595329e7532a",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       parentName: "Report",
+//       parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+//       name: "EndpointList",
+//       defaultLabel: "Endpoints",
+//       definition: {
+//         reportParameters: {},
+//         extractorTemplates: {
+//           endpoints: {
+//             extractorTemplateType: "extractorTemplateForObjectListByEntity",
+//             parentName: "Endpoint",
+//             parentUuid: {
+//               transformerType: "constantUuid",
+//               value: "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
+//             },
+//           },
+//         },
+//         section: {
+//           type: "objectListReportSection",
+//           definition: {
+//             label: "Endpoints",
+//             parentName: "Endpoint",
+//             parentUuid: "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
+//             fetchedDataReference: "endpoints",
+//             sortByAttribute: "name",
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       parentName: "Report",
+//       parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+//       name: "EntityList",
+//       defaultLabel: "Entities",
+//       type: "list",
+//       definition: {
+//         reportParameters: {},
+//         extractorTemplates: {
+//           entities: {
+//             extractorTemplateType: "extractorTemplateForObjectListByEntity",
+//             applicationSection: "model",
+//             parentName: "Entity",
+//             parentUuid: {
+//               transformerType: "constantUuid",
+//               value: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+//             },
+//           },
+//         },
+//         section: {
+//           type: "objectListReportSection",
+//           definition: {
+//             label: "Entities",
+//             parentName: "Entity",
+//             parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+//             fetchedDataReference: "entities",
+//             sortByAttribute: "name",
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "d65d8dc8-2a7f-4111-81b1-0324e816c1a8",
+//       selfApplication: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+//       parentName: "Report",
+//       parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+//       conceptLevel: "Model",
+//       name: "TestDetails",
+//       defaultLabel: "Details of Test",
+//       definition: {
+//         extractorTemplates: {
+//           elementToDisplay: {
+//             extractorTemplateType: "extractorForObjectByDirectReference",
+//             parentName: "Test",
+//             parentUuid: {
+//               transformerType: "constantString",
+//               value: "c37625c7-0b35-4d6a-811d-8181eb978301",
+//             },
+//             instanceUuid: {
+//               transformerType: "parameterReference",
+//               referenceName: "instanceUuid",
+//             },
+//           },
+//         },
+//         section: {
+//           type: "list",
+//           definition: [
+//             {
+//               type: "objectInstanceReportSection",
+//               definition: {
+//                 label: "My Test",
+//                 parentUuid: "c37625c7-0b35-4d6a-811d-8181eb978301",
+//                 fetchedDataReference: "elementToDisplay",
+//               },
+//             },
+//           ],
+//         },
+//       },
+//     },
+//     {
+//       uuid: "df0a9a8f-e0f6-4f9f-8635-c8460e638e1b",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       parentName: "Report",
+//       parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+//       name: "ApplicationDeploymentList",
+//       defaultLabel: "SelfApplication Deployments",
+//       definition: {
+//         reportParameters: {},
+//         extractorTemplates: {
+//           ApplicationDeployments: {
+//             extractorTemplateType: "extractorTemplateForObjectListByEntity",
+//             parentName: "Deployment",
+//             parentUuid: {
+//               transformerType: "constantUuid",
+//               interpolation: "build",
+//               value: "35c5608a-7678-4f07-a4ec-76fc5bc35424",
+//             },
+//           },
+//         },
+//         section: {
+//           type: "objectListReportSection",
+//           definition: {
+//             label: "SelfApplication Deployments",
+//             parentName: "Deployment",
+//             parentUuid: "35c5608a-7678-4f07-a4ec-76fc5bc35424",
+//             fetchedDataReference: "ApplicationDeployments",
+//             sortByAttribute: "name",
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "ecfd8787-09cc-417d-8d2c-173633c9f998",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       parentName: "Report",
+//       parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+//       name: "MenuList",
+//       defaultLabel: "Menus",
+//       definition: {
+//         reportParameters: {},
+//         extractorTemplates: {
+//           menus: {
+//             extractorTemplateType: "extractorTemplateForObjectListByEntity",
+//             parentName: "Menu",
+//             parentUuid: {
+//               transformerType: "constantUuid",
+//               value: "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
+//             },
+//           },
+//         },
+//         section: {
+//           type: "objectListReportSection",
+//           definition: {
+//             label: "Menus",
+//             parentName: "SelfApplication",
+//             parentUuid: "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
+//             fetchedDataReference: "menus",
+//             sortByAttribute: "name",
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "ef57aada-6b77-4384-8007-12f13eddd337",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       parentName: "Report",
+//       parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+//       conceptLevel: "Model",
+//       name: "ReportDetails",
+//       defaultLabel: "Detailed information about a Report",
+//       definition: {
+//         extractorTemplates: {
+//           report: {
+//             extractorTemplateType: "extractorForObjectByDirectReference",
+//             applicationSection: "model",
+//             parentName: "Report",
+//             parentUuid: {
+//               transformerType: "constantUuid",
+//               value: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+//             },
+//             instanceUuid: {
+//               transformerType: "parameterReference",
+//               referenceName: "instanceUuid",
+//             },
+//           },
+//         },
+//         section: {
+//           type: "list",
+//           definition: [
+//             {
+//               type: "objectInstanceReportSection",
+//               definition: {
+//                 label: "My Report",
+//                 parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+//                 fetchedDataReference: "report",
+//               },
+//             },
+//           ],
+//         },
+//       },
+//     },
+//     {
+//       uuid: "f9aff35d-8636-4519-8361-c7648e0ddc68",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       parentName: "Report",
+//       parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+//       name: "EntityDefinitionList",
+//       defaultLabel: "Entity Definitions",
+//       definition: {
+//         reportParameters: {},
+//         extractorTemplates: {
+//           entityDefinitions: {
+//             extractorTemplateType: "extractorTemplateForObjectListByEntity",
+//             applicationSection: "model",
+//             parentName: "Entity Definition",
+//             parentUuid: {
+//               transformerType: "constantUuid",
+//               value: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+//             },
+//           },
+//         },
+//         section: {
+//           type: "objectListReportSection",
+//           definition: {
+//             label: "Entity Definitions",
+//             parentName: "Entity Definition",
+//             parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+//             fetchedDataReference: "entityDefinitions",
+//             sortByAttribute: "name",
+//           },
+//         },
+//       },
+//     },
+//   ],
+// } as any;
+
+// // ################################################################################################
+// // ################################################################################################
+// // ################################################################################################
+// // ################################################################################################
+// // ################################################################################################
+// // ################################################################################################
+// const currentMiroirModel: MetaModel = {
+//   applicationVersions: [
+//     {
+//       uuid: "695826c2-aefa-4f5f-a131-dee46fe21c13",
+//       parentName: "ApplicationVersion",
+//       parentUuid: "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+//       name: "Initial",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       branch: "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+//       description: "Initial datastore Miroir selfApplication version",
+//       modelStructureMigration: [],
+//       modelCUDMigration: [],
+//     },
+//   ],
+//   applicationVersionCrossEntityDefinition: [],
+//   configuration: [
+//     {
+//       uuid: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       parentName: "Configuration",
+//       parentUuid: "7990c0c9-86c3-40a1-a121-036c91b55ed7",
+//       name: "Reference",
+//       defaultLabel: "The reference configuration for the database.",
+//       definition: {
+//         currentApplicationVersion: "695826c2-aefa-4f5f-a131-dee46fe21c13",
+//       },
+//     },
+//   ],
+//   entities: [
+//     {
+//       uuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+//       parentName: "Entity",
+//       parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+//       parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
+//       name: "Entity",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       conceptLevel: "MetaModel",
+//       description: "The Metaclass for entities.",
+//     },
+//     {
+//       uuid: "35c5608a-7678-4f07-a4ec-76fc5bc35424",
+//       parentName: "Entity",
+//       parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+//       parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
+//       name: "SelfApplicationDeploymentConfiguration",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       conceptLevel: "Model",
+//       description: "An SelfApplication Deployment",
+//     },
+//     {
+//       uuid: "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
+//       parentName: "Entity",
+//       parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+//       parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
+//       name: "Endpoint",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       conceptLevel: "Model",
+//       description: "An Endpoint, servicing Actions that are part of a Domain Specific Language",
+//     },
+//     {
+//       uuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+//       parentName: "Entity",
+//       parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+//       parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
+//       name: "Report",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       conceptLevel: "Model",
+//       description: "Report, allowing to display model instances",
+//     },
+//     {
+//       uuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+//       parentName: "Entity",
+//       parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+//       parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
+//       name: "EntityDefinition",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       conceptLevel: "MetaModel",
+//       description: "The Metaclass for the definition of entities.",
+//     },
+//     {
+//       uuid: "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+//       parentName: "Entity",
+//       parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+//       parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
+//       name: "JzodSchema",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       conceptLevel: "Model",
+//       description: "Common Jzod Schema definitions, available to all Entity definitions",
+//     },
+//     {
+//       uuid: "73bb0c69-e636-4e3b-a230-51f25469c089",
+//       parentName: "Entity",
+//       parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+//       parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
+//       name: "Commit",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       conceptLevel: "MetaModel",
+//       description: "A concurrent versioning transaction commit.",
+//     },
+//     {
+//       uuid: "7990c0c9-86c3-40a1-a121-036c91b55ed7",
+//       parentName: "Entity",
+//       parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+//       parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
+//       name: "StoreBasedConfiguration",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       conceptLevel: "Model",
+//       description: "A configuration of storage-related aspects of a Model.",
+//     },
+//     {
+//       uuid: "8bec933d-6287-4de7-8a88-5c24216de9f4",
+//       parentName: "Entity",
+//       parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+//       parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
+//       name: "ApplicationVersionCrossEntityDefinition",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       conceptLevel: "Model",
+//       description:
+//         "The (many-to-many) sssociation among ApplicationVersions and EntityDefinitions.",
+//     },
+//     {
+//       uuid: "a557419d-a288-4fb8-8a1e-971c86c113b8",
+//       parentName: "Entity",
+//       parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+//       parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
+//       name: "TransformerDefinition",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       conceptLevel: "Model",
+//       description:
+//         "A Transformer definition, enabling transformations on Entity Instances that are part of a Domain Specific Language",
+//     },
+//     {
+//       uuid: "a659d350-dd97-4da9-91de-524fa01745dc",
+//       parentName: "Entity",
+//       parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+//       parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
+//       name: "SelfApplication",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       conceptLevel: "Model",
+//       description: "Self SelfApplication",
+//     },
+//     {
+//       uuid: "c37625c7-0b35-4d6a-811d-8181eb978301",
+//       parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+//       selfApplication: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+//       description: "Description of the new entity",
+//       name: "Test",
+//     },
+//     {
+//       uuid: "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+//       parentName: "Entity",
+//       parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+//       parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
+//       name: "SelfApplicationVersion",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       conceptLevel: "Model",
+//       description: "A Version of the Self SelfApplication",
+//     },
+//     {
+//       uuid: "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
+//       parentName: "Entity",
+//       parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+//       parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
+//       name: "ApplicationModelBranch",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       conceptLevel: "Model",
+//       description: "A Branch of an SelfApplication Model",
+//     },
+//     {
+//       uuid: "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
+//       parentName: "Entity",
+//       parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+//       parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
+//       name: "Menu",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       conceptLevel: "Model",
+//       description: "Menu, allowing to display elements useful to navigate the selfApplication",
+//     },
+//     {
+//       uuid: "e4320b9e-ab45-4abe-85d8-359604b3c62f",
+//       parentName: "Entity",
+//       parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+//       parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
+//       name: "Query",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       conceptLevel: "Model",
+//       description: "A Query",
+//     },
+//   ],
+//   entityDefinitions: [
+//     {
+//       uuid: "0f421b2f-2fdc-47ee-8232-62121ea46350",
+//       parentName: "EntityDefinition",
+//       parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+//       parentDefinitionVersionUuid: "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+//       entityUuid: "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
+//       conceptLevel: "Model",
+//       name: "Menu",
+//       icon: "Interests",
+//       viewAttributes: ["name", "defaultLabel", "description", "uuid"],
+//       jzodSchema: {
+//         type: "object",
+//         definition: {
+//           uuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 1,
+//                 defaultLabel: "Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentName: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 2,
+//                 defaultLabel: "Entity Name",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentUuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 3,
+//                 defaultLabel: "Entity Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentDefinitionVersionUuid: {
+//             type: "uuid",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 4,
+//                 defaultLabel: "Entity Definition Version Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           name: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 5,
+//                 defaultLabel: "Name",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           defaultLabel: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 6,
+//                 defaultLabel: "Default Label",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           description: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 7,
+//                 defaultLabel: "Description",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           definition: {
+//             type: "schemaReference",
+//             context: {
+//               miroirMenuItem: {
+//                 type: "object",
+//                 definition: {
+//                   label: {
+//                     type: "string",
+//                   },
+//                   section: {
+//                     type: "schemaReference",
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "applicationSection",
+//                     },
+//                   },
+//                   selfApplication: {
+//                     type: "string",
+//                     validations: [
+//                       {
+//                         type: "uuid",
+//                       },
+//                     ],
+//                     tag: {
+//                       value: {
+//                         id: 1,
+//                         defaultLabel: "SelfApplication",
+//                         editable: false,
+//                       },
+//                     },
+//                   },
+//                   reportUuid: {
+//                     type: "string",
+//                     validations: [
+//                       {
+//                         type: "uuid",
+//                       },
+//                     ],
+//                     tag: {
+//                       value: {
+//                         id: 1,
+//                         defaultLabel: "Report",
+//                         editable: false,
+//                       },
+//                     },
+//                   },
+//                   instanceUuid: {
+//                     type: "string",
+//                     optional: true,
+//                     validations: [
+//                       {
+//                         type: "uuid",
+//                       },
+//                     ],
+//                     tag: {
+//                       value: {
+//                         id: 1,
+//                         defaultLabel: "Instance",
+//                         editable: false,
+//                       },
+//                     },
+//                   },
+//                   icon: {
+//                     type: "string",
+//                     validations: [
+//                       {
+//                         type: "uuid",
+//                       },
+//                     ],
+//                   },
+//                 },
+//               },
+//               menuItemArray: {
+//                 type: "array",
+//                 definition: {
+//                   type: "schemaReference",
+//                   definition: {
+//                     relativePath: "miroirMenuItem",
+//                   },
+//                 },
+//               },
+//               sectionOfMenu: {
+//                 type: "object",
+//                 definition: {
+//                   title: {
+//                     type: "string",
+//                   },
+//                   label: {
+//                     type: "string",
+//                   },
+//                   items: {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "menuItemArray",
+//                     },
+//                   },
+//                 },
+//               },
+//               simpleMenu: {
+//                 type: "object",
+//                 definition: {
+//                   menuType: {
+//                     type: "literal",
+//                     definition: "simpleMenu",
+//                   },
+//                   definition: {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "menuItemArray",
+//                     },
+//                   },
+//                 },
+//               },
+//               complexMenu: {
+//                 type: "object",
+//                 definition: {
+//                   menuType: {
+//                     type: "literal",
+//                     definition: "complexMenu",
+//                   },
+//                   definition: {
+//                     type: "array",
+//                     definition: {
+//                       type: "schemaReference",
+//                       definition: {
+//                         relativePath: "sectionOfMenu",
+//                       },
+//                     },
+//                   },
+//                 },
+//               },
+//               menuDefinition: {
+//                 type: "union",
+//                 discriminator: "menuType",
+//                 definition: [
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "simpleMenu",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "complexMenu",
+//                     },
+//                   },
+//                 ],
+//               },
+//             },
+//             definition: {
+//               relativePath: "menuDefinition",
+//             },
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "15407b85-f2c8-4a34-bfa7-89f044ba2407",
+//       parentName: "EntityDefinition",
+//       parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+//       parentDefinitionVersionUuid: "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+//       entityUuid: "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+//       conceptLevel: "Model",
+//       name: "JzodSchema",
+//       icon: "Interests",
+//       jzodSchema: {
+//         type: "object",
+//         definition: {
+//           uuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 1,
+//                 defaultLabel: "Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentName: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 2,
+//                 defaultLabel: "Entity Name",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentUuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 3,
+//                 defaultLabel: "Entity Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentDefinitionVersionUuid: {
+//             type: "uuid",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 4,
+//                 defaultLabel: "Entity Definition Version Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           name: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 5,
+//                 defaultLabel: "Name",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           conceptLevel: {
+//             type: "enum",
+//             definition: ["MetaModel", "Model", "Data"],
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 6,
+//                 defaultLabel: "Concept Level",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           defaultLabel: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 7,
+//                 defaultLabel: "Default Label",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           description: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 8,
+//                 defaultLabel: "Description",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           definition: {
+//             type: "schemaReference",
+//             context: {
+//               jzodObjectOrReference: {
+//                 type: "union",
+//                 definition: [
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                       relativePath: "jzodReference",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                       relativePath: "jzodObject",
+//                     },
+//                   },
+//                 ],
+//               },
+//             },
+//             definition: {
+//               relativePath: "jzodObjectOrReference",
+//             },
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 9,
+//                 defaultLabel: "Definition",
+//                 editable: true,
+//               },
+//             },
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "27046fce-742f-4cc4-bb95-76b271f490a5",
+//       parentName: "EntityDefinition",
+//       parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+//       parentDefinitionVersionUuid: "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+//       entityUuid: "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+//       conceptLevel: "Model",
+//       name: "SelfApplicationVersion",
+//       icon: "Interests",
+//       jzodSchema: {
+//         type: "object",
+//         definition: {
+//           uuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 1,
+//                 defaultLabel: "Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentName: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 2,
+//                 defaultLabel: "Entity Name",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentUuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 3,
+//                 defaultLabel: "Entity Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentDefinitionVersionUuid: {
+//             type: "uuid",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 4,
+//                 defaultLabel: "Entity Definition Version Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           name: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 5,
+//                 defaultLabel: "Name",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           defaultLabel: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 6,
+//                 defaultLabel: "Default Label",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           description: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 7,
+//                 defaultLabel: "Description",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           type: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 8,
+//                 defaultLabel: "Type of Report",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           selfApplication: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 9,
+//                 defaultLabel: "SelfApplication",
+//                 targetEntity: "a659d350-dd97-4da9-91de-524fa01745dc",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           branch: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 10,
+//                 defaultLabel: "Branch",
+//                 description: "The Branch of this SelfApplication Version",
+//                 targetEntity: "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           previousVersion: {
+//             type: "uuid",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 11,
+//                 defaultLabel: "Previous SelfApplication Version",
+//                 description: "Previous version of the selfApplication on this Branch.",
+//                 targetEntity: "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           modelStructureMigration: {
+//             type: "array",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 12,
+//                 defaultLabel: "Structure Migration from Previous Version",
+//                 editable: true,
+//               },
+//             },
+//             definition: {
+//               type: "record",
+//               definition: {
+//                 type: "any",
+//               },
+//             },
+//           },
+//           modelCUDMigration: {
+//             type: "array",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 13,
+//                 defaultLabel: "Create-Update-Delete Migration from Previous Version",
+//                 editable: true,
+//               },
+//             },
+//             definition: {
+//               type: "record",
+//               definition: {
+//                 type: "any",
+//               },
+//             },
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "359f1f9b-7260-4d76-a864-72c839b9711b",
+//       parentName: "EntityDefinition",
+//       parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+//       parentDefinitionVersionUuid: "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+//       entityUuid: "e4320b9e-ab45-4abe-85d8-359604b3c62f",
+//       name: "Query",
+//       conceptLevel: "MetaModel",
+//       description: "Definition of a Query",
+//       jzodSchema: {
+//         type: "object",
+//         definition: {
+//           uuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 1,
+//                 defaultLabel: "Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentName: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 2,
+//                 defaultLabel: "Entity Name",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentUuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 3,
+//                 defaultLabel: "Entity Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentDefinitionVersionUuid: {
+//             type: "uuid",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 4,
+//                 defaultLabel: "Entity Definition Version Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           name: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 5,
+//                 defaultLabel: "Name",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           description: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 6,
+//                 defaultLabel: "Description",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           definition: {
+//             type: "schemaReference",
+//             tag: {
+//               value: {
+//                 id: 7,
+//                 defaultLabel: "Query Version definition",
+//                 editable: true,
+//               },
+//             },
+//             context: {
+//               queryFailed: {
+//                 type: "object",
+//                 definition: {
+//                   queryFailure: {
+//                     type: "enum",
+//                     definition: [
+//                       "FailedTransformer_objectEntries",
+//                       "FailedExtractor",
+//                       "QueryNotExecutable",
+//                       "DomainStateNotLoaded",
+//                       "IncorrectParameters",
+//                       "DeploymentNotFound",
+//                       "ApplicationSectionNotFound",
+//                       "EntityNotFound",
+//                       "InstanceNotFound",
+//                       "ReferenceNotFound",
+//                       "ReferenceFoundButUndefined",
+//                       "ReferenceFoundButAttributeUndefinedOnFoundObject",
+//                     ],
+//                   },
+//                   query: {
+//                     type: "string",
+//                     optional: true,
+//                   },
+//                   failureOrigin: {
+//                     type: "array",
+//                     optional: true,
+//                     definition: {
+//                       type: "string",
+//                     },
+//                   },
+//                   failureMessage: {
+//                     type: "string",
+//                     optional: true,
+//                   },
+//                   queryReference: {
+//                     type: "string",
+//                     optional: true,
+//                   },
+//                   queryParameters: {
+//                     type: "string",
+//                     optional: true,
+//                   },
+//                   queryContext: {
+//                     type: "string",
+//                     optional: true,
+//                   },
+//                   deploymentUuid: {
+//                     type: "string",
+//                     optional: true,
+//                   },
+//                   errorStack: {
+//                     type: "array",
+//                     optional: true,
+//                     definition: {
+//                       type: "string",
+//                     },
+//                   },
+//                   innerError: {
+//                     type: "any",
+//                     optional: true,
+//                   },
+//                   applicationSection: {
+//                     type: "schemaReference",
+//                     optional: true,
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "applicationSection",
+//                     },
+//                   },
+//                   entityUuid: {
+//                     type: "string",
+//                     optional: true,
+//                   },
+//                   instanceUuid: {
+//                     type: "string",
+//                     optional: true,
+//                   },
+//                 },
+//               },
+//               extractorTemplateRoot: {
+//                 type: "object",
+//                 definition: {
+//                   label: {
+//                     type: "string",
+//                     optional: true,
+//                     tag: {
+//                       value: {
+//                         id: 1,
+//                         defaultLabel: "Label",
+//                         editable: false,
+//                       },
+//                     },
+//                   },
+//                   applicationSection: {
+//                     type: "schemaReference",
+//                     optional: true,
+//                     tag: {
+//                       value: {
+//                         id: 2,
+//                         defaultLabel: "SelfApplication Section",
+//                         editable: false,
+//                       },
+//                     },
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "applicationSection",
+//                     },
+//                   },
+//                   parentName: {
+//                     type: "string",
+//                     optional: true,
+//                     tag: {
+//                       value: {
+//                         id: 3,
+//                         defaultLabel: "Parent Name",
+//                         editable: false,
+//                       },
+//                     },
+//                   },
+//                   parentUuid: {
+//                     type: "schemaReference",
+//                     tag: {
+//                       value: {
+//                         id: 4,
+//                         defaultLabel: "Parent Uuid",
+//                         editable: false,
+//                       },
+//                     },
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "transformerForBuild_InnerReference",
+//                     },
+//                   },
+//                 },
+//               },
+//               extractorTemplateCombinerForObjectByRelation: {
+//                 type: "object",
+//                 extend: {
+//                   type: "schemaReference",
+//                   definition: {
+//                     eager: true,
+//                     relativePath: "extractorTemplateRoot",
+//                   },
+//                 },
+//                 definition: {
+//                   extractorTemplateType: {
+//                     type: "literal",
+//                     definition: "combinerForObjectByRelation",
+//                   },
+//                   objectReference: {
+//                     type: "schemaReference",
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "transformerForRuntime_InnerReference",
+//                     },
+//                   },
+//                   AttributeOfObjectToCompareToReferenceUuid: {
+//                     type: "string",
+//                   },
+//                 },
+//               },
+//               extractorTemplateExtractorForObjectByDirectReference: {
+//                 type: "object",
+//                 extend: {
+//                   type: "schemaReference",
+//                   definition: {
+//                     eager: true,
+//                     relativePath: "extractorTemplateRoot",
+//                   },
+//                 },
+//                 definition: {
+//                   extractorTemplateType: {
+//                     type: "literal",
+//                     definition: "extractorForObjectByDirectReference",
+//                   },
+//                   instanceUuid: {
+//                     type: "schemaReference",
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "transformerForBuild_InnerReference",
+//                     },
+//                   },
+//                 },
+//               },
+//               extractorTemplateReturningObject: {
+//                 type: "union",
+//                 discriminator: "queryType",
+//                 definition: [
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorTemplateCombinerForObjectByRelation",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorTemplateExtractorForObjectByDirectReference",
+//                     },
+//                   },
+//                 ],
+//               },
+//               extractorTemplateForObjectListByEntity: {
+//                 type: "object",
+//                 extend: {
+//                   type: "schemaReference",
+//                   definition: {
+//                     eager: true,
+//                     relativePath: "extractorTemplateRoot",
+//                   },
+//                 },
+//                 definition: {
+//                   extractorTemplateType: {
+//                     type: "literal",
+//                     definition: "extractorTemplateForObjectListByEntity",
+//                   },
+//                   orderBy: {
+//                     type: "object",
+//                     optional: true,
+//                     definition: {
+//                       attributeName: {
+//                         type: "string",
+//                       },
+//                       direction: {
+//                         type: "enum",
+//                         optional: true,
+//                         definition: ["ASC", "DESC"],
+//                       },
+//                     },
+//                   },
+//                   filter: {
+//                     type: "object",
+//                     optional: true,
+//                     definition: {
+//                       attributeName: {
+//                         type: "string",
+//                       },
+//                       value: {
+//                         type: "schemaReference",
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "transformerForRuntime_constantString",
+//                         },
+//                       },
+//                     },
+//                   },
+//                 },
+//               },
+//               extractorTemplateByRelationReturningObjectList: {
+//                 type: "object",
+//                 extend: {
+//                   type: "schemaReference",
+//                   definition: {
+//                     eager: true,
+//                     relativePath: "extractorTemplateRoot",
+//                   },
+//                 },
+//                 definition: {
+//                   extractorTemplateType: {
+//                     type: "literal",
+//                     definition: "combinerByRelationReturningObjectList",
+//                   },
+//                   orderBy: {
+//                     type: "object",
+//                     optional: true,
+//                     definition: {
+//                       attributeName: {
+//                         type: "string",
+//                       },
+//                       direction: {
+//                         type: "enum",
+//                         optional: true,
+//                         definition: ["ASC", "DESC"],
+//                       },
+//                     },
+//                   },
+//                   objectReference: {
+//                     type: "schemaReference",
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "transformerForRuntime_InnerReference",
+//                     },
+//                   },
+//                   objectReferenceAttribute: {
+//                     type: "string",
+//                     optional: true,
+//                   },
+//                   AttributeOfListObjectToCompareToReferenceUuid: {
+//                     type: "string",
+//                   },
+//                 },
+//               },
+//               extractorTemplateByManyToManyRelationReturningObjectList: {
+//                 type: "object",
+//                 extend: {
+//                   type: "schemaReference",
+//                   definition: {
+//                     eager: true,
+//                     relativePath: "extractorTemplateRoot",
+//                   },
+//                 },
+//                 definition: {
+//                   extractorTemplateType: {
+//                     type: "literal",
+//                     definition: "combinerByManyToManyRelationReturningObjectList",
+//                   },
+//                   orderBy: {
+//                     type: "object",
+//                     optional: true,
+//                     definition: {
+//                       attributeName: {
+//                         type: "string",
+//                       },
+//                       direction: {
+//                         type: "enum",
+//                         optional: true,
+//                         definition: ["ASC", "DESC"],
+//                       },
+//                     },
+//                   },
+//                   objectListReference: {
+//                     type: "schemaReference",
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "transformerForRuntime_contextReference",
+//                     },
+//                   },
+//                   objectListReferenceAttribute: {
+//                     type: "string",
+//                     optional: true,
+//                   },
+//                   AttributeOfRootListObjectToCompareToListReferenceUuid: {
+//                     type: "string",
+//                     optional: true,
+//                   },
+//                 },
+//               },
+//               extractorTemplateReturningObjectList: {
+//                 type: "union",
+//                 discriminator: "queryType",
+//                 definition: [
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorTemplateForObjectListByEntity",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorTemplateByRelationReturningObjectList",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorTemplateByManyToManyRelationReturningObjectList",
+//                     },
+//                   },
+//                 ],
+//               },
+//               extractorTemplateReturningObjectOrObjectList: {
+//                 type: "union",
+//                 discriminator: "extractorOrCombinerType",
+//                 definition: [
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorTemplateReturningObject",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorTemplateReturningObjectList",
+//                     },
+//                   },
+//                 ],
+//               },
+//               extractorTemplateByExtractorCombiner: {
+//                 type: "object",
+//                 definition: {
+//                   extractorTemplateType: {
+//                     type: "literal",
+//                     definition:
+//                       "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList",
+//                   },
+//                   rootExtractorOrReference: {
+//                     type: "union",
+//                     definition: [
+//                       {
+//                         type: "schemaReference",
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "extractorOrCombinerTemplate",
+//                         },
+//                       },
+//                       {
+//                         type: "string",
+//                       },
+//                     ],
+//                   },
+//                   subQueryTemplate: {
+//                     type: "object",
+//                     definition: {
+//                       query: {
+//                         type: "schemaReference",
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "extractorOrCombinerTemplate",
+//                         },
+//                       },
+//                       rootQueryObjectTransformer: {
+//                         type: "schemaReference",
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "recordOfTransformers",
+//                         },
+//                       },
+//                     },
+//                   },
+//                 },
+//               },
+//               extractorTemplateByExtractorWrapperReturningObject: {
+//                 type: "object",
+//                 definition: {
+//                   extractorTemplateType: {
+//                     type: "literal",
+//                     definition: "extractorTemplateByExtractorWrapperReturningObject",
+//                   },
+//                   definition: {
+//                     type: "record",
+//                     definition: {
+//                       type: "schemaReference",
+//                       definition: {
+//                         relativePath: "transformer_contextOrParameterReferenceTO_REMOVE",
+//                       },
+//                     },
+//                   },
+//                 },
+//               },
+//               extractorTemplateByExtractorWrapperReturningList: {
+//                 type: "object",
+//                 definition: {
+//                   extractorTemplateType: {
+//                     type: "literal",
+//                     definition: "extractorTemplateByExtractorWrapperReturningList",
+//                   },
+//                   definition: {
+//                     type: "array",
+//                     definition: {
+//                       type: "schemaReference",
+//                       definition: {
+//                         relativePath: "transformer_contextOrParameterReferenceTO_REMOVE",
+//                       },
+//                     },
+//                   },
+//                 },
+//               },
+//               extractorTemplateByExtractorWrapper: {
+//                 type: "union",
+//                 discriminator: "queryType",
+//                 definition: [
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorTemplateByExtractorWrapperReturningObject",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorTemplateByExtractorWrapperReturningList",
+//                     },
+//                   },
+//                 ],
+//               },
+//               extractorOrCombinerTemplate: {
+//                 type: "union",
+//                 discriminator: "queryType",
+//                 definition: [
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorTemplateByExtractorWrapper",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorTemplateExtractorForObjectByDirectReference",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorTemplateReturningObjectList",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorTemplateCombinerForObjectByRelation",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorTemplateByRelationReturningObjectList",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorTemplateByManyToManyRelationReturningObjectList",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorTemplateByExtractorCombiner",
+//                     },
+//                   },
+//                   {
+//                     type: "object",
+//                     definition: {
+//                       extractorTemplateType: {
+//                         type: "literal",
+//                         definition: "literal",
+//                       },
+//                       definition: {
+//                         type: "string",
+//                       },
+//                     },
+//                   },
+//                 ],
+//               },
+//               extractorOrCombinerTemplateRecord: {
+//                 type: "record",
+//                 definition: {
+//                   type: "schemaReference",
+//                   definition: {
+//                     relativePath: "extractorOrCombinerTemplate",
+//                   },
+//                 },
+//               },
+//               extractorOrCombinerRoot: {
+//                 type: "object",
+//                 definition: {
+//                   label: {
+//                     type: "string",
+//                     optional: true,
+//                     tag: {
+//                       value: {
+//                         id: 1,
+//                         defaultLabel: "Label",
+//                         editable: false,
+//                       },
+//                     },
+//                   },
+//                   applicationSection: {
+//                     type: "schemaReference",
+//                     optional: true,
+//                     tag: {
+//                       value: {
+//                         id: 2,
+//                         defaultLabel: "SelfApplication Section",
+//                         editable: false,
+//                       },
+//                     },
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "applicationSection",
+//                     },
+//                   },
+//                   parentName: {
+//                     type: "string",
+//                     optional: true,
+//                     tag: {
+//                       value: {
+//                         id: 3,
+//                         defaultLabel: "Parent Name",
+//                         editable: false,
+//                       },
+//                     },
+//                   },
+//                   parentUuid: {
+//                     type: "uuid",
+//                     tag: {
+//                       value: {
+//                         id: 4,
+//                         defaultLabel: "Parent Uuid",
+//                         editable: false,
+//                       },
+//                     },
+//                   },
+//                 },
+//               },
+//               extractorOrCombinerContextReference: {
+//                 type: "object",
+//                 definition: {
+//                   extractorOrCombinerType: {
+//                     type: "literal",
+//                     definition: "extractorOrCombinerContextReference",
+//                   },
+//                   extractorOrCombinerContextReference: {
+//                     type: "string",
+//                   },
+//                 },
+//               },
+//               combinerForObjectByRelation: {
+//                 type: "object",
+//                 extend: {
+//                   type: "schemaReference",
+//                   definition: {
+//                     eager: true,
+//                     relativePath: "extractorOrCombinerRoot",
+//                   },
+//                 },
+//                 definition: {
+//                   extractorOrCombinerType: {
+//                     type: "literal",
+//                     definition: "combinerForObjectByRelation",
+//                   },
+//                   objectReference: {
+//                     type: "string",
+//                   },
+//                   AttributeOfObjectToCompareToReferenceUuid: {
+//                     type: "string",
+//                   },
+//                 },
+//               },
+//               extractorForObjectByDirectReference: {
+//                 type: "object",
+//                 extend: {
+//                   type: "schemaReference",
+//                   definition: {
+//                     eager: true,
+//                     relativePath: "extractorOrCombinerRoot",
+//                   },
+//                 },
+//                 definition: {
+//                   extractorOrCombinerType: {
+//                     type: "literal",
+//                     definition: "extractorForObjectByDirectReference",
+//                   },
+//                   instanceUuid: {
+//                     type: "uuid",
+//                   },
+//                 },
+//               },
+//               extractorOrCombinerReturningObject: {
+//                 type: "union",
+//                 discriminator: "extractorOrCombinerType",
+//                 definition: [
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorForObjectByDirectReference",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "combinerForObjectByRelation",
+//                     },
+//                   },
+//                 ],
+//               },
+//               extractorByEntityReturningObjectList: {
+//                 type: "object",
+//                 extend: {
+//                   type: "schemaReference",
+//                   definition: {
+//                     eager: true,
+//                     relativePath: "extractorOrCombinerRoot",
+//                   },
+//                 },
+//                 definition: {
+//                   extractorOrCombinerType: {
+//                     type: "literal",
+//                     definition: "extractorByEntityReturningObjectList",
+//                   },
+//                   orderBy: {
+//                     type: "object",
+//                     optional: true,
+//                     definition: {
+//                       attributeName: {
+//                         type: "string",
+//                       },
+//                       direction: {
+//                         type: "enum",
+//                         optional: true,
+//                         definition: ["ASC", "DESC"],
+//                       },
+//                     },
+//                   },
+//                   filter: {
+//                     type: "object",
+//                     optional: true,
+//                     definition: {
+//                       attributeName: {
+//                         type: "string",
+//                       },
+//                       value: {
+//                         type: "any",
+//                       },
+//                     },
+//                   },
+//                 },
+//               },
+//               extractor: {
+//                 type: "union",
+//                 discriminator: "extractorOrCombinerType",
+//                 definition: [
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorForObjectByDirectReference",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorByEntityReturningObjectList",
+//                     },
+//                   },
+//                 ],
+//               },
+//               combinerByRelationReturningObjectList: {
+//                 type: "object",
+//                 extend: {
+//                   type: "schemaReference",
+//                   definition: {
+//                     eager: true,
+//                     relativePath: "extractorOrCombinerRoot",
+//                   },
+//                 },
+//                 definition: {
+//                   extractorOrCombinerType: {
+//                     type: "literal",
+//                     definition: "combinerByRelationReturningObjectList",
+//                   },
+//                   orderBy: {
+//                     type: "object",
+//                     optional: true,
+//                     definition: {
+//                       attributeName: {
+//                         type: "string",
+//                       },
+//                       direction: {
+//                         type: "enum",
+//                         optional: true,
+//                         definition: ["ASC", "DESC"],
+//                       },
+//                     },
+//                   },
+//                   objectReference: {
+//                     type: "string",
+//                   },
+//                   objectReferenceAttribute: {
+//                     type: "string",
+//                     optional: true,
+//                   },
+//                   AttributeOfListObjectToCompareToReferenceUuid: {
+//                     type: "string",
+//                   },
+//                 },
+//               },
+//               combinerByManyToManyRelationReturningObjectList: {
+//                 type: "object",
+//                 extend: {
+//                   type: "schemaReference",
+//                   definition: {
+//                     eager: true,
+//                     relativePath: "extractorOrCombinerRoot",
+//                   },
+//                 },
+//                 definition: {
+//                   extractorOrCombinerType: {
+//                     type: "literal",
+//                     definition: "combinerByManyToManyRelationReturningObjectList",
+//                   },
+//                   orderBy: {
+//                     type: "object",
+//                     optional: true,
+//                     definition: {
+//                       attributeName: {
+//                         type: "string",
+//                       },
+//                       direction: {
+//                         type: "enum",
+//                         optional: true,
+//                         definition: ["ASC", "DESC"],
+//                       },
+//                     },
+//                   },
+//                   objectListReference: {
+//                     type: "string",
+//                   },
+//                   objectListReferenceAttribute: {
+//                     type: "string",
+//                     optional: true,
+//                   },
+//                   AttributeOfRootListObjectToCompareToListReferenceUuid: {
+//                     type: "string",
+//                     optional: true,
+//                   },
+//                 },
+//               },
+//               extractorOrCombinerReturningObjectList: {
+//                 type: "union",
+//                 discriminator: "extractorOrCombinerType",
+//                 definition: [
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorByEntityReturningObjectList",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "combinerByRelationReturningObjectList",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "combinerByManyToManyRelationReturningObjectList",
+//                     },
+//                   },
+//                 ],
+//               },
+//               extractorOrCombinerReturningObjectOrObjectList: {
+//                 type: "union",
+//                 discriminator: "extractorOrCombinerType",
+//                 definition: [
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorOrCombinerReturningObject",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorOrCombinerReturningObjectList",
+//                     },
+//                   },
+//                 ],
+//               },
+//               extractorCombinerByHeteronomousManyToManyReturningListOfObjectList: {
+//                 type: "object",
+//                 definition: {
+//                   extractorOrCombinerType: {
+//                     type: "literal",
+//                     definition:
+//                       "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList",
+//                   },
+//                   orderBy: {
+//                     type: "object",
+//                     optional: true,
+//                     definition: {
+//                       attributeName: {
+//                         type: "string",
+//                       },
+//                       direction: {
+//                         type: "enum",
+//                         optional: true,
+//                         definition: ["ASC", "DESC"],
+//                       },
+//                     },
+//                   },
+//                   rootExtractorOrReference: {
+//                     type: "union",
+//                     definition: [
+//                       {
+//                         type: "schemaReference",
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "extractor",
+//                         },
+//                       },
+//                       {
+//                         type: "string",
+//                       },
+//                     ],
+//                   },
+//                   subQueryTemplate: {
+//                     type: "object",
+//                     definition: {
+//                       query: {
+//                         type: "schemaReference",
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "extractorOrCombinerTemplate",
+//                         },
+//                       },
+//                       rootQueryObjectTransformer: {
+//                         type: "schemaReference",
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "recordOfTransformers",
+//                         },
+//                       },
+//                     },
+//                   },
+//                 },
+//               },
+//               extractorWrapperReturningObject: {
+//                 type: "object",
+//                 definition: {
+//                   extractorOrCombinerType: {
+//                     type: "literal",
+//                     definition: "extractorWrapperReturningObject",
+//                   },
+//                   definition: {
+//                     type: "record",
+//                     definition: {
+//                       type: "union",
+//                       definition: [
+//                         {
+//                           type: "schemaReference",
+//                           definition: {
+//                             relativePath: "extractorOrCombinerContextReference",
+//                           },
+//                         },
+//                         {
+//                           type: "schemaReference",
+//                           definition: {
+//                             relativePath: "extractorOrCombiner",
+//                           },
+//                         },
+//                       ],
+//                     },
+//                   },
+//                 },
+//               },
+//               extractorWrapperReturningList: {
+//                 type: "object",
+//                 definition: {
+//                   extractorOrCombinerType: {
+//                     type: "literal",
+//                     definition: "extractorWrapperReturningList",
+//                   },
+//                   definition: {
+//                     type: "array",
+//                     definition: {
+//                       type: "union",
+//                       definition: [
+//                         {
+//                           type: "schemaReference",
+//                           definition: {
+//                             relativePath: "extractorOrCombinerContextReference",
+//                           },
+//                         },
+//                         {
+//                           type: "schemaReference",
+//                           definition: {
+//                             relativePath: "extractorOrCombiner",
+//                           },
+//                         },
+//                       ],
+//                     },
+//                   },
+//                 },
+//               },
+//               extractorWrapper: {
+//                 type: "union",
+//                 discriminator: "extractorOrCombinerType",
+//                 definition: [
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorWrapperReturningObject",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorWrapperReturningList",
+//                     },
+//                   },
+//                 ],
+//               },
+//               extractorOrCombiner: {
+//                 type: "union",
+//                 discriminator: "extractorOrCombinerType",
+//                 definition: [
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorOrCombinerContextReference",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorOrCombinerReturningObject",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorOrCombinerReturningObjectList",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "extractorWrapper",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath:
+//                         "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList",
+//                     },
+//                   },
+//                   {
+//                     type: "object",
+//                     definition: {
+//                       extractorOrCombinerType: {
+//                         type: "literal",
+//                         definition: "literal",
+//                       },
+//                       definition: {
+//                         type: "string",
+//                       },
+//                     },
+//                   },
+//                 ],
+//               },
+//               extractorOrCombinerRecord: {
+//                 type: "record",
+//                 definition: {
+//                   type: "schemaReference",
+//                   definition: {
+//                     relativePath: "extractorOrCombiner",
+//                   },
+//                 },
+//               },
+//             },
+//             definition: {
+//               eager: true,
+//               relativePath: "extractorOrCombinerTemplateRecord",
+//             },
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
+//       parentName: "EntityDefinition",
+//       parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+//       parentDefinitionVersionUuid: "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+//       entityUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+//       name: "Entity",
+//       conceptLevel: "MetaModel",
+//       description: "Entities",
+//       defaultInstanceDetailsReportUuid: "074d1de9-594d-42d6-8848-467baeb6f3e0",
+//       viewAttributes: ["name", "conceptLevel", "description", "selfApplication", "uuid"],
+//       jzodSchema: {
+//         type: "object",
+//         definition: {
+//           uuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 1,
+//                 defaultLabel: "Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentName: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 2,
+//                 defaultLabel: "Entity Name",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentUuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 3,
+//                 defaultLabel: "Entity Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentDefinitionVersionUuid: {
+//             type: "uuid",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 4,
+//                 defaultLabel: "Entity Definition Version Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           conceptLevel: {
+//             type: "enum",
+//             definition: ["MetaModel", "Model", "Data"],
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 5,
+//                 defaultLabel: "Concept Level",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           selfApplication: {
+//             type: "uuid",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 6,
+//                 defaultLabel: "SelfApplication",
+//                 targetEntity: "a659d350-dd97-4da9-91de-524fa01745dc",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           name: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 7,
+//                 defaultLabel: "Name",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           author: {
+//             type: "uuid",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 8,
+//                 defaultLabel: "SelfApplication",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           description: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 9,
+//                 defaultLabel: "Description",
+//                 editable: true,
+//               },
+//             },
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
+//       parentName: "EntityDefinition",
+//       parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+//       parentDefinitionVersionUuid: "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+//       entityUuid: "a557419d-a288-4fb8-8a1e-971c86c113b8",
+//       conceptLevel: "Model",
+//       name: "TransformerDefinition",
+//       icon: "Interests",
+//       viewAttributes: ["name", "defaultLabel", "selfApplication", "uuid"],
+//       jzodSchema: {
+//         type: "object",
+//         definition: {
+//           uuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 1,
+//                 defaultLabel: "Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentName: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 2,
+//                 defaultLabel: "Entity Name",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentUuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 3,
+//                 defaultLabel: "Entity Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentDefinitionVersionUuid: {
+//             type: "uuid",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 4,
+//                 defaultLabel: "Entity Definition Version Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           name: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 5,
+//                 defaultLabel: "Name",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           defaultLabel: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 6,
+//                 defaultLabel: "Default Label",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           description: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 7,
+//                 defaultLabel: "Description",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           transformerInterface: {
+//             type: "object",
+//             definition: {
+//               transformerParameterSchema: {
+//                 type: "object",
+//                 definition: {
+//                   transformerType: {
+//                     type: "schemaReference",
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "jzodLiteral",
+//                     },
+//                   },
+//                   transformerDefinition: {
+//                     type: "schemaReference",
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "jzodObject",
+//                     },
+//                   },
+//                 },
+//               },
+//               transformerResultSchema: {
+//                 type: "schemaReference",
+//                 optional: true,
+//                 definition: {
+//                   absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                   relativePath: "jzodElement",
+//                 },
+//               },
+//             },
+//           },
+//           transformerImplementation: {
+//             type: "union",
+//             discriminator: "transformerImplementationType",
+//             definition: [
+//               {
+//                 type: "object",
+//                 definition: {
+//                   transformerImplementationType: {
+//                     type: "literal",
+//                     definition: "libraryImplementation",
+//                   },
+//                   inMemoryImplementationFunctionName: {
+//                     type: "string",
+//                   },
+//                   sqlImplementationFunctionName: {
+//                     type: "string",
+//                     optional: true,
+//                   },
+//                 },
+//               },
+//               {
+//                 type: "object",
+//                 definition: {
+//                   transformerImplementationType: {
+//                     type: "literal",
+//                     definition: "transformer",
+//                   },
+//                   definition: {
+//                     type: "schemaReference",
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "transformerForBuildOrRuntime",
+//                     },
+//                   },
+//                 },
+//               },
+//             ],
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "69bf7c03-a1df-4d1c-88c1-44363feeea87",
+//       parentName: "EntityDefinition",
+//       parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+//       parentDefinitionVersionUuid: "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+//       entityUuid: "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
+//       conceptLevel: "Model",
+//       name: "ApplicationModelBranch",
+//       icon: "Interests",
+//       jzodSchema: {
+//         type: "object",
+//         definition: {
+//           uuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 1,
+//                 defaultLabel: "Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentName: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 2,
+//                 defaultLabel: "Entity Name",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentUuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 3,
+//                 defaultLabel: "Entity Uuid",
+//                 targetEntityApplicationSection: "model",
+//                 targetEntity: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentDefinitionVersionUuid: {
+//             type: "uuid",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 4,
+//                 defaultLabel: "Entity Definition Version Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           conceptLevel: {
+//             type: "enum",
+//             definition: ["MetaModel", "Model", "Data"],
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 5,
+//                 defaultLabel: "Concept Level",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           name: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 6,
+//                 defaultLabel: "Name",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           defaultLabel: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 7,
+//                 defaultLabel: "Name",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           selfApplication: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 8,
+//                 defaultLabel: "SelfApplication",
+//                 targetEntity: "a659d350-dd97-4da9-91de-524fa01745dc",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           headVersion: {
+//             type: "uuid",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 9,
+//                 defaultLabel: "Head Version",
+//                 targetEntity: "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           description: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 10,
+//                 defaultLabel: "Description",
+//                 editable: true,
+//               },
+//             },
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "9460420b-f176-4918-bd45-894ab195ffe9",
+//       parentName: "EntityDefinition",
+//       parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+//       parentDefinitionVersionUuid: "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+//       entityUuid: "a659d350-dd97-4da9-91de-524fa01745dc",
+//       conceptLevel: "Model",
+//       name: "SelfApplication",
+//       icon: "Interests",
+//       viewAttributes: ["name", "defaultLabel", "selfApplication", "uuid"],
+//       jzodSchema: {
+//         type: "object",
+//         definition: {
+//           uuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 1,
+//                 defaultLabel: "Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentName: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 2,
+//                 defaultLabel: "Entity Name",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentUuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 3,
+//                 defaultLabel: "Entity Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentDefinitionVersionUuid: {
+//             type: "uuid",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 4,
+//                 defaultLabel: "Entity Definition Version Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           name: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 5,
+//                 defaultLabel: "Name",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           defaultLabel: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 6,
+//                 defaultLabel: "Default Label",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           description: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 7,
+//                 defaultLabel: "Description",
+//                 editable: true,
+//               },
+//             },
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "952d2c65-4da2-45c2-9394-a0920ceedfb6",
+//       parentName: "EntityDefinition",
+//       parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+//       parentDefinitionVersionUuid: "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+//       entityUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+//       conceptLevel: "Model",
+//       name: "Report",
+//       icon: "Interests",
+//       defaultInstanceDetailsReportUuid: "ef57aada-6b77-4384-8007-12f13eddd337",
+//       viewAttributes: ["name", "defaultLabel", "type", "selfApplication", "uuid"],
+//       jzodSchema: {
+//         type: "object",
+//         definition: {
+//           uuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 1,
+//                 defaultLabel: "Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentName: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 2,
+//                 defaultLabel: "Entity Name",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentUuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 3,
+//                 defaultLabel: "Entity Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentDefinitionVersionUuid: {
+//             type: "uuid",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 4,
+//                 defaultLabel: "Entity Definition Version Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           conceptLevel: {
+//             type: "enum",
+//             definition: ["MetaModel", "Model", "Data"],
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 5,
+//                 defaultLabel: "Concept Level",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           name: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 6,
+//                 defaultLabel: "Name",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           defaultLabel: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 7,
+//                 defaultLabel: "Default Label",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           type: {
+//             type: "enum",
+//             definition: ["list", "grid"],
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 8,
+//                 defaultLabel: "Type of Report",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           selfApplication: {
+//             type: "uuid",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 9,
+//                 defaultLabel: "SelfApplication",
+//                 targetEntity: "a659d350-dd97-4da9-91de-524fa01745dc",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           definition: {
+//             type: "schemaReference",
+//             context: {
+//               objectInstanceReportSection: {
+//                 type: "object",
+//                 definition: {
+//                   type: {
+//                     type: "literal",
+//                     definition: "objectInstanceReportSection",
+//                   },
+//                   combinerTemplates: {
+//                     type: "schemaReference",
+//                     optional: true,
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "extractorOrCombinerTemplateRecord",
+//                     },
+//                   },
+//                   runtimeTransformers: {
+//                     type: "record",
+//                     optional: true,
+//                     definition: {
+//                       type: "schemaReference",
+//                       definition: {
+//                         absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                         relativePath: "transformerForRuntime",
+//                       },
+//                     },
+//                   },
+//                   definition: {
+//                     type: "object",
+//                     definition: {
+//                       label: {
+//                         type: "string",
+//                         optional: true,
+//                         tag: {
+//                           value: {
+//                             id: 1,
+//                             defaultLabel: "Label",
+//                             editable: false,
+//                           },
+//                         },
+//                       },
+//                       parentUuid: {
+//                         type: "string",
+//                         validations: [
+//                           {
+//                             type: "uuid",
+//                           },
+//                         ],
+//                         tag: {
+//                           value: {
+//                             id: 2,
+//                             defaultLabel: "Entity Uuid",
+//                             editable: false,
+//                           },
+//                         },
+//                       },
+//                       fetchedDataReference: {
+//                         type: "string",
+//                         optional: true,
+//                         tag: {
+//                           value: {
+//                             id: 3,
+//                             defaultLabel: "Fetched Data Reference",
+//                             editable: false,
+//                           },
+//                         },
+//                       },
+//                       query: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "extractorTemplateReturningObject",
+//                         },
+//                       },
+//                     },
+//                   },
+//                 },
+//               },
+//               objectListReportSection: {
+//                 type: "object",
+//                 definition: {
+//                   type: {
+//                     type: "literal",
+//                     definition: "objectListReportSection",
+//                   },
+//                   definition: {
+//                     type: "object",
+//                     definition: {
+//                       label: {
+//                         type: "string",
+//                         optional: true,
+//                         tag: {
+//                           value: {
+//                             id: 1,
+//                             defaultLabel: "Label",
+//                             editable: false,
+//                           },
+//                         },
+//                       },
+//                       parentName: {
+//                         type: "string",
+//                         optional: true,
+//                         tag: {
+//                           value: {
+//                             id: 2,
+//                             defaultLabel: "Entity Name",
+//                             editable: false,
+//                           },
+//                         },
+//                       },
+//                       parentUuid: {
+//                         type: "uuid",
+//                         tag: {
+//                           value: {
+//                             id: 2,
+//                             defaultLabel: "Entity Uuid",
+//                             targetEntity: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+//                             editable: false,
+//                           },
+//                         },
+//                       },
+//                       fetchedDataReference: {
+//                         type: "string",
+//                         optional: true,
+//                         tag: {
+//                           value: {
+//                             id: 3,
+//                             defaultLabel: "Fetched Data Reference",
+//                             editable: false,
+//                           },
+//                         },
+//                       },
+//                       query: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "extractorTemplateReturningObject",
+//                         },
+//                       },
+//                       sortByAttribute: {
+//                         type: "string",
+//                         optional: true,
+//                       },
+//                     },
+//                   },
+//                 },
+//               },
+//               gridReportSection: {
+//                 type: "object",
+//                 definition: {
+//                   type: {
+//                     type: "literal",
+//                     definition: "grid",
+//                   },
+//                   combinerTemplates: {
+//                     type: "schemaReference",
+//                     optional: true,
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "extractorOrCombinerTemplateRecord",
+//                     },
+//                   },
+//                   runtimeTransformers: {
+//                     type: "record",
+//                     optional: true,
+//                     definition: {
+//                       type: "schemaReference",
+//                       definition: {
+//                         absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                         relativePath: "transformerForRuntime",
+//                       },
+//                     },
+//                   },
+//                   selectData: {
+//                     type: "schemaReference",
+//                     optional: true,
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "extractorOrCombinerTemplateRecord",
+//                     },
+//                   },
+//                   definition: {
+//                     type: "array",
+//                     definition: {
+//                       type: "array",
+//                       definition: {
+//                         type: "schemaReference",
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "reportSection",
+//                         },
+//                       },
+//                     },
+//                   },
+//                 },
+//               },
+//               listReportSection: {
+//                 type: "object",
+//                 definition: {
+//                   type: {
+//                     type: "literal",
+//                     definition: "list",
+//                   },
+//                   combinerTemplates: {
+//                     type: "schemaReference",
+//                     optional: true,
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "extractorOrCombinerTemplateRecord",
+//                     },
+//                   },
+//                   runtimeTransformers: {
+//                     type: "record",
+//                     optional: true,
+//                     definition: {
+//                       type: "schemaReference",
+//                       definition: {
+//                         absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                         relativePath: "transformerForRuntime",
+//                       },
+//                     },
+//                   },
+//                   selectData: {
+//                     type: "schemaReference",
+//                     optional: true,
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "extractorOrCombinerTemplateRecord",
+//                     },
+//                   },
+//                   definition: {
+//                     type: "array",
+//                     definition: {
+//                       type: "union",
+//                       discriminator: "type",
+//                       definition: [
+//                         {
+//                           type: "schemaReference",
+//                           definition: {
+//                             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                             relativePath: "objectInstanceReportSection",
+//                           },
+//                         },
+//                         {
+//                           type: "schemaReference",
+//                           definition: {
+//                             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                             relativePath: "objectListReportSection",
+//                           },
+//                         },
+//                       ],
+//                     },
+//                   },
+//                 },
+//               },
+//               reportSection: {
+//                 type: "union",
+//                 discriminator: "type",
+//                 definition: [
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "gridReportSection",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "listReportSection",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "objectListReportSection",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "objectInstanceReportSection",
+//                     },
+//                   },
+//                 ],
+//               },
+//               parameterTransformer: {
+//                 type: "string",
+//               },
+//               rootReport: {
+//                 type: "object",
+//                 definition: {
+//                   reportParametersToFetchQueryParametersTransformer: {
+//                     type: "record",
+//                     optional: true,
+//                     definition: {
+//                       type: "string",
+//                     },
+//                   },
+//                   reportParameters: {
+//                     type: "record",
+//                     optional: true,
+//                     definition: {
+//                       type: "string",
+//                     },
+//                   },
+//                   extractorTemplates: {
+//                     type: "schemaReference",
+//                     optional: true,
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "extractorOrCombinerTemplateRecord",
+//                     },
+//                   },
+//                   extractors: {
+//                     type: "schemaReference",
+//                     optional: true,
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "extractorOrCombinerRecord",
+//                     },
+//                   },
+//                   combiners: {
+//                     type: "schemaReference",
+//                     optional: true,
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "extractorOrCombinerRecord",
+//                     },
+//                   },
+//                   combinerTemplates: {
+//                     type: "schemaReference",
+//                     optional: true,
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "extractorOrCombinerTemplateRecord",
+//                     },
+//                   },
+//                   runtimeTransformers: {
+//                     type: "record",
+//                     optional: true,
+//                     definition: {
+//                       type: "schemaReference",
+//                       definition: {
+//                         absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                         relativePath: "transformerForRuntime",
+//                       },
+//                     },
+//                   },
+//                   section: {
+//                     type: "schemaReference",
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "reportSection",
+//                     },
+//                   },
+//                 },
+//               },
+//             },
+//             definition: {
+//               relativePath: "rootReport",
+//             },
+//             tag: {
+//               value: {
+//                 id: 9,
+//                 defaultLabel: "Definition",
+//                 editable: true,
+//               },
+//             },
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "b17d5e9e-12f2-4ed8-abdb-2576c01514a4",
+//       parentName: "EntityDefinition",
+//       parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+//       parentDefinitionVersionUuid: "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+//       entityUuid: "73bb0c69-e636-4e3b-a230-51f25469c089",
+//       name: "Commit",
+//       conceptLevel: "MetaModel",
+//       description: "Commits",
+//       jzodSchema: {
+//         type: "object",
+//         definition: {
+//           uuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 1,
+//                 defaultLabel: "Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentName: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 2,
+//                 defaultLabel: "Entity Name",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentUuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 3,
+//                 defaultLabel: "Entity Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentDefinitionVersionUuid: {
+//             type: "uuid",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 4,
+//                 defaultLabel: "Entity Definition Version Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           date: {
+//             type: "date",
+//             tag: {
+//               value: {
+//                 id: 5,
+//                 defaultLabel: "Date",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           selfApplication: {
+//             type: "uuid",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 6,
+//                 defaultLabel: "SelfApplication",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           name: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 7,
+//                 defaultLabel: "Name",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           preceding: {
+//             type: "uuid",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 8,
+//                 defaultLabel: "Previous Commit",
+//                 targetEntity: "73bb0c69-e636-4e3b-a230-51f25469c089",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           branch: {
+//             type: "uuid",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 9,
+//                 defaultLabel: "Author",
+//                 targetEntity: "",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           author: {
+//             type: "uuid",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 10,
+//                 defaultLabel: "Author",
+//                 targetEntity: "",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           description: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 11,
+//                 defaultLabel: "Description",
+//                 editable: true,
+//               },
+//             },
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "bd303ae8-6bce-4b44-a63c-815b9ebf728b",
+//       parentName: "EntityDefinition",
+//       parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+//       parentDefinitionVersionUuid: "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+//       entityUuid: "35c5608a-7678-4f07-a4ec-76fc5bc35424",
+//       conceptLevel: "Model",
+//       name: "SelfApplicationDeploymentConfiguration",
+//       icon: "Interests",
+//       jzodSchema: {
+//         type: "object",
+//         definition: {
+//           uuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 1,
+//                 defaultLabel: "Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentName: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 2,
+//                 defaultLabel: "Entity Name",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentUuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 3,
+//                 defaultLabel: "Entity Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentDefinitionVersionUuid: {
+//             type: "uuid",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 4,
+//                 defaultLabel: "Entity Definition Version Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           name: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 5,
+//                 defaultLabel: "Name",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           defaultLabel: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 6,
+//                 defaultLabel: "Default Label",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           description: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 7,
+//                 defaultLabel: "Description",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           selfApplication: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 8,
+//                 defaultLabel: "SelfApplication",
+//                 description: "The SelfApplication of the Branch.",
+//                 targetEntity: "a659d350-dd97-4da9-91de-524fa01745dc",
+//                 editable: false,
+//               },
+//             },
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+//       parentName: "EntityDefinition",
+//       parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+//       parentDefinitionVersionUuid: "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+//       entityUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+//       name: "EntityDefinition",
+//       conceptLevel: "MetaModel",
+//       description: "definition of an entity",
+//       defaultInstanceDetailsReportUuid: "acd55b04-84df-427e-b219-cf0e01a6881b",
+//       viewAttributes: ["name", "description", "entityUuid", "viewAttributes", "uuid"],
+//       jzodSchema: {
+//         type: "object",
+//         definition: {
+//           uuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 1,
+//                 defaultLabel: "Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentName: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 2,
+//                 defaultLabel: "Entity Name",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentUuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 3,
+//                 defaultLabel: "Entity Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentDefinitionVersionUuid: {
+//             type: "uuid",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 4,
+//                 defaultLabel: "Entity Definition Version Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           name: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 5,
+//                 defaultLabel: "Name",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           entityUuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 6,
+//                 defaultLabel: "Entity Uuid of the Entity which this definition is the definition",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           conceptLevel: {
+//             type: "enum",
+//             definition: ["MetaModel", "Model", "Data"],
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 7,
+//                 defaultLabel: "Concept Level",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           description: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 8,
+//                 defaultLabel: "Description",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           defaultInstanceDetailsReportUuid: {
+//             type: "uuid",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 9,
+//                 defaultLabel: "Default Report used to display instances of this Entity",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           viewAttributes: {
+//             type: "array",
+//             optional: true,
+//             definition: {
+//               type: "string",
+//             },
+//             tag: {
+//               value: {
+//                 id: 10,
+//                 defaultLabel: "Attributes to display by default",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           icon: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 11,
+//                 defaultLabel: "Icon used to represent instances of this Entity",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           jzodSchema: {
+//             type: "schemaReference",
+//             definition: {
+//               absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//               relativePath: "jzodObject",
+//             },
+//             tag: {
+//               value: {
+//                 id: 12,
+//                 defaultLabel: "Jzod Schema",
+//                 editable: true,
+//               },
+//             },
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "c0b71083-8cc8-43db-bf52-572f1f03bbb5",
+//       parentName: "EntityDefinition",
+//       parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+//       parentDefinitionVersionUuid: "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+//       entityUuid: "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+//       conceptLevel: "Model",
+//       name: "ApplicationVersionCrossEntityDefinition",
+//       description: "The mapping among SelfApplication Versions and Entity Definitions",
+//       icon: "Interests",
+//       jzodSchema: {
+//         type: "object",
+//         definition: {
+//           uuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 1,
+//                 defaultLabel: "Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentName: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 2,
+//                 defaultLabel: "Entity Name",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentUuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 3,
+//                 defaultLabel: "Entity Uuid",
+//                 description: "The Parent Entity of this Instance",
+//                 targetEntity: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentDefinitionVersionUuid: {
+//             type: "uuid",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 4,
+//                 defaultLabel: "Entity Definition Version Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           name: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 5,
+//                 defaultLabel: "Name",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           defaultLabel: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 6,
+//                 defaultLabel: "Default Label",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           description: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 7,
+//                 defaultLabel: "Description",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           selfApplication: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 8,
+//                 defaultLabel: "SelfApplication",
+//                 description: "The SelfApplication of the Branch.",
+//                 targetEntity: "a659d350-dd97-4da9-91de-524fa01745dc",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           applicationVersion: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 9,
+//                 defaultLabel: "SelfApplication Version",
+//                 description: "The SelfApplication Version of this mapping.",
+//                 targetEntity: "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           entity: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 10,
+//                 defaultLabel: "Entity",
+//                 description: "The Entity definition of this mapping.",
+//                 targetEntity: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+//                 editable: false,
+//               },
+//             },
+//           },
+//         },
+//       },
+//     },
+//     {
+//       parentName: "EntityDefinition",
+//       name: "Test",
+//       uuid: "d2842a84-3e66-43ee-ac58-7e13b95b01e8",
+//       parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+//       entityUuid: "c37625c7-0b35-4d6a-811d-8181eb978301",
+//       conceptLevel: "Model",
+//       defaultInstanceDetailsReportUuid: "d65d8dc8-2a7f-4111-81b1-0324e816c1a8",
+//       jzodSchema: {
+//         type: "object",
+//         definition: {
+//           uuid: {
+//             type: "string",
+//             validations: [
+//               {
+//                 type: "uuid",
+//               },
+//             ],
+//             tag: {
+//               value: {
+//                 id: 1,
+//                 defaultLabel: "Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentName: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 1,
+//                 defaultLabel: "Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentUuid: {
+//             type: "string",
+//             validations: [
+//               {
+//                 type: "uuid",
+//               },
+//             ],
+//             tag: {
+//               value: {
+//                 id: 1,
+//                 defaultLabel: "parentUuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           definition: {
+//             type: "object",
+//             definition: {
+//               testCompositeActions: {
+//                 type: "record",
+//                 optional: true,
+//                 definition: {
+//                   type: "schemaReference",
+//                   definition: {
+//                     absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                     relativePath: "testCompositeAction",
+//                   },
+//                 },
+//               },
+//               fullTestDefinition: {
+//                 type: "union",
+//                 optional: true,
+//                 discriminator: "testType",
+//                 definition: [
+//                   {
+//                     type: "object",
+//                     definition: {
+//                       testType: {
+//                         type: "literal",
+//                         definition: "testCompositeAction",
+//                       },
+//                       testLabel: {
+//                         type: "string",
+//                       },
+//                       beforeTestSetupAction: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeAction",
+//                         },
+//                       },
+//                       afterTestCleanupAction: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeAction",
+//                         },
+//                       },
+//                       compositeAction: {
+//                         type: "schemaReference",
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeAction",
+//                         },
+//                       },
+//                       testCompositeActionAssertions: {
+//                         type: "array",
+//                         definition: {
+//                           type: "schemaReference",
+//                           definition: {
+//                             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                             relativePath: "compositeRunTestAssertion",
+//                           },
+//                         },
+//                       },
+//                     },
+//                   },
+//                   {
+//                     type: "object",
+//                     definition: {
+//                       testType: {
+//                         type: "literal",
+//                         definition: "testCompositeActionSuite",
+//                       },
+//                       testLabel: {
+//                         type: "string",
+//                       },
+//                       beforeAll: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeAction",
+//                         },
+//                       },
+//                       beforeEach: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeAction",
+//                         },
+//                       },
+//                       afterEach: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeAction",
+//                         },
+//                       },
+//                       afterAll: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeAction",
+//                         },
+//                       },
+//                       testCompositeActions: {
+//                         type: "record",
+//                         definition: {
+//                           type: "schemaReference",
+//                           definition: {
+//                             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                             relativePath: "testCompositeAction",
+//                           },
+//                         },
+//                       },
+//                     },
+//                   },
+//                   {
+//                     type: "object",
+//                     definition: {
+//                       testType: {
+//                         type: "literal",
+//                         definition: "testBuildCompositeAction",
+//                       },
+//                       testLabel: {
+//                         type: "string",
+//                       },
+//                       beforeTestSetupAction: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeAction",
+//                         },
+//                       },
+//                       afterTestCleanupAction: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeAction",
+//                         },
+//                       },
+//                       compositeAction: {
+//                         type: "schemaReference",
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "buildCompositeAction",
+//                         },
+//                       },
+//                       testCompositeActionAssertions: {
+//                         type: "array",
+//                         definition: {
+//                           type: "schemaReference",
+//                           definition: {
+//                             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                             relativePath: "compositeRunTestAssertion",
+//                           },
+//                         },
+//                       },
+//                     },
+//                   },
+//                   {
+//                     type: "object",
+//                     definition: {
+//                       testType: {
+//                         type: "literal",
+//                         definition: "testBuildCompositeActionSuite",
+//                       },
+//                       testLabel: {
+//                         type: "string",
+//                       },
+//                       beforeAll: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeAction",
+//                         },
+//                       },
+//                       beforeEach: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeAction",
+//                         },
+//                       },
+//                       afterEach: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeAction",
+//                         },
+//                       },
+//                       afterAll: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeAction",
+//                         },
+//                       },
+//                       testCompositeActions: {
+//                         type: "record",
+//                         definition: {
+//                           type: "schemaReference",
+//                           definition: {
+//                             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                             relativePath: "testBuildCompositeAction",
+//                           },
+//                         },
+//                       },
+//                     },
+//                   },
+//                   {
+//                     type: "object",
+//                     definition: {
+//                       testType: {
+//                         type: "literal",
+//                         definition: "testRuntimeCompositeAction",
+//                       },
+//                       testLabel: {
+//                         type: "string",
+//                       },
+//                       beforeTestSetupAction: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeAction",
+//                         },
+//                       },
+//                       afterTestCleanupAction: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeAction",
+//                         },
+//                       },
+//                       compositeAction: {
+//                         type: "schemaReference",
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "runtimeCompositeAction",
+//                         },
+//                       },
+//                       testCompositeActionAssertions: {
+//                         type: "array",
+//                         definition: {
+//                           type: "schemaReference",
+//                           definition: {
+//                             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                             relativePath: "compositeRunTestAssertion",
+//                           },
+//                         },
+//                       },
+//                     },
+//                   },
+//                   {
+//                     type: "object",
+//                     definition: {
+//                       testType: {
+//                         type: "literal",
+//                         definition: "testRuntimeCompositeActionSuite",
+//                       },
+//                       testLabel: {
+//                         type: "string",
+//                       },
+//                       beforeAll: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeAction",
+//                         },
+//                       },
+//                       beforeEach: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeAction",
+//                         },
+//                       },
+//                       afterEach: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeAction",
+//                         },
+//                       },
+//                       afterAll: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeAction",
+//                         },
+//                       },
+//                       testCompositeActions: {
+//                         type: "record",
+//                         definition: {
+//                           type: "schemaReference",
+//                           definition: {
+//                             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                             relativePath: "testRuntimeCompositeAction",
+//                           },
+//                         },
+//                       },
+//                     },
+//                   },
+//                   {
+//                     type: "object",
+//                     definition: {
+//                       testType: {
+//                         type: "literal",
+//                         definition: "testBuildPlusRuntimeCompositeAction",
+//                       },
+//                       testLabel: {
+//                         type: "string",
+//                       },
+//                       testParams: {
+//                         type: "record",
+//                         optional: true,
+//                         definition: {
+//                           type: "any",
+//                         },
+//                       },
+//                       beforeTestSetupAction: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeAction",
+//                         },
+//                       },
+//                       afterTestCleanupAction: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeAction",
+//                         },
+//                       },
+//                       compositeAction: {
+//                         type: "schemaReference",
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "buildPlusRuntimeCompositeAction",
+//                         },
+//                       },
+//                       testCompositeActionAssertions: {
+//                         type: "array",
+//                         definition: {
+//                           type: "schemaReference",
+//                           definition: {
+//                             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                             relativePath: "compositeRunTestAssertion",
+//                           },
+//                         },
+//                       },
+//                     },
+//                   },
+//                   {
+//                     type: "object",
+//                     definition: {
+//                       testType: {
+//                         type: "literal",
+//                         definition: "testBuildPlusRuntimeCompositeActionSuite",
+//                       },
+//                       testLabel: {
+//                         type: "string",
+//                       },
+//                       testParams: {
+//                         type: "record",
+//                         optional: true,
+//                         definition: {
+//                           type: "any",
+//                         },
+//                       },
+//                       beforeAll: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeAction",
+//                         },
+//                       },
+//                       beforeEach: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeAction",
+//                         },
+//                       },
+//                       afterEach: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeAction",
+//                         },
+//                       },
+//                       afterAll: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeAction",
+//                         },
+//                       },
+//                       testCompositeActions: {
+//                         type: "record",
+//                         definition: {
+//                           type: "schemaReference",
+//                           definition: {
+//                             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                             relativePath: "testBuildPlusRuntimeCompositeAction",
+//                           },
+//                         },
+//                       },
+//                     },
+//                   },
+//                   {
+//                     type: "object",
+//                     definition: {
+//                       testType: {
+//                         type: "literal",
+//                         definition: "testCompositeActionTemplate",
+//                       },
+//                       testLabel: {
+//                         type: "string",
+//                       },
+//                       beforeTestSetupAction: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeActionTemplate",
+//                         },
+//                       },
+//                       afterTestCleanupAction: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeActionTemplate",
+//                         },
+//                       },
+//                       compositeActionTemplate: {
+//                         type: "schemaReference",
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeActionTemplate",
+//                         },
+//                       },
+//                       testCompositeActionAssertions: {
+//                         type: "array",
+//                         definition: {
+//                           type: "schemaReference",
+//                           definition: {
+//                             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                             relativePath: "compositeRunTestAssertion",
+//                           },
+//                         },
+//                       },
+//                     },
+//                   },
+//                   {
+//                     type: "object",
+//                     definition: {
+//                       testType: {
+//                         type: "literal",
+//                         definition: "testCompositeActionTemplateSuite",
+//                       },
+//                       testLabel: {
+//                         type: "string",
+//                       },
+//                       beforeAll: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeActionTemplate",
+//                         },
+//                       },
+//                       beforeEach: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeActionTemplate",
+//                         },
+//                       },
+//                       afterEach: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeActionTemplate",
+//                         },
+//                       },
+//                       afterAll: {
+//                         type: "schemaReference",
+//                         optional: true,
+//                         definition: {
+//                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                           relativePath: "compositeActionTemplate",
+//                         },
+//                       },
+//                       testCompositeActions: {
+//                         type: "record",
+//                         definition: {
+//                           type: "schemaReference",
+//                           definition: {
+//                             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                             relativePath: "testCompositeActionTemplate",
+//                           },
+//                         },
+//                       },
+//                     },
+//                   },
+//                   {
+//                     type: "object",
+//                     definition: {
+//                       testType: {
+//                         type: "literal",
+//                         definition: "testAssertion",
+//                       },
+//                       testLabel: {
+//                         type: "string",
+//                       },
+//                       definition: {
+//                         type: "object",
+//                         definition: {
+//                           resultAccessPath: {
+//                             type: "array",
+//                             optional: true,
+//                             definition: {
+//                               type: "string",
+//                             },
+//                           },
+//                           resultTransformer: {
+//                             type: "schemaReference",
+//                             optional: true,
+//                             definition: {
+//                               absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                               relativePath: "extendedTransformerForRuntime",
+//                             },
+//                           },
+//                           ignoreAttributes: {
+//                             type: "array",
+//                             optional: true,
+//                             definition: {
+//                               type: "string",
+//                             },
+//                           },
+//                           expectedValue: {
+//                             type: "any",
+//                           },
+//                         },
+//                       },
+//                     },
+//                   },
+//                 ],
+//               },
+//             },
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "e3c1cc69-066d-4f52-beeb-b659dc7a88b9",
+//       parentName: "EntityDefinition",
+//       parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+//       parentDefinitionVersionUuid: "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+//       entityUuid: "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
+//       name: "Endpoint",
+//       conceptLevel: "MetaModel",
+//       description: "definition of an Endpoint",
+//       viewAttributes: ["name", "description", "transactionalEndpoint", "uuid"],
+//       jzodSchema: {
+//         type: "object",
+//         definition: {
+//           uuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 1,
+//                 defaultLabel: "Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentName: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 2,
+//                 defaultLabel: "Entity Name",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentUuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 3,
+//                 defaultLabel: "Entity Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentDefinitionVersionUuid: {
+//             type: "uuid",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 4,
+//                 defaultLabel: "Entity Definition Version Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           name: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 6,
+//                 defaultLabel: "Name",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           version: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 7,
+//                 defaultLabel: "Version",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           description: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 8,
+//                 defaultLabel: "Description",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           transactionalEndpoint: {
+//             type: "boolean",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 9,
+//                 defaultLabel: "Transactional Endpoint",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           definition: {
+//             type: "object",
+//             tag: {
+//               value: {
+//                 id: 10,
+//                 defaultLabel: "Definition",
+//                 editable: true,
+//               },
+//             },
+//             definition: {
+//               actions: {
+//                 type: "schemaReference",
+//                 context: {
+//                   action: {
+//                     type: "object",
+//                     definition: {
+//                       actionParameters: {
+//                         type: "object",
+//                         definition: {
+//                           actionType: {
+//                             type: "schemaReference",
+//                             definition: {
+//                               absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                               relativePath: "jzodLiteral",
+//                             },
+//                           },
+//                           actionName: {
+//                             type: "schemaReference",
+//                             definition: {
+//                               absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                               relativePath: "jzodLiteral",
+//                             },
+//                           },
+//                           actionLabel: {
+//                             type: "schemaReference",
+//                             optional: true,
+//                             definition: {
+//                               absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                               relativePath: "jzodAttributePlainStringWithValidations",
+//                             },
+//                           },
+//                           endpoint: {
+//                             type: "schemaReference",
+//                             definition: {
+//                               absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                               relativePath: "jzodLiteral",
+//                             },
+//                           },
+//                           configuration: {
+//                             type: "schemaReference",
+//                             definition: {
+//                               absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                               relativePath: "jzodElement",
+//                             },
+//                           },
+//                           deploymentUuid: {
+//                             type: "schemaReference",
+//                             definition: {
+//                               absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                               relativePath: "jzodAttributePlainStringWithValidations",
+//                             },
+//                           },
+//                         },
+//                       },
+//                       actionImplementation: {
+//                         type: "union",
+//                         optional: true,
+//                         discriminator: "actionImplementationType",
+//                         definition: [
+//                           {
+//                             type: "object",
+//                             definition: {
+//                               actionImplementationType: {
+//                                 type: "literal",
+//                                 definition: "libraryImplementation",
+//                               },
+//                               inMemoryImplementationFunctionName: {
+//                                 type: "string",
+//                               },
+//                               sqlImplementationFunctionName: {
+//                                 type: "string",
+//                                 optional: true,
+//                               },
+//                             },
+//                           },
+//                           {
+//                             type: "object",
+//                             definition: {
+//                               actionImplementationType: {
+//                                 type: "literal",
+//                                 definition: "compositeAction",
+//                               },
+//                               definition: {
+//                                 type: "schemaReference",
+//                                 definition: {
+//                                   absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                                   relativePath: "compositeAction",
+//                                 },
+//                               },
+//                             },
+//                           },
+//                         ],
+//                       },
+//                       errors: {
+//                         type: "union",
+//                         optional: true,
+//                         definition: [
+//                           {
+//                             type: "schemaReference",
+//                             definition: {
+//                               absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                               relativePath: "jzodEnum",
+//                             },
+//                           },
+//                           {
+//                             type: "schemaReference",
+//                             definition: {
+//                               absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                               relativePath: "jzodLiteral",
+//                             },
+//                           },
+//                         ],
+//                       },
+//                     },
+//                   },
+//                   actionsArray: {
+//                     type: "array",
+//                     definition: {
+//                       type: "schemaReference",
+//                       definition: {
+//                         relativePath: "action",
+//                       },
+//                     },
+//                   },
+//                   actionsUnion: {
+//                     type: "object",
+//                     extend: {
+//                       type: "schemaReference",
+//                       definition: {
+//                         eager: true,
+//                         absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                         relativePath: "jzodBaseObject",
+//                       },
+//                     },
+//                     definition: {
+//                       type: {
+//                         type: "literal",
+//                         definition: "union",
+//                       },
+//                       discriminator: {
+//                         type: "string",
+//                         optional: true,
+//                       },
+//                       definition: {
+//                         type: "array",
+//                         definition: {
+//                           type: "schemaReference",
+//                           definition: {
+//                             relativePath: "action",
+//                           },
+//                         },
+//                       },
+//                     },
+//                   },
+//                 },
+//                 definition: {
+//                   relativePath: "actionsArray",
+//                 },
+//                 tag: {
+//                   value: {
+//                     id: 10,
+//                     defaultLabel: "Endpoint Parameter",
+//                     editable: true,
+//                   },
+//                 },
+//               },
+//               actionDefinition: {
+//                 type: "schemaReference",
+//                 optional: true,
+//                 definition: {
+//                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                   relativePath: "jzodObject",
+//                 },
+//                 tag: {
+//                   value: {
+//                     id: 11,
+//                     defaultLabel: "Endpoint Definition",
+//                     editable: true,
+//                   },
+//                 },
+//               },
+//               actionTransformer: {
+//                 type: "any",
+//                 optional: true,
+//               },
+//               actionMigrations: {
+//                 type: "any",
+//                 optional: true,
+//               },
+//             },
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "f93af951-ea13-4815-a2e3-ec0cab1fadd2",
+//       parentName: "EntityDefinition",
+//       parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+//       parentDefinitionVersionUuid: "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+//       entityUuid: "7990c0c9-86c3-40a1-a121-036c91b55ed7",
+//       conceptLevel: "Model",
+//       name: "StoreBasedConfiguration",
+//       icon: "Interests",
+//       jzodSchema: {
+//         type: "object",
+//         definition: {
+//           uuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 1,
+//                 defaultLabel: "Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentName: {
+//             type: "string",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 2,
+//                 defaultLabel: "Entity Name",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentUuid: {
+//             type: "uuid",
+//             tag: {
+//               value: {
+//                 id: 3,
+//                 defaultLabel: "Entity Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           parentDefinitionVersionUuid: {
+//             type: "uuid",
+//             optional: true,
+//             tag: {
+//               value: {
+//                 id: 4,
+//                 defaultLabel: "Entity Definition Version Uuid",
+//                 editable: false,
+//               },
+//             },
+//           },
+//           name: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 5,
+//                 defaultLabel: "Name",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           defaultLabel: {
+//             type: "string",
+//             tag: {
+//               value: {
+//                 id: 6,
+//                 defaultLabel: "Default Label",
+//                 editable: true,
+//               },
+//             },
+//           },
+//           definition: {
+//             type: "object",
+//             optional: true,
+//             definition: {
+//               currentApplicationVersion: {
+//                 type: "string",
+//               },
+//             },
+//             tag: {
+//               value: {
+//                 id: 7,
+//                 defaultLabel: "The configuration itself",
+//                 editable: true,
+//               },
+//             },
+//           },
+//         },
+//       },
+//     },
+//   ],
+//   jzodSchemas: [
+//     {
+//       uuid: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//       parentName: "JzodSchema",
+//       parentUuid: "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+//       name: "jzodMiroirBootstrapSchema",
+//       defaultLabel: "The Jzod Schema for Miroir Jzod Schemas. Parses itself.",
+//       definition: {
+//         type: "schemaReference",
+//         context: {
+//           jzodBaseObject: {
+//             type: "object",
+//             tag: {
+//               optional: true,
+//               schema: {
+//                 optional: true,
+//                 metaSchema: {
+//                   type: "object",
+//                   optional: true,
+//                   definition: {
+//                     optional: {
+//                       type: "boolean",
+//                       optional: true,
+//                     },
+//                     metaSchema: {
+//                       type: "schemaReference",
+//                       optional: true,
+//                       definition: {
+//                         relativePath: "jzodElement",
+//                       },
+//                     },
+//                     valueSchema: {
+//                       type: "schemaReference",
+//                       optional: true,
+//                       definition: {
+//                         relativePath: "jzodElement",
+//                       },
+//                     },
+//                   },
+//                 },
+//                 valueSchema: {
+//                   type: "object",
+//                   optional: true,
+//                   definition: {
+//                     id: {
+//                       type: "number",
+//                       optional: true,
+//                     },
+//                     defaultLabel: {
+//                       type: "string",
+//                       optional: true,
+//                     },
+//                     initializeTo: {
+//                       type: "any",
+//                       optional: true,
+//                     },
+//                     targetEntity: {
+//                       type: "string",
+//                       optional: true,
+//                     },
+//                     editable: {
+//                       type: "boolean",
+//                       optional: true,
+//                     },
+//                   },
+//                 },
+//               },
+//             },
+//             definition: {
+//               optional: {
+//                 type: "boolean",
+//                 optional: true,
+//               },
+//               nullable: {
+//                 type: "boolean",
+//                 optional: true,
+//               },
+//             },
+//           },
+//           jzodArray: {
+//             type: "object",
+//             extend: {
+//               type: "schemaReference",
+//               definition: {
+//                 eager: true,
+//                 absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                 relativePath: "jzodBaseObject",
+//               },
+//             },
+//             definition: {
+//               type: {
+//                 type: "literal",
+//                 definition: "array",
+//               },
+//               definition: {
+//                 type: "schemaReference",
+//                 definition: {
+//                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                   relativePath: "jzodElement",
+//                 },
+//               },
+//             },
+//           },
+//           jzodPlainAttribute: {
+//             type: "object",
+//             extend: {
+//               type: "schemaReference",
+//               definition: {
+//                 eager: true,
+//                 absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                 relativePath: "jzodBaseObject",
+//               },
+//             },
+//             definition: {
+//               type: {
+//                 type: "enum",
+//                 definition: [
+//                   "any",
+//                   "bigint",
+//                   "boolean",
+//                   "never",
+//                   "null",
+//                   "uuid",
+//                   "undefined",
+//                   "unknown",
+//                   "void",
+//                 ],
+//               },
+//               coerce: {
+//                 type: "boolean",
+//                 optional: true,
+//               },
+//             },
+//           },
+//           jzodAttributeDateValidations: {
+//             type: "object",
+//             definition: {
+//               type: {
+//                 type: "enum",
+//                 definition: ["min", "max"],
+//               },
+//               parameter: {
+//                 type: "any",
+//               },
+//             },
+//           },
+//           jzodAttributePlainDateWithValidations: {
+//             type: "object",
+//             extend: {
+//               type: "schemaReference",
+//               definition: {
+//                 eager: true,
+//                 absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                 relativePath: "jzodBaseObject",
+//               },
+//             },
+//             definition: {
+//               type: {
+//                 type: "literal",
+//                 definition: "date",
+//               },
+//               coerce: {
+//                 type: "boolean",
+//                 optional: true,
+//               },
+//               validations: {
+//                 type: "array",
+//                 optional: true,
+//                 definition: {
+//                   type: "schemaReference",
+//                   definition: {
+//                     absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                     relativePath: "jzodAttributeDateValidations",
+//                   },
+//                 },
+//               },
+//             },
+//           },
+//           jzodAttributeNumberValidations: {
+//             type: "object",
+//             definition: {
+//               type: {
+//                 type: "enum",
+//                 definition: [
+//                   "gt",
+//                   "gte",
+//                   "lt",
+//                   "lte",
+//                   "int",
+//                   "positive",
+//                   "nonpositive",
+//                   "negative",
+//                   "nonnegative",
+//                   "multipleOf",
+//                   "finite",
+//                   "safe",
+//                 ],
+//               },
+//               parameter: {
+//                 type: "any",
+//               },
+//             },
+//           },
+//           jzodAttributePlainNumberWithValidations: {
+//             type: "object",
+//             extend: {
+//               type: "schemaReference",
+//               definition: {
+//                 eager: true,
+//                 absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                 relativePath: "jzodBaseObject",
+//               },
+//             },
+//             definition: {
+//               type: {
+//                 type: "literal",
+//                 definition: "number",
+//               },
+//               coerce: {
+//                 type: "boolean",
+//                 optional: true,
+//               },
+//               validations: {
+//                 type: "array",
+//                 optional: true,
+//                 definition: {
+//                   type: "schemaReference",
+//                   definition: {
+//                     absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                     relativePath: "jzodAttributeNumberValidations",
+//                   },
+//                 },
+//               },
+//             },
+//           },
+//           jzodAttributeStringValidations: {
+//             type: "object",
+//             definition: {
+//               type: {
+//                 type: "enum",
+//                 definition: [
+//                   "max",
+//                   "min",
+//                   "length",
+//                   "email",
+//                   "url",
+//                   "emoji",
+//                   "uuid",
+//                   "cuid",
+//                   "cuid2",
+//                   "ulid",
+//                   "regex",
+//                   "includes",
+//                   "startsWith",
+//                   "endsWith",
+//                   "datetime",
+//                   "ip",
+//                 ],
+//               },
+//               parameter: {
+//                 type: "any",
+//               },
+//             },
+//           },
+//           jzodAttributePlainStringWithValidations: {
+//             type: "object",
+//             extend: {
+//               type: "schemaReference",
+//               definition: {
+//                 eager: true,
+//                 absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                 relativePath: "jzodBaseObject",
+//               },
+//             },
+//             definition: {
+//               type: {
+//                 type: "literal",
+//                 definition: "string",
+//               },
+//               coerce: {
+//                 type: "boolean",
+//                 optional: true,
+//               },
+//               validations: {
+//                 type: "array",
+//                 optional: true,
+//                 definition: {
+//                   type: "schemaReference",
+//                   definition: {
+//                     absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                     relativePath: "jzodAttributeStringValidations",
+//                   },
+//                 },
+//               },
+//             },
+//           },
+//           jzodElement: {
+//             type: "union",
+//             discriminator: "type",
+//             definition: [
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                   relativePath: "jzodArray",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                   relativePath: "jzodPlainAttribute",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                   relativePath: "jzodAttributePlainDateWithValidations",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                   relativePath: "jzodAttributePlainNumberWithValidations",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                   relativePath: "jzodAttributePlainStringWithValidations",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                   relativePath: "jzodEnum",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                   relativePath: "jzodFunction",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                   relativePath: "jzodLazy",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                   relativePath: "jzodLiteral",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                   relativePath: "jzodIntersection",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                   relativePath: "jzodMap",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                   relativePath: "jzodObject",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                   relativePath: "jzodPromise",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                   relativePath: "jzodRecord",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                   relativePath: "jzodReference",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                   relativePath: "jzodSet",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                   relativePath: "jzodTuple",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                   relativePath: "jzodUnion",
+//                 },
+//               },
+//             ],
+//           },
+//           jzodEnum: {
+//             type: "object",
+//             extend: {
+//               type: "schemaReference",
+//               definition: {
+//                 eager: true,
+//                 absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                 relativePath: "jzodBaseObject",
+//               },
+//             },
+//             definition: {
+//               type: {
+//                 type: "literal",
+//                 definition: "enum",
+//               },
+//               definition: {
+//                 type: "array",
+//                 definition: {
+//                   type: "string",
+//                 },
+//               },
+//             },
+//           },
+//           jzodEnumAttributeTypes: {
+//             type: "enum",
+//             definition: [
+//               "any",
+//               "bigint",
+//               "boolean",
+//               "date",
+//               "never",
+//               "null",
+//               "number",
+//               "string",
+//               "uuid",
+//               "undefined",
+//               "unknown",
+//               "void",
+//             ],
+//           },
+//           jzodEnumElementTypes: {
+//             type: "enum",
+//             definition: [
+//               "array",
+//               "date",
+//               "enum",
+//               "function",
+//               "lazy",
+//               "literal",
+//               "intersection",
+//               "map",
+//               "number",
+//               "object",
+//               "promise",
+//               "record",
+//               "schemaReference",
+//               "set",
+//               "string",
+//               "tuple",
+//               "union",
+//             ],
+//           },
+//           jzodFunction: {
+//             type: "object",
+//             extend: {
+//               type: "schemaReference",
+//               definition: {
+//                 eager: true,
+//                 absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                 relativePath: "jzodBaseObject",
+//               },
+//             },
+//             definition: {
+//               type: {
+//                 type: "literal",
+//                 definition: "function",
+//               },
+//               definition: {
+//                 type: "object",
+//                 definition: {
+//                   args: {
+//                     type: "array",
+//                     definition: {
+//                       type: "schemaReference",
+//                       definition: {
+//                         absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                         relativePath: "jzodElement",
+//                       },
+//                     },
+//                   },
+//                   returns: {
+//                     type: "schemaReference",
+//                     definition: {
+//                       absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                       relativePath: "jzodElement",
+//                     },
+//                     optional: true,
+//                   },
+//                 },
+//               },
+//             },
+//           },
+//           jzodLazy: {
+//             type: "object",
+//             extend: {
+//               type: "schemaReference",
+//               definition: {
+//                 eager: true,
+//                 absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                 relativePath: "jzodBaseObject",
+//               },
+//             },
+//             definition: {
+//               type: {
+//                 type: "literal",
+//                 definition: "lazy",
+//               },
+//               definition: {
+//                 type: "schemaReference",
+//                 definition: {
+//                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                   relativePath: "jzodFunction",
+//                 },
+//               },
+//             },
+//           },
+//           jzodLiteral: {
+//             type: "object",
+//             extend: {
+//               type: "schemaReference",
+//               definition: {
+//                 eager: true,
+//                 absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                 relativePath: "jzodBaseObject",
+//               },
+//             },
+//             definition: {
+//               type: {
+//                 type: "literal",
+//                 definition: "literal",
+//               },
+//               definition: {
+//                 type: "union",
+//                 definition: [
+//                   {
+//                     type: "string",
+//                   },
+//                   {
+//                     type: "number",
+//                   },
+//                   {
+//                     type: "bigint",
+//                   },
+//                   {
+//                     type: "boolean",
+//                   },
+//                 ],
+//               },
+//             },
+//           },
+//           jzodIntersection: {
+//             type: "object",
+//             extend: {
+//               type: "schemaReference",
+//               definition: {
+//                 eager: true,
+//                 absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                 relativePath: "jzodBaseObject",
+//               },
+//             },
+//             definition: {
+//               type: {
+//                 type: "literal",
+//                 definition: "intersection",
+//               },
+//               definition: {
+//                 type: "object",
+//                 definition: {
+//                   left: {
+//                     type: "schemaReference",
+//                     definition: {
+//                       absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                       relativePath: "jzodElement",
+//                     },
+//                   },
+//                   right: {
+//                     type: "schemaReference",
+//                     definition: {
+//                       absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                       relativePath: "jzodElement",
+//                     },
+//                   },
+//                 },
+//               },
+//             },
+//           },
+//           jzodMap: {
+//             type: "object",
+//             extend: {
+//               type: "schemaReference",
+//               definition: {
+//                 eager: true,
+//                 absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                 relativePath: "jzodBaseObject",
+//               },
+//             },
+//             definition: {
+//               type: {
+//                 type: "literal",
+//                 definition: "map",
+//               },
+//               definition: {
+//                 type: "tuple",
+//                 definition: [
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                       relativePath: "jzodElement",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                       relativePath: "jzodElement",
+//                     },
+//                   },
+//                 ],
+//               },
+//             },
+//           },
+//           jzodObject: {
+//             type: "object",
+//             extend: {
+//               type: "schemaReference",
+//               definition: {
+//                 eager: true,
+//                 absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                 relativePath: "jzodBaseObject",
+//               },
+//             },
+//             definition: {
+//               extend: {
+//                 type: "union",
+//                 optional: true,
+//                 definition: [
+//                   {
+//                     type: "union",
+//                     optional: true,
+//                     definition: [
+//                       {
+//                         type: "schemaReference",
+//                         definition: {
+//                           relativePath: "jzodReference",
+//                         },
+//                       },
+//                       {
+//                         type: "schemaReference",
+//                         definition: {
+//                           relativePath: "jzodObject",
+//                         },
+//                       },
+//                     ],
+//                   },
+//                   {
+//                     type: "array",
+//                     definition: {
+//                       type: "union",
+//                       optional: true,
+//                       definition: [
+//                         {
+//                           type: "schemaReference",
+//                           definition: {
+//                             relativePath: "jzodReference",
+//                           },
+//                         },
+//                         {
+//                           type: "schemaReference",
+//                           definition: {
+//                             relativePath: "jzodObject",
+//                           },
+//                         },
+//                       ],
+//                     },
+//                   },
+//                 ],
+//               },
+//               type: {
+//                 type: "literal",
+//                 definition: "object",
+//               },
+//               nonStrict: {
+//                 type: "boolean",
+//                 optional: true,
+//               },
+//               partial: {
+//                 type: "boolean",
+//                 optional: true,
+//               },
+//               carryOn: {
+//                 type: "union",
+//                 optional: true,
+//                 definition: [
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                       relativePath: "jzodObject",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                       relativePath: "jzodUnion",
+//                     },
+//                   },
+//                 ],
+//               },
+//               definition: {
+//                 type: "record",
+//                 definition: {
+//                   type: "schemaReference",
+//                   definition: {
+//                     absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                     relativePath: "jzodElement",
+//                   },
+//                 },
+//               },
+//             },
+//           },
+//           jzodPromise: {
+//             type: "object",
+//             extend: {
+//               type: "schemaReference",
+//               definition: {
+//                 eager: true,
+//                 absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                 relativePath: "jzodBaseObject",
+//               },
+//             },
+//             definition: {
+//               type: {
+//                 type: "literal",
+//                 definition: "promise",
+//               },
+//               definition: {
+//                 type: "schemaReference",
+//                 definition: {
+//                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                   relativePath: "jzodElement",
+//                 },
+//               },
+//             },
+//           },
+//           jzodRecord: {
+//             type: "object",
+//             extend: {
+//               type: "schemaReference",
+//               definition: {
+//                 eager: true,
+//                 absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                 relativePath: "jzodBaseObject",
+//               },
+//             },
+//             definition: {
+//               type: {
+//                 type: "literal",
+//                 definition: "record",
+//               },
+//               definition: {
+//                 type: "schemaReference",
+//                 definition: {
+//                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                   relativePath: "jzodElement",
+//                 },
+//               },
+//             },
+//           },
+//           jzodReference: {
+//             type: "object",
+//             extend: {
+//               type: "schemaReference",
+//               definition: {
+//                 eager: true,
+//                 absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                 relativePath: "jzodBaseObject",
+//               },
+//             },
+//             definition: {
+//               type: {
+//                 type: "literal",
+//                 definition: "schemaReference",
+//               },
+//               context: {
+//                 type: "record",
+//                 optional: true,
+//                 definition: {
+//                   type: "schemaReference",
+//                   definition: {
+//                     absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                     relativePath: "jzodElement",
+//                   },
+//                 },
+//               },
+//               carryOn: {
+//                 type: "union",
+//                 optional: true,
+//                 definition: [
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                       relativePath: "jzodObject",
+//                     },
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                       relativePath: "jzodUnion",
+//                     },
+//                   },
+//                 ],
+//               },
+//               definition: {
+//                 type: "object",
+//                 definition: {
+//                   eager: {
+//                     type: "boolean",
+//                     optional: true,
+//                   },
+//                   partial: {
+//                     type: "boolean",
+//                     optional: true,
+//                   },
+//                   relativePath: {
+//                     type: "string",
+//                     optional: true,
+//                   },
+//                   absolutePath: {
+//                     type: "string",
+//                     optional: true,
+//                   },
+//                 },
+//               },
+//             },
+//           },
+//           jzodSet: {
+//             type: "object",
+//             extend: {
+//               type: "schemaReference",
+//               definition: {
+//                 eager: true,
+//                 absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                 relativePath: "jzodBaseObject",
+//               },
+//             },
+//             definition: {
+//               type: {
+//                 type: "literal",
+//                 definition: "set",
+//               },
+//               definition: {
+//                 type: "schemaReference",
+//                 definition: {
+//                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                   relativePath: "jzodElement",
+//                 },
+//               },
+//             },
+//           },
+//           jzodTuple: {
+//             type: "object",
+//             extend: {
+//               type: "schemaReference",
+//               definition: {
+//                 eager: true,
+//                 absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                 relativePath: "jzodBaseObject",
+//               },
+//             },
+//             definition: {
+//               type: {
+//                 type: "literal",
+//                 definition: "tuple",
+//               },
+//               definition: {
+//                 type: "array",
+//                 definition: {
+//                   type: "schemaReference",
+//                   definition: {
+//                     absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                     relativePath: "jzodElement",
+//                   },
+//                 },
+//               },
+//             },
+//           },
+//           jzodUnion: {
+//             type: "object",
+//             extend: {
+//               type: "schemaReference",
+//               definition: {
+//                 eager: true,
+//                 absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                 relativePath: "jzodBaseObject",
+//               },
+//             },
+//             definition: {
+//               type: {
+//                 type: "literal",
+//                 definition: "union",
+//               },
+//               discriminator: {
+//                 type: "string",
+//                 optional: true,
+//               },
+//               discriminatorNew: {
+//                 type: "union",
+//                 optional: true,
+//                 definition: [
+//                   {
+//                     type: "object",
+//                     definition: {
+//                       discriminatorType: {
+//                         type: "literal",
+//                         definition: "string",
+//                       },
+//                       value: {
+//                         type: "string",
+//                       },
+//                     },
+//                   },
+//                   {
+//                     type: "object",
+//                     definition: {
+//                       discriminatorType: {
+//                         type: "literal",
+//                         definition: "array",
+//                       },
+//                       value: {
+//                         type: "array",
+//                         definition: {
+//                           type: "string",
+//                         },
+//                       },
+//                     },
+//                   },
+//                 ],
+//               },
+//               carryOn: {
+//                 optional: true,
+//                 type: "schemaReference",
+//                 definition: {
+//                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                   relativePath: "jzodObject",
+//                 },
+//               },
+//               definition: {
+//                 type: "array",
+//                 definition: {
+//                   type: "schemaReference",
+//                   definition: {
+//                     absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                     relativePath: "jzodElement",
+//                   },
+//                 },
+//               },
+//             },
+//           },
+//         },
+//         definition: {
+//           absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//           relativePath: "jzodElement",
+//         },
+//       },
+//     },
+//     {
+//       uuid: "a97756cf-dd93-42b9-a021-91a629b187b9",
+//       parentName: "JzodSchema",
+//       parentUuid: "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+//       name: "transformerJzodSchema",
+//       defaultLabel:
+//         "The Jzod Schema for Miroir Transformers: build objects & other values on the fly from a given set of parameters.",
+//       definition: {
+//         type: "schemaReference",
+//         context: {
+//           transformer_inner_label: {
+//             type: "object",
+//             definition: {
+//               label: {
+//                 type: "string",
+//                 optional: true,
+//               },
+//             },
+//           },
+//           transformer_orderBy: {
+//             type: "object",
+//             extend: {
+//               type: "schemaReference",
+//               definition: {
+//                 eager: true,
+//                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                 relativePath: "transformer_inner_label",
+//               },
+//             },
+//             definition: {
+//               orderBy: {
+//                 type: "string",
+//                 optional: true,
+//               },
+//             },
+//           },
+//           transformerForBuild_Abstract: {
+//             type: "object",
+//             extend: {
+//               type: "schemaReference",
+//               definition: {
+//                 eager: true,
+//                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                 relativePath: "transformer_inner_label",
+//               },
+//             },
+//             definition: {
+//               interpolation: {
+//                 type: "literal",
+//                 definition: "build",
+//               },
+//             },
+//           },
+//           transformerForRuntime_Abstract: {
+//             type: "object",
+//             extend: {
+//               type: "schemaReference",
+//               definition: {
+//                 eager: true,
+//                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                 relativePath: "transformer_inner_label",
+//               },
+//             },
+//             definition: {
+//               interpolation: {
+//                 type: "literal",
+//                 definition: "runtime",
+//               },
+//             },
+//           },
+//           transformerForBuild_optional_Abstract: {
+//             type: "object",
+//             extend: {
+//               type: "schemaReference",
+//               definition: {
+//                 eager: true,
+//                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                 relativePath: "transformer_inner_label",
+//               },
+//             },
+//             definition: {
+//               interpolation: {
+//                 type: "literal",
+//                 optional: true,
+//                 definition: "build",
+//               },
+//             },
+//           },
+//           transformerForRuntime_optional_Abstract: {
+//             type: "object",
+//             extend: {
+//               type: "schemaReference",
+//               definition: {
+//                 eager: true,
+//                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                 relativePath: "transformer_inner_label",
+//               },
+//             },
+//             definition: {
+//               interpolation: {
+//                 type: "literal",
+//                 optional: true,
+//                 definition: "runtime",
+//               },
+//             },
+//           },
+//           transformer_inner_referenced_extractor: {
+//             type: "object",
+//             definition: {
+//               referenceType: {
+//                 type: "literal",
+//                 definition: "referencedExtractor",
+//               },
+//               reference: {
+//                 type: "union",
+//                 definition: [
+//                   {
+//                     type: "string",
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "transformer_extractors",
+//                     },
+//                   },
+//                 ],
+//               },
+//             },
+//           },
+//           transformer_extractors: {
+//             type: "schemaReference",
+//             definition: {
+//               relativePath: "transformer_constantListAsExtractor",
+//             },
+//           },
+//           transformer_constantListAsExtractor: {
+//             type: "object",
+//             definition: {
+//               transformerType: {
+//                 type: "literal",
+//                 definition: "constantListAsExtractor",
+//               },
+//               value: {
+//                 type: "array",
+//                 definition: {
+//                   type: "any",
+//                 },
+//               },
+//             },
+//           },
+//           transformer_inner_referenced_transformerForBuild: {
+//             type: "object",
+//             definition: {
+//               referenceType: {
+//                 type: "literal",
+//                 definition: "referencedTransformer",
+//               },
+//               reference: {
+//                 type: "union",
+//                 definition: [
+//                   {
+//                     type: "string",
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "transformerForBuild",
+//                     },
+//                   },
+//                 ],
+//               },
+//             },
+//           },
+//           transformer_inner_referenced_transformerForRuntime: {
+//             type: "object",
+//             definition: {
+//               referenceType: {
+//                 type: "literal",
+//                 definition: "referencedTransformer",
+//               },
+//               reference: {
+//                 type: "union",
+//                 definition: [
+//                   {
+//                     type: "string",
+//                   },
+//                   {
+//                     type: "schemaReference",
+//                     definition: {
+//                       relativePath: "transformerForRuntime",
+//                     },
+//                   },
+//                 ],
+//               },
+//             },
+//           },
+//           transformer_inner_elementTransformer_transformerForBuild: {
+//             type: "union",
+//             definition: [
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForRuntime",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForBuild",
+//                 },
+//               },
+//             ],
+//           },
+//           transformer_inner_elementTransformer_transformerForRuntime: {
+//             type: "schemaReference",
+//             definition: {
+//               relativePath: "transformerForRuntime",
+//             },
+//           },
+//           transformer_contextOrParameterReferenceTO_REMOVE: {
+//             type: "union",
+//             discriminator: "transformerType",
+//             definition: [
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForRuntime_contextReference",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForBuild_parameterReference",
+//                 },
+//               },
+//             ],
+//           },
+//           transformerForRuntime_constants: {
+//             type: "union",
+//             discriminator: "transformerType",
+//             definition: [
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForRuntime_constant",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForRuntime_constantAsExtractor",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForRuntime_constantArray",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForRuntime_constantBigint",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForRuntime_constantBoolean",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForRuntime_constantUuid",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForRuntime_constantObject",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForRuntime_constantNumber",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForRuntime_constantString",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForRuntime_newUuid",
+//                 },
+//               },
+//             ],
+//           },
+//           transformerForBuild_InnerReference: {
+//             type: "union",
+//             discriminator: "transformerType",
+//             definition: [
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForBuild_mustacheStringTemplate",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForBuild_constant",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForBuild_parameterReference",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForBuild_constantUuid",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForBuild_constantObject",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForBuild_constantString",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForBuild_newUuid",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForBuild_objectDynamicAccess",
+//                 },
+//               },
+//             ],
+//           },
+//           transformerForRuntime_InnerReference: {
+//             type: "union",
+//             discriminator: "transformerType",
+//             definition: [
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForRuntime_constant",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForRuntime_constantUuid",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForRuntime_constantObject",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForRuntime_constantString",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForRuntime_newUuid",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForRuntime_contextReference",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForRuntime_objectDynamicAccess",
+//                 },
+//               },
+//             ],
+//           },
+//           transformerForBuild_dataflowSequence: {
+//             type: "object",
+//             extend: [
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   eager: true,
+//                   absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                   relativePath: "transformerForBuild_Abstract",
+//                 },
+//               },
+//             ],
+//             definition: {
+//               transformerType: {
+//                 type: "literal",
+//                 definition: "dataflowSequence",
+//               },
+//               definition: {
+//                 type: "array",
+//                 definition: {
+//                   type: "schemaReference",
+//                   definition: {
+//                     relativePath: "transformerForBuild",
+//                   },
+//                 },
+//               },
+//             },
+//           },
+//           transformerForRuntime_dataflowSequence: {
+//             type: "object",
+//             extend: [
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   eager: true,
+//                   relativePath: "transformerForRuntime_Abstract",
+//                 },
+//               },
+//             ],
+//             definition: {
+//               transformerType: {
+//                 type: "literal",
+//                 definition: "dataflowSequence",
+//               },
+//               definition: {
+//                 type: "array",
+//                 definition: {
+//                   type: "schemaReference",
+//                   definition: {
+//                     relativePath: "transformerForRuntime",
+//                   },
+//                 },
+//               },
+//             },
+//           },
+//           transformerForBuildOrRuntime: {
+//             type: "union",
+//             discriminator: "transformerType",
+//             definition: [
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForBuild",
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   relativePath: "transformerForRuntime",
+//                 },
+//               },
+//             ],
+//           },
+//           recordOfTransformers: {
+//             type: "object",
+//             definition: {
+//               transformerType: {
+//                 type: "literal",
+//                 definition: "recordOfTransformers",
+//               },
+//               definition: {
+//                 type: "record",
+//                 definition: {
+//                   type: "schemaReference",
+//                   definition: {
+//                     absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                     relativePath: "transformer",
+//                   },
+//                 },
+//               },
+//             },
+//           },
+//           transformer: {
+//             type: "union",
+//             definition: [
+//               {
+//                 type: "object",
+//                 definition: {
+//                   transformerType: {
+//                     type: "literal",
+//                     definition: "objectTransformer",
+//                   },
+//                   attributeName: {
+//                     type: "string",
+//                   },
+//                 },
+//               },
+//               {
+//                 type: "schemaReference",
+//                 definition: {
+//                   absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                   relativePath: "recordOfTransformers",
+//                 },
+//               },
+//             ],
+//           },
+//           actionHandler: {
+//             type: "object",
+//             definition: {
+//               interface: {
+//                 type: "object",
+//                 definition: {
+//                   actionJzodObjectSchema: {
+//                     type: "schemaReference",
+//                     definition: {
+//                       absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+//                       relativePath: "jzodObject",
+//                     },
+//                   },
+//                 },
+//               },
+//               implementation: {
+//                 type: "object",
+//                 definition: {
+//                   templates: {
+//                     type: "record",
+//                     optional: true,
+//                     definition: {
+//                       type: "any",
+//                     },
+//                   },
+//                   compositeActionTemplate: {
+//                     type: "schemaReference",
+//                     definition: {
+//                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//                       relativePath: "compositeActionTemplate",
+//                     },
+//                   },
+//                 },
+//               },
+//             },
+//           },
+//         },
+//         definition: {
+//           relativePath: "transformerForBuild",
+//         },
+//       },
+//     },
+//   ],
+//   menus: [
+//     {
+//       uuid: "eaac459c-6c2b-475c-8ae4-c6c3032dae00",
+//       parentName: "Menu",
+//       parentUuid: "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
+//       name: "MiroirMenu",
+//       defaultLabel: "Meta-Model",
+//       description: "This is the default menu allowing to explore the Miroir Meta-Model.",
+//       definition: {
+//         menuType: "complexMenu",
+//         definition: [
+//           {
+//             title: "Miroir",
+//             label: "miroir",
+//             items: [
+//               {
+//                 label: "Miroir Entities",
+//                 section: "model",
+//                 selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+//                 reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9",
+//                 icon: "category",
+//               },
+//               {
+//                 label: "Miroir Entity Definitions",
+//                 section: "model",
+//                 selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+//                 reportUuid: "f9aff35d-8636-4519-8361-c7648e0ddc68",
+//                 icon: "category",
+//               },
+//               {
+//                 label: "Miroir Reports",
+//                 section: "data",
+//                 selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+//                 reportUuid: "1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855",
+//                 icon: "list",
+//               },
+//               {
+//                 label: "Miroir Menus",
+//                 section: "data",
+//                 selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+//                 reportUuid: "ecfd8787-09cc-417d-8d2c-173633c9f998",
+//                 icon: "list",
+//               },
+//               {
+//                 label: "Miroir Endpoints",
+//                 section: "data",
+//                 selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+//                 reportUuid: "ace3d5c9-b6a7-43e6-a277-595329e7532a",
+//                 icon: "list",
+//               },
+//               {
+//                 label: "Miroir Tests",
+//                 section: "data",
+//                 selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+//                 reportUuid: "683ba925-835e-4f9d-845b-7fae500316ad",
+//                 icon: "list",
+//               },
+//             ],
+//           },
+//         ],
+//       },
+//     },
+//   ],
+//   reports: [
+//     {
+//       uuid: "074d1de9-594d-42d6-8848-467baeb6f3e0",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       parentName: "Report",
+//       parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+//       conceptLevel: "Model",
+//       name: "EntityDetails",
+//       defaultLabel: "Detailed information about an Entity",
+//       definition: {
+//         extractorTemplates: {
+//           entity: {
+//             extractorTemplateType: "extractorForObjectByDirectReference",
+//             applicationSection: "model",
+//             parentName: "Entity",
+//             parentUuid: {
+//               transformerType: "constantUuid",
+//               value: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+//             },
+//             instanceUuid: {
+//               transformerType: "parameterReference",
+//               referenceName: "instanceUuid",
+//             },
+//           },
+//         },
+//         section: {
+//           type: "list",
+//           definition: [
+//             {
+//               type: "objectInstanceReportSection",
+//               definition: {
+//                 label: "My Entity",
+//                 parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+//                 fetchedDataReference: "entity",
+//               },
+//             },
+//           ],
+//         },
+//       },
+//     },
+//     {
+//       uuid: "0810de28-fdab-4baf-8935-7e04a8f779a9",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       parentName: "Report",
+//       parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+//       name: "ApplicationVersionList",
+//       defaultLabel: "SelfApplication Versions",
+//       type: "list",
+//       definition: {
+//         reportParameters: {},
+//         extractorTemplates: {
+//           applicationVersions: {
+//             extractorTemplateType: "extractorTemplateForObjectListByEntity",
+//             parentName: "ApplicationVersion",
+//             parentUuid: {
+//               transformerType: "constantUuid",
+//               value: "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+//             },
+//           },
+//         },
+//         section: {
+//           type: "objectListReportSection",
+//           definition: {
+//             label: "SelfApplication Versions",
+//             parentName: "ApplicationVersion",
+//             parentUuid: "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+//             fetchedDataReference: "applicationVersions",
+//             sortByAttribute: "name",
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "0e4cf674-3a26-422a-8618-09e32302ac0c",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       parentName: "Report",
+//       parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+//       name: "ApplicationList",
+//       defaultLabel: "Applications",
+//       definition: {
+//         reportParameters: {},
+//         extractorTemplates: {
+//           applications: {
+//             extractorTemplateType: "extractorTemplateForObjectListByEntity",
+//             parentUuid: {
+//               transformerType: "constantUuid",
+//               value: "a659d350-dd97-4da9-91de-524fa01745dc",
+//             },
+//           },
+//         },
+//         section: {
+//           type: "objectListReportSection",
+//           definition: {
+//             label: "Applications",
+//             parentName: "SelfApplication",
+//             parentUuid: "a659d350-dd97-4da9-91de-524fa01745dc",
+//             fetchedDataReference: "applications",
+//             sortByAttribute: "name",
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       parentName: "Report",
+//       parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+//       name: "ReportList",
+//       defaultLabel: "Reports",
+//       type: "list",
+//       definition: {
+//         reportParameters: {},
+//         extractorTemplates: {
+//           reports: {
+//             extractorTemplateType: "extractorTemplateForObjectListByEntity",
+//             parentName: "Report",
+//             parentUuid: {
+//               transformerType: "constantUuid",
+//               value: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+//             },
+//           },
+//         },
+//         section: {
+//           type: "objectListReportSection",
+//           definition: {
+//             label: "Reports",
+//             parentName: "Report",
+//             parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+//             fetchedDataReference: "reports",
+//             sortByAttribute: "name",
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "43f04807-8f96-43f9-876f-9a0210f7b99c",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       parentName: "Report",
+//       parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+//       name: "StoreBasedConfigurationList",
+//       defaultLabel: "Store-based Configurations",
+//       definition: {
+//         reportParameters: {},
+//         extractorTemplates: {
+//           storeBasedConfigurations: {
+//             extractorTemplateType: "extractorTemplateForObjectListByEntity",
+//             parentName: "StoreBasedConfiguration",
+//             parentUuid: {
+//               transformerType: "constantUuid",
+//               value: "7990c0c9-86c3-40a1-a121-036c91b55ed7",
+//             },
+//           },
+//         },
+//         section: {
+//           type: "objectListReportSection",
+//           definition: {
+//             label: "Store-based Configurations",
+//             parentName: "StoreBasedConfiguration",
+//             parentUuid: "7990c0c9-86c3-40a1-a121-036c91b55ed7",
+//             fetchedDataReference: "storeBasedConfigurations",
+//             sortByAttribute: "name",
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "60648b22-e2c6-4b74-8031-53884f597d63",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       parentName: "Report",
+//       parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+//       name: "ApplicationModelBranchList",
+//       defaultLabel: "SelfApplication Model Branches",
+//       definition: {
+//         reportParameters: {},
+//         extractorTemplates: {
+//           applicationModelBranches: {
+//             extractorTemplateType: "extractorTemplateForObjectListByEntity",
+//             parentName: "ApplicationModelBranch",
+//             parentUuid: {
+//               transformerType: "constantUuid",
+//               value: "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
+//             },
+//           },
+//         },
+//         section: {
+//           type: "objectListReportSection",
+//           definition: {
+//             label: "SelfApplication Model Branches",
+//             parentName: "ApplicationModelBranch",
+//             parentUuid: "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
+//             fetchedDataReference: "applicationModelBranches",
+//             sortByAttribute: "name",
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "683ba925-835e-4f9d-845b-7fae500316ad",
+//       selfApplication: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+//       parentName: "Report",
+//       parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+//       conceptLevel: "Model",
+//       name: "TestList",
+//       defaultLabel: "List of Tests",
+//       type: "list",
+//       definition: {
+//         extractors: {
+//           instanceList: {
+//             extractorOrCombinerType: "extractorByEntityReturningObjectList",
+//             parentName: "Test",
+//             parentUuid: "c37625c7-0b35-4d6a-811d-8181eb978301",
+//           },
+//         },
+//         section: {
+//           type: "objectListReportSection",
+//           definition: {
+//             label: "Tests",
+//             parentUuid: "c37625c7-0b35-4d6a-811d-8181eb978301",
+//             fetchedDataReference: "instanceList",
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "7947ae40-eb34-4149-887b-15a9021e714e",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       parentName: "Report",
+//       parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+//       name: "CommitList",
+//       defaultLabel: "Commits",
+//       type: "list",
+//       definition: {
+//         reportParameters: {},
+//         extractorTemplates: {
+//           commits: {
+//             extractorTemplateType: "extractorTemplateForObjectListByEntity",
+//             parentName: "Commit",
+//             parentUuid: {
+//               transformerType: "constantUuid",
+//               value: "73bb0c69-e636-4e3b-a230-51f25469c089",
+//             },
+//           },
+//         },
+//         section: {
+//           type: "objectListReportSection",
+//           definition: {
+//             label: "Commits",
+//             parentName: "Entity",
+//             parentUuid: "73bb0c69-e636-4e3b-a230-51f25469c089",
+//             fetchedDataReference: "commits",
+//             sortByAttribute: "name",
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "7aed09a9-8a2d-4437-95ab-62966e38352c",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       parentName: "Report",
+//       parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+//       name: "QueryList",
+//       defaultLabel: "Queries",
+//       definition: {
+//         reportParameters: {},
+//         extractorTemplates: {
+//           queries: {
+//             extractorTemplateType: "extractorTemplateForObjectListByEntity",
+//             parentName: "Query",
+//             parentUuid: {
+//               transformerType: "constantUuid",
+//               value: "e4320b9e-ab45-4abe-85d8-359604b3c62f",
+//             },
+//           },
+//         },
+//         section: {
+//           type: "objectListReportSection",
+//           definition: {
+//             label: "Queries",
+//             parentName: "Query",
+//             parentUuid: "e4320b9e-ab45-4abe-85d8-359604b3c62f",
+//             fetchedDataReference: "queries",
+//             sortByAttribute: "name",
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "8b22e84e-9374-4121-b2a7-d13d947a0ba2",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       parentName: "Report",
+//       parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+//       name: "JzodSchemaList",
+//       defaultLabel: "Jzod Schemas",
+//       definition: {
+//         reportParameters: {},
+//         extractorTemplates: {
+//           jzodSchemas: {
+//             extractorTemplateType: "extractorTemplateForObjectListByEntity",
+//             parentName: "JzodSchema",
+//             parentUuid: {
+//               transformerType: "constantUuid",
+//               value: "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+//             },
+//           },
+//         },
+//         section: {
+//           type: "objectListReportSection",
+//           definition: {
+//             label: "Jzod Schemas",
+//             parentName: "JzodSchema",
+//             parentUuid: "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+//             fetchedDataReference: "jzodSchemas",
+//             sortByAttribute: "name",
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "acd55b04-84df-427e-b219-cf0e01a6881b",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       parentName: "Report",
+//       parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+//       conceptLevel: "Model",
+//       name: "EntityDefinitionDetails",
+//       defaultLabel: "Detailed information about an Entity Definition",
+//       definition: {
+//         extractorTemplates: {
+//           entityDefinition: {
+//             extractorTemplateType: "extractorForObjectByDirectReference",
+//             applicationSection: "model",
+//             parentName: "EntityDefinition",
+//             parentUuid: {
+//               transformerType: "constantUuid",
+//               value: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+//             },
+//             instanceUuid: {
+//               transformerType: "parameterReference",
+//               referenceName: "instanceUuid",
+//             },
+//           },
+//         },
+//         section: {
+//           type: "list",
+//           definition: [
+//             {
+//               type: "objectInstanceReportSection",
+//               definition: {
+//                 label: "My Entity",
+//                 parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+//                 fetchedDataReference: "entityDefinition",
+//               },
+//             },
+//           ],
+//         },
+//       },
+//     },
+//     {
+//       uuid: "ace3d5c9-b6a7-43e6-a277-595329e7532a",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       parentName: "Report",
+//       parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+//       name: "EndpointList",
+//       defaultLabel: "Endpoints",
+//       definition: {
+//         reportParameters: {},
+//         extractorTemplates: {
+//           endpoints: {
+//             extractorTemplateType: "extractorTemplateForObjectListByEntity",
+//             parentName: "Endpoint",
+//             parentUuid: {
+//               transformerType: "constantUuid",
+//               value: "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
+//             },
+//           },
+//         },
+//         section: {
+//           type: "objectListReportSection",
+//           definition: {
+//             label: "Endpoints",
+//             parentName: "Endpoint",
+//             parentUuid: "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
+//             fetchedDataReference: "endpoints",
+//             sortByAttribute: "name",
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       parentName: "Report",
+//       parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+//       name: "EntityList",
+//       defaultLabel: "Entities",
+//       type: "list",
+//       definition: {
+//         reportParameters: {},
+//         extractorTemplates: {
+//           entities: {
+//             extractorTemplateType: "extractorTemplateForObjectListByEntity",
+//             applicationSection: "model",
+//             parentName: "Entity",
+//             parentUuid: {
+//               transformerType: "constantUuid",
+//               value: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+//             },
+//           },
+//         },
+//         section: {
+//           type: "objectListReportSection",
+//           definition: {
+//             label: "Entities",
+//             parentName: "Entity",
+//             parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+//             fetchedDataReference: "entities",
+//             sortByAttribute: "name",
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "d65d8dc8-2a7f-4111-81b1-0324e816c1a8",
+//       selfApplication: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+//       parentName: "Report",
+//       parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+//       conceptLevel: "Model",
+//       name: "TestDetails",
+//       defaultLabel: "Details of Test",
+//       definition: {
+//         extractorTemplates: {
+//           elementToDisplay: {
+//             extractorTemplateType: "extractorForObjectByDirectReference",
+//             parentName: "Test",
+//             parentUuid: {
+//               transformerType: "constantString",
+//               value: "c37625c7-0b35-4d6a-811d-8181eb978301",
+//             },
+//             instanceUuid: {
+//               transformerType: "parameterReference",
+//               referenceName: "instanceUuid",
+//             },
+//           },
+//         },
+//         section: {
+//           type: "list",
+//           definition: [
+//             {
+//               type: "objectInstanceReportSection",
+//               definition: {
+//                 label: "My Test",
+//                 parentUuid: "c37625c7-0b35-4d6a-811d-8181eb978301",
+//                 fetchedDataReference: "elementToDisplay",
+//               },
+//             },
+//           ],
+//         },
+//       },
+//     },
+//     {
+//       uuid: "df0a9a8f-e0f6-4f9f-8635-c8460e638e1b",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       parentName: "Report",
+//       parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+//       name: "ApplicationDeploymentList",
+//       defaultLabel: "SelfApplication Deployments",
+//       definition: {
+//         reportParameters: {},
+//         extractorTemplates: {
+//           ApplicationDeployments: {
+//             extractorTemplateType: "extractorTemplateForObjectListByEntity",
+//             parentName: "Deployment",
+//             parentUuid: {
+//               transformerType: "constantUuid",
+//               interpolation: "build",
+//               value: "35c5608a-7678-4f07-a4ec-76fc5bc35424",
+//             },
+//           },
+//         },
+//         section: {
+//           type: "objectListReportSection",
+//           definition: {
+//             label: "SelfApplication Deployments",
+//             parentName: "Deployment",
+//             parentUuid: "35c5608a-7678-4f07-a4ec-76fc5bc35424",
+//             fetchedDataReference: "ApplicationDeployments",
+//             sortByAttribute: "name",
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "ecfd8787-09cc-417d-8d2c-173633c9f998",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       parentName: "Report",
+//       parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+//       name: "MenuList",
+//       defaultLabel: "Menus",
+//       definition: {
+//         reportParameters: {},
+//         extractorTemplates: {
+//           menus: {
+//             extractorTemplateType: "extractorTemplateForObjectListByEntity",
+//             parentName: "Menu",
+//             parentUuid: {
+//               transformerType: "constantUuid",
+//               value: "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
+//             },
+//           },
+//         },
+//         section: {
+//           type: "objectListReportSection",
+//           definition: {
+//             label: "Menus",
+//             parentName: "SelfApplication",
+//             parentUuid: "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
+//             fetchedDataReference: "menus",
+//             sortByAttribute: "name",
+//           },
+//         },
+//       },
+//     },
+//     {
+//       uuid: "ef57aada-6b77-4384-8007-12f13eddd337",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       parentName: "Report",
+//       parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+//       conceptLevel: "Model",
+//       name: "ReportDetails",
+//       defaultLabel: "Detailed information about a Report",
+//       definition: {
+//         extractorTemplates: {
+//           report: {
+//             extractorTemplateType: "extractorForObjectByDirectReference",
+//             applicationSection: "model",
+//             parentName: "Report",
+//             parentUuid: {
+//               transformerType: "constantUuid",
+//               value: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+//             },
+//             instanceUuid: {
+//               transformerType: "parameterReference",
+//               referenceName: "instanceUuid",
+//             },
+//           },
+//         },
+//         section: {
+//           type: "list",
+//           definition: [
+//             {
+//               type: "objectInstanceReportSection",
+//               definition: {
+//                 label: "My Report",
+//                 parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+//                 fetchedDataReference: "report",
+//               },
+//             },
+//           ],
+//         },
+//       },
+//     },
+//     {
+//       uuid: "f9aff35d-8636-4519-8361-c7648e0ddc68",
+//       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+//       parentName: "Report",
+//       parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+//       name: "EntityDefinitionList",
+//       defaultLabel: "Entity Definitions",
+//       definition: {
+//         reportParameters: {},
+//         extractorTemplates: {
+//           entityDefinitions: {
+//             extractorTemplateType: "extractorTemplateForObjectListByEntity",
+//             applicationSection: "model",
+//             parentName: "Entity Definition",
+//             parentUuid: {
+//               transformerType: "constantUuid",
+//               value: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+//             },
+//           },
+//         },
+//         section: {
+//           type: "objectListReportSection",
+//           definition: {
+//             label: "Entity Definitions",
+//             parentName: "Entity Definition",
+//             parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+//             fetchedDataReference: "entityDefinitions",
+//             sortByAttribute: "name",
+//           },
+//         },
+//       },
+//     },
+//   ],
+// } as any;

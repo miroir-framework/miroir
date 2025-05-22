@@ -13,7 +13,8 @@ import {
   entityMenu,
   entityReport,
   getBasicApplicationConfiguration,
-  getBasicStoreUnitConfiguration
+  getBasicStoreUnitConfiguration,
+  test_createEntityAndReportFromSpreadsheetAndUpdateMenu,
 } from "miroir-core";
 import {
   BuildCompositeAction,
@@ -28,7 +29,7 @@ import {
 } from "./tests-utils";
 import { testOnLibrary_deleteLibraryDeployment, testOnLibrary_resetLibraryDeployment } from "./tests-utils-testOnLibrary";
 
-import test_createEntityAndReportFromSpreadsheetAndUpdateMenu from "./ffe6ab3c-8296-4293-8aaf-ebbad1f0ac9a.json";
+// import test_createEntityAndReportFromSpreadsheetAndUpdateMenu from "./ffe6ab3c-8296-4293-8aaf-ebbad1f0ac9a.json";
 
 // const libraryEntitesAndInstances = [
 //   {

@@ -109,6 +109,8 @@ import entityDefinitionDeployment from "../../src/assets/admin_model/54b9c72f-d4
 import transformerMenuV1 from "../../src/assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/685440be-7f3f-4774-b90d-bafa82d6832b.json";
 
 import { getMiroirFundamentalJzodSchema, miroirFundamentalJzodSchemaUuid } from "../../src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema";
+import { miroirFundamentalJzodSchema } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
+
 export const defaultMiroirMetaModel: MetaModel = {
   // configuration: [instanceConfigurationReference],
   entities: [
@@ -211,44 +213,43 @@ interface testFormat {
 describe("jzod.unfoldSchemaForValue", () => {
   // ###########################################################################################
   it("miroir entity definition object format", () => {
-    // const miroirFundamentalJzodSchema: JzodSchema = getMiroirFundamentalJzodSchema(
-    const miroirFundamentalJzodSchema: any = getMiroirFundamentalJzodSchema(
-      entityDefinitionBundleV1 as EntityDefinition,
-      entityDefinitionCommit as EntityDefinition,
-      modelEndpointV1,
-      storeManagementEndpoint,
-      instanceEndpointVersionV1,
-      undoRedoEndpointVersionV1,
-      localCacheEndpointVersionV1,
-      domainEndpointVersionV1,
-      queryEndpointVersionV1,
-      persistenceEndpointVersionV1,
-      testEndpointVersionV1,
-      jzodSchemajzodMiroirBootstrapSchema as JzodSchema,
-      transformerJzodSchema as JzodSchema,
-      [transformerMenuV1],
-      entityDefinitionAdminApplication as EntityDefinition,
-      entityDefinitionSelfApplication as EntityDefinition,
-      entityDefinitionSelfApplicationVersion as EntityDefinition,
-      entityDefinitionDeployment as EntityDefinition,
-      entityDefinitionEntity as EntityDefinition,
-      entityDefinitionEntityDefinition as EntityDefinition,
-      entityDefinitionJzodSchema as EntityDefinition,
-      entityDefinitionMenu as EntityDefinition,
-      entityDefinitionQueryVersionV1 as EntityDefinition,
-      entityDefinitionReport as EntityDefinition,
-      entityDefinitionSelfApplicationDeploymentConfiguration as EntityDefinition,
-      entityDefinitionTest as EntityDefinition,
-      entityDefinitionTransformerDefinition as EntityDefinition,
-      entityDefinitionEndpoint as EntityDefinition,
-      // jzodSchemajzodMiroirBootstrapSchema as any,
-    );
+    // const miroirFundamentalJzodSchema: any = getMiroirFundamentalJzodSchema(
+    //   entityDefinitionBundleV1 as EntityDefinition,
+    //   entityDefinitionCommit as EntityDefinition,
+    //   modelEndpointV1,
+    //   storeManagementEndpoint,
+    //   instanceEndpointVersionV1,
+    //   undoRedoEndpointVersionV1,
+    //   localCacheEndpointVersionV1,
+    //   domainEndpointVersionV1,
+    //   queryEndpointVersionV1,
+    //   persistenceEndpointVersionV1,
+    //   testEndpointVersionV1,
+    //   jzodSchemajzodMiroirBootstrapSchema as JzodSchema,
+    //   transformerJzodSchema as JzodSchema,
+    //   [transformerMenuV1],
+    //   entityDefinitionAdminApplication as EntityDefinition,
+    //   entityDefinitionSelfApplication as EntityDefinition,
+    //   entityDefinitionSelfApplicationVersion as EntityDefinition,
+    //   entityDefinitionDeployment as EntityDefinition,
+    //   entityDefinitionEntity as EntityDefinition,
+    //   entityDefinitionEntityDefinition as EntityDefinition,
+    //   entityDefinitionJzodSchema as EntityDefinition,
+    //   entityDefinitionMenu as EntityDefinition,
+    //   entityDefinitionQueryVersionV1 as EntityDefinition,
+    //   entityDefinitionReport as EntityDefinition,
+    //   entityDefinitionSelfApplicationDeploymentConfiguration as EntityDefinition,
+    //   entityDefinitionTest as EntityDefinition,
+    //   entityDefinitionTransformerDefinition as EntityDefinition,
+    //   entityDefinitionEndpoint as EntityDefinition,
+    //   // jzodSchemajzodMiroirBootstrapSchema as any,
+    // );
     console.log(expect.getState().currentTestName, "called getMiroirFundamentalJzodSchema");
-
+    const castMiroirFundamentalJzodSchema = miroirFundamentalJzodSchema as JzodSchema;
     const tests: { [k: string]: testFormat } = {
       // plain literal!
       test010: {
-        miroirFundamentalJzodSchema,
+        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
         testSchema: {
           type: "literal",
           definition: "myLiteral",
@@ -261,7 +262,7 @@ describe("jzod.unfoldSchemaForValue", () => {
       },
       // simpleType
       test020: {
-        miroirFundamentalJzodSchema,
+        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
         testSchema: {
           type: "string",
         },
@@ -272,7 +273,7 @@ describe("jzod.unfoldSchemaForValue", () => {
       },
       // schemaReference (plain, simpleType, non-recursive)
       test030: {
-        miroirFundamentalJzodSchema,
+        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
         testSchema: {
           type: "schemaReference",
           context: {
@@ -291,7 +292,7 @@ describe("jzod.unfoldSchemaForValue", () => {
       },
       // schemaReference: object, recursive, 1-level valueObject
       test040: {
-        miroirFundamentalJzodSchema,
+        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
         testSchema: {
           type: "schemaReference",
           context: {
@@ -327,7 +328,7 @@ describe("jzod.unfoldSchemaForValue", () => {
       },
       // schemaReference: object, recursive, 2-level valueObject
       test050: {
-        miroirFundamentalJzodSchema,
+        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
         testSchema: {
           type: "schemaReference",
           context: {
@@ -369,7 +370,7 @@ describe("jzod.unfoldSchemaForValue", () => {
       },
       // schemaReference: object, recursive, 3-level valueObject
       test060: {
-        miroirFundamentalJzodSchema,
+        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
         testSchema: {
           type: "schemaReference",
           context: {
@@ -415,7 +416,7 @@ describe("jzod.unfoldSchemaForValue", () => {
       },
       // schemaReference: record of recursive object, with 2-level valueObject
       test070: {
-        miroirFundamentalJzodSchema,
+        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
         testSchema: {
           type: "schemaReference",
           context: {
@@ -476,7 +477,7 @@ describe("jzod.unfoldSchemaForValue", () => {
       },
       // result must be identical to test70, but this time the schemaReference is places inside the record, not the other way around
       test080: {
-        miroirFundamentalJzodSchema,
+        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
         testSchema: {
           type: "record",
           definition: {
@@ -533,7 +534,7 @@ describe("jzod.unfoldSchemaForValue", () => {
       },
       // array of simpleType
       test090: {
-        miroirFundamentalJzodSchema,
+        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
         testSchema: {
           type: "array",
           definition: {
@@ -550,7 +551,7 @@ describe("jzod.unfoldSchemaForValue", () => {
       },
       // array of schemaReference / object
       test100: {
-        miroirFundamentalJzodSchema,
+        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
         testSchema: {
           type: "array",
           definition: {
@@ -616,7 +617,7 @@ describe("jzod.unfoldSchemaForValue", () => {
       // TODO: array of union Type
       // array of schemaReference / object
       test120: {
-        miroirFundamentalJzodSchema,
+        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
         testSchema: {
           type: "schemaReference",
           context: {
@@ -660,7 +661,7 @@ describe("jzod.unfoldSchemaForValue", () => {
       },
       // JzodSchema: literal
       test500: {
-        miroirFundamentalJzodSchema,
+        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
         testSchema: {
           type: "schemaReference",
           definition: {
@@ -684,7 +685,7 @@ describe("jzod.unfoldSchemaForValue", () => {
       },
       // JzodSchema: string
       test510: {
-        miroirFundamentalJzodSchema,
+        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
         testSchema: {
           type: "schemaReference",
           definition: {
@@ -705,7 +706,7 @@ describe("jzod.unfoldSchemaForValue", () => {
       },
       // JzodSchema: object, simpleType attributes
       test520: {
-        miroirFundamentalJzodSchema,
+        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
         testSchema: {
           type: "schemaReference",
           definition: {
@@ -740,7 +741,7 @@ describe("jzod.unfoldSchemaForValue", () => {
       },
       // JzodSchema: schema reference with simple attribute
       test530: {
-        miroirFundamentalJzodSchema,
+        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
         testSchema: {
           type: "schemaReference",
           definition: {
@@ -777,7 +778,7 @@ describe("jzod.unfoldSchemaForValue", () => {
       },
       // JzodSchema: schema reference for object with extend clause
       test540: {
-        miroirFundamentalJzodSchema,
+        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
         testSchema: {
           type: "schemaReference",
           definition: {
@@ -832,7 +833,7 @@ describe("jzod.unfoldSchemaForValue", () => {
       //
       // based on "real" cases
       test900: {
-        miroirFundamentalJzodSchema,
+        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
         testSchema: {
           type: "object",
           definition: {
@@ -1024,7 +1025,7 @@ describe("jzod.unfoldSchemaForValue", () => {
       },
       // based on "real" cases
       test910: {
-        miroirFundamentalJzodSchema,
+        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
         testSchema: {
           type: "schemaReference",
           context: {
@@ -1347,7 +1348,7 @@ describe("jzod.unfoldSchemaForValue", () => {
       },
       // based on "real" cases
       test920: {
-        miroirFundamentalJzodSchema,
+        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
         testSchema: {
           type: "schemaReference",
           context: {

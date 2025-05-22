@@ -9,6 +9,7 @@ import {
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
+  ResolvedJzodSchemaReturnType,
   Uuid,
   adminConfigurationDeploymentMiroir,
   resolveReferencesForJzodSchemaAndValueObject
@@ -85,22 +86,44 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
 
   log.info("ReportSectionEntityInstance instance", instance);
   log.info("ReportSectionEntityInstance entityJzodSchema", entityJzodSchemaDefinition);
+  log.info("ReportSectionEntityInstance miroirFundamentalJzodSchema", context.miroirFundamentalJzodSchema);
+  log.info("ReportSectionEntityInstance currentReportTargetEntityDefinition", currentReportTargetEntityDefinition);
+  log.info("ReportSectionEntityInstance currentModel", currentModel);
+  log.info("ReportSectionEntityInstance currentMiroirModel", currentMiroirModel);
 
-  const resolvedJzodSchema = useMemo(
-    () => context.miroirFundamentalJzodSchema &&
-    currentReportTargetEntityDefinition?.jzodSchema &&
-    instance &&
-    currentModel ?
-    resolveReferencesForJzodSchemaAndValueObject(
-      context.miroirFundamentalJzodSchema,
-      currentReportTargetEntityDefinition?.jzodSchema,
-      instance,
-      currentModel,
-      currentMiroirModel,
-      {}
-    ): undefined,
-    [props]
-  )
+  const resolvedJzodSchema: ResolvedJzodSchemaReturnType | undefined = useMemo(() => {
+    let result: ResolvedJzodSchemaReturnType | undefined = undefined;
+    try {
+      result = context.miroirFundamentalJzodSchema &&
+      currentReportTargetEntityDefinition?.jzodSchema &&
+      instance &&
+      currentModel
+        ? resolveReferencesForJzodSchemaAndValueObject(
+            context.miroirFundamentalJzodSchema,
+            currentReportTargetEntityDefinition?.jzodSchema,
+            instance,
+            currentModel,
+            currentMiroirModel,
+            {}
+          )
+        : undefined;
+    } catch (e) {
+      log.error(
+        "ReportSectionEntityInstance useMemo error",
+        // JSON.stringify(e, Object.getOwnPropertyNames(e)),
+        e,
+        "props",
+        props,
+        "context",
+        context
+      );
+      result = {
+        status: "error",
+        error: JSON.stringify(e, Object.getOwnPropertyNames(e)),
+      }
+    };
+    return result;
+  }, [props, currentReportTargetEntityDefinition, instance, context]);
 
   if (instance) {
     return (
@@ -116,7 +139,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
           && currentEnumJzodSchemaResolver
           && currentReportTargetEntityDefinition 
           && context.applicationSection
-          && resolvedJzodSchema?.status == "ok"? (
+          && resolvedJzodSchema
+          && (resolvedJzodSchema as any)?.status == "ok"? (
           <div>
             <JzodElementDisplay
               path={instance?.name}
@@ -128,7 +152,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
               element={instance}
               // rootJzodSchema={currentReportTargetEntityDefinition?.jzodSchema}
               elementJzodSchema={currentReportTargetEntityDefinition?.jzodSchema}
-              resolvedElementJzodSchema={resolvedJzodSchema.element}
+              resolvedElementJzodSchema={(resolvedJzodSchema as any)?.element}
               currentReportDeploymentSectionEntities={currentReportDeploymentSectionEntities}
               currentEnumJzodSchemaResolver={currentEnumJzodSchemaResolver}
             ></JzodElementDisplay>
@@ -140,10 +164,15 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
             <div>props selfApplication section: {props.applicationSection}</div>
             <div>context selfApplication section: {context.applicationSection}</div>
             <div>target entity: {currentReportTargetEntity?.name ?? "report target entity not found!"}</div>
-            <div>resolved entity: {JSON.stringify(resolvedJzodSchema)}</div>
-            <div>
+            <div>resolved schema: {JSON.stringify(resolvedJzodSchema)}</div>
+            <div style={{ whiteSpace: 'pre-line' }}>
               target entity definition:{" "}
               {currentReportTargetEntityDefinition?.name ?? "report target entity definition not found!"}
+            </div>
+            <div> ######################################## </div>
+            <div style={{ whiteSpace: 'pre-line' }}>
+              entity jzod schema:{" "}
+              {JSON.stringify(instance?.jzodSchema)}
             </div>
           </div>
         )}

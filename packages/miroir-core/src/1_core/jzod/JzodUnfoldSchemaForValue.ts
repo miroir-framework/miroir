@@ -34,6 +34,7 @@ export interface ResolvedJzodSchemaReturnTypeError {
 }
 export type ResolvedJzodSchemaReturnType = ResolvedJzodSchemaReturnTypeError | ResolvedJzodSchemaReturnTypeOK;
 
+// ################################################################################################
 export function resolveObjectExtendClauseAndDefinition(
   jzodObject: JzodObject,
   miroirFundamentalJzodSchema: JzodSchema,
@@ -75,7 +76,7 @@ export function resolveObjectExtendClauseAndDefinition(
         }
       } else {
         throw new Error(
-          "resolveReferencesForJzodSchemaAndValueObject object extend clause schema " +
+          "resolveObjectExtendClauseAndDefinition object extend clause schema " +
             JSON.stringify(jzodObject) +
             " is not an object " +
             JSON.stringify(extension)
@@ -96,6 +97,138 @@ export function resolveObjectExtendClauseAndDefinition(
   // }
 }
 
+// ################################################################################################
+export const recursivelyUnfoldUnionAndReferences = (
+  jzodUnion: JzodUnion,
+  expandedReferences: Set<string>,
+  miroirFundamentalJzodSchema: JzodSchema,
+  currentModel: MetaModel,
+  miroirMetaModel: MetaModel,
+  relativeReferenceJzodContext: { [k: string]: JzodElement }
+): ({
+  result: JzodElement[],
+  expandedReferences: Set<string>,
+}) => {
+  // TODO: handle case when resolved reference is itself a reference
+  // TODO: handle case when resolved reference is itself union with references (is that done?)
+
+  let result: JzodElement[] = jzodUnion.definition
+  .filter((a: JzodElement) => a.type != "schemaReference" && a.type != "union");
+
+  const referencesToBeExplored: JzodReference[] = jzodUnion.definition
+  .filter((a: JzodElement) => a.type == "schemaReference")
+  .filter((a => !expandedReferences.has(a.definition.relativePath as any)))
+  ;
+  const resolvedReferences: JzodElement[] = referencesToBeExplored.map((a: JzodReference) =>
+    resolveJzodSchemaReferenceInContext(
+      miroirFundamentalJzodSchema,
+      a,
+      currentModel,
+      miroirMetaModel,
+      { ...relativeReferenceJzodContext, ...a.context }
+    )
+  );
+
+  const newExpandedReferences = new Set(referencesToBeExplored.map((a: JzodReference) => a.definition.relativePath as string));
+
+  const unionsToBeExplored: JzodUnion[] = [
+    ...jzodUnion.definition.filter((a: JzodElement) => a.type == "union") as JzodUnion[],
+    ...resolvedReferences.filter((a: JzodElement) => a.type == "union") as JzodUnion[]];
+
+  log.info(
+    "recursivelyUnfoldUnionAndReferences called for union",
+    jzodUnion,
+    "found references to be explored",
+    referencesToBeExplored,
+    "resolvedReferences",
+    resolvedReferences,
+    "unionsToBeExplored",
+    unionsToBeExplored,
+  );
+  for (const r of unionsToBeExplored) {
+    const {result: subResult, expandedReferences: subExpandedReferences} = recursivelyUnfoldUnionAndReferences(
+      r as JzodUnion,
+      newExpandedReferences,
+      miroirFundamentalJzodSchema,
+      currentModel,
+      miroirMetaModel,
+      relativeReferenceJzodContext
+    );
+    for (const s of subResult) {
+      result.push(s);
+    }
+    subExpandedReferences.forEach(ref => newExpandedReferences.add(ref));
+  }
+  for (const r of resolvedReferences.filter((a: JzodElement) => a.type != "union") as JzodElement[]) {
+    result.push(r);
+  }
+  return {
+    result,
+    expandedReferences: newExpandedReferences,
+  }
+}
+
+// ################################################################################################
+export const unionChoices = (
+  concreteUnrolledJzodSchemas: JzodElement[],
+  miroirFundamentalJzodSchema: JzodSchema,
+  currentModel: MetaModel,
+  miroirMetaModel: MetaModel,
+  relativeReferenceJzodContext: { [k: string]: JzodElement }
+) =>
+  concreteUnrolledJzodSchemas
+    .filter((j) => j.type == "object")
+    .concat(
+      (
+        concreteUnrolledJzodSchemas.filter(
+          (j: JzodElement): boolean => j.type == "union"
+        ) as JzodUnion[]
+      ).flatMap(
+        (j: JzodUnion): JzodObject[] =>
+          (j.definition.filter((k: JzodElement) => k.type == "object") as JzodObject[]).map(
+            (k: JzodObject): JzodObject =>
+              resolveObjectExtendClauseAndDefinition(
+                k,
+                miroirFundamentalJzodSchema,
+                currentModel,
+                miroirMetaModel,
+                relativeReferenceJzodContext
+              )
+          ) as JzodObject[]
+      ),
+      (
+        concreteUnrolledJzodSchemas.filter((j: JzodElement) => j.type == "union") as JzodUnion[]
+      ).flatMap(
+        (j: JzodUnion) =>
+          (
+            (
+              j.definition.filter(
+                (k: JzodElement) => k.type == "schemaReference"
+              ) as JzodReference[]
+            )
+              .map((k: JzodReference) =>
+                resolveJzodSchemaReferenceInContext(
+                  miroirFundamentalJzodSchema,
+                  k,
+                  currentModel,
+                  miroirMetaModel,
+                  { ...relativeReferenceJzodContext, ...k.context }
+                )
+              )
+              .filter((j) => j.type == "object") as JzodObject[]
+          ).map(
+            (k: JzodObject): JzodObject =>
+              resolveObjectExtendClauseAndDefinition(
+                k,
+                miroirFundamentalJzodSchema,
+                currentModel,
+                miroirMetaModel,
+                relativeReferenceJzodContext
+              )
+          ) as JzodObject[]
+      )
+    );
+;
 
 // #####################################################################################################
 // #####################################################################################################
@@ -112,9 +245,11 @@ export function resolveReferencesForJzodSchemaAndValueObject(
 ): ResolvedJzodSchemaReturnType {
   log.info(
     "resolveReferencesForJzodSchemaAndValueObject called for valueObject",
-    JSON.stringify(valueObject, null, 2),
+    // JSON.stringify(valueObject, null, 2),
+    valueObject,
     "schema",
-    JSON.stringify(jzodSchema, null, 2)
+    // JSON.stringify(jzodSchema, null, 2)
+    jzodSchema
   );
   switch (jzodSchema?.type) {
     case "schemaReference": {
@@ -246,30 +381,40 @@ export function resolveReferencesForJzodSchemaAndValueObject(
       break;
     }
     case "union":{
-      const concreteJzodSchemas: JzodElement[] = jzodSchema.definition.map((a: JzodElement) =>
-        a.type == "schemaReference"
-          ? resolveJzodSchemaReferenceInContext(
-              miroirFundamentalJzodSchema,
-              a,
-              currentModel,
-              miroirMetaModel,
-              {...relativeReferenceJzodContext, ...a.context}
-            )
-          : a
-      );
-      const concreteUnrolledJzodSchemas: JzodElement[] = concreteJzodSchemas.map((j: JzodElement) => {
-        if (j.type == "object") {
-          return resolveObjectExtendClauseAndDefinition(
-            j,
-            miroirFundamentalJzodSchema,
-            currentModel,
-            miroirMetaModel,
-            relativeReferenceJzodContext
-          );
-        } else {
-          return j;
-        }
-      });
+      // resolve all schemaReferences, replacing them with their actual definitions
+      // const concreteJzodSchemas: JzodElement[] = jzodSchema.definition.map((a: JzodElement) =>
+      //   a.type == "schemaReference"
+      //     ? resolveJzodSchemaReferenceInContext(
+      //         miroirFundamentalJzodSchema,
+      //         a,
+      //         currentModel,
+      //         miroirMetaModel,
+      //         {...relativeReferenceJzodContext, ...a.context}
+      //       )
+      //     : a
+      // );
+      // // get a flat description of an object type, including all its extend clauses (inheritance)
+      // const concreteUnrolledJzodSchemas: JzodElement[] = concreteJzodSchemas.map((j: JzodElement) => {
+      //   if (j.type == "object") {
+      //     return resolveObjectExtendClauseAndDefinition(
+      //       j,
+      //       miroirFundamentalJzodSchema,
+      //       currentModel,
+      //       miroirMetaModel,
+      //       relativeReferenceJzodContext
+      //     );
+      //   } else {
+      //     return j;
+      //   }
+      // });
+      const concreteUnrolledJzodSchemas: JzodElement[] = recursivelyUnfoldUnionAndReferences(
+        jzodSchema,
+        new Set(),
+        miroirFundamentalJzodSchema,
+        currentModel,
+        miroirMetaModel,
+        relativeReferenceJzodContext
+      ).result;
 
       // log.info(
       //   "resolveReferencesForJzodSchemaAndValueObject called for union",
@@ -279,7 +424,7 @@ export function resolveReferencesForJzodSchemaAndValueObject(
       switch (typeof valueObject) {
         case "string": {
           // TODO: the following line may introduce some non-determinism, in the case many records actually match the "find" predicate! BAD!
-          const resultJzodSchema = concreteJzodSchemas.find(
+          const resultJzodSchema = concreteUnrolledJzodSchemas.find(
             (a) =>
               (a.type == "string") ||
               (a.type == "literal" && a.definition == valueObject)
@@ -294,12 +439,15 @@ export function resolveReferencesForJzodSchemaAndValueObject(
                 "resolveReferencesForJzodSchemaAndValueObject could not find string or literal type for value" +
                 valueObject +
                 " in resolved union " +
-                JSON.stringify(concreteJzodSchemas, null, 2),
+                JSON.stringify(concreteUnrolledJzodSchemas, null, 2),
             };
           }
           break;
         }
         case "object": {
+          // value is an object, type is a union, if many options are possible we shall use a discriminator
+          const discriminator = jzodSchema.discriminator??"_undefined_"
+
           /**
            * resolve type for object, either:
            * - only 1 object type is possible, or
@@ -307,61 +455,32 @@ export function resolveReferencesForJzodSchemaAndValueObject(
            * - there are several discriminators for the union (and / or subunions, 1 level) and exactly 1 possible union branch match of valueObject[discriminators[index]] for any index.
            * - subUnions are supported, but only 1 level deep, and schemaReferences must refer to an object type.
            */
-          const objectUnionChoices = concreteUnrolledJzodSchemas
-            .filter((j) => j.type == "object")
-            .concat(
-              (
-                concreteUnrolledJzodSchemas.filter((j: JzodElement): boolean => j.type == "union") as JzodUnion[]
-              ).flatMap(
-                (j: JzodUnion): JzodObject[] =>
-                  (j.definition.filter((k: JzodElement) => k.type == "object") as JzodObject[]).map(
-                    (k: JzodObject): JzodObject =>
-                      resolveObjectExtendClauseAndDefinition(
-                        k,
-                        miroirFundamentalJzodSchema,
-                        currentModel,
-                        miroirMetaModel,
-                        relativeReferenceJzodContext
-                      )
-                  ) as JzodObject[]
-              ),
-              (
-                concreteUnrolledJzodSchemas.filter((j: JzodElement) => j.type == "union") as JzodUnion[])
-                .flatMap(
-                  (j: JzodUnion) => (
-                    (j.definition.filter((k: JzodElement) => k.type == "schemaReference") as JzodReference[])
-                      .map((k: JzodReference) =>
-                        resolveJzodSchemaReferenceInContext(
-                          miroirFundamentalJzodSchema,
-                          k,
-                          currentModel,
-                          miroirMetaModel,
-                          { ...relativeReferenceJzodContext, ...k.context }
-                        )
-                      )
-                      .filter((j) => j.type == "object") as JzodObject[])
-                      .map(
-                        (k: JzodObject):JzodObject => resolveObjectExtendClauseAndDefinition(
-                          k,
-                          miroirFundamentalJzodSchema,
-                          currentModel,
-                          miroirMetaModel,
-                          relativeReferenceJzodContext
-                        )
-                      ) as JzodObject[]
-                )
-            );
+          const objectUnionChoices = unionChoices(
+            concreteUnrolledJzodSchemas,
+            miroirFundamentalJzodSchema,
+            currentModel,
+            miroirMetaModel,
+            relativeReferenceJzodContext
+          );
           // .concat(
           // )
 
           log.info(
-            "resolveReferencesForJzodSchemaAndValueObject called for union-type value object found", objectUnionChoices.length, "object branches in the union",
+            "resolveReferencesForJzodSchemaAndValueObject called for union-type value object found",
+            objectUnionChoices.length,
+            "discriminator=",
+            discriminator,
+            "concreteUnrolledJzodSchemas",
+            concreteUnrolledJzodSchemas,
+            "found object branches in the union",
             // JSON.stringify(objectUnionChoices),
-            // concreteUnrolledJzodSchemas,
-            JSON.stringify(concreteUnrolledJzodSchemas, null, 2),
-            "selected object branches",
-            // objectUnionChoices,
-            JSON.stringify(objectUnionChoices, null, 2),
+            // // concreteUnrolledJzodSchemas,
+            // // JSON.stringify(concreteUnrolledJzodSchemas, null, 2),
+            // "selected object branches",
+            objectUnionChoices,
+            // // JSON.stringify(objectUnionChoices, null, 2)
+            "possible object branches=",
+            // JSON.stringify(objectUnionChoices.map(e => (e as any).definition[discriminator].definition), null, 2)
           );
 
           // if there is only one object candidate, use this one
@@ -378,8 +497,6 @@ export function resolveReferencesForJzodSchemaAndValueObject(
             return subElementSchema;
           }
           
-          // many options for an object, must use a discriminator
-          const discriminator = jzodSchema.discriminator??"_undefined_"
           // const subDiscriminator = jzodSchema.subDiscriminator??"_undefined_"
 
           // log.info(
@@ -428,17 +545,25 @@ export function resolveReferencesForJzodSchemaAndValueObject(
           ; // TODO: this works only if there is exactly one object type in the union!
 
           log.info(
-            "resolveReferencesForJzodSchemaAndValueObject found", currentDiscriminatedObjectJzodSchemas.length, " potentially matching object types for value object",
+            "resolveReferencesForJzodSchemaAndValueObject found",
+            currentDiscriminatedObjectJzodSchemas.length,
+            " potentially matching object types for value object",
             valueObject,
-            "discriminator", discriminator,
-            "discriminator value", valueObject[discriminator],
+            "discriminator",
+            discriminator,
+            "discriminator value",
+            valueObject[discriminator],
             "##### union object resolved type: ",
-            JSON.stringify(currentDiscriminatedObjectJzodSchemas, null, 2),
+            currentDiscriminatedObjectJzodSchemas,
+            // JSON.stringify(currentDiscriminatedObjectJzodSchemas, null, 2)
           );
 
           if (currentDiscriminatedObjectJzodSchemas.length == 0) {
             throw new Error("resolveReferencesForJzodSchemaAndValueObject called for union-type value object with discriminator=" +
-            jzodSchema.discriminator + " valueObject[discriminator]=" + valueObject[discriminator] + " found no match!");
+            discriminator + " valueObject[discriminator]=" + valueObject[discriminator] + " found no match!" +
+            " jzodSchema=" + JSON.stringify(jzodSchema, null, 2) +
+            "\n valueObject=" + JSON.stringify(valueObject, null, 2)
+          );
           }
           if (currentDiscriminatedObjectJzodSchemas.length > 1 ) {
             throw new Error("resolveReferencesForJzodSchemaAndValueObject called for union-type value object with discriminator=" +
@@ -496,7 +621,7 @@ export function resolveReferencesForJzodSchemaAndValueObject(
               status: "error",
               error:
                 "resolveReferencesForJzodSchemaAndValueObject could not find string type in resolved union " +
-                JSON.stringify(concreteJzodSchemas, null, 2),
+                JSON.stringify(concreteUnrolledJzodSchemas, null, 2),
             };
           }
         }
@@ -544,7 +669,7 @@ export function resolveReferencesForJzodSchemaAndValueObject(
                 e[0] +
                 "' error:", JSON.stringify(resultSchemaTmp, null, 2)
               );
-            return [e[0],{ type: "never" }]
+              return [e[0],{ type: "never" }]
             }
           }
         ) as [string, JzodElement][]
