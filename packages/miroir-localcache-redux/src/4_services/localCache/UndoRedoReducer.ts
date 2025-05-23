@@ -92,7 +92,17 @@ function callUndoRedoReducer(
   );
 
   switch (action.payload.actionType) {
-    case "modelAction": {
+    // case "modelAction": {
+    case "initModel":
+    case "commit":
+    case "rollback":
+    case "remoteLocalCacheRollback":
+    case "resetModel":
+    case "resetData":
+    case "alterEntityAttribute":
+    case "renameEntity":
+    case "createEntity":
+    case "dropEntity": {
       return { newSnapshot: newPresentModelSnapshot, changes: changes, inverseChanges: inverseChanges };
       break;
     }
@@ -215,7 +225,7 @@ function handleModelAction(
     futureModelPatches,
     queriesResultsCache,
   } = state;
-  switch (action.payload.actionName) {
+  switch (action.payload.actionType) {
     case "rollback": {
       const next = callNextReducer(
         innerReducer,
@@ -415,7 +425,17 @@ export function createUndoRedoReducer(innerReducer: InnerReducerInterface): Redu
       case localCacheSliceName + "/" + localCacheSliceInputActionNamesObject.handleAction: {
         // log.info("reduceWithUndoRedo handleAction treating action", action.payload)
         switch (action.payload.actionType) {
-          case "modelAction": {
+          // case "modelAction": {
+          case "initModel":
+          case "commit":
+          case "rollback":
+          case "remoteLocalCacheRollback":
+          case "resetModel":
+          case "resetData":
+          case "alterEntityAttribute":
+          case "renameEntity":
+          case "createEntity":
+          case "dropEntity": {
             return handleModelAction(innerReducer, state, action as PayloadAction<ModelAction>)
             break;
           }

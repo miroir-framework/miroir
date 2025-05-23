@@ -77,8 +77,7 @@ export function testOnLibrary_resetLibraryDeployment(
     actionName: "sequence",
     definition: [
       {
-        actionType: "modelAction",
-        actionName: "resetModel",
+        actionType: "resetModel",
         actionLabel: "resetLibraryStore",
         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
         deploymentUuid,
@@ -98,7 +97,7 @@ export function testOnLibrary_deleteLibraryDeployment(
     definition: [
       {
         actionType: "storeManagementAction",
-        actionName: "deleteStore",
+        actionName: "storeManagementAction_deleteStore",
         actionLabel: "deleteLibraryStore",
         endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
         deploymentUuid,

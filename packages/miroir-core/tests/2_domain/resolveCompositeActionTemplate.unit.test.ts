@@ -113,8 +113,7 @@ describe('resolveTestCompositeActionTemplate', () => {
         definition: [
           // createEntity
           {
-            actionType: "modelAction",
-            actionName: "createEntity",
+            actionType: "createEntity",
             actionLabel: "createEntity",
             deploymentUuid: {
               transformerType: "parameterReference",
@@ -200,8 +199,7 @@ describe('resolveTestCompositeActionTemplate', () => {
         // templates: (testCompositeActionTemplate.compositeActionTemplate as any).templates,
         definition: [
           {
-            actionType: "modelAction",
-            actionName: "createEntity",
+            actionType: "createEntity",
             actionLabel: "createEntity",
             deploymentUuid: currentDeploymentUuid,
             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
@@ -309,8 +307,7 @@ describe('resolveTestCompositeActionTemplateSuite', () => {
             actionLabel: "simpleAction1",
             definition: [
               {
-                actionType: "modelAction",
-                actionName: "createEntity",
+                actionType: "createEntity",
                 actionLabel: "createEntity",
                 deploymentUuid: {
                   transformerType: "parameterReference",
@@ -363,8 +360,7 @@ describe('resolveTestCompositeActionTemplateSuite', () => {
             actionLabel: "simpleAction1",
             definition: [
               {
-                actionType: "modelAction",
-                actionName: "createEntity",
+                actionType: "createEntity",
                 actionLabel: "createEntity",
                 deploymentUuid: currentDeploymentUuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",

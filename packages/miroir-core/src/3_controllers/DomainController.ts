@@ -111,16 +111,14 @@ export async function resetAndInitApplicationDeployment(
 
   for (const selfAdminConfigurationDeployment of selfAdminConfigurationDeployments) {
     await domainController.handleAction({
-      actionType: "modelAction",
-      actionName: "resetModel",
+      actionType: "resetModel",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       deploymentUuid: selfAdminConfigurationDeployment.uuid,
     }, defaultMiroirMetaModel);
   }
   for (const selfAdminConfigurationDeployment of selfAdminConfigurationDeployments) {
     await domainController.handleAction({
-      actionType: "modelAction",
-      actionName: "initModel",
+      actionType: "initModel",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       deploymentUuid: selfAdminConfigurationDeployment.uuid,
       params: {
@@ -141,8 +139,7 @@ export async function resetAndInitApplicationDeployment(
   for (const d of selfAdminConfigurationDeployments) {
     log.info("resetAndInitApplicationDeployment rollback for deployment", d.uuid);
     await domainController.handleAction({
-      actionType: "modelAction",
-      actionName: "rollback",
+      actionType: "rollback",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       deploymentUuid: d.uuid,
     }, defaultMiroirMetaModel);
@@ -476,8 +473,7 @@ export class DomainController implements DomainControllerInterface {
             context, // context
             {}, // context update
             {
-              actionType: "modelAction",
-              actionName: "rollback",
+              actionType: "rollback",
               deploymentUuid,
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             }
@@ -911,16 +907,16 @@ export class DomainController implements DomainControllerInterface {
     currentModel: MetaModel
   ): Promise<Action2VoidReturnType> {
     log.info(
-      "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction START actionName=",
-      modelAction["actionName"],
+      "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction START actionType=",
+      modelAction["actionType"],
       "deployment",
       deploymentUuid,
       "action",
-      modelAction.actionName != "initModel" ? JSON.stringify(modelAction, null, 2) : modelAction
+      modelAction.actionType != "initModel" ? JSON.stringify(modelAction, null, 2) : modelAction
       // modelAction,
     );
     try {
-      switch (modelAction.actionName) {
+      switch (modelAction.actionType) {
         case "remoteLocalCacheRollback": {
           if (this.persistenceStoreAccessMode == "local") {
             // if the domain controller is deployed on the server, we refresh the local cache from the remote store
@@ -1075,7 +1071,11 @@ export class DomainController implements DomainControllerInterface {
                   }
                   break;
                 }
-                case "modelAction": {
+                // case "modelAction": 
+                case 'alterEntityAttribute':
+                case 'createEntity':
+                case 'dropEntity':
+                case 'renameEntity': {
                   const replayActionResult = await this.callUtil.callRemotePersistenceAction(
                     {}, // context
                     {}, // context update
@@ -1112,8 +1112,8 @@ export class DomainController implements DomainControllerInterface {
                 {}, // context
                 {}, // context update
                 {
-                  actionType: "modelAction",
-                  actionName: "commit",
+                  // actionType: "modelAction",
+                  actionType: "commit",
                   deploymentUuid: modelAction.deploymentUuid,
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 }
@@ -1187,7 +1187,7 @@ export class DomainController implements DomainControllerInterface {
     } catch (error) {
       log.warn(
         "DomainController handleModelAction caught exception when handling",
-        modelAction["actionName"],
+        modelAction["actionType"],
         "deployment",
         deploymentUuid,
         "action",
@@ -1202,7 +1202,7 @@ export class DomainController implements DomainControllerInterface {
     }
     log.info(
       "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction DONE actionName=",
-      modelAction["actionName"],
+      modelAction["actionType"],
       "deployment",
       deploymentUuid,
     );
@@ -1228,7 +1228,20 @@ export class DomainController implements DomainControllerInterface {
     //   JSON.stringify((domainAction as any)["objects"], null, 2)
     // );
 
-    if (domainAction.actionType != "modelAction" || domainAction.actionName != "initModel") {
+    if (
+      // !(
+      //   domainAction.actionType == "initModel" ||
+      //   domainAction.actionType == "commit" ||
+      //   domainAction.actionType == "rollback" ||
+      //   domainAction.actionType == "remoteLocalCacheRollback" ||
+      //   domainAction.actionType == "resetModel" ||
+      //   domainAction.actionType == "resetData" ||
+      //   domainAction.actionType == "alterEntityAttribute" ||
+      //   domainAction.actionType == "renameEntity" ||
+      //   domainAction.actionType == "createEntity" ||
+      //   domainAction.actionType == "dropEntity"
+      // ) ||
+      domainAction.actionType != "initModel") {
       log.debug(
         "DomainController handleAction domainAction",
         JSON.stringify(domainAction, null, 2)
@@ -1250,7 +1263,17 @@ export class DomainController implements DomainControllerInterface {
           );
           break;
         }
-        case "modelAction": {
+        // case "modelAction":
+        case 'initModel':
+        case 'commit':
+        case 'rollback':
+        case 'remoteLocalCacheRollback':
+        case 'resetModel':
+        case 'resetData':
+        case 'alterEntityAttribute':
+        case 'renameEntity':
+        case 'createEntity':
+        case 'dropEntity': {
           if (!currentModel) {
             throw new Error(
               "DomainController handleAction for modelAction needs a currentModel argument"
@@ -1268,8 +1291,14 @@ export class DomainController implements DomainControllerInterface {
         case 'getInstances': {
           return this.handleInstanceAction(domainAction.deploymentUuid, domainAction);
         }
-        case "storeManagementAction": {
-          if (domainAction.actionName == "resetAndInitApplicationDeployment") {
+        // case "storeManagementAction": {
+          case "storeManagementAction_createStore":
+          case "storeManagementAction_deleteStore":
+          case "storeManagementAction_resetAndInitApplicationDeployment":
+          case "storeManagementAction_openStore":
+          case "storeManagementAction_closeStore": {
+          // if (domainAction.actionName == "storeManagementAction_resetAndInitApplicationDeployment") {
+          if (domainAction.actionType == "storeManagementAction_resetAndInitApplicationDeployment") {
             await resetAndInitApplicationDeployment(
               this,
               domainAction.deployments as any as SelfApplicationDeploymentConfiguration[]
@@ -1454,14 +1483,30 @@ export class DomainController implements DomainControllerInterface {
           case 'getInstances':
           // 
           case "undoRedoAction":
-          case "modelAction":
+          // case "modelAction":
+          case 'initModel':
+          case 'commit':
+          case 'rollback':
+          case 'remoteLocalCacheRollback':
+          case 'resetModel':
+          case 'resetData':
+          case 'alterEntityAttribute':
+          case 'renameEntity':
+          case 'createEntity':
+          case 'dropEntity':
           case "transactionalInstanceAction":
-          case "storeManagementAction":
+          // case "storeManagementAction":
+          case "storeManagementAction_createStore":
+          case "storeManagementAction_deleteStore":
+          case "storeManagementAction_resetAndInitApplicationDeployment":
+          case "storeManagementAction_openStore":
+          case "storeManagementAction_closeStore":
+          // 
           case "bundleAction": {
             // these are PreActions, the runtime transformers present in them must be resolved before the action is executed
             if (
-              currentAction.actionType !== "modelAction" ||
-              currentAction.actionName !== "initModel"
+              // currentAction.actionType !== "modelAction" ||
+              currentAction.actionType !== "initModel"
             ) {
               log.info(
                 "handleCompositeAction domainAction action to handle",
@@ -1662,14 +1707,32 @@ export class DomainController implements DomainControllerInterface {
           case 'getInstances':
           // 
           case "undoRedoAction":
-          case "modelAction":
+          // case "modelAction":
+          // case 'compositeRunBoxedExtractorAction':
+          case 'initModel':
+          case 'commit':
+          case 'rollback':
+          case 'remoteLocalCacheRollback':
+          case 'resetModel':
+          case 'resetData':
+          case 'alterEntityAttribute':
+          case 'renameEntity':
+          case 'createEntity':
+          case 'dropEntity':
+          // 
           case "transactionalInstanceAction":
-          case "storeManagementAction":
+          // case "storeManagementAction":
+          case "storeManagementAction_createStore":
+          case "storeManagementAction_deleteStore":
+          case "storeManagementAction_resetAndInitApplicationDeployment":
+          case "storeManagementAction_openStore":
+          case "storeManagementAction_closeStore":
+          // 
           case "bundleAction": {
             // these are PreActions, the runtime transformers present in them must be resolved before the action is executed
             if (
-              currentAction.actionType !== "modelAction" ||
-              currentAction.actionName !== "initModel"
+              // currentAction.actionType !== "modelAction" ||
+              currentAction.actionType !== "initModel"
             ) {
               log.info(
                 "handleRuntimeCompositeAction domainAction action to handle",
@@ -2337,10 +2400,27 @@ export class DomainController implements DomainControllerInterface {
         case 'getInstances':
         // 
         case "undoRedoAction":
-        case "modelAction":
+        // case "modelAction":
+        case 'initModel':
+        case 'commit':
+        case 'rollback':
+        case 'remoteLocalCacheRollback':
+        case 'resetModel':
+        case 'resetData':
+        case 'alterEntityAttribute':
+        case 'renameEntity':
+        case 'createEntity':
+        case 'dropEntity':
+          // 
         case "transactionalInstanceAction":
         case "compositeAction":
-        case "storeManagementAction":
+        // case "storeManagementAction":
+        case "storeManagementAction_createStore":
+        case "storeManagementAction_deleteStore":
+        case "storeManagementAction_resetAndInitApplicationDeployment":
+        case "storeManagementAction_openStore":
+        case "storeManagementAction_closeStore":
+        // 
         case "bundleAction": {
           // case "domainAction": {
           // log.info(

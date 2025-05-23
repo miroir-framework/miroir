@@ -65,7 +65,6 @@ import { miroirAppStartup } from '../../src/startup.js';
 import {
   createDeploymentCompositeAction,
   deleteAndCloseApplicationDeployments,
-  loadTestConfigFiles,
   resetAndinitializeDeploymentCompositeAction,
   runTestOrTestSuite,
   setupMiroirTest,
@@ -82,6 +81,7 @@ import { displayTestSuiteResultsDetails } from 'miroir-core';
 import { runTransformerTestSuite } from 'miroir-core';
 import { TransformerForBuildOrRuntime } from 'miroir-core';
 import { entityMenu } from 'miroir-core';
+import { loadTestConfigFiles } from '../utils/fileTools.js';
 
 let domainController: DomainControllerInterface | undefined = undefined;
 let localCache: LocalCacheInterface | undefined = undefined;
@@ -636,8 +636,8 @@ const createEntityCompositeActionTemplate: CompositeActionTemplate = {
   definition: [
     // createEntity
     {
-      actionType: "modelAction",
-      actionName: "createEntity",
+      // actionType: "modelAction",
+      actionType: "createEntity",
       actionLabel: "createEntity",
       deploymentUuid: {
         transformerType: "parameterReference",
@@ -1181,8 +1181,8 @@ const testTemplateSuites: Record<string, TestActionParams> = {
               createReportsCompositeActionTemplate,
               // commit
               {
-                actionType: "modelAction",
-                actionName: "commit",
+                // actionType: "modelAction",
+                actionType: "commit",
                 actionLabel: "commit",
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 deploymentUuid: {
@@ -1568,8 +1568,8 @@ if (RUN_TEST == testSuiteName) {
   }
   for (const [currentTestSuiteName, testAction] of Object.entries(testTemplateSuites)) {
     const testSuiteResults = await runTestOrTestSuite(localCache, domainController, testAction);
-    if (testSuiteResults.status !== "ok") {
-      vitest.expect(testSuiteResults.status, `${currentTestSuiteName} failed!`).toBe("ok");
+    if (!testSuiteResults || testSuiteResults.status !== "ok") {
+      vitest.expect(testSuiteResults?.status, `${currentTestSuiteName} failed!`).toBe("ok");
     }
   }
   // Object.entries(testTemplateSuites).forEach(

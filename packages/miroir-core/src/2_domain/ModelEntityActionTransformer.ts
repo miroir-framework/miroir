@@ -32,7 +32,8 @@ export class ModelEntityActionTransformer{
     currentModel: MetaModel,
   ):InstanceAction[] {
     log.info("modelActionToLocalCacheInstanceAction called ", deploymentUuid, modelAction)
-    switch (modelAction.actionName) {
+    // switch (modelAction.actionName) {
+    switch (modelAction.actionType) {
       case "createEntity": {
         return [
           {

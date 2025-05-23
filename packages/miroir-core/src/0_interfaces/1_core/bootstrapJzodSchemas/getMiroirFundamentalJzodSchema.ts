@@ -665,6 +665,7 @@ export function getMiroirFundamentalJzodSchema(
         // },
         extendedTransformerForRuntime: {
           type: "union",
+          discriminator: "transformerType",
           definition: [
             {
               type: "schemaReference",
@@ -713,18 +714,21 @@ export function getMiroirFundamentalJzodSchema(
             ...transformerForRuntimeNames.map((e: any) => ({
               type: "schemaReference",
               definition: {
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: e,
               },
             })),
             {
               type: "schemaReference",
               definition: {
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "transformerForRuntime_InnerReference",
               },
             },
             {
               type: "schemaReference",
               definition: {
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "transformerForRuntime_dataflowSequence",
               },
             },
@@ -737,12 +741,14 @@ export function getMiroirFundamentalJzodSchema(
             {
               type: "schemaReference",
               definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                 relativePath: "transformerForBuild",
               },
             },
             {
               type: "schemaReference",
               definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                 relativePath: "transformerForRuntime",
               },
             },
@@ -1048,11 +1054,8 @@ export function getMiroirFundamentalJzodSchema(
           {
             type: "never",
           },
-        ...makeReferencesAbsolute(
-          testSuitesResultsSchema,
-          miroirFundamentalJzodSchemaUuid,
-          true
-        ).context,
+        ...makeReferencesAbsolute(testSuitesResultsSchema, miroirFundamentalJzodSchemaUuid, true)
+          .context,
         testSuitesResults: {
           type: "schemaReference",
           definition: {
@@ -2722,37 +2725,38 @@ export function getMiroirFundamentalJzodSchema(
           ],
         },
         modelActionInitModelParams: modelEndpointVersionV1.definition.actions.find(
-          (a: any) => a.actionParameters.definition.actionName.definition == "initModel"
+          (a: any) => a.actionParameters.definition.actionType.definition == "initModel"
         )?.actionParameters.definition.params,
         modelActionCommit: modelEndpointVersionV1.definition.actions.find(
-          (a: any) => a.actionParameters.definition.actionName.definition == "commit"
+          (a: any) => a.actionParameters.definition.actionType.definition == "commit"
         )?.actionParameters,
         modelActionRollback: modelEndpointVersionV1.definition.actions.find(
-          (a: any) => a.actionParameters.definition.actionName.definition == "rollback"
+          (a: any) => a.actionParameters.definition.actionType.definition == "rollback"
         )?.actionParameters,
         modelActionInitModel: modelEndpointVersionV1.definition.actions.find(
-          (a: any) => a.actionParameters.definition.actionName.definition == "initModel"
+          (a: any) => a.actionParameters.definition.actionType.definition == "initModel"
         )?.actionParameters,
         modelActionResetModel: modelEndpointVersionV1.definition.actions.find(
-          (a: any) => a.actionParameters.definition.actionName.definition == "resetModel"
+          (a: any) => a.actionParameters.definition.actionType.definition == "resetModel"
         )?.actionParameters,
         modelActionResetData: modelEndpointVersionV1.definition.actions.find(
-          (a: any) => a.actionParameters.definition.actionName.definition == "resetData"
+          (a: any) => a.actionParameters.definition.actionType.definition == "resetData"
         )?.actionParameters,
         modelActionAlterEntityAttribute: modelEndpointVersionV1.definition.actions.find(
-          (a: any) => a.actionParameters.definition.actionName.definition == "alterEntityAttribute"
+          (a: any) => a.actionParameters.definition.actionType.definition == "alterEntityAttribute"
         )?.actionParameters,
         modelActionCreateEntity: modelEndpointVersionV1.definition.actions.find(
-          (a: any) => a.actionParameters.definition.actionName.definition == "createEntity"
+          (a: any) => a.actionParameters.definition.actionType.definition == "createEntity"
         )?.actionParameters,
         modelActionDropEntity: modelEndpointVersionV1.definition.actions.find(
-          (a: any) => a.actionParameters.definition.actionName.definition == "dropEntity"
+          (a: any) => a.actionParameters.definition.actionType.definition == "dropEntity"
         )?.actionParameters,
         modelActionRenameEntity: modelEndpointVersionV1.definition.actions.find(
-          (a: any) => a.actionParameters.definition.actionName.definition == "renameEntity"
+          (a: any) => a.actionParameters.definition.actionType.definition == "renameEntity"
         )?.actionParameters,
         modelAction: {
           type: "union",
+          discriminator: "actionType",
           definition: modelEndpointVersionV1.definition.actions.map((e: any) => e.actionParameters),
         },
         testAction_runTestCompositeAction: testEndpointVersionV1.definition.actions.find(
@@ -2764,6 +2768,7 @@ export function getMiroirFundamentalJzodSchema(
         )?.actionParameters,
         instanceCUDAction: {
           type: "union",
+          discriminator: "actionType",
           definition: instanceEndpointVersionV1.definition.actions
             .filter((e: any) =>
               ["createInstance", "updateInstance", "deleteInstance"].includes(
@@ -2781,6 +2786,7 @@ export function getMiroirFundamentalJzodSchema(
         },
         undoRedoAction: {
           type: "union",
+          discriminator: "actionType",
           definition: undoRedoEndpointVersionV1.definition.actions.map(
             (e: any) => e.actionParameters
           ),
@@ -2792,18 +2798,21 @@ export function getMiroirFundamentalJzodSchema(
         )?.actionParameters,
         localCacheAction: {
           type: "union",
+          discriminator: "actionType",
           definition: localCacheEndpointVersionV1.definition.actions.map(
             (e: any) => e.actionParameters
           ),
         },
         storeManagementAction: {
           type: "union",
+          discriminator: "actionType",
           definition: storeManagementEndpoint.definition.actions.map(
             (e: any) => e.actionParameters
           ),
         },
         persistenceAction: {
           type: "union",
+          discriminator: "actionType",
           definition: persistenceEndpointVersionV1.definition.actions.map(
             (e: any) => e.actionParameters
           ),
@@ -3173,6 +3182,7 @@ export function getMiroirFundamentalJzodSchema(
           ),
         domainAction: {
           type: "union",
+          discriminator: "actionType",
           definition: domainEndpointVersionV1.definition.actions.map(
             (e: any) => e.actionParameters
           ),
@@ -3180,6 +3190,7 @@ export function getMiroirFundamentalJzodSchema(
         // ...(transformerJzodSchema as any).definition.context, // gives "transformerForBuild_InnerReference", "transformerForBuild", "actionHandler"
         modelActionReplayableAction: {
           type: "union",
+          discriminator: "actionType",
           definition: [
             {
               type: "schemaReference",
@@ -3275,6 +3286,7 @@ export function getMiroirFundamentalJzodSchema(
         },
         storeOrBundleAction: {
           type: "union",
+          discriminator: "actionType",
           definition: [
             {
               type: "schemaReference",
@@ -3499,16 +3511,13 @@ export function getMiroirFundamentalJzodSchema(
   );
 
   // ##############################################################################################
-  // const instanceCudAction = (miroirFundamentalJzodSchema as any).definition.context["instanceCUDAction"]
-  // const compositeCudActionReferencePrefix = "compositeCudAction_";
-
-
   const domainAction = (miroirFundamentalJzodSchema as any).definition.context["domainAction"]
   const runtimeDomainActionReferencePrefix = "runtimeDomainAction_";
 
   const transformerForRuntimeDomainActionSchemaReference: JzodReference = {
     type: "schemaReference",
     definition: {
+      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
       relativePath: "transformerForRuntime",
     },
   };

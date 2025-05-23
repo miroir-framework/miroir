@@ -203,15 +203,13 @@ const beforeAll = async () => {
     );
 
     await persistenceStoreController.handleAction({
-      actionType: "modelAction",
-      actionName: "resetModel",
+      actionType: "resetModel",
       actionLabel: "resetTestStore",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       deploymentUuid: paramAdminConfigurationDeploymentUuid,
     });
     await persistenceStoreController.handleAction({
-      actionType: "modelAction",
-      actionName: "initModel",
+      actionType: "initModel",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       deploymentUuid: paramAdminConfigurationDeploymentUuid,
       params: {
@@ -225,8 +223,7 @@ const beforeAll = async () => {
     });
     // }, defaultMiroirMetaModel);
     await persistenceStoreController.handleAction({
-      actionType: "modelAction",
-      actionName: "createEntity",
+      actionType: "createEntity",
       actionLabel: "CreateLibraryStoreEntities",
       deploymentUuid: paramAdminConfigurationDeploymentUuid,
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",

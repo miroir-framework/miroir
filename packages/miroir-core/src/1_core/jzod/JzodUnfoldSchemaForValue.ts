@@ -516,7 +516,8 @@ export function resolveReferencesForJzodSchemaAndValueObject(
               "resolveReferencesForJzodSchemaAndValueObject called for union-type value object with discriminator=" +
                 jzodSchema.discriminator +
                 ", but valueObject[discriminator] is undefined! valueObject=" +
-                JSON.stringify(valueObject, null, 2)
+                JSON.stringify(valueObject, null, 2) + 
+                "jzodSchema=" + JSON.stringify(jzodSchema, null, 2)
             );
           }
 

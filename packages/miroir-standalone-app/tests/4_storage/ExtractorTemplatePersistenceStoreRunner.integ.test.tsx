@@ -59,15 +59,17 @@ import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { miroirAppStartup } from '../../src/startup.js';
 import {
   addEntitiesAndInstances,
-  chainVitestSteps,
+  // chainVitestSteps,
   createDeploymentCompositeAction,
   createMiroirDeploymentGetPersistenceStoreController,
   deploymentConfigurations,
-  loadTestConfigFiles,
+  // loadTestConfigFiles,
   resetApplicationDeployments,
   selfApplicationDeploymentConfigurations,
   setupMiroirTest
 } from "../../src/miroir-fwk/4-tests/tests-utils.js";
+import { loadTestConfigFiles } from '../utils/fileTools.js';
+import { chainVitestSteps } from '../../src/miroir-fwk/4-tests/vitest-utils.js';
 
 let domainController: DomainControllerInterface;
 let localCache: LocalCacheInterface;

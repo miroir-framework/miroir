@@ -53,9 +53,10 @@ export class RestClientStub implements RestClientInterface {
 
     const { body, ...customConfig } = args;
     const deploymentUuid = args["deploymentUuid"] ?? (body ?? {})["deploymentUuid"];
-    const parentUuid = args["parentUuid"] ?? (body ?? {})["parentUuid"];
+    const parentUuid = args["parentUuid"] ?? (body ?? {})["parentUuid"] ?? (body ?? {})["deploymentUuid"];
     const section = args["section"] ?? (body ?? {})["section"];
-    const actionName = args["actionName"] ?? (body ?? {})["actionName"];
+    // const actionName = args["actionName"] ?? (body ?? {})["actionName"];
+    const actionType = args["actionType"] ?? (body ?? {})["actionType"];
 
     let data;
     try {
@@ -98,7 +99,8 @@ export class RestClientStub implements RestClientInterface {
         body, // body
         {
           // params
-          actionName,
+          // actionName,
+          actionType,
           deploymentUuid,
           parentUuid,
           section,

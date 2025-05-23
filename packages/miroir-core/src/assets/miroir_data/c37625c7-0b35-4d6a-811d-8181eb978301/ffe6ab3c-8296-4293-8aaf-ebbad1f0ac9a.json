@@ -227,8 +227,7 @@
           },
           "definition": [
             {
-              "actionType": "modelAction",
-              "actionName": "createEntity",
+              "actionType": "createEntity",
               "actionLabel": "createEntity",
               "deploymentUuid": {
                   "transformerType": "parameterReference",
@@ -293,8 +292,7 @@
               }
             },
             {
-              "actionType": "modelAction",
-              "actionName": "commit",
+              "actionType": "commit",
               "actionLabel": "commit",
               "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
               "deploymentUuid": {
@@ -522,19 +520,19 @@
                       "interpolation": "runtime",
                       "definition": {
                         "reportUuid": {
-                          "transformerType": "parameterReference",
-                          "interpolation": "build",
+                          "transformerType": "contextReference",
+                          "interpolation": "runtime",
                           "referenceName": "createEntity_newEntityListReportUuid"
                         },
                         "label": {
                           "transformerType": "mustacheStringTemplate",
-                          "interpolation": "build",
+                          "interpolation": "runtime",
                           "definition": "List of {{newEntityName}}s"
                         },
                         "section": "data",
                         "selfApplication": {
-                          "transformerType": "parameterReference",
-                          "interpolation": "build",
+                          "transformerType": "contextReference",
+                          "interpolation": "runtime",
                           "referencePath": ["adminConfigurationDeploymentParis", "uuid"]
                         },
                         "icon": "local_drink"
@@ -596,8 +594,7 @@
               }
             },
             {
-              "actionType": "modelAction",
-              "actionName": "commit",
+              "actionType": "commit",
               "actionLabel": "commit",
               "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
               "deploymentUuid": {

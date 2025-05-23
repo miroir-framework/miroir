@@ -169,7 +169,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
           //   actionType: "domainAction",
           //   domainAction: {
           //     actionType: "storeManagementAction",
-          //     actionName: "openStore",
+          //     actionName: "storeManagementAction_openStore",
           //     endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
           //     configuration: {
           //       transformerType: "innerFullObjectTemplate",
@@ -2018,7 +2018,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //       // openStoreAction
   //       {
   //         actionType: "storeManagementAction",
-  //         actionName: "openStore",
+  //         actionName: "storeManagementAction_openStore",
   //         actionLabel: "openStoreAction",
   //         endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
   //         configuration: {
@@ -2053,7 +2053,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //       // createStoreAction
   //       {
   //         actionType: "storeManagementAction",
-  //         actionName: "createStore",
+  //         actionName: "storeManagementAction_createStore",
   //         actionLabel: "createStoreAction",
   //         endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
   //         deploymentUuid: {
@@ -2074,7 +2074,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //         endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
   //         actionType: "storeManagementAction",
   //         actionLabel: "resetAndInitAction",
-  //         actionName: "resetAndInitApplicationDeployment",
+  //         actionName: "storeManagementAction_resetAndInitApplicationDeployment",
   //         deploymentUuid: "",
   //         deployments: [
   //           {

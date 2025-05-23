@@ -1562,7 +1562,7 @@ commit 401162dcc33ca6e2b21715ad883f0d648d0d7b29
 Author: Miroir Framework <miroir-framework@protonmail.com>
 Date:   Thu Apr 25 13:05:44 2024 +0200
 
-    EXPERIMENT: create & deploy a new SelfApplication #26. StoreAction "openStore" only opens one store, given by action.deploymentUuid.
+    EXPERIMENT: create & deploy a new SelfApplication #26. StoreAction "storeManagementAction_openStore" only opens one store, given by action.deploymentUuid.
 
  10 files changed, 142 insertions(+), 107 deletions(-)
 

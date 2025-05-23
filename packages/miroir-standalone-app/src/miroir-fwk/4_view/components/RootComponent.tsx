@@ -285,7 +285,7 @@ export const RootComponent = (props: RootComponentProps) => {
                       for (const c of Object.entries(configurations)) {
                         const openStoreAction: StoreOrBundleAction = {
                           actionType: "storeManagementAction",
-                          actionName: "openStore",
+                          actionName: "storeManagementAction_openStore",
                           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
                           configuration: {
                             [c[0]]: c[1] as StoreUnitConfiguration,
@@ -325,8 +325,8 @@ export const RootComponent = (props: RootComponentProps) => {
                         );
                       }
                       await domainController.handleAction({
-                        actionType: "modelAction",
-                        actionName: "rollback",
+                        // actionType: "modelAction",
+                        actionType: "rollback",
                         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                         deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
                       }, defaultMiroirMetaModel);
@@ -387,7 +387,7 @@ export const RootComponent = (props: RootComponentProps) => {
                       for (const c of Object.values(foundDeployments)) { // TODO: correct type of c
                         const openStoreAction: StoreOrBundleAction = {
                           actionType: "storeManagementAction",
-                          actionName: "openStore",
+                          actionName: "storeManagementAction_openStore",
                           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
                           configuration: {
                             [(c as any).uuid]: (c as any /** Deployment */).configuration as StoreUnitConfiguration,
@@ -397,8 +397,8 @@ export const RootComponent = (props: RootComponentProps) => {
                         await domainController.handleAction(openStoreAction)
 
                         await domainController.handleAction({
-                          actionType: "modelAction",
-                          actionName: "rollback",
+                          // actionType: "modelAction",
+                          actionType: "rollback",
                           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                           deploymentUuid: (c as any).uuid,
                         }, defaultMiroirMetaModel);
@@ -411,8 +411,8 @@ export const RootComponent = (props: RootComponentProps) => {
                     onClick={async () => {
                       log.info("fetching instances from datastore for deployment", adminConfigurationDeploymentMiroir);
                       await domainController.handleAction({
-                        actionType: "modelAction",
-                        actionName: "rollback",
+                        // actionType: "modelAction",
+                        actionType: "rollback",
                         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                         deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
                       }, defaultMiroirMetaModel);
@@ -424,14 +424,14 @@ export const RootComponent = (props: RootComponentProps) => {
                     onClick={async () => {
                       // await uploadBooksAndReports(domainController, defaultMiroirMetaModel);
                       await domainController.handleAction({
-                        actionType: "modelAction",
-                        actionName: "remoteLocalCacheRollback",
+                        // actionType: "modelAction",
+                        actionType: "remoteLocalCacheRollback",
                         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                         deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
                       }, defaultMiroirMetaModel);
                       await domainController.handleAction({
-                        actionType: "modelAction",
-                        actionName: "remoteLocalCacheRollback",
+                        // actionType: "modelAction",
+                        actionType: "remoteLocalCacheRollback",
                         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                       }, defaultMiroirMetaModel);
@@ -445,8 +445,8 @@ export const RootComponent = (props: RootComponentProps) => {
                       onClick={async () => {
                         await domainController.handleAction(
                           {
-                            actionType: "modelAction",
-                            actionName: "commit",
+                            // actionType: "modelAction",
+                            actionType: "commit",
                             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                             deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
                           },
@@ -463,8 +463,8 @@ export const RootComponent = (props: RootComponentProps) => {
                       onClick={async () => {
                         await domainController.handleAction(
                           {
-                            actionType: "modelAction",
-                            actionName: "commit",
+                            // actionType: "modelAction",
+                            actionType: "commit",
                             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                           },

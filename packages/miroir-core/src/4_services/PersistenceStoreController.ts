@@ -199,11 +199,20 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   // #############################################################################################
   async handleAction(persistenceStoreControllerAction: PersistenceStoreControllerAction): Promise<Action2ReturnType> {
     switch (persistenceStoreControllerAction.actionType) {
-      case "modelAction": {
+      case "initModel":
+      case "commit":
+      case "rollback":
+      case "remoteLocalCacheRollback":
+      case "resetModel":
+      case "resetData":
+      case "alterEntityAttribute":
+      case "renameEntity":
+      case "createEntity":
+      case "dropEntity": {
         // const storeManagementAction: ModelAction = body;
         // log.info('modelActionStoreRunnerNotUsed action', JSON.stringify(update,undefined,2));
         log.info("handleAction action", persistenceStoreControllerAction);
-        switch (persistenceStoreControllerAction.actionName) {
+        switch (persistenceStoreControllerAction.actionType) {
           case "dropEntity": {
             // await targetProxy.dropEntity(update.modelEntityUpdate.entityUuid);
             await this.dropEntity(persistenceStoreControllerAction.entityUuid);

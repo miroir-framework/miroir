@@ -29,7 +29,7 @@ export class SqlDbAdminStore extends SqlDbStore implements PersistenceStoreAdmin
   // ##############################################################################################
   async createStore(config: StoreSectionConfiguration): Promise<Action2VoidReturnType> {
     try {
-      log.info("createStore", JSON.stringify(config));
+      log.info("storeManagementAction_createStore", JSON.stringify(config));
       if (config.emulatedServerType !== "sql") {
         throw new Error( "SqlDbAdminStore createStore failed for serverType " + config.emulatedServerType);
       }

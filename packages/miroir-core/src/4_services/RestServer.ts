@@ -256,29 +256,47 @@ export async function restActionHandler(
   // console.log("restActionHandler called with params", JSON.stringify(params,undefined,2));
   console.log("restActionHandler called with params", params);
 
-  if (body && ((body as any).actionType !== "modelAction" || (body as any).actionName !== "initModel")) {
+  if (body && ((body as any).actionType !== "initModel")) {
     console.log("restActionHandler called with","body", JSON.stringify(body, undefined, 2));
   }
   // else {
   //   console.log("restActionHandler called");
   // }
-  const actionName: string = typeof params["actionName"] == "string" ? params["actionName"] : params["actionName"][0];
+  // const actionName: string = typeof params["actionName"] == "string" ? params["actionName"] : params["actionName"][0];
+  const actionType: string = typeof params["actionType"] == "string" ? params["actionType"] : params["actionType"][0];
 
   // log.debug("restActionRunner params", params, "body", body);
 
   const action: StoreOrBundleAction | InstanceAction | ModelAction = body as StoreOrBundleAction | InstanceAction | ModelAction ;
   switch (action.actionType) {
-    case "storeManagementAction":
+    // case "storeManagementAction":
+    case "storeManagementAction_createStore":
+    case "storeManagementAction_deleteStore":
+    case "storeManagementAction_resetAndInitApplicationDeployment":
+    case "storeManagementAction_openStore":
+    case "storeManagementAction_closeStore":
+    // 
     case "bundleAction": {
       const result = await storeActionOrBundleActionStoreRunner(
-        actionName,
+        // actionName,
+        actionType,
         body as StoreOrBundleAction,
         persistenceStoreControllerManager,
       );
       return continuationFunction(response)(result)
       break;
     }
-    case "modelAction": 
+    // case "modelAction": 
+    case "initModel":
+    case "commit":
+    case "rollback":
+    case "remoteLocalCacheRollback":
+    case "resetModel":
+    case "resetData":
+    case "alterEntityAttribute":
+    case "renameEntity":
+    case "createEntity":
+    case "dropEntity":
     // case "instanceAction": {
     case "createInstance":
     case "deleteInstance":
@@ -289,12 +307,26 @@ export async function restActionHandler(
     case "getInstances": {
       if (useDomainControllerToHandleModelAndInstanceActions) {
         // we are on the server, the action has been received from remote client
-        if (action.actionType == "modelAction") {
-          const result = await domainController.handleAction(action,defaultMiroirMetaModel)
-          return continuationFunction(response)(result)
+        // if (action.actionType == "modelAction") {
+        if (
+          [
+            "initModel",
+            "commit",
+            "rollback",
+            "remoteLocalCacheRollback",
+            "resetModel",
+            "resetData",
+            "alterEntityAttribute",
+            "renameEntity",
+            "createEntity",
+            "dropEntity",
+          ].includes(action.actionType)
+        ) {
+          const result = await domainController.handleAction(action, defaultMiroirMetaModel);
+          return continuationFunction(response)(result);
         } else {
-          const result = await domainController.handleAction(action)
-          return continuationFunction(response)(result)
+          const result = await domainController.handleAction(action);
+          return continuationFunction(response)(result);
         }
       } else {
         /**
@@ -489,7 +521,8 @@ export const restServerDefaultHandlers: RestServiceHandler[] = [
   },
   {
     method: "post",
-    url: "/action/:actionName",
+    // url: "/action/:actionName",
+    url: "/action/:actionType",
     handler: restActionHandler
   },
   {

@@ -65,17 +65,17 @@ import { miroirAppStartup } from '../../src/startup.js';
 import { cleanLevel, packageName } from '../3_controllers/constants.js';
 import { ApplicationEntitiesAndInstances } from '../../src/miroir-fwk/4-tests/tests-utils-testOnLibrary.js';
 import {
-  chainVitestSteps,
   createDeploymentCompositeAction,
   createMiroirDeploymentGetPersistenceStoreController,
   deleteAndCloseApplicationDeployments,
   deploymentConfigurations,
-  loadTestConfigFiles,
   resetAndinitializeDeploymentCompositeAction,
   resetApplicationDeployments,
   selfApplicationDeploymentConfigurations,
   setupMiroirTest
 } from "../../src/miroir-fwk/4-tests/tests-utils.js";
+import { loadTestConfigFiles } from '../utils/fileTools.js';
+import { chainVitestSteps } from '../../src/miroir-fwk/4-tests/vitest-utils.js';
 
 let domainController: DomainControllerInterface;
 let localCache: LocalCacheInterface;

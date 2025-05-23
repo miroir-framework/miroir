@@ -179,18 +179,18 @@ const beforeAll = async () => {
 const afterAll = (
   async () => {
     LoggerGlobalContext.setTest("afterAll-integTest");
-    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ deleteAndCloseApplicationDeployments")
-    if (!domainController) {
-      throw new Error("DomainController is not initialized");
-    }
-    await deleteAndCloseApplicationDeployments(
-      miroirConfig,
-      domainController,
-      [
-        typedAdminConfigurationDeploymentMiroir
-      ],
-    );
-    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done deleteAndCloseApplicationDeployments")
+    // console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ deleteAndCloseApplicationDeployments")
+    // if (!domainController) {
+    //   throw new Error("DomainController is not initialized");
+    // }
+    // await deleteAndCloseApplicationDeployments(
+    //   miroirConfig,
+    //   domainController,
+    //   [
+    //     typedAdminConfigurationDeploymentMiroir
+    //   ],
+    // );
+    // console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done deleteAndCloseApplicationDeployments")
 
     // console.log("globalTestSuiteResults:\n", Object.values(globalTestSuiteResults).map((r) => "\"" + r.testLabel + "\": " + r.testResult).join("\n"));
     displayTestSuiteResultsDetails(expect,Object.keys(testSuitesForBuildPlusRuntimeCompositeAction)[0]);

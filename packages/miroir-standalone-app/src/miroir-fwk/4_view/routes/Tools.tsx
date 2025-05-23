@@ -243,7 +243,7 @@ export const ToolsPage: React.FC<any> = (
           //   actionType: "action",
           //   action: {
           //     actionType: "storeManagementAction",
-          //     actionName: "openStore",
+          //     actionName: "storeManagementAction_openStore",
           //     endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
           //     configuration: {
           //       transformerType: "innerFullObjectTemplate",
@@ -539,7 +539,7 @@ export const ToolsPage: React.FC<any> = (
   //       // openStoreAction
   //       {
   //         actionType: "storeManagementAction",
-  //         actionName: "openStore",
+  //         actionName: "storeManagementAction_openStore",
   //         actionLabel: "openStoreAction",
   //         endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
   //         configuration: {
@@ -566,7 +566,7 @@ export const ToolsPage: React.FC<any> = (
   //       // createStoreAction
   //       {
   //         actionType: "storeManagementAction",
-  //         actionName: "createStore",
+  //         actionName: "storeManagementAction_createStore",
   //         actionLabel: "createStoreAction",
   //         endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
   //         deploymentUuid: {
@@ -587,7 +587,7 @@ export const ToolsPage: React.FC<any> = (
   //         endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
   //         actionType: "storeManagementAction",
   //         actionLabel: "resetAndInitAction",
-  //         actionName: "resetAndInitApplicationDeployment",
+  //         actionName: "storeManagementAction_resetAndInitApplicationDeployment",
   //         deploymentUuid: "",
   //         deployments: [
   //           {

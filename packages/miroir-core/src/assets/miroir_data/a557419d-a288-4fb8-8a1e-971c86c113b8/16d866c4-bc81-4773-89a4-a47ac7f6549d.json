@@ -41,6 +41,7 @@
               "definition": {
                 "attributeKey": {
                   "type": "union",
+                  "discriminator": "transformerType",
                   "definition": [
                     {
                       "type": "string"
@@ -48,6 +49,7 @@
                     {
                       "type": "schemaReference",
                       "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                         "relativePath": "transformer_InnerReference"
                       }
                     }
@@ -56,6 +58,7 @@
                 "attributeValue": {
                   "type": "schemaReference",
                   "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                     "relativePath": "transformer"
                   }
                 }

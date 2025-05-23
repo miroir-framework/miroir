@@ -47,8 +47,7 @@ export async function uploadBooksAndReports(
 ) {
   await domainController.handleAction(
     {
-      actionType: "modelAction",
-      actionName: "createEntity",
+      actionType: "createEntity",
       deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       entities: [
@@ -64,8 +63,7 @@ export async function uploadBooksAndReports(
 
   await domainController.handleAction(
     {
-      actionName: "commit",
-      actionType: "modelAction",
+      actionType: "commit",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
     },
@@ -77,8 +75,8 @@ export async function uploadBooksAndReports(
     {
       actionType: "transactionalInstanceAction",
       instanceAction: {
-        actionType: "instanceAction",
-        actionName: "createInstance",
+        // actionType: "instanceAction",
+        actionType: "createInstance",
         applicationSection: "model",
         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
         endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
@@ -105,8 +103,8 @@ export async function uploadBooksAndReports(
 
   await domainController.handleAction(
     {
-      actionName: "commit",
-      actionType: "modelAction",
+      actionType: "commit",
+      // actionType: "modelAction",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
     },
@@ -115,8 +113,8 @@ export async function uploadBooksAndReports(
   );
 
   await domainController.handleAction({
-    actionType: "instanceAction",
-    actionName: "createInstance",
+    // actionType: "instanceAction",
+    actionType: "createInstance",
     applicationSection: "data",
     deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",

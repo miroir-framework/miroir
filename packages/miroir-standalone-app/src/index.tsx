@@ -333,7 +333,7 @@ async function startWebApp(root:Root) {
       // for (const c of Object.entries(currentMiroirConfig.client.deploymentStorageConfig)) {
       //   const openStoreAction: StoreOrBundleAction = {
       //     actionType: "storeManagementAction",
-      //     actionName: "openStore",
+      //     actionName: "storeManagementAction_openStore",
       //     endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
       //     configuration: {
       //       [c[0]]: c[1] as StoreUnitConfiguration,

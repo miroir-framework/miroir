@@ -51,13 +51,13 @@ import {
   undoRedoEndpointVersionV1
 } from "miroir-core";
 
-import {
-  MiroirIntegrationTestEnvironment,
-  loadTestConfigFiles,
-  miroirIntegrationTestEnvironmentFactory,
-  renderWithProvidersWithContextProvider,
-  selfApplicationDeploymentConfigurations
-} from "miroir-standalone-app/tests/utils/tests-utils";
+// import {
+//   MiroirIntegrationTestEnvironment,
+//   loadTestConfigFiles,
+//   miroirIntegrationTestEnvironmentFactory,
+//   renderWithProvidersWithContextProvider,
+//   selfApplicationDeploymentConfigurations
+// } from "miroir-standalone-app/tests/utils/tests-utils";
 
 import {
   JzodObjectEditor
@@ -69,6 +69,9 @@ import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { useMiroirContextService } from "../../src/miroir-fwk/4_view/MiroirContextReactProvider";
 import { entityDefinitionTransformerDefinition } from "miroir-core";
 import { entityDefinitionEndpoint } from "miroir-core";
+import { JzodReference } from "miroir-core";
+import { loadTestConfigFiles } from "../utils/fileTools";
+import { MiroirIntegrationTestEnvironment, selfApplicationDeploymentConfigurations } from "../../src/miroir-fwk/4-tests/tests-utils";
 
 const env:any = (import.meta as any).env
 console.log("@@@@@@@@@@@@@@@@@@ env", env);
@@ -83,9 +86,10 @@ miroirIndexedDbStoreSectionStartup();
 // miroirPostgresStoreSectionStartup();
 
 
-let testEnvironment:MiroirIntegrationTestEnvironment;
+let testEnvironment:MiroirIntegrationTestEnvironment | undefined = undefined;
 
-const miroirFundamentalJzodSchema: JzodElement = getMiroirFundamentalJzodSchema(
+// const miroirFundamentalJzodSchema: JzodElement = getMiroirFundamentalJzodSchema(
+const miroirFundamentalJzodSchema: JzodReference = getMiroirFundamentalJzodSchema(
   entityDefinitionBundleV1 as EntityDefinition,
   entityDefinitionCommit as EntityDefinition,
   modelEndpointV1,
@@ -128,7 +132,10 @@ beforeAll(
 
 beforeEach(
   async () => {
-    await resetAndInitApplicationDeployment(testEnvironment.domainController, selfApplicationDeploymentConfigurations);
+    if (!testEnvironment || (testEnvironment as any).domainController === undefined) {
+      throw new Error("testEnvironment not initialized");
+    }
+    await resetAndInitApplicationDeployment((testEnvironment as any).domainController, selfApplicationDeploymentConfigurations);
     document.body.innerHTML = '';
   }
 )
@@ -229,7 +236,7 @@ function JzodObjectFormEditorWrapper(props: JsonElementEditorWrapperProps) {
             listKey={props.listKey}
             rootLesslistKey={props.rootLesslistKey}
             rootLesslistKeyArray={props.rootLesslistKeyArray}
-            paramMiroirFundamentalJzodSchema={miroirFundamentalJzodSchema}
+            paramMiroirFundamentalJzodSchema={miroirFundamentalJzodSchema as any}
             foreignKeyObjects={props.foreignKeyObjects}
             unresolvedJzodSchema={props.unresolvedJzodSchema}
             unionInformation={props.unionInformation}
@@ -733,32 +740,36 @@ describe(
         const expectedDiscriminatorValue = [ "A" ];
         const expectedSubdiscriminatorValue = [ "string", "number" ];
 
+        if (!testEnvironment || !(testEnvironment as any).domainController) {
+          throw new Error("testEnvironment not initialized");
+        }
+
         try {
           console.log('formJzodSchema', formJzodSchema);
           const user = (userEvent as any).setup()
       
           await act(
             async () => {
-              await testEnvironment.domainController.handleAction({
-                actionType: "modelAction",
-                actionName: "rollback",
+              await (testEnvironment as any).domainController.handleAction({
+                // actionType: "modelAction",
+                actionType: "rollback",
                 deploymentUuid:adminConfigurationDeploymentMiroir.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               });
-              await testEnvironment.domainController.handleAction({
-                actionType: "modelAction",
-                actionName: "rollback",
+              await (testEnvironment as any).domainController.handleAction({
+                // actionType: "modelAction",
+                actionType: "rollback",
                 deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               });
             }
           );
 
-          const appModel = testEnvironment.localCache.currentModel(adminConfigurationDeploymentLibrary.uuid)
-          const miroirModel = testEnvironment.localCache.currentModel(adminConfigurationDeploymentMiroir.uuid)
+          const appModel = (testEnvironment as any).localCache.currentModel(adminConfigurationDeploymentLibrary.uuid)
+          const miroirModel = (testEnvironment as any).localCache.currentModel(adminConfigurationDeploymentMiroir.uuid)
           console.log("miroirModel", miroirModel);
           const resolvedSchemaReturn: ResolvedJzodSchemaReturnType = resolveReferencesForJzodSchemaAndValueObject(
-            miroirFundamentalJzodSchema,
+            miroirFundamentalJzodSchema as any as JzodSchema,
             formJzodSchema,
             formInitialValue,
             appModel,

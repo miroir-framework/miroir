@@ -315,8 +315,8 @@ export const HomePage = (props: RootComponentProps) => {
         <button
           onClick={async () => {
             await domainController.handleAction({
-              actionType: "modelAction",
-              actionName: "rollback",
+              // actionType: "modelAction",
+              actionType: "rollback",
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
             }, defaultMiroirMetaModel);
@@ -344,8 +344,8 @@ export const HomePage = (props: RootComponentProps) => {
         <button
           onClick={async () => {
             await domainController.handleAction({
-              actionType: "modelAction",
-              actionName: "resetData",
+              // actionType: "modelAction",
+              actionType: "resetData",
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             }, defaultMiroirMetaModel);
@@ -353,8 +353,8 @@ export const HomePage = (props: RootComponentProps) => {
               "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ RESETDATA FOR LIBRARY APPLICATION DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
             );
             await domainController.handleAction({
-              actionType: "modelAction",
-              actionName: "rollback",
+              // actionType: "modelAction",
+              actionType: "rollback",
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             }, defaultMiroirMetaModel);
@@ -401,8 +401,8 @@ export const HomePage = (props: RootComponentProps) => {
           onClick={async () => {
             await domainController.handleAction(
               {
-                actionType: "modelAction",
-                actionName: "renameEntity",
+                // actionType: "modelAction",
+                actionType: "renameEntity",
                 deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 entityName: entityBook.name,
@@ -425,8 +425,8 @@ export const HomePage = (props: RootComponentProps) => {
               {
                 actionType: "transactionalInstanceAction",
                 instanceAction: {
-                  actionType: "instanceAction",
-                  actionName: "updateInstance",
+                  // actionType: "instanceAction",
+                  actionType: "updateInstance",
                   applicationSection: "data",
                   deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
                   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
@@ -458,8 +458,8 @@ export const HomePage = (props: RootComponentProps) => {
           onClick={async () => {
             await domainController.handleAction(
               {
-                actionType: "modelAction",
-                actionName: "dropEntity",
+                // actionType: "modelAction",
+                actionType: "dropEntity",
                 deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 entityUuid: entityAuthor.uuid,

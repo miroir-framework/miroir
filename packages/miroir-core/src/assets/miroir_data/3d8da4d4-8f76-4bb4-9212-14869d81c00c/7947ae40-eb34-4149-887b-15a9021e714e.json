@@ -14,10 +14,6 @@
           "definition": {
             "actionType": {
               "type": "literal",
-              "definition": "modelAction"
-            },
-            "actionName": {
-              "type": "literal",
               "definition": "initModel"
             },
             "actionLabel": { "type": "string", "optional": true },
@@ -84,10 +80,6 @@
           "definition": {
             "actionType": {
               "type": "literal",
-              "definition": "modelAction"
-            },
-            "actionName": {
-              "type": "literal",
               "definition": "commit"
             },
             "actionLabel": { "type": "string", "optional": true },
@@ -113,10 +105,6 @@
           "type": "object",
           "definition": {
             "actionType": {
-              "type": "literal",
-              "definition": "modelAction"
-            },
-            "actionName": {
               "type": "literal",
               "definition": "rollback"
             },
@@ -144,10 +132,6 @@
           "definition": {
             "actionType": {
               "type": "literal",
-              "definition": "modelAction"
-            },
-            "actionName": {
-              "type": "literal",
               "definition": "remoteLocalCacheRollback"
             },
             "actionLabel": { "type": "string", "optional": true },
@@ -173,10 +157,6 @@
           "type": "object",
           "definition": {
             "actionType": {
-              "type": "literal",
-              "definition": "modelAction"
-            },
-            "actionName": {
               "type": "literal",
               "definition": "resetModel"
             },
@@ -204,10 +184,6 @@
           "definition": {
             "actionType": {
               "type": "literal",
-              "definition": "modelAction"
-            },
-            "actionName": {
-              "type": "literal",
               "definition": "resetData"
             },
             "actionLabel": { "type": "string", "optional": true },
@@ -233,10 +209,6 @@
           "type": "object",
           "definition": {
             "actionType": {
-              "type": "literal",
-              "definition": "modelAction"
-            },
-            "actionName": {
               "type": "literal",
               "definition": "alterEntityAttribute"
             },
@@ -321,10 +293,6 @@
           "definition": {
             "actionType": {
               "type": "literal",
-              "definition": "modelAction"
-            },
-            "actionName": {
-              "type": "literal",
               "definition": "renameEntity"
             },
             "actionLabel": { "type": "string", "optional": true },
@@ -377,10 +345,6 @@
           "type": "object",
           "definition": {
             "actionType": {
-              "type": "literal",
-              "definition": "modelAction"
-            },
-            "actionName": {
               "type": "literal",
               "definition": "createEntity"
             },
@@ -435,10 +399,6 @@
           "type": "object",
           "definition": {
             "actionType": {
-              "type": "literal",
-              "definition": "modelAction"
-            },
-            "actionName": {
               "type": "literal",
               "definition": "dropEntity"
             },

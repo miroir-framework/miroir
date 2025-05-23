@@ -256,9 +256,9 @@ export function createDeploymentCompositeAction(
     actionName: "sequence",
     definition: [
       {
-        actionType: "storeManagementAction",
-        actionName: "openStore",
-        actionLabel: "openStore",
+        // actionType: "storeManagementAction",
+        actionType: "storeManagementAction_openStore",
+        actionLabel: "storeManagementAction_openStore",
         endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
         deploymentUuid: deploymentUuid,
         configuration: {
@@ -266,9 +266,9 @@ export function createDeploymentCompositeAction(
         },
       },
       {
-        actionType: "storeManagementAction",
-        actionName: "createStore",
-        actionLabel: "createStore",
+        // actionType: "storeManagementAction",
+        actionType: "storeManagementAction_createStore",
+        actionLabel: "storeManagementAction_createStore",
         endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
         deploymentUuid: deploymentUuid,
         configuration: deploymentConfiguration,
@@ -295,45 +295,39 @@ export function resetAndinitializeDeploymentCompositeAction(
     actionName: "sequence",
     definition: [
       {
-        actionType: "modelAction",
-        actionName: "resetModel",
+        actionType: "resetModel",
         actionLabel: "resetApplicationStore",
         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
         deploymentUuid: deploymentUuid,
       },
       {
-        actionType: "modelAction",
-        actionName: "initModel",
+        actionType: "initModel",
         actionLabel: "initStore",
         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
         deploymentUuid: deploymentUuid,
         params: initApplicationParameters,
       },
       {
-        actionType: "modelAction",
-        actionName: "rollback",
+        actionType: "rollback",
         actionLabel: "refreshLocalCacheForLibraryStore",
         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
         deploymentUuid: deploymentUuid,
       },
       {
-        actionType: "modelAction",
-        actionName: "createEntity",
+        actionType: "createEntity",
         actionLabel: "CreateLibraryStoreEntities",
         deploymentUuid: deploymentUuid,
         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
         entities: appEntitesAndInstances,
       },
       {
-        actionType: "modelAction",
-        actionName: "commit",
+        actionType: "commit",
         actionLabel: "CommitLibraryStoreEntities",
         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
         deploymentUuid: deploymentUuid,
       },
       {
-        actionType: "instanceAction",
-        actionName: "createInstance",
+        actionType: "createInstance",
         actionLabel: "CreateLibraryStoreInstances",
         endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
         applicationSection: "data",
@@ -378,8 +372,7 @@ export async function addEntitiesAndInstancesForRealServer(
   act?: unknown,
 ) {
   const createAction: DomainAction = {
-    actionType: "modelAction",
-    actionName: "createEntity",
+    actionType: "createEntity",
     deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
     entities: entities
@@ -390,8 +383,7 @@ export async function addEntitiesAndInstancesForRealServer(
       await domainController.handleAction(createAction, localCache.currentModel(adminConfigurationDeploymentLibrary.uuid));
       await domainController.handleAction(
         {
-          actionName: "commit",
-          actionType: "modelAction",
+          actionType: "commit",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
         },
@@ -402,8 +394,7 @@ export async function addEntitiesAndInstancesForRealServer(
     await domainController.handleAction(createAction, localCache.currentModel(adminConfigurationDeploymentLibrary.uuid));
     await domainController.handleAction(
       {
-        actionName: "commit",
-        actionType: "modelAction",
+        actionType: "commit",
         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       },
@@ -412,8 +403,8 @@ export async function addEntitiesAndInstancesForRealServer(
   }
 
   const createInstancesAction: InstanceAction = {
-    actionType: "instanceAction",
-    actionName: "createInstance",
+    // actionType: "instanceAction",
+    actionType: "createInstance",
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
     applicationSection: "data",
     deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
@@ -657,8 +648,7 @@ export async function resetApplicationDeployments(
   log.info('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ resetApplicationDeployments');
   for (const d of deploymentConfigurations) {
     await domainController.handleAction({
-      actionType: "modelAction",
-      actionName: "resetModel",
+      actionType: "resetModel",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       deploymentUuid: d.adminConfigurationDeployment.uuid,
     }, localCache?localCache.currentModel(d.adminConfigurationDeployment.uuid):defaultMiroirMetaModel);
@@ -681,8 +671,8 @@ export async function deleteAndCloseApplicationDeployments(
     ? miroirConfig.client.deploymentStorageConfig[d.uuid]
     : miroirConfig.client.serverConfig.storeSectionConfiguration[d.uuid];
     const deletedStore = await domainController.handleAction({
-      actionType: "storeManagementAction",
-      actionName: "deleteStore",
+      // actionType: "storeManagementAction",
+      actionType: "storeManagementAction_deleteStore",
       endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
       deploymentUuid: d.uuid,
       configuration: storeUnitConfiguration
@@ -697,8 +687,8 @@ export async function deleteAndCloseApplicationDeployments(
     log.info('deleteAndCloseApplicationDeployments closing deployment:', adminConfigurationDeploymentMiroir.uuid); // TODO: really???
     for (const d of deploymentConfigurations) {
       const deletedStore = await domainController.handleAction({
-        actionType: "storeManagementAction",
-        actionName: "closeStore",
+        // actionType: "storeManagementAction",
+        actionType: "storeManagementAction_closeStore",
         endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
         deploymentUuid: d.uuid,
         });

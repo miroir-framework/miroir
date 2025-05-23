@@ -150,7 +150,17 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
       );
     }
     switch (action.actionType) {
-      case 'modelAction':
+      // case 'modelAction':
+      case 'initModel':
+      case 'commit':
+      case 'rollback':
+      case 'remoteLocalCacheRollback':
+      case 'resetModel':
+      case 'resetData':
+      case 'alterEntityAttribute':
+      case 'renameEntity':
+      case 'createEntity':
+      case 'dropEntity':
       // case 'instanceAction':
       case 'createInstance':
       case 'deleteInstance':
@@ -163,7 +173,12 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
       case 'LocalPersistenceAction':
       case 'RestPersistenceAction':
       case 'bundleAction':
-      case 'storeManagementAction': {
+      // case 'storeManagementAction': 
+      case "storeManagementAction_createStore":
+      case "storeManagementAction_deleteStore":
+      case "storeManagementAction_resetAndInitApplicationDeployment":
+      case "storeManagementAction_openStore":
+      case "storeManagementAction_closeStore": {
         throw new Error(
           "PersistenceReduxSaga handlePersistenceActionForLocalCache should not be used to handle action " + JSON.stringify(action) + " please use handleStoreOrBundleActionForLocalStore instead!"
         );
@@ -275,15 +290,31 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
         "PersistenceReduxSaga innerHandlePersistenceActionForLocalPersistenceStore called with persistenceStoreAccessMode = remote, this is not allowed!"
       );
     }
-    if (!localPersistenceStoreController && action.actionType != "storeManagementAction") {
+    if (
+      !localPersistenceStoreController &&
+      ![
+        "storeManagementAction_createStore",
+        "storeManagementAction_deleteStore",
+        "storeManagementAction_resetAndInitApplicationDeployment",
+        "storeManagementAction_openStore",
+        "storeManagementAction_closeStore",
+      ].includes(action.actionType)
+    ) {
       throw new Error(
-        "PersistenceActionReduxSaga innerHandlePersistenceActionForLocalPersistenceStore could not find controller for deployment: " + action.deploymentUuid
+        "PersistenceActionReduxSaga innerHandlePersistenceActionForLocalPersistenceStore could not find controller for deployment: " +
+          action.deploymentUuid
       );
     }
 
     // direct access to store controller, action is executed locally
     switch (action.actionType) {
-      case "storeManagementAction":
+      // case "storeManagementAction":
+      case "storeManagementAction_createStore":
+      case "storeManagementAction_deleteStore":
+      case "storeManagementAction_resetAndInitApplicationDeployment":
+      case "storeManagementAction_openStore":
+      case "storeManagementAction_closeStore":
+      // 
       case "bundleAction": {
         throw new Error(
           "PersistenceActionReduxSaga innerHandlePersistenceActionForLocalPersistenceStore should not be used to handle action " + JSON.stringify(action) + " please use handleStoreOrBundleActionForLocalStore instead!"
@@ -305,7 +336,17 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
       case 'loadNewInstancesInLocalCache':
       case 'getInstance':
       case 'getInstances':
-      case "modelAction": {
+      // case "modelAction": {
+      case 'initModel':
+      case 'commit':
+      case 'rollback':
+      case 'remoteLocalCacheRollback':
+      case 'resetModel':
+      case 'resetData':
+      case 'alterEntityAttribute':
+      case 'renameEntity':
+      case 'createEntity':
+      case 'dropEntity': {
         if (!localPersistenceStoreController) {
           throw new Error(
             // "innerHandlePersistenceActionForLocalPersistenceStore could not find controller for deployment: " + action.deploymentUuid
@@ -490,7 +531,6 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
         break;
       }
       case "RestPersistenceAction":
-      // case ""
       default: {
         throw new Error(
           "PersistenceActionReduxSaga innerHandlePersistenceActionForLocalPersistenceStore could not handle action " + JSON.stringify(action)
@@ -519,7 +559,8 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
     }
     const result = yield* call(() =>
       storeActionOrBundleActionStoreRunner(
-        action.actionName,
+        // action.actionName,
+        action.actionType,
         action,
         localPersistenceStoreControllerManager
       )
@@ -545,7 +586,8 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
     }
     const result = yield* call(() =>
       storeActionOrBundleActionStoreRunner(
-        action.actionName,
+        // action.actionName,
+        action.actionType,
         action,
         localPersistenceStoreControllerManager
       )
@@ -566,7 +608,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
       );
     }
     // indirect access to a remote storeController through the network
-    if (action && ((action as any).actionType !== "modelAction" || (action as any).actionName !== "initModel")) {
+    if (action && (action as any).actionType !== "initModel") {
       console.log("handlePersistenceAction calling remoteStoreNetworkClient on action", JSON.stringify(action, undefined, 2));
     } else {
       console.log("handlePersistenceAction calling remoteStoreNetworkClient on action", action);
@@ -639,8 +681,24 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
       case 'getInstance':
       case 'getInstances':
       // 
-      case "modelAction":
-      case "storeManagementAction":
+      // case "modelAction":
+      case 'initModel':
+      case 'commit':
+      case 'rollback':
+      case 'remoteLocalCacheRollback':
+      case 'resetModel':
+      case 'resetData':
+      case 'alterEntityAttribute':
+      case 'renameEntity':
+      case 'createEntity':
+      case 'dropEntity':
+      // case "storeManagementAction":
+      case "storeManagementAction_createStore":
+      case "storeManagementAction_deleteStore":
+      case "storeManagementAction_resetAndInitApplicationDeployment":
+      case "storeManagementAction_openStore":
+      case "storeManagementAction_closeStore":
+      // 
       case "LocalPersistenceAction":
       default: {
         log.debug("handlePersistenceAction received result", clientResult.status);
@@ -739,7 +797,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
               JSON.stringify(action)
           );
         } catch (e: any) {
-          log.error("handlePersistenceAction exception", e);
+          log.error("handlePersistenceAction exception", e, "for action", JSON.stringify(action, undefined, 2));
           const result: Action2ReturnType = new Action2Error(
             "FailedToHandlePersistenceAction", // TODO: correct errorType!
             e["message"],

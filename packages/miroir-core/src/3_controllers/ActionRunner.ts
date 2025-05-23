@@ -51,7 +51,8 @@ export async function modelActionStoreRunnerNotUsed(
   const modelAction: ModelAction = body;
   // log.info('modelActionStoreRunnerNotUsed action', JSON.stringify(update,undefined,2));
   log.info("modelActionStoreRunnerNotUsed action", modelAction);
-  switch (modelAction.actionName) {
+  // switch (modelAction.actionName) {
+  switch (modelAction.actionType) {
     case "alterEntityAttribute":
     case "createEntity":
     case "renameEntity": 
@@ -94,25 +95,22 @@ export async function modelActionStoreRunnerNotUsed(
 // ################################################################################################
 /**
  * runs a model action: "modelActionUpdateEntity" ("create", "update" or "delete" an Entity), "resetModel" to start again from scratch, etc.
- * @param actionName
+ * @param actionType
  * @param action
  * @returns
  */
 export async function storeActionOrBundleActionStoreRunner(
-  actionName: string,
+  actionType: string,
   action: StoreOrBundleAction,
   persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface
 ): Promise<Action2ReturnType> {
-  log.info("###################################### storeActionOrBundleActionStoreRunner started ", "actionName", actionName);
+  log.info("###################################### storeActionOrBundleActionStoreRunner started ", "actionType", actionType);
   // log.debug('storeActionOrBundleActionStoreRunner getEntityUuids()', miroirDataStoreProxy.getEntityUuids());
   // const update: StoreManagementAction = action;
 
   log.info("storeActionOrBundleActionStoreRunner action", JSON.stringify(action, undefined, 2));
-  switch (action.actionName) {
-    // case "createBundle":
-    // case "deleteBundle":
-    //   break;
-    case "createStore": {
+  switch (action.actionType) {
+    case "storeManagementAction_createStore": {
       // log.warn("storeActionOrBundleActionStoreRunner createStore does nothing!")
       if (!action.deploymentUuid) {
         return new Action2Error("FailedToCreateStore", "storeActionOrBundleActionStoreRunner no deploymentUuid in action " + JSON.stringify(action));
@@ -148,7 +146,7 @@ export async function storeActionOrBundleActionStoreRunner(
       );
       break;
     }
-    case "deleteStore": {
+    case "storeManagementAction_deleteStore": {
       // log.warn("storeActionOrBundleActionStoreRunner deleteStore does nothing!")
       if (!action.deploymentUuid) {
         return new Action2Error("FailedToDeleteStore", "storeActionOrBundleActionStoreRunner no deploymentUuid in action " + JSON.stringify(action));
@@ -178,7 +176,7 @@ export async function storeActionOrBundleActionStoreRunner(
       }
       break;
     }
-    case "openStore": {
+    case "storeManagementAction_openStore": {
       // log.info('storeActionOrBundleActionStoreRunner openStore',miroirConfig);
 
       // TODO: NOT CLEAN, IMPLEMENTATION-DEPENDENT, METHOD SHOULD BE INJECTED
@@ -216,7 +214,7 @@ export async function storeActionOrBundleActionStoreRunner(
 
       break;
     }
-    case "closeStore": {
+    case "storeManagementAction_closeStore": {
       log.info("storeActionOrBundleActionStoreRunner closeStore");
       // NOT CLEAN, IMPLEMENTATION-DEPENDENT, METHOD SHOULD BE INJECTED
       await persistenceStoreControllerManager.deletePersistenceStoreController(action.deploymentUuid);
@@ -225,7 +223,7 @@ export async function storeActionOrBundleActionStoreRunner(
       break;
     }
     default:
-      log.warn("storeActionOrBundleActionStoreRunner could not handle actionName", actionName);
+      log.warn("storeActionOrBundleActionStoreRunner could not handle actionName", actionType);
       break;
   }
   log.debug("storeActionOrBundleActionStoreRunner returning empty response.");

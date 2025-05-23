@@ -535,7 +535,7 @@ function handleModelAction(
 ): Action2ReturnType {
   log.info(
     "localCacheSliceObject handleModelAction called",
-    action.actionName,
+    action.actionType,
     "deploymentUuid",
     deploymentUuid,
     "action",
@@ -544,7 +544,8 @@ function handleModelAction(
   // TODO: fail in case of Transactional Entity (Entity, EntityDefinition...)?
   // switch (action.actionType) {
   //   case "modelAction": {
-  switch (action.actionName) {
+  // switch (action.actionName) {
+  switch (action.actionType) {
     case "rollback": {
       // TODO: DIRTY, DIRTY, DIRTY...
       state.current = {
@@ -647,7 +648,18 @@ function handleAction(
       // );
       break;
     }
-    case "modelAction": {
+    // case "modelAction": 
+    case "initModel":
+    case "commit":
+    case "rollback":
+    case "remoteLocalCacheRollback":
+    case "resetModel":
+    case "resetData":
+    case "alterEntityAttribute":
+    case "renameEntity":
+    case "createEntity":
+    case "dropEntity":
+    {
       return handleModelAction(state, action.deploymentUuid,action);
       break;
     }

@@ -69,7 +69,6 @@ import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { miroirAppStartup } from '../../src/startup.js';
 import {
   createDeploymentCompositeAction,
-  loadTestConfigFiles,
   resetAndinitializeDeploymentCompositeAction,
   runTestOrTestSuite,
   setupMiroirTest,
@@ -80,6 +79,7 @@ import { adminConfigurationDeploymentParis } from '../../src/constants.js';
 import { transform } from 'typescript';
 import { CompositeRunTestAssertion } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js';
 import { testOnLibrary_deleteLibraryDeployment, testOnLibrary_resetLibraryDeployment } from '../../src/miroir-fwk/4-tests/tests-utils-testOnLibrary.js';
+import { loadTestConfigFiles } from '../utils/fileTools.js';
 
 let domainController: DomainControllerInterface | undefined = undefined;
 let localCache: LocalCacheInterface | undefined = undefined;
@@ -598,8 +598,8 @@ const createEntityCompositeAction: CompositeAction = {
   definition: [
     // createEntity
     {
-      actionType: "modelAction",
-      actionName: "createEntity",
+      // actionType: "modelAction",
+      actionType: "createEntity",
       actionLabel: "createEntity",
       deploymentUuid: testAdminConfigurationDeploymentUuid,
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
@@ -831,8 +831,8 @@ const createReportsCompositeAction: DomainAction = {
   actionType: "transactionalInstanceAction",
   actionLabel: "createReports",
   instanceAction: {
-    actionType: "instanceAction",
-    actionName: "createInstance",
+    // actionType: "instanceAction",
+    actionType: "createInstance",
     applicationSection: "model",
     deploymentUuid: testAdminConfigurationDeploymentUuid,
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
@@ -1083,8 +1083,8 @@ const testSuites: Record<string, TestActionParams> = {
               createReportsCompositeAction,
               // commit
               {
-                actionType: "modelAction",
-                actionName: "commit",
+                // actionType: "modelAction",
+                actionType: "commit",
                 actionLabel: "commit",
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 deploymentUuid: testAdminConfigurationDeploymentUuid,
@@ -1198,8 +1198,8 @@ const testSuites: Record<string, TestActionParams> = {
               },
               // commit
               {
-                actionType: "modelAction",
-                actionName: "commit",
+                // actionType: "modelAction",
+                actionType: "commit",
                 actionLabel: "commit",
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 deploymentUuid: testAdminConfigurationDeploymentUuid,

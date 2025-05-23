@@ -40,14 +40,12 @@ import {
   selfApplicationModelBranchLibraryMasterBranch,
   selfApplicationVersionLibraryInitialVersion,
   StoreUnitConfiguration,
-  TestSuiteResult,
 } from "miroir-core";
 
 import {
   adminApplicationDeploymentConfigurations,
   createDeploymentCompositeAction,
   deleteAndCloseApplicationDeployments,
-  loadTestConfigFiles,
   resetAndinitializeDeploymentCompositeAction,
   runTestOrTestSuite,
   setupMiroirTest,
@@ -70,6 +68,8 @@ import {
   testOnLibrary_resetLibraryDeployment,
 } from "../../src/miroir-fwk/4-tests/tests-utils-testOnLibrary.js";
 import { cleanLevel, packageName } from "./constants.js";
+import { loadTestConfigFiles } from "../utils/fileTools.js";
+import { TestSuiteResult } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 
 const env: any = (import.meta as any).env;
 
@@ -234,16 +234,16 @@ const testActions: Record<string, TestActionParams> = {
             actionName: "sequence",
             definition: [
               {
-                actionType: "modelAction",
-                actionName: "rollback",
+                // actionType: "modelAction",
+                actionType: "rollback",
                 actionLabel: "refreshMiroirLocalCache",
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
               },
               {
-                actionName: "rollback",
+                actionType: "rollback",
                 actionLabel: "refreshLibraryLocalCache",
-                actionType: "modelAction",
+                // actionType: "modelAction",
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 deploymentUuid: testApplicationDeploymentUuid,
               },
@@ -346,22 +346,22 @@ const testActions: Record<string, TestActionParams> = {
             actionName: "sequence",
             definition: [
               {
-                actionName: "rollback",
-                actionType: "modelAction",
+                actionType: "rollback",
+                // actionType: "modelAction",
                 actionLabel: "refreshMiroirLocalCache",
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
               },
               {
-                actionName: "rollback",
-                actionType: "modelAction",
+                actionType: "rollback",
+                // actionType: "modelAction",
                 actionLabel: "refreshLibraryLocalCache",
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 deploymentUuid: testApplicationDeploymentUuid,
               },
               {
-                actionType: "instanceAction",
-                actionName: "createInstance",
+                // actionType: "instanceAction",
+                actionType: "createInstance",
                 actionLabel: "addBook3",
                 endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                 applicationSection: "data",
@@ -462,22 +462,22 @@ const testActions: Record<string, TestActionParams> = {
             actionName: "sequence",
             definition: [
               {
-                actionName: "rollback",
-                actionType: "modelAction",
+                actionType: "rollback",
+                // actionType: "modelAction",
                 actionLabel: "refreshMiroirLocalCache",
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
               },
               {
-                actionType: "modelAction",
-                actionName: "rollback",
+                // actionType: "modelAction",
+                actionType: "rollback",
                 actionLabel: "refreshLibraryLocalCache",
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 deploymentUuid: testApplicationDeploymentUuid,
               },
               {
-                actionType: "instanceAction",
-                actionName: "createInstance",
+                // actionType: "instanceAction",
+                actionType: "createInstance",
                 actionLabel: "addBook3",
                 endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                 applicationSection: "data",
@@ -578,22 +578,22 @@ const testActions: Record<string, TestActionParams> = {
             actionName: "sequence",
             definition: [
               {
-                actionName: "rollback",
-                actionType: "modelAction",
+                actionType: "rollback",
+                // actionType: "modelAction",
                 actionLabel: "refreshMiroirLocalCache",
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
               },
               {
-                actionName: "rollback",
-                actionType: "modelAction",
+                actionType: "rollback",
+                // actionType: "modelAction",
                 actionLabel: "refreshLibraryLocalCache",
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 deploymentUuid: testApplicationDeploymentUuid,
               },
               {
-                actionType: "instanceAction",
-                actionName: "deleteInstance",
+                // actionType: "instanceAction",
+                actionType: "deleteInstance",
                 actionLabel: "deleteBook2",
                 endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                 applicationSection: "data",
@@ -701,22 +701,22 @@ const testActions: Record<string, TestActionParams> = {
             actionName: "sequence",
             definition: [
               {
-                actionName: "rollback",
-                actionType: "modelAction",
+                actionType: "rollback",
+                // actionType: "modelAction",
                 actionLabel: "refreshMiroirLocalCache",
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
               },
               {
-                actionName: "rollback",
-                actionType: "modelAction",
+                actionType: "rollback",
+                // actionType: "modelAction",
                 actionLabel: "refreshLibraryLocalCache",
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 deploymentUuid: testApplicationDeploymentUuid,
               },
               {
-                actionType: "instanceAction",
-                actionName: "deleteInstance",
+                // actionType: "instanceAction",
+                actionType: "deleteInstance",
                 actionLabel: "addBook3",
                 endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                 applicationSection: "data",
@@ -731,8 +731,8 @@ const testActions: Record<string, TestActionParams> = {
                 ],
               },
               {
-                actionName: "rollback",
-                actionType: "modelAction",
+                actionType: "rollback",
+                // actionType: "modelAction",
                 actionLabel: "refreshLibraryLocalCache",
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 deploymentUuid: testApplicationDeploymentUuid,
@@ -831,22 +831,22 @@ const testActions: Record<string, TestActionParams> = {
             actionName: "sequence",
             definition: [
               {
-                actionName: "rollback",
-                actionType: "modelAction",
+                actionType: "rollback",
+                // actionType: "modelAction",
                 actionLabel: "refreshMiroirLocalCache",
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
               },
               {
-                actionName: "rollback",
-                actionType: "modelAction",
+                actionType: "rollback",
+                // actionType: "modelAction",
                 actionLabel: "refreshLibraryLocalCache",
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 deploymentUuid: testApplicationDeploymentUuid,
               },
               {
-                actionType: "instanceAction",
-                actionName: "updateInstance",
+                // actionType: "instanceAction",
+                actionType: "updateInstance",
                 actionLabel: "updateBook2",
                 endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                 applicationSection: "data",
@@ -966,9 +966,9 @@ describe.sequential(
     it.each(Object.entries(testActions))(
       "test %s",
       async (currentTestSuiteName, testAction: TestActionParams) => {
-        const testSuiteResults = await runTestOrTestSuite(localCache, domainController, testAction);
-        if (testSuiteResults.status !== "ok") {
-          expect(testSuiteResults.status, `${currentTestSuiteName} failed!`).toBe("ok");
+        const testSuiteResults = await runTestOrTestSuite(domainController, testAction);
+        if (!testSuiteResults || testSuiteResults.status !== "ok") {
+          expect(testSuiteResults?.status, `${currentTestSuiteName} failed!`).toBe("ok");
         }
       },
       globalTimeOut

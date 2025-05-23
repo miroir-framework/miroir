@@ -51,10 +51,10 @@ import {
   createDeploymentCompositeAction,
   createMiroirDeploymentGetPersistenceStoreController,
   deleteAndCloseApplicationDeployments,
-  loadTestConfigFiles,
   selfApplicationDeploymentConfigurations,
   setupMiroirTest
 } from "../../src/miroir-fwk/4-tests/tests-utils.js";
+import { loadTestConfigFiles } from '../utils/fileTools.js';
 
 let domainController: DomainControllerInterface;
 let localCache: LocalCacheInterface;
@@ -439,8 +439,8 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
     expect(entityCreated, "failed to setup test case").toEqual(ACTION_OK)
     // test starts
     const modelActionRenameEntity:ModelActionRenameEntity =  {
-      actionType: "modelAction",
-      actionName: "renameEntity",
+      // actionType: "modelAction",
+      actionType: "renameEntity",
       deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       entityUuid: entityAuthor.uuid, 
@@ -528,8 +528,8 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
 
     // test starts
     const modelActionDropEntity:ModelActionDropEntity =  {
-      actionType: "modelAction",
-      actionName: "dropEntity",
+      // actionType: "modelAction",
+      actionType: "dropEntity",
       deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       entityUuid: entityAuthor.uuid, 
@@ -611,8 +611,8 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
       tag: { value: { id: 6, defaultLabel: "Gender (narrow-minded)", editable: true } },
     };
     const modelActionAlterAttribute:ModelAction =  {
-      actionType: "modelAction",
-      actionName: "alterEntityAttribute",
+      // actionType: "modelAction",
+      actionType: "alterEntityAttribute",
       deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       entityUuid: entityAuthor.uuid, 

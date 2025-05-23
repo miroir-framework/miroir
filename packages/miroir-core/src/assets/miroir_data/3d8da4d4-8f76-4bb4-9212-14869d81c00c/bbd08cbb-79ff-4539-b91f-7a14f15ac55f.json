@@ -13,11 +13,7 @@
           "definition": {
             "actionType": {
               "type": "literal",
-              "definition": "storeManagementAction"
-            },
-            "actionName": {
-              "type": "literal",
-              "definition": "createStore"
+              "definition": "storeManagementAction_createStore"
             },
             "actionLabel": { "type": "string", "optional": true },
             "endpoint": {
@@ -56,11 +52,7 @@
           "definition": {
             "actionType": {
               "type": "literal",
-              "definition": "storeManagementAction"
-            },
-            "actionName": {
-              "type": "literal",
-              "definition": "deleteStore"
+              "definition": "storeManagementAction_deleteStore"
             },
             "actionLabel": { "type": "string", "optional": true },
             "endpoint": {
@@ -96,11 +88,7 @@
           "definition": {
             "actionType": {
               "type": "literal",
-              "definition": "storeManagementAction"
-            },
-            "actionName": {
-              "type": "literal",
-              "definition": "resetAndInitApplicationDeployment"
+              "definition": "storeManagementAction_resetAndInitApplicationDeployment"
             },
             "actionLabel": { "type": "string", "optional": true },
             "endpoint": {
@@ -139,11 +127,7 @@
           "definition": {
             "actionType": {
               "type": "literal",
-              "definition": "storeManagementAction"
-            },
-            "actionName": {
-              "type": "literal",
-              "definition": "openStore"
+              "definition": "storeManagementAction_openStore"
             },
             "actionLabel": { "type": "string", "optional": true },
             "endpoint": {
@@ -182,11 +166,7 @@
           "definition": {
             "actionType": {
               "type": "literal",
-              "definition": "storeManagementAction"
-            },
-            "actionName": {
-              "type": "literal",
-              "definition": "closeStore"
+              "definition": "storeManagementAction_closeStore"
             },
             "actionLabel": { "type": "string", "optional": true },
             "endpoint": {

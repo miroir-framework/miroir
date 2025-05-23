@@ -34,7 +34,6 @@ import {
   createDeploymentCompositeAction,
   deleteAndCloseApplicationDeployments,
   deploymentConfigurations,
-  loadTestConfigFiles,
   renderWithProviders,
   resetApplicationDeployments,
   selfApplicationDeploymentConfigurations,
@@ -50,6 +49,8 @@ import { LoggerOptions } from "miroir-core/src/0_interfaces/4-services/LoggerInt
 import { LocalCache } from "miroir-localcache-redux";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { cleanLevel, packageName } from "./constants.js";
+import { loadTestConfigFiles } from "../utils/fileTools.js";
+import { LocalCacheInterface } from "miroir-core";
 
 
 
@@ -104,7 +105,7 @@ let localMiroirPersistenceStoreController: PersistenceStoreControllerInterface;
 let localAppPersistenceStoreController: PersistenceStoreControllerInterface;
 let persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface;
 let domainController: DomainControllerInterface;
-let localCache: LocalCache;
+let localCache: LocalCacheInterface;
 let miroirContext: MiroirContextInterface;
 
 beforeAll(
@@ -203,14 +204,14 @@ describe.sequential(
           await act(
             async () => {
               await domainController.handleAction({
-                actionType: "modelAction",
-                actionName: "rollback",
+                // actionType: "modelAction",
+                actionType: "rollback",
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 deploymentUuid:adminConfigurationDeploymentMiroir.uuid,
               }, defaultMiroirMetaModel);
               await domainController.handleAction({
-                actionType: "modelAction",
-                actionName: "rollback",
+                // actionType: "modelAction",
+                actionType: "rollback",
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
               }, defaultMiroirMetaModel);
@@ -234,8 +235,8 @@ describe.sequential(
           // ##########################################################################################################
           console.log('Add 2 entity definitions then undo one then commit step 2: adding entities, they must then be present in the local cache Entity list.')
           const createAuthorAction: DomainAction = {
-            actionType: "modelAction",
-            actionName: "createEntity",
+            // actionType: "modelAction",
+            actionType: "createEntity",
             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
             entities: [
@@ -246,8 +247,8 @@ describe.sequential(
             ]
           };
           const createBookAction: DomainAction = {
-            actionType: "modelAction",
-            actionName: "createEntity",
+            // actionType: "modelAction",
+            actionType: "createEntity",
             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
             entities: [
@@ -513,8 +514,8 @@ describe.sequential(
             async () => {
               await domainController.handleAction(
                 {
-                  actionName: "commit",
-                  actionType: "modelAction",
+                  actionType: "commit",
+                  // actionType: "modelAction",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                 },
