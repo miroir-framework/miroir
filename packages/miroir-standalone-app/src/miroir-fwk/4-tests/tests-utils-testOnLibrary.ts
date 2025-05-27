@@ -96,8 +96,8 @@ export function testOnLibrary_deleteLibraryDeployment(
     actionName: "sequence",
     definition: [
       {
-        actionType: "storeManagementAction",
-        actionName: "storeManagementAction_deleteStore",
+        // actionType: "storeManagementAction",
+        actionType: "storeManagementAction_deleteStore",
         actionLabel: "deleteLibraryStore",
         endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
         deploymentUuid,

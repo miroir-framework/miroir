@@ -182,7 +182,7 @@ describe("recursivelyUnfoldUnionAndReferences", () => {
     });
   });
 
-  it("recursivelyUnfoldUnionAndReferences expanda reference definition when reference is itself a union", () => {
+  it("recursivelyUnfoldUnionAndReferences expand a reference definition when reference is itself a union", () => {
     const schema: JzodUnion = {
       type: "union",
       definition: [

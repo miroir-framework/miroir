@@ -12,7 +12,8 @@ import {
   EntityInstancesUuidIndex,
   ExtendedTransformerForRuntime,
   ExtractorOrCombiner,
-  QueryFailed
+  QueryFailed,
+  TransformerForBuildPlusRuntime
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { Domain2ElementFailed, Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement";
 import {
@@ -116,7 +117,8 @@ export const asyncExtractEntityInstanceListWithObjectListExtractor
 
 // ################################################################################################
 export async function asyncApplyExtractorTransformerInMemory(
-  actionRuntimeTransformer: ExtendedTransformerForRuntime,
+  // actionRuntimeTransformer: ExtendedTransformerForRuntime,
+  actionRuntimeTransformer: TransformerForBuildPlusRuntime | ExtendedTransformerForRuntime,
   queryParams: Record<string, any>,
   newFetchedData: Record<string, any>,
   extractors: Record<

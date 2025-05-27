@@ -690,18 +690,21 @@ export function getMiroirFundamentalJzodSchema(
             ...transformerForBuildNames.map((e: any) => ({
               type: "schemaReference",
               definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                 relativePath: e,
               },
             })),
             {
               type: "schemaReference",
               definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                 relativePath: "transformerForBuild_InnerReference",
               },
             },
             {
               type: "schemaReference",
               definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                 relativePath: "transformerForBuild_dataflowSequence",
               },
             },
@@ -736,7 +739,7 @@ export function getMiroirFundamentalJzodSchema(
         },
         transformerForBuildPlusRuntime: {
           type: "union",
-          discriminator: "transformerType",
+          discriminator: ["transformerType", "interpolation"],
           definition: [
             {
               type: "schemaReference",
@@ -2130,7 +2133,8 @@ export function getMiroirFundamentalJzodSchema(
                 definition: {
                   absolutePath: miroirFundamentalJzodSchemaUuid,
                   // relativePath: "transformerForRuntime",
-                  relativePath: "extendedTransformerForRuntime",
+                  // relativePath: "extendedTransformerForRuntime",
+                  relativePath: "transformerForBuildPlusRuntime",
                 },
               },
             },
@@ -2247,7 +2251,8 @@ export function getMiroirFundamentalJzodSchema(
                 definition: {
                   absolutePath: miroirFundamentalJzodSchemaUuid,
                   // relativePath: "transformerForRuntime",
-                  relativePath: "extendedTransformerForRuntime",
+                  // relativePath: "extendedTransformerForRuntime",
+                  relativePath: "transformerForBuildPlusRuntime",
                 },
               },
             },

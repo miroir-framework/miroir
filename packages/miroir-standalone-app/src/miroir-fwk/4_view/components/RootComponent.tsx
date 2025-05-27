@@ -284,8 +284,8 @@ export const RootComponent = (props: RootComponentProps) => {
                         : miroirConfig.client.serverConfig.storeSectionConfiguration;
                       for (const c of Object.entries(configurations)) {
                         const openStoreAction: StoreOrBundleAction = {
-                          actionType: "storeManagementAction",
-                          actionName: "storeManagementAction_openStore",
+                          // actionType: "storeManagementAction",
+                          actionType: "storeManagementAction_openStore",
                           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
                           configuration: {
                             [c[0]]: c[1] as StoreUnitConfiguration,
@@ -386,8 +386,8 @@ export const RootComponent = (props: RootComponentProps) => {
                       // open and refresh found deployments
                       for (const c of Object.values(foundDeployments)) { // TODO: correct type of c
                         const openStoreAction: StoreOrBundleAction = {
-                          actionType: "storeManagementAction",
-                          actionName: "storeManagementAction_openStore",
+                          // actionType: "storeManagementAction",
+                          actionType: "storeManagementAction_openStore",
                           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
                           configuration: {
                             [(c as any).uuid]: (c as any /** Deployment */).configuration as StoreUnitConfiguration,

@@ -25,7 +25,8 @@ import {
   QueryFailed,
   QueryJzodSchemaParams,
   RunBoxedExtractorAction,
-  RunBoxedQueryAction
+  RunBoxedQueryAction,
+  TransformerForBuildPlusRuntime
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
   Action2Error,
@@ -510,7 +511,8 @@ export const extractEntityInstanceListWithObjectListExtractorInMemory
 
 // ################################################################################################
 export const applyExtractorTransformerInMemory = (
-  actionRuntimeTransformer: ExtendedTransformerForRuntime,
+  // actionRuntimeTransformer: ExtendedTransformerForRuntime,
+  actionRuntimeTransformer: TransformerForBuildPlusRuntime| ExtendedTransformerForRuntime,
   queryParams: Record<string, any>,
   newFetchedData: Record<string, any>
 // ): Domain2QueryReturnType<DomainElementSuccess> => {

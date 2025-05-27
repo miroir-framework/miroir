@@ -23,7 +23,8 @@ import {
   DomainElementInstanceUuidIndex,
   EntityInstancesUuidIndex,
   DomainElementSuccess,
-  EntityInstance
+  EntityInstance,
+  TransformerForBuildPlusRuntime
 } from "../1_core/preprocessor-generated/miroirFundamentalType";
 import { Action2ReturnType, Domain2QueryReturnType } from "./DomainElement";
 
@@ -211,7 +212,8 @@ export type AsyncBoxedExtractorOrQueryRunnerMap = {
   //
   // TODO: called in AsyncQuerySelector
   applyExtractorTransformer(
-    query: ExtendedTransformerForRuntime,
+    // query: ExtendedTransformerForRuntime,
+    query: ExtendedTransformerForRuntime | TransformerForBuildPlusRuntime,
     queryParams: Record<string, any>,
     newFetchedData: Record<string, any>,
     extractors: Record<

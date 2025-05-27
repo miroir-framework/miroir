@@ -5,6 +5,7 @@ import {
   EntityInstance,
   JzodElement,
   JzodSchema,
+  JzodUnion,
   Menu,
   MetaModel,
   Report,
@@ -100,7 +101,6 @@ import entityDefinitionJzodSchemaV1 from "../../src/assets/miroir_model/54b9c72f
 // import entityDefinitionMenu  from "../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/0f421b2f-2fdc-47ee-8232-62121ea46350.json";
 import entityDefinitionQueryVersionV1 from "../../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/359f1f9b-7260-4d76-a864-72c839b9711b.json";
 import entityDefinitionReportV1 from "../../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/952d2c65-4da2-45c2-9394-a0920ceedfb6.json";
-import entityDefinitionTest from '../../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/d2842a84-3e66-43ee-ac58-7e13b95b01e8.json';
 import entityDefinitionTransformerDefinition from "../../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/54a16d69-c1f0-4dd7-aba4-a2cda883586c.json";
 
 
@@ -110,6 +110,9 @@ import transformerMenuV1 from "../../src/assets/miroir_data/a557419d-a288-4fb8-8
 
 import { getMiroirFundamentalJzodSchema, miroirFundamentalJzodSchemaUuid } from "../../src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema";
 import { miroirFundamentalJzodSchema } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
+
+import entityDefinitionTest from '../../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/d2842a84-3e66-43ee-ac58-7e13b95b01e8.json';
+import test_createEntityAndReportFromSpreadsheetAndUpdateMenu from "../../src/assets/miroir_data/c37625c7-0b35-4d6a-811d-8181eb978301/ffe6ab3c-8296-4293-8aaf-ebbad1f0ac9a.json";
 
 export const defaultMiroirMetaModel: MetaModel = {
   // configuration: [instanceConfigurationReference],
@@ -190,10 +193,10 @@ function testResolve(
   if (testResult.status == "ok") {
     expect(testResult.status).toEqual("ok");
     console.log("test", testId, "has result", JSON.stringify(testResult.element, null, 2));
-    expect(testResult.element).toEqual(expectedResult);
+    expect(testResult.element, testId).toEqual(expectedResult);
   } else {
     console.log("test", testId, "failed with error", testResult.error);
-    expect(testResult.status).toEqual("ok");
+    expect(testResult.status, testId).toEqual("ok");
   }
 }
 
@@ -247,1424 +250,1807 @@ describe("jzod.unfoldSchemaForValue", () => {
     console.log(expect.getState().currentTestName, "called getMiroirFundamentalJzodSchema");
     const castMiroirFundamentalJzodSchema = miroirFundamentalJzodSchema as JzodSchema;
     const tests: { [k: string]: testFormat } = {
-      // plain literal!
-      test010: {
-        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-        testSchema: {
-          type: "literal",
-          definition: "myLiteral",
-        },
-        expectedResult: {
-          type: "literal",
-          definition: "myLiteral",
-        },
-        testValueObject: "myLiteral",
-      },
-      // simpleType
-      test020: {
-        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-        testSchema: {
-          type: "string",
-        },
-        expectedResult: {
-          type: "string",
-        },
-        testValueObject: "myString",
-      },
-      // schemaReference (plain, simpleType, non-recursive)
-      test030: {
-        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-        testSchema: {
-          type: "schemaReference",
-          context: {
-            a: {
-              type: "string",
-            },
-          },
-          definition: {
-            relativePath: "a",
-          },
-        },
-        expectedResult: {
-          type: "string",
-        },
-        testValueObject: "myString",
-      },
-      // schemaReference: object, recursive, 1-level valueObject
-      test040: {
-        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-        testSchema: {
-          type: "schemaReference",
-          context: {
-            myObject: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "union",
-                  definition: [
-                    {
-                      type: "string",
-                    },
-                    {
-                      type: "schemaReference",
-                      definition: { relativePath: "myObject" },
-                    },
-                  ],
-                },
-              },
-            },
-          },
-          definition: { relativePath: "myObject" },
-        },
-        expectedResult: {
-          type: "object",
-          definition: {
-            a: {
-              type: "string",
-            },
-          },
-        },
-        testValueObject: { a: "myString" },
-      },
-      // schemaReference: object, recursive, 2-level valueObject
-      test050: {
-        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-        testSchema: {
-          type: "schemaReference",
-          context: {
-            myObject: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "union",
-                  discriminator: "type",
-                  definition: [
-                    {
-                      type: "string",
-                    },
-                    {
-                      type: "schemaReference",
-                      definition: { relativePath: "myObject" },
-                    },
-                  ],
-                },
-              },
-            },
-          },
-          definition: { relativePath: "myObject" },
-        },
-        expectedResult: {
-          type: "object",
-          definition: {
-            a: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "string",
-                },
-              },
-            },
-          },
-        },
-        testValueObject: { a: { a: "myString" } },
-      },
-      // schemaReference: object, recursive, 3-level valueObject
-      test060: {
-        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-        testSchema: {
-          type: "schemaReference",
-          context: {
-            myObject: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "union",
-                  definition: [
-                    {
-                      type: "string",
-                    },
-                    {
-                      type: "schemaReference",
-                      definition: { relativePath: "myObject" },
-                    },
-                  ],
-                },
-              },
-            },
-          },
-          definition: { relativePath: "myObject" },
-        },
-        expectedResult: {
-          type: "object",
-          definition: {
-            a: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "object",
-                  definition: {
-                    a: {
-                      type: "string",
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-        testValueObject: { a: { a: { a: "myString" } } },
-      },
-      // schemaReference: record of recursive object, with 2-level valueObject
-      test070: {
-        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-        testSchema: {
-          type: "schemaReference",
-          context: {
-            myObject: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "union",
-                  definition: [
-                    {
-                      type: "string",
-                    },
-                    {
-                      type: "schemaReference",
-                      definition: { relativePath: "myObject" },
-                    },
-                  ],
-                },
-              },
-            },
-            myRecord: {
-              type: "record",
-              definition: {
-                type: "schemaReference",
-                definition: { relativePath: "myObject" },
-              },
-            },
-          },
-          definition: { relativePath: "myRecord" },
-        },
-        expectedResult: {
-          type: "object",
-          definition: {
-            r1: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "object",
-                  definition: {
-                    a: {
-                      type: "string",
-                    },
-                  },
-                },
-              },
-            },
-            r2: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "string",
-                },
-              },
-            },
-          },
-        },
-        testValueObject: { r1: { a: { a: "myString" } }, r2: { a: "myString" } },
-      },
-      // result must be identical to test70, but this time the schemaReference is places inside the record, not the other way around
-      test080: {
-        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-        testSchema: {
-          type: "record",
-          definition: {
-            type: "schemaReference",
-            context: {
-              myObject: {
-                type: "object",
-                definition: {
-                  a: {
-                    type: "union",
-                    definition: [
-                      {
-                        type: "string",
-                      },
-                      {
-                        type: "schemaReference",
-                        definition: { relativePath: "myObject" },
-                      },
-                    ],
-                  },
-                },
-              },
-            },
-            definition: { relativePath: "myObject" },
-          },
-        },
-        expectedResult: {
-          type: "object",
-          definition: {
-            r1: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "object",
-                  definition: {
-                    a: {
-                      type: "string",
-                    },
-                  },
-                },
-              },
-            },
-            r2: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "string",
-                },
-              },
-            },
-          },
-        },
-        testValueObject: { r1: { a: { a: "myString" } }, r2: { a: "myString" } },
-      },
-      // array of simpleType
-      test090: {
-        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-        testSchema: {
-          type: "array",
-          definition: {
-            type: "string",
-          },
-        },
-        expectedResult: {
-          type: "array",
-          definition: {
-            type: "string",
-          },
-        },
-        testValueObject: ["1", "2", "3"],
-      },
-      // array of schemaReference / object
-      test100: {
-        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-        testSchema: {
-          type: "array",
-          definition: {
-            type: "schemaReference",
-            context: {
-              myObject: {
-                type: "object",
-                definition: {
-                  a: {
-                    type: "union",
-                    definition: [
-                      {
-                        type: "string",
-                      },
-                      {
-                        type: "schemaReference",
-                        definition: { relativePath: "myObject" },
-                      },
-                    ],
-                  },
-                },
-              },
-            },
-            definition: { relativePath: "myObject" },
-          },
-        },
-        expectedResult: {
-          type: "array",
-          definition: {
-            type: "object",
-            definition: {
-              a: {
-                type: "union",
-                definition: [
-                  {
-                    type: "string",
-                  },
-                  {
-                    type: "schemaReference",
-                    definition: {
-                      relativePath: "myObject",
-                    },
-                  },
-                ],
-              },
-            },
-          },
-          // "type": "array",
-          // "definition": {
-          //   "type": "object",
-          //   "definition": {
-          //     "a": {
-          //       "type": "string"
-          //     }
-          //   }
-          // }
-        },
-        testValueObject: [
-          { a: "myString" },
-          // { a: { a: "myString" } }
-        ],
-      },
-      // TODO: array of union Type
-      // array of schemaReference / object
-      test120: {
-        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-        testSchema: {
-          type: "schemaReference",
-          context: {
-            myObjectRoot: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "string",
-                },
-              },
-            },
-            myObject: {
-              type: "object",
-              extend: {
-                type: "schemaReference",
-                definition: {
-                  relativePath: "myObjectRoot",
-                },
-              },
-              definition: {
-                b: {
-                  type: "string",
-                },
-              },
-            },
-          },
-          definition: { relativePath: "myObject" },
-        },
-        expectedResult: {
-          type: "object",
-          definition: {
-            a: {
-              type: "string",
-            },
-            b: {
-              type: "string",
-            },
-          },
-        },
-        testValueObject: { a: "myString", b: "anotherString" },
-      },
-      // JzodSchema: literal
-      test500: {
-        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-        testSchema: {
-          type: "schemaReference",
-          definition: {
-            absolutePath: miroirFundamentalJzodSchemaUuid,
-            relativePath: "jzodElement",
-          },
-        },
-        expectedResult: {
-          type: "object",
-          definition: {
-            type: {
-              type: "literal",
-              definition: "literal",
-            },
-            definition: {
-              type: "string",
-            },
-          },
-        },
-        testValueObject: { type: "literal", definition: "myLiteral" },
-      },
-      // JzodSchema: string
-      test510: {
-        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-        testSchema: {
-          type: "schemaReference",
-          definition: {
-            absolutePath: miroirFundamentalJzodSchemaUuid,
-            relativePath: "jzodElement",
-          },
-        },
-        expectedResult: {
-          type: "object",
-          definition: {
-            type: {
-              type: "literal",
-              definition: "string",
-            },
-          },
-        },
-        testValueObject: { type: "string" },
-      },
-      // JzodSchema: object, simpleType attributes
-      test520: {
-        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-        testSchema: {
-          type: "schemaReference",
-          definition: {
-            absolutePath: miroirFundamentalJzodSchemaUuid,
-            relativePath: "jzodElement",
-          },
-        },
-        expectedResult: {
-          type: "object",
-          definition: {
-            type: {
-              type: "literal",
-              definition: "object",
-            },
-            definition: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "object",
-                  definition: {
-                    type: {
-                      type: "literal",
-                      definition: "string",
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-        testValueObject: { type: "object", definition: { a: { type: "string" } } },
-      },
-      // JzodSchema: schema reference with simple attribute
-      test530: {
-        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-        testSchema: {
-          type: "schemaReference",
-          definition: {
-            absolutePath: miroirFundamentalJzodSchemaUuid,
-            relativePath: "jzodElement",
-          },
-        },
-        expectedResult: {
-          type: "object",
-          definition: {
-            type: {
-              type: "literal",
-              definition: "schemaReference",
-            },
-            definition: {
-              type: "object",
-              definition: {
-                absolutePath: {
-                  type: "string",
-                  optional: true,
-                },
-                relativePath: {
-                  type: "string",
-                  optional: true,
-                },
-              },
-            },
-          },
-        },
-        testValueObject: {
-          type: "schemaReference",
-          definition: { absolutePath: miroirFundamentalJzodSchemaUuid, relativePath: "jzodElement" },
-        },
-      },
-      // JzodSchema: schema reference for object with extend clause
-      test540: {
-        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-        testSchema: {
-          type: "schemaReference",
-          definition: {
-            absolutePath: miroirFundamentalJzodSchemaUuid,
-            relativePath: "jzodElement",
-          },
-        },
-        expectedResult: {
-          type: "object",
-          definition: {
-            type: {
-              type: "literal",
-              definition: "schemaReference",
-            },
-            context: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "object",
-                  definition: {
-                    type: {
-                      type: "literal",
-                      definition: "string",
-                    },
-                  },
-                },
-              },
-            },
-            definition: {
-              type: "object",
-              definition: {
-                relativePath: {
-                  type: "string",
-                  optional: true,
-                },
-              },
-            },
-          },
-        },
-        testValueObject: {
-          type: "schemaReference",
-          context: {
-            a: {
-              type: "string",
-            },
-          },
-          definition: {
-            relativePath: "a",
-          },
-        },
-      },
-      //
+      // // plain literal!
+      // test010: {
+      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      //   testSchema: {
+      //     type: "literal",
+      //     definition: "myLiteral",
+      //   },
+      //   expectedResult: {
+      //     type: "literal",
+      //     definition: "myLiteral",
+      //   },
+      //   testValueObject: "myLiteral",
+      // },
+      // // simpleType
+      // test020: {
+      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      //   testSchema: {
+      //     type: "string",
+      //   },
+      //   expectedResult: {
+      //     type: "string",
+      //   },
+      //   testValueObject: "myString",
+      // },
+      // // schemaReference (plain, simpleType, non-recursive)
+      // test030: {
+      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      //   testSchema: {
+      //     type: "schemaReference",
+      //     context: {
+      //       a: {
+      //         type: "string",
+      //       },
+      //     },
+      //     definition: {
+      //       relativePath: "a",
+      //     },
+      //   },
+      //   expectedResult: {
+      //     type: "string",
+      //   },
+      //   testValueObject: "myString",
+      // },
+      // // schemaReference: object, recursive, 1-level valueObject
+      // test040: {
+      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      //   testSchema: {
+      //     type: "schemaReference",
+      //     context: {
+      //       myObject: {
+      //         type: "object",
+      //         definition: {
+      //           a: {
+      //             type: "union",
+      //             definition: [
+      //               {
+      //                 type: "string",
+      //               },
+      //               {
+      //                 type: "schemaReference",
+      //                 definition: { relativePath: "myObject" },
+      //               },
+      //             ],
+      //           },
+      //         },
+      //       },
+      //     },
+      //     definition: { relativePath: "myObject" },
+      //   },
+      //   expectedResult: {
+      //     type: "object",
+      //     definition: {
+      //       a: {
+      //         type: "string",
+      //       },
+      //     },
+      //   },
+      //   testValueObject: { a: "myString" },
+      // },
+      // // schemaReference: object, recursive, 2-level valueObject
+      // test050: {
+      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      //   testSchema: {
+      //     type: "schemaReference",
+      //     context: {
+      //       myObject: {
+      //         type: "object",
+      //         definition: {
+      //           a: {
+      //             type: "union",
+      //             discriminator: "type",
+      //             definition: [
+      //               {
+      //                 type: "string",
+      //               },
+      //               {
+      //                 type: "schemaReference",
+      //                 definition: { relativePath: "myObject" },
+      //               },
+      //             ],
+      //           },
+      //         },
+      //       },
+      //     },
+      //     definition: { relativePath: "myObject" },
+      //   },
+      //   expectedResult: {
+      //     type: "object",
+      //     definition: {
+      //       a: {
+      //         type: "object",
+      //         definition: {
+      //           a: {
+      //             type: "string",
+      //           },
+      //         },
+      //       },
+      //     },
+      //   },
+      //   testValueObject: { a: { a: "myString" } },
+      // },
+      // // schemaReference: object, recursive, 3-level valueObject
+      // test060: {
+      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      //   testSchema: {
+      //     type: "schemaReference",
+      //     context: {
+      //       myObject: {
+      //         type: "object",
+      //         definition: {
+      //           a: {
+      //             type: "union",
+      //             definition: [
+      //               {
+      //                 type: "string",
+      //               },
+      //               {
+      //                 type: "schemaReference",
+      //                 definition: { relativePath: "myObject" },
+      //               },
+      //             ],
+      //           },
+      //         },
+      //       },
+      //     },
+      //     definition: { relativePath: "myObject" },
+      //   },
+      //   expectedResult: {
+      //     type: "object",
+      //     definition: {
+      //       a: {
+      //         type: "object",
+      //         definition: {
+      //           a: {
+      //             type: "object",
+      //             definition: {
+      //               a: {
+      //                 type: "string",
+      //               },
+      //             },
+      //           },
+      //         },
+      //       },
+      //     },
+      //   },
+      //   testValueObject: { a: { a: { a: "myString" } } },
+      // },
+      // // schemaReference: record of recursive object, with 2-level valueObject
+      // test070: {
+      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      //   testSchema: {
+      //     type: "schemaReference",
+      //     context: {
+      //       myObject: {
+      //         type: "object",
+      //         definition: {
+      //           a: {
+      //             type: "union",
+      //             definition: [
+      //               {
+      //                 type: "string",
+      //               },
+      //               {
+      //                 type: "schemaReference",
+      //                 definition: { relativePath: "myObject" },
+      //               },
+      //             ],
+      //           },
+      //         },
+      //       },
+      //       myRecord: {
+      //         type: "record",
+      //         definition: {
+      //           type: "schemaReference",
+      //           definition: { relativePath: "myObject" },
+      //         },
+      //       },
+      //     },
+      //     definition: { relativePath: "myRecord" },
+      //   },
+      //   expectedResult: {
+      //     type: "object",
+      //     definition: {
+      //       r1: {
+      //         type: "object",
+      //         definition: {
+      //           a: {
+      //             type: "object",
+      //             definition: {
+      //               a: {
+      //                 type: "string",
+      //               },
+      //             },
+      //           },
+      //         },
+      //       },
+      //       r2: {
+      //         type: "object",
+      //         definition: {
+      //           a: {
+      //             type: "string",
+      //           },
+      //         },
+      //       },
+      //     },
+      //   },
+      //   testValueObject: { r1: { a: { a: "myString" } }, r2: { a: "myString" } },
+      // },
+      // // result must be identical to test70, but this time the schemaReference is places inside the record, not the other way around
+      // test080: {
+      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      //   testSchema: {
+      //     type: "record",
+      //     definition: {
+      //       type: "schemaReference",
+      //       context: {
+      //         myObject: {
+      //           type: "object",
+      //           definition: {
+      //             a: {
+      //               type: "union",
+      //               definition: [
+      //                 {
+      //                   type: "string",
+      //                 },
+      //                 {
+      //                   type: "schemaReference",
+      //                   definition: { relativePath: "myObject" },
+      //                 },
+      //               ],
+      //             },
+      //           },
+      //         },
+      //       },
+      //       definition: { relativePath: "myObject" },
+      //     },
+      //   },
+      //   expectedResult: {
+      //     type: "object",
+      //     definition: {
+      //       r1: {
+      //         type: "object",
+      //         definition: {
+      //           a: {
+      //             type: "object",
+      //             definition: {
+      //               a: {
+      //                 type: "string",
+      //               },
+      //             },
+      //           },
+      //         },
+      //       },
+      //       r2: {
+      //         type: "object",
+      //         definition: {
+      //           a: {
+      //             type: "string",
+      //           },
+      //         },
+      //       },
+      //     },
+      //   },
+      //   testValueObject: { r1: { a: { a: "myString" } }, r2: { a: "myString" } },
+      // },
+      // // array of simpleType
+      // test090: {
+      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      //   testSchema: {
+      //     type: "array",
+      //     definition: {
+      //       type: "string",
+      //     },
+      //   },
+      //   expectedResult: {
+      //     type: "array",
+      //     definition: {
+      //       type: "string",
+      //     },
+      //   },
+      //   testValueObject: ["1", "2", "3"],
+      // },
+      // // array of schemaReference / object
+      // test100: {
+      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      //   testSchema: {
+      //     type: "array",
+      //     definition: {
+      //       type: "schemaReference",
+      //       context: {
+      //         myObject: {
+      //           type: "object",
+      //           definition: {
+      //             a: {
+      //               type: "union",
+      //               definition: [
+      //                 {
+      //                   type: "string",
+      //                 },
+      //                 {
+      //                   type: "schemaReference",
+      //                   definition: { relativePath: "myObject" },
+      //                 },
+      //               ],
+      //             },
+      //           },
+      //         },
+      //       },
+      //       definition: { relativePath: "myObject" },
+      //     },
+      //   },
+      //   expectedResult: {
+      //     type: "array",
+      //     definition: {
+      //       type: "object",
+      //       definition: {
+      //         a: {
+      //           type: "union",
+      //           definition: [
+      //             {
+      //               type: "string",
+      //             },
+      //             {
+      //               type: "schemaReference",
+      //               definition: {
+      //                 relativePath: "myObject",
+      //               },
+      //             },
+      //           ],
+      //         },
+      //       },
+      //     },
+      //     // "type": "array",
+      //     // "definition": {
+      //     //   "type": "object",
+      //     //   "definition": {
+      //     //     "a": {
+      //     //       "type": "string"
+      //     //     }
+      //     //   }
+      //     // }
+      //   },
+      //   testValueObject: [
+      //     { a: "myString" },
+      //     // { a: { a: "myString" } }
+      //   ],
+      // },
+      // // TODO: array of union Type
+      // // array of schemaReference / object
+      // test120: {
+      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      //   testSchema: {
+      //     type: "schemaReference",
+      //     context: {
+      //       myObjectRoot: {
+      //         type: "object",
+      //         definition: {
+      //           a: {
+      //             type: "string",
+      //           },
+      //         },
+      //       },
+      //       myObject: {
+      //         type: "object",
+      //         extend: {
+      //           type: "schemaReference",
+      //           definition: {
+      //             relativePath: "myObjectRoot",
+      //           },
+      //         },
+      //         definition: {
+      //           b: {
+      //             type: "string",
+      //           },
+      //         },
+      //       },
+      //     },
+      //     definition: { relativePath: "myObject" },
+      //   },
+      //   expectedResult: {
+      //     type: "object",
+      //     definition: {
+      //       a: {
+      //         type: "string",
+      //       },
+      //       b: {
+      //         type: "string",
+      //       },
+      //     },
+      //   },
+      //   testValueObject: { a: "myString", b: "anotherString" },
+      // },
+      // // JzodSchema: literal
+      // test500: {
+      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      //   testSchema: {
+      //     type: "schemaReference",
+      //     definition: {
+      //       absolutePath: miroirFundamentalJzodSchemaUuid,
+      //       relativePath: "jzodElement",
+      //     },
+      //   },
+      //   expectedResult: {
+      //     type: "object",
+      //     definition: {
+      //       type: {
+      //         type: "literal",
+      //         definition: "literal",
+      //       },
+      //       definition: {
+      //         type: "string",
+      //       },
+      //     },
+      //   },
+      //   testValueObject: { type: "literal", definition: "myLiteral" },
+      // },
+      // // JzodSchema: string
+      // test510: {
+      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      //   testSchema: {
+      //     type: "schemaReference",
+      //     definition: {
+      //       absolutePath: miroirFundamentalJzodSchemaUuid,
+      //       relativePath: "jzodElement",
+      //     },
+      //   },
+      //   expectedResult: {
+      //     type: "object",
+      //     definition: {
+      //       type: {
+      //         type: "literal",
+      //         definition: "string",
+      //       },
+      //     },
+      //   },
+      //   testValueObject: { type: "string" },
+      // },
+      // // JzodSchema: object, simpleType attributes
+      // test520: {
+      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      //   testSchema: {
+      //     type: "schemaReference",
+      //     definition: {
+      //       absolutePath: miroirFundamentalJzodSchemaUuid,
+      //       relativePath: "jzodElement",
+      //     },
+      //   },
+      //   expectedResult: {
+      //     type: "object",
+      //     definition: {
+      //       type: {
+      //         type: "literal",
+      //         definition: "object",
+      //       },
+      //       definition: {
+      //         type: "object",
+      //         definition: {
+      //           a: {
+      //             type: "object",
+      //             definition: {
+      //               type: {
+      //                 type: "literal",
+      //                 definition: "string",
+      //               },
+      //             },
+      //           },
+      //         },
+      //       },
+      //     },
+      //   },
+      //   testValueObject: { type: "object", definition: { a: { type: "string" } } },
+      // },
+      // // JzodSchema: schema reference with simple attribute
+      // test530: {
+      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      //   testSchema: {
+      //     type: "schemaReference",
+      //     definition: {
+      //       absolutePath: miroirFundamentalJzodSchemaUuid,
+      //       relativePath: "jzodElement",
+      //     },
+      //   },
+      //   expectedResult: {
+      //     type: "object",
+      //     definition: {
+      //       type: {
+      //         type: "literal",
+      //         definition: "schemaReference",
+      //       },
+      //       definition: {
+      //         type: "object",
+      //         definition: {
+      //           absolutePath: {
+      //             type: "string",
+      //             optional: true,
+      //           },
+      //           relativePath: {
+      //             type: "string",
+      //             optional: true,
+      //           },
+      //         },
+      //       },
+      //     },
+      //   },
+      //   testValueObject: {
+      //     type: "schemaReference",
+      //     definition: { absolutePath: miroirFundamentalJzodSchemaUuid, relativePath: "jzodElement" },
+      //   },
+      // },
+      // // JzodSchema: schema reference for object with extend clause
+      // test540: {
+      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      //   testSchema: {
+      //     type: "schemaReference",
+      //     definition: {
+      //       absolutePath: miroirFundamentalJzodSchemaUuid,
+      //       relativePath: "jzodElement",
+      //     },
+      //   },
+      //   expectedResult: {
+      //     type: "object",
+      //     definition: {
+      //       type: {
+      //         type: "literal",
+      //         definition: "schemaReference",
+      //       },
+      //       context: {
+      //         type: "object",
+      //         definition: {
+      //           a: {
+      //             type: "object",
+      //             definition: {
+      //               type: {
+      //                 type: "literal",
+      //                 definition: "string",
+      //               },
+      //             },
+      //           },
+      //         },
+      //       },
+      //       definition: {
+      //         type: "object",
+      //         definition: {
+      //           relativePath: {
+      //             type: "string",
+      //             optional: true,
+      //           },
+      //         },
+      //       },
+      //     },
+      //   },
+      //   testValueObject: {
+      //     type: "schemaReference",
+      //     context: {
+      //       a: {
+      //         type: "string",
+      //       },
+      //     },
+      //     definition: {
+      //       relativePath: "a",
+      //     },
+      //   },
+      // },
+      // //
+      // // based on "real" cases
+      // test900: {
+      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      //   testSchema: {
+      //     type: "object",
+      //     definition: {
+      //       uuid: {
+      //         type: "string",
+      //         validations: [
+      //           {
+      //             type: "uuid",
+      //           },
+      //         ],
+      //         tag: {
+      //           value: {
+      //             id: 1,
+      //             defaultLabel: "Uuid",
+      //             editable: false,
+      //           },
+      //         },
+      //       },
+      //       parentName: {
+      //         type: "string",
+      //         optional: true,
+      //         tag: {
+      //           value: {
+      //             id: 2,
+      //             defaultLabel: "Entity Name",
+      //             editable: false,
+      //           },
+      //         },
+      //       },
+      //       parentUuid: {
+      //         type: "string",
+      //         validations: [
+      //           {
+      //             type: "uuid",
+      //           },
+      //         ],
+      //         tag: {
+      //           value: {
+      //             id: 3,
+      //             defaultLabel: "Entity Uuid",
+      //             editable: false,
+      //           },
+      //         },
+      //       },
+      //       name: {
+      //         type: "string",
+      //         tag: {
+      //           value: {
+      //             id: 4,
+      //             defaultLabel: "Name",
+      //             editable: true,
+      //           },
+      //         },
+      //       },
+      //       author: {
+      //         type: "string",
+      //         validations: [
+      //           {
+      //             type: "uuid",
+      //           },
+      //         ],
+      //         optional: true,
+      //         tag: {
+      //           value: {
+      //             id: 5,
+      //             defaultLabel: "Author",
+      //             targetEntity: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+      //             editable: true,
+      //           },
+      //         },
+      //       },
+      //       publisher: {
+      //         type: "string",
+      //         validations: [
+      //           {
+      //             type: "uuid",
+      //           },
+      //         ],
+      //         optional: true,
+      //         tag: {
+      //           value: {
+      //             id: 5,
+      //             defaultLabel: "Publisher",
+      //             targetEntity: "a027c379-8468-43a5-ba4d-bf618be25cab",
+      //             editable: true,
+      //           },
+      //         },
+      //       },
+      //     },
+      //   },
+      //   expectedResult: {
+      //     type: "object",
+      //     definition: {
+      //       uuid: {
+      //         type: "string",
+      //         validations: [
+      //           {
+      //             type: "uuid",
+      //           },
+      //         ],
+      //         tag: {
+      //           value: {
+      //             id: 1,
+      //             defaultLabel: "Uuid",
+      //             editable: false,
+      //           },
+      //         },
+      //       },
+      //       parentName: {
+      //         type: "string",
+      //         optional: true,
+      //         tag: {
+      //           value: {
+      //             id: 2,
+      //             defaultLabel: "Entity Name",
+      //             editable: false,
+      //           },
+      //         },
+      //       },
+      //       parentUuid: {
+      //         type: "string",
+      //         validations: [
+      //           {
+      //             type: "uuid",
+      //           },
+      //         ],
+      //         tag: {
+      //           value: {
+      //             id: 3,
+      //             defaultLabel: "Entity Uuid",
+      //             editable: false,
+      //           },
+      //         },
+      //       },
+      //       name: {
+      //         type: "string",
+      //         tag: {
+      //           value: {
+      //             id: 4,
+      //             defaultLabel: "Name",
+      //             editable: true,
+      //           },
+      //         },
+      //       },
+      //       author: {
+      //         type: "string",
+      //         validations: [
+      //           {
+      //             type: "uuid",
+      //           },
+      //         ],
+      //         optional: true,
+      //         tag: {
+      //           value: {
+      //             id: 5,
+      //             defaultLabel: "Author",
+      //             targetEntity: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+      //             editable: true,
+      //           },
+      //         },
+      //       },
+      //       publisher: {
+      //         type: "string",
+      //         validations: [
+      //           {
+      //             type: "uuid",
+      //           },
+      //         ],
+      //         optional: true,
+      //         tag: {
+      //           value: {
+      //             id: 5,
+      //             defaultLabel: "Publisher",
+      //             targetEntity: "a027c379-8468-43a5-ba4d-bf618be25cab",
+      //             editable: true,
+      //           },
+      //         },
+      //       },
+      //     },
+      //   },
+      //   testValueObject: {
+      //     uuid: "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7",
+      //     parentName: "Book",
+      //     parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      //     name: "Renata n'importe quoi",
+      //     author: "e4376314-d197-457c-aa5e-d2da5f8d5977",
+      //     publisher: "516a7366-39e7-4998-82cb-80199a7fa667",
+      //   },
+      // },
+      // // based on "real" cases
+      // test910: {
+      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      //   testSchema: {
+      //     type: "schemaReference",
+      //     context: {
+      //       menuItem: {
+      //         type: "object",
+      //         definition: {
+      //           label: {
+      //             type: "string",
+      //           },
+      //           section: {
+      //             type: "schemaReference",
+      //             definition: {
+      //               absolutePath: miroirFundamentalJzodSchemaUuid,
+      //               relativePath: "applicationSection",
+      //             },
+      //           },
+      //           selfApplication: {
+      //             type: "string",
+      //             validations: [
+      //               {
+      //                 type: "uuid",
+      //               },
+      //             ],
+      //             tag: {
+      //               value: {
+      //                 id: 1,
+      //                 defaultLabel: "Uuid",
+      //                 editable: false,
+      //               },
+      //             },
+      //           },
+      //           reportUuid: {
+      //             type: "string",
+      //             validations: [
+      //               {
+      //                 type: "uuid",
+      //               },
+      //             ],
+      //             tag: {
+      //               value: {
+      //                 id: 1,
+      //                 defaultLabel: "Uuid",
+      //                 editable: false,
+      //               },
+      //             },
+      //           },
+      //           instanceUuid: {
+      //             type: "string",
+      //             optional: true,
+      //             validations: [
+      //               {
+      //                 type: "uuid",
+      //               },
+      //             ],
+      //             tag: {
+      //               value: {
+      //                 id: 1,
+      //                 defaultLabel: "Uuid",
+      //                 editable: false,
+      //               },
+      //             },
+      //           },
+      //           icon: {
+      //             type: "string",
+      //             validations: [
+      //               {
+      //                 type: "uuid",
+      //               },
+      //             ],
+      //           },
+      //         },
+      //       },
+      //       menuItemArray: {
+      //         type: "array",
+      //         definition: {
+      //           type: "schemaReference",
+      //           definition: {
+      //             relativePath: "menuItem",
+      //           },
+      //         },
+      //       },
+      //       sectionOfMenu: {
+      //         type: "object",
+      //         definition: {
+      //           title: {
+      //             type: "string",
+      //           },
+      //           label: {
+      //             type: "string",
+      //           },
+      //           items: {
+      //             type: "schemaReference",
+      //             definition: {
+      //               relativePath: "menuItemArray",
+      //             },
+      //           },
+      //         },
+      //       },
+      //       simpleMenu: {
+      //         type: "object",
+      //         definition: {
+      //           menuType: {
+      //             type: "literal",
+      //             definition: "simpleMenu",
+      //           },
+      //           definition: {
+      //             type: "schemaReference",
+      //             definition: {
+      //               relativePath: "menuItemArray",
+      //             },
+      //           },
+      //         },
+      //       },
+      //       complexMenu: {
+      //         type: "object",
+      //         definition: {
+      //           menuType: {
+      //             type: "literal",
+      //             definition: "complexMenu",
+      //           },
+      //           definition: {
+      //             type: "array",
+      //             definition: {
+      //               type: "schemaReference",
+      //               definition: {
+      //                 relativePath: "sectionOfMenu",
+      //               },
+      //             },
+      //           },
+      //         },
+      //       },
+      //       menuDefinition: {
+      //         type: "union",
+      //         discriminator: "menuType",
+      //         definition: [
+      //           {
+      //             type: "schemaReference",
+      //             definition: {
+      //               relativePath: "simpleMenu",
+      //             },
+      //           },
+      //           {
+      //             type: "schemaReference",
+      //             definition: {
+      //               relativePath: "complexMenu",
+      //             },
+      //           },
+      //         ],
+      //       },
+      //     },
+      //     definition: {
+      //       relativePath: "menuDefinition",
+      //     },
+      //   },
+      //   expectedResult: {
+      //     type: "object",
+      //     definition: {
+      //       menuType: {
+      //         type: "literal",
+      //         definition: "complexMenu",
+      //       },
+      //       definition: {
+      //         type: "array",
+      //         definition: {
+      //           type: "object",
+      //           definition: {
+      //             title: {
+      //               type: "string",
+      //             },
+      //             label: {
+      //               type: "string",
+      //             },
+      //             items: {
+      //               type: "schemaReference",
+      //               definition: {
+      //                 relativePath: "menuItemArray",
+      //               },
+      //             },
+      //             // {
+      //             //   type: "array",
+      //             //   definition: {
+      //             //     type: "object",
+      //             //     definition: {
+      //             //       label: {
+      //             //         type: "string",
+      //             //       },
+      //             //       section: {
+      //             //         type: "literal",
+      //             //         definition: "model",
+      //             //       },
+      //             //       selfApplication: {
+      //             //         type: "string",
+      //             //         validations: [
+      //             //           {
+      //             //             type: "uuid",
+      //             //           },
+      //             //         ],
+      //             //         tag: {
+      //             //           id: 1,
+      //             //           defaultLabel: "Uuid",
+      //             //           editable: false,
+      //             //         },
+      //             //       },
+      //             //       reportUuid: {
+      //             //         type: "string",
+      //             //         validations: [
+      //             //           {
+      //             //             type: "uuid",
+      //             //           },
+      //             //         ],
+      //             //         tag: {
+      //             //           id: 1,
+      //             //           defaultLabel: "Uuid",
+      //             //           editable: false,
+      //             //         },
+      //             //       },
+      //             //       icon: {
+      //             //         type: "string",
+      //             //         validations: [
+      //             //           {
+      //             //             type: "uuid",
+      //             //           },
+      //             //         ],
+      //             //       },
+      //             //     },
+      //             //   },
+      //             // },
+      //           },
+      //         },
+      //       },
+      //     },
+      //   },
+      //   testValueObject: {
+      //     menuType: "complexMenu",
+      //     definition: [
+      //       {
+      //         title: "Miroir",
+      //         label: "miroir",
+      //         items: [
+      //           {
+      //             label: "Miroir Entities",
+      //             section: "model",
+      //             selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+      //             reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9",
+      //             icon: "category",
+      //           },
+      //           {
+      //             label: "Miroir Entity Definitions",
+      //             section: "model",
+      //             selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+      //             reportUuid: "f9aff35d-8636-4519-8361-c7648e0ddc68",
+      //             icon: "category",
+      //           },
+      //           {
+      //             label: "Miroir Reports",
+      //             section: "data",
+      //             selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+      //             reportUuid: "1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855",
+      //             icon: "list",
+      //           },
+      //           {
+      //             label: "Miroir Menus",
+      //             section: "data",
+      //             selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+      //             reportUuid: "ecfd8787-09cc-417d-8d2c-173633c9f998",
+      //             icon: "list",
+      //           },
+      //         ],
+      //       },
+      //       {
+      //         title: "Library",
+      //         label: "library",
+      //         items: [
+      //           {
+      //             label: "Library Entities",
+      //             section: "model",
+      //             selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+      //             reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9",
+      //             icon: "category",
+      //           },
+      //           {
+      //             label: "Library Entity Definitions",
+      //             section: "model",
+      //             selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+      //             reportUuid: "f9aff35d-8636-4519-8361-c7648e0ddc68",
+      //             icon: "category",
+      //           },
+      //           {
+      //             label: "Library Tests",
+      //             section: "data",
+      //             selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+      //             reportUuid: "931dd036-dfce-4e47-868e-36dba3654816",
+      //             icon: "category",
+      //           },
+      //           {
+      //             label: "Library Books",
+      //             section: "data",
+      //             selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+      //             reportUuid: "74b010b6-afee-44e7-8590-5f0849e4a5c9",
+      //             icon: "auto_stories",
+      //           },
+      //           {
+      //             label: "Library Authors",
+      //             section: "data",
+      //             selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+      //             reportUuid: "66a09068-52c3-48bc-b8dd-76575bbc8e72",
+      //             icon: "star",
+      //           },
+      //           {
+      //             label: "Library Publishers",
+      //             section: "data",
+      //             selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+      //             reportUuid: "a77aa662-006d-46cd-9176-01f02a1a12dc",
+      //             icon: "account_balance",
+      //           },
+      //         ],
+      //       },
+      //     ],
+      //   },
+      // },
+      // // // based on "real" cases
+      // // test920: {
+      // //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      // //   testSchema: {
+      // //     type: "schemaReference",
+      // //     context: {
+      // //       applicationSection: {
+      // //         type: "union",
+      // //         definition: [
+      // //           {
+      // //             type: "literal",
+      // //             definition: "model",
+      // //           },
+      // //           {
+      // //             type: "literal",
+      // //             definition: "data",
+      // //           },
+      // //         ],
+      // //       },
+      // //       transformer_constantUuid: {
+      // //         type: "object",
+      // //         definition: {
+      // //           transformerType: {
+      // //             type: "literal",
+      // //             definition: "constantUuid",
+      // //           },
+      // //           value: {
+      // //             type: "string",
+      // //           },
+      // //         },
+      // //       },
+      // //       transformer_constantString: {
+      // //         type: "object",
+      // //         definition: {
+      // //           transformerType: {
+      // //             type: "literal",
+      // //             definition: "constantString",
+      // //           },
+      // //           value: {
+      // //             type: "string",
+      // //           },
+      // //         },
+      // //       },
+      // //       transformer_newUuid: {
+      // //         type: "object",
+      // //         definition: {
+      // //           transformerType: {
+      // //             type: "literal",
+      // //             definition: "newUuid",
+      // //           },
+      // //         },
+      // //       },
+      // //       transformerForRuntime_contextReference: {
+      // //         type: "object",
+      // //         definition: {
+      // //           transformerType: {
+      // //             type: "literal",
+      // //             definition: "contextReference",
+      // //           },
+      // //           referenceName: {
+      // //             optional: true,
+      // //             type: "string",
+      // //           },
+      // //           referencePath: {
+      // //             optional: true,
+      // //             type: "array",
+      // //             definition: {
+      // //               type: "string",
+      // //             },
+      // //           },
+      // //         },
+      // //       },
+      // //       transformer_parameterReference: {
+      // //         type: "object",
+      // //         definition: {
+      // //           transformerType: {
+      // //             type: "literal",
+      // //             definition: "parameterReference",
+      // //           },
+      // //           referenceName: {
+      // //             optional: true,
+      // //             type: "string",
+      // //           },
+      // //           referencePath: {
+      // //             optional: true,
+      // //             type: "array",
+      // //             definition: {
+      // //               type: "string",
+      // //             },
+      // //           },
+      // //         },
+      // //       },
+      // //       transformer_contextOrParameterReferenceTO_REMOVE: {
+      // //         type: "union",
+      // //         discriminator: "transformerType",
+      // //         definition: [
+      // //           {
+      // //             type: "schemaReference",
+      // //             definition: {
+      // //               relativePath: "transformerForRuntime_contextReference",
+      // //             },
+      // //           },
+      // //           {
+      // //             type: "schemaReference",
+      // //             definition: {
+      // //               relativePath: "transformer_parameterReference",
+      // //             },
+      // //           },
+      // //         ],
+      // //       },
+      // //       transformerForBuild_Abstract: {
+      // //         type: "object",
+      // //         definition: {
+      // //           interpolation: {
+      // //             type: "literal",
+      // //             definition: "build",
+      // //           },
+      // //         },
+      // //       },
+      // //       transformerForBuild_InnerReference: {
+      // //         type: "union",
+      // //         discriminator: "transformerType",
+      // //         definition: [
+      // //           {
+      // //             type: "schemaReference",
+      // //             definition: {
+      // //               relativePath: "transformer_parameterReference",
+      // //             },
+      // //           },
+      // //           {
+      // //             type: "schemaReference",
+      // //             definition: {
+      // //               relativePath: "transformer_constantUuid",
+      // //             },
+      // //           },
+      // //           {
+      // //             type: "schemaReference",
+      // //             definition: {
+      // //               relativePath: "transformer_constantString",
+      // //             },
+      // //           },
+      // //           {
+      // //             type: "schemaReference",
+      // //             definition: {
+      // //               relativePath: "transformer_newUuid",
+      // //             },
+      // //           }
+      // //         ],
+      // //       },
+      // //       extractorTemplateRoot: {
+      // //         type: "object",
+      // //         definition: {
+      // //           label: {
+      // //             type: "string",
+      // //             optional: true,
+      // //             tag: { value: { id: 1, defaultLabel: "Label", editable: false } },
+      // //           },
+      // //           applicationSection: {
+      // //             type: "schemaReference",
+      // //             optional: true,
+      // //             tag: { value: { id: 2, defaultLabel: "Parent Uuid", editable: false } },
+      // //             definition: {
+      // //               absolutePath: miroirFundamentalJzodSchemaUuid,
+      // //               relativePath: "applicationSection",
+      // //             },
+      // //           },
+      // //           parentName: {
+      // //             type: "string",
+      // //             optional: true,
+      // //             tag: { value: { id: 3, defaultLabel: "Parent Name", editable: false } },
+      // //           },
+      // //           parentUuid: {
+      // //             type: "schemaReference",
+      // //             tag: { value: { id: 4, defaultLabel: "Parent Uuid", editable: false } },
+      // //             definition: {
+      // //               relativePath: "transformerForBuild_InnerReference",
+      // //             },
+      // //           },
+      // //         },
+      // //       },
+      // //       extractorTemplateExtractorForObjectByDirectReference: {
+      // //         type: "object",
+      // //         extend: {
+      // //           type: "schemaReference",
+      // //           definition: {
+      // //             eager: true,
+      // //             relativePath: "extractorTemplateRoot",
+      // //           },
+      // //         },
+      // //         definition: {
+      // //           extractorOrCombinerType: {
+      // //             type: "literal",
+      // //             definition: "extractorForObjectByDirectReference",
+      // //           },
+      // //           instanceUuid: {
+      // //             type: "schemaReference",
+      // //             definition: {
+      // //               // absolutePath: miroirFundamentalJzodSchemaUuid,
+      // //               relativePath: "transformerForBuild_InnerReference",
+      // //             },
+      // //           },
+      // //         },
+      // //       },
+      // //       extractorTemplateForObjectListByEntity: {
+      // //         type: "object",
+      // //         extend: {
+      // //           type: "schemaReference",
+      // //           definition: {
+      // //             eager: true,
+      // //             relativePath: "extractorTemplateRoot",
+      // //           },
+      // //         },
+      // //         definition: {
+      // //           extractorOrCombinerType: {
+      // //             type: "literal",
+      // //             definition: "extractorTemplateForObjectListByEntity",
+      // //           },
+      // //           filter: {
+      // //             type: "object",
+      // //             optional: true,
+      // //             definition: {
+      // //               attributeName: {
+      // //                 type: "string",
+      // //               },
+      // //               value: {
+      // //                 type: "schemaReference",
+      // //                 definition: {
+      // //                   relativePath: "transformer_constantString",
+      // //                 },
+      // //               },
+      // //             },
+      // //           },
+      // //         },
+      // //       },
+      // //       extractorTemplateByExtractorWrapperReturningObject: {
+      // //         type: "union",
+      // //         discriminator: "extractorOrCombinerType",
+      // //         definition: [
+      // //           {
+      // //             type: "schemaReference",
+      // //             definition: {
+      // //               relativePath: "extractorTemplateExtractorForObjectByDirectReference",
+      // //             },
+      // //           },
+      // //           {
+      // //             type: "object",
+      // //             definition: {
+      // //               extractorOrCombinerType: {
+      // //                 type: "literal",
+      // //                 definition: "extractorWrapperReturningObject",
+      // //               },
+      // //               definition: {
+      // //                 type: "record",
+      // //                 definition: {
+      // //                   type: "schemaReference",
+      // //                   definition: {
+      // //                     relativePath: "extractorTemplateByExtractorWrapperReturningObject",
+      // //                   },
+      // //                 },
+      // //               },
+      // //             },
+      // //           },
+      // //         ],
+      // //       },
+      // //       extractorTemplateByExtractorWrapperReturningList: {
+      // //         type: "union",
+      // //         discriminator: "extractorOrCombinerType",
+      // //         definition: [
+      // //           {
+      // //             type: "schemaReference",
+      // //             definition: {
+      // //               relativePath: "extractorTemplateForObjectListByEntity",
+      // //             },
+      // //           },
+      // //           {
+      // //             type: "object",
+      // //             definition: {
+      // //               extractorOrCombinerType: {
+      // //                 type: "literal",
+      // //                 definition: "extractorWrapperReturningList",
+      // //               },
+      // //               definition: {
+      // //                 type: "array",
+      // //                 definition: {
+      // //                   type: "schemaReference",
+      // //                   definition: {
+      // //                     relativePath: "extractorTemplateByExtractorWrapperReturningList",
+      // //                   },
+      // //                 },
+      // //               },
+      // //             },
+      // //           },
+      // //         ],
+      // //       },
+      // //       extractorTemplateByExtractorWrapper: {
+      // //         type: "union",
+      // //         discriminator: "extractorOrCombinerType",
+      // //         definition: [
+      // //           {
+      // //             type: "schemaReference",
+      // //             definition: {
+      // //               relativePath: "extractorTemplateByExtractorWrapperReturningObject",
+      // //             },
+      // //           },
+      // //           {
+      // //             type: "schemaReference",
+      // //             definition: {
+      // //               relativePath: "extractorTemplateByExtractorWrapperReturningList",
+      // //             },
+      // //           },
+      // //         ],
+      // //       },
+      // //     },
+      // //     definition: {
+      // //       relativePath: "extractorTemplateByExtractorWrapper",
+      // //     },
+      // //   },
+      // //   expectedResult: {
+      // //     // TODO: missing alternate possible union branches in parentUuid, instanceUuid?
+      // //     type: "object",
+      // //     definition: {
+      // //       extractorOrCombinerType: {
+      // //         type: "literal",
+      // //         definition: "extractorForObjectByDirectReference",
+      // //       },
+      // //       parentName: {
+      // //         type: "string",
+      // //         optional: true,
+      // //         tag: {
+      // //           value: {
+      // //             id: 3,
+      // //             defaultLabel: "Parent Name",
+      // //             editable: false,
+      // //           },
+      // //         },
+      // //       },
+      // //       parentUuid: {
+      // //         type: "object",
+      // //         definition: {
+      // //           transformerType: {
+      // //             type: "literal",
+      // //             definition: "constantUuid",
+      // //           },
+      // //           value: {
+      // //             type: "string",
+      // //           },
+      // //         },
+      // //       },
+      // //       instanceUuid: {
+      // //         type: "object",
+      // //         definition: {
+      // //           transformerType: {
+      // //             type: "literal",
+      // //             definition: "parameterReference",
+      // //           },
+      // //           referenceName: {
+      // //             optional: true,
+      // //             type: "string",
+      // //           },
+      // //         },
+      // //       },
+      // //     },
+      // //   },
+      // //   testValueObject: {
+      // //     extractorOrCombinerType: "extractorForObjectByDirectReference",
+      // //     parentName: "Report",
+      // //     parentUuid: {
+      // //       transformerType: "constantUuid",
+      // //       value: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+      // //     },
+      // //     instanceUuid: {
+      // //       transformerType: "parameterReference",
+      // //       referenceName: "instanceUuid",
+      // //     },
+      // //   },
+      // // },
       // based on "real" cases
-      test900: {
+      test930: {
         miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-        testSchema: {
-          type: "object",
-          definition: {
-            uuid: {
-              type: "string",
-              validations: [
-                {
-                  type: "uuid",
-                },
-              ],
-              tag: {
-                value: {
-                  id: 1,
-                  defaultLabel: "Uuid",
-                  editable: false,
-                },
-              },
-            },
-            parentName: {
-              type: "string",
-              optional: true,
-              tag: {
-                value: {
-                  id: 2,
-                  defaultLabel: "Entity Name",
-                  editable: false,
-                },
-              },
-            },
-            parentUuid: {
-              type: "string",
-              validations: [
-                {
-                  type: "uuid",
-                },
-              ],
-              tag: {
-                value: {
-                  id: 3,
-                  defaultLabel: "Entity Uuid",
-                  editable: false,
-                },
-              },
-            },
-            name: {
-              type: "string",
-              tag: {
-                value: {
-                  id: 4,
-                  defaultLabel: "Name",
-                  editable: true,
-                },
-              },
-            },
-            author: {
-              type: "string",
-              validations: [
-                {
-                  type: "uuid",
-                },
-              ],
-              optional: true,
-              tag: {
-                value: {
-                  id: 5,
-                  defaultLabel: "Author",
-                  targetEntity: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-                  editable: true,
-                },
-              },
-            },
-            publisher: {
-              type: "string",
-              validations: [
-                {
-                  type: "uuid",
-                },
-              ],
-              optional: true,
-              tag: {
-                value: {
-                  id: 5,
-                  defaultLabel: "Publisher",
-                  targetEntity: "a027c379-8468-43a5-ba4d-bf618be25cab",
-                  editable: true,
-                },
-              },
-            },
-          },
-        },
+        testSchema: entityDefinitionTest.jzodSchema as JzodElement,
+        // {
+        //   type: "record",
+        //   definition: miroirFundamentalJzodSchema.definition.context.buildPlusRuntimeCompositeAction.definition
+        //   .definition.definition as JzodUnion
+        // },
+        // testSchema: 
+
+        // {
+        //   type: "schemaReference",
+        //   context: {
+        //     applicationSection: {
+        //       type: "union",
+        //       definition: [
+        //         {
+        //           type: "literal",
+        //           definition: "model",
+        //         },
+        //         {
+        //           type: "literal",
+        //           definition: "data",
+        //         },
+        //       ],
+        //     },
+        //     transformer_constantUuid: {
+        //       type: "object",
+        //       definition: {
+        //         transformerType: {
+        //           type: "literal",
+        //           definition: "constantUuid",
+        //         },
+        //         value: {
+        //           type: "string",
+        //         },
+        //       },
+        //     },
+        //     transformer_constantString: {
+        //       type: "object",
+        //       definition: {
+        //         transformerType: {
+        //           type: "literal",
+        //           definition: "constantString",
+        //         },
+        //         value: {
+        //           type: "string",
+        //         },
+        //       },
+        //     },
+        //     transformer_newUuid: {
+        //       type: "object",
+        //       definition: {
+        //         transformerType: {
+        //           type: "literal",
+        //           definition: "newUuid",
+        //         },
+        //       },
+        //     },
+        //     transformerForRuntime_contextReference: {
+        //       type: "object",
+        //       definition: {
+        //         transformerType: {
+        //           type: "literal",
+        //           definition: "contextReference",
+        //         },
+        //         referenceName: {
+        //           optional: true,
+        //           type: "string",
+        //         },
+        //         referencePath: {
+        //           optional: true,
+        //           type: "array",
+        //           definition: {
+        //             type: "string",
+        //           },
+        //         },
+        //       },
+        //     },
+        //     transformer_parameterReference: {
+        //       type: "object",
+        //       definition: {
+        //         transformerType: {
+        //           type: "literal",
+        //           definition: "parameterReference",
+        //         },
+        //         referenceName: {
+        //           optional: true,
+        //           type: "string",
+        //         },
+        //         referencePath: {
+        //           optional: true,
+        //           type: "array",
+        //           definition: {
+        //             type: "string",
+        //           },
+        //         },
+        //       },
+        //     },
+        //     transformer_contextOrParameterReferenceTO_REMOVE: {
+        //       type: "union",
+        //       discriminator: "transformerType",
+        //       definition: [
+        //         {
+        //           type: "schemaReference",
+        //           definition: {
+        //             relativePath: "transformerForRuntime_contextReference",
+        //           },
+        //         },
+        //         {
+        //           type: "schemaReference",
+        //           definition: {
+        //             relativePath: "transformer_parameterReference",
+        //           },
+        //         },
+        //       ],
+        //     },
+        //     transformerForBuild_Abstract: {
+        //       type: "object",
+        //       definition: {
+        //         interpolation: {
+        //           type: "literal",
+        //           definition: "build",
+        //         },
+        //       },
+        //     },
+        //     transformerForBuild_InnerReference: {
+        //       type: "union",
+        //       discriminator: "transformerType",
+        //       definition: [
+        //         {
+        //           type: "schemaReference",
+        //           definition: {
+        //             relativePath: "transformer_parameterReference",
+        //           },
+        //         },
+        //         {
+        //           type: "schemaReference",
+        //           definition: {
+        //             relativePath: "transformer_constantUuid",
+        //           },
+        //         },
+        //         {
+        //           type: "schemaReference",
+        //           definition: {
+        //             relativePath: "transformer_constantString",
+        //           },
+        //         },
+        //         {
+        //           type: "schemaReference",
+        //           definition: {
+        //             relativePath: "transformer_newUuid",
+        //           },
+        //         }
+        //       ],
+        //     },
+        //     extractorTemplateRoot: {
+        //       type: "object",
+        //       definition: {
+        //         label: {
+        //           type: "string",
+        //           optional: true,
+        //           tag: { value: { id: 1, defaultLabel: "Label", editable: false } },
+        //         },
+        //         applicationSection: {
+        //           type: "schemaReference",
+        //           optional: true,
+        //           tag: { value: { id: 2, defaultLabel: "Parent Uuid", editable: false } },
+        //           definition: {
+        //             absolutePath: miroirFundamentalJzodSchemaUuid,
+        //             relativePath: "applicationSection",
+        //           },
+        //         },
+        //         parentName: {
+        //           type: "string",
+        //           optional: true,
+        //           tag: { value: { id: 3, defaultLabel: "Parent Name", editable: false } },
+        //         },
+        //         parentUuid: {
+        //           type: "schemaReference",
+        //           tag: { value: { id: 4, defaultLabel: "Parent Uuid", editable: false } },
+        //           definition: {
+        //             relativePath: "transformerForBuild_InnerReference",
+        //           },
+        //         },
+        //       },
+        //     },
+        //     extractorTemplateExtractorForObjectByDirectReference: {
+        //       type: "object",
+        //       extend: {
+        //         type: "schemaReference",
+        //         definition: {
+        //           eager: true,
+        //           relativePath: "extractorTemplateRoot",
+        //         },
+        //       },
+        //       definition: {
+        //         extractorOrCombinerType: {
+        //           type: "literal",
+        //           definition: "extractorForObjectByDirectReference",
+        //         },
+        //         instanceUuid: {
+        //           type: "schemaReference",
+        //           definition: {
+        //             // absolutePath: miroirFundamentalJzodSchemaUuid,
+        //             relativePath: "transformerForBuild_InnerReference",
+        //           },
+        //         },
+        //       },
+        //     },
+        //     extractorTemplateForObjectListByEntity: {
+        //       type: "object",
+        //       extend: {
+        //         type: "schemaReference",
+        //         definition: {
+        //           eager: true,
+        //           relativePath: "extractorTemplateRoot",
+        //         },
+        //       },
+        //       definition: {
+        //         extractorOrCombinerType: {
+        //           type: "literal",
+        //           definition: "extractorTemplateForObjectListByEntity",
+        //         },
+        //         filter: {
+        //           type: "object",
+        //           optional: true,
+        //           definition: {
+        //             attributeName: {
+        //               type: "string",
+        //             },
+        //             value: {
+        //               type: "schemaReference",
+        //               definition: {
+        //                 relativePath: "transformer_constantString",
+        //               },
+        //             },
+        //           },
+        //         },
+        //       },
+        //     },
+        //     extractorTemplateByExtractorWrapperReturningObject: {
+        //       type: "union",
+        //       discriminator: "extractorOrCombinerType",
+        //       definition: [
+        //         {
+        //           type: "schemaReference",
+        //           definition: {
+        //             relativePath: "extractorTemplateExtractorForObjectByDirectReference",
+        //           },
+        //         },
+        //         {
+        //           type: "object",
+        //           definition: {
+        //             extractorOrCombinerType: {
+        //               type: "literal",
+        //               definition: "extractorWrapperReturningObject",
+        //             },
+        //             definition: {
+        //               type: "record",
+        //               definition: {
+        //                 type: "schemaReference",
+        //                 definition: {
+        //                   relativePath: "extractorTemplateByExtractorWrapperReturningObject",
+        //                 },
+        //               },
+        //             },
+        //           },
+        //         },
+        //       ],
+        //     },
+        //     extractorTemplateByExtractorWrapperReturningList: {
+        //       type: "union",
+        //       discriminator: "extractorOrCombinerType",
+        //       definition: [
+        //         {
+        //           type: "schemaReference",
+        //           definition: {
+        //             relativePath: "extractorTemplateForObjectListByEntity",
+        //           },
+        //         },
+        //         {
+        //           type: "object",
+        //           definition: {
+        //             extractorOrCombinerType: {
+        //               type: "literal",
+        //               definition: "extractorWrapperReturningList",
+        //             },
+        //             definition: {
+        //               type: "array",
+        //               definition: {
+        //                 type: "schemaReference",
+        //                 definition: {
+        //                   relativePath: "extractorTemplateByExtractorWrapperReturningList",
+        //                 },
+        //               },
+        //             },
+        //           },
+        //         },
+        //       ],
+        //     },
+        //     extractorTemplateByExtractorWrapper: {
+        //       type: "union",
+        //       discriminator: "extractorOrCombinerType",
+        //       definition: [
+        //         {
+        //           type: "schemaReference",
+        //           definition: {
+        //             relativePath: "extractorTemplateByExtractorWrapperReturningObject",
+        //           },
+        //         },
+        //         {
+        //           type: "schemaReference",
+        //           definition: {
+        //             relativePath: "extractorTemplateByExtractorWrapperReturningList",
+        //           },
+        //         },
+        //       ],
+        //     },
+        //   },
+        //   definition: {
+        //     relativePath: "extractorTemplateByExtractorWrapper",
+        //   },
+        // },
         expectedResult: {
-          type: "object",
-          definition: {
-            uuid: {
-              type: "string",
-              validations: [
-                {
-                  type: "uuid",
-                },
-              ],
-              tag: {
-                value: {
-                  id: 1,
-                  defaultLabel: "Uuid",
-                  editable: false,
-                },
-              },
-            },
-            parentName: {
-              type: "string",
-              optional: true,
-              tag: {
-                value: {
-                  id: 2,
-                  defaultLabel: "Entity Name",
-                  editable: false,
-                },
-              },
-            },
-            parentUuid: {
-              type: "string",
-              validations: [
-                {
-                  type: "uuid",
-                },
-              ],
-              tag: {
-                value: {
-                  id: 3,
-                  defaultLabel: "Entity Uuid",
-                  editable: false,
-                },
-              },
-            },
-            name: {
-              type: "string",
-              tag: {
-                value: {
-                  id: 4,
-                  defaultLabel: "Name",
-                  editable: true,
-                },
-              },
-            },
-            author: {
-              type: "string",
-              validations: [
-                {
-                  type: "uuid",
-                },
-              ],
-              optional: true,
-              tag: {
-                value: {
-                  id: 5,
-                  defaultLabel: "Author",
-                  targetEntity: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-                  editable: true,
-                },
-              },
-            },
-            publisher: {
-              type: "string",
-              validations: [
-                {
-                  type: "uuid",
-                },
-              ],
-              optional: true,
-              tag: {
-                value: {
-                  id: 5,
-                  defaultLabel: "Publisher",
-                  targetEntity: "a027c379-8468-43a5-ba4d-bf618be25cab",
-                  editable: true,
-                },
-              },
-            },
-          },
-        },
-        testValueObject: {
-          uuid: "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7",
-          parentName: "Book",
-          parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-          name: "Renata n'importe quoi",
-          author: "e4376314-d197-457c-aa5e-d2da5f8d5977",
-          publisher: "516a7366-39e7-4998-82cb-80199a7fa667",
-        },
-      },
-      // based on "real" cases
-      test910: {
-        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-        testSchema: {
-          type: "schemaReference",
-          context: {
-            menuItem: {
-              type: "object",
-              definition: {
-                label: {
-                  type: "string",
-                },
-                section: {
-                  type: "schemaReference",
-                  definition: {
-                    absolutePath: miroirFundamentalJzodSchemaUuid,
-                    relativePath: "applicationSection",
-                  },
-                },
-                selfApplication: {
-                  type: "string",
-                  validations: [
-                    {
-                      type: "uuid",
-                    },
-                  ],
-                  tag: {
-                    value: {
-                      id: 1,
-                      defaultLabel: "Uuid",
-                      editable: false,
-                    },
-                  },
-                },
-                reportUuid: {
-                  type: "string",
-                  validations: [
-                    {
-                      type: "uuid",
-                    },
-                  ],
-                  tag: {
-                    value: {
-                      id: 1,
-                      defaultLabel: "Uuid",
-                      editable: false,
-                    },
-                  },
-                },
-                instanceUuid: {
-                  type: "string",
-                  optional: true,
-                  validations: [
-                    {
-                      type: "uuid",
-                    },
-                  ],
-                  tag: {
-                    value: {
-                      id: 1,
-                      defaultLabel: "Uuid",
-                      editable: false,
-                    },
-                  },
-                },
-                icon: {
-                  type: "string",
-                  validations: [
-                    {
-                      type: "uuid",
-                    },
-                  ],
-                },
-              },
-            },
-            menuItemArray: {
-              type: "array",
-              definition: {
-                type: "schemaReference",
-                definition: {
-                  relativePath: "menuItem",
-                },
-              },
-            },
-            sectionOfMenu: {
-              type: "object",
-              definition: {
-                title: {
-                  type: "string",
-                },
-                label: {
-                  type: "string",
-                },
-                items: {
-                  type: "schemaReference",
-                  definition: {
-                    relativePath: "menuItemArray",
-                  },
-                },
-              },
-            },
-            simpleMenu: {
-              type: "object",
-              definition: {
-                menuType: {
-                  type: "literal",
-                  definition: "simpleMenu",
-                },
-                definition: {
-                  type: "schemaReference",
-                  definition: {
-                    relativePath: "menuItemArray",
-                  },
-                },
-              },
-            },
-            complexMenu: {
-              type: "object",
-              definition: {
-                menuType: {
-                  type: "literal",
-                  definition: "complexMenu",
-                },
-                definition: {
-                  type: "array",
-                  definition: {
-                    type: "schemaReference",
-                    definition: {
-                      relativePath: "sectionOfMenu",
-                    },
-                  },
-                },
-              },
-            },
-            menuDefinition: {
-              type: "union",
-              discriminator: "menuType",
-              definition: [
-                {
-                  type: "schemaReference",
-                  definition: {
-                    relativePath: "simpleMenu",
-                  },
-                },
-                {
-                  type: "schemaReference",
-                  definition: {
-                    relativePath: "complexMenu",
-                  },
-                },
-              ],
-            },
-          },
-          definition: {
-            relativePath: "menuDefinition",
-          },
-        },
-        expectedResult: {
-          type: "object",
-          definition: {
-            menuType: {
-              type: "literal",
-              definition: "complexMenu",
-            },
-            definition: {
-              type: "array",
-              definition: {
-                type: "object",
-                definition: {
-                  title: {
-                    type: "string",
-                  },
-                  label: {
-                    type: "string",
-                  },
-                  items: {
-                    type: "schemaReference",
-                    definition: {
-                      relativePath: "menuItemArray",
-                    },
-                  },
-                  // {
-                  //   type: "array",
-                  //   definition: {
-                  //     type: "object",
-                  //     definition: {
-                  //       label: {
-                  //         type: "string",
-                  //       },
-                  //       section: {
-                  //         type: "literal",
-                  //         definition: "model",
-                  //       },
-                  //       selfApplication: {
-                  //         type: "string",
-                  //         validations: [
-                  //           {
-                  //             type: "uuid",
-                  //           },
-                  //         ],
-                  //         tag: {
-                  //           id: 1,
-                  //           defaultLabel: "Uuid",
-                  //           editable: false,
-                  //         },
-                  //       },
-                  //       reportUuid: {
-                  //         type: "string",
-                  //         validations: [
-                  //           {
-                  //             type: "uuid",
-                  //           },
-                  //         ],
-                  //         tag: {
-                  //           id: 1,
-                  //           defaultLabel: "Uuid",
-                  //           editable: false,
-                  //         },
-                  //       },
-                  //       icon: {
-                  //         type: "string",
-                  //         validations: [
-                  //           {
-                  //             type: "uuid",
-                  //           },
-                  //         ],
-                  //       },
-                  //     },
-                  //   },
-                  // },
-                },
-              },
-            },
-          },
-        },
-        testValueObject: {
-          menuType: "complexMenu",
-          definition: [
-            {
-              title: "Miroir",
-              label: "miroir",
-              items: [
-                {
-                  label: "Miroir Entities",
-                  section: "model",
-                  selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-                  reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9",
-                  icon: "category",
-                },
-                {
-                  label: "Miroir Entity Definitions",
-                  section: "model",
-                  selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-                  reportUuid: "f9aff35d-8636-4519-8361-c7648e0ddc68",
-                  icon: "category",
-                },
-                {
-                  label: "Miroir Reports",
-                  section: "data",
-                  selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-                  reportUuid: "1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855",
-                  icon: "list",
-                },
-                {
-                  label: "Miroir Menus",
-                  section: "data",
-                  selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-                  reportUuid: "ecfd8787-09cc-417d-8d2c-173633c9f998",
-                  icon: "list",
-                },
-              ],
-            },
-            {
-              title: "Library",
-              label: "library",
-              items: [
-                {
-                  label: "Library Entities",
-                  section: "model",
-                  selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
-                  reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9",
-                  icon: "category",
-                },
-                {
-                  label: "Library Entity Definitions",
-                  section: "model",
-                  selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
-                  reportUuid: "f9aff35d-8636-4519-8361-c7648e0ddc68",
-                  icon: "category",
-                },
-                {
-                  label: "Library Tests",
-                  section: "data",
-                  selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
-                  reportUuid: "931dd036-dfce-4e47-868e-36dba3654816",
-                  icon: "category",
-                },
-                {
-                  label: "Library Books",
-                  section: "data",
-                  selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
-                  reportUuid: "74b010b6-afee-44e7-8590-5f0849e4a5c9",
-                  icon: "auto_stories",
-                },
-                {
-                  label: "Library Authors",
-                  section: "data",
-                  selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
-                  reportUuid: "66a09068-52c3-48bc-b8dd-76575bbc8e72",
-                  icon: "star",
-                },
-                {
-                  label: "Library Publishers",
-                  section: "data",
-                  selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
-                  reportUuid: "a77aa662-006d-46cd-9176-01f02a1a12dc",
-                  icon: "account_balance",
-                },
-              ],
-            },
-          ],
-        },
-      },
-      // based on "real" cases
-      test920: {
-        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-        testSchema: {
-          type: "schemaReference",
-          context: {
-            applicationSection: {
-              type: "union",
-              definition: [
-                {
-                  type: "literal",
-                  definition: "model",
-                },
-                {
-                  type: "literal",
-                  definition: "data",
-                },
-              ],
-            },
-            transformer_constantUuid: {
-              type: "object",
-              definition: {
-                transformerType: {
-                  type: "literal",
-                  definition: "constantUuid",
-                },
-                value: {
-                  type: "string",
-                },
-              },
-            },
-            transformer_constantString: {
-              type: "object",
-              definition: {
-                transformerType: {
-                  type: "literal",
-                  definition: "constantString",
-                },
-                value: {
-                  type: "string",
-                },
-              },
-            },
-            transformer_newUuid: {
-              type: "object",
-              definition: {
-                transformerType: {
-                  type: "literal",
-                  definition: "newUuid",
-                },
-              },
-            },
-            transformerForRuntime_contextReference: {
-              type: "object",
-              definition: {
-                transformerType: {
-                  type: "literal",
-                  definition: "contextReference",
-                },
-                referenceName: {
-                  optional: true,
-                  type: "string",
-                },
-                referencePath: {
-                  optional: true,
-                  type: "array",
-                  definition: {
-                    type: "string",
-                  },
-                },
-              },
-            },
-            transformer_parameterReference: {
-              type: "object",
-              definition: {
-                transformerType: {
-                  type: "literal",
-                  definition: "parameterReference",
-                },
-                referenceName: {
-                  optional: true,
-                  type: "string",
-                },
-                referencePath: {
-                  optional: true,
-                  type: "array",
-                  definition: {
-                    type: "string",
-                  },
-                },
-              },
-            },
-            transformer_contextOrParameterReferenceTO_REMOVE: {
-              type: "union",
-              discriminator: "transformerType",
-              definition: [
-                {
-                  type: "schemaReference",
-                  definition: {
-                    relativePath: "transformerForRuntime_contextReference",
-                  },
-                },
-                {
-                  type: "schemaReference",
-                  definition: {
-                    relativePath: "transformer_parameterReference",
-                  },
-                },
-              ],
-            },
-            transformerForBuild_Abstract: {
-              type: "object",
-              definition: {
-                interpolation: {
-                  type: "literal",
-                  definition: "build",
-                },
-              },
-            },
-            transformerForBuild_InnerReference: {
-              type: "union",
-              discriminator: "transformerType",
-              definition: [
-                {
-                  type: "schemaReference",
-                  definition: {
-                    relativePath: "transformer_parameterReference",
-                  },
-                },
-                {
-                  type: "schemaReference",
-                  definition: {
-                    relativePath: "transformer_constantUuid",
-                  },
-                },
-                {
-                  type: "schemaReference",
-                  definition: {
-                    relativePath: "transformer_constantString",
-                  },
-                },
-                {
-                  type: "schemaReference",
-                  definition: {
-                    relativePath: "transformer_newUuid",
-                  },
-                }
-              ],
-            },
-            extractorTemplateRoot: {
-              type: "object",
-              definition: {
-                label: {
-                  type: "string",
-                  optional: true,
-                  tag: { value: { id: 1, defaultLabel: "Label", editable: false } },
-                },
-                applicationSection: {
-                  type: "schemaReference",
-                  optional: true,
-                  tag: { value: { id: 2, defaultLabel: "Parent Uuid", editable: false } },
-                  definition: {
-                    absolutePath: miroirFundamentalJzodSchemaUuid,
-                    relativePath: "applicationSection",
-                  },
-                },
-                parentName: {
-                  type: "string",
-                  optional: true,
-                  tag: { value: { id: 3, defaultLabel: "Parent Name", editable: false } },
-                },
-                parentUuid: {
-                  type: "schemaReference",
-                  tag: { value: { id: 4, defaultLabel: "Parent Uuid", editable: false } },
-                  definition: {
-                    relativePath: "transformerForBuild_InnerReference",
-                  },
-                },
-              },
-            },
-            extractorTemplateExtractorForObjectByDirectReference: {
-              type: "object",
-              extend: {
-                type: "schemaReference",
-                definition: {
-                  eager: true,
-                  relativePath: "extractorTemplateRoot",
-                },
-              },
-              definition: {
-                extractorOrCombinerType: {
-                  type: "literal",
-                  definition: "extractorForObjectByDirectReference",
-                },
-                instanceUuid: {
-                  type: "schemaReference",
-                  definition: {
-                    // absolutePath: miroirFundamentalJzodSchemaUuid,
-                    relativePath: "transformerForBuild_InnerReference",
-                  },
-                },
-              },
-            },
-            extractorTemplateForObjectListByEntity: {
-              type: "object",
-              extend: {
-                type: "schemaReference",
-                definition: {
-                  eager: true,
-                  relativePath: "extractorTemplateRoot",
-                },
-              },
-              definition: {
-                extractorOrCombinerType: {
-                  type: "literal",
-                  definition: "extractorTemplateForObjectListByEntity",
-                },
-                filter: {
-                  type: "object",
-                  optional: true,
-                  definition: {
-                    attributeName: {
-                      type: "string",
-                    },
-                    value: {
-                      type: "schemaReference",
-                      definition: {
-                        relativePath: "transformer_constantString",
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            extractorTemplateByExtractorWrapperReturningObject: {
-              type: "union",
-              discriminator: "extractorOrCombinerType",
-              definition: [
-                {
-                  type: "schemaReference",
-                  definition: {
-                    relativePath: "extractorTemplateExtractorForObjectByDirectReference",
-                  },
-                },
-                {
-                  type: "object",
-                  definition: {
-                    extractorOrCombinerType: {
-                      type: "literal",
-                      definition: "extractorWrapperReturningObject",
-                    },
-                    definition: {
-                      type: "record",
-                      definition: {
-                        type: "schemaReference",
-                        definition: {
-                          relativePath: "extractorTemplateByExtractorWrapperReturningObject",
-                        },
-                      },
-                    },
-                  },
-                },
-              ],
-            },
-            extractorTemplateByExtractorWrapperReturningList: {
-              type: "union",
-              discriminator: "extractorOrCombinerType",
-              definition: [
-                {
-                  type: "schemaReference",
-                  definition: {
-                    relativePath: "extractorTemplateForObjectListByEntity",
-                  },
-                },
-                {
-                  type: "object",
-                  definition: {
-                    extractorOrCombinerType: {
-                      type: "literal",
-                      definition: "extractorWrapperReturningList",
-                    },
-                    definition: {
-                      type: "array",
-                      definition: {
-                        type: "schemaReference",
-                        definition: {
-                          relativePath: "extractorTemplateByExtractorWrapperReturningList",
-                        },
-                      },
-                    },
-                  },
-                },
-              ],
-            },
-            extractorTemplateByExtractorWrapper: {
-              type: "union",
-              discriminator: "extractorOrCombinerType",
-              definition: [
-                {
-                  type: "schemaReference",
-                  definition: {
-                    relativePath: "extractorTemplateByExtractorWrapperReturningObject",
-                  },
-                },
-                {
-                  type: "schemaReference",
-                  definition: {
-                    relativePath: "extractorTemplateByExtractorWrapperReturningList",
-                  },
-                },
-              ],
-            },
-          },
-          definition: {
-            relativePath: "extractorTemplateByExtractorWrapper",
-          },
-        },
-        expectedResult: {
-          // TODO: missing alternate possible union branches in parentUuid, instanceUuid?
           type: "object",
           definition: {
             extractorOrCombinerType: {
@@ -1709,18 +2095,20 @@ describe("jzod.unfoldSchemaForValue", () => {
             },
           },
         },
-        testValueObject: {
-          extractorOrCombinerType: "extractorForObjectByDirectReference",
-          parentName: "Report",
-          parentUuid: {
-            transformerType: "constantUuid",
-            value: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
-          },
-          instanceUuid: {
-            transformerType: "parameterReference",
-            referenceName: "instanceUuid",
-          },
-        },
+        // testValueObject: test_createEntityAndReportFromSpreadsheetAndUpdateMenu.definition.testCompositeActions
+        testValueObject: test_createEntityAndReportFromSpreadsheetAndUpdateMenu
+        // {
+        //   extractorOrCombinerType: "extractorForObjectByDirectReference",
+        //   parentName: "Report",
+        //   parentUuid: {
+        //     transformerType: "constantUuid",
+        //     value: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+        //   },
+        //   instanceUuid: {
+        //     transformerType: "parameterReference",
+        //     referenceName: "instanceUuid",
+        //   },
+        // },
       },
     };
 

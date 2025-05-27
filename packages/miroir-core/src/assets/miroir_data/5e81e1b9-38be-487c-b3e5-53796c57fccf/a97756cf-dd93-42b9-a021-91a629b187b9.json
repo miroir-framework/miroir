@@ -129,7 +129,7 @@
           "relativePath": "transformer_constantListAsExtractor"
         }
       },
-      "transformer_constantListAsExtractor":{
+      "transformer_constantListAsExtractor": {
         "type": "object",
         "definition": {
           "transformerType": {
