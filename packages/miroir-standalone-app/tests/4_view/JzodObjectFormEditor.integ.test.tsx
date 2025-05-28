@@ -43,7 +43,7 @@ import {
   persistenceEndpointVersionV1,
   queryEndpointVersionV1,
   resetAndInitApplicationDeployment,
-  resolveReferencesForJzodSchemaAndValueObject,
+  jzodTypeCheck,
   storeManagementEndpoint,
   testEndpointVersionV1,
   transformerJzodSchema,
@@ -512,10 +512,12 @@ describe(
     //       console.log('edit discriminated union', objectJzodSchema);
     //       const user = (userEvent as any).setup()
       
-    //       const resolvedSchemaReturn: ResolvedJzodSchemaReturnType = resolveReferencesForJzodSchemaAndValueObject(
+    //       const resolvedSchemaReturn: ResolvedJzodSchemaReturnType = jzodTypeCheck(
+      //         formJzodSchema,
+      //         formInitialValue,
+    // [], // currentValuePath
+    // [], // currentTypePath
     //         miroirFundamentalJzodSchema,
-    //         formJzodSchema,
-    //         formInitialValue,
     //         testEnvironment.localCache.currentModel(adminConfigurationDeploymentLibrary.uuid),
     //         testEnvironment.localCache.currentModel(adminConfigurationDeploymentMiroir.uuid),
     //       );
@@ -628,10 +630,12 @@ describe(
     //       console.log('edit subdiscriminated union', objectJzodSchema);
     //       const user = (userEvent as any).setup()
       
-    //       const resolvedSchemaReturn: ResolvedJzodSchemaReturnType = resolveReferencesForJzodSchemaAndValueObject(
+    //       const resolvedSchemaReturn: ResolvedJzodSchemaReturnType = jzodTypeCheck(
+      //         formJzodSchema,
+      //         formInitialValue,
+    // [], // currentValuePath
+    // [], // currentTypePath
     //         miroirFundamentalJzodSchema,
-    //         formJzodSchema,
-    //         formInitialValue,
     //         testEnvironment.localCache.currentModel(adminConfigurationDeploymentLibrary.uuid),
     //         testEnvironment.localCache.currentModel(adminConfigurationDeploymentMiroir.uuid),
     //       );
@@ -768,10 +772,12 @@ describe(
           const appModel = (testEnvironment as any).localCache.currentModel(adminConfigurationDeploymentLibrary.uuid)
           const miroirModel = (testEnvironment as any).localCache.currentModel(adminConfigurationDeploymentMiroir.uuid)
           console.log("miroirModel", miroirModel);
-          const resolvedSchemaReturn: ResolvedJzodSchemaReturnType = resolveReferencesForJzodSchemaAndValueObject(
-            miroirFundamentalJzodSchema as any as JzodSchema,
+          const resolvedSchemaReturn: ResolvedJzodSchemaReturnType = jzodTypeCheck(
             formJzodSchema,
             formInitialValue,
+            [], // currentValuePath
+            [], // currentTypePath
+            miroirFundamentalJzodSchema as any as JzodSchema,
             appModel,
             miroirModel,
             {}

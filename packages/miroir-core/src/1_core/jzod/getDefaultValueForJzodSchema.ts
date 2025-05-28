@@ -7,7 +7,7 @@ import { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../../4_services/LoggerFactory";
 import { packageName } from "../../constants";
 import { cleanLevel } from "../constants";
-import { resolveJzodSchemaReferenceInContext, resolveObjectExtendClauseAndDefinition } from "./JzodUnfoldSchemaForValue";
+import { resolveJzodSchemaReferenceInContext, resolveObjectExtendClauseAndDefinition } from "./jzodTypeCheck";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

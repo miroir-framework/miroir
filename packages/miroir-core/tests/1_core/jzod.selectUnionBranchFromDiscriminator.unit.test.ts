@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { Entity, EntityDefinition, JzodEnum, JzodLiteral, JzodObject, JzodSchema, Menu, MetaModel, Report } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { selectUnionBranchFromDiscriminator } from '../../src/1_core/jzod/JzodUnfoldSchemaForValue';
+import { selectUnionBranchFromDiscriminator } from '../../src/1_core/jzod/jzodTypeCheck';
 // import { selectUnionBranchFromDiscriminator } from "./JzodUnfoldSchemaForValue";
 
 import entityEntity from '../../src/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json';
@@ -148,6 +148,8 @@ describe("selectUnionBranchFromDiscriminator", () => {
         [objA, objB],
         discriminator,
         valueObject,
+        [], // valueObjectPath
+        [], // typePath 
         castMiroirFundamentalJzodSchema,
         defaultMiroirMetaModel,
         defaultMiroirMetaModel,
@@ -169,6 +171,8 @@ describe("selectUnionBranchFromDiscriminator", () => {
         [objA, objB],
         discriminator,
         valueObject,
+        [], // valueObjectPath
+        [], // typePath 
         castMiroirFundamentalJzodSchema,
         defaultMiroirMetaModel,
         defaultMiroirMetaModel,
@@ -189,6 +193,8 @@ describe("selectUnionBranchFromDiscriminator", () => {
         [objA1, objA2],
         discriminator,
         valueObject,
+        [], // valueObjectPath
+        [], // typePath 
         castMiroirFundamentalJzodSchema,
         defaultMiroirMetaModel,
         defaultMiroirMetaModel,
@@ -209,6 +215,8 @@ describe("selectUnionBranchFromDiscriminator", () => {
         [objA, objB],
         discriminator,
         valueObject,
+        [], // valueObjectPath
+        [], // typePath 
         castMiroirFundamentalJzodSchema,
         defaultMiroirMetaModel,
         defaultMiroirMetaModel,
@@ -229,6 +237,8 @@ describe("selectUnionBranchFromDiscriminator", () => {
         [objA, objB],
         discriminator,
         valueObject,
+        [], // valueObjectPath
+        [], // typePath 
         castMiroirFundamentalJzodSchema,
         defaultMiroirMetaModel,
         defaultMiroirMetaModel,
@@ -250,6 +260,8 @@ describe("selectUnionBranchFromDiscriminator", () => {
         [objA],
         discriminator,
         valueObject,
+        [], // valueObjectPath
+        [], // typePath 
         castMiroirFundamentalJzodSchema,
         defaultMiroirMetaModel,
         defaultMiroirMetaModel,
@@ -271,6 +283,8 @@ describe("selectUnionBranchFromDiscriminator", () => {
         [objA, objB],
         discriminator,
         valueObject,
+        [], // valueObjectPath
+        [], // typePath 
         castMiroirFundamentalJzodSchema,
         defaultMiroirMetaModel,
         defaultMiroirMetaModel,
@@ -293,6 +307,8 @@ describe("selectUnionBranchFromDiscriminator", () => {
         [objEnum, objOther],
         discriminator,
         valueObject,
+        [], // valueObjectPath
+        [], // typePath 
         castMiroirFundamentalJzodSchema,
         defaultMiroirMetaModel,
         defaultMiroirMetaModel,
@@ -314,6 +330,8 @@ describe("selectUnionBranchFromDiscriminator", () => {
         [objEnum],
         discriminator,
         valueObject,
+        [], // valueObjectPath
+        [], // typePath 
         castMiroirFundamentalJzodSchema,
         defaultMiroirMetaModel,
         defaultMiroirMetaModel,
@@ -336,6 +354,8 @@ describe("selectUnionBranchFromDiscriminator", () => {
         [objA, objB],
         discriminator,
         valueObject,
+        [], // valueObjectPath
+        [], // typePath 
         castMiroirFundamentalJzodSchema,
         defaultMiroirMetaModel,
         defaultMiroirMetaModel,
@@ -357,6 +377,8 @@ describe("selectUnionBranchFromDiscriminator", () => {
         [objA, objB],
         discriminator,
         valueObject,
+        [], // valueObjectPath
+        [], // typePath 
         castMiroirFundamentalJzodSchema,
         defaultMiroirMetaModel,
         defaultMiroirMetaModel,
@@ -393,6 +415,8 @@ describe("selectUnionBranchFromDiscriminator", () => {
         [objA, objB],
         discriminator,
         valueObject,
+        [], // valueObjectPath
+        [], // typePath 
         castMiroirFundamentalJzodSchema,
         defaultMiroirMetaModel,
         defaultMiroirMetaModel,
@@ -405,7 +429,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
           },
         }
       );
-    console.log("currentDiscriminatedObjectJzodSchema", JSON.stringify(currentDiscriminatedObjectJzodSchema, null, 2));
+    // console.log("currentDiscriminatedObjectJzodSchema", JSON.stringify(currentDiscriminatedObjectJzodSchema, null, 2));
     expect(currentDiscriminatedObjectJzodSchemas.length).toBe(1);
     expect(currentDiscriminatedObjectJzodSchema).toEqual({
       type: "object",
@@ -2575,6 +2599,8 @@ describe("selectUnionBranchFromDiscriminator", () => {
         unionBranches as any,
         discriminator,
         valueObject,
+        [], // valueObjectPath
+        [], // typePath 
         castMiroirFundamentalJzodSchema,
         defaultMiroirMetaModel,
         defaultMiroirMetaModel,

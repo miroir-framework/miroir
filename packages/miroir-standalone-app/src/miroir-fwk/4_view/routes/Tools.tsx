@@ -29,7 +29,7 @@ import {
   entityMenu,
   entitySelfApplication,
   miroirFundamentalJzodSchema,
-  resolveReferencesForJzodSchemaAndValueObject,
+  jzodTypeCheck,
   testSuitesResultsSchema
 } from "miroir-core";
 
@@ -807,10 +807,12 @@ export const ToolsPage: React.FC<any> = (
       if (context.miroirFundamentalJzodSchema == undefined || context.miroirFundamentalJzodSchema.name == "dummyJzodSchema") {
         return defaultObject
       } else {
-        const configuration = resolveReferencesForJzodSchemaAndValueObject(
-          context.miroirFundamentalJzodSchema,
+        const configuration = jzodTypeCheck(
           rawSchema,
           formState,
+          [], // currentValuePath
+          [], // currentTypePath
+          context.miroirFundamentalJzodSchema,
           currentModel,
           currentMiroirModel,
           emptyObject,
@@ -823,7 +825,7 @@ export const ToolsPage: React.FC<any> = (
   );
 
   log.info(
-    "called resolveReferencesForJzodSchemaAndValueObject: resolvedJzodSchema",
+    "called jzodTypeCheck: resolvedJzodSchema",
     resolvedJzodSchema,
     "miroirFundamentalJzodSchema",
     context.miroirFundamentalJzodSchema,
@@ -838,12 +840,12 @@ export const ToolsPage: React.FC<any> = (
       context.miroirFundamentalJzodSchema != undefined &&
       (testSuitesResultsSchema != undefined && testSuitesResultsSchema.context != undefined)
     ) {
-      const configuration = resolveReferencesForJzodSchemaAndValueObject(
-        context.miroirFundamentalJzodSchema,
-        // testSuitesResultsSchema.context.innerTestSuitesResults,
-        // testSuitesResultsSchema.context.testsResults,
+      const configuration = jzodTypeCheck(
         (miroirFundamentalJzodSchema.definition.context as any).testsResults,
         testResults["applicative.Library.BuildPlusRuntimeCompositeAction.integ.test"],
+        [], // currentValuePath
+        [], // currentTypePath
+        context.miroirFundamentalJzodSchema,
         currentModel,
         currentMiroirModel,
         emptyObject
@@ -854,7 +856,7 @@ export const ToolsPage: React.FC<any> = (
   }, [context.miroirFundamentalJzodSchema, rawSchema, testResults]);
 
   log.info(
-    "called resolveReferencesForJzodSchemaAndValueObject: resolvedTestResultsJzodSchema",
+    "called jzodTypeCheck: resolvedTestResultsJzodSchema",
     resolvedTestResultsJzodSchema,
     context.miroirFundamentalJzodSchema,
     "rawSchema",

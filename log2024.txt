@@ -818,7 +818,7 @@ commit 7682d005aa8832e44ebcff51423b1c71df06f09c
 Author: Miroir Framework <miroir-framework@protonmail.com>
 Date:   Thu Sep 26 10:27:36 2024 +0200
 
-    BUGFIX: correct resolveReferencesForJzodSchemaAndValueObject to handle (a limited form of) discriminated unions of unions. In ReportView, converting Report Templates before display, do not use useDeploymentEntityStateJzodSchemaSelectorForTemplate. Fixed display for some details reports.
+    BUGFIX: correct jzodTypeCheck to handle (a limited form of) discriminated unions of unions. In ReportView, converting Report Templates before display, do not use useDeploymentEntityStateJzodSchemaSelectorForTemplate. Fixed display for some details reports.
 
  23 files changed, 7220 insertions(+), 6708 deletions(-)
 
@@ -1994,7 +1994,7 @@ commit 450b6491cae8d8cb77bd34fbf0496f0c8c09ed89
 Author: Miroir Framework <miroir-framework@protonmail.com>
 Date:   Thu Mar 28 19:08:20 2024 +0100
 
-    GUI: for resolveReferencesForJzodSchemaAndValueObject, adding treatment for Object.extend clause, using subDiscriminator for union types (because of JzodSimpleTypes)
+    GUI: for jzodTypeCheck, adding treatment for Object.extend clause, using subDiscriminator for union types (because of JzodSimpleTypes)
 
  9 files changed, 2185 insertions(+), 9622 deletions(-)
 
@@ -2114,7 +2114,7 @@ commit 3670cb47125c5653a5fff922b1ba7b3147bff90c
 Author: Miroir Framework <miroir-framework@protonmail.com>
 Date:   Thu Mar 21 12:09:17 2024 +0100
 
-    mash-up: implementing resolveReferencesForJzodSchemaAndValueObject for objects and arrays, recovering Test entity to test JzodElementEditor (there are issues in it)
+    mash-up: implementing jzodTypeCheck for objects and arrays, recovering Test entity to test JzodElementEditor (there are issues in it)
 
  14 files changed, 1106 insertions(+), 651 deletions(-)
 
@@ -2122,7 +2122,7 @@ commit 7b8f39718f1a748774c3ffa13c8b2e7e02696bb9
 Author: Miroir Framework <miroir-framework@protonmail.com>
 Date:   Mon Mar 18 22:16:48 2024 +0100
 
-    mash-up: avoid using import of json files in miroir-core, and implementing resolveReferencesForJzodSchemaAndValueObject for edition of Jzod schemas
+    mash-up: avoid using import of json files in miroir-core, and implementing jzodTypeCheck for edition of Jzod schemas
 
  23 files changed, 2391 insertions(+), 307 deletions(-)
 
@@ -2130,7 +2130,7 @@ commit f95498bade7815fe45343550acc06c8dd26fe262
 Author: Miroir Framework <miroir-framework@protonmail.com>
 Date:   Mon Mar 18 09:53:26 2024 +0100
 
-    GUI: correct JzodElementEditor phase 1, added treatment for record types to  resolveReferencesForJzodSchemaAndValueObject.
+    GUI: correct JzodElementEditor phase 1, added treatment for record types to  jzodTypeCheck.
 
  2 files changed, 275 insertions(+), 86 deletions(-)
 
@@ -2138,7 +2138,7 @@ commit 6afcda09d88a94e1e854bcf1570a1933a6d2abf6
 Author: Miroir Framework <miroir-framework@protonmail.com>
 Date:   Sun Mar 17 21:56:06 2024 +0100
 
-    GUI: correct JzodElementEditor phase 1, add resolveReferencesForJzodSchemaAndValueObject to Jzod.ts, with tests for very simple recursive object schema.
+    GUI: correct JzodElementEditor phase 1, add jzodTypeCheck to Jzod.ts, with tests for very simple recursive object schema.
 
  20 files changed, 15523 insertions(+), 317 deletions(-)
 

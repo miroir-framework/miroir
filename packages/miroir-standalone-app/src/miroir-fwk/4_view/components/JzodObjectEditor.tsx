@@ -41,7 +41,7 @@ import {
   getDefaultValueForJzodSchemaWithResolution,
   getQueryRunnerParamsForDeploymentEntityState,
   resolvePathOnObject,
-  resolveReferencesForJzodSchemaAndValueObject,
+  jzodTypeCheck,
   unfoldJzodSchemaOnce
 } from "miroir-core";
 
@@ -738,10 +738,12 @@ export const JzodObjectEditor = (
         props.unionInformation?.jzodSchema
       );
 
-      const newResolvedJzodSchema = resolveReferencesForJzodSchemaAndValueObject(
-        currentMiroirFundamentalJzodSchema, //context.miroirFundamentalJzodSchema,
+      const newResolvedJzodSchema = jzodTypeCheck(
         props.unionInformation?.jzodSchema as any, // not undefined here!
         currentParentValue,
+        [], // currentValuePath
+        [], // currentTypePath
+        currentMiroirFundamentalJzodSchema, //context.miroirFundamentalJzodSchema,
         currentModel,
         miroirMetaModel,
         {}

@@ -97,8 +97,7 @@ describe("transformerInterfaceFromDefinition", () => {
   it("should return a valid JzodElement for runtime target", () => {
     const result = transformerInterfaceFromDefinition(transformerDefinition, "runtime", runtimeReferenceMap);
 
-    expect(result).toEqual(
-      {
+    expect(result).toEqual({
       type: "object",
       extend: [
         {
@@ -128,20 +127,20 @@ describe("transformerInterfaceFromDefinition", () => {
           type: "union",
           discriminator: "referenceType",
           definition: [
-          {
-            type: "record",
-            definition: {
-              type: "any",
-            },
-          },
             {
-              type: "schemaReference",
+              type: "record",
               definition: {
-                relativePath: "transformer_inner_referenced_extractor",
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                type: "any",
               },
-              context: {},
             },
+            // {
+            //   type: "schemaReference",
+            //   definition: {
+            //     relativePath: "transformer_inner_referenced_extractor",
+            //     absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            //   },
+            //   context: {},
+            // },
             {
               type: "schemaReference",
               definition: {
@@ -213,20 +212,20 @@ describe("transformerInterfaceFromDefinition", () => {
           type: "union",
           discriminator: "referenceType",
           definition: [
-          {
-            type: "record",
-            definition: {
-              type: "any",
-            },
-          },
             {
-              type: "schemaReference",
+              type: "record",
               definition: {
-                relativePath: "transformer_inner_referenced_extractor",
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                type: "any",
               },
-              context: {},
             },
+            // {
+            //   type: "schemaReference",
+            //   definition: {
+            //     relativePath: "transformer_inner_referenced_extractor",
+            //     absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            //   },
+            //   context: {},
+            // },
             {
               type: "schemaReference",
               definition: {

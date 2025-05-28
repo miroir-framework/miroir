@@ -8,7 +8,7 @@ import { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../../4_services/LoggerFactory";
 import { packageName } from "../../constants";
 import { cleanLevel } from "../constants";
-import { resolveJzodSchemaReferenceInContext } from "./JzodUnfoldSchemaForValue";
+import { resolveJzodSchemaReferenceInContext } from "./jzodTypeCheck";
 
 // export const miroirFundamentalJzodSchema2 = miroirFundamentalJzodSchema;
 // import { miroirFundamentalJzodSchema } from "../tmp/src/0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema";

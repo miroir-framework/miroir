@@ -28,7 +28,7 @@ import {
   entityReport,
   entitySelfApplication,
   metaModel,
-  resolveReferencesForJzodSchemaAndValueObject
+  jzodTypeCheck
 } from "miroir-core";
 import * as XLSX from 'xlsx';
 import { adminConfigurationDeploymentParis, applicationParis, packageName } from "../../constants.js";
@@ -1807,14 +1807,16 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       if (!context.miroirFundamentalJzodSchema || context.miroirFundamentalJzodSchema.name == "dummyJzodSchema") {
         return defaultObject
       } else {
-        const configuration = resolveReferencesForJzodSchemaAndValueObject(
-          context.miroirFundamentalJzodSchema,
+        const configuration = jzodTypeCheck(
           rawSchema,
           formState,
+          [], // currentValuePath
+          [], // currentTypePath
+          context.miroirFundamentalJzodSchema,
           currentModel,
           currentMiroirModel,
-          emptyObject,
-        )
+          emptyObject
+        );
 
         // return configuration.status == "ok"? configuration.element : defaultObject;
         return configuration.status == "ok"? configuration.element : defaultObject;

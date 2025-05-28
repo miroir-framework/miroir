@@ -28,7 +28,7 @@ import {
   entityMenu,
   entityReport,
   getApplicationSection,
-  resolveReferencesForJzodSchemaAndValueObject
+  jzodTypeCheck
 } from "miroir-core";
 
 import { adminConfigurationDeploymentParis, deployments, packageName } from "../../../constants.js";
@@ -288,10 +288,12 @@ export const ConceptPage: React.FC<any> = (
       if (!context.miroirFundamentalJzodSchema || context.miroirFundamentalJzodSchema?.name == "dummyJzodSchema") {
         return defaultObject
       } else {
-        const configuration = resolveReferencesForJzodSchemaAndValueObject(
-          context.miroirFundamentalJzodSchema,
+        const configuration = jzodTypeCheck(
           rawSchema,
           formState,
+          [], // currentValuePath
+          [], // currentTypePath
+          context.miroirFundamentalJzodSchema,
           currentModel,
           currentMiroirModel,
           emptyObject,

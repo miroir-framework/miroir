@@ -12,7 +12,7 @@ import {
   MetaModel,
   MiroirLoggerFactory,
   Uuid,
-  resolveReferencesForJzodSchemaAndValueObject
+  jzodTypeCheck
 } from "miroir-core";
 
 import { packageName } from "../../../constants.js";
@@ -106,10 +106,12 @@ export function JsonObjectDeleteFormDialog(props: JsonObjectEditFormDialogProps)
     props.entityDefinitionJzodSchema &&
     props.defaultFormValuesObject &&
     props.currentAppModel ?
-    resolveReferencesForJzodSchemaAndValueObject(
-      context.miroirFundamentalJzodSchema,
+    jzodTypeCheck(
       props.entityDefinitionJzodSchema,
       props.defaultFormValuesObject,
+      [], // currentValuePath
+      [], // currentTypePath
+      context.miroirFundamentalJzodSchema,
       props.currentAppModel,
       props.currentMiroirModel,
       {}
@@ -117,7 +119,7 @@ export function JsonObjectDeleteFormDialog(props: JsonObjectEditFormDialogProps)
     [props, context.miroirFundamentalJzodSchema]
   )
   log.info(
-    "JsonObjectDeleteFormDialog called resolveReferencesForJzodSchemaAndValueObject for valueObject",
+    "JsonObjectDeleteFormDialog called jzodTypeCheck for valueObject",
     props.defaultFormValuesObject,
     "jzodSchema",
     props.entityDefinitionJzodSchema,

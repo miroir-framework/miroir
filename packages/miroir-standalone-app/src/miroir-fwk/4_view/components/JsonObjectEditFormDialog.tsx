@@ -16,7 +16,7 @@ import {
   MetaModel,
   MiroirLoggerFactory,
   Uuid,
-  resolveReferencesForJzodSchemaAndValueObject
+  jzodTypeCheck
 } from "miroir-core";
 
 import { packageName } from "../../../constants.js";
@@ -222,10 +222,12 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
     props.defaultFormValuesObject &&
     dialogOuterFormObject &&
     props.currentAppModel ?
-    resolveReferencesForJzodSchemaAndValueObject(
-      context.miroirFundamentalJzodSchema,
+    jzodTypeCheck(
       props.entityDefinitionJzodSchema,
       dialogOuterFormObject,// props.defaultFormValuesObject,
+      [], // currentValuePath
+      [], // currentTypePath
+      context.miroirFundamentalJzodSchema,
       props.currentAppModel,
       props.currentMiroirModel,
       {}
@@ -233,7 +235,7 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
     [props, dialogOuterFormObject, context.miroirFundamentalJzodSchema]
   )
   log.info(
-    "called resolveReferencesForJzodSchemaAndValueObject for valueObject",
+    "called jzodTypeCheck for valueObject",
     props.defaultFormValuesObject,
     "jzodSchema",
     props.entityDefinitionJzodSchema,

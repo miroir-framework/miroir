@@ -12,7 +12,7 @@ import {
   ResolvedJzodSchemaReturnType,
   Uuid,
   adminConfigurationDeploymentMiroir,
-  resolveReferencesForJzodSchemaAndValueObject
+  jzodTypeCheck
 } from "miroir-core";
 
 import {
@@ -98,10 +98,12 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
       currentReportTargetEntityDefinition?.jzodSchema &&
       instance &&
       currentModel
-        ? resolveReferencesForJzodSchemaAndValueObject(
-            context.miroirFundamentalJzodSchema,
+        ? jzodTypeCheck(
             currentReportTargetEntityDefinition?.jzodSchema,
             instance,
+            [], // currentValuePath
+            [], // currentTypePath
+            context.miroirFundamentalJzodSchema,
             currentModel,
             currentMiroirModel,
             {}
