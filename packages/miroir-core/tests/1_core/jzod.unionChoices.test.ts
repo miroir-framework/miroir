@@ -11,8 +11,11 @@ import type {
 // import { unionChoices } from "./JzodUnfoldSchemaForValue";
 import currentModel from "./currentModel.json";
 import currentMiroirModel from "./currentMiroirModel.json";
-import { resolveJzodSchemaReferenceInContext, unionChoices } from "../../src/1_core/jzod/JzodUnfoldSchemaForValue";
-import { miroirFundamentalJzodSchema } from '../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema';
+import {
+  resolveJzodSchemaReferenceInContext,
+  unionChoices,
+} from "../../src/1_core/jzod/jzodTypeCheck";
+import { miroirFundamentalJzodSchema } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
 
 // Minimal mocks for MetaModel and JzodSchema
 const mockMetaModel: MetaModel = {} as MetaModel;

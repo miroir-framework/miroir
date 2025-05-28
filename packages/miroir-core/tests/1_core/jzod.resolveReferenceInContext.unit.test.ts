@@ -111,7 +111,7 @@ import transformerMenuV1 from "../../src/assets/miroir_data/a557419d-a288-4fb8-8
 
 import { getMiroirFundamentalJzodSchema} from "../../src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema"
 
-import { resolveJzodSchemaReferenceInContext } from "../../src/1_core/jzod/JzodUnfoldSchemaForValue";
+import { resolveJzodSchemaReferenceInContext } from "../../src/1_core/jzod/jzodTypeCheck";
 
 export const defaultMiroirMetaModel: MetaModel = {
   // configuration: [instanceConfigurationReference],

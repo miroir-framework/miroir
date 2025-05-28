@@ -243,7 +243,7 @@ export function unionChoices (
 // #####################################################################################################
 export function selectUnionBranchFromDiscriminator(
   objectUnionChoices: JzodObject[],
-  discriminator: string | string[],
+  discriminator: string | string[] | undefined,
   valueObject: any,
   valueObjectPath: (string | number)[],
   typePath: (string | number)[], // for logging purposes only
@@ -252,25 +252,18 @@ export function selectUnionBranchFromDiscriminator(
   currentModel: MetaModel,
   miroirMetaModel: MetaModel,
   relativeReferenceJzodContext: {[k:string]: JzodElement},
-) {
-  const discriminators = Array.isArray(discriminator) ? discriminator : [discriminator];
+): {
+  currentDiscriminatedObjectJzodSchema: JzodObject;
+  currentDiscriminatedObjectJzodSchemas: JzodObject[];
+  chosenDiscriminator: {discriminator: string, value: any}[];
+} {
+  const discriminators:string | string[] | undefined = !discriminator?discriminator:Array.isArray(discriminator) ? discriminator : [discriminator];
   // let currentDiscriminatedObjectJzodSchemas: JzodObject[] = [];
   // let usedDiscriminator: string | undefined = undefined;
 
-  // log.info(
-  //   "selectUnionBranchFromDiscriminator called for union-type value object with discriminator(s)=",
-  //   discriminators,
-  //   "valueObject[discriminator]=",
-  //   discriminators.map(d => valueObject[d]),
-  //   "relativeReferenceJzodContext=",
-  //   JSON.stringify(relativeReferenceJzodContext, null, 2),
-  //   "objectUnionChoices=",
-  //   JSON.stringify(objectUnionChoices, null, 2),
-  //   // JSON.stringify(objectUnionChoices.map((e:any) => [e?.definition['transformerType'], e?.definition ]), null, 2),
-  // );
 
   // "flatten" object hierarchy, if there is an extend clause, we resolve it
-  let found = objectUnionChoices.map(
+  let flattenedUnionChoices = objectUnionChoices.map(
     (jzodObjectSchema) => {
       let extendedJzodSchema: JzodObject
       if (jzodObjectSchema.extend) {
@@ -303,25 +296,59 @@ export function selectUnionBranchFromDiscriminator(
       return extendedJzodSchema;
     }
   );
+  log.info(
+    "selectUnionBranchFromDiscriminator called for union-type value object with discriminator(s)=",
+    discriminators,
+    "valueObject[discriminator]=",
+    discriminators??[].map(d => valueObject[d]),
+    "relativeReferenceJzodContext=",
+    JSON.stringify(relativeReferenceJzodContext, null, 2),
+    "flattenedUnionChoices=",
+    JSON.stringify(flattenedUnionChoices, null, 2),
+    // JSON.stringify(objectUnionChoices.map((e:any) => [e?.definition['transformerType'], e?.definition ]), null, 2),
+  );
   let i = 0;
   let chosenDiscriminator = [];
-  while (i < discriminators.length && found.length > 1) {
-    const disc = discriminators[i];
-    found = found.filter(
-      (a) =>
-        (
-          a.type == "object" &&
-          a.definition[disc]?.type == "literal" &&
-          (a.definition[disc] as JzodLiteral).definition == valueObject[disc]
-        ) ||
-        (
-          a.type == "object" &&
-          a.definition[disc]?.type == "enum" &&
-          (a.definition[disc] as JzodEnum).definition.includes(valueObject[disc])
-        )
+  if (!discriminators || discriminators.length == 0) {
+    // no discriminator, proceed by eliminating all choices that do not match the valueObject
+    flattenedUnionChoices = flattenedUnionChoices.filter((objectChoice) => {
+      const objectChoiceKeys = Object.keys(objectChoice.definition);
+      return Object.keys(valueObject).every(
+        (valueObjectKey) =>
+          objectChoiceKeys.includes(valueObjectKey) &&
+          (objectChoice.definition[valueObjectKey]?.type != "literal" ||
+            objectChoice.definition[valueObjectKey]?.definition == valueObject[valueObjectKey])
+      );
+    });
+    log.info(
+      "selectUnionBranchFromDiscriminator called for union-type value object with no discriminator, flattenedUnionChoices=",
+      JSON.stringify(flattenedUnionChoices, null, 2),
+      "valueObject=",
+      JSON.stringify(valueObject, null, 2),
+      // "valueObjectPath=",
+      // valueObjectPath,
+      // "typePath=",
+      // typePath
     );
-    chosenDiscriminator.push({discriminator: disc, value: valueObject[disc]});
-    i++;
+  } else {
+    while (i < discriminators.length && flattenedUnionChoices.length > 1) {
+      const disc = discriminators[i];
+      flattenedUnionChoices = flattenedUnionChoices.filter(
+        (a) =>
+          (
+            a.type == "object" &&
+            a.definition[disc]?.type == "literal" &&
+            (a.definition[disc] as JzodLiteral).definition == valueObject[disc]
+          ) ||
+          (
+            a.type == "object" &&
+            a.definition[disc]?.type == "enum" &&
+            (a.definition[disc] as JzodEnum).definition.includes(valueObject[disc])
+          )
+      );
+      chosenDiscriminator.push({discriminator: disc, value: valueObject[disc]});
+      i++;
+    }
   }
 
   // log.info(
@@ -341,26 +368,26 @@ export function selectUnionBranchFromDiscriminator(
   //   // JSON.stringify(objectUnionChoices.filter((e:any) => e.definition['transformerType'].definition == "listPickElement")),
   // );
 
-  if (found.length == 0) {
+  if (flattenedUnionChoices.length == 0) {
     throw new Error(
       "jzodTypeCheck called for union-type value object with discriminator(s)=" +
         JSON.stringify(discriminators) +
         " valueObject[discriminator]=" +
-        JSON.stringify(discriminators.map(d => valueObject[d])) +
+        JSON.stringify(discriminators??[].map(d => valueObject[d])) +
         " found no match!"
     );
   }
-  if (found.length > 1) {
+  if (flattenedUnionChoices.length > 1) {
     throw new Error(
       "jzodTypeCheck called for union-type value object with discriminator(s)=" +
         JSON.stringify(discriminators) +
         " valueObject[discriminator]=" +
-        JSON.stringify(discriminators.map(d => valueObject[d])) +
+        JSON.stringify(discriminators??[].map(d => valueObject[d])) +
         " found many matches: " +
-        found.length +
+        flattenedUnionChoices.length +
         "objectUnionChoices=" +
         JSON.stringify(
-          objectUnionChoices.map((e) => discriminators.map(d => (e.definition[d] as any)?.definition)),
+          objectUnionChoices.map((e) => discriminators??[].map(d => (e.definition[d] as any)?.definition)),
           null,
           2
         )
@@ -374,8 +401,8 @@ export function selectUnionBranchFromDiscriminator(
     JSON.stringify(chosenDiscriminator, null, 2),
   );
   const currentDiscriminatedObjectJzodSchema: JzodObject =
-    found[0] as JzodObject;
-  return { currentDiscriminatedObjectJzodSchema, currentDiscriminatedObjectJzodSchemas: found, chosenDiscriminator };
+    flattenedUnionChoices[0] as JzodObject;
+  return { currentDiscriminatedObjectJzodSchema, currentDiscriminatedObjectJzodSchemas: flattenedUnionChoices, chosenDiscriminator };
 }
 
 // #####################################################################################################
@@ -597,7 +624,8 @@ export function jzodTypeCheck(
         }
         case "object": {
           // value is an object, type is a union, if many options are possible we shall use a discriminator
-          const discriminator = jzodSchema.discriminator??"_undefined_"
+          // const discriminator = jzodSchema.discriminator??"_undefined_"
+          const discriminator = jzodSchema.discriminator
 
           /**
            * resolve type for object, either:
@@ -680,7 +708,8 @@ export function jzodTypeCheck(
                 "jzodTypeCheck for resolved union type calling on object attribute\n"+
                 "valuePath=" + currentValuePath.join(".") + "." + a[0] + "\n" +
                 "typePath=" + [...currentTypePath, JSON.stringify(chosenDiscriminator), a[0]].join(".") +
-                "\n found schema:" + JSON.stringify(foundAttributeJzodSchema, null, 2)
+                "\n found schema:" + JSON.stringify(foundAttributeJzodSchema, null, 2) +
+                "\n valueObject=" + JSON.stringify(valueObject, null, 2)
               );
               if (foundAttributeJzodSchema) {
                 const subSchema = jzodTypeCheck(

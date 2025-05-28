@@ -1,8 +1,8 @@
 import { JzodElement, JzodObject, TransformerDefinition } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 export function substituteTransformerReferencesInJzodElement<T>(
-  jzodElement: any,
   // jzodElement: JzodObject,
+  jzodElement: any,
   newReference: Record<string, string>,
 ): T {
   if (jzodElement == null || jzodElement == undefined) {
@@ -43,12 +43,28 @@ export function substituteTransformerReferencesInJzodElement<T>(
   return jzodElement;
 }
 
+// ################################################################################################
 export function transformerInterfaceFromDefinition(
   transformerDefinition: TransformerDefinition,
-  target: "build" | "runtime",
+  target: "build" | "runtime" | "buildPlusRuntime",
   referenceMap: Record<string, string> = {},
   optionalInterpolation: boolean = false
 ): JzodElement {
+  let innerReferenceRelativePath: "transformer_inner_referenced_transformerForBuild" | "transformer_inner_referenced_transformerForRuntime" | "transformer_inner_referenced_transformerForBuildPlusRuntime" | undefined = undefined;
+  switch (target) {
+    case "build":
+      innerReferenceRelativePath = "transformer_inner_referenced_transformerForBuild";
+      break;
+    case "runtime":
+      innerReferenceRelativePath = "transformer_inner_referenced_transformerForRuntime";
+      break;
+    case "buildPlusRuntime":
+      innerReferenceRelativePath = "transformer_inner_referenced_transformerForBuildPlusRuntime";
+      break;
+    default:
+      throw new Error(`Unknown target: ${target}`);
+  }
+
   const newApplyTo: JzodElement = (
     transformerDefinition.transformerInterface.transformerParameterSchema
       .transformerDefinition.definition as any
@@ -63,10 +79,7 @@ export function transformerInterfaceFromDefinition(
       {
         type: "schemaReference",
         definition: {
-          relativePath:
-            target == "runtime"
-              ? "transformer_inner_referenced_transformerForRuntime"
-              : "transformer_inner_referenced_transformerForBuild",
+          relativePath: innerReferenceRelativePath,
           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
         },
         context: {},
@@ -79,7 +92,7 @@ export function transformerInterfaceFromDefinition(
     referenceMap
   ).definition;
 
-  const relativePath = target == "runtime"
+  const relativePath = target == "runtime" || target == "buildPlusRuntime"
   ? optionalInterpolation?"transformerForRuntime_optional_Abstract":"transformerForRuntime_Abstract"
   : optionalInterpolation?"transformerForBuild_optional_Abstract":"transformerForBuild_Abstract"
   const result: JzodElement = {

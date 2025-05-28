@@ -7,7 +7,7 @@ import {
 import { Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement";
 import { defaultTransformers } from './TransformersForRuntime';
 
-export function transformerBuildToValue(
+export function transformerBuildToValueNOT_USED(
   transformerForBuild: TransformerForBuild,
   queryParams: Record<string, any>
 ): Domain2QueryReturnType<any> {
@@ -29,7 +29,9 @@ export function transformerBuildToValue(
     case "mustacheStringTemplate": {
       return defaultTransformers.transformer_mustacheStringTemplate_apply(
         "build",
+        undefined, // objectName
         transformerForBuild,
+        "value", // resolveBuildTransformerTo
         queryParams,
         {}
       );

@@ -99,6 +99,12 @@ export const transformerForRuntimeNames = Object.keys(miroirTransformers)
   e.replace("transformer_", "transformerForRuntime_")
 );
 
+export const transformerForBuildPlusRuntimeNames = Object.keys(miroirTransformers)
+.filter((e) => e != "transformer_parameterReference")
+.map((e) =>
+  e.replace("transformer_", "transformerForBuildPlusRuntime_")
+);
+
 
 const runtimeReferenceMap: Record<string, string> = {
   transformer: "transformerForRuntime",
@@ -106,7 +112,7 @@ const runtimeReferenceMap: Record<string, string> = {
   transformer_freeObjectTemplate: "transformerForRuntime_freeObjectTemplate",
   transformer_contextReference: "transformerForRuntime_contextReference",
   transformer_objectDynamicAccess: "transformerForRuntime_objectDynamicAccess",
-  transformer_mustacheStringTemplate: "transformerForBuild_mustacheStringTemplate",
+  transformer_mustacheStringTemplate: "transformerForRuntime_mustacheStringTemplate",
 };
 
 const buildReferenceMap: Record<string, string> = {
@@ -118,6 +124,15 @@ const buildReferenceMap: Record<string, string> = {
   transformer_mustacheStringTemplate: "transformerForBuild_mustacheStringTemplate", // TODO: rename to transformer_mustacheStringTemplate
 };
 
+const buildPlusRuntimeReferenceMap: Record<string, string> = {
+  transformer: "transformerForBuildPlusRuntime",
+  transformer_InnerReference: "transformerForBuildPlusRuntime_InnerReference",
+  transformer_freeObjectTemplate: "transformerForBuildPlusRuntime_freeObjectTemplate",
+  transformer_contextReference: "transformerForBuildPlusRuntime_contextReference",
+  transformer_objectDynamicAccess: "transformerForBuildPlusRuntime_objectDynamicAccess",
+  transformer_mustacheStringTemplate: "transformerForBuildPlusRuntime_mustacheStringTemplate", // TODO: rename to transformer_mustacheStringTemplate
+};
+
 export const miroirTransformersForRuntime: Record<string, JzodElement> = Object.fromEntries(
   Object.entries(miroirTransformers).map(([key, transformer]) => [
     key,
@@ -125,6 +140,18 @@ export const miroirTransformersForRuntime: Record<string, JzodElement> = Object.
       transformer,
       "runtime",
       runtimeReferenceMap,
+      ["transformer_contextReference", "transformer_parameterReference"].includes(key)
+    ),
+  ])
+);
+
+export const miroirTransformersForBuildPlusRuntime: Record<string, JzodElement> = Object.fromEntries(
+  Object.entries(miroirTransformers).map(([key, transformer]) => [
+    key,
+    transformerInterfaceFromDefinition(
+      transformer,
+      "buildPlusRuntime",
+      buildPlusRuntimeReferenceMap,
       ["transformer_contextReference", "transformer_parameterReference"].includes(key)
     ),
   ])

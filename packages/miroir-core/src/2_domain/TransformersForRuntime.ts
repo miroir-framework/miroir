@@ -51,7 +51,8 @@ import {
   TransformerForRuntime_objectDynamicAccess,
   TransformerForRuntime_objectEntries,
   TransformerForRuntime_objectValues,
-  TransformerForRuntime_unique
+  TransformerForRuntime_unique,
+  TransformerForBuildPlusRuntime
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { Action2Error, Domain2ElementFailed, Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
@@ -1978,7 +1979,8 @@ export function innerTransformer_array_apply(
 export function transformer_extended_apply(
   step: Step,
   label: string | undefined,
-  transformer: TransformerForBuild | TransformerForRuntime | ExtendedTransformerForRuntime | undefined,
+  // transformer: TransformerForBuild | TransformerForRuntime | ExtendedTransformerForRuntime | undefined,
+  transformer: TransformerForBuild | TransformerForRuntime | ExtendedTransformerForRuntime | TransformerForBuildPlusRuntime | undefined,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
@@ -2367,7 +2369,8 @@ export function transformer_extended_apply(
 export function transformer_extended_apply_wrapper(
   step: Step,
   label: string | undefined,
-  transformer: TransformerForBuild | TransformerForRuntime | ExtendedTransformerForRuntime,
+  // transformer: TransformerForBuild | TransformerForRuntime | ExtendedTransformerForRuntime,
+  transformer: TransformerForBuild | TransformerForRuntime | ExtendedTransformerForRuntime | TransformerForBuildPlusRuntime,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
   resolveBuildTransformersTo: ResolveBuildTransformersTo = "constantTransformer",

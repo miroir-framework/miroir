@@ -9,7 +9,7 @@ import currentModel from "./currentModel.json";
 import currentMiroirModel from "./currentMiroirModel.json";
 import {
   recursivelyUnfoldUnionAndReferences
-} from "../../src/1_core/jzod/JzodUnfoldSchemaForValue";
+} from "../../src/1_core/jzod/jzodTypeCheck";
 
 
 describe("recursivelyUnfoldUnionAndReferences", () => {
