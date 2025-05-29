@@ -46,7 +46,6 @@ export function JzodElementDisplay(props: JzodElementDisplayProps){
 
   const targetJzodSchema = // hack to display Jzod Schemas (DRAWBACK: makes of "type" a reserved attribute name, it has to be changed to something more specific)
     props.resolvedElementJzodSchema?.type == "union" && props.element?.type
-      // ? props.currentEnumJzodSchemaResolver[props.element?.type]
       ? props.currentEnumJzodSchemaResolver(props.element?.type,props.element?.definition)
       : props.resolvedElementJzodSchema;
 
@@ -240,42 +239,6 @@ export function JzodElementDisplay(props: JzodElementDisplayProps){
         </div>
       )
     }
-    // case "simpleType": {
-    //   const targetEntityUuid = targetJzodSchema.tag?.value?.targetEntity
-    //   if (
-    //     context.applicationSection &&
-    //     targetJzodSchema.definition == "string" &&
-    //     targetJzodSchema?.tag?.value?.targetEntity &&
-    //     targetEntityUuid
-    //   ) {
-    //     const targetEntity: Entity | undefined = props.currentReportDeploymentSectionEntities?.find(
-    //       (e) => e.uuid == targetEntityUuid
-    //     );
-    //     return (
-    //       <div>
-    //         {displayName}:
-    //         <EntityInstanceLink
-    //           deploymentUuid={
-    //             context.deploymentUuid
-    //             // targetJzodSchema.tag?.targetEntityApplication == "metaModel"
-    //             //   ? adminConfigurationDeploymentMiroir.uuid
-    //             //   : props.deploymentUuid
-    //           }
-    //           applicationSection={context.applicationSection}
-    //           entityUuid={targetJzodSchema?.tag?.value?.targetEntity}
-    //           instanceUuid={props.element}
-    //           key={props.name}
-    //         />
-    //       </div>
-    //     );
-    //   } else {
-    //     return (
-    //       <div>
-    //         {displayName}: {props.element}
-    //       </div>
-    //     );
-    //   }
-    // }
     case "uuid": 
     case "number": 
     case "date": 
