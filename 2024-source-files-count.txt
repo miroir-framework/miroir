@@ -314,7 +314,7 @@ packages/miroir-standalone-app/src/miroir-fwk/4_view/components/GenderCellRender
 packages/miroir-standalone-app/src/miroir-fwk/4_view/components/JsonObjectDeleteFormDialog.tsx 219
 packages/miroir-standalone-app/src/miroir-fwk/4_view/components/JsonObjectEditFormDialog.tsx 476
 packages/miroir-standalone-app/src/miroir-fwk/4_view/components/JzodElementDisplay.tsx 330
-packages/miroir-standalone-app/src/miroir-fwk/4_view/components/JzodObjectEditor.tsx 1736
+packages/miroir-standalone-app/src/miroir-fwk/4_view/components/JzodElementEditor.tsx 1736
 packages/miroir-standalone-app/src/miroir-fwk/4_view/components/MTableComponent.tsx 467
 packages/miroir-standalone-app/src/miroir-fwk/4_view/components/MTableComponentInterface.ts 79
 packages/miroir-standalone-app/src/miroir-fwk/4_view/components/ReportInstanceLink.tsx 68

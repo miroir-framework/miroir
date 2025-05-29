@@ -54,7 +54,7 @@ import { useCurrentModel, useDeploymentEntityStateQuerySelectorForCleanedResult 
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodObjectEditor")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodElementEditor")
 ).then((logger: LoggerInterface) => {log = logger});
 
 
@@ -245,8 +245,8 @@ let count = 0;
 // #####################################################################################################
 
 
-// export const JzodObjectEditor = (props: JzodObjectEditorProps): JSX.Element => {
-export function JzodObjectEditor (props: JzodObjectEditorProps): JSX.Element {
+// export const JzodElementEditor = (props: JzodObjectEditorProps): JSX.Element => {
+export function JzodElementEditor (props: JzodObjectEditorProps): JSX.Element {
   count++;
   const context = useMiroirContextService();
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState> =
@@ -279,9 +279,9 @@ export function JzodObjectEditor (props: JzodObjectEditorProps): JSX.Element {
 
   const currentValue = resolvePathOnObject(props.formState, props.rootLesslistKeyArray);
   // log.info("#####################################################################################");
-  // log.info("JzodObjectEditor", props.listKey, "count", count, "currentValue", currentValue);
-  // log.info("JzodObjectEditor", props.listKey, "count", count, "resolvedJzodSchema", props.resolvedJzodSchema);
-  // log.info("JzodObjectEditor", props.listKey, "count", count, "rawJzodSchema", props.rawJzodSchema?.type, props.rawJzodSchema);
+  // log.info("JzodElementEditor", props.listKey, "count", count, "currentValue", currentValue);
+  // log.info("JzodElementEditor", props.listKey, "count", count, "resolvedJzodSchema", props.resolvedJzodSchema);
+  // log.info("JzodElementEditor", props.listKey, "count", count, "rawJzodSchema", props.rawJzodSchema?.type, props.rawJzodSchema);
 
   const [itemsOrder, setItemsOrder] = useState<any[]>(
     getItemsOrder(currentValue, props.resolvedJzodSchema)
@@ -352,7 +352,7 @@ export function JzodObjectEditor (props: JzodObjectEditorProps): JSX.Element {
 
   if (!unfoldedRawSchemaReturnType || unfoldedRawSchemaReturnType.status == "error") {
     throw new Error(
-      "JzodObjectEditor could not unfold raw schema " +
+      "JzodElementEditor could not unfold raw schema " +
         JSON.stringify(props.rawJzodSchema, null, 2) +
         // props.rawJzodSchema +
         " count " +
@@ -367,7 +367,7 @@ export function JzodObjectEditor (props: JzodObjectEditorProps): JSX.Element {
   }
   const unfoldedRawSchema: JzodElement = unfoldedRawSchemaReturnType.element;
   // log.info(
-  //   "JzodObjectEditor",
+  //   "JzodElementEditor",
   //   props.listKey,
   //   "rawJzodSchema",
   //   props.rawJzodSchema,
@@ -450,7 +450,7 @@ export function JzodObjectEditor (props: JzodObjectEditorProps): JSX.Element {
         (props.rawJzodSchema.type == "enum" && !enumTypes.includes(props.resolvedJzodSchema.type)))
     ) {
       throw new Error(
-        "JzodObjectEditor mismatching jzod schemas, resolved schema " +
+        "JzodElementEditor mismatching jzod schemas, resolved schema " +
           JSON.stringify(props.resolvedJzodSchema, null, 2) +
           " raw schema " +
           JSON.stringify(props.rawJzodSchema, null, 2)
@@ -497,7 +497,7 @@ export function JzodObjectEditor (props: JzodObjectEditorProps): JSX.Element {
       );
 
     log.info(
-      "JzodObjectEditor",
+      "JzodElementEditor",
       props.listKey,
       "count",
       count,
@@ -815,7 +815,7 @@ export function JzodObjectEditor (props: JzodObjectEditorProps): JSX.Element {
         let resolvedJzodSchema: JzodObject = props.resolvedJzodSchema;
         if (unfoldedRawSchema.type == "union" && !unfoldedRawSchema.discriminator) {
           throw new Error(
-            "JzodObjectEditor could not compute allSchemaObjectAttributes, no discriminator found in " +
+            "JzodElementEditor could not compute allSchemaObjectAttributes, no discriminator found in " +
               JSON.stringify(unfoldedRawSchema, null, 2)
           );
         }
@@ -993,7 +993,7 @@ export function JzodObjectEditor (props: JzodObjectEditorProps): JSX.Element {
                     // switch (rawJzodSchema?.type) {
                     if (!unfoldedRawSchema) {
                       throw new Error(
-                        "JzodObjectEditor unfoldedRawSchema undefined for object " +
+                        "JzodElementEditor unfoldedRawSchema undefined for object " +
                           props.listKey +
                           " attribute " +
                           attribute[0] +
@@ -1033,7 +1033,7 @@ export function JzodObjectEditor (props: JzodObjectEditorProps): JSX.Element {
                         const discriminator: string = (unfoldedRawSchema as any).discriminator;
                         // const subDiscriminator: string = (unfoldedRawSchema as any).subDiscriminator;
                         // log.info(
-                        //   "JzodObjectEditor object with discrimitated union:",
+                        //   "JzodElementEditor object with discrimitated union:",
                         //   props.listKey,
                         //   "attribute",
                         //   attribute[0],
@@ -1081,7 +1081,7 @@ export function JzodObjectEditor (props: JzodObjectEditorProps): JSX.Element {
                           // }
                           if (!concreteObjectRawJzodSchema) {
                             throw new Error(
-                              "JzodObjectEditor could not find concrete raw schema for " +
+                              "JzodElementEditor could not find concrete raw schema for " +
                                 props.listKey +
                                 " attribute " +
                                 attribute[0] +
@@ -1114,7 +1114,7 @@ export function JzodObjectEditor (props: JzodObjectEditorProps): JSX.Element {
                               resolvedConcreteObjectJzodSchemaTmp.status != "ok"
                             ) {
                               throw new Error(
-                                "JzodObjectEditor resolve 'extend' clause for concrete raw schema for " +
+                                "JzodElementEditor resolve 'extend' clause for concrete raw schema for " +
                                   props.listKey +
                                   " attribute " +
                                   attribute[0] +
@@ -1136,7 +1136,7 @@ export function JzodObjectEditor (props: JzodObjectEditorProps): JSX.Element {
                             resolvedConcreteObjectJzodSchema.definition[attribute[0]];
                         }
                         // log.info(
-                        //   "JzodObjectEditor attribute for object",
+                        //   "JzodElementEditor attribute for object",
                         //   currentValue,
                         //   "listKey",
                         //   props.listKey,
@@ -1158,7 +1158,7 @@ export function JzodObjectEditor (props: JzodObjectEditorProps): JSX.Element {
                       }
                       default: {
                         throw new Error(
-                          "JzodObjectEditor unfoldedRawSchema.type incorrect for object " +
+                          "JzodElementEditor unfoldedRawSchema.type incorrect for object " +
                             props.listKey +
                             " attribute " +
                             attribute[0] +
@@ -1169,7 +1169,7 @@ export function JzodObjectEditor (props: JzodObjectEditorProps): JSX.Element {
                       }
                     }
                     // log.info(
-                    //   "JzodObjectEditor resolved for object",
+                    //   "JzodElementEditor resolved for object",
                     //   props.listKey,
                     //   "attribute",
                     //   attribute[0],
@@ -1264,7 +1264,7 @@ export function JzodObjectEditor (props: JzodObjectEditorProps): JSX.Element {
                             //   // Reset the state of your app so the error doesn't happen again
                             // }}
                           >
-                            <JzodObjectEditor
+                            <JzodElementEditor
                               name={attribute[0]}
                               listKey={attributeListKey}
                               rootLesslistKey={attributeRootLessListKey}
@@ -1321,9 +1321,9 @@ export function JzodObjectEditor (props: JzodObjectEditorProps): JSX.Element {
         break;
       }
       case "array": {
-        // log.info("############################################### JzodObjectEditor array rootLesslistKey", props.rootLesslistKey, "values", props.formik.values);
+        // log.info("############################################### JzodElementEditor array rootLesslistKey", props.rootLesslistKey, "values", props.formik.values);
         log.info(
-          "JzodObjectEditor for array",
+          "JzodElementEditor for array",
           props.listKey,
           // "attribute",
           // attribute[0],
@@ -1387,7 +1387,7 @@ export function JzodObjectEditor (props: JzodObjectEditorProps): JSX.Element {
                     currentArrayElementRawDefinition.status != "ok"
                   ) {
                     throw new Error(
-                      "JzodObjectEditor could not resolve jzod schema " +
+                      "JzodElementEditor could not resolve jzod schema " +
                         JSON.stringify(currentArrayElementRawDefinition, null, 2)
                     );
                   }
@@ -1423,7 +1423,7 @@ export function JzodObjectEditor (props: JzodObjectEditorProps): JSX.Element {
                             Object.assign(formHelperState, { [props.listKey]: newItemsOrder })
                           );
                           log.info(
-                            "JzodObjectEditor array moving item",
+                            "JzodElementEditor array moving item",
                             currentItemIndex,
                             "in object with items",
                             itemsOrder,
@@ -1452,7 +1452,7 @@ export function JzodObjectEditor (props: JzodObjectEditorProps): JSX.Element {
                             Object.assign(formHelperState, { [props.listKey]: newItemsOrder })
                           );
                           log.info(
-                            "JzodObjectEditor array moving item",
+                            "JzodElementEditor array moving item",
                             currentItemIndex,
                             "in object with items",
                             itemsOrder,
@@ -1466,7 +1466,7 @@ export function JzodObjectEditor (props: JzodObjectEditorProps): JSX.Element {
                       >
                         {"^"}
                       </button>
-                      <JzodObjectEditor
+                      <JzodElementEditor
                         name={"" + index}
                         listKey={props.listKey + "." + index}
                         // currentEnumJzodSchemaResolver={props.currentEnumJzodSchemaResolver}
@@ -1501,7 +1501,7 @@ export function JzodObjectEditor (props: JzodObjectEditorProps): JSX.Element {
         break;
       }
       case "boolean": {
-        // log.info("JzodObjectEditor boolean!",props.listKey,"formState",props.formState)
+        // log.info("JzodElementEditor boolean!",props.listKey,"formState",props.formState)
         return (
           <>
             <Checkbox
@@ -1819,10 +1819,10 @@ export function JzodObjectEditor (props: JzodObjectEditorProps): JSX.Element {
   }
 };
 
-export const JzodObjectEditorWithErrorBoundary = withErrorBoundary(JzodObjectEditor, {
+export const JzodObjectEditorWithErrorBoundary = withErrorBoundary(JzodElementEditor, {
   fallback: <div>Something went wrong</div>,
   onError(error, info) {
-    log.error("JzodObjectEditor error", error)
+    log.error("JzodElementEditor error", error)
     // Do something with the error
     // E.g. log to an error logging client here
   },

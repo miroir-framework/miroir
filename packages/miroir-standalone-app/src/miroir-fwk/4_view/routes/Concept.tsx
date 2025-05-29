@@ -40,7 +40,7 @@ import {
   useMiroirContextformHelperState,
 } from "../MiroirContextReactProvider.js";
 import { useCurrentModel } from "../ReduxHooks.js";
-import { JzodObjectEditor } from "../components/JzodObjectEditor.js";
+import { JzodElementEditor } from "../components/JzodElementEditor.js";
 import { cleanLevel } from "../constants.js";
 
 
@@ -735,7 +735,7 @@ export const ConceptPage: React.FC<any> = (
                     <div>no object definition found!</div>
                     :
                     <>
-                      <JzodObjectEditor
+                      <JzodElementEditor
                         name={'ROOT'}
                         listKey={'ROOT'}
                         rootLesslistKey={emptyString}

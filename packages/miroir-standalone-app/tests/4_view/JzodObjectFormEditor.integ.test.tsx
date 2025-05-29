@@ -60,8 +60,8 @@ import {
 // } from "miroir-standalone-app/tests/utils/tests-utils";
 
 import {
-  JzodObjectEditor
-} from "../../src/miroir-fwk/4_view/components/JzodObjectEditor";
+  JzodElementEditor
+} from "../../src/miroir-fwk/4_view/components/JzodElementEditor";
 
 import { miroirAppStartup } from "miroir-standalone-app/src/startup";
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
@@ -229,7 +229,7 @@ function JzodObjectFormEditorWrapper(props: JsonElementEditorWrapperProps) {
       >
       {
         (formik) => (
-          <JzodObjectEditor
+          <JzodElementEditor
             forceTestingMode={true}
             name={props.name}
             label={props.label}

@@ -26,7 +26,7 @@ import {
   useMiroirContextService,
   useMiroirContextformHelperState,
 } from "../MiroirContextReactProvider.js";
-import { JzodObjectEditor } from "./JzodObjectEditor.js";
+import { JzodElementEditor } from "./JzodElementEditor.js";
 
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -442,7 +442,7 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
                   )
                 }
                 <span style={{paddingTop: 0, paddingBottom: 0}}>
-                  <JzodObjectEditor
+                  <JzodElementEditor
                     name={"ROOT"}
                     listKey={"ROOT"}
                     rootLesslistKey=""

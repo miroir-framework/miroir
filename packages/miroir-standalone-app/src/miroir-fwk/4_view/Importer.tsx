@@ -32,7 +32,7 @@ import {
 } from "miroir-core";
 import * as XLSX from 'xlsx';
 import { adminConfigurationDeploymentParis, applicationParis, packageName } from "../../constants.js";
-import { JzodObjectEditor } from "./components/JzodObjectEditor.js";
+import { JzodElementEditor } from "./components/JzodElementEditor.js";
 import { cleanLevel } from "./constants.js";
 import { useDomainControllerService, useErrorLogService, useMiroirContextService } from "./MiroirContextReactProvider.js";
 import { useCurrentModel } from "./ReduxHooks.js";
@@ -2391,7 +2391,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                     <div>no object definition found!</div>
                     :
                     <>
-                      <JzodObjectEditor
+                      <JzodElementEditor
                         name={'ROOT'}
                         listKey={'ROOT'}
                         rootLesslistKey={emptyString}

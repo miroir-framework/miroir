@@ -260,7 +260,7 @@ export type SyncBoxedExtractorOrQueryRunnerMap<StateType> = {
     Domain2QueryReturnType<EntityInstance[]>
   >;
   // ################################################################################################
-  // TODO: has direct call in ReportView, ReportSectionListDisplay, JzodObjectEditor
+  // TODO: has direct call in ReportView, ReportSectionListDisplay, JzodElementEditor
   runQueryTemplateWithExtractorCombinerTransformer: SyncQueryTemplateRunner<
     StateType,
     Domain2QueryReturnType<any>

@@ -602,7 +602,7 @@ commit f9bd9919ab6243401dccbc8a92146c37ad41a75b
 Author: Miroir Framework <miroir-framework@protonmail.com>
 Date:   Thu Oct 17 16:07:59 2024 +0200
 
-    REFACTOR: remove use of extractWithManyExtractorTemplates from JzodObjectEditor and ReportSectionListDisplay
+    REFACTOR: remove use of extractWithManyExtractorTemplates from JzodElementEditor and ReportSectionListDisplay
 
  6 files changed, 115 insertions(+), 132 deletions(-)
 
@@ -1378,7 +1378,7 @@ commit cbc202ce940e3cba7fafd0376cfd9ab68bb2b5c1
 Author: Miroir Framework <miroir-framework@protonmail.com>
 Date:   Thu Jun 6 13:34:12 2024 +0200
 
-    Form / JzodElementEditor: allow to extend an Entity Instance based on the Entity's known structure #29. Improve object and array indentation in JzodObjectEditor.
+    Form / JzodElementEditor: allow to extend an Entity Instance based on the Entity's known structure #29. Improve object and array indentation in JzodElementEditor.
 
  1 file changed, 17 insertions(+), 11 deletions(-)
 
@@ -1386,7 +1386,7 @@ commit a5c29e18464ca3e5c0c61c9fa256932878ea1e74
 Author: Miroir Framework <miroir-framework@protonmail.com>
 Date:   Thu Jun 6 13:08:21 2024 +0200
 
-    Form / JzodElementEditor: allow to extend an Entity Instance based on the Entity's known structure #29. Adding capability to remove optional object's attributes in JzodObjectEditor.
+    Form / JzodElementEditor: allow to extend an Entity Instance based on the Entity's known structure #29. Adding capability to remove optional object's attributes in JzodElementEditor.
 
  6 files changed, 394 insertions(+), 249 deletions(-)
 
@@ -1394,7 +1394,7 @@ commit 8ab8e1c0170e6d6d8214524cbc2c862037cd11a9
 Author: Miroir Framework <miroir-framework@protonmail.com>
 Date:   Mon Jun 3 18:54:27 2024 +0200
 
-    migrate to Jzod 0.7.0: abandon "simpleType" Jzod schema definitions #32. Step 1: dealing with numbers & booleans in JzodObjectEditor.
+    migrate to Jzod 0.7.0: abandon "simpleType" Jzod schema definitions #32. Step 1: dealing with numbers & booleans in JzodElementEditor.
 
  4 files changed, 104 insertions(+), 108 deletions(-)
 
@@ -1402,7 +1402,7 @@ commit 4f651bdf4b22dff3e3ee91470ac010677155f1ef
 Author: Miroir Framework <miroir-framework@protonmail.com>
 Date:   Mon Jun 3 16:21:07 2024 +0200
 
-    BUG: implement display as Select combobox of enum-typed attributes and entity uuids for edition (JzodObjectEditor) #3. Dealing with Entity Uuids through "targetEntity" "extra" property of Report Query and Definition.
+    BUG: implement display as Select combobox of enum-typed attributes and entity uuids for edition (JzodElementEditor) #3. Dealing with Entity Uuids through "targetEntity" "extra" property of Report Query and Definition.
 
  8 files changed, 157 insertions(+), 86 deletions(-)
 
@@ -1418,7 +1418,7 @@ commit 4c650bbf2dc200aa5d9e08e6469e24c6501235f9
 Author: Miroir Framework <miroir-framework@protonmail.com>
 Date:   Sun Jun 2 22:53:26 2024 +0200
 
-    migrate to Jzod 0.7.0: abandon "simpleType" Jzod schema definitions #32. Step 1: dealing with strings only in JzodObjectEditor, and migrating entities of Library selfApplication.
+    migrate to Jzod 0.7.0: abandon "simpleType" Jzod schema definitions #32. Step 1: dealing with strings only in JzodElementEditor, and migrating entities of Library selfApplication.
 
  40 files changed, 917 insertions(+), 2301 deletions(-)
 
@@ -1426,7 +1426,7 @@ commit 71893a148109ab22211142d85b992e4e37874617
 Author: Miroir Framework <miroir-framework@protonmail.com>
 Date:   Sun Jun 2 19:29:18 2024 +0200
 
-    migrate to Jzod 0.7.0: abandon "simpleType" Jzod schema definitions #32. Step 1: dealing with strings only in JzodObjectEditor, and migrating entities of Library selfApplication.
+    migrate to Jzod 0.7.0: abandon "simpleType" Jzod schema definitions #32. Step 1: dealing with strings only in JzodElementEditor, and migrating entities of Library selfApplication.
 
  17 files changed, 1206 insertions(+), 738 deletions(-)
 

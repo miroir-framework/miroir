@@ -54,7 +54,7 @@ import { cleanLevel } from "../constants.js";
 import { getColumnDefinitionsFromEntityDefinitionJzodObjectSchema } from "../getColumnDefinitionsFromEntityAttributes.js";
 import { deleteCascade } from "../scripts.js";
 import { JsonObjectEditFormDialog, JsonObjectEditFormDialogInputs } from "./JsonObjectEditFormDialog.js";
-import { noValue } from "./JzodObjectEditor.js";
+import { noValue } from "./JzodElementEditor.js";
 import { MTableComponent } from "./MTableComponent.js";
 import { TableComponentType, TableComponentTypeSchema } from "./MTableComponentInterface.js";
 
