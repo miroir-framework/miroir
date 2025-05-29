@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 import {
   ApplicationSection,
@@ -26,6 +26,7 @@ import {
   useCurrentModel
 } from "../ReduxHooks.js";
 import { JzodElementDisplay } from './JzodElementDisplay.js';
+import { Switch } from '@mui/material';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -41,6 +42,7 @@ export interface ReportSectionEntityInstanceProps {
   entityUuid: Uuid,
 }
 
+// const label = { inputProps: { 'aria-label': 'Color switch demo' } };
 
 
 // ###############################################################################################################
@@ -52,6 +54,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     "++++++++++++++++++++++++++++++++ render with props",
     props
   );
+
+  const [displayAsStructuredElement, setDisplayAsStructuredElement] = useState(true);
 
   const currentModel: MetaModel = useCurrentModel(
     context.applicationSection == "data" ? context.deploymentUuid : adminConfigurationDeploymentMiroir.uuid
@@ -121,12 +125,18 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
       );
       result = {
         status: "error",
+        valuePath: [],
+        typePath: [],
         error: JSON.stringify(e, Object.getOwnPropertyNames(e)),
       }
     };
     return result;
   }, [props, currentReportTargetEntityDefinition, instance, context]);
 
+  const handleDisplayAsStructuredElementSwitchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setDisplayAsStructuredElement(event.target.checked);
+  };
+  
   if (instance) {
     return (
       <div>
@@ -134,15 +144,20 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
         ReportSectionEntityInstance
         </p> */}
         <h1>
-          {currentReportTargetEntity?.name} details: {instance.name}
+          {currentReportTargetEntity?.name} details: {instance.name}{" "}
+          <Switch
+            checked={displayAsStructuredElement}
+            onChange={handleDisplayAsStructuredElementSwitchChange}
+            inputProps={{ "aria-label": "controlled" }}
+          />
         </h1>
-        {
-          currentReportTargetEntity 
-          && currentEnumJzodSchemaResolver
-          && currentReportTargetEntityDefinition 
-          && context.applicationSection
-          && resolvedJzodSchema
-          && (resolvedJzodSchema as any)?.status == "ok"? (
+        {currentReportTargetEntity &&
+        currentEnumJzodSchemaResolver &&
+        currentReportTargetEntityDefinition &&
+        context.applicationSection &&
+        resolvedJzodSchema &&
+        (resolvedJzodSchema as any)?.status == "ok" ? (
+          displayAsStructuredElement ? (
           <div>
             <JzodElementDisplay
               path={instance?.name}
@@ -159,22 +174,29 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
               currentEnumJzodSchemaResolver={currentEnumJzodSchemaResolver}
             ></JzodElementDisplay>
           </div>
+          ) : (
+            <div>
+              <pre>{JSON.stringify(instance, null, 2)}</pre>
+            </div>
+          )
         ) : (
           <div>
             Oops, ReportSectionEntityInstance could not be displayed.
-            <p/>
+            <p />
             <div>props selfApplication section: {props.applicationSection}</div>
             <div>context selfApplication section: {context.applicationSection}</div>
-            <div>target entity: {currentReportTargetEntity?.name ?? "report target entity not found!"}</div>
+            <div>
+              target entity: {currentReportTargetEntity?.name ?? "report target entity not found!"}
+            </div>
             <div>resolved schema: {JSON.stringify(resolvedJzodSchema)}</div>
-            <div style={{ whiteSpace: 'pre-line' }}>
+            <div style={{ whiteSpace: "pre-line" }}>
               target entity definition:{" "}
-              {currentReportTargetEntityDefinition?.name ?? "report target entity definition not found!"}
+              {currentReportTargetEntityDefinition?.name ??
+                "report target entity definition not found!"}
             </div>
             <div> ######################################## </div>
-            <div style={{ whiteSpace: 'pre-line' }}>
-              entity jzod schema:{" "}
-              {JSON.stringify(instance?.jzodSchema)}
+            <div style={{ whiteSpace: "pre-line" }}>
+              entity jzod schema: {JSON.stringify(instance?.jzodSchema)}
             </div>
           </div>
         )}
