@@ -56,6 +56,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   );
 
   const [displayAsStructuredElement, setDisplayAsStructuredElement] = useState(true);
+  const [displayEditor, setDisplayEditor] = useState(true);
 
   const currentModel: MetaModel = useCurrentModel(
     context.applicationSection == "data" ? context.deploymentUuid : adminConfigurationDeploymentMiroir.uuid
@@ -84,35 +85,39 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const currentMiroirModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
 
   const currentEnumJzodSchemaResolver: JzodEnumSchemaToJzodElementResolver | undefined = useMemo(
-    () => context.miroirFundamentalJzodSchema? getCurrentEnumJzodSchemaResolver(currentMiroirModel,context.miroirFundamentalJzodSchema): undefined,
+    () =>
+      context.miroirFundamentalJzodSchema
+        ? getCurrentEnumJzodSchemaResolver(currentMiroirModel, context.miroirFundamentalJzodSchema)
+        : undefined,
     [context.miroirFundamentalJzodSchema, currentMiroirModel]
   );
 
-  log.info("ReportSectionEntityInstance instance", instance);
-  log.info("ReportSectionEntityInstance entityJzodSchema", entityJzodSchemaDefinition);
-  log.info("ReportSectionEntityInstance miroirFundamentalJzodSchema", context.miroirFundamentalJzodSchema);
-  log.info("ReportSectionEntityInstance currentReportTargetEntityDefinition", currentReportTargetEntityDefinition);
-  log.info("ReportSectionEntityInstance currentModel", currentModel);
-  log.info("ReportSectionEntityInstance currentMiroirModel", currentMiroirModel);
+  // log.info("ReportSectionEntityInstance instance", instance);
+  // log.info("ReportSectionEntityInstance entityJzodSchema", entityJzodSchemaDefinition);
+  // log.info("ReportSectionEntityInstance miroirFundamentalJzodSchema", context.miroirFundamentalJzodSchema);
+  // log.info("ReportSectionEntityInstance currentReportTargetEntityDefinition", currentReportTargetEntityDefinition);
+  // log.info("ReportSectionEntityInstance currentModel", currentModel);
+  // log.info("ReportSectionEntityInstance currentMiroirModel", currentMiroirModel);
 
   const resolvedJzodSchema: ResolvedJzodSchemaReturnType | undefined = useMemo(() => {
     let result: ResolvedJzodSchemaReturnType | undefined = undefined;
     try {
-      result = context.miroirFundamentalJzodSchema &&
-      currentReportTargetEntityDefinition?.jzodSchema &&
-      instance &&
-      currentModel
-        ? jzodTypeCheck(
-            currentReportTargetEntityDefinition?.jzodSchema,
-            instance,
-            [], // currentValuePath
-            [], // currentTypePath
-            context.miroirFundamentalJzodSchema,
-            currentModel,
-            currentMiroirModel,
-            {}
-          )
-        : undefined;
+      result =
+        context.miroirFundamentalJzodSchema &&
+        currentReportTargetEntityDefinition?.jzodSchema &&
+        instance &&
+        currentModel
+          ? jzodTypeCheck(
+              currentReportTargetEntityDefinition?.jzodSchema,
+              instance,
+              [], // currentValuePath
+              [], // currentTypePath
+              context.miroirFundamentalJzodSchema,
+              currentModel,
+              currentMiroirModel,
+              {}
+            )
+          : undefined;
     } catch (e) {
       log.error(
         "ReportSectionEntityInstance useMemo error",
@@ -128,13 +133,17 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
         valuePath: [],
         typePath: [],
         error: JSON.stringify(e, Object.getOwnPropertyNames(e)),
-      }
-    };
+      };
+    }
     return result;
   }, [props, currentReportTargetEntityDefinition, instance, context]);
 
   const handleDisplayAsStructuredElementSwitchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setDisplayAsStructuredElement(event.target.checked);
+  };
+  
+  const handleDisplayEditorSwitchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setDisplayEditor(event.target.checked);
   };
   
   if (instance) {
@@ -147,8 +156,13 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
           {currentReportTargetEntity?.name} details: {instance.name}{" "}
           <Switch
             checked={displayAsStructuredElement}
+            onChange={handleDisplayEditorSwitchChange}
+            inputProps={{ "aria-label": "Display as structured element"}}
+          />
+          <Switch
+            checked={displayEditor}
             onChange={handleDisplayAsStructuredElementSwitchChange}
-            inputProps={{ "aria-label": "controlled" }}
+            inputProps={{ "aria-label": "Edit"}}
           />
         </h1>
         {currentReportTargetEntity &&
