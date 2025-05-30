@@ -1,13 +1,12 @@
 import { ChangeEvent, useCallback, useMemo, useState } from "react";
-import { ErrorBoundary, withErrorBoundary } from 'react-error-boundary';
+import { ErrorBoundary, withErrorBoundary } from "react-error-boundary";
 
 import styled from "@emotion/styled";
 import { AddBox, Clear, ExpandLess, ExpandMore } from "@mui/icons-material";
-import { Button, Checkbox, Icon, IconButton, MenuItem, Select } from "@mui/material";
-
+import { Button, Checkbox, Icon, IconButton, MenuItem, Select, SelectChangeEvent } from "@mui/material";
+import { JzodEnumEditor } from "./JzodEnumEditor";
 
 // import { FieldValues, UseFormRegister, UseFormSetValue, useFormContext } from "react-hook-form";
-
 
 import {
   ApplicationSection,
@@ -42,25 +41,34 @@ import {
   getQueryRunnerParamsForDeploymentEntityState,
   resolvePathOnObject,
   jzodTypeCheck,
-  unfoldJzodSchemaOnce
+  unfoldJzodSchemaOnce,
 } from "miroir-core";
 
 import { getMemoizedDeploymentEntityStateSelectorMap } from "miroir-localcache-redux";
 import { packageName } from "../../../constants.js";
 import { cleanLevel } from "../constants.js";
-import { useMiroirContextService, useMiroirContextformHelperState } from "../MiroirContextReactProvider.js";
-import { useCurrentModel, useDeploymentEntityStateQuerySelectorForCleanedResult } from '../ReduxHooks.js';
-
+import {
+  useMiroirContextService,
+  useMiroirContextformHelperState,
+} from "../MiroirContextReactProvider.js";
+import {
+  useCurrentModel,
+  useDeploymentEntityStateQuerySelectorForCleanedResult,
+} from "../ReduxHooks.js";
+import { StyledSelect } from "./Style";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodElementEditor")
-).then((logger: LoggerInterface) => {log = logger});
+).then((logger: LoggerInterface) => {
+  log = logger;
+});
 
-
-export const noValue = { uuid: "31f3a03a-f150-416d-9315-d3a752cb4eb4", name: "no value", parentUuid: "" } as EntityInstance;
-
-
+export const noValue = {
+  uuid: "31f3a03a-f150-416d-9315-d3a752cb4eb4",
+  name: "no value",
+  parentUuid: "",
+} as EntityInstance;
 
 // #####################################################################################################
 export type JzodObjectFormEditorInputs = { [a: string]: any };
@@ -71,44 +79,52 @@ export interface EditorAttribute {
 }
 
 export interface JzodObjectEditorProps {
-  forceTestingMode?: boolean,
+  forceTestingMode?: boolean;
   label?: string;
-  name: string,
-  listKey: string,
-  rootLesslistKey: string,
-  rootLesslistKeyArray: string[],
-  indentLevel?:number,
-  unresolvedJzodSchema?: JzodElement | undefined,
-  paramMiroirFundamentalJzodSchema?: JzodSchema, //used only for testing, trouble with using MiroirContextReactProvider
-  unionInformation?: {
-    jzodSchema: JzodUnion,
-    discriminator: string,
-    discriminatorValues: string[],
-    // subDiscriminator?: string,
-    // subDiscriminatorValues?: string[],
-    setItemsOrder: React.Dispatch<React.SetStateAction<any[]>>;
-  } | undefined,
-  rawJzodSchema: JzodElement | undefined,
-  resolvedJzodSchema: JzodElement | undefined,
-  foreignKeyObjects: Record<string,EntityInstancesUuidIndex>,
-  currentDeploymentUuid?: Uuid,
-  currentApplicationSection?: ApplicationSection,
-  formik: any,
-  handleChange: (e: ChangeEvent<any>) => Promise<void>,
-  setFormState: React.Dispatch<React.SetStateAction<{
-    [k: string]: any;
-  }>>,
-  parentObjectSetItemsOrder?: React.Dispatch<React.SetStateAction<any[]>>,
-  parentObjectItemsOrder?: any[],
-  formState: any,
+  name: string;
+  listKey: string;
+  rootLesslistKey: string;
+  rootLesslistKeyArray: string[];
+  indentLevel?: number;
+  unresolvedJzodSchema?: JzodElement | undefined;
+  paramMiroirFundamentalJzodSchema?: JzodSchema; //used only for testing, trouble with using MiroirContextReactProvider
+  unionInformation?:
+    | {
+        jzodSchema: JzodUnion;
+        discriminator: string;
+        discriminatorValues: string[];
+        // subDiscriminator?: string,
+        // subDiscriminatorValues?: string[],
+        setItemsOrder: React.Dispatch<React.SetStateAction<any[]>>;
+      }
+    | undefined;
+  rawJzodSchema: JzodElement | undefined;
+  resolvedJzodSchema: JzodElement | undefined;
+  foreignKeyObjects: Record<string, EntityInstancesUuidIndex>;
+  currentDeploymentUuid?: Uuid;
+  currentApplicationSection?: ApplicationSection;
+  formik: any;
+  handleChange: (e: ChangeEvent<any>) => Promise<void>;
+  setFormState: React.Dispatch<
+    React.SetStateAction<{
+      [k: string]: any;
+    }>
+  >;
+  parentObjectSetItemsOrder?: React.Dispatch<React.SetStateAction<any[]>>;
+  parentObjectItemsOrder?: any[];
+  formState: any;
 }
 
 // ################################################################################################
 // ################################################################################################
 // #####################################################################################################
-const SizedButton = styled(Button)(({ theme }) => ({height: "1em", width: "auto", padding: "0px"}));
-const SizedAddBox = styled(AddBox)(({ theme }) => ({height: "1em", width: "1em"}));
-const SizedIcon = styled(Icon)(({ theme }) => ({height: "1em", width: "1em"}));
+const SizedButton = styled(Button)(({ theme }) => ({
+  height: "1em",
+  width: "auto",
+  padding: "0px",
+}));
+const SizedAddBox = styled(AddBox)(({ theme }) => ({ height: "1em", width: "1em" }));
+const SizedIcon = styled(Icon)(({ theme }) => ({ height: "1em", width: "1em" }));
 // const SizedIcon = styled(Icon)(({ theme }) => ({height: "0.5em", width: "0.5em", padding: 0, boxSizing:"border-box"}));
 // const SizedIcon = styled(Icon)(({ theme }) => ({sx: { }, fontSize:"small", padding: 0, boxSizing:"border-box"}));
 // const SizedIcon = styled(Icon)(({ theme }) => ({height: 0.5, width: 0.5, padding: 0, }));
@@ -123,16 +139,6 @@ const LineIconButton = styled(IconButton)(({ theme }) => ({
 }));
 // const SizedIcon = styled(Clear)(({ theme }) => ({height: "10px", width: "10px"}));
 // const SizedIcon = styled(Clear)(({ theme }) => ({size:}));
-const StyledSelect = styled(Select)(({ theme }) => ({
-  // backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
-  // ...theme.typography.body2,
-  // padding: theme.spacing(1),
-  // textAlign: "left",
-  // display: "flex",
-  maxHeight: "1.5em",
-  // height: '80vh',
-  // color: theme.palette.text.secondary,
-}));
 
 // const Item = styled(Paper)(({ theme }) => ({
 //   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -146,46 +152,41 @@ const StyledSelect = styled(Select)(({ theme }) => ({
 // }));
 
 const labelStyle = {
-  paddingRight: "10px"
-}
+  paddingRight: "10px",
+};
 
-const StyledLabel = styled('label')(
-  ({ theme }) => ({
-    ...theme,
-    paddingRight: "10px"
-  })
-)
+const StyledLabel = styled("label")(({ theme }) => ({
+  ...theme,
+  paddingRight: "10px",
+}));
 
-const indentShift =  "1em + 4px";
-
-
+const indentShift = "1em + 4px";
 
 // ################################################################################################
-export const ExpandOrFoldObjectAttributes = (
-  props: {
-    hiddenFormItems: {[k: string]: boolean},
-    // setHiddenFormItems: any,
-    setHiddenFormItems: React.Dispatch<
+export const ExpandOrFoldObjectAttributes = (props: {
+  hiddenFormItems: { [k: string]: boolean };
+  // setHiddenFormItems: any,
+  setHiddenFormItems: React.Dispatch<
     React.SetStateAction<{
       [k: string]: boolean;
     }>
-    >,
-    listKey: string,
-  }
-): JSX.Element => {
+  >;
+  listKey: string;
+}): JSX.Element => {
   return (
     <LineIconButton
       // style={{maxHeight:"20px",maxWidth:"20px"}}
       // style={{display:"inline-flex"}}
-      // sx={{ 
-      //   // maxWidth: "1rem", 
-      //   // maxHeight: "1rem", 
-      //   transform: {scale: 1.5} 
+      // sx={{
+      //   // maxWidth: "1rem",
+      //   // maxHeight: "1rem",
+      //   transform: {scale: 1.5}
       // }}
 
-      style={{ 
-        border: 0, 
-        backgroundColor: "transparent" }}
+      style={{
+        border: 0,
+        backgroundColor: "transparent",
+      }}
       onClick={(e) => {
         e.stopPropagation();
         e.preventDefault();
@@ -197,29 +198,28 @@ export const ExpandOrFoldObjectAttributes = (
     >
       {props.hiddenFormItems[props.listKey] ? (
         <ExpandMore sx={{ color: "darkgreen" }} />
-        // <ExpandMore sx={{ color: "darkred",maxWidth: "15px", maxHeight: "15px" }} />
       ) : (
+        // <ExpandMore sx={{ color: "darkred",maxWidth: "15px", maxHeight: "15px" }} />
         // <ExpandLess sx={{ maxWidth: "15px", maxHeight: "15px" }} />
-        <ExpandLess/>
+        <ExpandLess />
       )}
     </LineIconButton>
   );
-}
-
-
+};
 
 // #####################################################################################################
-function getItemsOrder(currentValue:any, resolvedJzodSchema: JzodElement | undefined) {
-  return resolvedJzodSchema?.type == "object" && typeof(currentValue) == "object" && currentValue !== null?
-  Object.keys(currentValue)
-:
-  (
-    Array.isArray(currentValue)?currentValue.map((e:any, k:number) => k):[]
-  )
+function getItemsOrder(currentValue: any, resolvedJzodSchema: JzodElement | undefined) {
+  return resolvedJzodSchema?.type == "object" &&
+    typeof currentValue == "object" &&
+    currentValue !== null
+    ? Object.keys(currentValue)
+    : Array.isArray(currentValue)
+    ? currentValue.map((e: any, k: number) => k)
+    : [];
 }
 
 // #####################################################################################################
-function Fallback({ error, resetErrorBoundary }:any) {
+function Fallback({ error, resetErrorBoundary }: any) {
   // Call resetErrorBoundary() to reset the error boundary and retry the render.
 
   return (
@@ -230,10 +230,9 @@ function Fallback({ error, resetErrorBoundary }:any) {
   );
 }
 
-
 // #####################################################################################################
 const objectTypes: string[] = ["record", "object", "union"];
-const enumTypes: string[] = ["enum", "literal"]; 
+const enumTypes: string[] = ["enum", "literal"];
 
 let count = 0;
 // #####################################################################################################
@@ -244,9 +243,8 @@ let count = 0;
 // #####################################################################################################
 // #####################################################################################################
 
-
 // export const JzodElementEditor = (props: JzodObjectEditorProps): JSX.Element => {
-export function JzodElementEditor (props: JzodObjectEditorProps): JSX.Element {
+export function JzodElementEditor(props: JzodObjectEditorProps): JSX.Element {
   count++;
   const context = useMiroirContextService();
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState> =
@@ -266,16 +264,18 @@ export function JzodElementEditor (props: JzodObjectEditorProps): JSX.Element {
 
   const usedIndentLevel: number = props.indentLevel ? props.indentLevel : 0;
 
-  // log.info(
-  //   "rendering",
-  //   props.listKey,
-  //   "type=",
-  //   props.resolvedJzodSchema?.type,
-  //   "jzodSchema=",
-  //   props.resolvedJzodSchema,
-  //   "props=",
-  //   props
-  // );
+  log.info(
+    "JzodElementEditor rendering",
+    props.listKey,
+    "type=",
+    props.resolvedJzodSchema?.type,
+    "jzodSchema=",
+    props.resolvedJzodSchema,
+    "props=",
+    props,
+    "unionInformation=",
+    props.unionInformation,
+  );
 
   const currentValue = resolvePathOnObject(props.formState, props.rootLesslistKeyArray);
   // log.info("#####################################################################################");
@@ -530,7 +530,14 @@ export function JzodElementEditor (props: JzodObjectEditorProps): JSX.Element {
       return new Set();
     }, [unfoldedRawSchema, currentValue]);
 
-    const unionInformation = useMemo(() => {
+    const unionInformation:
+      | {
+          jzodSchema: JzodUnion;
+          discriminator: string;
+          discriminatorValues: string[];
+          setItemsOrder: React.Dispatch<React.SetStateAction<any[]>>;
+        }
+      | undefined = useMemo(() => {
       return unfoldedRawSchema.type == "union"
         ? {
             jzodSchema: unfoldedRawSchema,
@@ -539,7 +546,7 @@ export function JzodElementEditor (props: JzodObjectEditorProps): JSX.Element {
             setItemsOrder: setItemsOrder,
           }
         : undefined;
-    }, [unfoldedRawSchema, objectUniondiscriminatorValues]);
+    }, [unfoldedRawSchema, objectUniondiscriminatorValues, setItemsOrder]);
 
     const stringSelectList = useMemo(() => {
       if (
@@ -676,6 +683,7 @@ export function JzodElementEditor (props: JzodObjectEditorProps): JSX.Element {
     // )
 
     // ############################################################################################
+    // const handleSelectLiteralChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const handleSelectLiteralChange = (event: any) => {
       // TODO: avoid side-effects!!! So ugly, I'll be hanged for this.
 
@@ -1666,28 +1674,24 @@ export function JzodElementEditor (props: JzodObjectEditorProps): JSX.Element {
         );
       }
       case "enum": {
-        const handleSelectEnumChange = (event: any) => {
+        // const handleSelectEnumChange = (event: any) => {
+        // const handleSelectEnumChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+          // const handleSelectEnumChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const handleSelectEnumChange = (event: SelectChangeEvent<any>) => {
           // TODO: avoid side-effects!!! So ugly, I'll be hanged for this.
 
-          // log.info("handleSelectEnumChange called with event", event)
           const parentPath = props.rootLesslistKeyArray.slice(
             0,
             props.rootLesslistKeyArray.length - 1
           );
-          // const currentParentValue = resolvePathOnObject(props.formik.values,parentPath);
 
-          if (
+          if ( //????
             props.unionInformation?.discriminator &&
             props.unionInformation?.discriminatorValues &&
             props.name == props.unionInformation?.discriminator
           ) {
-            // change of discriminator for union type, we must generate a new default value for the object
-            // const newAttributeValue = getDefaultValueForJzodSchemaWithResolution(
-            //   unfoldedRawSchema.definition,
-            //   currentMiroirFundamentalJzodSchema, // context.miroirFundamentalJzodSchema,
-            //   currentModel,
-            //   miroirMetaModel
-            // );
+            // handle union discriminator change if needed
+            // ...existing code for union discriminator handling...
             handleSelectLiteralChange(event);
           } else {
             const newFormState: any = alterObjectAtPath(
@@ -1695,88 +1699,30 @@ export function JzodElementEditor (props: JzodObjectEditorProps): JSX.Element {
               props.rootLesslistKeyArray,
               event.target.value
             );
-            log.info(
-              "handleSelectEnumChange called with event",
-              event,
-              "current Value",
-              props.formik.values,
-              "newFormState",
-              newFormState
-            );
-            // log.info(
-            //   "handleSelectChange newFormState",
-            //   newFormState
-            // );
             props.setFormState(newFormState);
           }
-          // missingAttributes.length > 0
-          //   ? { ...props.formik.values, [missingAttributes[0]]: "test!" }
-          //   : props.formik.values;
-          // const parentPath = props.rootLesslistKey.substring(0,props.rootLesslistKey.lastIndexOf("."))
-          // if (!props.unionInformation) {
-          //   throw new Error("handleSelectLiteralChange called but current object does not have information about the discriminated union type it must be part of!");
-          // }
-          // if (!props.unionInformation.jzodSchema.discriminator) {
-          //   throw new Error("handleSelectLiteralChange called but current object does not have a discriminated union type!");
-          // }
         };
+        // Get enum values from resolvedJzodSchema or rawJzodSchema
+        const enumValues: string[] =
+          (props.resolvedJzodSchema && props.resolvedJzodSchema.definition) ||
+          (props.rawJzodSchema && ((props.rawJzodSchema as any).definition ?? [])) ||
+          [];
         return (
-          <>
-            {/* <label htmlFor={props.listKey}>{displayedLabel}: </label> */}
-            {props.unionInformation?.discriminator &&
-            props.unionInformation?.discriminatorValues &&
-            props.name == props.unionInformation?.discriminator ? (
-              <>
-                <StyledSelect
-                  variant="standard"
-                  labelId="demo-simple-select-label"
-                  id={props.listKey}
-                  value={currentValue}
-                  label={props.name}
-                  onChange={handleSelectEnumChange}
-                >
-                  {props.unionInformation?.discriminatorValues.map((v) => {
-                    return (
-                      <MenuItem key={v} value={v}>
-                        {v}
-                      </MenuItem>
-                    );
-                  })}
-                </StyledSelect>{" "}
-                enum
-                {/* <div>
-                  subDiscriminator: {JSON.stringify(props.unionInformation.subDiscriminatorValues)}
-                </div> */}
-              </>
-            ) : (
-              <>
-                <StyledSelect
-                  variant="standard"
-                  labelId="demo-simple-select-label"
-                  id={props.listKey}
-                  role={props.listKey}
-                  value={currentValue}
-                  label={props.name}
-                  onChange={handleSelectEnumChange}
-                >
-                  {(props.rawJzodSchema as JzodEnum).definition.map((v) => {
-                    return (
-                      <MenuItem key={v} value={v}>
-                        {v}
-                      </MenuItem>
-                    );
-                  })}
-                </StyledSelect>
-              </>
-            )}
-            {props.forceTestingMode ? (
-              <div>enumValues={JSON.stringify((props.rawJzodSchema as JzodEnum).definition)}</div>
-            ) : (
-              <></>
-            )}
-          </>
+          <JzodEnumEditor
+            name={props.name}
+            listKey={props.listKey}
+            rootLesslistKey={props.rootLesslistKey}
+            rootLesslistKeyArray={props.rootLesslistKeyArray}
+            enumValues={enumValues}
+            value={currentValue}
+            onChange={handleSelectEnumChange}
+            label={props.label}
+            unionInformation={unionInformation}
+            currentValue={currentValue}
+            forceTestingMode={props.forceTestingMode}
+            rawJzodSchema={props.rawJzodSchema}
+          />
         );
-        break;
       }
       case "function":
       case "lazy":
@@ -1817,13 +1763,13 @@ export function JzodElementEditor (props: JzodObjectEditorProps): JSX.Element {
       </div>
     );
   }
-};
+}
 
 export const JzodObjectEditorWithErrorBoundary = withErrorBoundary(JzodElementEditor, {
   fallback: <div>Something went wrong</div>,
   onError(error, info) {
-    log.error("JzodElementEditor error", error)
+    log.error("JzodElementEditor error", error);
     // Do something with the error
     // E.g. log to an error logging client here
   },
-})
+});

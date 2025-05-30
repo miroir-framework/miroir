@@ -14,7 +14,8 @@
     "startDev": "vite --host --cors",
     "build": "vite build --emptyOutDir",
     "build5": "npm run build",
-    "test": "vitest run --poolOptions.threads.singleThread --passWithNoTests",
+    "test": "vitest run --poolOptions.threads.singleThread --passWithNoTests -t",
+    "testByFile": "vitest run --poolOptions.forks.singleFork --passWithNoTests",
     "testWithFullLog": "vitest run --poolOptions.threads.singleThread --disable-console-intercept --passWithNoTests"
   },
   "dependencies": {
@@ -57,6 +58,7 @@
   },
   "devDependencies": {
     "@miroir-framework/jzod-ts": "^0.7.0",
+    "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^14.4.3",
     "@types/chai-subset": "^1.3.5",
