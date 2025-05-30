@@ -528,7 +528,8 @@ export function getMiroirFundamentalJzodSchema(
   entityDefinitionTransformerDefinition: any,
   entityDefinitionEndpointDefinition: any,
 // ): JzodReference {
-  ): any /** JzodReference, avoiding reference to ensure proper compilation */ {
+  // ): any /** JzodReference, avoiding reference to ensure proper compilation */ {
+  ): any /** JzodSchema, avoiding reference to ensure proper compilation */ {
   // TODO: not really a JzodReference!!
   const entityDefinitionQueryVersionV1WithAbsoluteReferences = makeReferencesAbsolute(
     entityDefinitionQueryVersionV1.jzodSchema.definition.definition,

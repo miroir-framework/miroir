@@ -123,8 +123,6 @@ export function JzodElementDisplay(props: JzodElementDisplayProps){
                             deploymentUuid={props.deploymentUuid}
                             elementJzodSchema={(props.resolvedElementJzodSchema as JzodRecord).definition}
                             entityUuid={props.entityUuid}
-                            // instanceUuid={props.instanceUuid}
-                            // rootJzodSchema={props.rootJzodSchema}
                             currentEnumJzodSchemaResolver={props.currentEnumJzodSchemaResolver}
                             resolvedElementJzodSchema={(props.resolvedElementJzodSchema as JzodRecord).definition}
                             element={attribute[1]}

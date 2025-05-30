@@ -451,7 +451,7 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
                     currentDeploymentUuid={props.currentDeploymentUuid}
                     currentApplicationSection={props.currentApplicationSection}
                     rawJzodSchema={props.entityDefinitionJzodSchema}
-                    resolvedJzodSchema={resolvedJzodSchema?.status == "ok" ? resolvedJzodSchema.element : undefined}
+                    resolvedElementJzodSchema={resolvedJzodSchema?.status == "ok" ? resolvedJzodSchema.element : undefined}
                     foreignKeyObjects={props.foreignKeyObjects}
                     formState={dialogOuterFormObject}
                     setFormState={setdialogOuterFormObject}

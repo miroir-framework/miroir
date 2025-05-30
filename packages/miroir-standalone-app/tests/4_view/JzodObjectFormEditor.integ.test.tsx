@@ -7,7 +7,6 @@ import { Formik } from "formik";
 
 import {
   ApplicationSection,
-  EntityDefinition,
   EntityInstancesUuidIndex,
   JzodElement,
   JzodSchema,
@@ -18,37 +17,10 @@ import {
   Uuid,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
-  domainEndpointVersionV1,
-  entityDefinitionAdminApplication,
-  entityDefinitionBundleV1,
-  entityDefinitionCommit,
-  entityDefinitionDeployment,
-  entityDefinitionEntity,
-  entityDefinitionEntityDefinition,
-  entityDefinitionJzodSchema,
-  entityDefinitionMenu,
-  entityDefinitionQueryVersionV1,
-  entityDefinitionReport,
-  entityDefinitionSelfApplication,
-  entityDefinitionSelfApplicationDeploymentConfiguration,
-  entityDefinitionSelfApplicationVersion,
-  entityDefinitionTest,
-  getMiroirFundamentalJzodSchema,
-  instanceEndpointVersionV1,
-  jzodSchemajzodMiroirBootstrapSchema,
-  localCacheEndpointVersionV1,
+  jzodTypeCheck,
   miroirCoreStartup,
   miroirFundamentalJzodSchemaUuid,
-  modelEndpointV1,
-  persistenceEndpointVersionV1,
-  queryEndpointVersionV1,
-  resetAndInitApplicationDeployment,
-  jzodTypeCheck,
-  storeManagementEndpoint,
-  testEndpointVersionV1,
-  transformerJzodSchema,
-  transformerMenuV1,
-  undoRedoEndpointVersionV1
+  resetAndInitApplicationDeployment
 } from "miroir-core";
 
 // import {
@@ -63,15 +35,13 @@ import {
   JzodElementEditor
 } from "../../src/miroir-fwk/4_view/components/JzodElementEditor";
 
+import { miroirFundamentalJzodSchema } from "miroir-core";
 import { miroirAppStartup } from "miroir-standalone-app/src/startup";
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
+import { MiroirIntegrationTestEnvironment, renderWithProvidersWithContextProvider, selfApplicationDeploymentConfigurations } from "../../src/miroir-fwk/4-tests/tests-utils";
 import { useMiroirContextService } from "../../src/miroir-fwk/4_view/MiroirContextReactProvider";
-import { entityDefinitionTransformerDefinition } from "miroir-core";
-import { entityDefinitionEndpoint } from "miroir-core";
-import { JzodReference } from "miroir-core";
 import { loadTestConfigFiles } from "../utils/fileTools";
-import { MiroirIntegrationTestEnvironment, selfApplicationDeploymentConfigurations } from "../../src/miroir-fwk/4-tests/tests-utils";
 
 const env:any = (import.meta as any).env
 console.log("@@@@@@@@@@@@@@@@@@ env", env);
@@ -88,38 +58,7 @@ miroirIndexedDbStoreSectionStartup();
 
 let testEnvironment:MiroirIntegrationTestEnvironment | undefined = undefined;
 
-// const miroirFundamentalJzodSchema: JzodElement = getMiroirFundamentalJzodSchema(
-const miroirFundamentalJzodSchema: JzodReference = getMiroirFundamentalJzodSchema(
-  entityDefinitionBundleV1 as EntityDefinition,
-  entityDefinitionCommit as EntityDefinition,
-  modelEndpointV1,
-  storeManagementEndpoint,
-  instanceEndpointVersionV1,
-  undoRedoEndpointVersionV1,
-  localCacheEndpointVersionV1,
-  domainEndpointVersionV1,
-  queryEndpointVersionV1,
-  persistenceEndpointVersionV1,
-  testEndpointVersionV1,
-  jzodSchemajzodMiroirBootstrapSchema as JzodSchema,
-  transformerJzodSchema as JzodSchema,
-  [transformerMenuV1],
-  entityDefinitionAdminApplication as EntityDefinition,
-  entityDefinitionSelfApplication as EntityDefinition,
-  entityDefinitionSelfApplicationVersion as EntityDefinition,
-  entityDefinitionDeployment as EntityDefinition,
-  entityDefinitionEntity as EntityDefinition,
-  entityDefinitionEntityDefinition as EntityDefinition,
-  entityDefinitionJzodSchema as EntityDefinition,
-  entityDefinitionMenu  as EntityDefinition,
-  entityDefinitionQueryVersionV1 as EntityDefinition,
-  entityDefinitionReport as EntityDefinition,
-  entityDefinitionSelfApplicationDeploymentConfiguration as EntityDefinition,
-  entityDefinitionTest as EntityDefinition,
-  entityDefinitionTransformerDefinition as EntityDefinition,
-  entityDefinitionEndpoint as EntityDefinition,
-  // jzodSchemajzodMiroirBootstrapSchema as any,
-);
+const castMiroirFundamentalJzodSchema: JzodSchema = miroirFundamentalJzodSchema as JzodSchema;
 
 console.log("@@@@@@@@@@@@@@@@@@ miroirFundamentalJzodSchema", miroirFundamentalJzodSchema);
 
@@ -205,7 +144,7 @@ function JzodObjectFormEditorWrapper(props: JsonElementEditorWrapperProps) {
   console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ context", context)
   console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ context.setMiroirFundamentalJzodSchema", miroirFundamentalJzodSchema)
 
-  useEffect(() => context.setMiroirFundamentalJzodSchema(miroirFundamentalJzodSchema));
+  useEffect(() => context.setMiroirFundamentalJzodSchema(miroirFundamentalJzodSchema as any)); // TODO: remove as any
 
   console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ context.miroirFundamentalJzodSchema", context.miroirFundamentalJzodSchema)
 
@@ -241,7 +180,7 @@ function JzodObjectFormEditorWrapper(props: JsonElementEditorWrapperProps) {
             unresolvedJzodSchema={props.unresolvedJzodSchema}
             unionInformation={props.unionInformation}
             rawJzodSchema={props?.rawJzodSchema}
-            resolvedJzodSchema={props.resolvedJzodSchema}
+            resolvedElementJzodSchema={props.resolvedJzodSchema}
             handleChange={handleChange1}
             formik={formik}
             formState={dialogOuterFormObject}

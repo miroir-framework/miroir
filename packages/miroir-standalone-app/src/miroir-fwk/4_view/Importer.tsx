@@ -2401,7 +2401,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                         currentApplicationSection={dataSection}
                         // resolvedJzodSchema={actionsJzodSchema}
                         rawJzodSchema={rawSchema}
-                        resolvedJzodSchema={resolvedJzodSchema}
+                        resolvedElementJzodSchema={resolvedJzodSchema}
                         foreignKeyObjects={emptyObject}
                         handleChange={formik.handleChange as any}
                         formik={formik}

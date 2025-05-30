@@ -11,14 +11,13 @@ describe("JzodEnumEditor", () => {
     rootLesslistKey: "testName",
     rootLesslistKeyArray: ["testName"],
     enumValues,
-    value: "value2",
+    currentValue: "value2",
     onChange: vi.fn(),
     label: "Test Label",
     rawJzodSchema: {
       type: "enum",
       definition: ["value1", "value2", "value3"],
     },
-    currentValue: "value2",
     forceTestingMode: false,
     unionInformation: undefined,
   };
@@ -39,12 +38,14 @@ describe("JzodEnumEditor", () => {
     expect(combobox).toContainHTML("value2");
   });
 
-  // it("renders all enum options", () => {
-  //   render(<JzodEnumEditor {...defaultProps} />);
-  //   enumValues.forEach((val) => {
-  //     expect(screen.getByRole("option", { name: val })).toBeInTheDocument();
-  //   });
-  // });
+  it("renders all enum options", () => {
+    render(<JzodEnumEditor {...defaultProps} />);
+    const combobox = screen.getByRole("combobox");
+    fireEvent.mouseDown(combobox);
+    enumValues.forEach((val) => {
+      expect(screen.getByRole("option", { name: val })).toBeInTheDocument();
+    });
+  });
 
   it("calls onChange when selection changes", () => {
     const onChange = vi.fn();
@@ -53,7 +54,7 @@ describe("JzodEnumEditor", () => {
     fireEvent.mouseDown(combobox);
     fireEvent.click(screen.getByRole("option", { name: "value3" }));
     expect(onChange).toHaveBeenCalledTimes(1);
-    // expect(select).toHaveValue("value2");
+    // expect(combobox).toHaveValue("value3"); // the value is not changed because the onChange function is mocked
   });
 
   it("sets select id and name correctly", () => {

@@ -441,8 +441,8 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
             {
               actionType: "transactionalInstanceAction",
               instanceAction: {
-                actionType: "instanceAction",
-                actionName: "createInstance",
+                // actionType: "instanceAction",
+                actionType: "createInstance",
                 // applicationSection: "model",
                 applicationSection: currentApplicationSection,
                 deploymentUuid: props.displayedDeploymentDefinition.uuid,
@@ -463,8 +463,8 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
           );
         } else {
           const createAction: InstanceAction = {
-            actionType: "instanceAction",
-            actionName: "createInstance",
+            // actionType: "instanceAction",
+            actionType: "createInstance",
             applicationSection: currentApplicationSection,
             deploymentUuid: props.displayedDeploymentDefinition?.uuid,
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
@@ -500,8 +500,8 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
             {
               actionType: "transactionalInstanceAction",
               instanceAction: {
-                actionType: "instanceAction",
-                actionName: "updateInstance",
+                // actionType: "instanceAction",
+                actionType: "updateInstance",
                 applicationSection: "model",
                 deploymentUuid: props.displayedDeploymentDefinition.uuid,
                 endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
@@ -520,8 +520,8 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
           );
         } else {
           const updateAction: InstanceAction = {
-            actionType: "instanceAction",
-            actionName: "updateInstance",
+            // actionType: "instanceAction",
+            actionType: "updateInstance",
             applicationSection: props.chosenApplicationSection?props.chosenApplicationSection:"data",
             deploymentUuid: props.displayedDeploymentDefinition?.uuid,
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
@@ -772,7 +772,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                   onRowEdit={onEditFormObject}
                   onRowDelete={onDeleteFormObject}
                   sortByAttribute={props.section.definition.sortByAttribute}
-                  paramsAsdomainElements={props.paramsAsdomainElements}
+                  paramsAsdomainElements={props.paramsAsdomainElements as any} // TODO: which is right? DomainElementObject or record<string, any>?
                 ></MTableComponent>
               </div>
             ) : (

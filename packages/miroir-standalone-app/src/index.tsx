@@ -145,7 +145,7 @@ const router = createBrowserRouter([
 
 // const theme = createMuiTheme();
 
-const themeParams = {
+export const themeParams = {
   palette: {
     primary: {
       main: blue[500],

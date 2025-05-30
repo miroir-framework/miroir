@@ -19,15 +19,10 @@ export interface JzodEnumEditorProps {
   rootLesslistKey: string;
   rootLesslistKeyArray: string[];
   enumValues: string[];
-  value: any;
   currentValue: any;
   forceTestingMode?: boolean;
   // rawJzodSchema: JzodEnum | JzodUnion;
   rawJzodSchema: JzodElement | undefined;
-  // rawJzodSchema: JzodEnum | undefined;
-  // onChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
-  // onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  // onChange: (event: React.ChangeEvent<HTMLElement>) => void;
   onChange: (event: SelectChangeEvent<any>) => void;
   // onChange: (event: React.ChangeEvent) => void;
   label?: string;
@@ -45,8 +40,8 @@ export const JzodEnumEditor: React.FC<JzodEnumEditorProps> = ({
   name,
   listKey,
   rootLesslistKey,
-  enumValues,
-  value,
+  enumValues, // TODO: use enumValues instead of rawJzodSchema.definition?
+  // value,
   onChange,
   label,
   unionInformation,
@@ -55,24 +50,24 @@ export const JzodEnumEditor: React.FC<JzodEnumEditorProps> = ({
   rawJzodSchema,
 
 }) => {
-  log.info("JzodEnumEditor render",
-    "name",
-    name,
-    "listKey",
-    listKey,
-    "rootLesslistKey",
-    rootLesslistKey,
-    "enumValues",
-    enumValues,
-    "value",
-    value,
-    "currentValue",
-    currentValue,
-    "rawJzodSchema",
-    rawJzodSchema,
-    "unionInformation",
-    unionInformation,
-  )
+  // log.info("JzodEnumEditor render",
+  //   "name",
+  //   name,
+  //   "listKey",
+  //   listKey,
+  //   "rootLesslistKey",
+  //   rootLesslistKey,
+  //   "enumValues",
+  //   enumValues,
+  //   "value",
+  //   value,
+  //   "currentValue",
+  //   currentValue,
+  //   "rawJzodSchema",
+  //   rawJzodSchema,
+  //   "unionInformation",
+  //   unionInformation,
+  // )
   return (
     <>
       {unionInformation?.discriminator &&
@@ -99,9 +94,6 @@ export const JzodEnumEditor: React.FC<JzodEnumEditorProps> = ({
             })}
           </StyledSelect>{" "}
           enum
-          {/* <div>
-                  subDiscriminator: {JSON.stringify(props.unionInformation.subDiscriminatorValues)}
-                </div> */}
         </>
       ) : (
         <>
@@ -112,11 +104,8 @@ export const JzodEnumEditor: React.FC<JzodEnumEditorProps> = ({
             id={listKey}
             role={listKey}
             value={currentValue}
-            // label={name}
-            // label={label}
             name={name}
             aria-label={label}
-            // onChange={handleSelectEnumChange}
             onChange={onChange}
           >
             {(rawJzodSchema as JzodEnum).definition.map((v) => {
@@ -136,22 +125,4 @@ export const JzodEnumEditor: React.FC<JzodEnumEditorProps> = ({
       )}
     </>
   );
-
-  // return (
-  //   <>
-  //     {label && <label htmlFor={rootLesslistKey}>{label}: </label>}
-  //     <select
-  //       id={rootLesslistKey}
-  //       name={name}
-  //       value={value}
-  //       onChange={onChange}
-  //     >
-  //       {enumValues.map((enumValue) => (
-  //         <option key={enumValue} value={enumValue}>
-  //           {enumValue}
-  //         </option>
-  //       ))}
-  //     </select>
-  //   </>
-  // );
 };
