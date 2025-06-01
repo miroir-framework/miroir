@@ -79,10 +79,8 @@ export const JzodEnumEditor: React.FC<JzodEnumEditorProps> = ({
             labelId="demo-simple-select-label"
             id={listKey}
             value={currentValue}
-            // label={name}
             name={name}
             aria-label={label}
-            // onChange={handleSelectEnumChange}
             onChange={onChange}
           >
             {unionInformation?.discriminatorValues.map((v) => {
@@ -97,7 +95,6 @@ export const JzodEnumEditor: React.FC<JzodEnumEditorProps> = ({
         </>
       ) : (
         <>
-          {/* {label && <label htmlFor={listKey}>{label}: </label>} */}
           <StyledSelect
             variant="standard"
             labelId="demo-simple-select-label"

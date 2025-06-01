@@ -59,6 +59,7 @@ describe("JzodElementEditor", () => {
   const localCache: LocalCacheInterface = new LocalCache(persistenceSaga);
 
   // Mock domainController with handleAction spy
+  // TODO: test submit action
   const handleAction = vi.fn();
   const domainController: DomainControllerInterface = {
     handleAction,
@@ -131,26 +132,17 @@ describe("JzodElementEditor", () => {
       <div>
       <ThemeProvider theme={theme}>
         <StyledEngineProvider injectFirst>
-          {/* <Provider store={domainController.getLocalCache().getInnerStore()}> */}
           <Provider store={localCache.getInnerStore()}>
             <MiroirContextReactProvider miroirContext={miroirContext} domainController={domainController}>
               <Formik
                 enableReinitialize={true}
                 initialValues={formState}
                 onSubmit={onSubmit}
-                // handleChange={async (e: ChangeEvent<any>): Promise<void> => {
                 handleChange={
                   (e: ChangeEvent<any>) => {
                   console.info("onChange formik values ###########################################", e.target.value);
                   setFormState(e.target.value);
                 }
-                //   (e: ChangeEvent<any>) => {
-                //   console.info("onChange formik", e);
-                //   if (props.onChange) {
-                //     console.info("onChange formik props.onChange!!!!!!!!!!!", props.onChange);
-                //     props.onChange(e);
-                //   }
-                // }
               }
               >
                 {(formik) => (
@@ -158,8 +150,8 @@ describe("JzodElementEditor", () => {
                     <form id={"form." + pageLabel} onSubmit={formik.handleSubmit}>
                       <>
                         <JzodElementEditor
-                          name={"ROOT"}
-                          listKey={"ROOT"}
+                          name={name}
+                          listKey={listKey}
                           rootLesslistKey={emptyString}
                           rootLesslistKeyArray={emptyList}
                           paramMiroirFundamentalJzodSchema={miroirFundamentalJzodSchema as JzodSchema}
@@ -197,13 +189,11 @@ describe("JzodElementEditor", () => {
   });
 
   it("does not render label if not provided", () => {
-    // render(<JzodElementEditor {...defaultProps} label={undefined} />);
     render(<LocalJzodElementEditor />);
     expect(screen.queryByLabelText(/Test Label/)).not.toBeInTheDocument();
   });
 
   it("renders select with correct value", () => {
-    // render(<JzodElementEditor {...defaultProps} />);
     render(<LocalJzodElementEditor {...defaultProps}/>);
     const combobox = screen.getByRole("combobox");
     expect(combobox).toContainHTML("value2");
@@ -219,26 +209,21 @@ describe("JzodElementEditor", () => {
   });
 
   it("calls onChange when selection changes", () => {
-    // render(<JzodElementEditor {...defaultProps} onChange={onChange} />);
-    // render(<JzodElementEditor {...defaultProps} />);
     render(<LocalJzodElementEditor {...defaultProps}/>);
     const combobox = screen.getByRole("combobox");
     fireEvent.mouseDown(combobox);
     fireEvent.click(screen.getByRole("option", { name: "value3" }));
     // console.info("combobox.innerHTML", combobox.innerHTML);
-    // expect(onChange).toHaveBeenCalledTimes(1);
-
     expect(combobox.innerHTML).toEqual("value3");
   });
 
-  // it("sets select id and name correctly", () => {
-  //   // render(<JzodEnumEditor {...defaultProps} />);
-  //   render(<LocalJzodElementEditor {...defaultProps}/>);
-  //   // 
-  //   expect(screen.getByRole("combobox")).toHaveAttribute("id", listKey);
-  //   // 
-  //   const select = screen.getByRole(listKey);
-  //   const input = select.querySelector('input');
-  //   expect(input).toHaveAttribute("name", name);
-  // });
+  it("sets select id and name correctly", () => {
+    render(<LocalJzodElementEditor {...defaultProps}/>);
+    // 
+    expect(screen.getByRole("combobox")).toHaveAttribute("id", listKey);
+    // 
+    const select = screen.getByRole(listKey);
+    const input = select.querySelector('input');
+    expect(input).toHaveAttribute("name", name);
+  });
 });
