@@ -109,16 +109,15 @@ describe("JzodLiteralEditor", () => {
   });
 
   // ##############################################################################################
-  it("calls onChange when input value changes", () => {
-    const handleChange = vi.fn();
+  // TODO: this test differs from the JzodElementEditor.test.tsx, because the latter (correctly) checks for the resulting type of the modified value.
+  it("sets new value when input value changes", () => {
+    // const handleChange = vi.fn();
     render(
       <LocalLiteralEditor
         name="fieldName"
         listKey="listKey"
         rootLesslistKey="rootLesslistKey"
         value="test-value"
-        // formik={mockFormik}
-        // onChange={handleChange}
         label="Test Label"
       />
     );
@@ -128,6 +127,7 @@ describe("JzodLiteralEditor", () => {
     expect(screen.getByDisplayValue(/new value/)).toBeInTheDocument();
   });
 
+  // ##############################################################################################
   it("passes correct props to input", () => {
     render(
       <LocalLiteralEditor

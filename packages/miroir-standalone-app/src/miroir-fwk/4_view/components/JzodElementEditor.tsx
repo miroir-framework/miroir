@@ -86,7 +86,7 @@ export interface EditorAttribute {
   value: any;
 }
 
-export interface JzodObjectEditorProps {
+export interface JzodElementEditorProps {
   forceTestingMode?: boolean;
   label?: string;
   name: string;
@@ -94,6 +94,8 @@ export interface JzodObjectEditorProps {
   rootLesslistKey: string;
   rootLesslistKeyArray: string[];
   indentLevel?: number;
+  rawJzodSchema: JzodElement | undefined;
+  resolvedElementJzodSchema: JzodElement | undefined;
   unresolvedJzodSchema?: JzodElement | undefined;
   paramMiroirFundamentalJzodSchema?: JzodSchema; //used only for testing, trouble with using MiroirContextReactProvider
   unionInformation?:
@@ -106,8 +108,6 @@ export interface JzodObjectEditorProps {
         setItemsOrder: React.Dispatch<React.SetStateAction<any[]>>;
       }
     | undefined;
-  rawJzodSchema: JzodElement | undefined;
-  resolvedElementJzodSchema: JzodElement | undefined;
   foreignKeyObjects: Record<string, EntityInstancesUuidIndex>;
   currentDeploymentUuid?: Uuid;
   currentApplicationSection?: ApplicationSection;
@@ -262,7 +262,7 @@ let count = 0;
 // #####################################################################################################
 
 // export const JzodElementEditor = (props: JzodObjectEditorProps): JSX.Element => {
-export function JzodElementEditor(props: JzodObjectEditorProps): JSX.Element {
+export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   count++;
   const context = useMiroirContextService();
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState> =
@@ -698,127 +698,148 @@ export function JzodElementEditor(props: JzodObjectEditorProps): JSX.Element {
     const handleSelectLiteralChange = (event: any) => {
       // TODO: avoid side-effects!!! So ugly, I'll be hanged for this.
 
-      if (!props.unionInformation) {
-        throw new Error(
-          "handleSelectLiteralChange called but current object does not have information about the discriminated union type it must be part of!"
-        );
-      }
-      if (!props.unionInformation.jzodSchema.discriminator) {
-        throw new Error(
-          "handleSelectLiteralChange called but current object does not have a discriminated union type!"
-        );
-      }
-
-      const currentAttributeName =
-        props.rootLesslistKeyArray[props.rootLesslistKeyArray.length - 1];
+      // if (!props.unionInformation) {
+      //   throw new Error(
+      //     "handleSelectLiteralChange called but current object does not have information about the discriminated union type it must be part of!"
+      //   );
+      // }
+      // if (!props.unionInformation.jzodSchema.discriminator) {
+      //   throw new Error(
+      //     "handleSelectLiteralChange called but current object does not have a discriminated union type!"
+      //   );
+      // }
 
       const parentPath = props.rootLesslistKeyArray.slice(0, props.rootLesslistKeyArray.length - 1);
-      log.info(
-        "handleSelectLiteralChange event",
-        event,
-        "attribute",
-        currentAttributeName,
-        "props.name",
-        props.name,
-        "parentPath",
-        parentPath,
-        "props.unionInformation?.jzodSchema",
-        props.unionInformation.jzodSchema,
-        "jzodSchema.discriminator",
-        "'" + (props.unionInformation as any).jzodSchema.discriminator + "'",
-        "props.formik.values",
-        props.formik.values,
-        "props.rootLesslistKeyArray",
-        props.rootLesslistKeyArray
-      );
-
-      const newJzodSchema: JzodElement | undefined = // attribute is either discriminator or sub-discriminator
-        // props.name == props.unionInformation.subDiscriminator
-        //   ? // props.name == currentAttributeName == props.unionInformation.subDiscriminator?
-        //     (props.unionInformation.jzodSchema.definition as JzodObject[]).find(
-        //       (a: JzodObject) =>
-        //         a.type == "object" &&
-        //         a.definition[(props.unionInformation as any).jzodSchema.subDiscriminator].type == "literal" &&
-        //         (a.definition[(props.unionInformation as any).jzodSchema.subDiscriminator] as JzodLiteral).definition ==
-        //           event.target.value
-        //     )
-        // :
-        (props.unionInformation.jzodSchema.definition as JzodObject[]).find(
-          (a: JzodObject) =>
-            a.type == "object" &&
-            a.definition[(props.unionInformation as any).jzodSchema.discriminator].type ==
-              "literal" &&
-            (a.definition[(props.unionInformation as any).jzodSchema.discriminator] as JzodLiteral)
-              .definition == event.target.value
+      
+      if (props.unionInformation && props.unionInformation.jzodSchema.discriminator) {
+        const currentAttributeName =
+          props.rootLesslistKeyArray[props.rootLesslistKeyArray.length - 1];
+  
+        log.info(
+          "handleSelectLiteralChange event",
+          event,
+          "attribute",
+          currentAttributeName,
+          "props.name",
+          props.name,
+          "parentPath",
+          parentPath,
+          "props.unionInformation?.jzodSchema",
+          props.unionInformation.jzodSchema,
+          "jzodSchema.discriminator",
+          "'" + (props.unionInformation as any).jzodSchema.discriminator + "'",
+          "props.formik.values",
+          props.formik.values,
+          "props.rootLesslistKeyArray",
+          props.rootLesslistKeyArray
         );
-      if (!newJzodSchema) {
-        throw new Error(
-          "handleSelectLiteralChange could not find union branch for discriminator " +
-            props.unionInformation.discriminator +
-            " in " +
-            JSON.stringify(props.unionInformation.jzodSchema)
+  
+        const newJzodSchema: JzodElement | undefined = // attribute is either discriminator or sub-discriminator
+          // props.name == props.unionInformation.subDiscriminator
+          //   ? // props.name == currentAttributeName == props.unionInformation.subDiscriminator?
+          //     (props.unionInformation.jzodSchema.definition as JzodObject[]).find(
+          //       (a: JzodObject) =>
+          //         a.type == "object" &&
+          //         a.definition[(props.unionInformation as any).jzodSchema.subDiscriminator].type == "literal" &&
+          //         (a.definition[(props.unionInformation as any).jzodSchema.subDiscriminator] as JzodLiteral).definition ==
+          //           event.target.value
+          //     )
+          // :
+          (props.unionInformation.jzodSchema.definition as JzodObject[]).find(
+            (a: JzodObject) =>
+              a.type == "object" &&
+              a.definition[(props.unionInformation as any).jzodSchema.discriminator].type ==
+                "literal" &&
+              (a.definition[(props.unionInformation as any).jzodSchema.discriminator] as JzodLiteral)
+                .definition == event.target.value
+          );
+        if (!newJzodSchema) {
+          throw new Error(
+            "handleSelectLiteralChange could not find union branch for discriminator " +
+              props.unionInformation.discriminator +
+              " in " +
+              JSON.stringify(props.unionInformation.jzodSchema)
+          );
+        }
+        const newJzodSchemaWithOptional = props.unionInformation.jzodSchema.optional
+          ? {
+              ...newJzodSchema,
+              optional: true,
+            }
+          : newJzodSchema;
+        log.info("handleSelectLiteralChange newJzodSchemaWithOptional", newJzodSchemaWithOptional);
+  
+        const defaultValue = currentMiroirFundamentalJzodSchema
+          ? getDefaultValueForJzodSchemaWithResolution(
+              newJzodSchemaWithOptional,
+              currentMiroirFundamentalJzodSchema, // context.miroirFundamentalJzodSchema,
+              currentModel,
+              miroirMetaModel
+            )
+          : undefined;
+        log.info("handleSelectLiteralChange defaultValue", defaultValue);
+        // const newFormState: any = alterObjectAtPath(props.formik.values, parentPath, {type: "B", b: "Test!!"}) ;
+        const newFormState: any = alterObjectAtPath(props.formik.values, parentPath, defaultValue);
+        log.info("handleSelectLiteralChange newFormState", newFormState);
+        props.setFormState(newFormState);
+        const currentParentValue = resolvePathOnObject(newFormState, parentPath);
+        log.info(
+          "handleSelectLiteralChange props.resolvedJzodSchema",
+          props.resolvedElementJzodSchema,
+          "currentParentValue",
+          currentParentValue
         );
+        log.info(
+          "handleSelectLiteralChange props.unionInformation?.jzodSchema",
+          props.unionInformation?.jzodSchema
+        );
+  
+        const newResolvedJzodSchema = currentMiroirFundamentalJzodSchema
+          ? jzodTypeCheck(
+              props.unionInformation?.jzodSchema as any, // not undefined here!
+              currentParentValue,
+              [], // currentValuePath
+              [], // currentTypePath
+              currentMiroirFundamentalJzodSchema, //context.miroirFundamentalJzodSchema,
+              currentModel,
+              miroirMetaModel,
+              {}
+            )
+          : undefined;
+  
+        if (!newResolvedJzodSchema || newResolvedJzodSchema.status != "ok") {
+          throw new Error(
+            "handleSelectLiteralChange could not resolve schema " +
+              JSON.stringify(props.unionInformation?.jzodSchema) +
+              " value " +
+              JSON.stringify(newFormState)
+          );
+        }
+  
+        log.info("handleSelectLiteralChange newResolvedJzodSchema", newResolvedJzodSchema);
+  
+        const newItemsOrder = getItemsOrder(currentParentValue, newResolvedJzodSchema.element);
+        log.info("handleSelectLiteralChange newItemsOrder", newItemsOrder);
+        props.unionInformation.setItemsOrder(newItemsOrder);
+      } else {
+        log.info("handleSelectLiteralChange parentPath", parentPath);
+        log.info("handleSelectLiteralChange event.target.value", event.target.value);
+        const newFormState: any = alterObjectAtPath(props.formik.values, parentPath, event.target.value); ;
+        // const newFormState: any = alterObjectAtPath(props.formik.values, parentPath, defaultValue);
+        log.info("handleSelectLiteralChange newFormState", newFormState);
+        props.setFormState(newFormState);
+        // const currentParentValue = resolvePathOnObject(newFormState, parentPath);
+        // log.info(
+        //   "handleSelectLiteralChange props.resolvedJzodSchema",
+        //   props.resolvedElementJzodSchema,
+        //   "currentParentValue",
+        //   currentParentValue
+        // );
+        // log.info(
+        //   "handleSelectLiteralChange props.unionInformation?.jzodSchema",
+        //   props.unionInformation?.jzodSchema
+        // );
       }
-      const newJzodSchemaWithOptional = props.unionInformation.jzodSchema.optional
-        ? {
-            ...newJzodSchema,
-            optional: true,
-          }
-        : newJzodSchema;
-      log.info("handleSelectLiteralChange newJzodSchemaWithOptional", newJzodSchemaWithOptional);
-
-      const defaultValue = currentMiroirFundamentalJzodSchema
-        ? getDefaultValueForJzodSchemaWithResolution(
-            newJzodSchemaWithOptional,
-            currentMiroirFundamentalJzodSchema, // context.miroirFundamentalJzodSchema,
-            currentModel,
-            miroirMetaModel
-          )
-        : undefined;
-      log.info("handleSelectLiteralChange defaultValue", defaultValue);
-      // const newFormState: any = alterObjectAtPath(props.formik.values, parentPath, {type: "B", b: "Test!!"}) ;
-      const newFormState: any = alterObjectAtPath(props.formik.values, parentPath, defaultValue);
-      log.info("handleSelectLiteralChange newFormState", newFormState);
-      props.setFormState(newFormState);
-      const currentParentValue = resolvePathOnObject(newFormState, parentPath);
-      log.info(
-        "handleSelectLiteralChange props.resolvedJzodSchema",
-        props.resolvedElementJzodSchema,
-        "currentParentValue",
-        currentParentValue
-      );
-      log.info(
-        "handleSelectLiteralChange props.unionInformation?.jzodSchema",
-        props.unionInformation?.jzodSchema
-      );
-
-      const newResolvedJzodSchema = currentMiroirFundamentalJzodSchema
-        ? jzodTypeCheck(
-            props.unionInformation?.jzodSchema as any, // not undefined here!
-            currentParentValue,
-            [], // currentValuePath
-            [], // currentTypePath
-            currentMiroirFundamentalJzodSchema, //context.miroirFundamentalJzodSchema,
-            currentModel,
-            miroirMetaModel,
-            {}
-          )
-        : undefined;
-
-      if (!newResolvedJzodSchema || newResolvedJzodSchema.status != "ok") {
-        throw new Error(
-          "handleSelectLiteralChange could not resolve schema " +
-            JSON.stringify(props.unionInformation?.jzodSchema) +
-            " value " +
-            JSON.stringify(newFormState)
-        );
-      }
-
-      log.info("handleSelectLiteralChange newResolvedJzodSchema", newResolvedJzodSchema);
-
-      const newItemsOrder = getItemsOrder(currentParentValue, newResolvedJzodSchema.element);
-      log.info("handleSelectLiteralChange newItemsOrder", newItemsOrder);
-      props.unionInformation.setItemsOrder(newItemsOrder);
       // changing the current Jzod Schema for the whole object (at ROOT! Redraw / recreate everything!)
     };
 

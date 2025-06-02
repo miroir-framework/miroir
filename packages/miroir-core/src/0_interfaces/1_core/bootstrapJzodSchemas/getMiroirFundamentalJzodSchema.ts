@@ -531,6 +531,7 @@ export function getMiroirFundamentalJzodSchema(
   // ): any /** JzodReference, avoiding reference to ensure proper compilation */ {
   ): any /** JzodSchema, avoiding reference to ensure proper compilation */ {
   // TODO: not really a JzodReference!!
+  console.log("getMiroirFundamentalJzodSchema called!");
   const entityDefinitionQueryVersionV1WithAbsoluteReferences = makeReferencesAbsolute(
     entityDefinitionQueryVersionV1.jzodSchema.definition.definition,
     miroirFundamentalJzodSchemaUuid
