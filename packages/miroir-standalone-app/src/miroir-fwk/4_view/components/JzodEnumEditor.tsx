@@ -1,10 +1,13 @@
-import React from "react";
-import { StyledSelect } from "./Style";
-import { JzodElement, JzodEnum, JzodUnion } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { MenuItem, SelectChangeEvent } from "@mui/material";
-import { LoggerInterface, MiroirLoggerFactory } from "miroir-core";
+import { LoggerInterface, MiroirLoggerFactory, resolvePathOnObject } from "miroir-core";
+import {
+  JzodEnum,
+  JzodUnion
+} from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import React, { useMemo } from "react";
 import { packageName } from "../../../constants";
 import { cleanLevel } from "../constants";
+import { StyledSelect } from "./Style";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -14,18 +17,16 @@ MiroirLoggerFactory.registerLoggerToStart(
 });
 
 export interface JzodEnumEditorProps {
+  label?: string;
   name: string;
   listKey: string;
   rootLesslistKey: string;
   rootLesslistKeyArray: string[];
   enumValues: string[];
-  currentValue: any;
+  formState: any; // TODO: replace with Formik type
   forceTestingMode?: boolean;
-  // rawJzodSchema: JzodEnum | JzodUnion;
-  rawJzodSchema: JzodElement | undefined;
+  rawJzodSchema: JzodEnum | undefined;
   onChange: (event: SelectChangeEvent<any>) => void;
-  // onChange: (event: React.ChangeEvent) => void;
-  label?: string;
   unionInformation:
     | {
         jzodSchema: JzodUnion;
@@ -36,54 +37,44 @@ export interface JzodEnumEditorProps {
     | undefined;
 }
 
-export const JzodEnumEditor: React.FC<JzodEnumEditorProps> = ({
-  name,
-  listKey,
-  rootLesslistKey,
-  enumValues, // TODO: use enumValues instead of rawJzodSchema.definition?
-  // value,
-  onChange,
-  label,
-  unionInformation,
-  currentValue,
-  forceTestingMode,
-  rawJzodSchema,
+export const JzodEnumEditor: React.FC<JzodEnumEditorProps> = (
+  props: JzodEnumEditorProps
+) => {
+  
+//   log.info(`JzodEnumEditor render
+// name: ${props.name}
+// formState: ${JSON.stringify(props.formState, null, 2)}
+// listKey: ${props.listKey}
+// rootLesslistKey: ${props.rootLesslistKey}
+// rootLesslistKeyArray: ${props.rootLesslistKeyArray}
+// enumValues: ${props.enumValues}
+// rawJzodSchema: ${JSON.stringify(props.rawJzodSchema)}
+// unionInformation: ${JSON.stringify(props.unionInformation)}
+// onChange: ${props.onChange}
+// `)
+// onChange: ${JSON.stringify(props.onChange, null, 2)}
+  const currentValue = resolvePathOnObject(props.formState, props.rootLesslistKeyArray);
+  // const currentValue = useMemo(
+  //   () => resolvePathOnObject(props.formState, props.rootLesslistKeyArray),
+  //   [props.formState, props.rootLesslistKeyArray]
+  // );
 
-}) => {
-  // log.info("JzodEnumEditor render",
-  //   "name",
-  //   name,
-  //   "listKey",
-  //   listKey,
-  //   "rootLesslistKey",
-  //   rootLesslistKey,
-  //   "enumValues",
-  //   enumValues,
-  //   "value",
-  //   value,
-  //   "currentValue",
-  //   currentValue,
-  //   "rawJzodSchema",
-  //   rawJzodSchema,
-  //   "unionInformation",
-  //   unionInformation,
-  // )
   return (
     <>
-      {unionInformation?.discriminator &&
-      unionInformation?.discriminatorValues &&
-      name == unionInformation?.discriminator ? ( // NOT USED, unionInformation is null!!
+      {props.unionInformation?.discriminator &&
+      props.unionInformation?.discriminatorValues &&
+      props.name == props.unionInformation?.discriminator ? ( // NOT USED, unionInformation is null!!
         <>
           <StyledSelect
             variant="standard"
             labelId="demo-simple-select-label"
-            id={listKey}
+            id={props.listKey}
             value={currentValue}
-            name={name}
-            aria-label={label}
-            onChange={onChange}
+            name={props.name}
+            aria-label={props.label}
+            onChange={props.onChange}
           >
-            {unionInformation?.discriminatorValues.map((v) => {
+            {props.unionInformation?.discriminatorValues.map((v) => {
               return (
                 <MenuItem key={v} value={v}>
                   {v}
@@ -98,14 +89,14 @@ export const JzodEnumEditor: React.FC<JzodEnumEditorProps> = ({
           <StyledSelect
             variant="standard"
             labelId="demo-simple-select-label"
-            id={listKey}
-            role={listKey}
+            id={props.listKey}
+            role={props.listKey}
             value={currentValue}
-            name={name}
-            aria-label={label}
-            onChange={onChange}
+            name={props.name}
+            aria-label={props.label}
+            onChange={props.onChange}
           >
-            {(rawJzodSchema as JzodEnum).definition.map((v) => {
+            {(props.rawJzodSchema as JzodEnum).definition.map((v) => {
               return (
                 <MenuItem key={v} value={v}>
                   {v}
@@ -115,8 +106,8 @@ export const JzodEnumEditor: React.FC<JzodEnumEditorProps> = ({
           </StyledSelect>
         </>
       )}
-      {forceTestingMode ? (
-        <div>enumValues={JSON.stringify((rawJzodSchema as JzodEnum).definition)}</div>
+      {props.forceTestingMode ? (
+        <div>enumValues={JSON.stringify((props.rawJzodSchema as JzodEnum).definition)}</div>
       ) : (
         <></>
       )}

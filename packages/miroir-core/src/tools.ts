@@ -103,7 +103,7 @@ export function resolvePathOnObject(valueObject:any, path: ResultAccessPath) {
       if (typeof acc !== "object" || !Array.isArray(acc)) {
         throw new Error(
           "resolvePathOnObject value object=" +
-            valueObject +
+            JSON.stringify(valueObject) +
             ", path=" +
             path +
             " either attribute " +
@@ -121,7 +121,7 @@ export function resolvePathOnObject(valueObject:any, path: ResultAccessPath) {
       if (!acc[curr]) {
         throw new Error(
           "resolvePathOnObject value object=" +
-            valueObject +
+            JSON.stringify(valueObject) +
             ", path=" +
             path +
             " either attribute " +

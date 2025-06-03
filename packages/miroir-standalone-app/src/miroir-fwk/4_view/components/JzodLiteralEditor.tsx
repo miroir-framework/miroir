@@ -1,24 +1,44 @@
+import { resolvePathOnObject } from "miroir-core";
 import React from "react";
 
 export interface JzodLiteralEditorProps {
   name: string;
   listKey: string;
   rootLesslistKey: string;
+  rootLesslistKeyArray: string[];
   value: any;
-  formik: any; // Replace with appropriate type for formik
+  formState: any; // TODO: replace with Formik type
+  // formik: any; // Replace with appropriate type for formik
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   label?: string;
 }
 
-export const JzodLiteralEditor: React.FC<JzodLiteralEditorProps> = ({
+export const JzodLiteralEditor: React.FC<JzodLiteralEditorProps> = (
+  // props: JzodLiteralEditorProps
+  {
   name,
   listKey,
   rootLesslistKey,
-  formik,
+  rootLesslistKeyArray,
+  // formik,
+  formState,
   value,
   onChange,
   label,
-}) => {
+  }
+) => {
+  // console.log(
+  //   `JzodLiteralEditor render
+  //   name: ${name}
+  //   listKey: ${listKey}
+  //   rootLesslistKey: ${rootLesslistKey}
+  //   value: ${value}
+  //   label: ${label}
+  //   formState: ${JSON.stringify(formState, null, 2)}
+  //   `
+  // );
+  const currentValue = resolvePathOnObject(formState, rootLesslistKeyArray);
+  
         // if (props.unionInformation) {
         //   log.info(
         //     "literal with unionInformation",
@@ -97,9 +117,10 @@ export const JzodLiteralEditor: React.FC<JzodLiteralEditorProps> = ({
         // id={rootLesslistKey}
         form={"form." + name}
         name={name}
-        {...formik.getFieldProps(rootLesslistKey)}
+        value={currentValue}
         onChange={onChange}
-      />
+        />
+        {/* {...formik.getFieldProps(rootLesslistKey)} */}
     </>
   );
 };

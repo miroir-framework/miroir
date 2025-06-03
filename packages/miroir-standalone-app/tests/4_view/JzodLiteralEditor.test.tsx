@@ -1,149 +1,85 @@
-import React, { ChangeEvent, useState } from "react";
-import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
 import '@testing-library/jest-dom';
-import { JzodLiteralEditor, JzodLiteralEditorProps } from "../../src/miroir-fwk/4_view/components/JzodLiteralEditor";
-import { Formik } from "formik";
+import { render } from '@testing-library/react';
+import React from "react";
+import { describe, expect, ExpectStatic } from "vitest";
+
+
+import { LoggerInterface, MiroirLoggerFactory } from 'miroir-core';
+import { JzodLiteralEditorProps } from '../../src/miroir-fwk/4_view/components/JzodLiteralEditor';
+import { cleanLevel, packageName } from '../3_controllers/constants';
+import {
+  JzodEditorTest,
+  JzodEditorTestSuite,
+  JzodEditorTestSuites,
+  literalBeforeAll,
+  LocalLiteralEditorProps,
+  runJzodEditorTest
+} from "./JzodElementEditorTestTools";
 
 const pageLabel = "JzodLiteralEditor.test";
 
-const initialFormState = "";
-
-interface LocalLiteralEditorProps {
-  name: string;
-  listKey: string;
-  rootLesslistKey: string;
-  value: any;
-  // formik: any; // Replace with appropriate type for formik
-  // onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  label?: string;
-}
-
-describe("JzodLiteralEditor", () => {
-  const LocalLiteralEditor: React.FC<LocalLiteralEditorProps> = ({
-    name,
-    listKey,
-    rootLesslistKey,
-    value,
-    // formik,
-    // onChange,
-    label,
-  }) => {
-    // const [value, setValue] = React.useState("test-value");
-    // const [formState,setFormState] = useState<any>(initialFormState);
-    const [formState,setFormState] = useState<any>(value);
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      // setValue(e.target.value);
-      console.info("handleChange formik values ###########################################", e.target.value);
-      setFormState(e.target.value);
-    };
-    
-    const onSubmit = (values: any) => {
-      console.info("onSubmit formik values ###########################################", values);
-      setFormState(values);
-    };
-
-    return (
-      <Formik
-        enableReinitialize={true}
-        initialValues={formState}
-        onSubmit={onSubmit}
-        handleChange={
-          (e: ChangeEvent<any>) => {
-          console.info("onChange formik values ###########################################", e.target.value);
-          setFormState(e.target.value);
-        }
-      }
-      >
-        {(formik) => (
-          <>
-            <form id={"form." + pageLabel} onSubmit={formik.handleSubmit}>
-              <JzodLiteralEditor
-                name={name}
-                listKey={listKey}
-                rootLesslistKey={rootLesslistKey}
-                value={formState}
-                // formik={{ getFieldProps: () => ({ name: "fieldName", value, onChange: handleChange }) }}
-                formik={{ getFieldProps: () => ({ name: "fieldName", value: formState, onChange: handleChange }) }}
-                onChange={handleChange}
-                label={label}
-              />
-            </form>
-          </>
-        )}
-      </Formik>
-    );
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, pageLabel)).then(
+  (logger: LoggerInterface) => {
+    log = logger;
   }
+);
 
-  // ##############################################################################################
-  it("renders input with label when label prop is provided", () => {
-    render(
-      <LocalLiteralEditor
-        name="fieldName"
-        listKey="listKey"
-        rootLesslistKey="rootLesslistKey"
-        value="test-value"
-        // formik={mockFormik}
-        // onChange={vi.fn()}
-        label="Test Label"
-      />
-    );
-    expect(screen.getByLabelText(/Test Label/)).toBeInTheDocument();
-    expect(screen.getByRole("textbox")).toHaveAttribute("name", "fieldName");
-  });
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// describe("JzodLiteralEditor", () => {
+//   console.log("######################################################### JzodLiteralEditor.test.tsx");
+//   // const jzodLiteralEditorTest:JzodEditorTest<LocalLiteralEditorProps> = literalBeforeAll(pageLabel);
+//   const jzodLiteralEditorTestSuites:JzodEditorTestSuites<LocalLiteralEditorProps> = literalBeforeAll(pageLabel);
+//   log.info("jzodLiteralEditorTestSuites", jzodLiteralEditorTestSuites);
 
-  // ##############################################################################################
-  it("renders input without label when label prop is not provided", () => {
-    render(
-      <LocalLiteralEditor
-        name="fieldName"
-        listKey="listKey"
-        rootLesslistKey="rootLesslistKey"
-        value="test-value"
-        // formik={mockFormik}
-        // onChange={vi.fn()}
-      />
-    );
-    expect(screen.queryByLabelText(/Test Label/)).not.toBeInTheDocument();
-    expect(screen.getByRole("textbox")).toBeInTheDocument();
-  });
+//   const testSuite: JzodEditorTestSuite<LocalLiteralEditorProps> = jzodLiteralEditorTestSuites["JzodLiteralEditor"];
 
-  // ##############################################################################################
-  // TODO: this test differs from the JzodElementEditor.test.tsx, because the latter (correctly) checks for the resulting type of the modified value.
-  it("sets new value when input value changes", () => {
-    // const handleChange = vi.fn();
-    render(
-      <LocalLiteralEditor
-        name="fieldName"
-        listKey="listKey"
-        rootLesslistKey="rootLesslistKey"
-        value="test-value"
-        label="Test Label"
-      />
-    );
-    expect(screen.getByDisplayValue("test-value")).toBeInTheDocument();
-    const input = screen.getByDisplayValue("test-value");
-    fireEvent.change(input, { target: { value: "new value" } });
-    expect(screen.getByDisplayValue(/new value/)).toBeInTheDocument();
-  });
+//   Object.entries(jzodLiteralEditorTestSuites["JzodLiteralEditor"].tests).forEach(([testName, testCase]) => {
+//     it(testName, () => {
+//       if (testCase.renderComponent.renderAsComponent) {
+//         const ComponentToRender: React.FC<LocalLiteralEditorProps> = testCase.renderComponent.renderAsComponent;
+//         const props: LocalLiteralEditorProps | undefined = !testCase.componentProps?
+//         typeof testCase.props === "function"
+//           ? testCase.props(testSuite.suiteProps as any)
+//           : testCase.props // why does typecheck work? it should fail!
+//           : typeof testCase.componentProps === "function"
+//           ? testCase.componentProps(typeof testCase.props == "function" || !testCase.props?testSuite.suiteProps: testCase.props as any) // TODO: testCase.props can be a function, which will fail.
+//           : testCase.componentProps
+//         ;
+//         if (!props) {
+//           console.warn(
+//             `Test case ${testName} does not have props defined, skipping test: ${testName}`
+//           );
+//         } else {
+//           render(<ComponentToRender {...props}/>);
+//           const tests =
+//             typeof testCase.tests === "function"
+//               ? testCase.tests
+//               : testCase.tests.testAsComponent ?? ((expect: ExpectStatic) => {});
+//           tests(expect);
+//         }
+//       } else {
+//         console.warn(
+//           `Test case ${testName} does not have a renderAsComponent function, skipping test: ${testName}`
+//         );
+//       }
+//     });
+//   });
+// });
+describe("JzodLiteralEditor", () => {
+  console.log("######################################################### JzodLiteralEditor.test.tsx");
+  const jzodEnumEditorTestSuites: JzodEditorTestSuites<LocalLiteralEditorProps> =
+    literalBeforeAll(pageLabel);
+  log.info("jzodLiteralEditorTestSuites", jzodEnumEditorTestSuites);
 
-  // ##############################################################################################
-  it("passes correct props to input", () => {
-    render(
-      <LocalLiteralEditor
-        name="fieldName"
-        listKey="listKey"
-        rootLesslistKey="rootLesslistKey"
-        value="test-value"
-        // formik={mockFormik}
-        // onChange={vi.fn()}
-        label="Test Label"
-      />
-    );
-    const input = screen.getByRole("textbox");
-    expect(input).toHaveAttribute("id", "listKey");
-    expect(input).toHaveAttribute("form", "form.fieldName");
-    expect(input).toHaveAttribute("name", "fieldName");
-    expect(input).toHaveAttribute("type", "text");
+  const testSuite: JzodEditorTestSuite<LocalLiteralEditorProps> =
+    jzodEnumEditorTestSuites["JzodLiteralEditor"];
+  Object.entries(testSuite.tests).forEach(([testName, testCase]) => {
+    it(testName, () => {
+      runJzodEditorTest(testCase, testSuite, testName, "component");
+    });
   });
 });

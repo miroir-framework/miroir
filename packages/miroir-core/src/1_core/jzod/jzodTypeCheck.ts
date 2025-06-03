@@ -559,14 +559,14 @@ export function jzodTypeCheck(
         ...extendedJzodSchema,
         definition: Object.fromEntries(resolvedObjectEntries),
       } as JzodElement;
-      log.info(
-        "jzodTypeCheck object at",
-        currentValuePath.join("."),
-        "type:",
-        JSON.stringify(resultElement, null, 2),
-        "validates",
-        JSON.stringify(valueObject, null, 2)
-      );
+      // log.info(
+      //   "jzodTypeCheck object at",
+      //   currentValuePath.join("."),
+      //   "type:",
+      //   JSON.stringify(resultElement, null, 2),
+      //   "validates",
+      //   JSON.stringify(valueObject, null, 2)
+      // );
       return { status: "ok", valuePath: currentValuePath, typePath: [], element: resultElement };
       break;
     }
@@ -827,14 +827,14 @@ export function jzodTypeCheck(
         ) as [string, JzodElement][]
       );
       // log.info("jzodTypeCheck record, converting to object definition", JSON.stringify(definition, null, 2))
-      log.info(
-        "jzodTypeCheck record at path=valueObject." + 
-        currentValuePath.join("."),
-        ", type:",
-        JSON.stringify({ type: "object", definition }, null, 2),
-        "validates",
-        JSON.stringify(valueObject, null, 2)
-      );
+      // log.info(
+      //   "jzodTypeCheck record at path=valueObject." + 
+      //   currentValuePath.join("."),
+      //   ", type:",
+      //   JSON.stringify({ type: "object", definition }, null, 2),
+      //   "validates",
+      //   JSON.stringify(valueObject, null, 2)
+      // );
       return {
         status: "ok",
         valuePath: currentValuePath,
@@ -844,14 +844,14 @@ export function jzodTypeCheck(
     }
     case "literal": {
       if (valueObject == jzodSchema.definition)  {
-        log.info(
-          "jzodTypeCheck literal at path=valueObject." + 
-          currentValuePath.join("."),
-          ", type:",
-          JSON.stringify(jzodSchema, null, 2),
-          "validates",
-          JSON.stringify(valueObject, null, 2)
-        );
+        // log.info(
+        //   "jzodTypeCheck literal at path=valueObject." + 
+        //   currentValuePath.join("."),
+        //   ", type:",
+        //   JSON.stringify(jzodSchema, null, 2),
+        //   "validates",
+        //   JSON.stringify(valueObject, null, 2)
+        // );
 
         return {
           status: "ok",
@@ -1006,14 +1006,14 @@ export function jzodTypeCheck(
     case "map":
     // case "simpleType":
     case "lazy": {
-      log.info(
-        "jzodTypeCheck", jzodSchema?.type, "at path=valueObject." + 
-        currentValuePath.join("."),
-        ", type:",
-        JSON.stringify(jzodSchema, null, 2),
-        "validates",
-        JSON.stringify(valueObject, null, 2)
-      );
+      // log.info(
+      //   "jzodTypeCheck", jzodSchema?.type, "at path=valueObject." + 
+      //   currentValuePath.join("."),
+      //   ", type:",
+      //   JSON.stringify(jzodSchema, null, 2),
+      //   "validates",
+      //   JSON.stringify(valueObject, null, 2)
+      // );
       return { status: "ok", valuePath: currentValuePath, typePath: [], element: jzodSchema };
     }
     default: {

@@ -513,14 +513,14 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         foreignKeyObjectsFetchQueryParams
       );
 
-    log.info(
-      "JzodElementEditor",
-      props.listKey,
-      "count",
-      count,
-      "foreignKeyObjects",
-      foreignKeyObjects
-    );
+    // log.info(
+    //   "JzodElementEditor",
+    //   props.listKey,
+    //   "count",
+    //   count,
+    //   "foreignKeyObjects",
+    //   foreignKeyObjects
+    // );
 
     // ############################################################################################
     const undefinedOptionalAttributes: string[] = useMemo(() => {
@@ -1629,15 +1629,18 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         );
         break;
       }
+      // DONE
       case "literal": {
-        log.info("rendering literal", props.listKey);
+        // log.info("rendering literal", props.listKey);
         return (
           <JzodLiteralEditor
             name={props.name}
             listKey={props.listKey}
             rootLesslistKey={props.rootLesslistKey}
             value={currentValue}
-            formik={props.formik}
+            // formik={props.formik}
+            formState={props.formState}
+            rootLesslistKeyArray={props.rootLesslistKeyArray}
             onChange={handleSelectLiteralChange}
             label={props.label}
           />
@@ -1713,6 +1716,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         //   </>
         // );
       }
+      // DONE
       case "enum": {
         // const handleSelectEnumChange = (event: any) => {
         // const handleSelectEnumChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -1737,7 +1741,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             );
             props.setFormState(newFormState);
           }
-        };
+        }; // end handleSelectEnumChange
         // Get enum values from resolvedJzodSchema or rawJzodSchema
         const enumValues: string[] =
           (props.resolvedElementJzodSchema && props.resolvedElementJzodSchema.definition) ||
@@ -1750,12 +1754,13 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             rootLesslistKey={props.rootLesslistKey}
             rootLesslistKeyArray={props.rootLesslistKeyArray}
             enumValues={enumValues}
-            currentValue={currentValue}
+            // currentValue={currentValue}
+            formState={props.formState}
             onChange={handleSelectEnumChange}
             label={props.label}
             unionInformation={unionInformation}
             forceTestingMode={props.forceTestingMode}
-            rawJzodSchema={props.rawJzodSchema}
+            rawJzodSchema={props.rawJzodSchema as any}
           />
         );
         break;
