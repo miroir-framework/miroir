@@ -37,6 +37,7 @@ import { JzodUnion } from "miroir-core";
 import { JzodAttributePlainDateWithValidations } from "miroir-core";
 import { JzodAttributePlainNumberWithValidations } from "miroir-core";
 import { JzodAttributePlainStringWithValidations } from "miroir-core";
+import { JzodObject } from "miroir-core";
 
 export const testThemeParams = {
   palette: {
@@ -943,11 +944,9 @@ export function getJzodSimpleTypeEditorTests(
           },
 
           tests: async (expect: ExpectStatic) => {
-            // expect(screen.getByText(/Test Label/)).toBeInTheDocument();
             const input = screen.getByRole("textbox");
             expect(input).toBeInTheDocument();
-            expect(input).toHaveValue("placeholder text"); // Assuming the input is a string representation of the number
-            // expect(input).toHaveValue("42"); // Assuming the input is a string representation of the number
+            expect(input).toHaveValue("placeholder text");
           },
         },
         "number renders input with proper value": { // TODO: test for nullable / optional scenario
@@ -959,17 +958,66 @@ export function getJzodSimpleTypeEditorTests(
             rootLesslistKeyArray: ["fieldName"],
             rawJzodSchema: {
               type: "number",
-              // definition: [{ type: "string" }, { type: "number" }],
             },
             initialFormState: 42,
           },
-
           tests: async (expect: ExpectStatic) => {
-            // expect(screen.getByText(/Test Label/)).toBeInTheDocument();
             const input = screen.getByRole("textbox");
             expect(input).toBeInTheDocument();
-            // expect(input).toHaveValue("placeholder text"); // Assuming the input is a string representation of the number
-            expect(input).toHaveValue(42); // Assuming the input is a string representation of the number
+            expect(input).toHaveValue(42);
+          },
+        },
+      },
+    },
+  };
+};
+// ################################################################################################
+// ARRAY
+// ################################################################################################
+export interface LocalObjectEditorProps extends LocalEditorPropsRoot{
+  rawJzodSchema: JzodObject | undefined;
+}
+
+export type JzodObjectEditorTest = JzodEditorTest<LocalObjectEditorProps>;
+export type JzodObjectEditorTestSuites = JzodEditorTestSuites<LocalObjectEditorProps>;
+
+export function getJzodObjectEditorTests(
+  LocalEditor: React.FC<LocalObjectEditorProps>,
+  renderAsJzodElementEditor: React.FC<JzodElementEditorProps_Test>
+): JzodObjectEditorTestSuites {
+  const arrayValues = ["value1", "value2", "value3"];
+  return {
+    JzodObjectEditor: {
+      suiteRenderComponent: {
+        renderAsComponent: LocalEditor,
+        renderAsJzodElementEditor,
+      },
+      tests: {
+        "object type renders as json-like input fields with proper value": {
+          props: {
+            label: "Test Label",
+            name: "fieldName",
+            listKey: "ROOT.fieldName",
+            rootLesslistKey: "fieldName",
+            rootLesslistKeyArray: ["fieldName"],
+            rawJzodSchema: {
+              type: "object",
+              definition: {a:{ type: "string" }, b:{ type: "number" }},
+            },
+            initialFormState: {
+              a: "test string",
+              b: 42,
+            },
+          },
+
+          tests: async (expect: ExpectStatic) => {
+            const inputs = screen.getAllByRole("textbox");
+            const values: Record<string, any> = {};
+            inputs.forEach((input: HTMLElement) => {
+              const name = (input as HTMLInputElement).name.replace(/^fieldName\./, "");
+              values[name] = (input as HTMLInputElement).value || Number((input as HTMLInputElement).value);
+            });
+            expect(values).toEqual({ a: "test string", b: "42" });
           },
         },
       },
@@ -1013,11 +1061,64 @@ export function getJzodUnionEditorTests(
           },
 
           tests: async (expect: ExpectStatic) => {
-            // expect(screen.getByText(/Test Label/)).toBeInTheDocument();
             const input = screen.getByRole("textbox");
             expect(input).toBeInTheDocument();
-            expect(input).toHaveValue(42); // Assuming the input is a string representation of the number
-            // expect(input).toHaveValue("42"); // Assuming the input is a string representation of the number
+            expect(input).toHaveValue(42);
+          },
+        },
+        "union between simple type and object for value of simple type renders input with proper value": {
+          props: {
+            label: "Test Label",
+            name: "fieldName",
+            listKey: "ROOT.fieldName",
+            rootLesslistKey: "fieldName",
+            rootLesslistKeyArray: ["fieldName"],
+            rawJzodSchema: {
+              type: "union",
+              definition: [
+                { type: "string" },
+                { type: "number" },
+                { type: "object", definition: { a: { type: "string" }, b: { type: "number" } } },
+              ],
+            },
+            initialFormState: 42,
+          },
+
+          tests: async (expect: ExpectStatic) => {
+            const input = screen.getByRole("textbox");
+            expect(input).toBeInTheDocument();
+            expect(input).toHaveValue(42);
+          },
+        },
+        "union between simple type and object for value object renders input with proper value": {
+          props: {
+            label: "Test Label",
+            name: "fieldName",
+            listKey: "ROOT.fieldName",
+            rootLesslistKey: "fieldName",
+            rootLesslistKeyArray: ["fieldName"],
+            rawJzodSchema: {
+              type: "union",
+              definition: [
+                { type: "string" },
+                { type: "number" },
+                { type: "object", definition: { a: { type: "string" }, b: { type: "number" } } },
+              ],
+            },
+            initialFormState: {
+              a: "test string",
+              b: 42,
+            },
+          },
+
+          tests: async (expect: ExpectStatic) => {
+            const inputs = screen.getAllByRole("textbox");
+            const values: Record<string, any> = {};
+            inputs.forEach((input: HTMLElement) => {
+              const name = (input as HTMLInputElement).name.replace(/^fieldName\./, "");
+              values[name] = (input as HTMLInputElement).value || Number((input as HTMLInputElement).value);
+            });
+            expect(values).toEqual({ a: "test string", b: "42" });
           },
         },
         // "renders all array values, in the right order": {

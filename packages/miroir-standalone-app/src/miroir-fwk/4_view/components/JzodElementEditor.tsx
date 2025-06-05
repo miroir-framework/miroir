@@ -876,13 +876,22 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     // switch (unfoldedRawSchema.type) {
       case "object": {
         let resolvedElementJzodSchema: JzodObject = props.resolvedElementJzodSchema;
-        if (unfoldedRawSchema.type == "union" && !unfoldedRawSchema.discriminator) {
-          throw new Error(
-            "JzodElementEditor could not compute allSchemaObjectAttributes, no discriminator found in " +
-              JSON.stringify(unfoldedRawSchema, null, 2)
-          );
-        }
-
+        // if (unfoldedRawSchema.type == "union" && !unfoldedRawSchema.discriminator) {
+        //   throw new Error(
+        //     "JzodElementEditor could not compute allSchemaObjectAttributes, no discriminator found in " +
+        //       JSON.stringify(unfoldedRawSchema, null, 2)
+        //   );
+        // }
+        log.info(
+          "JzodElementEditor",
+          props.listKey,
+          "count",
+          count,
+          "props.resolvedElementJzodSchema",
+          JSON.stringify(props.resolvedElementJzodSchema, null, 2),
+          "unfoldedRawSchema",
+          JSON.stringify(unfoldedRawSchema, null, 2)
+        );
         // #######################
         const addNewRecordAttribute = useCallback(async () => {
           log.info(
@@ -1084,19 +1093,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                         break;
                       }
                       case "union": {
-                        // if (!rawJzodSchema.discriminator) {
-                        if (!unfoldedRawSchema.discriminator) {
-                          throw new Error(
-                            "no discriminator found, could not choose branch of union type for object " +
-                              // JSON.stringify(unfoldedRawSchema, null, 2) +
-                              unfoldedRawSchema +
-                              " " +
-                              props.resolvedElementJzodSchema
-                            // JSON.stringify(props.resolvedJzodSchema, null, 2)
-                          );
-                        }
-                        // TODO: resolve using subDiscriminator
-                        const discriminator: string = (unfoldedRawSchema as any).discriminator;
                         // const subDiscriminator: string = (unfoldedRawSchema as any).subDiscriminator;
                         // log.info(
                         //   "JzodElementEditor object with discrimitated union:",
@@ -1115,92 +1111,126 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                         // );
                         let concreteObjectRawJzodSchema: JzodObject | undefined;
                         let resolvedConcreteObjectJzodSchema: JzodObject | undefined;
-                        if (attribute[0] == discriminator) {
-                          attributeRawJzodSchema =
-                            currentAttributeDefinition.type == "enum"
-                              ? currentAttributeDefinition
-                              : { type: "literal", definition: "literal" }; // definition is not taken into account, possible values come from unionInformation
-                        } else {
-                          const discriminatorValue = currentValue[discriminator];
-                          // log.info(
-                          //   "discriminator",
-                          //   discriminator,
-                          //   "discriminatorValue",
-                          //   discriminatorValue,
-                          // );
-                          // discriminator only
-                          // TODO: remove duplication from JzodUnfoldSchemaForValue. This is a core functionality, finding the concrete type for a value in a union.
-                          if (discriminator && discriminatorValue) {
-                            concreteObjectRawJzodSchema = unfoldedRawSchema.definition.find(
-                              (a: any) =>
-                                (a.type == "object" &&
-                                  a.definition[discriminator].type == "literal" &&
-                                  (a.definition[discriminator] as JzodLiteral).definition ==
-                                    discriminatorValue) ||
-                                (a.type == "object" &&
-                                  a.definition[discriminator].type == "enum" &&
-                                  (a.definition[discriminator] as JzodEnum).definition.includes(
-                                    discriminatorValue
-                                  ))
-                            ) as any;
-                          }
-                          // }
-                          if (!concreteObjectRawJzodSchema) {
+
+                        const possibleObjectTypes = unfoldedRawSchema.definition.filter(
+                          (a: any) =>
+                            a.type == "object"
+                        );
+
+                        if (possibleObjectTypes.length == 0) {
+                          return (
+                            <div key={attributeListKey}>
+                              <span>
+                                {attributeDisplayedLabel}{" "}
+                                <span className="error">no object type found in union</span>
+                              </span>
+                            </div>
+                          );
+                        }
+
+                        if (possibleObjectTypes.length > 1) {
+                          if (!unfoldedRawSchema.discriminator) {
                             throw new Error(
-                              "JzodElementEditor could not find concrete raw schema for " +
+                              "no discriminator found, could not choose branch of union type for object " +
+                              // JSON.stringify(unfoldedRawSchema, null, 2) +
+                              unfoldedRawSchema +
+                              " " +
+                              props.resolvedElementJzodSchema
+                              // JSON.stringify(props.resolvedJzodSchema, null, 2)
+                            );
+                          }
+                          const discriminator: string = (unfoldedRawSchema as any).discriminator;
+                          if (attribute[0] == discriminator) {
+                            attributeRawJzodSchema =
+                              currentAttributeDefinition.type == "enum"
+                                ? currentAttributeDefinition
+                                : { type: "literal", definition: "literal" }; // definition is not taken into account, possible values come from unionInformation
+                          } else {
+                            const discriminatorValue = currentValue[discriminator];
+                            // log.info(
+                            //   "discriminator",
+                            //   discriminator,
+                            //   "discriminatorValue",
+                            //   discriminatorValue,
+                            // );
+                            // discriminator only
+                            // TODO: remove duplication from JzodUnfoldSchemaForValue. This is a core functionality, finding the concrete type for a value in a union.
+                            if (discriminator && discriminatorValue) {
+                              concreteObjectRawJzodSchema = unfoldedRawSchema.definition.find(
+                                (a: any) =>
+                                  (a.type == "object" &&
+                                    a.definition[discriminator].type == "literal" &&
+                                    (a.definition[discriminator] as JzodLiteral).definition ==
+                                      discriminatorValue) ||
+                                  (a.type == "object" &&
+                                    a.definition[discriminator].type == "enum" &&
+                                    (a.definition[discriminator] as JzodEnum).definition.includes(
+                                      discriminatorValue
+                                    ))
+                              ) as any;
+                            }
+                            // }
+
+                          }
+                        } else { // possibleObjectTypes.length == 1
+                          concreteObjectRawJzodSchema = possibleObjectTypes[0] as JzodObject;
+                        }
+                        if (!concreteObjectRawJzodSchema) {
+                          throw new Error(
+                            "JzodElementEditor could not find concrete raw schema for " +
+                              props.listKey +
+                              " attribute " +
+                              attribute[0] +
+                              " listKey " +
+                              attributeListKey +
+                              // " discriminator " +
+                              // discriminator +
+                              // " discriminatorValue " +
+                              // discriminatorValue +
+                              " unfoldedRawSchema " +
+                              JSON.stringify(unfoldedRawSchema, null, 2)
+                          );
+                        }
+                        if (
+                          concreteObjectRawJzodSchema.type == "object" &&
+                          concreteObjectRawJzodSchema.extend
+                        ) {
+                          const resolvedConcreteObjectJzodSchemaTmp =
+                            currentMiroirFundamentalJzodSchema
+                              ? unfoldJzodSchemaOnce(
+                                  currentMiroirFundamentalJzodSchema,
+                                  concreteObjectRawJzodSchema,
+                                  currentModel,
+                                  miroirMetaModel
+                                )
+                              : undefined;
+
+                          if (
+                            !resolvedConcreteObjectJzodSchemaTmp ||
+                            resolvedConcreteObjectJzodSchemaTmp.status != "ok"
+                          ) {
+                            throw new Error(
+                              "JzodElementEditor resolve 'extend' clause for concrete raw schema for " +
                                 props.listKey +
                                 " attribute " +
                                 attribute[0] +
                                 " listKey " +
                                 attributeListKey +
-                                " discriminator " +
-                                discriminator +
-                                " discriminatorValue " +
-                                discriminatorValue +
-                                " unfoldedRawSchema " +
-                                JSON.stringify(unfoldedRawSchema, null, 2)
+                                " concreteObjectRawJzodSchema " +
+                                JSON.stringify(concreteObjectRawJzodSchema) +
+                                " error " +
+                                resolvedConcreteObjectJzodSchemaTmp?.error
                             );
                           }
-                          if (
-                            concreteObjectRawJzodSchema.type == "object" &&
-                            concreteObjectRawJzodSchema.extend
-                          ) {
-                            const resolvedConcreteObjectJzodSchemaTmp =
-                              currentMiroirFundamentalJzodSchema
-                                ? unfoldJzodSchemaOnce(
-                                    currentMiroirFundamentalJzodSchema,
-                                    concreteObjectRawJzodSchema,
-                                    currentModel,
-                                    miroirMetaModel
-                                  )
-                                : undefined;
-
-                            if (
-                              !resolvedConcreteObjectJzodSchemaTmp ||
-                              resolvedConcreteObjectJzodSchemaTmp.status != "ok"
-                            ) {
-                              throw new Error(
-                                "JzodElementEditor resolve 'extend' clause for concrete raw schema for " +
-                                  props.listKey +
-                                  " attribute " +
-                                  attribute[0] +
-                                  " listKey " +
-                                  attributeListKey +
-                                  " concreteObjectRawJzodSchema " +
-                                  JSON.stringify(concreteObjectRawJzodSchema) +
-                                  " error " +
-                                  resolvedConcreteObjectJzodSchemaTmp?.error
-                              );
-                            }
-                            resolvedConcreteObjectJzodSchema =
-                              resolvedConcreteObjectJzodSchemaTmp.element as JzodObject;
-                          } else {
-                            resolvedConcreteObjectJzodSchema = concreteObjectRawJzodSchema;
-                          }
-
-                          attributeRawJzodSchema =
-                            resolvedConcreteObjectJzodSchema.definition[attribute[0]];
+                          resolvedConcreteObjectJzodSchema =
+                            resolvedConcreteObjectJzodSchemaTmp.element as JzodObject;
+                        } else {
+                          resolvedConcreteObjectJzodSchema = concreteObjectRawJzodSchema;
                         }
+  
+                        attributeRawJzodSchema =
+                          resolvedConcreteObjectJzodSchema.definition[attribute[0]];
+
                         // log.info(
                         //   "JzodElementEditor attribute for object",
                         //   currentValue,
