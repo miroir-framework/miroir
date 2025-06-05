@@ -42,7 +42,7 @@ import { Button } from "@mui/material";
 
 import { getMemoizedDeploymentEntityStateSelectorForTemplateMap } from "miroir-localcache-redux";
 
-import { AddBox } from "@mui/icons-material";
+import AddBox from "@mui/icons-material/AddBox";
 import { packageName } from "../../../constants.js";
 import {
   useDomainControllerService,

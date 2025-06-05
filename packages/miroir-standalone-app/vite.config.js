@@ -2,6 +2,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
+// import { babelImport } from 'vite-plugin-babel-import';
 // import * as path from "path";
 
 export default defineConfig({
@@ -44,6 +45,13 @@ export default defineConfig({
       // Use React plugin in all *.jsx and *.tsx files
       include: '../src/**/*.{jsx,tsx}',
     }),
+    // babelImport([
+    //   {
+    //     libraryName: '@mui/icons-material',
+    //     libraryDirectory: '',
+    //     camel2DashComponentName: false,
+    //   },
+    // ]),
   ],
   test: {
     root: "tests",

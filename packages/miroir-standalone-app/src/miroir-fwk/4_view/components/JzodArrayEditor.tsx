@@ -1,4 +1,4 @@
-import { adminConfigurationDeploymentMiroir, JzodArray, JzodElement, LoggerInterface, MetaModel, MiroirLoggerFactory, resolvePathOnObject, unfoldJzodSchemaOnce } from "miroir-core";
+﻿import { adminConfigurationDeploymentMiroir, JzodArray, JzodElement, LoggerInterface, MetaModel, MiroirLoggerFactory, resolvePathOnObject, unfoldJzodSchemaOnce } from "miroir-core";
 import React from "react";
 import { packageName } from "../../../constants";
 import { cleanLevel } from "../constants";
@@ -15,6 +15,72 @@ MiroirLoggerFactory.registerLoggerToStart(
 });
 
 export const indentShift = "1em + 4px"; // TODO: centralize style
+
+interface JzodArrayMoveButtonProps {
+  direction: "up" | "down";
+  index: number;
+  itemsOrder: number[];
+  listKey: string;
+  setItemsOrder: React.Dispatch<React.SetStateAction<number[]>>;
+  formHelperState: any;
+  setformHelperState: (state: any) => void;
+}
+
+export const JzodArrayMoveButton: React.FC<JzodArrayMoveButtonProps> = ({
+  direction,
+  index,
+  itemsOrder,
+  listKey,
+  setItemsOrder,
+  formHelperState,
+  setformHelperState,
+}) => {
+  const isDisabled = direction === "up" 
+    ? index === 0 
+    : index === itemsOrder.length - 1;
+  
+  const handleClick = (e: React.MouseEvent) => {
+    const currentItemIndex: number = index;
+    let newItemsOrder = itemsOrder.slice();
+    const cutOut = newItemsOrder.splice(currentItemIndex, 1)[0];
+    
+    // Insert at new position based on direction
+    const newPosition = direction === "up" 
+      ? currentItemIndex - 1 
+      : currentItemIndex + 1;
+    
+    newItemsOrder.splice(newPosition, 0, cutOut);
+    
+    setformHelperState(
+      Object.assign(formHelperState, { [listKey]: newItemsOrder })
+    );
+    
+    log.info(
+      `JzodArrayEditor array moving ${direction} item`,
+      currentItemIndex,
+      "in object with items",
+      itemsOrder,
+      "cutOut",
+      cutOut,
+      "new order",
+      newItemsOrder
+    );
+    
+    setItemsOrder(newItemsOrder);
+  };
+
+  return (
+    <button
+      style={{ border: 0, backgroundColor: "transparent" }}
+      type="button"
+      role={`${listKey}.button.${direction}`}
+      disabled={isDisabled}
+      onClick={handleClick}
+    >
+      {direction === "up" ? "^" : "v"}
+    </button>
+  );
+};
 
 let jzodArrayEditorRenderCount: number = 0;
 export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
@@ -55,24 +121,6 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     listKey,
     "itemsOrder",
     itemsOrder,
-    // // "context",
-    // // context,
-    // // "attribute",
-    // // attribute[0],
-    // // "attributeListkey",
-    // // attributeListKey,
-    // "rawJzodSchema",
-    // rawJzodSchema,
-    // "resolvedJzodSchema",
-    // resolvedElementJzodSchema, //TODO
-    // // "unfoldedRawSchema"
-    // // unfoldedRawSchema
-    // // "currentAttributeDefinition",
-    // // currentAttributeDefinition,
-    // // "attributeRawJzodSchema",
-    // // attributeRawJzodSchema,
-    // // "currentAttributeRawDefinition",
-    // // currentAttributeRawDefinition.element
   );
 
   const currentModel: MetaModel = useCurrentModel(currentDeploymentUuid);
@@ -153,66 +201,24 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
                 // style={{ marginLeft: `calc((${usedIndentLevel})*(${indentShift}))` }}
                 style={{ marginLeft: `calc(${indentShift})` }}
               >
-                <button
-                  style={{ border: 0, backgroundColor: "transparent" }}
-                  role={listKey + ".button.down"}
-                  disabled={index == itemsOrder.length - 1}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    e.preventDefault();
-
-                    const currentItemIndex: number = index;
-                    let newItemsOrder = itemsOrder.slice();
-                    const cutOut = newItemsOrder.splice(currentItemIndex, 1)[0];
-                    newItemsOrder.splice(currentItemIndex + 1, 0, cutOut);
-                    setformHelperState(
-                      Object.assign(formHelperState, { [listKey]: newItemsOrder })
-                    );
-                    log.info(
-                      "JzodArrayEditor array moving down item",
-                      currentItemIndex,
-                      "in object with items",
-                      itemsOrder,
-                      "cutOut",
-                      cutOut,
-                      "new order",
-                      newItemsOrder
-                    );
-                    setItemsOrder(newItemsOrder);
-                  }}
-                >
-                  {"v"}
-                </button>
-                <button
-                  style={{ border: 0, backgroundColor: "transparent" }}
-                  disabled={index == 0}
-                  role={listKey + ".button.up"}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    e.preventDefault();
-
-                    const currentItemIndex: number = index;
-                    let newItemsOrder = itemsOrder.slice();
-                    const cutOut = newItemsOrder.splice(currentItemIndex, 1)[0];
-                    newItemsOrder.splice(currentItemIndex - 1, 0, cutOut);
-                    setformHelperState(
-                      Object.assign(formHelperState, { [listKey]: newItemsOrder })
-                    );
-                    log.info(
-                      "JzodArrayEditor array moving up item",
-                      currentItemIndex,
-                      "in object with items",
-                      itemsOrder,
-                      "cutOut",
-                      cutOut,
-                      "new order",
-                      newItemsOrder
-                    );
-                    setItemsOrder(newItemsOrder);
-                  }}
-                >
-                  {"^"}
-                </button>
+                <JzodArrayMoveButton
+                  direction="down"
+                  index={index}
+                  itemsOrder={itemsOrder as number[]}
+                  listKey={listKey}
+                  setItemsOrder={setItemsOrder}
+                  formHelperState={formHelperState}
+                  setformHelperState={setformHelperState}
+                />
+                <JzodArrayMoveButton
+                  direction="up"
+                  index={index}
+                  itemsOrder={itemsOrder as number[]}
+                  listKey={listKey}
+                  setItemsOrder={setItemsOrder}
+                  formHelperState={formHelperState}
+                  setformHelperState={setformHelperState}
+                />
                 <JzodElementEditor
                   name={"" + index}
                   listKey={listKey + "." + index}

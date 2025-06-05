@@ -11,7 +11,7 @@ import { CSSObject, styled, Theme, useTheme } from '@mui/material/styles';
 import { Link } from 'react-router-dom';
 
 
-import { AutoStories } from '@mui/icons-material';
+import AutoStories from '@mui/icons-material/AutoStories';
 import { Icon } from '@mui/material';
 import {
   adminConfigurationDeploymentMiroir,

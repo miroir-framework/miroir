@@ -1,7 +1,7 @@
 import { ThemeProvider } from "@emotion/react";
 import { createTheme, StyledEngineProvider } from "@mui/material";
 import { blue } from "@mui/material/colors";
-import { act, ByRoleMatcher, fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { Formik, FormikProps } from "formik";
 import { ChangeEvent, useCallback, useMemo, useState } from "react";
 import { Provider } from "react-redux";
@@ -460,6 +460,8 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
           enableReinitialize={true}
           initialValues={formState}
           onSubmit={onSubmit}
+          validateOnChange={false}
+          validateOnBlur={false}
           handleChange={(e: ChangeEvent<any>) => {
             console.log(
               "onChange formik values ###########################################",
@@ -891,83 +893,44 @@ export function getJzodArrayEditorTests(
         initialFormState: arrayValues,
       },
       tests: {
-        // "renders input with label when label prop is provided": {
-        //   tests: async (expect: ExpectStatic) => {
-        //     // expect(screen.getByLabelText(/Test Label/)).toBeInTheDocument();
-        //     expect(screen.getByText(/Test Label/)).toBeInTheDocument();
-        //   },
-        // },
-        // "renders input without label when label prop is not provided": {
-        //   props: {
-        //     // label: "Test Label", // no label
-        //     name: "fieldName",
-        //     listKey: "listKey",
-        //     rootLesslistKey: "rootLesslistKey",
-        //     rootLesslistKeyArray: ["fieldName"],
-        //     rawJzodSchema: {
-        //       type: "enum",
-        //       definition: enumValues,
-        //     },
-        //     initialFormState: "value2",
-        //   },
-        //   jzodElementEditorProps: (props: LocalEnumEditorProps) =>
-        //     ({
-        //       ...props,
-        //       initialFormState: "value2",
-        //     } as JzodElementEditorProps_Test),
-        //   tests: (expect) => {
-        //     expect(screen.queryByLabelText(/Test Label/)).not.toBeInTheDocument();
-        //     // expect(screen.getByRole("textbox")).toBeInTheDocument();
-        //   },
-        // },
-        // "renders select with correct value": {
-        //   tests: async (expect: ExpectStatic) => {
-        //     const combobox = screen.getByRole("combobox");
-        //     expect(combobox).toContainHTML("value2");
-        //     // expect(screen.getByLabelText(/Test Label/)).toBeInTheDocument();
-        //   },
-        // },
-        // "renders all array values, in the right order": {
-        //   tests: async (expect: ExpectStatic) => {
-        //     arrayValues.forEach((val, i) => {
-        //       const cell = screen.getByRole("ROOT.fieldName." + i);
-        //       expect(cell).toBeInTheDocument();
-        //       expect(cell).toHaveValue(val);
-        //     });
-        //     // Check order
-        //     const cells = arrayValues.map((_, i) => screen.getByRole("ROOT.fieldName." + i));
-        //     const values = cells.map((cell) => (cell as HTMLInputElement).value);
-        //     expect(values).toEqual(arrayValues);
-        //   },
-        // },
-        // "form state is changed when selection changes": {
-        //   tests: async (expect: ExpectStatic) => {
-        //     const cell = screen.getByRole("ROOT.fieldName.2")
-        //     await act(() => {
-        //       fireEvent.change(cell, { target: { value: "new value" } });
-        //     });
-        //     expect(cell).toContainHTML("new value");
-        //     expect(screen.getByLabelText(/Test Label/)).toBeInTheDocument();
-        //   },
-        // },
+        "renders input with label when label prop is provided": {
+          tests: async (expect: ExpectStatic) => {
+            expect(screen.getByText(/Test Label/)).toBeInTheDocument();
+          },
+        },
+        "renders all array values, in the right order": {
+          tests: async (expect: ExpectStatic) => {
+            const cells = screen
+              .getAllByRole("textbox")
+              .filter((input: HTMLElement) =>
+                (input as HTMLInputElement).name.startsWith("fieldName.")
+              );
+            const values = cells.map((cell) => (cell as HTMLInputElement).value);
+            expect(values).toEqual(arrayValues);
+          },
+        },
+        "form state is changed when selection changes": {
+          tests: async (expect: ExpectStatic) => {
+            const cell = screen.getAllByRole("textbox").filter((input: HTMLElement) =>
+              (input as HTMLInputElement).name.startsWith("fieldName.")
+            )[1] as HTMLInputElement;
+            await act(() => {
+              fireEvent.change(cell, { target: { value: "new value" } });
+            });
+            expect(cell).toContainHTML("new value");
+          },
+        },
         "changing order of array items when button ROOT.fieldName.2.up is clicked": {
           tests: async (expect) => {
-            // const upButton = screen.getByRole("button", { name: /ROOT.fieldName.2.up/ });
-            const upButtons = screen.getByRole("ROOT.fieldName.up");
+            const upButtons = screen.getAllByRole("ROOT.fieldName.button.up");
             await act(() => {
-              fireEvent.click(upButton);
+              fireEvent.click(upButtons[2]); // Click the up button for the third item
             });
-            // const cells = arrayValues.map((_, i) => screen.getByRole("ROOT.fieldName." + i));
-            // const cellsInOrder = screen.getAllByRole((_, element:any): any =>
-            //   element?.getAttribute("role")?.startsWith("ROOT.fieldName.")
-            // );
-            // const cells = screen.getAllByRole("button", (role) =>
-            //   typeof role === "string" && role.startsWith("ROOT.fieldName.")
-            // );
-            const cells = screen.getAllByRole("button", { name: /ROOT.fieldName\.\d+/ });
-            const cellInputs = screen.getAllByRole((role, element) =>
-              typeof role === "string" && /^ROOT\.fieldName\.\d+$/.test(role)
-            );
+            const cells = screen
+              .getAllByRole("textbox")
+              .filter((input: HTMLElement) =>
+                (input as HTMLInputElement).name.startsWith("fieldName.")
+              );
             const values = cells.map((cell) => (cell as HTMLInputElement).value);
             expect(values).toEqual(["value1", "value3", "value2"]);
           },

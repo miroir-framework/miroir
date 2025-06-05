@@ -2,14 +2,15 @@ import { ChangeEvent, useCallback, useMemo, useState } from "react";
 import { ErrorBoundary, withErrorBoundary } from "react-error-boundary";
 
 import styled from "@emotion/styled";
-import { AddBox, Clear, ExpandLess, ExpandMore } from "@mui/icons-material";
-import {
-  Button,
-  Checkbox,
-  Icon,
-  IconButton,
-  Select
-} from "@mui/material";
+import AddBox from "@mui/icons-material/AddBox";
+import Clear from "@mui/icons-material/Clear";
+import ExpandLess from "@mui/icons-material/ExpandLess";
+import ExpandMore from "@mui/icons-material/ExpandMore";
+import Button from "@mui/material/Button";
+import Checkbox from "@mui/material/Checkbox";
+import Icon from "@mui/material/Icon";
+import IconButton from "@mui/material/IconButton";
+import Select from "@mui/material/Select";
 
 // import { FieldValues, UseFormRegister, UseFormSetValue, useFormContext } from "react-hook-form";
 
@@ -1599,15 +1600,15 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       case "string": {
         // log.info("selectList for targetEntity", props.resolvedJzodSchema.tag?.value?.targetEntity, "value", selectList, "props.foreignKeyObjects", props.foreignKeyObjects);
         return (
-          <>
+            <>
             {/* <label htmlFor={props.listKey}>{displayedLabel}: </label> */}
             <input
               type="text"
               id={props.rootLesslistKey}
-              // role={props.listKey}
+              role="textbox"
               {...props.formik.getFieldProps(props.rootLesslistKey)}
             />
-          </>
+            </>
         );
         break;
       }

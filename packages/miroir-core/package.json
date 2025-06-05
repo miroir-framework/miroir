@@ -33,7 +33,8 @@
     "build5": "npm run devBuild",
     "devBuild": "npm run generate-ts-types && echo DONE PRE-BUILD && npm run build",
     "generate-ts-types": "tsx ./scripts/generate-ts-types.ts",
-    "vitestByFile": "cross-env DEBUG='vite-node:*' vitest run --poolOptions.forks.singleFork --passWithNoTests",
+    "vitestByFile": "vitest run --poolOptions.forks.singleFork --passWithNoTests",
+    "vitestByFileWithFullLog": "cross-env DEBUG='vite-node:*' vitest run --poolOptions.forks.singleFork --passWithNoTests",
     "vitest": "vitest run --poolOptions.threads.singleThread --passWithNoTests -t"
   },
   "browser": {

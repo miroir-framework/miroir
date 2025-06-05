@@ -6,7 +6,7 @@ import IconButton from '@mui/material/IconButton';
 import { CSSObject, styled, Theme, useTheme } from '@mui/material/styles';
 
 
-import { AutoStories } from '@mui/icons-material';
+import AutoStories from '@mui/icons-material/AutoStories';
 import {
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,

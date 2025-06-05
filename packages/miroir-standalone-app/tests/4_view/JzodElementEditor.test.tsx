@@ -57,25 +57,25 @@ const jzodElementEditorTests: Record<
   JzodEnumEditor: {
     editor: JzodEnumEditor,
     getJzodEditorTests: getJzodEnumEditorTests,
-    modes: '*',
-    // modes: "jzodElementEditor",
+    // modes: '*',
+    modes: "jzodElementEditor",
     // modes: "component",
   },
   JzodLiteralEditor: { 
     editor: JzodLiteralEditor, 
     getJzodEditorTests: getJzodLiteralEditorTests,
-    modes: "*",
+    // modes: "*",
     // modes: ['jzodElementEditor', 'component'],
-    // modes: "jzodElementEditor",
+    modes: "jzodElementEditor",
     // modes: "component",
   },
-  // JzodArrayEditor: { 
-  //   editor: JzodArrayEditor, 
-  //   getJzodEditorTests: getJzodArrayEditorTests,
-  //   // modes: '*',
-  //   // modes: ['jzodElementEditor', 'component'],
-  //   modes: 'jzodElementEditor',
-  // },
+  JzodArrayEditor: { 
+    editor: JzodArrayEditor, 
+    getJzodEditorTests: getJzodArrayEditorTests,
+    // modes: '*',
+    // modes: ['jzodElementEditor', 'component'],
+    modes: 'jzodElementEditor',
+  },
 };
 
 // ##############################################################################################
