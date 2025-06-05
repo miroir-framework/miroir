@@ -5,7 +5,7 @@ import { Dialog, DialogTitle, Paper, styled } from "@mui/material";
 import CodeMirror from '@uiw/react-codemirror';
 import { ChangeEvent, useCallback, useMemo } from "react";
 
-import { Formik } from "formik";
+import { Formik, FormikProps } from "formik";
 
 import {
   ApplicationSection,
@@ -394,7 +394,7 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
             }
           }}
           handleChange={async (e: ChangeEvent<any>) => {
-            log.info("onChange formik", e);
+            log.info("onChange formik DOES NOTHING", e);
             // try {
             //   //  Send values somehow
             //   if (props.onCreateFormObject) {
@@ -417,7 +417,7 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
             // }
           }}
         >
-          {(formik) => (
+          {(formik: FormikProps<any>) => (
             <Dialog onClose={handleAddObjectDialogFormClose} open={formIsOpen} fullScreen>
               <DialogTitle>{props.label} add / edit Element</DialogTitle>
               <span>
@@ -453,7 +453,7 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
                     rawJzodSchema={props.entityDefinitionJzodSchema}
                     resolvedElementJzodSchema={resolvedJzodSchema?.status == "ok" ? resolvedJzodSchema.element : undefined}
                     foreignKeyObjects={props.foreignKeyObjects}
-                    formState={dialogOuterFormObject}
+                    // formState={dialogOuterFormObject}
                     setFormState={setdialogOuterFormObject}
                     handleChange={formik.handleChange as any}
                     formik={formik}

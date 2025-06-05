@@ -316,7 +316,7 @@ export const ConceptPage: React.FC<any> = (
         setformHelperState(actionCreateEntityParamValues);
 
         log.info(
-          "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ onSubmit formik values actionCreateEntityParamValues",
+          "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Concept.tsx onSubmit formik values actionCreateEntityParamValues",
           actionCreateEntityParamValues,
           // "newApplicationName",
           // actionCreateEntityParamValues.newApplicationName,
@@ -750,7 +750,7 @@ export const ConceptPage: React.FC<any> = (
                         handleChange={formik.handleChange as any}
                         formik={formik}
                         setFormState={setFormState}
-                        formState={formState}
+                        // formState={formState}
                       />
                       <button type="submit" name={pageLabel} form={"form." + pageLabel}>submit form.{pageLabel}</button>
                     </>

@@ -90,7 +90,7 @@ export function safeResolvePathOnObject(valueObject:any, path: ResultAccessPath)
         // );
         return undefined;
       } else {
-        // console.info("safeResolvePathOnObject called with", valueObject, "path", path, "result", acc[curr])
+        // console.log("safeResolvePathOnObject called with", valueObject, "path", path, "result", acc[curr])
         return acc[curr];
       }
     }
@@ -132,7 +132,7 @@ export function resolvePathOnObject(valueObject:any, path: ResultAccessPath) {
             (curr as any)[acc]
         );
       } else {
-        // console.info("resolvePathOnObject called with", valueObject, "path", path, "result", acc[curr])
+        // console.log("resolvePathOnObject called with", valueObject, "path", path, "result", acc[curr])
         return acc[curr];
       }
     }

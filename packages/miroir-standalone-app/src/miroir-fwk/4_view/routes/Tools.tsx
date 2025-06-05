@@ -369,7 +369,7 @@ export const ToolsPage: React.FC<any> = (
         setformHelperState(actionCreateSchemaParamValues);
 
         log.info(
-          "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ onSubmit formik values",
+          "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Tools.tsx onSubmit formik values",
           actionCreateSchemaParamValues,
           "newApplicationName",
           actionCreateSchemaParamValues.newApplicationName,
@@ -390,7 +390,7 @@ export const ToolsPage: React.FC<any> = (
           entityDeployment,
         };
         log.info(
-          "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ onSubmit formik values actionCreateSchemaParamValues",
+          "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Tools.tsx onSubmit formik values actionCreateSchemaParamValues",
           actionCreateSchemaParamValues,
           "paramsForTemplates",
           paramsForTemplates
@@ -633,7 +633,7 @@ export const ToolsPage: React.FC<any> = (
                       handleChange={formik.handleChange as any}
                       formik={formik}
                       setFormState={setFormState}
-                      formState={formState}
+                      // formState={formState}
                     />
                     <button type="submit" name={pageLabel} form={"form." + pageLabel}>
                       submit form.{pageLabel}

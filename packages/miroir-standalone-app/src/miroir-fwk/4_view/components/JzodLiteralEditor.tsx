@@ -1,18 +1,9 @@
 import { resolvePathOnObject } from "miroir-core";
 import React from "react";
+import { JzodLiteralEditorProps } from "./JzodElementEditorInterface";
+import { J } from "vitest/dist/chunks/reporters.D7Jzd9GS";
 
-export interface JzodLiteralEditorProps {
-  name: string;
-  listKey: string;
-  rootLesslistKey: string;
-  rootLesslistKeyArray: string[];
-  value: any;
-  formState: any; // TODO: replace with Formik type
-  // formik: any; // Replace with appropriate type for formik
-  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  label?: string;
-}
-
+let JzodLiteralEditorRenderCount: number = 0;
 export const JzodLiteralEditor: React.FC<JzodLiteralEditorProps> = (
   // props: JzodLiteralEditorProps
   {
@@ -20,24 +11,25 @@ export const JzodLiteralEditor: React.FC<JzodLiteralEditorProps> = (
   listKey,
   rootLesslistKey,
   rootLesslistKeyArray,
-  // formik,
-  formState,
-  value,
-  onChange,
+  formik,
+  // onChange,
   label,
+  // formState,
   }
 ) => {
+  JzodLiteralEditorRenderCount++;
+  // const currentValue = resolvePathOnObject(formik.values, rootLesslistKeyArray);
   // console.log(
-  //   `JzodLiteralEditor render
+  //   `JzodLiteralEditor render #${JzodLiteralEditorRenderCount}
   //   name: ${name}
   //   listKey: ${listKey}
   //   rootLesslistKey: ${rootLesslistKey}
-  //   value: ${value}
+  //   rootLesslistKeyArray: ${rootLesslistKeyArray}
   //   label: ${label}
-  //   formState: ${JSON.stringify(formState, null, 2)}
+  //   formik.values: ${JSON.stringify(formik.values, null, 2)}
   //   `
+  //   // formState: ${JSON.stringify(formState, null, 2)}
   // );
-  const currentValue = resolvePathOnObject(formState, rootLesslistKeyArray);
   
         // if (props.unionInformation) {
         //   log.info(
@@ -112,15 +104,12 @@ export const JzodLiteralEditor: React.FC<JzodLiteralEditorProps> = (
       {label && <label htmlFor={listKey}>{label}: </label>}
       <input
         type="text"
-        id={listKey}
+        id={rootLesslistKey}
         aria-label={label}
-        // id={rootLesslistKey}
         form={"form." + name}
+        {...formik.getFieldProps(rootLesslistKey)}
         name={name}
-        value={currentValue}
-        onChange={onChange}
-        />
-        {/* {...formik.getFieldProps(rootLesslistKey)} */}
+      />
     </>
   );
 };

@@ -1,16 +1,20 @@
-import { fireEvent, render, screen } from "@testing-library/react";
-import { Formik } from "formik";
+import { ThemeProvider } from "@emotion/react";
+import { createTheme, StyledEngineProvider } from "@mui/material";
+import { blue } from "@mui/material/colors";
+import { act, ByRoleMatcher, fireEvent, render, screen } from "@testing-library/react";
+import { Formik, FormikProps } from "formik";
 import { ChangeEvent, useCallback, useMemo, useState } from "react";
 import { Provider } from "react-redux";
 import { expect, ExpectStatic, vi } from "vitest";
 
-import { ThemeProvider } from "@emotion/react";
-import { createTheme, StyledEngineProvider } from "@mui/material";
 import {
   adminConfigurationDeploymentMiroir,
+  alterObjectAtPath,
   ConfigurationService,
   DomainControllerInterface,
+  JzodArray,
   JzodElement,
+  JzodEnum,
   JzodSchema,
   jzodTypeCheck,
   LocalCacheInterface,
@@ -22,15 +26,13 @@ import {
 } from "miroir-core";
 import { LocalCache, PersistenceReduxSaga } from "miroir-localcache-redux";
 
+import { resolvePathOnObject } from "miroir-core";
 import { JzodElementEditor } from "../../src/miroir-fwk/4_view/components/JzodElementEditor";
-import { JzodLiteralEditor, JzodLiteralEditorProps } from "../../src/miroir-fwk/4_view/components/JzodLiteralEditor";
+import { JzodEditorPropsRoot } from "../../src/miroir-fwk/4_view/components/JzodElementEditorInterface";
 import { MiroirContextReactProvider, useMiroirContextService } from "../../src/miroir-fwk/4_view/MiroirContextReactProvider";
 import { useCurrentModel } from "../../src/miroir-fwk/4_view/ReduxHooks";
-import { emptyList, emptyObject, emptyString } from "../../src/miroir-fwk/4_view/routes/Tools";
-import { JzodEnumEditor, JzodEnumEditorProps } from "../../src/miroir-fwk/4_view/components/JzodEnumEditor";
-import { JzodEnum } from "miroir-core";
-import { blue } from "@mui/material/colors";
-import { alterObjectAtPath } from "miroir-core";
+import { emptyObject } from "../../src/miroir-fwk/4_view/routes/Tools";
+import { TestMode } from "./JzodElementEditor.test";
 
 export const testThemeParams = {
   palette: {
@@ -188,10 +190,10 @@ export interface JzodEditorTestCase<PropType extends Record<string, any>> {
   props?:PropType | ((props:PropType) => PropType),
   componentProps?:PropType | ((props:PropType) => PropType),
   jzodElementEditorProps?:JzodElementEditorProps_Test | ((props:PropType) => JzodElementEditorProps_Test),
-  renderComponent: JzodEditorTestCaseRenderer<PropType>;
+  renderComponent?: JzodEditorTestCaseRenderer<PropType>;
   tests:
-    | ((expect: ExpectStatic) => void)
-    | { testAsComponent?: (expect: any) => void; testAsJzodElementEditor?: (expect: any) => void };
+    | ((expect: ExpectStatic) => Promise<void>)
+    | { testAsComponent?: (expect: any) => Promise<void>; testAsJzodElementEditor?: (expect: any) => Promise<void> };
 }
 
 export type JzodEditorTest<PropType extends Record<string, any>> = Record<string, JzodEditorTestCase<PropType>>;
@@ -209,130 +211,81 @@ export type JzodEditorTestSuites<T extends Record<string, any>> = Record<string,
 // LOCAL EDITOR
 // ################################################################################################
 // ################################################################################################
-// export const getLocalEditor: <T extends Record<string, any>>(pageLabel: string) => React.FC<LocalLiteralEditorProps> =
-export const getLocalEditor: <S extends Record<string, any>, T extends Record<string, any>>(
-  pageLabel: string,
-  Compo: React.FC<S>
-) => React.FC<T> =
-  <S extends Record<string, any>, T extends Record<string, any>>(pageLabel: string, Compo: React.FC<S>) => {
-  const result: React.FC<T> = (
-    props: T
-  ) => {
-    const initialFormState: any = {[props.name]: props.initialFormState};
-    console.info(
-      "getLocalEditor props",
-      JSON.stringify(props, null, 2),
-      "initialFormState",
-      JSON.stringify(initialFormState, null, 2)
-    );
-    const [formState, setFormState] = useState<any>(
-       initialFormState
-    ); // TODO: UNIFY!!!
-    const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-      // console.log(
-      //   "handleChange event value ###########################################",
-      //   e.target.value
-      // );
-      // console.log(
-      //   "handleChange props",
-      //   JSON.stringify(props, null, 2),
-      // );
-      const newFormState: any = alterObjectAtPath(
-        formState,
-        props.rootLesslistKeyArray,
-        e.target.value
-      );
-      // console.log(
-      //   "handleChange newFormState ###########################################",
-      //   JSON.stringify(newFormState, null, 2)
-      // );
-      setFormState(newFormState);
-      // setFormState(e.target.value);
-      // console.log(
-      //   "handleChange formik values after ###########################################",
-      //   formState
-      // );
-    }, [props, setFormState]);
+export function getLocalEditor<
+  JzodEditorProps extends JzodEditorPropsRoot,
+  LocalEditorProps extends LocalEditorPropsRoot
+>(pageLabel: string, Compo: React.FC<JzodEditorProps>): React.FC<LocalEditorProps> {
+  const result: React.FC<LocalEditorProps> = (props: LocalEditorProps) => {
+    const initialFormState: any = { [props.name]: props.initialFormState };
+    // const [formState, setFormState] = useState<any>(initialFormState); // TODO: UNIFY!!!
+    // const handleChange = useCallback(
+    //   (e: React.ChangeEvent<HTMLInputElement>) => {
+    //     console.log(
+    //       "handleChange event value ###########################################",
+    //       JSON.stringify(e, null, 2)
+    //     );
+    //     const newFormState: any = alterObjectAtPath(
+    //       formState,
+    //       props.rootLesslistKeyArray,
+    //       e.target.value
+    //     );
+    //     // console.log(
+    //     //   "handleChange newFormState ###########################################",
+    //     //   JSON.stringify(newFormState, null, 2)
+    //     // );
+    //     setFormState(newFormState);
+    //     // setFormState(e.target.value);
+    //     // console.log(
+    //     //   "handleChange formik values after ###########################################",
+    //     //   formState
+    //     // );
+    //   },
+    //   [props, setFormState]
+    // );
 
     const onSubmit = (values: any) => {
-      console.log("onSubmit formik values ###########################################", values);
-      setFormState(values);
+      console.log("JzodElementEditorTestTools onSubmit formik values ###########################################", values);
+      // const newFormState: any = alterObjectAtPath(formState, props.rootLesslistKeyArray, values);
+      // setFormState(newFormState);
+      // setFormState(values);
+      // handleChange({target: { value: values}});
     };
 
-    // const innerProps: S = useMemo(() => {
-    //   console.info("getLocalEditor innerProps with", "formState", formState);
-    //   return {
-    //     ...props,
-    //     value: formState,
-    //     formik: {
-    //       getFieldProps: () => ({
-    //         name: "fieldName",
-    //         value: formState,
-    //         onChange: handleChange,
-    //       }),
-    //     },
-    //     onChange: handleChange,
-    //   } as any as S;
-    // }, [props, formState, handleChange]);
     return (
       <Formik
         enableReinitialize={true}
-        initialValues={formState}
+        initialValues={initialFormState}
         onSubmit={onSubmit}
-        handleChange={handleChange}
-        // handleChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-        //   console.info(
-        //     "handleChange event value ###########################################",
-        //     e.target.value
-        //   );
-        //   console.info("handleChange props", JSON.stringify(props, null, 2));
-        //   const newFormState: any = alterObjectAtPath(
-        //     props.formik.values,
-        //     props.rootLesslistKeyArray,
-        //     e.target.value
-        //   );
-
-        //   setFormState(newFormState);
-        //   // setFormState(e.target.value);
-        //   console.info(
-        //     "handleChange formik values after ###########################################",
-        //     formState
-        //   );
-        // }}
+        // handleChange={handleChange}
       >
-        {(formik) => (
+        {(formik:FormikProps<any>) => (
           <>
             <form id={"form." + pageLabel} onSubmit={formik.handleSubmit}>
               <Compo
-                {
-                  // ...(props as any),
-                  ...({
-                    ...props,
-                    // value: formState,
-                    // currentValue: formState,
-                    // formik,
-                    formState,
-                    // handleChange,
-                    onChange: handleChange,
-                    formik: { // 
-                      ...formik,
-                      getFieldProps: () => ({
-                        name: "fieldName",
-                        value: formState,
-                        onChange: formik.handleChange,
-                      }),
-                    },
-                  } as any)
-                }
+                {...({
+                  ...props,
+                  // formState,
+                  // onChange: handleChange,
+                  formik,
+                  // formik: {
+                  //   ...formik,
+                  //   getFieldProps: (rootLesslistKey: string[]) => ({
+                  //     name: "fieldName",
+                  //     value: formState,
+                  //     rootLesslistKey,
+                  //     onChange: formik.handleChange,
+                  //   }),
+                  // },
+                } as any)}
               />
             </form>
           </>
         )}
       </Formik>
     );
-  }
+  };
   return result;
-};
+}
 
 
 // ################################################################################################
@@ -340,13 +293,31 @@ export const getLocalEditor: <S extends Record<string, any>, T extends Record<st
 // ################################################################################################
 // JZOD ELEMENT EDITOR
 // ################################################################################################
-export const getLocalJzodElementEditor: (
-  pageLabel: string
-) => React.FC<JzodElementEditorProps_Test> =
-  (pageLabel: string) => (props: JzodElementEditorProps_Test) => {
+let JzodElementEditorForTestRenderCount: number = 0;
+export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodElementEditorProps_Test> =
+  (pageLabel: string) =>
+  ({
+    name,
+    label,
+    listKey,
+    rootLesslistKey,
+    rootLesslistKeyArray,
+    // indentLevel?: number;
+    initialFormState,
+    rawJzodSchema,
+  }) => {
     // const [formHelperState, setformHelperState] = useMiroirContextformHelperState();
-
+    JzodElementEditorForTestRenderCount++;
     const context = useMiroirContextService();
+
+    // ###############################################################################################
+    // useEffect(() => context.setMiroirFundamentalJzodSchema(miroirFundamentalJzodSchema as any), [context]);
+    // setting context.miroirFundamentalJzodSchema in-line during the test for immediate access, with gatekeeper test to avoid infinite refresh loop
+    // if (!context.miroirFundamentalJzodSchema) {
+    //   context.setMiroirFundamentalJzodSchema(miroirFundamentalJzodSchema as any);
+    // }
+    // ###############################################################################################
+
 
     const currentModel: MetaModel = useCurrentModel(
       context.applicationSection == "data"
@@ -365,8 +336,8 @@ export const getLocalJzodElementEditor: (
           //  Send values somehow
           // setformHelperState(actionCreateSchemaParamValues);
 
-          console.info(
-            "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ onSubmit formik values",
+          console.log(
+            "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ JzodElementEditorTestTools onSubmit formik values",
             actionCreateSchemaParamValues,
             "newApplicationName",
             actionCreateSchemaParamValues.newApplicationName,
@@ -385,38 +356,60 @@ export const getLocalJzodElementEditor: (
       []
     );
 
-    // const resolvedJzodSchema: JzodEnum = rawSchema;
+    // const [formState, setFormState] = useState<any>(props.initialFormState);
+    const [formState, setFormState] = useState<any>({ [name]: initialFormState });
 
-    // Mock domainController with handleAction spy
-    // TODO: test submit action
+    console.log(
+      "getJzodElementEditorForTest render",
+      JzodElementEditorForTestRenderCount,
+      "with",
+      // "context",
+      // context,
+      "context.miroirFundamentalJzodSchema",
+      Object.keys(context.miroirFundamentalJzodSchema?? {}).length,
+      "name",
+      name,
+      "listKey",
+      listKey,
+      "rootLesslistKey",
+      rootLesslistKey,
+      "formState",
+      JSON.stringify(formState, null, 2),
+    );
 
-    // const defaultProps: JzodElementEditorProps = {
-    //   name: "testName",
-    //   listKey: "ROOT.testName",
-    //   rootLesslistKey: "testName",
-    //   rootLesslistKeyArray: ["testName"],
-    //   formState: "value2",
-    //   label: "Test Label",
-    //   rawJzodSchema: rawSchema,
-    //   currentDeploymentUuid:emptyString,
-    //   currentApplicationSection:"data",
-    //   // onChange: vi.fn(),
-    //   resolvedElementJzodSchema: rawSchema,
-    //   foreignKeyObjects:emptyObject,
-    //   forceTestingMode: false,
-    //   unionInformation: undefined,
-    //   // formik:
-    // };
-    // const [formState,setFormState] = useState<{[k:string]:any}>(initialFormState);
-    const [formState, setFormState] = useState<any>(props.initialFormState);
+    const currentValue = resolvePathOnObject(formState, rootLesslistKeyArray);
+
+    console.log(
+      "getJzodElementEditorForTest still render",
+      JzodElementEditorForTestRenderCount,
+      "with",
+      // "miroirFundamentalJzodSchema",
+      // miroirFundamentalJzodSchema,
+      // "context.miroirFundamentalJzodSchema",
+      // Object.keys(context.miroirFundamentalJzodSchema ?? {}).length,
+      "currentMiroirModel",
+      currentMiroirModel,
+      "currentModel",
+      currentModel
+    );
+    console.log(
+      "getJzodElementEditorForTest still render",
+      JzodElementEditorForTestRenderCount,
+      "with",
+      "currentValue",
+      JSON.stringify(currentValue, null, 2),
+      "rawJzodSchema",
+      JSON.stringify(rawJzodSchema, null, 2),
+    )
     const resolvedJzodSchema: ResolvedJzodSchemaReturnType | undefined = useMemo(() => {
       let result: ResolvedJzodSchemaReturnType | undefined = undefined;
       try {
         result =
-          miroirFundamentalJzodSchema && props.rawJzodSchema && formState && currentModel
+          miroirFundamentalJzodSchema && rawJzodSchema && formState && currentModel
             ? jzodTypeCheck(
-                props.rawJzodSchema,
-                formState,
+                rawJzodSchema,
+                // formState,
+                currentValue,
                 [], // currentValuePath
                 [], // currentTypePath
                 miroirFundamentalJzodSchema as JzodSchema,
@@ -427,11 +420,11 @@ export const getLocalJzodElementEditor: (
             : undefined;
       } catch (e) {
         console.error(
-          "ReportSectionEntityInstance useMemo error",
+          "getJzodElementEditorForTest useMemo error",
           // JSON.stringify(e, Object.getOwnPropertyNames(e)),
           e,
-          "props",
-          props,
+          // "props",
+          // props,
           "context",
           context
         );
@@ -443,9 +436,9 @@ export const getLocalJzodElementEditor: (
         };
       }
       return result;
-    }, [props, props.rawJzodSchema, formState, context]);
+    }, [rawJzodSchema, currentValue, context]);
 
-    // console.info(
+    // console.log(
     //   "JzodElementEditor useMemo",
     //   "formState",
     //   JSON.stringify(formState, null, 2),
@@ -468,41 +461,55 @@ export const getLocalJzodElementEditor: (
           initialValues={formState}
           onSubmit={onSubmit}
           handleChange={(e: ChangeEvent<any>) => {
-            console.info(
+            console.log(
               "onChange formik values ###########################################",
               e.target.value
             );
-            setFormState(e.target.value);
+            const newFormState: any = alterObjectAtPath(
+              formState,
+              rootLesslistKeyArray,
+              e.target.value
+            );
+            // console.log(
+            //   "handleChange newFormState ###########################################",
+            //   JSON.stringify(newFormState, null, 2)
+            // );
+            setFormState(newFormState);
+            // setFormState(e.target.value);
           }}
         >
-          {(formik) => (
+          {(formik: FormikProps<any>) => (
             <>
               <form id={"form." + pageLabel} onSubmit={formik.handleSubmit}>
                 {resolvedJzodSchema != undefined && resolvedJzodSchema.status == "ok" ? (
                   <>
                     <JzodElementEditor
-                      name={props.name}
-                      listKey={props.listKey}
-                      rootLesslistKey={emptyString}
-                      rootLesslistKeyArray={emptyList}
+                      name={name}
+                      listKey={listKey}
+                      rootLesslistKey={rootLesslistKey}
+                      rootLesslistKeyArray={rootLesslistKeyArray}
                       paramMiroirFundamentalJzodSchema={miroirFundamentalJzodSchema as JzodSchema}
-                      label={props.label}
-                      currentDeploymentUuid={emptyString}
+                      label={label}
+                      currentDeploymentUuid={context.deploymentUuid}
                       currentApplicationSection={"data"}
-                      rawJzodSchema={props.rawJzodSchema}
+                      rawJzodSchema={rawJzodSchema}
                       resolvedElementJzodSchema={resolvedJzodSchema.element}
                       foreignKeyObjects={emptyObject}
                       handleChange={formik.handleChange as any}
                       formik={formik}
-                      setFormState={setFormState}
-                      formState={formState}
+                      // setFormState={setFormState}
+                      setFormState={formik.handleChange}
+                      // formState={formState}
                     />
                     <button type="submit" name={pageLabel} form={"form." + pageLabel}>
                       submit form.{pageLabel}
                     </button>
                   </>
                 ) : (
-                  <div>could not display editor because schema could not be resolved</div>
+                  <div>
+                    could not display editor because schema could not be resolved:{" "}
+                    {JSON.stringify(resolvedJzodSchema)}
+                  </div>
                 )}
               </form>
             </>
@@ -532,6 +539,8 @@ export function getWrapperForLocalJzodElementEditor(): React.FC<any> {
 
   const localCache: LocalCacheInterface = new LocalCache(persistenceSaga);
 
+  const handleAction = vi.fn();
+
   // ###############################################
   return (props: { children?: React.ReactNode }) => {
     const domainController: DomainControllerInterface = {
@@ -557,16 +566,19 @@ export function getWrapperForLocalJzodElementEditor(): React.FC<any> {
 };
   
 // ##############################################################################################
-export function runJzodEditorTest(
+export async function runJzodEditorTest(
   testCase: JzodEditorTestCase<any>,
   testSuite: JzodEditorTestSuite<any>,
   testName: string,
-  renderAs: "component" | "jzodElementEditor" = "jzodElementEditor"
+  // renderAs: "component" | "jzodElementEditor" = "jzodElementEditor"
+  renderAs: TestMode
 ) {
   const ComponentToRender: React.FC<any> | undefined =
     renderAs == "jzodElementEditor"
-      ? testCase.renderComponent.renderAsJzodElementEditor
-      : testCase.renderComponent.renderAsComponent;
+      ? testCase.renderComponent?.renderAsJzodElementEditor ??
+        testSuite.suiteRenderComponent?.renderAsJzodElementEditor
+      : testCase.renderComponent?.renderAsComponent ??
+        testSuite.suiteRenderComponent?.renderAsComponent;
   if (!ComponentToRender) {
     throw new Error(
       `Test case ${testName} does not have a renderAsJzodElementEditor or renderAsComponent function, skipping test: ${testName}`
@@ -610,59 +622,85 @@ export function runJzodEditorTest(
         : (renderAs == "jzodElementEditor"
             ? testCase.tests.testAsJzodElementEditor
             : testCase.tests.testAsComponent) ?? ((expect: ExpectStatic) => {});
-    tests(expect);
+    return tests(expect);
   } else {
     console.warn(`Test case ${testName} does not have props defined, skipping test: ${testName}`);
   }
+}
+
+// ################################################################################################
+export function getJzodEditorTestSuites<
+  JzodEditorProps extends JzodEditorPropsRoot,
+  LocalEditorProps extends LocalEditorPropsRoot,
+>(
+  pageLabel: string,
+  JzodLiteralEditor: React.FC<JzodEditorProps>,
+  getJzodEditorTests: (
+    LocalEditor: React.FC<LocalEditorProps>,
+    jzodElementEditor: React.FC<JzodElementEditorProps_Test>
+  ) => JzodEditorTestSuites<LocalEditorProps>
+): JzodEditorTestSuites<LocalEditorProps> {
+  const WrapperForJzodElementEditor: React.FC<any> = getWrapperForLocalJzodElementEditor();
+
+  const LocalEditor: React.FC<LocalEditorProps> = getLocalEditor<JzodEditorProps, LocalEditorProps>(
+    pageLabel,
+    JzodLiteralEditor
+  );
+
+  const JzodElementEditorForTest: React.FC<JzodElementEditorProps_Test> =
+    getJzodElementEditorForTest(pageLabel);
+
+  const jzodEditorTest: JzodEditorTestSuites<LocalEditorProps> = getJzodEditorTests(
+    LocalEditor,
+    (props: JzodElementEditorProps_Test) => (
+      <WrapperForJzodElementEditor>
+        <JzodElementEditorForTest {...props} />
+      </WrapperForJzodElementEditor>
+    )
+  );
+  return jzodEditorTest;
 }
 
 
 // ################################################################################################
 // LITERAL
 // ################################################################################################
-export interface LocalLiteralEditorProps {
+export interface LocalEditorPropsRoot {
+  label?: string;
   name: string;
   listKey: string;
   rootLesslistKey: string;
   rootLesslistKeyArray: string[];
-  // value: any;
-  initialFormState: string;
-  label?: string;
+  initialFormState: any;
+}
+
+export interface LocalLiteralEditorProps extends LocalEditorPropsRoot {
 }
 
 export type JzodLiteralEditorTest = JzodEditorTest<LocalLiteralEditorProps>;
 export type JzodLiteralEditorTestSuites = JzodEditorTestSuites<LocalLiteralEditorProps>;
 
-
-const handleAction = vi.fn();
-
-// // ################################################################################################
-// // ################################################################################################
+// ################################################################################################
 export function getJzodLiteralEditorTests(
-  LocalLiteralEditor: React.FC<LocalLiteralEditorProps>,
-  WrapperForJzodElementEditor: React.FC<any>,
-  LocalJzodElementEditor: React.FC<JzodElementEditorProps_Test>
+  LocalEditor: React.FC<LocalLiteralEditorProps>,
+  jzodElementEditor: React.FC<JzodElementEditorProps_Test>
 ): JzodLiteralEditorTestSuites {
   return {
     "JzodLiteralEditor": {
+      suiteRenderComponent: {
+        renderAsComponent: LocalEditor,
+        renderAsJzodElementEditor: jzodElementEditor
+      },
+      suiteProps: {
+        name: "fieldName",
+        listKey: "root.fieldName",
+        rootLesslistKey: "fieldName",
+        rootLesslistKeyArray: ["fieldName"],
+        initialFormState: "test-value",
+        label: "Test Label",
+      } as LocalLiteralEditorProps,
       tests: {
         "renders input with label when label prop is provided": {
-          renderComponent: {
-            renderAsComponent: LocalLiteralEditor,
-            renderAsJzodElementEditor: (props: JzodElementEditorProps_Test) => (
-              <WrapperForJzodElementEditor>
-                <LocalJzodElementEditor {...props} />
-              </WrapperForJzodElementEditor>
-            ),
-          },
-          props: {
-            name: "fieldName",
-            listKey: "root.fieldName",
-            rootLesslistKey: "fieldName",
-            rootLesslistKeyArray: ["fieldName"],
-            initialFormState: "test-value",
-            label: "Test Label",
-          },
           jzodElementEditorProps: (props: LocalLiteralEditorProps) =>
             ({
               ...props,
@@ -672,24 +710,16 @@ export function getJzodLiteralEditorTests(
               },
             } as JzodElementEditorProps_Test),
           tests: {
-            testAsComponent: (expect) => {
+            testAsComponent: async (expect) => {
               expect(screen.getByLabelText(/Test Label/)).toBeInTheDocument();
-              expect(screen.getByRole("textbox")).toHaveAttribute("name", "fieldName"); // TODO: this is implementation detail, should be removed
+              // expect(screen.getByRole("textbox")).toHaveAttribute("name", "fieldName"); // TODO: this is implementation detail, should be removed
             },
-            testAsJzodElementEditor: (expect) => {
+            testAsJzodElementEditor: async (expect) => {
               expect(screen.getByLabelText(/Test Label/)).toBeInTheDocument();
             },
           },
         },
         "renders input without label when label prop is not provided": {
-          renderComponent: {
-            renderAsComponent: LocalLiteralEditor,
-            renderAsJzodElementEditor: (props: JzodElementEditorProps_Test) => (
-              <WrapperForJzodElementEditor>
-                <LocalJzodElementEditor {...props} />
-              </WrapperForJzodElementEditor>
-            ),
-          },
           props: {
             name: "fieldName",
             listKey: "root.fieldName",
@@ -701,103 +731,45 @@ export function getJzodLiteralEditorTests(
           jzodElementEditorProps: (props: LocalLiteralEditorProps) =>
             ({
               ...props,
-              // initialFormState: "test-value",
               rawJzodSchema: {
                 type: "literal",
                 definition: "test-value",
               },
             } as JzodElementEditorProps_Test),
-          tests: (expect) => {
+          tests: async (expect) => {
             expect(screen.queryByLabelText(/Test Label/)).not.toBeInTheDocument();
             expect(screen.getByRole("textbox")).toBeInTheDocument();
           },
         },
-        "setting new value, succeeds in JzodLiteralEditor, fails in JzodElementEditor": {
-          renderComponent: {
-            renderAsComponent: LocalLiteralEditor,
-            renderAsJzodElementEditor: (props: JzodElementEditorProps_Test) => (
-              <WrapperForJzodElementEditor>
-                <LocalJzodElementEditor {...props} />
-              </WrapperForJzodElementEditor>
-            ),
-          },
-          props: {
-            name: "fieldName",
-            listKey: "root.fieldName",
-            rootLesslistKey: "fieldName",
-            rootLesslistKeyArray: ["fieldName"],
-            // value: "test-value",
-            label: "Test Label",
-            initialFormState: "test-value",
-          },
+        "setting new value": {
           jzodElementEditorProps: (props: LocalLiteralEditorProps) =>
             ({
               ...props,
-              // initialFormState: "test-value",
               rawJzodSchema: {
                 type: "literal",
                 definition: "test-value",
               },
             } as JzodElementEditorProps_Test),
-          tests: {
-            testAsComponent: (expect) => {
+            tests: async (expect) => {
               expect(screen.getByDisplayValue("test-value")).toBeInTheDocument();
               const input = screen.getByDisplayValue("test-value");
-              fireEvent.change(input, { target: { value: "new value" } });
+              await act(() => {
+                fireEvent.change(input, { target: { value: "new value" } });
+              });
               expect(screen.getByDisplayValue(/new value/)).toBeInTheDocument();
-            },
-            testAsJzodElementEditor: (expect) => {
-              expect(screen.getByDisplayValue("test-value")).toBeInTheDocument();
-              const input = screen.getByDisplayValue("test-value");
-              fireEvent.change(input, { target: { value: "new value" } });
-              // expect(screen.getByDisplayValue(/new value/)).toBeInTheDocument();
-              expect(
-                screen.getByText("could not display editor because schema could not be resolved")
-              ).toBeInTheDocument();
-            },
-          },
+            }
         },
       }
     }
   };
 };
 
-// ################################################################################################
-export function literalBeforeAll(
-  pageLabel: string,
-) {
-  const WrapperForJzodElementEditor: React.FC<any> = getWrapperForLocalJzodElementEditor();
-  // const jzodLiteralEditorTest: JzodEditorTest<LocalLiteralEditorProps> = getJzodLiteralEditorTests(
-  const jzodLiteralEditorTest: JzodEditorTestSuites<LocalLiteralEditorProps> = getJzodLiteralEditorTests(
-    getLocalEditor<JzodLiteralEditorProps, LocalLiteralEditorProps>(pageLabel, JzodLiteralEditor),
-    WrapperForJzodElementEditor,
-    getLocalJzodElementEditor(pageLabel)
-  );
-  return jzodLiteralEditorTest;
-}
 
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
 // ################################################################################################
 // ENUM
 // ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-export interface LocalEnumEditorProps {
-  label?: string;
-  name: string;
-  listKey: string;
-  rootLesslistKey: string;
-  rootLesslistKeyArray: string[];
+export interface LocalEnumEditorProps extends LocalEditorPropsRoot {
   rawJzodSchema: JzodEnum | undefined;
-  initialFormState: any;
 }
 
 export type JzodEnumEditorTest = JzodEditorTest<LocalEnumEditorProps>;
@@ -805,12 +777,15 @@ export type JzodEnumEditorTestSuites = JzodEditorTestSuites<LocalEnumEditorProps
 
 export function getJzodEnumEditorTests(
   LocalEditor: React.FC<LocalEnumEditorProps>,
-  WrapperForJzodElementEditor: React.FC<any>,
-  LocalJzodElementEditor: React.FC<JzodElementEditorProps_Test>
+  renderAsJzodElementEditor: React.FC<JzodElementEditorProps_Test>
 ): JzodEnumEditorTestSuites {
   const enumValues = ["value1", "value2", "value3"];
   return {
     JzodEnumEditor: {
+      suiteRenderComponent: {
+        renderAsComponent: LocalEditor,
+        renderAsJzodElementEditor,
+      },
       suiteProps: {
         label: "Test Label",
         name: "fieldName",
@@ -825,32 +800,16 @@ export function getJzodEnumEditorTests(
       },
       tests: {
         "renders input with label when label prop is provided": {
-          renderComponent: {
-            renderAsComponent: LocalEditor,
-            renderAsJzodElementEditor: (props: JzodElementEditorProps_Test) => (
-              <WrapperForJzodElementEditor>
-                <LocalJzodElementEditor {...props} />
-              </WrapperForJzodElementEditor>
-            ),
-          },
-          tests: (expect: ExpectStatic) => {
+          tests: async (expect: ExpectStatic) => {
             expect(screen.getByLabelText(/Test Label/)).toBeInTheDocument();
           },
         },
         "renders input without label when label prop is not provided": {
-          renderComponent: {
-            renderAsComponent: LocalEditor,
-            renderAsJzodElementEditor: (props: JzodElementEditorProps_Test) => (
-              <WrapperForJzodElementEditor>
-                <LocalJzodElementEditor {...props} />
-              </WrapperForJzodElementEditor>
-            ),
-          },
           props: {
-            // label: "Test Label",
+            // label: "Test Label", // no label
             name: "fieldName",
-            listKey: "listKey",
-            rootLesslistKey: "rootLesslistKey",
+            listKey: "ROOT.fieldName",
+            rootLesslistKey: "fieldName",
             rootLesslistKeyArray: ["fieldName"],
             rawJzodSchema: {
               type: "enum",
@@ -858,61 +817,38 @@ export function getJzodEnumEditorTests(
             },
             initialFormState: "value2",
           },
-          jzodElementEditorProps: (props: LocalEnumEditorProps) =>
-            ({
-              ...props,
-              initialFormState: "value2",
-            } as JzodElementEditorProps_Test),
-          tests: (expect) => {
+          tests: async (expect) => {
             expect(screen.queryByLabelText(/Test Label/)).not.toBeInTheDocument();
             // expect(screen.getByRole("textbox")).toBeInTheDocument();
           },
         },
         "renders select with correct value": {
-          renderComponent: {
-            renderAsComponent: LocalEditor,
-            renderAsJzodElementEditor: (props: JzodElementEditorProps_Test) => (
-              <WrapperForJzodElementEditor>
-                <LocalJzodElementEditor {...props} />
-              </WrapperForJzodElementEditor>
-            ),
-          },
-          tests: (expect: ExpectStatic) => {
+          tests: async (expect: ExpectStatic) => {
             const combobox = screen.getByRole("combobox");
             expect(combobox).toContainHTML("value2");
             // expect(screen.getByLabelText(/Test Label/)).toBeInTheDocument();
           },
         },
         "renders all enum options": {
-          renderComponent: {
-            renderAsComponent: LocalEditor,
-            renderAsJzodElementEditor: (props: JzodElementEditorProps_Test) => (
-              <WrapperForJzodElementEditor>
-                <LocalJzodElementEditor {...props} />
-              </WrapperForJzodElementEditor>
-            ),
-          },
-          tests: (expect: ExpectStatic) => {
+          tests: async (expect: ExpectStatic) => {
             const combobox = screen.getByRole("combobox");
-            fireEvent.mouseDown(combobox);
+            await act(() => {
+              fireEvent.mouseDown(combobox);
+            });
             enumValues.forEach((val) => {
               expect(screen.getByRole("option", { name: val })).toBeInTheDocument();
             });
           },
         },
         "form state is changed when selection changes": {
-          renderComponent: {
-            renderAsComponent: LocalEditor,
-            renderAsJzodElementEditor: (props: JzodElementEditorProps_Test) => (
-              <WrapperForJzodElementEditor>
-                <LocalJzodElementEditor {...props} />
-              </WrapperForJzodElementEditor>
-            ),
-          },
-          tests: (expect: ExpectStatic) => {
+          tests: async (expect: ExpectStatic) => {
             const combobox = screen.getByRole("combobox");
-            fireEvent.mouseDown(combobox);
-            fireEvent.click(screen.getByRole("option", { name: "value3" }));
+            await act(() => {
+              fireEvent.mouseDown(combobox);
+            });
+            await act(() => {
+              fireEvent.click(screen.getByRole("option", { name: "value3" }));
+            });
             // expect(screen.getByLabelText(/Test LabelSSSSSSSSSSSSSSSSSSSSSSSS/)).toBeInTheDocument();
             expect(combobox).toContainHTML("value3");
           },
@@ -921,16 +857,123 @@ export function getJzodEnumEditorTests(
     },
   };
 };
-
 // ################################################################################################
-export function enumBeforeAll(
-  pageLabel: string,
-) {
-  const WrapperForJzodElementEditor: React.FC<any> = getWrapperForLocalJzodElementEditor();
-  const jzodEnumEditorTest: JzodEditorTestSuites<LocalEnumEditorProps> = getJzodEnumEditorTests(
-    getLocalEditor<JzodEnumEditorProps, LocalEnumEditorProps>(pageLabel, JzodEnumEditor),
-    WrapperForJzodElementEditor,
-    getLocalJzodElementEditor(pageLabel)
-  );
-  return jzodEnumEditorTest;
+// ARRAY
+// ################################################################################################
+export interface LocalArrayEditorProps extends LocalEditorPropsRoot{
+  rawJzodSchema: JzodArray | undefined;
 }
+
+export type JzodArrayEditorTest = JzodEditorTest<LocalArrayEditorProps>;
+export type JzodArrayEditorTestSuites = JzodEditorTestSuites<LocalArrayEditorProps>;
+
+export function getJzodArrayEditorTests(
+  LocalEditor: React.FC<LocalArrayEditorProps>,
+  renderAsJzodElementEditor: React.FC<JzodElementEditorProps_Test>
+): JzodArrayEditorTestSuites {
+  const arrayValues = ["value1", "value2", "value3"];
+  return {
+    JzodArrayEditor: {
+      suiteRenderComponent: {
+        renderAsComponent: LocalEditor,
+        renderAsJzodElementEditor,
+      },
+      suiteProps: {
+        label: "Test Label",
+        name: "fieldName",
+        listKey: "ROOT.fieldName",
+        rootLesslistKey: "fieldName",
+        rootLesslistKeyArray: ["fieldName"],
+        rawJzodSchema: {
+          type: "array",
+          definition: { type: "string" },
+        },
+        initialFormState: arrayValues,
+      },
+      tests: {
+        // "renders input with label when label prop is provided": {
+        //   tests: async (expect: ExpectStatic) => {
+        //     // expect(screen.getByLabelText(/Test Label/)).toBeInTheDocument();
+        //     expect(screen.getByText(/Test Label/)).toBeInTheDocument();
+        //   },
+        // },
+        // "renders input without label when label prop is not provided": {
+        //   props: {
+        //     // label: "Test Label", // no label
+        //     name: "fieldName",
+        //     listKey: "listKey",
+        //     rootLesslistKey: "rootLesslistKey",
+        //     rootLesslistKeyArray: ["fieldName"],
+        //     rawJzodSchema: {
+        //       type: "enum",
+        //       definition: enumValues,
+        //     },
+        //     initialFormState: "value2",
+        //   },
+        //   jzodElementEditorProps: (props: LocalEnumEditorProps) =>
+        //     ({
+        //       ...props,
+        //       initialFormState: "value2",
+        //     } as JzodElementEditorProps_Test),
+        //   tests: (expect) => {
+        //     expect(screen.queryByLabelText(/Test Label/)).not.toBeInTheDocument();
+        //     // expect(screen.getByRole("textbox")).toBeInTheDocument();
+        //   },
+        // },
+        // "renders select with correct value": {
+        //   tests: async (expect: ExpectStatic) => {
+        //     const combobox = screen.getByRole("combobox");
+        //     expect(combobox).toContainHTML("value2");
+        //     // expect(screen.getByLabelText(/Test Label/)).toBeInTheDocument();
+        //   },
+        // },
+        // "renders all array values, in the right order": {
+        //   tests: async (expect: ExpectStatic) => {
+        //     arrayValues.forEach((val, i) => {
+        //       const cell = screen.getByRole("ROOT.fieldName." + i);
+        //       expect(cell).toBeInTheDocument();
+        //       expect(cell).toHaveValue(val);
+        //     });
+        //     // Check order
+        //     const cells = arrayValues.map((_, i) => screen.getByRole("ROOT.fieldName." + i));
+        //     const values = cells.map((cell) => (cell as HTMLInputElement).value);
+        //     expect(values).toEqual(arrayValues);
+        //   },
+        // },
+        // "form state is changed when selection changes": {
+        //   tests: async (expect: ExpectStatic) => {
+        //     const cell = screen.getByRole("ROOT.fieldName.2")
+        //     await act(() => {
+        //       fireEvent.change(cell, { target: { value: "new value" } });
+        //     });
+        //     expect(cell).toContainHTML("new value");
+        //     expect(screen.getByLabelText(/Test Label/)).toBeInTheDocument();
+        //   },
+        // },
+        "changing order of array items when button ROOT.fieldName.2.up is clicked": {
+          tests: async (expect) => {
+            // const upButton = screen.getByRole("button", { name: /ROOT.fieldName.2.up/ });
+            const upButtons = screen.getByRole("ROOT.fieldName.up");
+            await act(() => {
+              fireEvent.click(upButton);
+            });
+            // const cells = arrayValues.map((_, i) => screen.getByRole("ROOT.fieldName." + i));
+            // const cellsInOrder = screen.getAllByRole((_, element:any): any =>
+            //   element?.getAttribute("role")?.startsWith("ROOT.fieldName.")
+            // );
+            // const cells = screen.getAllByRole("button", (role) =>
+            //   typeof role === "string" && role.startsWith("ROOT.fieldName.")
+            // );
+            const cells = screen.getAllByRole("button", { name: /ROOT.fieldName\.\d+/ });
+            const cellInputs = screen.getAllByRole((role, element) =>
+              typeof role === "string" && /^ROOT\.fieldName\.\d+$/.test(role)
+            );
+            const values = cells.map((cell) => (cell as HTMLInputElement).value);
+            expect(values).toEqual(["value1", "value3", "value2"]);
+          },
+        },
+      },
+    },
+  };
+};
+

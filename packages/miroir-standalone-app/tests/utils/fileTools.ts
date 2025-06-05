@@ -40,7 +40,7 @@ export async function loadTestConfigFiles(env:any) {
     let logConfig:any
     if (env.VITE_MIROIR_LOG_CONFIG_FILENAME) {
       logConfig = await loadTestSingleConfigFile(env.VITE_MIROIR_LOG_CONFIG_FILENAME ?? "specificLoggersConfig_warn");
-      // console.info("@@@@@@@@@@@@@@@@@@ log config file contents:", miroirConfig)
+      // console.log("@@@@@@@@@@@@@@@@@@ log config file contents:", miroirConfig)
     
       // MiroirLoggerFactory.setEffectiveLoggerFactoryWithLogLevelNext(
       //   loglevelnext,

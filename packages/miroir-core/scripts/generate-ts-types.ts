@@ -319,7 +319,7 @@ async function generateSchemas(generateFundamentalJzodSchema = true) {
         // Object.fromEntries(extendedJzodSchemaContext),
         extendedJzodSchemasTsTypes
       );
-      console.info(
+      console.log(
         "miroir-core GENERATED Zod schema file: ",
         targetFileName,
         "took",

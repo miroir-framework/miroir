@@ -1143,7 +1143,7 @@ function cleanupResult(
 describe("queries.unit", () => {
   // ###########################################################################################
   it.each(Object.entries(testExtractorParams))('test %s', (currentTestName, testParams:TestExtractorParams) => {
-    console.info("STARTING test:", currentTestName);
+    console.log("STARTING test:", currentTestName);
     expect(currentTestName != undefined).toBeTruthy();
     expect(testParams.testAssertions).toBeDefined();
     // Testing Extractors
@@ -1156,12 +1156,12 @@ describe("queries.unit", () => {
           // getExtractorRunnerParamsForDomainState(testParams.query)
         );
         for (const [testAssertionName, testAssertionParams] of Object.entries(testParams.testAssertions)) {
-          console.info(
+          console.log(
             `############################################## running query for DOMAIN STATE test assertion: ${currentTestName} ${testAssertionName}`
           );
-          console.info(`For test named ${currentTestName} ${testAssertionName} preResult: `, JSON.stringify(preResult, null, 2));
+          console.log(`For test named ${currentTestName} ${testAssertionName} preResult: `, JSON.stringify(preResult, null, 2));
           const result = cleanupResult(preResult, testAssertionParams);
-          console.info(`For test named ${currentTestName} ${testAssertionName} result: `, result);
+          console.log(`For test named ${currentTestName} ${testAssertionName} result: `, result);
           expect(result).toEqual(testAssertionParams.expectedResult);
         }
       }
@@ -1172,9 +1172,9 @@ describe("queries.unit", () => {
           testParams.getQueryRunnerParamsForDeploymentEntityState(testParams.query)
         );
         for (const [testAssertionName, testAssertionParams] of Object.entries(testParams.testAssertions)) {
-        console.info(`############################################## running query for DEPLOYMENT ENTITY STATE test assertion: ${currentTestName} ${testAssertionName}`);
+        console.log(`############################################## running query for DEPLOYMENT ENTITY STATE test assertion: ${currentTestName} ${testAssertionName}`);
           const result = cleanupResult(preResult, testAssertionParams);
-          console.info(`For test named ${currentTestName} ${testAssertionName} result: `, result);
+          console.log(`For test named ${currentTestName} ${testAssertionName} result: `, result);
           expect(result).toEqual(testAssertionParams.expectedResult);
         }
       }
@@ -1192,10 +1192,10 @@ describe("queries.unit", () => {
           testParams.getQueryTemplateRunnerParamsForDomainState(testParams.queryTemplate)
         ) as any;
         for (const [testAssertionName, testAssertionParams] of Object.entries(testParams.testAssertions)) {
-          console.info(`############################################## running query TEMPLATE for DOMAIN STATE test assertion: ${currentTestName} ${testAssertionName}`);
+          console.log(`############################################## running query TEMPLATE for DOMAIN STATE test assertion: ${currentTestName} ${testAssertionName}`);
           const result = cleanupResult(preTemplateResult, testAssertionParams);
-          // console.info(`For test named ${currentTestName} ${testName} Template result: `, result);
-          // console.info(`For test named ${currentTestName} ${testName} expected Template result: `, testParams.expectedResult);
+          // console.log(`For test named ${currentTestName} ${testName} Template result: `, result);
+          // console.log(`For test named ${currentTestName} ${testName} expected Template result: `, testParams.expectedResult);
           expect(result).toEqual(testAssertionParams.expectedResult);
         }
       }
@@ -1209,10 +1209,10 @@ describe("queries.unit", () => {
           testParams.getQueryTemplateRunnerParamsForDeploymentEntityState(testParams.queryTemplate)
         ) as any;
         for (const [testAssertionName, testAssertionParams] of Object.entries(testParams.testAssertions)) {
-          console.info(`############################################## running query TEMPLATE for DEPLOYMENT ENTITY STATE test assertion: ${currentTestName} ${testAssertionName}`);
+          console.log(`############################################## running query TEMPLATE for DEPLOYMENT ENTITY STATE test assertion: ${currentTestName} ${testAssertionName}`);
           const result = cleanupResult(preTemplateResult, testAssertionParams);
-          // console.info(`For test named ${currentTestName} ${testName} Template result: `, result);
-          // console.info(`For test named ${currentTestName} ${testName} expected Template result: `, testParams.expectedResult);
+          // console.log(`For test named ${currentTestName} ${testName} Template result: `, result);
+          // console.log(`For test named ${currentTestName} ${testName} expected Template result: `, testParams.expectedResult);
           expect(result).toEqual(testAssertionParams.expectedResult);
         }
       }
