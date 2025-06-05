@@ -63,6 +63,7 @@ import {
 import { JzodArrayEditor, indentShift } from "./JzodArrayEditor.js";
 import { JzodEnumEditor } from "./JzodEnumEditor.js";
 import { JzodLiteralEditor } from "./JzodLiteralEditor.js";
+import { J } from "vitest/dist/chunks/reporters.D7Jzd9GS.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -1140,37 +1141,45 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                             );
                           }
                           const discriminator: string = (unfoldedRawSchema as any).discriminator;
-                          if (attribute[0] == discriminator) {
-                            attributeRawJzodSchema =
-                              currentAttributeDefinition.type == "enum"
-                                ? currentAttributeDefinition
-                                : { type: "literal", definition: "literal" }; // definition is not taken into account, possible values come from unionInformation
-                          } else {
-                            const discriminatorValue = currentValue[discriminator];
-                            // log.info(
-                            //   "discriminator",
-                            //   discriminator,
-                            //   "discriminatorValue",
-                            //   discriminatorValue,
-                            // );
+                          const discriminatorValue = currentValue[discriminator];
+                          log.info(
+                            "############### discriminator",
+                            discriminator,
+                            "discriminatorValue",
+                            discriminatorValue,
+                            "possibleObjectTypes",
+                            JSON.stringify(possibleObjectTypes, null, 2),
+                            "attribute",
+                            JSON.stringify(attribute, null, 2),
+                          );
                             // discriminator only
                             // TODO: remove duplication from JzodUnfoldSchemaForValue. This is a core functionality, finding the concrete type for a value in a union.
-                            if (discriminator && discriminatorValue) {
-                              concreteObjectRawJzodSchema = unfoldedRawSchema.definition.find(
-                                (a: any) =>
-                                  (a.type == "object" &&
-                                    a.definition[discriminator].type == "literal" &&
-                                    (a.definition[discriminator] as JzodLiteral).definition ==
-                                      discriminatorValue) ||
-                                  (a.type == "object" &&
-                                    a.definition[discriminator].type == "enum" &&
-                                    (a.definition[discriminator] as JzodEnum).definition.includes(
-                                      discriminatorValue
-                                    ))
-                              ) as any;
-                            }
-                            // }
-
+                          if (discriminator && discriminatorValue) {
+                            concreteObjectRawJzodSchema = possibleObjectTypes.find(
+                              (a: any) =>
+                                (a.type == "object" &&
+                                  a.definition[discriminator].type == "literal" &&
+                                  (a.definition[discriminator] as JzodLiteral).definition ==
+                                    discriminatorValue) ||
+                                (a.type == "object" &&
+                                  a.definition[discriminator].type == "enum" &&
+                                  (a.definition[discriminator] as JzodEnum).definition.includes(
+                                    discriminatorValue
+                                  ))
+                            ) as any;
+                          } else {
+                            return (
+                              <div key={attributeListKey}>
+                                <span>
+                                  {attributeDisplayedLabel}{" "}
+                                  <span className="error">
+                                    no discriminator value found in union for object{" "}
+                                    {props.listKey} attribute {attribute[0]} attributeListKey{" "}
+                                    {attributeListKey}
+                                  </span>
+                                </span>
+                              </div>
+                            );
                           }
                         } else { // possibleObjectTypes.length == 1
                           concreteObjectRawJzodSchema = possibleObjectTypes[0] as JzodObject;
@@ -1228,8 +1237,14 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                           resolvedConcreteObjectJzodSchema = concreteObjectRawJzodSchema;
                         }
   
-                        attributeRawJzodSchema =
-                          resolvedConcreteObjectJzodSchema.definition[attribute[0]];
+                        // if (attribute[0] == discriminator) {
+                        //   attributeRawJzodSchema =
+                        //     currentAttributeDefinition.type == "enum"
+                        //       ? currentAttributeDefinition
+                        //       : { type: "literal", definition: "literal" }; // definition is not taken into account, possible values come from unionInformation
+                        // } else {
+                          attributeRawJzodSchema = resolvedConcreteObjectJzodSchema.definition[attribute[0]];
+                        // }
 
                         // log.info(
                         //   "JzodElementEditor attribute for object",

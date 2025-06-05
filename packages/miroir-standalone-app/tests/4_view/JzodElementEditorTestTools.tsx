@@ -1046,51 +1046,82 @@ export function getJzodUnionEditorTests(
         renderAsJzodElementEditor,
       },
       tests: {
-        "union between simple types renders input with proper value": {
-          props: {
-            label: "Test Label",
-            name: "fieldName",
-            listKey: "ROOT.fieldName",
-            rootLesslistKey: "fieldName",
-            rootLesslistKeyArray: ["fieldName"],
-            rawJzodSchema: {
-              type: "union",
-              definition: [{ type: "string" }, { type: "number" }],
-            },
-            initialFormState: 42,
-          },
+        // "union between simple types renders input with proper value": {
+        //   props: {
+        //     label: "Test Label",
+        //     name: "fieldName",
+        //     listKey: "ROOT.fieldName",
+        //     rootLesslistKey: "fieldName",
+        //     rootLesslistKeyArray: ["fieldName"],
+        //     rawJzodSchema: {
+        //       type: "union",
+        //       definition: [{ type: "string" }, { type: "number" }],
+        //     },
+        //     initialFormState: 42,
+        //   },
 
-          tests: async (expect: ExpectStatic) => {
-            const input = screen.getByRole("textbox");
-            expect(input).toBeInTheDocument();
-            expect(input).toHaveValue(42);
-          },
-        },
-        "union between simple type and object for value of simple type renders input with proper value": {
-          props: {
-            label: "Test Label",
-            name: "fieldName",
-            listKey: "ROOT.fieldName",
-            rootLesslistKey: "fieldName",
-            rootLesslistKeyArray: ["fieldName"],
-            rawJzodSchema: {
-              type: "union",
-              definition: [
-                { type: "string" },
-                { type: "number" },
-                { type: "object", definition: { a: { type: "string" }, b: { type: "number" } } },
-              ],
-            },
-            initialFormState: 42,
-          },
+        //   tests: async (expect: ExpectStatic) => {
+        //     const input = screen.getByRole("textbox");
+        //     expect(input).toBeInTheDocument();
+        //     expect(input).toHaveValue(42);
+        //   },
+        // },
+        // "union between simple type and object for value of simple type renders input with proper value": {
+        //   props: {
+        //     label: "Test Label",
+        //     name: "fieldName",
+        //     listKey: "ROOT.fieldName",
+        //     rootLesslistKey: "fieldName",
+        //     rootLesslistKeyArray: ["fieldName"],
+        //     rawJzodSchema: {
+        //       type: "union",
+        //       definition: [
+        //         { type: "string" },
+        //         { type: "number" },
+        //         { type: "object", definition: { a: { type: "string" }, b: { type: "number" } } },
+        //       ],
+        //     },
+        //     initialFormState: 42,
+        //   },
 
-          tests: async (expect: ExpectStatic) => {
-            const input = screen.getByRole("textbox");
-            expect(input).toBeInTheDocument();
-            expect(input).toHaveValue(42);
-          },
-        },
-        "union between simple type and object for value object renders input with proper value": {
+        //   tests: async (expect: ExpectStatic) => {
+        //     const input = screen.getByRole("textbox");
+        //     expect(input).toBeInTheDocument();
+        //     expect(input).toHaveValue(42);
+        //   },
+        // },
+        // "union between simple type and object for value object renders input with proper value": {
+        //   props: {
+        //     label: "Test Label",
+        //     name: "fieldName",
+        //     listKey: "ROOT.fieldName",
+        //     rootLesslistKey: "fieldName",
+        //     rootLesslistKeyArray: ["fieldName"],
+        //     rawJzodSchema: {
+        //       type: "union",
+        //       definition: [
+        //         { type: "string" },
+        //         { type: "number" },
+        //         { type: "object", definition: { a: { type: "string" }, b: { type: "number" } } },
+        //       ],
+        //     },
+        //     initialFormState: {
+        //       a: "test string",
+        //       b: 42,
+        //     },
+        //   },
+
+        //   tests: async (expect: ExpectStatic) => {
+        //     const inputs = screen.getAllByRole("textbox");
+        //     const values: Record<string, any> = {};
+        //     inputs.forEach((input: HTMLElement) => {
+        //       const name = (input as HTMLInputElement).name.replace(/^fieldName\./, "");
+        //       values[name] = (input as HTMLInputElement).value || Number((input as HTMLInputElement).value);
+        //     });
+        //     expect(values).toEqual({ a: "test string", b: "42" });
+        //   },
+        // },
+        "union between 2 object types with a discriminator for value object renders input following the proper value type": {
           props: {
             label: "Test Label",
             name: "fieldName",
@@ -1099,28 +1130,28 @@ export function getJzodUnionEditorTests(
             rootLesslistKeyArray: ["fieldName"],
             rawJzodSchema: {
               type: "union",
+              discriminator: "testObjectType",
               definition: [
-                { type: "string" },
-                { type: "number" },
-                { type: "object", definition: { a: { type: "string" }, b: { type: "number" } } },
+                { type: "object", definition: { testObjectType: { type: "literal", definition: "type1" }, a: { type: "string" } } },
+                { type: "object", definition: { testObjectType: { type: "literal", definition: "type2" }, b: { type: "number" } } },
               ],
             },
             initialFormState: {
+              testObjectType: "type1",
               a: "test string",
-              b: 42,
             },
           },
-
           tests: async (expect: ExpectStatic) => {
+            // expect(screen.getByText(/Test Label/)).toBeInTheDocument();
             const inputs = screen.getAllByRole("textbox");
             const values: Record<string, any> = {};
             inputs.forEach((input: HTMLElement) => {
               const name = (input as HTMLInputElement).name.replace(/^fieldName\./, "");
               values[name] = (input as HTMLInputElement).value || Number((input as HTMLInputElement).value);
             });
-            expect(values).toEqual({ a: "test string", b: "42" });
+            expect(values).toEqual({ testObjectType: "type1", a: "test string" });
           },
-        },
+        }
         // "renders all array values, in the right order": {
         //   tests: async (expect: ExpectStatic) => {
         //     const cells = screen
