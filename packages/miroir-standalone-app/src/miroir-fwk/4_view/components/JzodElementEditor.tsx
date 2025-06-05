@@ -292,7 +292,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   //   props
   // );
 
-  // const currentValue = resolvePathOnObject(props.formState, props.rootLesslistKeyArray);
   const currentValue = resolvePathOnObject(props.formik.values, props.rootLesslistKeyArray);
   // log.info("#####################################################################################");
   // log.info("JzodElementEditor", props.listKey, "count", count, "currentValue", currentValue);
@@ -312,17 +311,19 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   if ((props.rawJzodSchema as any as string) == "never") {
     log.warn("found never for props.rawJzodSchema! key", props.listKey, "count", count);
   }
+
+  // object or schemaReference unfolding
   let unfoldedRawSchemaReturnType: ResolvedJzodSchemaReturnType | undefined;
   try {
     unfoldedRawSchemaReturnType = useMemo(() => {
-      log.info(
-        "unfolding rawJzodSchema for",
-        props.listKey,
-        "count",
-        count,
-        "rawJzodSchema",
-        props.rawJzodSchema
-      );
+      // log.info(
+      //   "unfolding rawJzodSchema for",
+      //   props.listKey,
+      //   "count",
+      //   count,
+      //   "rawJzodSchema",
+      //   props.rawJzodSchema
+      // );
       const result = currentMiroirFundamentalJzodSchema
         ? unfoldJzodSchemaOnce(
             currentMiroirFundamentalJzodSchema, // context.miroirFundamentalJzodSchema,
@@ -332,16 +333,16 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             miroirMetaModel
           )
         : undefined;
-      log.info(
-        "unfolded rawJzodSchema for",
-        props.listKey,
-        "count",
-        count,
-        "props.rawJzodSchema",
-        props.rawJzodSchema,
-        "result",
-        result
-      );
+      // log.info(
+      //   "unfolded rawJzodSchema for",
+      //   props.listKey,
+      //   "count",
+      //   count,
+      //   "props.rawJzodSchema",
+      //   props.rawJzodSchema,
+      //   "result",
+      //   result
+      // );
       return {
         ...result,
         valuePath: [],
@@ -382,81 +383,14 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     );
   }
   const unfoldedRawSchema: JzodElement = unfoldedRawSchemaReturnType.element;
-  log.info(
-    "JzodElementEditor",
-    props.listKey,
-    "rawJzodSchema",
-    props.rawJzodSchema,
-    "unfoldedRawSchema",
-    unfoldedRawSchema,
-  );
-  const objectUniondiscriminatorValues: string[] = useMemo(() => {
-    if (
-      props.resolvedElementJzodSchema?.type == "object" &&
-      unfoldedRawSchema &&
-      unfoldedRawSchema.type == "union" &&
-      unfoldedRawSchema.discriminator
-    ) {
-      const discriminator = (unfoldedRawSchema as any).discriminator;
-      const result = [
-        ...new Set(
-          unfoldedRawSchema.definition.flatMap((a: any /** JzodObject */) => {
-            // return (a.definition as any)[(unfoldedRawSchema as any).discriminator].definition}
-            switch (a.definition[discriminator]?.type) {
-              case "literal": {
-                return a.definition[discriminator].definition;
-                break;
-              }
-              case "enum": {
-                return a.definition[discriminator].definition;
-              }
-              case "object":
-              case "string":
-              case "number":
-              case "bigint":
-              case "boolean":
-              case "undefined":
-              case "function":
-              case "array":
-              // case "simpleType":
-              case "any":
-              case "date":
-              case "never":
-              case "null":
-              case "uuid":
-              case "unknown":
-              case "void":
-              case "lazy":
-              case "intersection":
-              case "map":
-              case "promise":
-              case "record":
-              case "schemaReference":
-              case "set":
-              case "tuple":
-              case "union":
-              default: {
-                throw new Error(
-                  "objectUniondiscriminatorValues could not handle union branch object: discriminator type " +
-                    a.definition[discriminator]?.type +
-                    " discriminator " +
-                    JSON.stringify(a.definition[discriminator]) +
-                    " for union " +
-                    JSON.stringify(unfoldedRawSchema)
-                );
-                // return [];
-                break;
-              }
-            }
-          })
-        ),
-      ];
-      log.info("objectUniondiscriminatorValues found ", result);
-      return result;
-    } else {
-      return [];
-    }
-  }, [props.resolvedElementJzodSchema, unfoldedRawSchema]);
+  // log.info(
+  //   "JzodElementEditor",
+  //   props.listKey,
+  //   "rawJzodSchema",
+  //   props.rawJzodSchema,
+  //   "unfoldedRawSchema",
+  //   unfoldedRawSchema,
+  // );
 
   if (props.resolvedElementJzodSchema && props.rawJzodSchema) {
     if (
@@ -474,6 +408,91 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       );
     }
 
+    // ######################### unions #########################
+    const objectUniondiscriminatorValues: string[] = useMemo(() => {
+      if (
+        props.resolvedElementJzodSchema?.type == "object" &&
+        unfoldedRawSchema &&
+        unfoldedRawSchema.type == "union" &&
+        unfoldedRawSchema.discriminator
+      ) {
+        const discriminator = (unfoldedRawSchema as any).discriminator;
+        const result = [
+          ...new Set(
+            unfoldedRawSchema.definition.flatMap((a: any /** JzodObject */) => {
+              // return (a.definition as any)[(unfoldedRawSchema as any).discriminator].definition}
+              switch (
+                typeof a.definition[discriminator] == "string"
+                  ? "literal"
+                  : a.definition[discriminator]?.type
+              ) {
+                case "literal": {
+                  return a.definition[discriminator].definition;
+                  break;
+                }
+                case "enum": {
+                  return a.definition[discriminator].definition;
+                }
+                case "object":
+                case "string":
+                case "number":
+                case "bigint":
+                case "boolean":
+                case "undefined":
+                case "function":
+                case "array":
+                // case "simpleType":
+                case "any":
+                case "date":
+                case "never":
+                case "null":
+                case "uuid":
+                case "unknown":
+                case "void":
+                case "lazy":
+                case "intersection":
+                case "map":
+                case "promise":
+                case "record":
+                case "schemaReference":
+                case "set":
+                case "tuple":
+                case "union":
+                default: {
+                  throw new Error(
+                    "objectUniondiscriminatorValues could not handle union branch object: discriminator type " +
+                      a.definition[discriminator]?.type +
+                      " discriminator " +
+                      JSON.stringify(a.definition[discriminator]) +
+                      " for union " +
+                      JSON.stringify(unfoldedRawSchema)
+                  );
+                  // return [];
+                  break;
+                }
+              }
+            })
+          ),
+        ];
+        log.info("objectUniondiscriminatorValues found ", result);
+        return result;
+      } else {
+        return [];
+      }
+    }, [props.resolvedElementJzodSchema, unfoldedRawSchema]);
+
+    const unionInformation = useMemo(() => {
+      return unfoldedRawSchema.type == "union"
+        ? {
+            jzodSchema: unfoldedRawSchema,
+            discriminator: unfoldedRawSchema.discriminator as string,
+            discriminatorValues: objectUniondiscriminatorValues,
+            setItemsOrder: setItemsOrder,
+          }
+        : undefined;
+    }, [unfoldedRawSchema, objectUniondiscriminatorValues]);
+
+    // ######################### foreignKeyObjects #########################
     const foreignKeyObjectsFetchQueryParams: SyncQueryRunnerParams<DeploymentEntityState> = useMemo(
       () =>
         getQueryRunnerParamsForDeploymentEntityState(
@@ -522,7 +541,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     //   foreignKeyObjects
     // );
 
-    // ############################################################################################
+    // ################################# objects ###################################
     const undefinedOptionalAttributes: string[] = useMemo(() => {
       if (props.resolvedElementJzodSchema?.type == "object" && unfoldedRawSchema.type == "object") {
         const currentObjectAttributes = Object.keys(currentValue);
@@ -547,16 +566,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       return new Set();
     }, [unfoldedRawSchema, currentValue]);
 
-    const unionInformation = useMemo(() => {
-      return unfoldedRawSchema.type == "union"
-        ? {
-            jzodSchema: unfoldedRawSchema,
-            discriminator: unfoldedRawSchema.discriminator as string,
-            discriminatorValues: objectUniondiscriminatorValues,
-            setItemsOrder: setItemsOrder,
-          }
-        : undefined;
-    }, [unfoldedRawSchema, objectUniondiscriminatorValues]);
 
     const stringSelectList = useMemo(() => {
       if (
@@ -864,6 +873,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     // ############################################################################################
     // ############################################################################################
     switch (props.resolvedElementJzodSchema.type) {
+    // switch (unfoldedRawSchema.type) {
       case "object": {
         let resolvedElementJzodSchema: JzodObject = props.resolvedElementJzodSchema;
         if (unfoldedRawSchema.type == "union" && !unfoldedRawSchema.discriminator) {
@@ -1376,12 +1386,11 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         );
         break;
       }
+      // DONE
       case "array": {
         return (
-          // JzodArrayEditor(props, unfoldedRawSchema, itemsOrder, setItemsOrder)
           <JzodArrayEditor
             {...props}
-            // unfoldedRawSchema={unfoldedRawSchema}
             itemsOrder={itemsOrder}
             setItemsOrder={setItemsOrder}
             hiddenFormItems={hiddenFormItems}
@@ -1390,7 +1399,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             currentDeploymentUuid={props.currentDeploymentUuid}
             paramMiroirFundamentalJzodSchema={props.paramMiroirFundamentalJzodSchema}
             foreignKeyObjects={props.foreignKeyObjects}
-            // formState={props.formState}
             setFormState={props.setFormState}
             formik={props.formik}
             rootLesslistKeyArray={props.rootLesslistKeyArray}
@@ -1399,186 +1407,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           ></JzodArrayEditor>
         ) 
       }
-      // {
-      //   // log.info("############################################### JzodElementEditor array rootLesslistKey", props.rootLesslistKey, "values", props.formik.values);
-      //   log.info(
-      //     "JzodElementEditor for array",
-      //     props.listKey,
-      //     // "attribute",
-      //     // attribute[0],
-      //     // "attributeListkey",
-      //     // attributeListKey,
-      //     "resolvedJzodSchema",
-      //     props.resolvedElementJzodSchema,
-      //     "rawJzodSchema",
-      //     props.rawJzodSchema,
-      //     "unfoldedRawSchema",
-      //     unfoldedRawSchema
-      //     // "currentAttributeDefinition",
-      //     // currentAttributeDefinition,
-      //     // "attributeRawJzodSchema",
-      //     // attributeRawJzodSchema,
-      //     // "currentAttributeRawDefinition",
-      //     // currentAttributeRawDefinition.element
-      //   );
-      //   const arrayValueObject = resolvePathOnObject(
-      //     props.formik.values,
-      //     props.rootLesslistKeyArray
-      //   );
-      //   // log.info("array",arrayValueObject, "resolvedJzodSchema",props.resolvedJzodSchema);
-
-      //   return (
-      //     // <div style={{ marginLeft: `calc(${usedIndentLevel}*(${indentShift}))` }}>
-      //     // <div style={{ marginLeft: `calc(${indentShift})` }}>
-      //     <span>
-      //       {" ["}{" "}
-      //       <ExpandOrFoldObjectAttributes
-      //         hiddenFormItems={hiddenFormItems}
-      //         setHiddenFormItems={setHiddenFormItems}
-      //         listKey={props.listKey}
-      //       ></ExpandOrFoldObjectAttributes>
-      //       {/* <div>itemsOrder {JSON.stringify(itemsOrder)}</div> */}
-      //       <div
-      //         id={props.listKey + ".inner"}
-      //         style={{ display: hiddenFormItems[props.listKey] ? "none" : "block" }}
-      //       >
-      //         {/* {props.initialValuesObject.map((attribute: JzodElement, index: number) => { */}
-      //         {(itemsOrder as number[])
-      //           .map((i: number): [number, JzodElement] => [i, arrayValueObject[i]])
-      //           .map((attributeParam: [number, JzodElement]) => {
-      //             const index: number = attributeParam[0];
-      //             const attribute = attributeParam[1];
-      //             // HACK HACK HACK
-      //             // TODO: allow individualized schmema resolution for items of an array, in case the definition of the array schema is a union type
-      //             // resulting type of an array type would be a tuple type.
-
-      //             // const currentAttributeJzodSchema: JzodElement = props.resolvedJzodSchema.definition
-      //             const currentArrayElementRawDefinition = context.miroirFundamentalJzodSchema
-      //               ? unfoldJzodSchemaOnce(
-      //                   context.miroirFundamentalJzodSchema,
-      //                   (props as any).rawJzodSchema.definition,
-      //                   currentModel,
-      //                   miroirMetaModel
-      //                 )
-      //               : undefined;
-      //             if (
-      //               !currentArrayElementRawDefinition ||
-      //               currentArrayElementRawDefinition.status != "ok"
-      //             ) {
-      //               throw new Error(
-      //                 "JzodElementEditor could not resolve jzod schema " +
-      //                   JSON.stringify(currentArrayElementRawDefinition, null, 2)
-      //               );
-      //             }
-
-      //             // log.info(
-      //             //   "array [",
-      //             //   index,
-      //             //   "]",
-      //             //   attribute,
-      //             //   "type",
-      //             //   attribute.type,
-      //             //   "found schema",
-      //             //   props.resolvedJzodSchema
-      //             // );
-      //             return (
-      //               <div
-      //                 key={props.listKey + "." + index}
-      //                 // style={{ marginLeft: `calc((${usedIndentLevel})*(${indentShift}))` }}
-      //                 style={{ marginLeft: `calc(${indentShift})` }}
-      //               >
-      //                 <button
-      //                   style={{ border: 0, backgroundColor: "transparent" }}
-      //                   disabled={index == itemsOrder.length - 1}
-      //                   onClick={(e) => {
-      //                     e.stopPropagation();
-      //                     e.preventDefault();
-
-      //                     const currentItemIndex: number = index;
-      //                     let newItemsOrder = itemsOrder.slice();
-      //                     const cutOut = newItemsOrder.splice(currentItemIndex, 1)[0];
-      //                     newItemsOrder.splice(currentItemIndex + 1, 0, cutOut);
-      //                     setformHelperState(
-      //                       Object.assign(formHelperState, { [props.listKey]: newItemsOrder })
-      //                     );
-      //                     log.info(
-      //                       "JzodElementEditor array moving item",
-      //                       currentItemIndex,
-      //                       "in object with items",
-      //                       itemsOrder,
-      //                       "cutOut",
-      //                       cutOut,
-      //                       "new order",
-      //                       newItemsOrder
-      //                     );
-      //                     setItemsOrder(newItemsOrder);
-      //                   }}
-      //                 >
-      //                   {"v"}
-      //                 </button>
-      //                 <button
-      //                   style={{ border: 0, backgroundColor: "transparent" }}
-      //                   disabled={index == 0}
-      //                   onClick={(e) => {
-      //                     e.stopPropagation();
-      //                     e.preventDefault();
-
-      //                     const currentItemIndex: number = index;
-      //                     let newItemsOrder = itemsOrder.slice();
-      //                     const cutOut = newItemsOrder.splice(currentItemIndex, 1)[0];
-      //                     newItemsOrder.splice(currentItemIndex - 1, 0, cutOut);
-      //                     setformHelperState(
-      //                       Object.assign(formHelperState, { [props.listKey]: newItemsOrder })
-      //                     );
-      //                     log.info(
-      //                       "JzodElementEditor array moving item",
-      //                       currentItemIndex,
-      //                       "in object with items",
-      //                       itemsOrder,
-      //                       "cutOut",
-      //                       cutOut,
-      //                       "new order",
-      //                       newItemsOrder
-      //                     );
-      //                     setItemsOrder(newItemsOrder);
-      //                   }}
-      //                 >
-      //                   {"^"}
-      //                 </button>
-      //                 <JzodElementEditor
-      //                   name={"" + index}
-      //                   listKey={props.listKey + "." + index}
-      //                   // currentEnumJzodSchemaResolver={props.currentEnumJzodSchemaResolver}
-      //                   indentLevel={usedIndentLevel + 1}
-      //                   label={props.resolvedElementJzodSchema?.tag?.value?.defaultLabel}
-      //                   paramMiroirFundamentalJzodSchema={props.paramMiroirFundamentalJzodSchema}
-      //                   currentDeploymentUuid={props.currentDeploymentUuid}
-      //                   currentApplicationSection={props.currentApplicationSection}
-      //                   rootLesslistKey={
-      //                     props.rootLesslistKey.length > 0
-      //                       ? props.rootLesslistKey + "." + index
-      //                       : "" + index
-      //                   }
-      //                   rootLesslistKeyArray={[...props.rootLesslistKeyArray, "" + index]}
-      //                   rawJzodSchema={currentArrayElementRawDefinition.element}
-      //                   resolvedElementJzodSchema={
-      //                     (props.resolvedElementJzodSchema as JzodArray)?.definition as any
-      //                   } // TODO: wrong type seen for props.resolvedJzodSchema! (cannot be undefined, really)
-      //                   foreignKeyObjects={props.foreignKeyObjects}
-      //                   handleChange={props.handleChange}
-      //                   formik={props.formik}
-      //                   setFormState={props.setFormState}
-      //                   formState={props.formState}
-      //                 />
-      //               </div>
-      //             );
-      //           })}
-      //       </div>
-      //       <div style={{ marginLeft: `calc(${indentShift})` }}>{"]"}</div>
-      //     </span>
-      //   );
-      //   break;
-      // }
       case "boolean": {
         // log.info("JzodElementEditor boolean!",props.listKey,"formState",props.formState)
         return (
@@ -1596,7 +1424,21 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         break;
       }
       case "number":
-      case "bigint":
+      case "bigint": {
+        // log.info("selectList for targetEntity", props.resolvedJzodSchema.tag?.value?.targetEntity, "value", selectList, "props.foreignKeyObjects", props.foreignKeyObjects);
+        return (
+            <>
+            {/* <label htmlFor={props.listKey}>{displayedLabel}: </label> */}
+            <input
+              type="number"
+              id={props.rootLesslistKey}
+              role="textbox"
+              {...props.formik.getFieldProps(props.rootLesslistKey)}
+            />
+            </>
+        );
+        break;
+      }
       case "string": {
         // log.info("selectList for targetEntity", props.resolvedJzodSchema.tag?.value?.targetEntity, "value", selectList, "props.foreignKeyObjects", props.foreignKeyObjects);
         return (
@@ -1783,6 +1625,14 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         //   }
         // }; // end handleSelectEnumChange
         // Get enum values from resolvedJzodSchema or rawJzodSchema
+        // if (props.resolvedElementJzodSchema?.type !== "enum") {
+        //   return (
+        //     <span>
+        //       JzodElementEditor failed: expected enum type, got {props.resolvedElementJzodSchema?.type} for{" "}
+        //       {props.listKey}
+        //     </span>
+        //   );
+        // }
         const enumValues: string[] =
           (props.resolvedElementJzodSchema && props.resolvedElementJzodSchema.definition) ||
           (props.rawJzodSchema && ((props.rawJzodSchema as any).definition ?? [])) ||

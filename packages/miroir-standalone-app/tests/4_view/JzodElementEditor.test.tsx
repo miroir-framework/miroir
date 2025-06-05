@@ -11,11 +11,14 @@ import {
   getJzodEditorTestSuites,
   getJzodEnumEditorTests,
   getJzodLiteralEditorTests,
+  getJzodSimpleTypeEditorTests,
+  getJzodUnionEditorTests,
   JzodEditorTestSuites,
   JzodElementEditorProps_Test,
   runJzodEditorTest
 } from "./JzodElementEditorTestTools";
 import { JzodArrayEditor } from "../../src/miroir-fwk/4_view/components/JzodArrayEditor";
+import { JzodElementEditor } from "../../src/miroir-fwk/4_view/components/JzodElementEditor";
 
 
 // ################################################################################################
@@ -54,24 +57,38 @@ const jzodElementEditorTests: Record<
   string,
   JzodElementEditorTestSuite<any> & { modes?: ModesType }
 > = {
-  JzodEnumEditor: {
-    editor: JzodEnumEditor,
-    getJzodEditorTests: getJzodEnumEditorTests,
+  // JzodArrayEditor: { 
+  //   editor: JzodArrayEditor, 
+  //   getJzodEditorTests: getJzodArrayEditorTests,
+  //   // modes: '*',
+  //   // modes: ['jzodElementEditor', 'component'],
+  //   modes: 'jzodElementEditor',
+  // },
+  // JzodEnumEditor: {
+  //   editor: JzodEnumEditor,
+  //   getJzodEditorTests: getJzodEnumEditorTests,
+  //   // modes: '*',
+  //   modes: "jzodElementEditor",
+  //   // modes: "component",
+  // },
+  // JzodLiteralEditor: { 
+  //   editor: JzodLiteralEditor, 
+  //   getJzodEditorTests: getJzodLiteralEditorTests,
+  //   // modes: "*",
+  //   // modes: ['jzodElementEditor', 'component'],
+  //   modes: "jzodElementEditor",
+  //   // modes: "component",
+  // },
+  JzodSimpleTypeEditor: { 
+    editor: JzodElementEditor, 
+    getJzodEditorTests: getJzodSimpleTypeEditorTests,
     // modes: '*',
-    modes: "jzodElementEditor",
-    // modes: "component",
-  },
-  JzodLiteralEditor: { 
-    editor: JzodLiteralEditor, 
-    getJzodEditorTests: getJzodLiteralEditorTests,
-    // modes: "*",
     // modes: ['jzodElementEditor', 'component'],
-    modes: "jzodElementEditor",
-    // modes: "component",
+    modes: 'jzodElementEditor',
   },
-  JzodArrayEditor: { 
-    editor: JzodArrayEditor, 
-    getJzodEditorTests: getJzodArrayEditorTests,
+  JzodUnionEditor: { 
+    editor: JzodElementEditor, 
+    getJzodEditorTests: getJzodUnionEditorTests,
     // modes: '*',
     // modes: ['jzodElementEditor', 'component'],
     modes: 'jzodElementEditor',

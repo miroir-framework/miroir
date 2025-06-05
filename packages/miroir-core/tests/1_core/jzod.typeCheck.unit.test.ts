@@ -591,9 +591,8 @@ describe("jzod.unfoldSchemaForValue", () => {
           // { a: { a: "myString" } }
         ],
       },
-      // TODO: array of union Type
       // array of schemaReference / object
-      test120: {
+      test110: {
         miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
         testSchema: {
           type: "schemaReference",
@@ -636,6 +635,258 @@ describe("jzod.unfoldSchemaForValue", () => {
         },
         testValueObject: { a: "myString", b: "anotherString" },
       },
+      // simple union Type
+      test120: {
+        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+        testSchema: {
+          type: "union",
+          definition: [
+            {
+              type: "string",
+            },
+            {
+              type: "number",
+            },
+            // {
+            //   type: "schemaReference",
+            //   context: {
+            //     myObjectRoot: {
+            //       type: "object",
+            //       definition: {
+            //         a: {
+            //           type: "string",
+            //         },
+            //       },
+            //     },
+            //     myObject: {
+            //       type: "object",
+            //       extend: {
+            //         type: "schemaReference",
+            //         definition: { relativePath: "myObjectRoot" },
+            //       },
+            //       definition: {
+            //         b: {
+            //           type: "string",
+            //         },
+            //       },
+            //     },
+            //   },
+            //   definition: { relativePath: "myObject" },
+            // },
+          ],
+        },
+        expectedResult: {
+          type: "number",
+        },
+        testValueObject: 1, // this is the object
+      },
+      // union between simpleType and object, object value
+      test130: {
+        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+        testSchema: {
+          type: "union",
+          definition: [
+            {
+              type: "string",
+            },
+            {
+              type: "object",
+              definition: {
+                a: {
+                  type: "string",
+                },
+              },
+            },
+          ],
+        },
+        testValueObject: { a: "myString" }, // this is the object
+        expectedResult: {
+          type: "object",
+          definition: {
+            a: {
+              type: "string",
+            },
+          },
+        },
+      },
+      // union between simpleType and object, simpleType value
+      test140: {
+        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+        testSchema: {
+          type: "union",
+          definition: [
+            {
+              type: "string",
+            },
+            {
+              type: "bigint",
+            },
+            {
+              type: "object",
+              definition: {
+                a: {
+                  type: "string",
+                },
+              },
+            },
+          ],
+        },
+        testValueObject: 42n, // this is the bigint
+        expectedResult: {
+          type: "bigint",
+        },
+      },
+      // union between simpleType and object, object value
+      test150: {
+        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+        testSchema: {
+          type: "union",
+          definition: [
+            {
+              type: "string",
+            },
+            {
+              type: "bigint",
+            },
+            {
+              type: "object",
+              definition: {
+                a: {
+                  type: "string",
+                },
+              },
+            },
+          ],
+        },
+        testValueObject: { a: "test"}, // this is the bigint
+        expectedResult: {
+          type: "object",
+          definition: {
+            a: {
+              type: "string",
+            },
+          },
+        },
+      },
+      // union between simpleType and shemaReference pointing to a simple object, object value
+      test160: {
+        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+        testSchema: {
+          type: "union",
+          definition: [
+            {
+              type: "string",
+            },
+            {
+              type: "bigint",
+            },
+            {
+              type: "schemaReference",
+              context: {
+                // myObjectRoot: {
+                //   type: "object",
+                //   definition: {
+                //     a: {
+                //       type: "string",
+                //     },
+                //   },
+                // },
+                myObject: {
+                  type: "object",
+                  // extend: {
+                  //   type: "schemaReference",
+                  //   definition: { relativePath: "myObjectRoot" },
+                  // },
+                  definition: {
+                    b: {
+                      type: "string",
+                      optional: true,
+                    },
+                  },
+                },
+              },
+              definition: { relativePath: "myObject" },
+            },
+          ],
+        },
+        testValueObject: { b: "test"}, // this is the object
+        expectedResult: {
+          type: "object",
+          definition: {
+            // a: {
+            //   type: "string",
+            // },
+            b: {
+              type: "string",
+              optional: true,
+            },
+          },
+        },
+      },
+      // // TODO: union between simpleTypes and array with simpleType value
+      // // TODO: union between simpleTypes and array with array value
+      // // TODO: union between simpleTypes and array and object with array value
+      // // TODO: union between simpleTypes and array and object with simpleType value
+      // // TODO: union between simpleTypes and array and object with object value
+      // // TODO: failing for union between simpleTypes, with object value
+      // // TODO: union between simpleType and shemaReference pointing to an extended object, object value
+      // test170: {
+      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      //   testSchema: {
+      //     type: "union",
+      //     definition: [
+      //       {
+      //         type: "string",
+      //       },
+      //       {
+      //         type: "bigint",
+      //       },
+      //       {
+      //         type: "schemaReference",
+      //         context: {
+      //           myObjectRoot: {
+      //             type: "object",
+      //             definition: {
+      //               a: {
+      //                 type: "string",
+      //               },
+      //             },
+      //           },
+      //           myObject: {
+      //             type: "object",
+      //             extend: {
+      //               type: "schemaReference",
+      //               definition: { relativePath: "myObjectRoot" },
+      //             },
+      //             definition: {
+      //               b: {
+      //                 type: "string",
+      //                 optional: true,
+      //               },
+      //             },
+      //           },
+      //         },
+      //         definition: { relativePath: "myObject" },
+      //       },
+      //     ],
+      //   },
+      //   testValueObject: { b: "test"}, // this is the object
+      //   expectedResult: {
+      //     type: "object",
+      //     definition: {
+      //       a: {
+      //         type: "string",
+      //       },
+      //       b: {
+      //         type: "string",
+      //         optional: true,
+      //       },
+      //     },
+      //   },
+      // },
+      // ##########################################################################################
+      // ################################# JZOD SCHEMAS ###########################################
+      // ##########################################################################################
       // JzodSchema: literal
       test200: {
         miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,

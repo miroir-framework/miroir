@@ -250,6 +250,10 @@ describe("selectUnionBranchFromDiscriminator", () => {
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
   // TODO: in a union, there must be at least 2 branches to select from, so this case should not happen
   it("returns the given type if only 1 is provided, even if it does not match the given discriminator", () => {
     const discriminator = "type";
@@ -270,6 +274,30 @@ describe("selectUnionBranchFromDiscriminator", () => {
     expect(currentDiscriminatedObjectJzodSchemas.length).toBe(1);
     expect(currentDiscriminatedObjectJzodSchema).toEqual(objA);
   });
+
+  // // ##############################################################################################
+  // it("returns the string type if the possible branches are a string and an object types", () => {
+  //   const discriminator = "type";
+  //   const objA = makeObjectWithLiteralDiscriminators([[discriminator, "A"]]);
+  //   const objB = { type: "string" }; // A simple string type
+  //   const valueObject = { type: "A", foo: "bar" };
+
+  //   const { currentDiscriminatedObjectJzodSchema, currentDiscriminatedObjectJzodSchemas } =
+  //     selectUnionBranchFromDiscriminator(
+  //       [objA, objB],
+  //       discriminator,
+  //       valueObject,
+  //       [], // valueObjectPath
+  //       [], // typePath 
+  //       castMiroirFundamentalJzodSchema,
+  //       defaultMiroirMetaModel,
+  //       defaultMiroirMetaModel,
+  //       {}
+  //     );
+
+  //   expect(currentDiscriminatedObjectJzodSchemas.length).toBe(1);
+  //   expect(currentDiscriminatedObjectJzodSchema).toEqual(objA);
+  // });
 
   // ##############################################################################################
   it("selects the correct branch for a literal discriminator", () => {

@@ -26,7 +26,7 @@ interface JzodArrayMoveButtonProps {
   setformHelperState: (state: any) => void;
 }
 
-export const JzodArrayMoveButton: React.FC<JzodArrayMoveButtonProps> = ({
+export const JzodArrayEditorMoveButton: React.FC<JzodArrayMoveButtonProps> = ({
   direction,
   index,
   itemsOrder,
@@ -56,7 +56,7 @@ export const JzodArrayMoveButton: React.FC<JzodArrayMoveButtonProps> = ({
     );
     
     log.info(
-      `JzodArrayEditor array moving ${direction} item`,
+      `JzodArrayMoveButton array moving ${direction} item`,
       currentItemIndex,
       "in object with items",
       itemsOrder,
@@ -112,16 +112,16 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
   jzodArrayEditorRenderCount++;
   const context = useMiroirContextService();
 
-  log.info(
-    "JzodArrayEditor render",
-    jzodArrayEditorRenderCount,
-    "name",
-    name,
-    "listKey",
-    listKey,
-    "itemsOrder",
-    itemsOrder,
-  );
+  // log.info(
+  //   "JzodArrayEditor render",
+  //   jzodArrayEditorRenderCount,
+  //   "name",
+  //   name,
+  //   "listKey",
+  //   listKey,
+  //   "itemsOrder",
+  //   itemsOrder,
+  // );
 
   const currentModel: MetaModel = useCurrentModel(currentDeploymentUuid);
   const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
@@ -160,13 +160,12 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
             // TODO: allow individualized schmema resolution for items of an array, in case the definition of the array schema is a union type
             // resulting type of an array type would be a tuple type.
 
-            // const currentAttributeJzodSchema: JzodElement = props.resolvedJzodSchema.definition
-            log.info(
-              "JzodArrayEditor array attribute",
-              index,
-              "attribute",
-              attribute,
-            );
+            // log.info(
+            //   "JzodArrayEditor array attribute",
+            //   index,
+            //   "attribute",
+            //   attribute,
+            // );
             const currentArrayElementRawDefinition = context.miroirFundamentalJzodSchema
               ? unfoldJzodSchemaOnce(
                   context.miroirFundamentalJzodSchema,
@@ -201,7 +200,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
                 // style={{ marginLeft: `calc((${usedIndentLevel})*(${indentShift}))` }}
                 style={{ marginLeft: `calc(${indentShift})` }}
               >
-                <JzodArrayMoveButton
+                <JzodArrayEditorMoveButton
                   direction="down"
                   index={index}
                   itemsOrder={itemsOrder as number[]}
@@ -210,7 +209,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
                   formHelperState={formHelperState}
                   setformHelperState={setformHelperState}
                 />
-                <JzodArrayMoveButton
+                <JzodArrayEditorMoveButton
                   direction="up"
                   index={index}
                   itemsOrder={itemsOrder as number[]}

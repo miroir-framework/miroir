@@ -176,6 +176,15 @@ export const recursivelyUnfoldUnionAndReferences = (
 }
 
 // ################################################################################################
+/**
+ * returns a list of JzodObject schemas by recursively unrolling the union and references in @param concreteUnrolledJzodSchemas.
+ * @param concreteUnrolledJzodSchemas 
+ * @param miroirFundamentalJzodSchema 
+ * @param currentModel 
+ * @param miroirMetaModel 
+ * @param relativeReferenceJzodContext 
+ * @returns 
+ */
 export function unionChoices (
   concreteUnrolledJzodSchemas: JzodElement[],
   miroirFundamentalJzodSchema: JzodSchema,
@@ -257,7 +266,11 @@ export function selectUnionBranchFromDiscriminator(
   currentDiscriminatedObjectJzodSchemas: JzodObject[];
   chosenDiscriminator: {discriminator: string, value: any}[];
 } {
-  const discriminators:string | string[] | undefined = !discriminator?discriminator:Array.isArray(discriminator) ? discriminator : [discriminator];
+  const discriminators: string | string[] | undefined = !discriminator
+    ? discriminator
+    : Array.isArray(discriminator)
+    ? discriminator
+    : [discriminator];
   // let currentDiscriminatedObjectJzodSchemas: JzodObject[] = [];
   // let usedDiscriminator: string | undefined = undefined;
 
@@ -586,6 +599,47 @@ export function jzodTypeCheck(
       //   JSON.stringify(concreteUnrolledJzodSchemas, null, 2)
       // );
       switch (typeof valueObject) {
+        case "number":
+        case "bigint":
+        case "boolean": {
+          // why is selectUnionBranchFromDiscriminator not used here? This is really similar to it.
+          const resultJzodSchema = concreteUnrolledJzodSchemas.find(
+            (a) =>
+              (a.type == typeof valueObject)
+          );
+          if (resultJzodSchema) {
+            log.info(
+              "jzodTypeCheck object at",
+              currentValuePath.join("."),
+              "type:",
+              JSON.stringify(resultJzodSchema, null, 2),
+              "validates",
+              JSON.stringify(
+                valueObject,
+                (key, value) =>typeof value === "bigint" ? value.toString() : value,
+                2
+              )
+            );
+            return {
+              status: "ok",
+              valuePath: currentValuePath,
+              typePath: currentTypePath,
+              element: resultJzodSchema,
+            };
+          } else {
+            return {
+              status: "error",
+              valuePath: currentValuePath,
+              typePath: currentTypePath,
+              error:
+                "jzodTypeCheck could not find " + typeof valueObject + " type for value" +
+                valueObject +
+                " in resolved union " +
+                JSON.stringify(concreteUnrolledJzodSchemas, null, 2),
+            };
+          }
+          break;
+        }
         case "string": {
           // TODO: the following line may introduce some non-determinism, in the case many records actually match the "find" predicate! BAD!
           const resultJzodSchema = concreteUnrolledJzodSchemas.find(
@@ -642,21 +696,21 @@ export function jzodTypeCheck(
             relativeReferenceJzodContext
           );
 
-          // log.info(
-          //   "jzodTypeCheck called for union-type value object found",
-          //   objectUnionChoices.length,
-          //   "discriminator=",
-          //   discriminator,
-          //   // "concreteUnrolledJzodSchemas",
-          //   // concreteUnrolledJzodSchemas,
-          //   "found object branches in the union",
-          //   JSON.stringify(objectUnionChoices, null, 2),
-          //   // objectUnionChoices,
-          //   // "valueObject",
-          //   // JSON.stringify(valueObject, null, 2),
-          //   // "possible object branches=",
-          //   // // JSON.stringify(objectUnionChoices.map(e => (e as any).definition[discriminator].definition), null, 2)
-          // );
+          log.info(
+            "jzodTypeCheck called for union-type value object found",
+            objectUnionChoices.length,
+            "discriminator=",
+            discriminator,
+            // "concreteUnrolledJzodSchemas",
+            // concreteUnrolledJzodSchemas,
+            "found object branches in the union",
+            JSON.stringify(objectUnionChoices, null, 2),
+            // objectUnionChoices,
+            // "valueObject",
+            // JSON.stringify(valueObject, null, 2),
+            // "possible object branches=",
+            // // JSON.stringify(objectUnionChoices.map(e => (e as any).definition[discriminator].definition), null, 2)
+          );
 
           // if there is only one object candidate, use this one
           if (objectUnionChoices.length == 1) {
@@ -678,7 +732,17 @@ export function jzodTypeCheck(
             );
             return subElementSchema;
           }
-          
+
+          if (!objectUnionChoices || objectUnionChoices.length == 0) {
+            return {
+              status: "error",
+              valuePath: currentValuePath,
+              typePath: currentTypePath,
+              error:
+                "jzodTypeCheck could not find object type for given object value in resolved union " +
+                JSON.stringify(concreteUnrolledJzodSchemas, null, 2),
+            };
+          }
           const {
             currentDiscriminatedObjectJzodSchema,
             currentDiscriminatedObjectJzodSchemas,
@@ -775,9 +839,6 @@ export function jzodTypeCheck(
             };
           }
         }
-        case "number":
-        case "bigint":
-        case "boolean":
         case "function":
         case "symbol": // TODO: what does this correspond to?
         case "undefined":
@@ -874,14 +935,14 @@ export function jzodTypeCheck(
       break;
     }
     case "enum": {
-      log.info(
-        "jzodTypeCheck enum at path=valueObject." + 
-        currentValuePath.join("."),
-        ", type:",
-        JSON.stringify(jzodSchema, null, 2),
-        "validates",
-        JSON.stringify(valueObject, null, 2)
-      );
+      // log.info(
+      //   "jzodTypeCheck enum at path=valueObject." + 
+      //   currentValuePath.join("."),
+      //   ", type:",
+      //   JSON.stringify(jzodSchema, null, 2),
+      //   "validates",
+      //   JSON.stringify(valueObject, null, 2)
+      // );
       return {
         status: "ok",
         valuePath: currentValuePath,
@@ -927,14 +988,14 @@ export function jzodTypeCheck(
       // log.info("jzodTypeCheck called resolveJzodSchemaReferenceInContext for array found innerSchema", JSON.stringify(innerSchema, null, 2));
 
       if (innerSchema.type != "union") {
-        log.info(
-          "jzodTypeCheck array innerSchema not union at path=valueObject." + 
-          currentValuePath.join("."),
-          ", type:",
-          JSON.stringify({ type: "array", definition: innerSchema}, null, 2),
-          "validates",
-          JSON.stringify(valueObject, null, 2)
-        );
+        // log.info(
+        //   "jzodTypeCheck array innerSchema not union at path=valueObject." + 
+        //   currentValuePath.join("."),
+        //   ", type:",
+        //   JSON.stringify({ type: "array", definition: innerSchema}, null, 2),
+        //   "validates",
+        //   JSON.stringify(valueObject, null, 2)
+        // );
         return {
           status: "ok",
           valuePath: currentValuePath,
@@ -969,14 +1030,14 @@ export function jzodTypeCheck(
         }
       );
 
-      log.info(
-        "jzodTypeCheck array innerSchema is union at path=valueObject." + 
-        currentValuePath.join("."),
-        ", type:",
-        JSON.stringify({ type: "tuple", definition: result}, null, 2),
-        "validates",
-        JSON.stringify(valueObject, null, 2)
-      );
+      // log.info(
+      //   "jzodTypeCheck array innerSchema is union at path=valueObject." + 
+      //   currentValuePath.join("."),
+      //   ", type:",
+      //   JSON.stringify({ type: "tuple", definition: result}, null, 2),
+      //   "validates",
+      //   JSON.stringify(valueObject, null, 2)
+      // );
       return {
         status: "ok",
         valuePath: currentValuePath,

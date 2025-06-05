@@ -33,6 +33,10 @@ import { MiroirContextReactProvider, useMiroirContextService } from "../../src/m
 import { useCurrentModel } from "../../src/miroir-fwk/4_view/ReduxHooks";
 import { emptyObject } from "../../src/miroir-fwk/4_view/routes/Tools";
 import { TestMode } from "./JzodElementEditor.test";
+import { JzodUnion } from "miroir-core";
+import { JzodAttributePlainDateWithValidations } from "miroir-core";
+import { JzodAttributePlainNumberWithValidations } from "miroir-core";
+import { JzodAttributePlainStringWithValidations } from "miroir-core";
 
 export const testThemeParams = {
   palette: {
@@ -356,51 +360,8 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
       []
     );
 
-    // const [formState, setFormState] = useState<any>(props.initialFormState);
     const [formState, setFormState] = useState<any>({ [name]: initialFormState });
-
-    console.log(
-      "getJzodElementEditorForTest render",
-      JzodElementEditorForTestRenderCount,
-      "with",
-      // "context",
-      // context,
-      "context.miroirFundamentalJzodSchema",
-      Object.keys(context.miroirFundamentalJzodSchema?? {}).length,
-      "name",
-      name,
-      "listKey",
-      listKey,
-      "rootLesslistKey",
-      rootLesslistKey,
-      "formState",
-      JSON.stringify(formState, null, 2),
-    );
-
     const currentValue = resolvePathOnObject(formState, rootLesslistKeyArray);
-
-    console.log(
-      "getJzodElementEditorForTest still render",
-      JzodElementEditorForTestRenderCount,
-      "with",
-      // "miroirFundamentalJzodSchema",
-      // miroirFundamentalJzodSchema,
-      // "context.miroirFundamentalJzodSchema",
-      // Object.keys(context.miroirFundamentalJzodSchema ?? {}).length,
-      "currentMiroirModel",
-      currentMiroirModel,
-      "currentModel",
-      currentModel
-    );
-    console.log(
-      "getJzodElementEditorForTest still render",
-      JzodElementEditorForTestRenderCount,
-      "with",
-      "currentValue",
-      JSON.stringify(currentValue, null, 2),
-      "rawJzodSchema",
-      JSON.stringify(rawJzodSchema, null, 2),
-    )
     const resolvedJzodSchema: ResolvedJzodSchemaReturnType | undefined = useMemo(() => {
       let result: ResolvedJzodSchemaReturnType | undefined = undefined;
       try {
@@ -859,6 +820,7 @@ export function getJzodEnumEditorTests(
     },
   };
 };
+
 // ################################################################################################
 // ARRAY
 // ################################################################################################
@@ -935,6 +897,168 @@ export function getJzodArrayEditorTests(
             expect(values).toEqual(["value1", "value3", "value2"]);
           },
         },
+      },
+    },
+  };
+};
+
+// ################################################################################################
+// SIMPLE TYPES
+// ################################################################################################
+export type JzodSimpleTypes =
+  | JzodAttributePlainDateWithValidations
+  | JzodAttributePlainNumberWithValidations
+  | JzodAttributePlainStringWithValidations;
+export interface LocalSimpleTypeEditorProps extends LocalEditorPropsRoot{
+  rawJzodSchema: JzodSimpleTypes | undefined;
+}
+
+export type JzodSimpleTypeEditorTest = JzodEditorTest<LocalSimpleTypeEditorProps>;
+export type JzodSimpleTypeEditorTestSuites = JzodEditorTestSuites<LocalSimpleTypeEditorProps>;
+
+export function getJzodSimpleTypeEditorTests(
+  LocalEditor: React.FC<LocalSimpleTypeEditorProps>,
+  renderAsJzodElementEditor: React.FC<JzodElementEditorProps_Test>
+): JzodSimpleTypeEditorTestSuites {
+  // const arrayValues = ["value1", "value2", "value3"];
+  return {
+    JzodSimpleTypeEditor: {
+      suiteRenderComponent: {
+        renderAsComponent: LocalEditor,
+        renderAsJzodElementEditor,
+      },
+      tests: {
+        "string renders input with proper value": {
+          props: {
+            label: "Test Label",
+            name: "fieldName",
+            listKey: "ROOT.fieldName",
+            rootLesslistKey: "fieldName",
+            rootLesslistKeyArray: ["fieldName"],
+            rawJzodSchema: {
+              type: "string",
+              // definition: [{ type: "string" }, { type: "number" }],
+            },
+            initialFormState: "placeholder text",
+          },
+
+          tests: async (expect: ExpectStatic) => {
+            // expect(screen.getByText(/Test Label/)).toBeInTheDocument();
+            const input = screen.getByRole("textbox");
+            expect(input).toBeInTheDocument();
+            expect(input).toHaveValue("placeholder text"); // Assuming the input is a string representation of the number
+            // expect(input).toHaveValue("42"); // Assuming the input is a string representation of the number
+          },
+        },
+        "number renders input with proper value": { // TODO: test for nullable / optional scenario
+          props: {
+            label: "Test Label",
+            name: "fieldName",
+            listKey: "ROOT.fieldName",
+            rootLesslistKey: "fieldName",
+            rootLesslistKeyArray: ["fieldName"],
+            rawJzodSchema: {
+              type: "number",
+              // definition: [{ type: "string" }, { type: "number" }],
+            },
+            initialFormState: 42,
+          },
+
+          tests: async (expect: ExpectStatic) => {
+            // expect(screen.getByText(/Test Label/)).toBeInTheDocument();
+            const input = screen.getByRole("textbox");
+            expect(input).toBeInTheDocument();
+            // expect(input).toHaveValue("placeholder text"); // Assuming the input is a string representation of the number
+            expect(input).toHaveValue(42); // Assuming the input is a string representation of the number
+          },
+        },
+      },
+    },
+  };
+};
+// ################################################################################################
+// ARRAY
+// ################################################################################################
+export interface LocalUnionEditorProps extends LocalEditorPropsRoot{
+  rawJzodSchema: JzodUnion | undefined;
+}
+
+export type JzodUnionEditorTest = JzodEditorTest<LocalUnionEditorProps>;
+export type JzodUnionEditorTestSuites = JzodEditorTestSuites<LocalUnionEditorProps>;
+
+export function getJzodUnionEditorTests(
+  LocalEditor: React.FC<LocalUnionEditorProps>,
+  renderAsJzodElementEditor: React.FC<JzodElementEditorProps_Test>
+): JzodUnionEditorTestSuites {
+  const arrayValues = ["value1", "value2", "value3"];
+  return {
+    JzodUnionEditor: {
+      suiteRenderComponent: {
+        renderAsComponent: LocalEditor,
+        renderAsJzodElementEditor,
+      },
+      tests: {
+        "union between simple types renders input with proper value": {
+          props: {
+            label: "Test Label",
+            name: "fieldName",
+            listKey: "ROOT.fieldName",
+            rootLesslistKey: "fieldName",
+            rootLesslistKeyArray: ["fieldName"],
+            rawJzodSchema: {
+              type: "union",
+              definition: [{ type: "string" }, { type: "number" }],
+            },
+            initialFormState: 42,
+          },
+
+          tests: async (expect: ExpectStatic) => {
+            // expect(screen.getByText(/Test Label/)).toBeInTheDocument();
+            const input = screen.getByRole("textbox");
+            expect(input).toBeInTheDocument();
+            expect(input).toHaveValue(42); // Assuming the input is a string representation of the number
+            // expect(input).toHaveValue("42"); // Assuming the input is a string representation of the number
+          },
+        },
+        // "renders all array values, in the right order": {
+        //   tests: async (expect: ExpectStatic) => {
+        //     const cells = screen
+        //       .getAllByRole("textbox")
+        //       .filter((input: HTMLElement) =>
+        //         (input as HTMLInputElement).name.startsWith("fieldName.")
+        //       );
+        //     const values = cells.map((cell) => (cell as HTMLInputElement).value);
+        //     expect(values).toEqual(arrayValues);
+        //   },
+        // },
+        // "form state is changed when selection changes": {
+        //   tests: async (expect: ExpectStatic) => {
+        //     const cell = screen
+        //       .getAllByRole("textbox")
+        //       .filter((input: HTMLElement) =>
+        //         (input as HTMLInputElement).name.startsWith("fieldName.")
+        //       )[1] as HTMLInputElement;
+        //     await act(() => {
+        //       fireEvent.change(cell, { target: { value: "new value" } });
+        //     });
+        //     expect(cell).toContainHTML("new value");
+        //   },
+        // },
+        // "changing order of array items when button ROOT.fieldName.2.up is clicked": {
+        //   tests: async (expect) => {
+        //     const upButtons = screen.getAllByRole("ROOT.fieldName.button.up");
+        //     await act(() => {
+        //       fireEvent.click(upButtons[2]); // Click the up button for the third item
+        //     });
+        //     const cells = screen
+        //       .getAllByRole("textbox")
+        //       .filter((input: HTMLElement) =>
+        //         (input as HTMLInputElement).name.startsWith("fieldName.")
+        //       );
+        //     const values = cells.map((cell) => (cell as HTMLInputElement).value);
+        //     expect(values).toEqual(["value1", "value3", "value2"]);
+        //   },
+        // },
       },
     },
   };
