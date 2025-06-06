@@ -38,8 +38,53 @@ import {
   Country4,
   MetaModel,
   Entity,
+  EntityInstanceCollection,
 } from "miroir-core";
 
+export const libraryApplicationInstances: EntityInstanceCollection[] = [
+  {
+        parentName: entityPublisher.name,
+        parentUuid: entityPublisher.uuid,
+        applicationSection: "data",
+        instances: [folio as EntityInstance, penguin as EntityInstance, springer as EntityInstance],
+      },
+      {
+        parentName: entityAuthor.name,
+        parentUuid: entityAuthor.uuid,
+        applicationSection: "data",
+        instances: [
+          author1 as EntityInstance,
+          author2 as EntityInstance,
+          author3 as EntityInstance,
+          author4 as EntityInstance,
+        ],
+      },
+      {
+        parentName: entityBook.name,
+        parentUuid: entityBook.uuid,
+        applicationSection: "data",
+        instances: [
+          book1 as EntityInstance,
+          book2 as EntityInstance,
+          book3 as EntityInstance,
+          book4 as EntityInstance,
+          book5 as EntityInstance,
+          book6 as EntityInstance,
+        ],
+      },
+      {
+        parentName: entityCountry.name,
+        parentUuid: entityCountry.uuid,
+        applicationSection: "data",
+        instances: [
+          Country1 as EntityInstance,
+          Country2 as EntityInstance,
+          Country3 as EntityInstance,
+          Country4 as EntityInstance,
+        ],
+      },
+    ]
+;
 // ###################################################################################
 export async function uploadBooksAndReports(
   domainController: DomainControllerInterface,
@@ -112,54 +157,13 @@ export async function uploadBooksAndReports(
     currentModel
   );
 
+  
   await domainController.handleAction({
     // actionType: "instanceAction",
     actionType: "createInstance",
     applicationSection: "data",
     deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-    objects: [
-      {
-        parentName: entityPublisher.name,
-        parentUuid: entityPublisher.uuid,
-        applicationSection: "data",
-        instances: [folio as EntityInstance, penguin as EntityInstance, springer as EntityInstance],
-      },
-      {
-        parentName: entityAuthor.name,
-        parentUuid: entityAuthor.uuid,
-        applicationSection: "data",
-        instances: [
-          author1 as EntityInstance,
-          author2 as EntityInstance,
-          author3 as EntityInstance,
-          author4 as EntityInstance,
-        ],
-      },
-      {
-        parentName: entityBook.name,
-        parentUuid: entityBook.uuid,
-        applicationSection: "data",
-        instances: [
-          book1 as EntityInstance,
-          book2 as EntityInstance,
-          book3 as EntityInstance,
-          book4 as EntityInstance,
-          book5 as EntityInstance,
-          book6 as EntityInstance,
-        ],
-      },
-      {
-        parentName: entityCountry.name,
-        parentUuid: entityCountry.uuid,
-        applicationSection: "data",
-        instances: [
-          Country1 as EntityInstance,
-          Country2 as EntityInstance,
-          Country3 as EntityInstance,
-          Country4 as EntityInstance,
-        ],
-      },
-    ],
+    objects: libraryApplicationInstances,
   });
 }

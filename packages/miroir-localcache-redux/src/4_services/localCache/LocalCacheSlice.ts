@@ -304,13 +304,24 @@ function loadNewEntityInstancesInLocalCache(
   state: LocalCacheSliceState,
   instanceCollection: EntityInstanceCollection
 ) {
-  // log.debug('loadNewInstancesForSectionEntity',deploymentUuid,section,instanceCollection);
+  // log.info(
+  //   "loadNewEntityInstancesInLocalCache called with deployment",
+  //   deploymentUuid,
+  //   "section",
+  //   section,
+  //   "instanceCollection",
+  //   instanceCollection
+  // );
   const instanceCollectionEntityIndex = getDeploymentEntityStateIndex(deploymentUuid, section, instanceCollection.parentUuid);
   // log.info(
   //   "ReplaceInstancesForDeploymentEntity for deployment",
   //   deploymentUuid,
-  //   "entity",
-  //   entity ? (entity as any)["name"] : "entity not found for deployment"
+  //   "section",
+  //   section,
+  //   "instanceCollection",
+  //   instanceCollection,
+  //   // "entity",
+  //   // entity ? (entity as any)["name"] : "entity not found for deployment"
   // );
   const sliceEntityAdapter = initializeLocalCacheSliceStateWithEntityAdapter(
     deploymentUuid,
@@ -493,7 +504,7 @@ function handleInstanceAction(
       break;
     }
     case "loadNewInstancesInLocalCache": {
-      log.info("localCacheSlice handleInstanceAction loadNewInstancesInLocalCache called!");
+      // log.info("localCacheSlice handleInstanceAction loadNewInstancesInLocalCache called!");
       for (const instanceCollection of instanceAction.objects) {
         loadNewEntityInstancesInLocalCache(
           instanceAction.deploymentUuid,
@@ -514,6 +525,7 @@ function handleInstanceAction(
     log.error(
       "localCacheSliceObject handleInstanceAction action could not be taken into account, error",
       instanceAction,
+      // JSON.stringify(instanceAction, undefined, 2),
       error
     );
     return new Action2Error(
@@ -630,14 +642,15 @@ function handleAction(
   state: LocalCacheSliceState,
   action: LocalCacheAction
 ): Action2ReturnType {
-  log.info(
-    "localCacheSliceObject handleAction called",
-    action.actionType,
-    "deploymentUuid",
-    action.actionType !== "transactionalInstanceAction" ?action.deploymentUuid:action.instanceAction.deploymentUuid,
-    "action",
-    JSON.stringify(action, undefined, 2)
-  );
+  // log.info(
+  //   "localCacheSliceObject handleAction called",
+  //   action.actionType,
+  //   "deploymentUuid",
+  //   action.actionType !== "transactionalInstanceAction" ?action.deploymentUuid:action.instanceAction.deploymentUuid,
+  //   "action",
+  //   // JSON.stringify(action, undefined, 2)
+  //   action
+  // );
   switch (action.actionType) {
     case "undoRedoAction": {
       // log.debug(

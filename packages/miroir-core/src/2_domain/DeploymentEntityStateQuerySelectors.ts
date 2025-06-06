@@ -233,14 +233,20 @@ export const selectEntityInstanceUuidIndexFromDeploymentEntityState: SyncBoxedEx
 
   const entityUuid = selectorParams.extractor.select.parentUuid;
 
-  log.info(
-    "selectEntityInstanceUuidIndexFromDeploymentEntityState params",
-    selectorParams,
-    deploymentUuid,
-    applicationSection,
-    entityUuid
-  );
-  log.info("selectEntityInstanceUuidIndexFromDeploymentEntityState deploymentEntityState", deploymentEntityState);
+  // log.info(
+  //   "selectEntityInstanceUuidIndexFromDeploymentEntityState params",
+  //   selectorParams,
+  //   deploymentUuid,
+  //   applicationSection,
+  //   entityUuid
+  // );
+
+  // log.info("selectEntityInstanceUuidIndexFromDeploymentEntityState deploymentEntityState", deploymentEntityState);
+  // log.info(
+  //   "selectEntityInstanceUuidIndexFromDeploymentEntityState deploymentEntityState",
+  //   deploymentEntityState
+  //   // JSON.stringify(deploymentEntityState, undefined, 2)
+  // );
 
   const deploymentEntityStateIndex = getDeploymentEntityStateIndex(
     deploymentUuid,
@@ -253,6 +259,7 @@ export const selectEntityInstanceUuidIndexFromDeploymentEntityState: SyncBoxedEx
       deploymentEntityStateIndex,
       "in deploymentEntityState",
       deploymentEntityState
+      // JSON.stringify(deploymentEntityState, undefined, 2)
     );
     return new Domain2ElementFailed({
       queryFailure: "EntityNotFound",
@@ -262,12 +269,12 @@ export const selectEntityInstanceUuidIndexFromDeploymentEntityState: SyncBoxedEx
     });
   }
 
-  log.info(
-    "selectEntityInstanceUuidIndexFromDeploymentEntityState for",
-    deploymentEntityStateIndex,
-    "result",
-    deploymentEntityState[deploymentEntityStateIndex].entities
-  );
+  // log.info(
+  //   "selectEntityInstanceUuidIndexFromDeploymentEntityState for",
+  //   deploymentEntityStateIndex,
+  //   "result",
+  //   deploymentEntityState[deploymentEntityStateIndex].entities
+  // );
   return deploymentEntityState[deploymentEntityStateIndex].entities;
 };
 

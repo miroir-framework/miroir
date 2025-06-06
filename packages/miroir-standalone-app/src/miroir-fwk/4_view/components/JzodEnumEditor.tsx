@@ -41,11 +41,13 @@ export const JzodEnumEditor: React.FC<JzodEnumEditorProps> = (
       name == unionInformation?.discriminator ? ( // NOT USED, unionInformation is null!!
         <>
           <StyledSelect
-            variant="standard"
-            labelId="demo-simple-select-label"
             id={listKey}
+            // role="textbox"
             aria-label={label}
+            labelId="demo-simple-select-label"
+            variant="standard"
             {...formik.getFieldProps(rootLesslistKey)}
+            name={rootLesslistKey}
           >
             {unionInformation?.discriminatorValues.map((v) => {
               return (
@@ -60,12 +62,13 @@ export const JzodEnumEditor: React.FC<JzodEnumEditorProps> = (
       ) : (
         <>
           <StyledSelect
-            variant="standard"
-            labelId="demo-simple-select-label"
             id={listKey}
-            role={listKey}
+            // role="textbox"
             aria-label={label}
+            labelId="demo-simple-select-label"
+            variant="standard"
             {...formik.getFieldProps(rootLesslistKey)}
+            name={rootLesslistKey}
           >
             {(rawJzodSchema as JzodEnum).definition.map((v) => {
               return (

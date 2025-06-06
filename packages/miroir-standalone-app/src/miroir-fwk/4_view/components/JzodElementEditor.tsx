@@ -63,7 +63,7 @@ import {
 import { JzodArrayEditor, indentShift } from "./JzodArrayEditor.js";
 import { JzodEnumEditor } from "./JzodEnumEditor.js";
 import { JzodLiteralEditor } from "./JzodLiteralEditor.js";
-import { J } from "vitest/dist/chunks/reporters.D7Jzd9GS.js";
+import { MenuItem } from "@mui/material";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -111,7 +111,6 @@ export interface JzodElementEditorProps {
   foreignKeyObjects: Record<string, EntityInstancesUuidIndex>;
   currentDeploymentUuid?: Uuid;
   currentApplicationSection?: ApplicationSection;
-  // formik: any;
   formik: FormikProps<any>;
   handleChange: (e: ChangeEvent<any>) => Promise<void>;
   // formState: any;
@@ -533,14 +532,16 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         foreignKeyObjectsFetchQueryParams
       );
 
-    // log.info(
-    //   "JzodElementEditor",
-    //   props.listKey,
-    //   "count",
-    //   count,
-    //   "foreignKeyObjects",
-    //   foreignKeyObjects
-    // );
+    log.info(
+      "JzodElementEditor",
+      props.listKey,
+      "count",
+      count,
+      // "foreignKeyObjectsFetchQueryParams",
+      // JSON.stringify(foreignKeyObjectsFetchQueryParams, null, 2),
+      // "foreignKeyObjects",
+      // JSON.stringify(foreignKeyObjects, null, 2),
+    );
 
     // ################################# objects ###################################
     const undefinedOptionalAttributes: string[] = useMemo(() => {
@@ -718,8 +719,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       // );
       // const currentParentValue = resolvePathOnObject(newFormState2,parentPath);
     };
-    //   [props.formik.values, props.setFormState ]
-    // )
 
     // ############################################################################################
     const handleSelectLiteralChange = (event: any) => {
@@ -1142,16 +1141,16 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                           }
                           const discriminator: string = (unfoldedRawSchema as any).discriminator;
                           const discriminatorValue = currentValue[discriminator];
-                          log.info(
-                            "############### discriminator",
-                            discriminator,
-                            "discriminatorValue",
-                            discriminatorValue,
-                            "possibleObjectTypes",
-                            JSON.stringify(possibleObjectTypes, null, 2),
-                            "attribute",
-                            JSON.stringify(attribute, null, 2),
-                          );
+                          // log.info(
+                          //   "############### discriminator",
+                          //   discriminator,
+                          //   "discriminatorValue",
+                          //   discriminatorValue,
+                          //   "possibleObjectTypes",
+                          //   JSON.stringify(possibleObjectTypes, null, 2),
+                          //   "attribute",
+                          //   JSON.stringify(attribute, null, 2),
+                          // );
                             // discriminator only
                             // TODO: remove duplication from JzodUnfoldSchemaForValue. This is a core functionality, finding the concrete type for a value in a union.
                           if (discriminator && discriminatorValue) {
@@ -1308,99 +1307,99 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                       ? "visible"
                       : "hidden";
                     return (
-                      <>
-                        <div
-                          key={attributeListKey}
-                          // style={{ marginLeft: `calc(${usedIndentLevel}*(${indentShift}))`}}
-                          // style={{ marginLeft: `calc(${indentShift})`}}
+                      <div
+                        key={attributeListKey}
+                        // style={{ marginLeft: `calc(${usedIndentLevel}*(${indentShift}))`}}
+                        // style={{ marginLeft: `calc(${indentShift})`}}
+                      >
+                        <SmallIconButton
+                          onClick={() => removeOptionalAttribute(attributeRootLessListKey)}
+                          // sx={{display: `calc(${attributeCanBeRemoved}`}}
+                          // sx={{display: {attributeCanBeRemoved}}}
+                          // style={{display: "none"}}
+                          // style={{display: `calc(${attributeCanBeRemoved}`}}
+                          // style={{display: attributeCanBeRemoved}}
+                          style={{ visibility: attributeCanBeRemoved, padding: 0 }}
+                          // sx={{visibility: `calc(${attributeCanBeRemoved}`}}
                         >
-                          <SmallIconButton
-                            onClick={() => removeOptionalAttribute(attributeRootLessListKey)}
-                            // sx={{display: `calc(${attributeCanBeRemoved}`}}
-                            // sx={{display: {attributeCanBeRemoved}}}
-                            // style={{display: "none"}}
-                            // style={{display: `calc(${attributeCanBeRemoved}`}}
-                            // style={{display: attributeCanBeRemoved}}
-                            style={{ visibility: attributeCanBeRemoved, padding: 0 }}
-                            // sx={{visibility: `calc(${attributeCanBeRemoved}`}}
-                          >
-                            <Clear />
-                          </SmallIconButton>
-                          {unfoldedRawSchema?.type == "record" ? (
-                            <>
-                              <input
-                                id={attributeListKey + "Name"}
-                                name={attributeListKey + "Name"}
-                                onChange={(e) =>
-                                  handleAttributeNameChange(
-                                    e,
-                                    attributeRootLessListKeyArray.slice()
-                                  )
-                                }
-                                defaultValue={attribute[0]}
-                              />
-                              attributeName for {attributeRootLessListKeyArray}
-                            </>
-                          ) : (
-                            <label htmlFor={attributeListKey}>{attributeDisplayedLabel}:</label>
-                          )}
-                          {/* {attributeDisplayedLabel} */}
-                          {/* </Box> */}
-                          {/* <Box gridColumn="3" gridRow={attributeNumber} justifySelf="start"> */}
-                          <ErrorBoundary
-                            // FallbackComponent={Fallback}
-                            FallbackComponent={({ error, resetErrorBoundary }: any) => {
-                              // Call resetErrorBoundary() to reset the error boundary and retry the render.
-                              log.error(
-                                "Object errorboundary for",
-                                attributeListKey,
-                                "currentValue",
-                                currentValue
-                              );
-                              return (
-                                <div role="alert">
-                                  <p>Something went wrong:</p>
-                                  <div style={{ color: "red" }}>
-                                    <div key="1">object {props.listKey}</div>
-                                    <div key="2">attribute {attributeListKey}</div>
-                                    value {JSON.stringify(currentValue)}
-                                    <div key="3"></div>
-                                    resolved type {JSON.stringify(resolvedElementJzodSchema)}
-                                    <div key="4">error {error.message}</div>
-                                  </div>
-                                </div>
-                              );
-                            }}
-                            // onReset={(details:any) => {
-                            //   // Reset the state of your app so the error doesn't happen again
-                            // }}
-                          >
-                            <JzodElementEditor
-                              name={attribute[0]}
-                              listKey={attributeListKey}
-                              rootLesslistKey={attributeRootLessListKey}
-                              rootLesslistKeyArray={[...props.rootLesslistKeyArray, attribute[0]]}
-                              indentLevel={usedIndentLevel + 1}
-                              label={currentAttributeDefinition?.tag?.value?.defaultLabel}
-                              paramMiroirFundamentalJzodSchema={
-                                props.paramMiroirFundamentalJzodSchema
+                          <Clear />
+                        </SmallIconButton>
+                        {unfoldedRawSchema?.type == "record" ? (
+                          <>
+                            <input
+                              id={attributeListKey + "Name"}
+                              key={attributeListKey + "Name"}
+                              name={attributeListKey + "Name"}
+                              onChange={(e) =>
+                                handleAttributeNameChange(
+                                  e,
+                                  attributeRootLessListKeyArray.slice()
+                                )
                               }
-                              currentDeploymentUuid={props.currentDeploymentUuid}
-                              rawJzodSchema={attributeRawJzodSchema}
-                              unionInformation={unionInformation}
-                              currentApplicationSection={props.currentApplicationSection}
-                              resolvedElementJzodSchema={currentAttributeDefinition}
-                              foreignKeyObjects={props.foreignKeyObjects}
-                              handleChange={props.handleChange}
-                              formik={props.formik}
-                              setFormState={props.setFormState}
-                              // formState={props.formState}
-                              parentObjectItemsOrder={itemsOrder}
-                              parentObjectSetItemsOrder={setItemsOrder}
+                              defaultValue={attribute[0]}
                             />
-                          </ErrorBoundary>
-                        </div>
-                      </>
+                            attributeName for {attributeRootLessListKeyArray}
+                          </>
+                        ) : (
+                          <label htmlFor={attributeListKey}>{attributeDisplayedLabel}:</label>
+                        )}
+                        {/* {attributeDisplayedLabel} */}
+                        {/* </Box> */}
+                        {/* <Box gridColumn="3" gridRow={attributeNumber} justifySelf="start"> */}
+                        <ErrorBoundary
+                          // FallbackComponent={Fallback}
+                          FallbackComponent={({ error, resetErrorBoundary }: any) => {
+                            // Call resetErrorBoundary() to reset the error boundary and retry the render.
+                            log.error(
+                              "Object errorboundary for",
+                              attributeListKey,
+                              "currentValue",
+                              currentValue
+                            );
+                            return (
+                              <div role="alert">
+                                <p>Something went wrong:</p>
+                                <div style={{ color: "red" }}>
+                                  <div key="1">object {props.listKey}</div>
+                                  <div key="2">attribute {attributeListKey}</div>
+                                  value {JSON.stringify(currentValue)}
+                                  <div key="3"></div>
+                                  resolved type {JSON.stringify(resolvedElementJzodSchema)}
+                                  <div key="4">error {error.message}</div>
+                                </div>
+                              </div>
+                            );
+                          }}
+                          // onReset={(details:any) => {
+                          //   // Reset the state of your app so the error doesn't happen again
+                          // }}
+                        >
+                          <JzodElementEditor
+                            name={attribute[0]}
+                            key={attribute[0]}
+                            listKey={attributeListKey}
+                            rootLesslistKey={attributeRootLessListKey}
+                            rootLesslistKeyArray={[...props.rootLesslistKeyArray, attribute[0]]}
+                            indentLevel={usedIndentLevel + 1}
+                            label={currentAttributeDefinition?.tag?.value?.defaultLabel}
+                            paramMiroirFundamentalJzodSchema={
+                              props.paramMiroirFundamentalJzodSchema
+                            }
+                            currentDeploymentUuid={props.currentDeploymentUuid}
+                            rawJzodSchema={attributeRawJzodSchema}
+                            unionInformation={unionInformation}
+                            currentApplicationSection={props.currentApplicationSection}
+                            resolvedElementJzodSchema={currentAttributeDefinition}
+                            foreignKeyObjects={props.foreignKeyObjects}
+                            handleChange={props.handleChange}
+                            formik={props.formik}
+                            setFormState={props.setFormState}
+                            // formState={props.formState}
+                            parentObjectItemsOrder={itemsOrder}
+                            parentObjectSetItemsOrder={setItemsOrder}
+                          />
+                        </ErrorBoundary>
+                      </div>
                     );
                   })}
                 {/* </Box> */}
@@ -1491,8 +1490,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             {/* <label htmlFor={props.listKey}>{displayedLabel}: </label> */}
             <input
               type="text"
-              id={props.rootLesslistKey}
               role="textbox"
+              id={props.rootLesslistKey}
               {...props.formik.getFieldProps(props.rootLesslistKey)}
             />
             </>
@@ -1500,57 +1499,58 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         break;
       }
       case "uuid": {
-        const handleSelectUuidChange = (event: any) => {
-          // const parentPath = props.rootLesslistKeyArray.slice(0,props.rootLesslistKeyArray.length - 1)
-          // identical to handleSelectEnumChange?
-          const newFormState: any = alterObjectAtPath(
-            props.formik.values,
-            props.rootLesslistKeyArray,
-            event.target.value
-          );
-          log.info(
-            "handleSelectUuidChange called with event",
-            event,
-            "current Value",
-            props.formik.values,
-            "newFormState",
-            newFormState
-          );
-          props.setFormState(newFormState);
-        };
-
+        // return (
+        //   <>
+        //     {/* <label htmlFor={props.listKey}>{displayedLabel}: </label> */}
+        //     <input
+        //       type="text"
+        //       id={props.rootLesslistKey}
+        //       role="textbox"
+        //       {...props.formik.getFieldProps(props.rootLesslistKey)}
+        //       // name={props.name}
+        //       // onChange={props.handleChange}
+        //       // value={currentValue}
+        //     />
+        //   </>
+        // )
         return props.resolvedElementJzodSchema.tag?.value?.targetEntity ? (
           <>
             {/* <label htmlFor={props.listKey}>{displayedLabel}: </label> */}
-            <select
-              id={props.rootLesslistKey}
+            <StyledSelect
+              id={props.listKey}
+              // role="textbox"
+              aria-label={props.label}
+              labelId="demo-simple-select-label"
+              variant="standard"
               {...props.formik.getFieldProps(props.rootLesslistKey)}
-              name={props.name}
-              onChange={handleSelectUuidChange}
-              value={currentValue}
+              name={props.rootLesslistKey}
             >
-              {/* <option id={props.rootLesslistKey+".undefined"} value=""></option> */}
+              {/* {unionInformation?.discriminatorValues.map((v) => {
+                return (
+                  <MenuItem key={v} value={v}>
+                    {v}
+                  </MenuItem>
+                );
+              }) */}
               {stringSelectList.map((e: [string, EntityInstance], index: number) => (
-                <option id={props.rootLesslistKey + "." + index} key={e[1].uuid} value={e[1].uuid}>
+                <MenuItem id={props.rootLesslistKey + "." + index} key={e[1].uuid} value={e[1].uuid}>
                   {(e[1] as EntityInstanceWithName).name}
-                </option>
+                </MenuItem>
               ))}
-              {/* <option value="red">Red</option>
-             <option value="green">Green</option>
-             <option value="blue">Blue</option> */}
-            </select>
+
+            </StyledSelect>
           </>
         ) : (
           <>
             {/* <label htmlFor={props.listKey}>{displayedLabel}: </label> */}
             <input
               type="text"
-              {...props.formik.getFieldProps(props.rootLesslistKey)}
               id={props.rootLesslistKey}
-              name={props.name}
-              role={props.listKey}
-              onChange={props.handleChange}
-              value={currentValue}
+              role="textbox"
+              {...props.formik.getFieldProps(props.rootLesslistKey)}
+              // name={props.name}
+              // onChange={props.handleChange}
+              // value={currentValue}
             />
           </>
         );

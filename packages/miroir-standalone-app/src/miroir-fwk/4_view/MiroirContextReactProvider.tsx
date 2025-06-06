@@ -57,18 +57,22 @@ const miroirReactContext = createContext<MiroirReactContext>({} as MiroirReactCo
 export function MiroirContextReactProvider(props: {
   miroirContext: MiroirContextInterface;
   domainController: DomainControllerInterface;
-  children: ReactNode
+  testingDeploymentUuid?: Uuid; // for tests only! Yuck!
+  children: ReactNode;
 }) {
-  const [deploymentUuid, setDeploymentUuid] = useState("");
+  const [deploymentUuid, setDeploymentUuid] = useState(props.testingDeploymentUuid ?? "");
   const [reportUuid, setReportUuid] = useState("");
   const [applicationSection, setApplicationSection] = useState<ApplicationSection>("data");
   const [innerFormOutput, setInnerFormOutput] = useState<any>({});
   const [formHelperState, setformHelperState] = useState<any>({});
-  const [deploymentUuidToReportsEntitiesDefinitionsMapping, setDeploymentUuidToReportsEntitiesDefinitionsMapping] =
-    useState<DeploymentUuidToReportsEntitiesDefinitionsMapping>({});
-  const [miroirFundamentalJzodSchema, setMiroirFundamentalJzodSchema] = useState<JzodSchema | undefined>(globalMiroirFundamentalJzodSchema as JzodSchema);
-    // useState<JzodSchema>({name: "dummyJzodSchema", parentName: "JzodSchema", parentUuid:"", uuid: ""});
-    
+  const [
+    deploymentUuidToReportsEntitiesDefinitionsMapping,
+    setDeploymentUuidToReportsEntitiesDefinitionsMapping,
+  ] = useState<DeploymentUuidToReportsEntitiesDefinitionsMapping>({});
+  const [miroirFundamentalJzodSchema, setMiroirFundamentalJzodSchema] = useState<
+    JzodSchema | undefined
+  >(globalMiroirFundamentalJzodSchema as JzodSchema);
+  // useState<JzodSchema>({name: "dummyJzodSchema", parentName: "JzodSchema", parentUuid:"", uuid: ""});
 
   // const value = useMemo<MiroirReactContext>(()=>({
   const value = useMemo<MiroirReactContext>(
@@ -92,7 +96,7 @@ export function MiroirContextReactProvider(props: {
       // setMiroirFundamentalJzodSchema: (a: any) => {log.info("setMiroirFundamentalJzodSchema called with", a);setMiroirFundamentalJzodSchema(a)},
       setMiroirFundamentalJzodSchema: (a: any) => {
         // console.log("setMiroirFundamentalJzodSchema called!");
-        console.log("setMiroirFundamentalJzodSchema called with", Object.keys(a?? {}).length);
+        console.log("setMiroirFundamentalJzodSchema called with", Object.keys(a ?? {}).length);
         setMiroirFundamentalJzodSchema(a);
       },
     }),

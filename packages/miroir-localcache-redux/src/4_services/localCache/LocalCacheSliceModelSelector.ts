@@ -209,7 +209,7 @@ export const selectModelForDeploymentFromReduxState: () => (
         menus: (menus ? Object.values(menus) : []) as Menu[],
         reports: (reports ? Object.values(reports) : []) as Report[],
       } as MetaModel;
-      // log.info("selectModelForDeploymentFromReduxState",params,result);
+      // log.info("selectModelForDeploymentFromReduxState",result);
 
       return result;
     }

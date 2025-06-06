@@ -15,29 +15,62 @@ import {
   JzodArray,
   JzodElement,
   JzodEnum,
+  JzodPlainAttribute,
   JzodSchema,
   jzodTypeCheck,
   LocalCacheInterface,
-  MetaModel,
   MiroirContext,
   miroirFundamentalJzodSchema,
   PersistenceStoreControllerManager,
-  ResolvedJzodSchemaReturnType,
+  ResolvedJzodSchemaReturnType
 } from "miroir-core";
 import { LocalCache, PersistenceReduxSaga } from "miroir-localcache-redux";
 
-import { resolvePathOnObject } from "miroir-core";
+import {
+  Action2ReturnType,
+  book1,
+  defaultMiroirMetaModel,
+  entityAuthor,
+  entityBook,
+  entityCountry,
+  EntityDefinition,
+  entityDefinitionAuthor,
+  entityDefinitionBook,
+  entityDefinitionCountry,
+  entityDefinitionEntityDefinition,
+  entityDefinitionPublisher,
+  entityEntity,
+  entityEntityDefinition,
+  entityJzodSchema,
+  entityMenu,
+  entityPublisher,
+  entityReport,
+  entitySelfApplicationVersion,
+  JzodAttributePlainDateWithValidations,
+  JzodAttributePlainNumberWithValidations,
+  JzodAttributePlainStringWithValidations,
+  JzodObject,
+  JzodUnion,
+  menuDefaultLibrary,
+  reportAuthorDetails,
+  reportAuthorList,
+  reportBookDetails,
+  reportBookInstance,
+  reportBookList,
+  reportCountryList,
+  reportPublisherList,
+  resolvePathOnObject,
+} from "miroir-core";
 import { JzodElementEditor } from "../../src/miroir-fwk/4_view/components/JzodElementEditor";
 import { JzodEditorPropsRoot } from "../../src/miroir-fwk/4_view/components/JzodElementEditorInterface";
 import { MiroirContextReactProvider, useMiroirContextService } from "../../src/miroir-fwk/4_view/MiroirContextReactProvider";
 import { useCurrentModel } from "../../src/miroir-fwk/4_view/ReduxHooks";
 import { emptyObject } from "../../src/miroir-fwk/4_view/routes/Tools";
+import { libraryApplicationInstances } from "../../src/miroir-fwk/4_view/uploadBooksAndReports";
 import { TestMode } from "./JzodElementEditor.test";
-import { JzodUnion } from "miroir-core";
-import { JzodAttributePlainDateWithValidations } from "miroir-core";
-import { JzodAttributePlainNumberWithValidations } from "miroir-core";
-import { JzodAttributePlainStringWithValidations } from "miroir-core";
-import { JzodObject } from "miroir-core";
+import { selfApplicationDeploymentLibrary } from "miroir-core";
+import { MetaModel } from "miroir-core";
+import { applicationDeploymentAdmin } from "miroir-core/src/ApplicationDeploymentAdmin";
 
 export const testThemeParams = {
   palette: {
@@ -315,6 +348,7 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
     JzodElementEditorForTestRenderCount++;
     const context = useMiroirContextService();
 
+    context.setDeploymentUuid
     // ###############################################################################################
     // useEffect(() => context.setMiroirFundamentalJzodSchema(miroirFundamentalJzodSchema as any), [context]);
     // setting context.miroirFundamentalJzodSchema in-line during the test for immediate access, with gatekeeper test to avoid infinite refresh loop
@@ -324,13 +358,14 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
     // ###############################################################################################
 
 
-    const currentModel: MetaModel = useCurrentModel(
-      context.applicationSection == "data"
-        ? context.deploymentUuid
-        : adminConfigurationDeploymentMiroir.uuid
-    );
+    const currentModel: MetaModel = useCurrentModel(selfApplicationDeploymentLibrary.uuid);
+      // context.applicationSection == "data"
+        // ? context.deploymentUuid
+        // : adminConfigurationDeploymentMiroir.uuid
+    // );
 
     const currentMiroirModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
+    console.log("currentMiroirModel", currentMiroirModel);
 
     const onSubmit = useCallback(
       async (
@@ -367,7 +402,8 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
       let result: ResolvedJzodSchemaReturnType | undefined = undefined;
       try {
         result =
-          miroirFundamentalJzodSchema && rawJzodSchema && formState && currentModel
+          // miroirFundamentalJzodSchema && rawJzodSchema && formState && currentModel
+          miroirFundamentalJzodSchema && rawJzodSchema && formState && currentMiroirModel
             ? jzodTypeCheck(
                 rawJzodSchema,
                 // formState,
@@ -376,6 +412,7 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
                 [], // currentTypePath
                 miroirFundamentalJzodSchema as JzodSchema,
                 currentModel,
+                // currentMiroirModel,
                 currentMiroirModel,
                 {}
               )
@@ -503,6 +540,186 @@ export function getWrapperForLocalJzodElementEditor(): React.FC<any> {
 
   const localCache: LocalCacheInterface = new LocalCache(persistenceSaga);
 
+  console.log("getWrapperForLocalJzodElementEditor", "defaultMiroirMetaModel.entities", JSON.stringify(defaultMiroirMetaModel.entities));
+    // const resultForLoadingLibraryAppInstances: Action2ReturnType = localCache.handleLocalCacheAction({
+  const resultForLoadingMiroirMetaModel: Action2ReturnType = localCache.handleLocalCacheAction({
+    actionType: "loadNewInstancesInLocalCache",
+    deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+    // deploymentUuid: applicationDeploymentAdmin.uuid,
+    endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+    objects: [
+      {
+        parentName: entityEntity.name,
+        parentUuid: entityEntity.uuid,
+        applicationSection: "model",
+        instances: defaultMiroirMetaModel.entities
+      },
+      {
+        parentName: entityEntityDefinition.name,
+        parentUuid: entityEntityDefinition.uuid,
+        applicationSection: "model",
+        instances: defaultMiroirMetaModel.entityDefinitions
+      },
+      {
+        parentName: entityJzodSchema.name,
+        parentUuid: entityJzodSchema.uuid,
+        applicationSection: "data",
+        instances: defaultMiroirMetaModel.jzodSchemas
+      },
+      {
+        parentName: entityMenu.name,
+        parentUuid: entityMenu.uuid,
+        applicationSection: "data",
+        instances: defaultMiroirMetaModel.menus
+      },
+      {
+        parentName: entitySelfApplicationVersion.name,
+        parentUuid: entitySelfApplicationVersion.uuid,
+        applicationSection: "data",
+        instances: defaultMiroirMetaModel.applicationVersions
+      },
+      {
+        parentName: entityReport.name,
+        parentUuid: entityReport.uuid,
+        applicationSection: "data",
+        instances: defaultMiroirMetaModel.reports
+      },
+      // {
+      //   parentName: applicationVersionCrossEntityDefinitionSchema.name,
+      //   parentUuid: ApplicationVersionCrossEntityDefinitionSchema.uuid,
+      //   applicationSection: "model",
+      //   instances: defaultMiroirMetaModel.applicationVersionCrossEntityDefinition
+      // },
+    ],
+  });
+  if (resultForLoadingMiroirMetaModel.status !== "ok") {
+    throw new Error(
+      `Error loading Miroir Meta Model: ${JSON.stringify(resultForLoadingMiroirMetaModel, null, 2)}`
+    );
+  }
+
+  localCache.handleLocalCacheAction( // needed so that "loading" instances become "current"
+    {
+      actionType: "rollback",
+      // actionType: "commit",
+      deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+    }
+  );
+  const resultForLoadingLibraryApplicationModel: Action2ReturnType = localCache.handleLocalCacheAction({
+    actionType: "loadNewInstancesInLocalCache",
+    deploymentUuid: selfApplicationDeploymentLibrary.uuid,
+    endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+    objects: [
+      {
+        parentName: entityEntity.name,
+        parentUuid: entityEntity.uuid,
+        applicationSection: "model",
+        instances: [
+          entityAuthor,
+          entityBook,
+          entityCountry,
+          entityPublisher
+        ]
+      },
+      {
+        parentName: entityEntityDefinition.name,
+        parentUuid: entityEntityDefinition.uuid,
+        applicationSection: "model",
+        instances: [
+          entityDefinitionBook,
+          entityDefinitionAuthor,
+          entityDefinitionCountry,
+          entityDefinitionPublisher,
+        ]
+      },
+      {
+        parentName: entityMenu.name,
+        parentUuid: entityMenu.uuid,
+        applicationSection: "model",
+        instances: [menuDefaultLibrary]
+      },
+      // {
+      //   parentName: entitySelfApplicationVersion.name,
+      //   parentUuid: entitySelfApplicationVersion.uuid,
+      //   applicationSection: "model",
+      //   instances: defaultMiroirMetaModel.applicationVersions
+      // },
+      {
+        parentName: entityReport.name,
+        parentUuid: entityReport.uuid,
+        applicationSection: "model",
+        instances: [
+            reportAuthorList,
+            reportAuthorDetails,
+            reportBookList,
+            reportBookDetails,
+            reportBookInstance,
+            reportCountryList,
+            reportPublisherList,
+        ],
+      },
+      // {
+      //   parentName: applicationVersionCrossEntityDefinitionSchema.name,
+      //   parentUuid: ApplicationVersionCrossEntityDefinitionSchema.uuid,
+      //   applicationSection: "model",
+      //   instances: defaultMiroirMetaModel.applicationVersionCrossEntityDefinition
+      // },
+      ...libraryApplicationInstances
+    ],
+  });
+  if (resultForLoadingLibraryApplicationModel.status !== "ok") {
+    throw new Error(
+      `Error loading Library Application Model: ${JSON.stringify(resultForLoadingLibraryApplicationModel, null, 2)}`
+    );
+  }
+  localCache.handleLocalCacheAction( // needed so that "loading" instances become "current"
+    {
+      actionType: "rollback",
+      // actionType: "commit",
+      deploymentUuid: selfApplicationDeploymentLibrary.uuid,
+      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+    }
+  );
+
+  const resultForLoadingLibraryApplicationInstances: Action2ReturnType = localCache.handleLocalCacheAction({
+    actionType: "loadNewInstancesInLocalCache",
+    deploymentUuid: selfApplicationDeploymentLibrary.uuid,
+    endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+    objects: libraryApplicationInstances,
+  });
+
+  if (resultForLoadingLibraryApplicationInstances.status !== "ok") {
+    throw new Error(
+      `Error loading Library Application Instances: ${JSON.stringify(resultForLoadingLibraryApplicationInstances, null, 2)}`
+    );
+  }
+  localCache.handleLocalCacheAction( // needed so that "loading" instances become "current"
+    {
+      actionType: "rollback",
+      // actionType: "commit",
+      deploymentUuid: selfApplicationDeploymentLibrary.uuid,
+      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+    }
+  );
+
+  console.log(
+    "getWrapperForLocalJzodElementEditor",
+    "resultForLoadingMiroirMetaModel",
+    resultForLoadingMiroirMetaModel,
+    "resultForLoadingLibraryApplicationModel",
+    resultForLoadingLibraryApplicationModel,
+    "resultForLoadingLibraryApplicationInstances",
+    resultForLoadingLibraryApplicationInstances,
+    localCache.getInnerStore().getState()
+  );  
+  // localCache.setInstancesForEntityUuidIndex(
+  //   adminConfigurationDeploymentMiroir.uuid,
+  //   "MetaModel",
+  //   {
+  //     [adminConfigurationDeploymentMiroir.uuid]: adminConfigurationDeploymentMiroir,
+  //   }
+  // );
   const handleAction = vi.fn();
 
   // ###############################################
@@ -519,6 +736,7 @@ export function getWrapperForLocalJzodElementEditor(): React.FC<any> {
             <MiroirContextReactProvider
               miroirContext={miroirContext}
               domainController={domainController}
+              testingDeploymentUuid={selfApplicationDeploymentLibrary.uuid}
             >
               {props.children}
             </MiroirContextReactProvider>
@@ -907,6 +1125,7 @@ export function getJzodArrayEditorTests(
 // SIMPLE TYPES
 // ################################################################################################
 export type JzodSimpleTypes =
+  | JzodPlainAttribute
   | JzodAttributePlainDateWithValidations
   | JzodAttributePlainNumberWithValidations
   | JzodAttributePlainStringWithValidations;
@@ -967,12 +1186,52 @@ export function getJzodSimpleTypeEditorTests(
             expect(input).toHaveValue(42);
           },
         },
+        "uuid renders input with proper value": { // TODO: test for nullable / optional scenario
+          props: {
+            label: "Test Label",
+            name: "fieldName",
+            listKey: "ROOT.fieldName",
+            rootLesslistKey: "fieldName",
+            rootLesslistKeyArray: ["fieldName"],
+            rawJzodSchema: {
+              type: "uuid",
+            },
+            initialFormState: "123e4567-e89b-12d3-a456-426614174000",
+          },
+          tests: async (expect: ExpectStatic) => {
+            const input = screen.getByRole("textbox");
+            expect(input).toBeInTheDocument();
+            expect(input).toHaveValue("123e4567-e89b-12d3-a456-426614174000");
+          },
+        },
+        "uuid allows to modify input value with consistent update": {
+          props: {
+            label: "Test Label",
+            name: "fieldName",
+            listKey: "ROOT.fieldName",
+            rootLesslistKey: "fieldName",
+            rootLesslistKeyArray: ["fieldName"],
+            rawJzodSchema: {
+              type: "uuid",
+            },
+            initialFormState: "123e4567-e89b-12d3-a456-426614174000",
+          },
+          tests: async (expect: ExpectStatic) => {
+            const input = screen.getByRole("textbox");
+            expect(input).toBeInTheDocument();
+            expect(input).toHaveValue("123e4567-e89b-12d3-a456-426614174000");
+            await act(() => {
+              fireEvent.change(input, { target: { value: "new-uuid-value" } });
+            });
+            expect(input).toHaveValue("new-uuid-value");
+          },
+        }
       },
     },
   };
 };
 // ################################################################################################
-// ARRAY
+// OBJECT
 // ################################################################################################
 export interface LocalObjectEditorProps extends LocalEditorPropsRoot{
   rawJzodSchema: JzodObject | undefined;
@@ -993,7 +1252,7 @@ export function getJzodObjectEditorTests(
         renderAsJzodElementEditor,
       },
       tests: {
-        "object type renders as json-like input fields with proper value": {
+        "object renders as json-like input fields with proper value": {
           props: {
             label: "Test Label",
             name: "fieldName",
@@ -1009,7 +1268,6 @@ export function getJzodObjectEditorTests(
               b: 42,
             },
           },
-
           tests: async (expect: ExpectStatic) => {
             const inputs = screen.getAllByRole("textbox");
             const values: Record<string, any> = {};
@@ -1020,12 +1278,49 @@ export function getJzodObjectEditorTests(
             expect(values).toEqual({ a: "test string", b: "42" });
           },
         },
+        "object can be updated through displayed input fields": {
+          props: {
+            label: "Test Label",
+            name: "fieldName",
+            listKey: "ROOT.fieldName",
+            rootLesslistKey: "fieldName",
+            rootLesslistKeyArray: ["fieldName"],
+            rawJzodSchema: {
+              type: "object",
+              definition: {a:{ type: "string" }, b:{ type: "number" }},
+            },
+            initialFormState: {
+              a: "test string",
+              b: 42,
+            },
+          },
+          tests: async (expect: ExpectStatic) => {
+            const inputs = screen.getAllByRole("textbox");
+            const inputA = inputs.find(
+              (input: HTMLElement) => (input as HTMLInputElement).name === "fieldName.a"
+            ) as HTMLInputElement;
+            const inputB = inputs.find(
+              (input: HTMLElement) => (input as HTMLInputElement).name === "fieldName.b"
+            ) as HTMLInputElement;
+            expect(inputA).toHaveValue("test string");
+            expect(inputB).toHaveValue(42);
+
+            await act(() => {
+              fireEvent.change(inputA, { target: { value: "new string value" } });
+              fireEvent.change(inputB, { target: { value: 100 } });
+            });
+
+            expect(inputA).toHaveValue("new string value");
+            expect(inputB).toHaveValue(100);
+          },
+        }
       },
     },
   };
 };
+
 // ################################################################################################
-// ARRAY
+// UNION
 // ################################################################################################
 export interface LocalUnionEditorProps extends LocalEditorPropsRoot{
   rawJzodSchema: JzodUnion | undefined;
@@ -1191,6 +1486,196 @@ export function getJzodUnionEditorTests(
         //     expect(values).toEqual(["value1", "value3", "value2"]);
         //   },
         // },
+      },
+    },
+  };
+};
+
+// ################################################################################################
+// BOOK
+// ################################################################################################
+export interface LocalBookEditorProps extends LocalEditorPropsRoot{
+  // rawJzodSchema: EntityDefinition | undefined;
+  rawJzodSchema: JzodObject | undefined;
+}
+
+export type JzodBookEditorTest = JzodEditorTest<LocalBookEditorProps>;
+export type JzodBookEditorTestSuites = JzodEditorTestSuites<LocalBookEditorProps>;
+
+export function getJzodBookEditorTests(
+  LocalEditor: React.FC<LocalBookEditorProps>,
+  renderAsJzodElementEditor: React.FC<JzodElementEditorProps_Test>
+): JzodBookEditorTestSuites {
+  return {
+    JzodBookEditor: {
+      suiteRenderComponent: {
+        renderAsComponent: LocalEditor,
+        renderAsJzodElementEditor,
+      },
+      tests: {
+        "Book is displayed as json-like input fields with proper value": {
+          props: {
+            label: "Test Label",
+            name: "fieldName",
+            listKey: "ROOT.fieldName",
+            rootLesslistKey: "fieldName",
+            rootLesslistKeyArray: ["fieldName"],
+            rawJzodSchema: entityDefinitionBook.jzodSchema,
+            // rawJzodSchema: {
+            //   type: "object",
+            //   definition: {a:{ type: "string" }, b:{ type: "number" }},
+            // },
+            initialFormState: book1
+            // initialFormState: {
+            //   a: "test string",
+            //   b: 42,
+            // },
+          },
+          tests: async (expect: ExpectStatic) => {
+            // Pretty-print the entire rendered DOM
+            // console.log("=== FULL RENDERED DOM ===");
+            // screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
+            
+            const inputs = Array.from(document.querySelectorAll('input'));
+            console.log("=== INPUTS ===", inputs.map((input: HTMLElement) => ({
+              name: (input as HTMLInputElement).name,
+              value: (input as HTMLInputElement).value,
+            })));
+            const values: Record<string, any> = {};
+            inputs.forEach((input: HTMLElement) => {
+              const index = (input as HTMLInputElement).name.replace(/^fieldName\./, "");
+              values[index] = (input as HTMLInputElement).value || Number((input as HTMLInputElement).value);
+            });
+            expect(values).toEqual(book1);
+          },
+        },
+        // "object can be updated through displayed input fields": {
+        //   props: {
+        //     label: "Test Label",
+        //     name: "fieldName",
+        //     listKey: "ROOT.fieldName",
+        //     rootLesslistKey: "fieldName",
+        //     rootLesslistKeyArray: ["fieldName"],
+        //     rawJzodSchema: {
+        //       type: "object",
+        //       definition: {a:{ type: "string" }, b:{ type: "number" }},
+        //     },
+        //     initialFormState: {
+        //       a: "test string",
+        //       b: 42,
+        //     },
+        //   },
+        //   tests: async (expect: ExpectStatic) => {
+        //     const inputs = screen.getAllByRole("textbox");
+        //     const inputA = inputs.find(
+        //       (input: HTMLElement) => (input as HTMLInputElement).name === "fieldName.a"
+        //     ) as HTMLInputElement;
+        //     const inputB = inputs.find(
+        //       (input: HTMLElement) => (input as HTMLInputElement).name === "fieldName.b"
+        //     ) as HTMLInputElement;
+        //     expect(inputA).toHaveValue("test string");
+        //     expect(inputB).toHaveValue(42);
+
+        //     await act(() => {
+        //       fireEvent.change(inputA, { target: { value: "new string value" } });
+        //       fireEvent.change(inputB, { target: { value: 100 } });
+        //     });
+
+        //     expect(inputA).toHaveValue("new string value");
+        //     expect(inputB).toHaveValue(100);
+        //   },
+        // }
+      },
+    },
+  };
+};
+// ################################################################################################
+// ENTITY DEFINITION
+// ################################################################################################
+export interface LocalEntityDefinitionEditorProps extends LocalEditorPropsRoot{
+  // rawJzodSchema: EntityDefinition | undefined;
+  rawJzodSchema: JzodObject | undefined;
+}
+
+export type JzodEntityDefinitionEditorTest = JzodEditorTest<LocalEntityDefinitionEditorProps>;
+export type JzodEntityDefinitionEditorTestSuites = JzodEditorTestSuites<LocalEntityDefinitionEditorProps>;
+
+export function getJzodEntityDefinitionEditorTests(
+  LocalEditor: React.FC<LocalEntityDefinitionEditorProps>,
+  renderAsJzodElementEditor: React.FC<JzodElementEditorProps_Test>
+): JzodEntityDefinitionEditorTestSuites {
+  return {
+    JzodEntityDefinitionEditor: {
+      suiteRenderComponent: {
+        renderAsComponent: LocalEditor,
+        renderAsJzodElementEditor,
+      },
+      tests: {
+        "entity definition for Book is displayed as json-like input fields with proper value": {
+          props: {
+            label: "Test Label",
+            name: "fieldName",
+            listKey: "ROOT.fieldName",
+            rootLesslistKey: "fieldName",
+            rootLesslistKeyArray: ["fieldName"],
+            rawJzodSchema: (entityDefinitionEntityDefinition as EntityDefinition).jzodSchema,
+            // rawJzodSchema: {
+            //   type: "object",
+            //   definition: {a:{ type: "string" }, b:{ type: "number" }},
+            // },
+            initialFormState: entityDefinitionBook
+            // initialFormState: {
+            //   a: "test string",
+            //   b: 42,
+            // },
+          },
+          tests: async (expect: ExpectStatic) => {
+            const inputs = screen.getAllByRole("textbox");
+            const values: Record<string, any> = {};
+            inputs.forEach((input: HTMLElement) => {
+              const name = (input as HTMLInputElement).name.replace(/^fieldName\./, "");
+              values[name] = (input as HTMLInputElement).value || Number((input as HTMLInputElement).value);
+            });
+            // expect(values).toEqual({ a: "test string", b: "42" });
+            expect(values).toEqual(entityDefinitionBook);
+          },
+        },
+        // "object can be updated through displayed input fields": {
+        //   props: {
+        //     label: "Test Label",
+        //     name: "fieldName",
+        //     listKey: "ROOT.fieldName",
+        //     rootLesslistKey: "fieldName",
+        //     rootLesslistKeyArray: ["fieldName"],
+        //     rawJzodSchema: {
+        //       type: "object",
+        //       definition: {a:{ type: "string" }, b:{ type: "number" }},
+        //     },
+        //     initialFormState: {
+        //       a: "test string",
+        //       b: 42,
+        //     },
+        //   },
+        //   tests: async (expect: ExpectStatic) => {
+        //     const inputs = screen.getAllByRole("textbox");
+        //     const inputA = inputs.find(
+        //       (input: HTMLElement) => (input as HTMLInputElement).name === "fieldName.a"
+        //     ) as HTMLInputElement;
+        //     const inputB = inputs.find(
+        //       (input: HTMLElement) => (input as HTMLInputElement).name === "fieldName.b"
+        //     ) as HTMLInputElement;
+        //     expect(inputA).toHaveValue("test string");
+        //     expect(inputB).toHaveValue(42);
+
+        //     await act(() => {
+        //       fireEvent.change(inputA, { target: { value: "new string value" } });
+        //       fireEvent.change(inputB, { target: { value: 100 } });
+        //     });
+
+        //     expect(inputA).toHaveValue("new string value");
+        //     expect(inputB).toHaveValue(100);
+        //   },
+        // }
       },
     },
   };

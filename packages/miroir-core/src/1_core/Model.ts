@@ -5,7 +5,7 @@ const entityEntity = require('../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a
 // const entitySelfApplicationDeploymentConfiguration = require('../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/35c5608a-7678-4f07-a4ec-76fc5bc35424.json');
 const entityReport = require('../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916.json');
 const entityEntityDefinition = require('../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json');
-const EntityJzodSchema = require('../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/5e81e1b9-38be-487c-b3e5-53796c57fccf.json');
+const entityJzodSchema = require("../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/5e81e1b9-38be-487c-b3e5-53796c57fccf.json");
 const entityMenu = require('../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/dde4c883-ae6d-47c3-b6df-26bc6e3c1842.json');
 // const entityStoreBasedConfiguration = require('../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/7990c0c9-86c3-40a1-a121-036c91b55ed7.json');
 
@@ -19,7 +19,7 @@ const entityDefinitionReport = require('../assets/miroir_model/54b9c72f-d4f3-4db
 const entityDefinitionSelfApplicationDeploymentConfiguration = require('../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bd303ae8-6bce-4b44-a63c-815b9ebf728b.json');
 const entityDefinitionEntityDefinition = require('../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bdd7ad43-f0fc-4716-90c1-87454c40dd95.json');
 // const entityDefinitionModelVersion = require('../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/27046fce-742f-4cc4-bb95-76b271f490a5.json');
-const entityDefinitionStoreBasedConfiguration = require('../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/f93af951-ea13-4815-a2e3-ec0cab1fadd2.json');
+// const entityDefinitionStoreBasedConfiguration = require('../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/f93af951-ea13-4815-a2e3-ec0cab1fadd2.json');
 
 const menuDefaultMiroir = require('../assets/miroir_data/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/eaac459c-6c2b-475c-8ae4-c6c3032dae00.json');
 
@@ -47,6 +47,7 @@ const selfApplicationVersionInitialMiroirVersion = require('../assets/miroir_dat
 const instanceConfigurationReference = require('../assets/miroir_data/7990c0c9-86c3-40a1-a121-036c91b55ed7/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json');
 const adminConfigurationDeploymentMiroir = require('../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json');
 
+// import { entityJzodSchema, entitySelfApplicationDeploymentConfiguration, entityStoreBasedConfiguration } from "..";
 import { MetaEntity, Uuid } from "../0_interfaces/1_core/EntityDefinition";
 
 import {
@@ -83,33 +84,32 @@ export const applicationModelEntities: MetaEntity[] = metaModelEntities.filter(
   (e: MetaEntity) => e.conceptLevel != "MetaModel"
 );
 
-// TODO: define current configuration!
 export const defaultMiroirMetaModel: MetaModel = {
   // configuration: [instanceConfigurationReference],
   entities: [
-    entitySelfApplication as Entity,
-    // entitySelfApplicationDeploymentConfiguration as Entity,
-    entitySelfApplicationModelBranch as Entity,
-    entitySelfApplicationVersion as Entity,
+    // this is used in tests, the bootstrap entities have to come first
     entityEntity as Entity,
     entityEntityDefinition as Entity,
-    EntityJzodSchema as Entity,
+    // 
+    entitySelfApplication as Entity,
+    entitySelfApplicationModelBranch as Entity,
+    entitySelfApplicationVersion as Entity,
+    entityJzodSchema as Entity, // null
     entityMenu as Entity,
     entityReport as Entity,
-    // entityStoreBasedConfiguration as Entity,
     entitySelfApplicationVersion as Entity,
   ],
   entityDefinitions: [
+    // bootstrap entities have to come first
+    entityDefinitionEntityDefinition as EntityDefinition,
+    entityDefinitionEntity as EntityDefinition,
+    // 
     entityDefinitionSelfApplication as EntityDefinition,
-    // entityDefinitionSelfApplicationDeploymentConfiguration as EntityDefinition,
     entityDefinitionSelfApplicationModelBranch as EntityDefinition,
     entityDefinitionSelfApplicationVersion as EntityDefinition,
-    entityDefinitionEntity as EntityDefinition,
-    entityDefinitionEntityDefinition as EntityDefinition,
-    entityDefinitionJzodSchema as EntityDefinition,
+    entityDefinitionJzodSchema as EntityDefinition, //
     entityDefinitionMenu as EntityDefinition,
     entityDefinitionReport as EntityDefinition,
-    // entityDefinitionStoreBasedConfiguration as EntityDefinition,
   ],
   jzodSchemas: [
     jzodSchemajzodMiroirBootstrapSchema as JzodSchema,
@@ -121,7 +121,7 @@ export const defaultMiroirMetaModel: MetaModel = {
     selfApplicationVersionInitialMiroirVersion
   ],
   reports: [
-    // reportApplicationDeploymentConfigurationList as Report,
+    reportApplicationDeploymentConfigurationList as Report,
     reportApplicationList as Report,
     reportApplicationModelBranchList as Report,
     reportApplicationVersionList as Report,
@@ -139,9 +139,69 @@ export const defaultMiroirMetaModel: MetaModel = {
     applicationVersionInitialMiroirVersionCrossEntityDefinitionEntity,
     applicationVersionInitialMiroirVersionCrossEntityDefinitionEntityDefinition,
     applicationVersionInitialMiroirVersionCrossEntityDefinitionReport,
-    // applicationVersionInitialMiroirVersionCrossEntityDefinitionStoreBasedConfiguration,
+    applicationVersionInitialMiroirVersionCrossEntityDefinitionStoreBasedConfiguration,
   ]
 }
+
+// // TODO: define current configuration!
+// export const defaultMiroirMetaModel: MetaModel = {
+//   // configuration: [instanceConfigurationReference],
+//   entities: [
+//     entitySelfApplication as Entity,
+//     // entitySelfApplicationDeploymentConfiguration as Entity,
+//     entitySelfApplicationModelBranch as Entity,
+//     entitySelfApplicationVersion as Entity,
+//     entityEntity as Entity,
+//     entityEntityDefinition as Entity,
+//     EntityJzodSchema as Entity,
+//     entityMenu as Entity,
+//     entityReport as Entity,
+//     // entityStoreBasedConfiguration as Entity,
+//     entitySelfApplicationVersion as Entity,
+//   ],
+//   entityDefinitions: [
+//     entityDefinitionSelfApplication as EntityDefinition,
+//     // entityDefinitionSelfApplicationDeploymentConfiguration as EntityDefinition,
+//     entityDefinitionSelfApplicationModelBranch as EntityDefinition,
+//     entityDefinitionSelfApplicationVersion as EntityDefinition,
+//     entityDefinitionEntity as EntityDefinition,
+//     entityDefinitionEntityDefinition as EntityDefinition,
+//     entityDefinitionJzodSchema as EntityDefinition,
+//     entityDefinitionMenu as EntityDefinition,
+//     entityDefinitionReport as EntityDefinition,
+//     // entityDefinitionStoreBasedConfiguration as EntityDefinition,
+//   ],
+//   jzodSchemas: [
+//     jzodSchemajzodMiroirBootstrapSchema as JzodSchema,
+//   ],
+//   menus: [
+//     menuDefaultMiroir as Menu,
+//   ],
+//   applicationVersions:[
+//     selfApplicationVersionInitialMiroirVersion
+//   ],
+//   reports: [
+//     // reportApplicationDeploymentConfigurationList as Report,
+//     reportApplicationList as Report,
+//     reportApplicationModelBranchList as Report,
+//     reportApplicationVersionList as Report,
+//     reportConfigurationList as Report,
+//     reportEntityDefinitionList as Report,
+//     reportEntityList as Report,
+//     reportJzodSchemaList as Report,
+//     reportMenuList as Report,
+//     reportReportList as Report,
+//   ],
+//   applicationVersionCrossEntityDefinition: [
+//     applicationVersionInitialMiroirVersionCrossEntityDefinitionApplication,
+//     applicationVersionInitialMiroirVersionCrossEntityDefinitionApplicationModelBranch,
+//     applicationVersionInitialMiroirVersionCrossEntityDefinitionApplicationVersion,
+//     applicationVersionInitialMiroirVersionCrossEntityDefinitionEntity,
+//     applicationVersionInitialMiroirVersionCrossEntityDefinitionEntityDefinition,
+//     applicationVersionInitialMiroirVersionCrossEntityDefinitionReport,
+//     // applicationVersionInitialMiroirVersionCrossEntityDefinitionStoreBasedConfiguration,
+//   ]
+// }
 
 // ################################################################################################
 // export function getCurrentEntityDefinition(
