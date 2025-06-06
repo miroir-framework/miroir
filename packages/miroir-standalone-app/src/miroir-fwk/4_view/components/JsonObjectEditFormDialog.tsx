@@ -192,16 +192,34 @@ let count = 0;
 
 export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
   count++;
+  const {
+    label,
+    isAttributes,
+    entityDefinitionJzodSchema,
+    defaultFormValuesObject,
+    currentDeploymentUuid,
+    currentApplicationSection,
+    currentAppModel,
+    currentMiroirModel,
+    addObjectdialogFormIsOpen,
+    foreignKeyObjects,
+    setAddObjectdialogFormIsOpen,
+    onCreateFormObject,
+    onSubmit,
+    showButton,
+    // isOpen,
+    // onClose,
+  } = props;
   log.info(
     "##################################### rendering",
     "label",
-    props.label,
+    label,
     "count",
     count,
     "defaultFormValuesObject",
-    props.defaultFormValuesObject,
+    defaultFormValuesObject,
     "entityDefinitionJzodSchema",
-    props.entityDefinitionJzodSchema
+    entityDefinitionJzodSchema
   );
   const context = useMiroirContextService();
 
@@ -214,31 +232,31 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
     log.info('edit code done');
   }, []);
 
-  const formIsOpen = props.addObjectdialogFormIsOpen || (!props.showButton && props.isOpen);
+  const formIsOpen = addObjectdialogFormIsOpen || (!showButton && props.isOpen);
 
   const resolvedJzodSchema = useMemo(
     () => context.miroirFundamentalJzodSchema &&
-    props.entityDefinitionJzodSchema &&
-    props.defaultFormValuesObject &&
+    entityDefinitionJzodSchema &&
+    defaultFormValuesObject &&
     dialogOuterFormObject &&
-    props.currentAppModel ?
+    currentAppModel ?
     jzodTypeCheck(
-      props.entityDefinitionJzodSchema,
-      dialogOuterFormObject,// props.defaultFormValuesObject,
+      entityDefinitionJzodSchema,
+      dialogOuterFormObject,// defaultFormValuesObject,
       [], // currentValuePath
       [], // currentTypePath
       context.miroirFundamentalJzodSchema,
-      props.currentAppModel,
-      props.currentMiroirModel,
+      currentAppModel,
+      currentMiroirModel,
       {}
     ): undefined,
     [props, dialogOuterFormObject, context.miroirFundamentalJzodSchema]
   )
   log.info(
     "called jzodTypeCheck for valueObject",
-    props.defaultFormValuesObject,
+    defaultFormValuesObject,
     "jzodSchema",
-    props.entityDefinitionJzodSchema,
+    entityDefinitionJzodSchema,
     " resolvedJzodSchema",
     resolvedJzodSchema
   );
@@ -248,14 +266,14 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
   //   log.info(
   //     "handleAddObjectDialogFormOpen",
   //     label,
-  //     "called, props.formObject",
-  //     props.defaultFormValuesObject,
+  //     "called, formObject",
+  //     defaultFormValuesObject,
   //     "passed value",
   //     a
   //   );
 
-  //   props.setAddObjectdialogFormIsOpen(true);
-  //   // reset(props.defaultFormValuesObject);
+  //   setAddObjectdialogFormIsOpen(true);
+  //   // reset(defaultFormValuesObject);
   //   setdialogOuterFormObject(a);
   // },[props]);
 
@@ -263,8 +281,8 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
   const handleAddObjectDialogFormClose = useCallback((value: string) => {
     log.info("handleAddObjectDialogFormClose", value);
 
-    props.setAddObjectdialogFormIsOpen(false);
-    if (!props.showButton) {
+    setAddObjectdialogFormIsOpen(false);
+    if (!showButton) {
       props.onClose();
     }
   },[props]);
@@ -318,7 +336,7 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
       //     newVersion
       //     // "data",data
       //   );
-      //   result = props.onSubmit(newVersion);
+      //   result = onSubmit(newVersion);
       // } else {
         const newVersion = _.merge(effectiveData, effectiveData["ROOT"]);
         delete newVersion["ROOT"];
@@ -334,7 +352,7 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
           props,
           "passed value",
         );
-        result = props.onSubmit(newVersion);
+        result = onSubmit(newVersion);
       // }
       handleAddObjectDialogFormClose("");
       return result;
@@ -351,29 +369,29 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
   return (
     <div className="JsonObjectEditFormDialog">
       {/* <span> */}
-      {props.showButton ? (
+      {showButton ? (
         <h3>Show Button! (Button is no more supported by JzonsObjectFormEditorDialog, this is a bug)</h3>
       ) : (
         <div></div>
       )}
       {/* </span> */}
-      {/* {props.currentDeploymentUuid && props.currentApplicationSection && !props.showButton && props?.isOpen && props.defaultFormValuesObject ? ( */}
-      {props.currentDeploymentUuid &&
-      props.currentApplicationSection &&
-      !props.showButton &&
+      {/* {currentDeploymentUuid && currentApplicationSection && !showButton && props?.isOpen && defaultFormValuesObject ? ( */}
+      {currentDeploymentUuid &&
+      currentApplicationSection &&
+      !showButton &&
       props?.isOpen &&
       dialogOuterFormObject ? (
         <Formik
-          // initialValues={props.defaultFormValuesObject}
+          // initialValues={defaultFormValuesObject}
           enableReinitialize={true}
           initialValues={dialogOuterFormObject}
           onSubmit={async (values, { setSubmitting, setErrors }) => {
             try {
               //  Send values somehow
-              if (props.onCreateFormObject) {
+              if (onCreateFormObject) {
                 log.info("onSubmit formik onCreateFormObject", values);
-                await props.onCreateFormObject(values);
-                await props.onSubmit(values);
+                await onCreateFormObject(values);
+                await onSubmit(values);
               } else {
                 log.info("onSubmit formik handleAddObjectDialogFormSubmit", values);
                 setformHelperState(values);
@@ -397,9 +415,9 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
             log.info("onChange formik DOES NOTHING", e);
             // try {
             //   //  Send values somehow
-            //   if (props.onCreateFormObject) {
-            //     await props.onCreateFormObject(values)
-            //     await props.onSubmit(values);
+            //   if (onCreateFormObject) {
+            //     await onCreateFormObject(values)
+            //     await onSubmit(values);
             //   } else {
             //     await handleAddObjectDialogFormSubmit(values)
             //   }
@@ -419,17 +437,17 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
         >
           {(formik: FormikProps<any>) => (
             <Dialog onClose={handleAddObjectDialogFormClose} open={formIsOpen} fullScreen>
-              <DialogTitle>{props.label} add / edit Element</DialogTitle>
+              <DialogTitle>{label} add / edit Element</DialogTitle>
               <span>
-                form: {"form." + props.label}, JsonObjectEditFormDialog count {count}
+                form: {"form." + label}, JsonObjectEditFormDialog count {count}
               </span>
               <form
-                id={"form." + props.label}
+                id={"form." + label}
                 // onSubmit={handleSubmit(handleAddObjectDialogFormSubmit)}
                 onSubmit={formik.handleSubmit}
               >
                 {
-                  // props.defaultFormValuesObject?
+                  // defaultFormValuesObject?
                   dialogOuterFormObject ? (
                     <CodeMirror
                       value={JSON.stringify(dialogOuterFormObject, null, 2)}
@@ -447,20 +465,20 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
                     listKey={"ROOT"}
                     rootLesslistKey=""
                     rootLesslistKeyArray={[]}
-                    label={props.label}
-                    currentDeploymentUuid={props.currentDeploymentUuid}
-                    currentApplicationSection={props.currentApplicationSection}
-                    rawJzodSchema={props.entityDefinitionJzodSchema}
+                    label={label}
+                    currentDeploymentUuid={currentDeploymentUuid}
+                    currentApplicationSection={currentApplicationSection}
+                    rawJzodSchema={entityDefinitionJzodSchema}
                     resolvedElementJzodSchema={resolvedJzodSchema?.status == "ok" ? resolvedJzodSchema.element : undefined}
-                    foreignKeyObjects={props.foreignKeyObjects}
+                    foreignKeyObjects={foreignKeyObjects}
                     // formState={dialogOuterFormObject}
                     setFormState={setdialogOuterFormObject}
                     handleChange={formik.handleChange as any}
                     formik={formik}
                   />
                   {/* {errors.exampleRequired && <span>This field is required</span>} */}
-                  <button type="submit" name={props.label} form={"form." + props.label}>
-                    submit form.{props.label}
+                  <button type="submit" name={label} form={"form." + label}>
+                    submit form.{label}
                   </button>
                 </span>
               </form>

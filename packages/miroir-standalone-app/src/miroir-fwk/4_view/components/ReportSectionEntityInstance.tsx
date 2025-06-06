@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import {
   ApplicationSection,
@@ -19,6 +19,9 @@ import {
   useErrorLogService, useMiroirContextService
 } from "../MiroirContextReactProvider.js";
 
+import { javascript } from '@codemirror/lang-javascript';
+import { Switch } from '@mui/material';
+import ReactCodeMirror from '@uiw/react-codemirror';
 import { packageName } from '../../../constants.js';
 import { JzodEnumSchemaToJzodElementResolver, getCurrentEnumJzodSchemaResolver } from '../../JzodTools.js';
 import { cleanLevel } from '../constants.js';
@@ -26,7 +29,6 @@ import {
   useCurrentModel
 } from "../ReduxHooks.js";
 import { JzodElementDisplay } from './JzodElementDisplay.js';
-import { Switch } from '@mui/material';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -146,75 +148,110 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     setDisplayEditor(event.target.checked);
   };
   
+  const onCodeEditorChange = useCallback((values:any, viewUpdate:any) => {
+    log.info('edit code received value:', values);
+    // setdialogOuterFormObject(JSON.parse(values))
+    log.info('edit code done');
+  }, []);
+
   if (instance) {
     return (
-      <div>
-        {/* <p>
+      <>
+        <div>
+          {/* <p>
         ReportSectionEntityInstance
         </p> */}
-        <h1>
-          {currentReportTargetEntity?.name} details: {instance.name}{" "}
-          <Switch
-            checked={displayAsStructuredElement}
-            onChange={handleDisplayEditorSwitchChange}
-            inputProps={{ "aria-label": "Display as structured element"}}
-          />
-          <Switch
-            checked={displayEditor}
-            onChange={handleDisplayAsStructuredElementSwitchChange}
-            inputProps={{ "aria-label": "Edit"}}
-          />
-        </h1>
-        {currentReportTargetEntity &&
-        currentEnumJzodSchemaResolver &&
-        currentReportTargetEntityDefinition &&
-        context.applicationSection &&
-        resolvedJzodSchema &&
-        (resolvedJzodSchema as any)?.status == "ok" ? (
-          displayAsStructuredElement ? (
           <div>
-            <JzodElementDisplay
-              path={instance?.name}
-              name={instance?.name}
-              deploymentUuid={props.deploymentUuid}
-              // prop drilling!
-              applicationSection={context.applicationSection as ApplicationSection}
-              entityUuid={props.entityUuid}
-              element={instance}
-              // rootJzodSchema={currentReportTargetEntityDefinition?.jzodSchema}
-              elementJzodSchema={currentReportTargetEntityDefinition?.jzodSchema}
-              resolvedElementJzodSchema={(resolvedJzodSchema as any)?.element}
-              currentReportDeploymentSectionEntities={currentReportDeploymentSectionEntities}
-              currentEnumJzodSchemaResolver={currentEnumJzodSchemaResolver}
-            ></JzodElementDisplay>
+            <label htmlFor="displayAsStructuredElementSwitch">
+              Display as structured element:
+            </label>
+            <Switch
+              checked={displayAsStructuredElement}
+              id="displayAsStructuredElementSwitch"
+              onChange={handleDisplayAsStructuredElementSwitchChange}
+              inputProps={{ "aria-label": "Display as structured element" }}
+            />
+            <label htmlFor="displayEditorSwitch">
+              Display editor:
+            </label>
+            <Switch
+              checked={displayEditor}
+              id="displayEditorSwitch"
+              onChange={handleDisplayEditorSwitchChange}
+              inputProps={{ "aria-label": "Edit" }}
+            />
           </div>
+          <h1>
+            {currentReportTargetEntity?.name} details: {instance.name}{" "}
+          </h1>
+          {currentReportTargetEntity &&
+          currentEnumJzodSchemaResolver &&
+          currentReportTargetEntityDefinition &&
+          context.applicationSection &&
+          resolvedJzodSchema &&
+          (resolvedJzodSchema as any)?.status == "ok" ? (
+            displayAsStructuredElement ? (
+              <div>
+                <JzodElementDisplay
+                  path={instance?.name}
+                  name={instance?.name}
+                  deploymentUuid={props.deploymentUuid}
+                  // prop drilling!
+                  applicationSection={context.applicationSection as ApplicationSection}
+                  entityUuid={props.entityUuid}
+                  element={instance}
+                  // rootJzodSchema={currentReportTargetEntityDefinition?.jzodSchema}
+                  elementJzodSchema={currentReportTargetEntityDefinition?.jzodSchema}
+                  resolvedElementJzodSchema={(resolvedJzodSchema as any)?.element}
+                  currentReportDeploymentSectionEntities={currentReportDeploymentSectionEntities}
+                  currentEnumJzodSchemaResolver={currentEnumJzodSchemaResolver}
+                ></JzodElementDisplay>
+              </div>
+            ) : (
+              <div>
+                <pre>{JSON.stringify(instance, null, 2)}</pre>
+              </div>
+            )
           ) : (
             <div>
-              <pre>{JSON.stringify(instance, null, 2)}</pre>
+              Oops, ReportSectionEntityInstance could not be displayed.
+              <p />
+              <div>props selfApplication section: {props.applicationSection}</div>
+              <div>context selfApplication section: {context.applicationSection}</div>
+              <div>
+                target entity:{" "}
+                {currentReportTargetEntity?.name ?? "report target entity not found!"}
+              </div>
+              <div>resolved schema: {JSON.stringify(resolvedJzodSchema)}</div>
+              <div style={{ whiteSpace: "pre-line" }}>
+                target entity definition:{" "}
+                {currentReportTargetEntityDefinition?.name ??
+                  "report target entity definition not found!"}
+              </div>
+              <div> ######################################## </div>
+              <div style={{ whiteSpace: "pre-line" }}>
+                entity jzod schema: {JSON.stringify(instance?.jzodSchema)}
+              </div>
             </div>
-          )
-        ) : (
-          <div>
-            Oops, ReportSectionEntityInstance could not be displayed.
-            <p />
-            <div>props selfApplication section: {props.applicationSection}</div>
-            <div>context selfApplication section: {context.applicationSection}</div>
+          )}
+        </div>
+        <div>
+          {displayEditor ? (
             <div>
-              target entity: {currentReportTargetEntity?.name ?? "report target entity not found!"}
+              <ReactCodeMirror
+                value={JSON.stringify(instance, null, 2)}
+                height="200px"
+                extensions={[javascript({ jsx: true })]}
+                onChange={onCodeEditorChange}
+              />
             </div>
-            <div>resolved schema: {JSON.stringify(resolvedJzodSchema)}</div>
-            <div style={{ whiteSpace: "pre-line" }}>
-              target entity definition:{" "}
-              {currentReportTargetEntityDefinition?.name ??
-                "report target entity definition not found!"}
+          ) : (
+            <div>
+              <pre>{JSON.stringify(resolvedJzodSchema, null, 2)}</pre>
             </div>
-            <div> ######################################## </div>
-            <div style={{ whiteSpace: "pre-line" }}>
-              entity jzod schema: {JSON.stringify(instance?.jzodSchema)}
-            </div>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      </>
     );
   } else {
     return <>ReportSectionEntityInstance: No instance to display!</>;

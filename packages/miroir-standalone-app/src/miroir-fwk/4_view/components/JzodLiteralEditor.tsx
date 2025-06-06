@@ -101,7 +101,7 @@ export const JzodLiteralEditor: React.FC<JzodLiteralEditorProps> = (
         // );
   return (
     <>
-      {label && <label htmlFor={listKey}>{label}: </label>}
+      {label && <label htmlFor={rootLesslistKey}>{label}: </label>}
       <input
         type="text"
         id={rootLesslistKey}
