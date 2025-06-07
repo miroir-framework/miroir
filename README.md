@@ -220,7 +220,7 @@ RUN_TEST=transformers.unit.test npm run vitestByFile -w miroir-core -- transform
 #### integration tests for Applicative CompositeActions
 
 ```sh
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug RUN_TEST="applicative.Library.integ.test" npm run test -w miroir-standalone-app -- applicative.Library.integ
+VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug RUN_TEST="applicative.Library.BuildPlusRuntimeCompositeAction.integ.test" npm run test -w miroir-standalone-app -- applicative.Library.BuildPlusRuntimeCompositeAction.integ.test
 ```
 
 

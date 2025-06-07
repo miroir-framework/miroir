@@ -899,16 +899,16 @@ export const runQuery = <StateType>(
     } else {
       context[extractor[0]] = result; // does side effect!
     }
-    log.info(
-      "runQuery done for extractors",
-      extractor[0],
-      "query",
-      extractor[1],
-      "result=",
-      result,
-      "context keys=",
-      Object.keys(context)
-    );
+    // log.info(
+    //   "runQuery done for extractors",
+    //   extractor[0],
+    //   "query",
+    //   extractor[1],
+    //   "result=",
+    //   result,
+    //   "context keys=",
+    //   Object.keys(context)
+    // );
   }
   for (const combiner of Object.entries(
     selectorParams.extractor.combiners ?? {}

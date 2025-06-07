@@ -42,7 +42,6 @@ export const JzodEnumEditor: React.FC<JzodEnumEditorProps> = (
         <>
           <StyledSelect
             id={listKey}
-            // role="textbox"
             aria-label={label}
             labelId="demo-simple-select-label"
             variant="standard"

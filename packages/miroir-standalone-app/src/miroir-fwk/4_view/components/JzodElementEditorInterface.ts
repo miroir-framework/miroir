@@ -48,7 +48,7 @@ export interface JzodArrayEditorProps extends JzodEditorPropsRoot {
   setItemsOrder: React.Dispatch<React.SetStateAction<any[]>>
   itemsOrder: any[];
   // formik: FormikProps<any>;
-  handleChange: (e: ChangeEvent<any>) => Promise<void>;
+  // handleChange: (e: ChangeEvent<any>) => Promise<void>;
   setFormState: React.Dispatch<
     React.SetStateAction<{
       [k: string]: any;

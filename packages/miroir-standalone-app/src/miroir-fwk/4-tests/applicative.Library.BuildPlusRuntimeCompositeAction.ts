@@ -1229,22 +1229,17 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(
                           interpolation: "runtime",
                           definition: {
                             reportUuid: {
-                              // transformerType: "contextReference",
-                              // interpolation: "runtime",
                               transformerType: "parameterReference",
                               interpolation: "build",
                               referenceName: "createEntity_newEntityListReportUuid",
                             },
                             label: {
                               transformerType: "mustacheStringTemplate",
-                              // interpolation: "runtime",
                               interpolation: "build",
                               definition: "List of {{newEntityName}}s",
                             },
                             section: "data",
                             selfApplication: {
-                              // transformerType: "contextReference",
-                              // interpolation: "runtime",
                               transformerType: "parameterReference",
                               interpolation: "build",
                               referencePath: ["adminConfigurationDeploymentParis", "uuid"],

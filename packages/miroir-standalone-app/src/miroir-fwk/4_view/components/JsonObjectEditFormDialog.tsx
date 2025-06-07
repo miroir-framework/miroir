@@ -289,7 +289,7 @@ const JsonObjectEditFormContent: React.FC<JsonObjectEditFormContentProps> = ({
                 resolvedElementJzodSchema={resolvedJzodSchema?.status == "ok" ? resolvedJzodSchema.element : undefined}
                 foreignKeyObjects={foreignKeyObjects}
                 setFormState={setdialogOuterFormObject}
-                handleChange={formik.handleChange as any}
+                // handleChange={formik.handleChange as any}
                 formik={formik}
               />
               <button type="submit" name={label} form={"form." + label}>

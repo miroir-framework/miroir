@@ -112,7 +112,7 @@ export interface JzodElementEditorProps {
   currentDeploymentUuid?: Uuid;
   currentApplicationSection?: ApplicationSection;
   formik: FormikProps<any>;
-  handleChange: (e: ChangeEvent<any>) => Promise<void>;
+  // handleChange: (e: ChangeEvent<any>) => Promise<void>;
   // formState: any;
   setFormState: React.Dispatch<
     React.SetStateAction<{
@@ -537,10 +537,10 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       props.listKey,
       "count",
       count,
-      // "foreignKeyObjectsFetchQueryParams",
-      // JSON.stringify(foreignKeyObjectsFetchQueryParams, null, 2),
-      // "foreignKeyObjects",
-      // JSON.stringify(foreignKeyObjects, null, 2),
+        // "foreignKeyObjectsFetchQueryParams",
+        // JSON.stringify(foreignKeyObjectsFetchQueryParams, null, 2),
+        // "foreignKeyObjects",
+        // JSON.stringify(foreignKeyObjects, null, 2),
     );
 
     // ################################# objects ###################################
@@ -1391,7 +1391,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                             currentApplicationSection={props.currentApplicationSection}
                             resolvedElementJzodSchema={currentAttributeDefinition}
                             foreignKeyObjects={props.foreignKeyObjects}
-                            handleChange={props.handleChange}
+                            // handleChange={props.handleChange}
                             formik={props.formik}
                             setFormState={props.setFormState}
                             // formState={props.formState}

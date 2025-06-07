@@ -105,7 +105,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     setHiddenFormItems,
     itemsOrder,
     setItemsOrder,
-    handleChange,
+    // handleChange,
   }
 ) => {
   // log.info("############################################### JzodArrayEditor array rootLesslistKey", props.rootLesslistKey, "values", props.formik.values);
@@ -236,7 +236,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
                     (resolvedElementJzodSchema as JzodArray)?.definition as any
                   } // TODO: wrong type seen for props.resolvedJzodSchema! (cannot be undefined, really)
                   foreignKeyObjects={foreignKeyObjects}
-                  handleChange={handleChange}
+                  // handleChange={handleChange}
                   formik={formik}
                   setFormState={setFormState}
                   // formState={formState}
