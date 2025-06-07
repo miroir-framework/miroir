@@ -3,7 +3,7 @@ import { createTheme, StyledEngineProvider } from "@mui/material";
 import { blue } from "@mui/material/colors";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { Formik, FormikProps } from "formik";
-import { ChangeEvent, useCallback, useMemo, useState } from "react";
+import { ChangeEvent, Dispatch, SetStateAction, useCallback, useMemo, useState } from "react";
 import { Provider } from "react-redux";
 import { expect, ExpectStatic, vi } from "vitest";
 
@@ -332,6 +332,7 @@ export function getLocalEditor<
 // JZOD ELEMENT EDITOR
 // ################################################################################################
 let JzodElementEditorForTestRenderCount: number = 0;
+
 export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodElementEditorProps_Test> =
   (pageLabel: string) =>
   ({
@@ -396,18 +397,20 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
       []
     );
 
-    const [formState, setFormState] = useState<any>({ [name]: initialFormState });
-    const currentValue = resolvePathOnObject(formState, rootLesslistKeyArray);
+    // const [formState, setFormState] = useState<any>({ [name]: initialFormState });
+    // const currentValue = resolvePathOnObject(formState, rootLesslistKeyArray);
     const resolvedJzodSchema: ResolvedJzodSchemaReturnType | undefined = useMemo(() => {
       let result: ResolvedJzodSchemaReturnType | undefined = undefined;
       try {
         result =
           // miroirFundamentalJzodSchema && rawJzodSchema && formState && currentModel
-          miroirFundamentalJzodSchema && rawJzodSchema && formState && currentMiroirModel
+          // miroirFundamentalJzodSchema && rawJzodSchema && formState && currentMiroirModel
+          miroirFundamentalJzodSchema && rawJzodSchema && initialFormState && currentMiroirModel
             ? jzodTypeCheck(
                 rawJzodSchema,
                 // formState,
-                currentValue,
+                // currentValue,
+                initialFormState,
                 [], // currentValuePath
                 [], // currentTypePath
                 miroirFundamentalJzodSchema as JzodSchema,
@@ -435,7 +438,8 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
         };
       }
       return result;
-    }, [rawJzodSchema, currentValue, context]);
+    }, [rawJzodSchema, initialFormState, context]);
+    // }, [rawJzodSchema, currentValue, context]);
 
     // console.log(
     //   "JzodElementEditor useMemo",
@@ -453,31 +457,52 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
     //   element: rawSchema,
     // }
 
+    // const handleChange=(e: ChangeEvent<Record<string, any>>) => {
+    // // const handleChange=(e: Dispatch<SetStateAction<{ [k: string]: any; }>>) => {
+    //   console.log(
+    //     "onChange formik values ###########################################",
+    //     e.target.value
+    //     // e.
+    //   );
+    //   const newFormState: any = alterObjectAtPath(
+    //     formState,
+    //     rootLesslistKeyArray,
+    //     e.target.value
+    //   );
+    //   // console.log(
+    //   //   "handleChange newFormState ###########################################",
+    //   //   JSON.stringify(newFormState, null, 2)
+    //   // );
+    //   setFormState(newFormState);
+    //   // setFormState(e.target.value);
+    // }
+
     return (
       <div>
         <Formik
           enableReinitialize={true}
-          initialValues={formState}
+          // initialValues={formState}
+          initialValues={{ [name]: initialFormState }}
           onSubmit={onSubmit}
           validateOnChange={false}
           validateOnBlur={false}
-          handleChange={(e: ChangeEvent<any>) => {
-            console.log(
-              "onChange formik values ###########################################",
-              e.target.value
-            );
-            const newFormState: any = alterObjectAtPath(
-              formState,
-              rootLesslistKeyArray,
-              e.target.value
-            );
-            // console.log(
-            //   "handleChange newFormState ###########################################",
-            //   JSON.stringify(newFormState, null, 2)
-            // );
-            setFormState(newFormState);
-            // setFormState(e.target.value);
-          }}
+          // handleChange={(e: ChangeEvent<any>) => {
+          //   console.log(
+          //     "onChange formik values ###########################################",
+          //     e.target.value
+          //   );
+          //   const newFormState: any = alterObjectAtPath(
+          //     formState,
+          //     rootLesslistKeyArray,
+          //     e.target.value
+          //   );
+          //   // console.log(
+          //   //   "handleChange newFormState ###########################################",
+          //   //   JSON.stringify(newFormState, null, 2)
+          //   // );
+          //   setFormState(newFormState);
+          //   // setFormState(e.target.value);
+          // }}
         >
           {(formik: FormikProps<any>) => (
             <>
@@ -496,11 +521,9 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
                       rawJzodSchema={rawJzodSchema}
                       resolvedElementJzodSchema={resolvedJzodSchema.element}
                       foreignKeyObjects={emptyObject}
-                      handleChange={formik.handleChange as any}
-                      formik={formik}
-                      // setFormState={setFormState}
-                      setFormState={formik.handleChange}
-                      // formState={formState}
+                      // formik={formik}
+                      // setFormState={formik.handleChange}
+                      // setFormState={handleChange}
                     />
                     <button type="submit" name={pageLabel} form={"form." + pageLabel}>
                       submit form.{pageLabel}

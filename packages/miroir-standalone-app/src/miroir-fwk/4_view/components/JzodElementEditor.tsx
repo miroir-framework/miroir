@@ -49,7 +49,7 @@ import {
   unfoldJzodSchemaOnce
 } from "miroir-core";
 
-import { FormikProps } from "formik";
+import { FormikProps, useFormikContext } from "formik";
 import { getMemoizedDeploymentEntityStateSelectorMap } from "miroir-localcache-redux";
 import { packageName } from "../../../constants.js";
 import { cleanLevel } from "../constants.js";
@@ -64,6 +64,7 @@ import { JzodArrayEditor, indentShift } from "./JzodArrayEditor.js";
 import { JzodEnumEditor } from "./JzodEnumEditor.js";
 import { JzodLiteralEditor } from "./JzodLiteralEditor.js";
 import { MenuItem } from "@mui/material";
+import { JzodElementEditorProps } from "./JzodElementEditorInterface.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -86,42 +87,6 @@ export interface EditorAttribute {
   value: any;
 }
 
-export interface JzodElementEditorProps {
-  forceTestingMode?: boolean;
-  label?: string;
-  name: string;
-  listKey: string;
-  rootLesslistKey: string;
-  rootLesslistKeyArray: string[];
-  indentLevel?: number;
-  rawJzodSchema: JzodElement | undefined;
-  resolvedElementJzodSchema: JzodElement | undefined;
-  unresolvedJzodSchema?: JzodElement | undefined;
-  paramMiroirFundamentalJzodSchema?: JzodSchema; //used only for testing, trouble with using MiroirContextReactProvider
-  unionInformation?:
-    | {
-        jzodSchema: JzodUnion;
-        discriminator: string;
-        discriminatorValues: string[];
-        // subDiscriminator?: string,
-        // subDiscriminatorValues?: string[],
-        setItemsOrder: React.Dispatch<React.SetStateAction<any[]>>;
-      }
-    | undefined;
-  foreignKeyObjects: Record<string, EntityInstancesUuidIndex>;
-  currentDeploymentUuid?: Uuid;
-  currentApplicationSection?: ApplicationSection;
-  formik: FormikProps<any>;
-  // handleChange: (e: ChangeEvent<any>) => Promise<void>;
-  // formState: any;
-  setFormState: React.Dispatch<
-    React.SetStateAction<{
-      [k: string]: any;
-    }>
-  >;
-  parentObjectSetItemsOrder?: React.Dispatch<React.SetStateAction<any[]>>;
-  parentObjectItemsOrder?: any[];
-}
 
 // ################################################################################################
 // ################################################################################################
@@ -272,6 +237,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     props.paramMiroirFundamentalJzodSchema ?? context.miroirFundamentalJzodSchema;
   // const [formHelperState, setformHelperState] = useMiroirContextformHelperState();
 
+  const formik = useFormikContext<Record<string, any>>();
+
   const [hiddenFormItems, setHiddenFormItems] = useState<{ [k: string]: boolean }>({});
 
   const currentModel: MetaModel = useCurrentModel(props.currentDeploymentUuid);
@@ -292,7 +259,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   //   props
   // );
 
-  const currentValue = resolvePathOnObject(props.formik.values, props.rootLesslistKeyArray);
+  // const currentValue = resolvePathOnObject(props.formik.values, props.rootLesslistKeyArray);
+  const currentValue = resolvePathOnObject(formik.values, props.rootLesslistKeyArray);
   // log.info("#####################################################################################");
   // log.info("JzodElementEditor", props.listKey, "count", count, "currentValue", currentValue);
   // log.info("JzodElementEditor", props.listKey, "count", count, "resolvedJzodSchema", props.resolvedJzodSchema);
@@ -592,27 +560,30 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     // ############################################################################################
     // ############################################################################################
     // ############################################################################################
-    const handleSelectValueChange = useCallback(
-      (event: any) => {
-        // const parentPath = props.rootLesslistKeyArray.slice(0,props.rootLesslistKeyArray.length - 1)
-        // identical to handleSelectEnumChange?
-        const newFormState: any = alterObjectAtPath(
-          props.formik.values,
-          props.rootLesslistKeyArray,
-          event.target.value
-        );
-        log.info(
-          "handleSelectValueChange called with event",
-          event,
-          "current Value",
-          props.formik.values,
-          "newFormState",
-          newFormState
-        );
-        props.setFormState(newFormState);
-      },
-      [props.formik.values, props.rootLesslistKeyArray, props.setFormState]
-    );
+    // uses setFormState to update the formik state
+    // const handleSelectValueChange = useCallback(
+    //   (event: any) => {
+    //     // const parentPath = props.rootLesslistKeyArray.slice(0,props.rootLesslistKeyArray.length - 1)
+    //     // identical to handleSelectEnumChange?
+    //     const newFormState: any = alterObjectAtPath(
+    //       formik.values,
+    //       props.rootLesslistKeyArray,
+    //       event.target.value
+    //     );
+    //     log.info(
+    //       "handleSelectValueChange called with event",
+    //       event,
+    //       "current Value",
+    //       formik.values,
+    //       "newFormState",
+    //       newFormState
+    //     );
+    //     // props.setFormState(newFormState);
+    //     // formik.setFormState(newFormState);
+    //     formik.setFormikState(newFormState);
+    //   },
+    //   [formik, props.rootLesslistKeyArray]
+    // );
 
     // ############################################################################################
     // ############################################################################################
@@ -626,6 +597,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     // ############################################################################################
     // ############################################################################################
     // const handleAttributeNameChange = useCallback(
+    // uses setFormState to update the formik state
     const handleAttributeNameChange = (event: any, attributeRootLessListKeyArray: string[]) => {
       // const parentPath = props.rootLesslistKeyArray.slice(0,props.rootLesslistKeyArray.length - 1)
       // identical to handleSelectEnumChange?
@@ -641,7 +613,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         "called with event",
         event,
         "current Value",
-        props.formik.values,
+        formik.values,
         "props.rootLesslistKey",
         props.rootLesslistKey,
         "attributeRootLessListKeyArray",
@@ -654,11 +626,11 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         props.resolvedElementJzodSchema
       );
       const subObject = resolvePathOnObject(
-        props.formik.values,
+        formik.values,
         localAttributeRootLessListKeyArray
       );
       const newFormState1: any = deleteObjectAtPath(
-        props.formik.values,
+        formik.values,
         localAttributeRootLessListKeyArray
       );
       log.info(
@@ -686,7 +658,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       log.info("handleAttributeNameChange newFormState2", newFormState2);
 
       // log.info("handleSelectValueChange called with event", event, "current Value",props.formik.values,"newFormState", newFormState)
-      props.setFormState(newFormState2);
+      // props.setFormState(newFormState2);
+      formik.setFormikState(newFormState2);
       if (itemsOrder) {
         // const parentItemsOrder = props.parentObjectItemsOrder;
         log.info(
@@ -721,6 +694,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     };
 
     // ############################################################################################
+    // uses setFormState to update the formik state
     const handleSelectLiteralChange = (event: any) => {
       // TODO: avoid side-effects!!! So ugly, I'll be hanged for this.
 
@@ -755,7 +729,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           "jzodSchema.discriminator",
           "'" + (props.unionInformation as any).jzodSchema.discriminator + "'",
           "props.formik.values",
-          props.formik.values,
+          formik.values,
           "props.rootLesslistKeyArray",
           props.rootLesslistKeyArray
         );
@@ -805,9 +779,10 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           : undefined;
         log.info("handleSelectLiteralChange defaultValue", defaultValue);
         // const newFormState: any = alterObjectAtPath(props.formik.values, parentPath, {type: "B", b: "Test!!"}) ;
-        const newFormState: any = alterObjectAtPath(props.formik.values, parentPath, defaultValue);
+        const newFormState: any = alterObjectAtPath(formik.values, parentPath, defaultValue);
         log.info("handleSelectLiteralChange newFormState", newFormState);
-        props.setFormState(newFormState);
+        // props.setFormState(newFormState);
+        formik.setFormikState(newFormState);
         const currentParentValue = resolvePathOnObject(newFormState, parentPath);
         log.info(
           "handleSelectLiteralChange props.resolvedJzodSchema",
@@ -850,10 +825,11 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       } else {
         log.info("handleSelectLiteralChange parentPath", parentPath);
         log.info("handleSelectLiteralChange event.target.value", event.target.value);
-        const newFormState: any = alterObjectAtPath(props.formik.values, parentPath, event.target.value); ;
+        const newFormState: any = alterObjectAtPath(formik.values, parentPath, event.target.value); ;
         // const newFormState: any = alterObjectAtPath(props.formik.values, parentPath, defaultValue);
         log.info("handleSelectLiteralChange newFormState", newFormState);
-        props.setFormState(newFormState);
+        // props.setFormState(newFormState);
+        formik.setFormikState(newFormState);
         // const currentParentValue = resolvePathOnObject(newFormState, parentPath);
         // log.info(
         //   "handleSelectLiteralChange props.resolvedJzodSchema",
@@ -893,6 +869,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           JSON.stringify(unfoldedRawSchema, null, 2)
         );
         // #######################
+        // uses setFormState to update the formik state
         const addNewRecordAttribute = useCallback(async () => {
           log.info(
             "addMissingRecordAttribute clicked!",
@@ -902,7 +879,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             // "formState",
             // props.formState,
             "formik",
-            props.formik.values
+            formik.values
           );
           if (unfoldedRawSchema.type != "record") {
             throw "addMissingRecordAttribute called for non-record type: " + unfoldedRawSchema.type;
@@ -916,17 +893,18 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               )
             : undefined;
 
-          const currentValue = resolvePathOnObject(props.formik.values, props.rootLesslistKeyArray);
+          const currentValue = resolvePathOnObject(formik.values, props.rootLesslistKeyArray);
           const newValue: any = { ["NEWATTRIBUTE"]: newAttributeValue, ...currentValue };
           log.info("addMissingRecordAttribute", "newValue", newValue);
           // setNestedObjectValues(props.listKey, e.target.value);
           const newFormValue = alterObjectAtPath(
-            props.formik.values,
+            formik.values,
             props.rootLesslistKeyArray,
             newValue
           );
           log.info("addMissingRecordAttribute", "newFormValue", newFormValue);
-          props.setFormState(newFormValue);
+          // props.setFormState(newFormValue);
+          formik.setFormikState(newFormValue);
           setItemsOrder(getItemsOrder(newValue, props.resolvedElementJzodSchema));
           // await props.setFormState({"deploymentUuid2": "test!"});
           // await props.formik.setFieldValue("deploymentUuid2", "test!");
@@ -938,10 +916,11 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             // "formState",
             // props.formState,
             "formik",
-            props.formik.values
+            formik.values
           );
         }, [props, itemsOrder, resolvedElementJzodSchema]);
         // #######################
+        // uses setFormState to update the formik state
         const addMissingOptionalAttribute = useCallback(async () => {
           log.info(
             "addMissingOptionalAttribute clicked!",
@@ -951,13 +930,14 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             // "formState",
             // props.formState,
             "formik",
-            props.formik.values
+            formik.values
           );
           const newFormState: any =
             undefinedOptionalAttributes.length > 0
-              ? { ...props.formik.values, [undefinedOptionalAttributes[0]]: "test!" }
-              : props.formik.values;
-          props.setFormState(newFormState);
+              ? { ...formik.values, [undefinedOptionalAttributes[0]]: "test!" }
+              : formik.values;
+          // props.setFormState(newFormState);
+          formik.setFormikState(newFormState);
           const currentValue = resolvePathOnObject(newFormState, props.rootLesslistKeyArray);
           setItemsOrder(getItemsOrder(currentValue, props.resolvedElementJzodSchema));
           // await props.setFormState({"deploymentUuid2": "test!"});
@@ -970,10 +950,11 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             // "formState",
             // props.formState,
             "formik",
-            props.formik.values
+            formik.values
           );
         }, [props, itemsOrder, resolvedElementJzodSchema]);
         // #######################
+        // uses setFormState to update the formik state
         const removeOptionalAttribute = useCallback(
           (listKey: string) => {
             log.info(
@@ -984,11 +965,11 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               // "formState",
               // props.formState,
               "formik",
-              props.formik.values
+              formik.values
             );
-            const newFormState: any = { ...props.formik.values };
+            const newFormState: any = { ...formik.values };
             delete newFormState[listKey];
-            props.setFormState(newFormState);
+            formik.setFormikState(newFormState);
             const currentValue = resolvePathOnObject(newFormState, props.rootLesslistKeyArray);
             setItemsOrder(getItemsOrder(currentValue, props.resolvedElementJzodSchema));
             // // await props.setFormState({"deploymentUuid2": "test!"});
@@ -1001,7 +982,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               // "formState",
               // props.formState,
               "formik",
-              props.formik.values
+              formik.values
             );
           },
           [props, itemsOrder, resolvedElementJzodSchema]
@@ -1047,7 +1028,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                 {itemsOrder
                   .map((i): [string, JzodElement] => [
                     i,
-                    props.formik.values[
+                    formik.values[
                       props.rootLesslistKey.length > 0 ? props.rootLesslistKey + "." + i[0] : i[0]
                     ],
                   ])
@@ -1392,8 +1373,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                             resolvedElementJzodSchema={currentAttributeDefinition}
                             foreignKeyObjects={props.foreignKeyObjects}
                             // handleChange={props.handleChange}
-                            formik={props.formik}
-                            setFormState={props.setFormState}
+                            // formik={props.formik}
+                            // setFormState={props.setFormState}
                             // formState={props.formState}
                             parentObjectItemsOrder={itemsOrder}
                             parentObjectSetItemsOrder={setItemsOrder}
@@ -1443,8 +1424,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             currentDeploymentUuid={props.currentDeploymentUuid}
             paramMiroirFundamentalJzodSchema={props.paramMiroirFundamentalJzodSchema}
             foreignKeyObjects={props.foreignKeyObjects}
-            setFormState={props.setFormState}
-            formik={props.formik}
+            // setFormState={props.setFormState}
+            // formik={props.formik}
             rootLesslistKeyArray={props.rootLesslistKeyArray}
             rootLesslistKey={props.rootLesslistKey}
             rawJzodSchema={props.rawJzodSchema as any}
@@ -1456,12 +1437,11 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         return (
           <>
             <Checkbox
-              defaultChecked={props.formik.values[props.rootLesslistKey]}
-              {...props.formik.getFieldProps(props.listKey)}
-              name={props.listKey}
+              defaultChecked={formik.values[props.rootLesslistKey]}
               id={props.listKey}
-              onChange={handleSelectValueChange}
-              // value={props.formik.values[props.rootLesslistKey]}
+              // name={props.listKey}
+              {...formik.getFieldProps(props.listKey)}
+              // onChange={handleSelectValueChange}
             />
           </>
         );
@@ -1477,7 +1457,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               type="number"
               id={props.rootLesslistKey}
               role="textbox"
-              {...props.formik.getFieldProps(props.rootLesslistKey)}
+              {...formik.getFieldProps(props.rootLesslistKey)}
             />
             </>
         );
@@ -1492,7 +1472,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               type="text"
               role="textbox"
               id={props.rootLesslistKey}
-              {...props.formik.getFieldProps(props.rootLesslistKey)}
+              {...formik.getFieldProps(props.rootLesslistKey)}
             />
             </>
         );
@@ -1522,7 +1502,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               aria-label={props.label}
               labelId="demo-simple-select-label"
               variant="standard"
-              {...props.formik.getFieldProps(props.rootLesslistKey)}
+              {...formik.getFieldProps(props.rootLesslistKey)}
               name={props.rootLesslistKey}
             >
               {/* {unionInformation?.discriminatorValues.map((v) => {
@@ -1547,10 +1527,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               type="text"
               id={props.rootLesslistKey}
               role="textbox"
-              {...props.formik.getFieldProps(props.rootLesslistKey)}
-              // name={props.name}
-              // onChange={props.handleChange}
-              // value={currentValue}
+              {...formik.getFieldProps(props.rootLesslistKey)}
             />
           </>
         );
@@ -1565,7 +1542,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             listKey={props.listKey}
             rootLesslistKey={props.rootLesslistKey}
             // value={currentValue}
-            formik={props.formik}
+            // formik={props.formik}
             // formState={props.formState}
             rootLesslistKeyArray={props.rootLesslistKeyArray}
             onChange={handleSelectLiteralChange}
@@ -1691,7 +1668,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             enumValues={enumValues}
             // currentValue={currentValue}
             // formState={props.formState}
-            formik={props.formik}
+            // formik={props.formik}
             // onChange={handleSelectEnumChange}
             label={props.label}
             unionInformation={unionInformation}
@@ -1715,7 +1692,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         return (
           <span>
             default case: {props.resolvedElementJzodSchema.type} {props.listKey} value{" "}
-            {props.formik.values[props.rootLesslistKey]}
+            {formik.values[props.rootLesslistKey]}
             {/* <div>
               found schema: {JSON.stringify(props.resolvedJzodSchema, null, 2)}
             </div>
@@ -1732,7 +1709,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       <div>
         Could not find schema for item: {props.rootLesslistKey}
         <br />
-        value {props.formik.values[props.rootLesslistKey]}
+        value {formik.values[props.rootLesslistKey]}
         <br />
         raw Jzod schema: {JSON.stringify(props.rawJzodSchema)}
         <br />

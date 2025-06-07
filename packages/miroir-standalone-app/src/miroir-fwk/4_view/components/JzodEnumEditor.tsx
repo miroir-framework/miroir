@@ -8,6 +8,7 @@ import { packageName } from "../../../constants";
 import { cleanLevel } from "../constants";
 import { JzodEnumEditorProps } from "./JzodElementEditorInterface";
 import { StyledSelect } from "./Style";
+import { useFormikContext } from "formik";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -27,12 +28,12 @@ export const JzodEnumEditor: React.FC<JzodEnumEditorProps> = (
     rootLesslistKey,
     rootLesslistKeyArray,
     forceTestingMode,
-    formik,
     unionInformation
   }
 ) => {
   
   // const currentValue = resolvePathOnObject(props.formik.values, props.rootLesslistKeyArray);
+  const formik = useFormikContext<Record<string, any>>();
 
   return (
     <>

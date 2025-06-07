@@ -190,40 +190,44 @@ const reorderArrayField = (
 // #####################################################################################################
 let count = 0;
 
-interface JsonObjectEditFormContentProps {
+interface JsonElementEditorDialogProps {
   label?: string;
-  dialogOuterFormObject: any;
-  setdialogOuterFormObject: (obj: any) => void;
-  setformHelperState: (state: any) => void;
-  handleAddObjectDialogFormSubmit: (data: any, source?: string) => Promise<any>;
-  handleAddObjectDialogFormClose: (value: string) => void;
-  formIsOpen: boolean;
-  onCreateFormObject?: (a: any) => void;
-  onSubmit: (data: JsonObjectEditFormDialogInputs) => void;
+  count: number;
+  formState: any;
   currentDeploymentUuid?: Uuid;
   currentApplicationSection?: ApplicationSection;
   entityDefinitionJzodSchema: JzodObject;
   resolvedJzodSchema: any;
   foreignKeyObjects: Record<string, EntityInstancesUuidIndex>;
-  count: number;
+  // dialog
+  setdialogOuterFormObject: (obj: any) => void;
+  handleAddObjectDialogFormSubmit: (data: any, source?: string) => Promise<any>;
+  handleAddObjectDialogFormClose: (value: string) => void;
+  formIsOpen: boolean;
+  onCreateFormObject?: (a: any) => void;
+  // 
+  onSubmit: (data: JsonObjectEditFormDialogInputs) => void;
 }
 
-const JsonObjectEditFormContent: React.FC<JsonObjectEditFormContentProps> = ({
+// ################################################################################################
+const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
   label,
-  dialogOuterFormObject,
-  setdialogOuterFormObject,
-  setformHelperState,
-  handleAddObjectDialogFormSubmit,
-  handleAddObjectDialogFormClose,
-  formIsOpen,
-  onCreateFormObject,
-  onSubmit,
+  count,
+  formState: formState,
+  // setformHelperState,
+  // dialog: open and close dialog, collect result
   currentDeploymentUuid,
   currentApplicationSection,
   entityDefinitionJzodSchema,
   resolvedJzodSchema,
   foreignKeyObjects,
-  count
+  setdialogOuterFormObject,
+  handleAddObjectDialogFormSubmit,
+  handleAddObjectDialogFormClose,
+  onCreateFormObject,
+  formIsOpen,
+  // 
+  onSubmit,
 }) => {
   const onCodeEditorChange = useCallback((values: any, viewUpdate: any) => {
     log.info('edit code received value:', values);
@@ -234,7 +238,7 @@ const JsonObjectEditFormContent: React.FC<JsonObjectEditFormContentProps> = ({
   return (
     <Formik
       enableReinitialize={true}
-      initialValues={dialogOuterFormObject}
+      initialValues={formState}
       onSubmit={async (values, { setSubmitting, setErrors }) => {
         try {
           if (onCreateFormObject) {
@@ -243,7 +247,7 @@ const JsonObjectEditFormContent: React.FC<JsonObjectEditFormContentProps> = ({
             await onSubmit(values);
           } else {
             log.info("onSubmit formik handleAddObjectDialogFormSubmit", values);
-            setformHelperState(values);
+            // setformHelperState(values);
             await handleAddObjectDialogFormSubmit(values, "param");
           }
         } catch (e) {
@@ -252,9 +256,9 @@ const JsonObjectEditFormContent: React.FC<JsonObjectEditFormContentProps> = ({
           setSubmitting(false);
         }
       }}
-      handleChange={async (e: ChangeEvent<any>) => {
-        log.info("onChange formik DOES NOTHING", e);
-      }}
+      // handleChange={async (e: ChangeEvent<any>) => {
+      //   log.info("onChange formik DOES NOTHING", e);
+      // }}
     >
       {(formik: FormikProps<any>) => (
         <Dialog onClose={handleAddObjectDialogFormClose} open={formIsOpen} fullScreen>
@@ -266,16 +270,16 @@ const JsonObjectEditFormContent: React.FC<JsonObjectEditFormContentProps> = ({
             id={"form." + label}
             onSubmit={formik.handleSubmit}
           >
-            {dialogOuterFormObject ? (
+            {/* {formInitialValues ? (
               <CodeMirror
-                value={JSON.stringify(dialogOuterFormObject, null, 2)}
+                value={JSON.stringify(formInitialValues, null, 2)}
                 height="200px"
                 extensions={[javascript({ jsx: true })]}
                 onChange={onCodeEditorChange}
               />
             ) : (
               <></>
-            )}
+            )} */}
             <span style={{paddingTop: 0, paddingBottom: 0}}>
               <JzodElementEditor
                 name={"ROOT"}
@@ -288,9 +292,9 @@ const JsonObjectEditFormContent: React.FC<JsonObjectEditFormContentProps> = ({
                 rawJzodSchema={entityDefinitionJzodSchema}
                 resolvedElementJzodSchema={resolvedJzodSchema?.status == "ok" ? resolvedJzodSchema.element : undefined}
                 foreignKeyObjects={foreignKeyObjects}
-                setFormState={setdialogOuterFormObject}
+                // setFormState={setdialogOuterFormObject}
                 // handleChange={formik.handleChange as any}
-                formik={formik}
+                // formik={formik}
               />
               <button type="submit" name={label} form={"form." + label}>
                 submit form.{label}
@@ -303,6 +307,10 @@ const JsonObjectEditFormContent: React.FC<JsonObjectEditFormContentProps> = ({
   );
 };
 
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
 export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
   count++;
   const {
@@ -335,7 +343,7 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
   const context = useMiroirContextService();
 
   const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
-  const [formHelperState, setformHelperState] = useMiroirContextformHelperState();
+  // const [formHelperState, setformHelperState] = useMiroirContextformHelperState();
 
   const formIsOpen = addObjectdialogFormIsOpen || (!showButton && props.isOpen);
 
@@ -421,11 +429,11 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
       !showButton &&
       props?.isOpen &&
       dialogOuterFormObject ? (
-        <JsonObjectEditFormContent
+        <JsonElementEditorDialog
           label={label}
-          dialogOuterFormObject={dialogOuterFormObject}
+          formState={dialogOuterFormObject}
           setdialogOuterFormObject={setdialogOuterFormObject}
-          setformHelperState={setformHelperState}
+          // setformHelperState={setformHelperState}
           handleAddObjectDialogFormSubmit={handleAddObjectDialogFormSubmit}
           handleAddObjectDialogFormClose={handleAddObjectDialogFormClose}
           formIsOpen={formIsOpen}

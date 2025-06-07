@@ -6,6 +6,7 @@ import { useMiroirContextformHelperState, useMiroirContextService } from "../Mir
 import { useCurrentModel } from "../ReduxHooks";
 import { ExpandOrFoldObjectAttributes, JzodElementEditor } from "./JzodElementEditor";
 import { JzodArrayEditorProps } from "./JzodElementEditorInterface";
+import { useFormikContext } from "formik";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -91,9 +92,9 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     listKey,
     rootLesslistKey,
     rootLesslistKeyArray,
-    formik, // ??
+    // formik, // ??
     // formState,
-    setFormState,
+    // setFormState,
     rawJzodSchema,
     resolvedElementJzodSchema,
     paramMiroirFundamentalJzodSchema,
@@ -125,6 +126,8 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
 
   const currentModel: MetaModel = useCurrentModel(currentDeploymentUuid);
   const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
+  const formik = useFormikContext<Record<string,any>>();
+  // ??
   const [formHelperState, setformHelperState] = useMiroirContextformHelperState();
   // const [hiddenFormItems, setHiddenFormItems] = useState<{ [k: string]: boolean }>({});
   const usedIndentLevel: number = indentLevel ?? 0;
@@ -237,8 +240,8 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
                   } // TODO: wrong type seen for props.resolvedJzodSchema! (cannot be undefined, really)
                   foreignKeyObjects={foreignKeyObjects}
                   // handleChange={handleChange}
-                  formik={formik}
-                  setFormState={setFormState}
+                  // formik={formik}
+                  // setFormState={setFormState}
                   // formState={formState}
                 />
               </div>

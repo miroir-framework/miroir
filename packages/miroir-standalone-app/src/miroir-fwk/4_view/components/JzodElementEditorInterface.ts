@@ -11,7 +11,6 @@ export interface JzodEditorPropsRoot {
   rootLesslistKeyArray: string[];
   // formState: any; // TODO: replace with Formik type
   initialFormState?: any;
-  formik: FormikProps<any>;
   // rawJzodSchema: JzodElement | undefined;
   // enumValues: string[];
   // onChange: (event: SelectChangeEvent<any>) => void;
@@ -24,6 +23,37 @@ export interface JzodEditorPropsRoot {
   //       setItemsOrder: React.Dispatch<React.SetStateAction<any[]>>;
   //     }
   //   | undefined;
+}
+
+// ################################################################################################
+export interface JzodElementEditorProps extends JzodEditorPropsRoot {
+  forceTestingMode?: boolean;
+  // label?: string;
+  // name: string;
+  // listKey: string;
+  // rootLesslistKey: string;
+  // rootLesslistKeyArray: string[];
+  indentLevel?: number;
+  rawJzodSchema: JzodElement | undefined;
+  resolvedElementJzodSchema: JzodElement | undefined;
+  unresolvedJzodSchema?: JzodElement | undefined;
+  paramMiroirFundamentalJzodSchema?: JzodSchema; //used only for testing, trouble with using MiroirContextReactProvider
+  unionInformation?:
+    | {
+        jzodSchema: JzodUnion;
+        discriminator: string;
+        discriminatorValues: string[];
+        // subDiscriminator?: string,
+        // subDiscriminatorValues?: string[],
+        setItemsOrder: React.Dispatch<React.SetStateAction<any[]>>;
+      }
+    | undefined;
+  foreignKeyObjects: Record<string, EntityInstancesUuidIndex>;
+  currentDeploymentUuid?: Uuid;
+  currentApplicationSection?: ApplicationSection;
+  // setFormState: (e: ChangeEvent<Record<string, any>>) => void;
+  parentObjectSetItemsOrder?: React.Dispatch<React.SetStateAction<any[]>>;
+  parentObjectItemsOrder?: any[];
 }
 
 // ################################################################################################
@@ -47,14 +77,7 @@ export interface JzodArrayEditorProps extends JzodEditorPropsRoot {
   >;
   setItemsOrder: React.Dispatch<React.SetStateAction<any[]>>
   itemsOrder: any[];
-  // formik: FormikProps<any>;
-  // handleChange: (e: ChangeEvent<any>) => Promise<void>;
-  setFormState: React.Dispatch<
-    React.SetStateAction<{
-      [k: string]: any;
-    }>
-  >;
-
+  // setFormState: (e: ChangeEvent<Record<string, any>>) => void;
 }
 
 // #################################################################################################
@@ -75,14 +98,6 @@ export interface JzodEnumEditorProps extends JzodEditorPropsRoot {
 }
 
 export interface JzodLiteralEditorProps extends JzodEditorPropsRoot {
-  // label?: string;
-  // name: string;
-  // listKey: string;
-  // rootLesslistKey: string;
-  // rootLesslistKeyArray: string[];
-  // value: any;
-  // formState: any; // TODO: replace with Formik type
-  // formik: FormikProps<any>;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 

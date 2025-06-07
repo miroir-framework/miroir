@@ -1,17 +1,27 @@
-import { useCallback, useMemo, useState } from 'react';
+import { ChangeEvent, useCallback, useMemo, useState } from 'react';
 
 import {
   ApplicationSection,
+  DeploymentEntityState,
+  Domain2QueryReturnType,
+  DomainElementSuccess,
   Entity,
   EntityDefinition,
   EntityInstance,
+  EntityInstancesUuidIndex,
   JzodElement,
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
   ResolvedJzodSchemaReturnType,
+  SyncBoxedExtractorOrQueryRunnerMap,
+  SyncQueryRunner,
+  SyncQueryRunnerParams,
   Uuid,
   adminConfigurationDeploymentMiroir,
+  dummyDomainManyQueryWithDeploymentUuid,
+  getApplicationSection,
+  getQueryRunnerParamsForDeploymentEntityState,
   jzodTypeCheck
 } from "miroir-core";
 
@@ -26,9 +36,13 @@ import { packageName } from '../../../constants.js';
 import { JzodEnumSchemaToJzodElementResolver, getCurrentEnumJzodSchemaResolver } from '../../JzodTools.js';
 import { cleanLevel } from '../constants.js';
 import {
-  useCurrentModel
+  useCurrentModel,
+  useDeploymentEntityStateQuerySelectorForCleanedResult
 } from "../ReduxHooks.js";
 import { JzodElementDisplay } from './JzodElementDisplay.js';
+import { Formik, FormikProps } from 'formik';
+import { JzodElementEditor } from './JzodElementEditor.js';
+import { getMemoizedDeploymentEntityStateSelectorMap } from 'miroir-localcache-redux';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -59,6 +73,11 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
 
   const [displayAsStructuredElement, setDisplayAsStructuredElement] = useState(true);
   const [displayEditor, setDisplayEditor] = useState(true);
+  const [formState, setFormState] = useState<any>(props.instance);
+  const instance: any = props.instance;
+
+  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState> =
+    useMemo(() => getMemoizedDeploymentEntityStateSelectorMap(), []);
 
   const currentModel: MetaModel = useCurrentModel(
     context.applicationSection == "data" ? context.deploymentUuid : adminConfigurationDeploymentMiroir.uuid
@@ -82,7 +101,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const entityJzodSchemaDefinition: { [attributeName: string]: JzodElement } | undefined =
     currentReportTargetEntityDefinition?.jzodSchema.definition;
 
-  const instance: any = props.instance;
+  const pageLabel: string = props.applicationSection + "." + currentReportTargetEntity?.name;
 
   const currentMiroirModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
 
@@ -140,20 +159,72 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     return result;
   }, [props, currentReportTargetEntityDefinition, instance, context]);
 
+  if (!resolvedJzodSchema || resolvedJzodSchema.status != "ok") {
+    log.error(
+      "ReportSectionEntityInstance could not resolve jzod schema",
+      props,
+      context, resolvedJzodSchema
+    );
+    return <>ReportSectionEntityInstance: could not resolve jzod schema: {JSON.stringify(resolvedJzodSchema)}</>;
+  }
+
+  const foreignKeyObjectsFetchQueryParams: SyncQueryRunnerParams<DeploymentEntityState> = useMemo(
+    () =>
+      getQueryRunnerParamsForDeploymentEntityState(
+            props.deploymentUuid &&
+              resolvedJzodSchema.element.type == "uuid" &&
+              resolvedJzodSchema.element.tag?.value?.targetEntity
+              ? {
+                  queryType: "boxedQueryWithExtractorCombinerTransformer",
+                  deploymentUuid: props.deploymentUuid,
+                  pageParams: {},
+                  queryParams: {},
+                  contextResults: {},
+                  extractors: {
+                    [resolvedJzodSchema.element.tag?.value?.targetEntity]: {
+                      extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                      applicationSection: getApplicationSection(
+                        props.deploymentUuid,
+                        resolvedJzodSchema.element.tag?.value?.targetEntity
+                      ),
+                      parentName: "",
+                      parentUuid: resolvedJzodSchema.element.tag?.value?.targetEntity,
+                    },
+                  },
+                }
+              : dummyDomainManyQueryWithDeploymentUuid,
+            deploymentEntityStateSelectorMap
+          ),
+        [deploymentEntityStateSelectorMap, props.deploymentUuid, resolvedJzodSchema]
+      );
+  
+      const foreignKeyObjects: Record<string, EntityInstancesUuidIndex> =
+        useDeploymentEntityStateQuerySelectorForCleanedResult(
+          deploymentEntityStateSelectorMap.runQuery as SyncQueryRunner<
+            DeploymentEntityState,
+            Domain2QueryReturnType<DomainElementSuccess>
+          >,
+          foreignKeyObjectsFetchQueryParams
+        );
+  
+  // ##############################################################################################
   const handleDisplayAsStructuredElementSwitchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setDisplayAsStructuredElement(event.target.checked);
   };
   
+  // ##############################################################################################
   const handleDisplayEditorSwitchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setDisplayEditor(event.target.checked);
   };
   
+  // ##############################################################################################
   const onCodeEditorChange = useCallback((values:any, viewUpdate:any) => {
     log.info('edit code received value:', values);
     // setdialogOuterFormObject(JSON.parse(values))
     log.info('edit code done');
   }, []);
-
+  
+  // ##############################################################################################
   if (instance) {
     return (
       <>
@@ -162,24 +233,26 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
         ReportSectionEntityInstance
         </p> */}
           <div>
-            <label htmlFor="displayAsStructuredElementSwitch">
-              Display as structured element:
-            </label>
+            <label htmlFor="displayAsStructuredElementSwitch">Display as structured element:</label>
             <Switch
               checked={displayAsStructuredElement}
               id="displayAsStructuredElementSwitch"
               onChange={handleDisplayAsStructuredElementSwitchChange}
               inputProps={{ "aria-label": "Display as structured element" }}
             />
-            <label htmlFor="displayEditorSwitch">
-              Display editor:
-            </label>
+            <label htmlFor="displayEditorSwitch">Display editor:</label>
             <Switch
               checked={displayEditor}
               id="displayEditorSwitch"
               onChange={handleDisplayEditorSwitchChange}
               inputProps={{ "aria-label": "Edit" }}
             />
+          </div>
+          <div>
+            <span>
+              displayAsStructuredElement: {displayAsStructuredElement ? "true" : "false"}{" "}
+              displayEditor: {displayEditor ? "true" : "false"}
+            </span>
           </div>
           <h1>
             {currentReportTargetEntity?.name} details: {instance.name}{" "}
@@ -191,26 +264,120 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
           resolvedJzodSchema &&
           (resolvedJzodSchema as any)?.status == "ok" ? (
             displayAsStructuredElement ? (
-              <div>
-                <JzodElementDisplay
-                  path={instance?.name}
-                  name={instance?.name}
-                  deploymentUuid={props.deploymentUuid}
-                  // prop drilling!
-                  applicationSection={context.applicationSection as ApplicationSection}
-                  entityUuid={props.entityUuid}
-                  element={instance}
-                  // rootJzodSchema={currentReportTargetEntityDefinition?.jzodSchema}
-                  elementJzodSchema={currentReportTargetEntityDefinition?.jzodSchema}
-                  resolvedElementJzodSchema={(resolvedJzodSchema as any)?.element}
-                  currentReportDeploymentSectionEntities={currentReportDeploymentSectionEntities}
-                  currentEnumJzodSchemaResolver={currentEnumJzodSchemaResolver}
-                ></JzodElementDisplay>
-              </div>
+              displayEditor ? (
+                <div>
+                  <Formik
+                    enableReinitialize={true}
+                    initialValues={instance}
+                    // onSubmit={onSubmit}
+                    onSubmit={async (values, { setSubmitting, setErrors }) => {
+                      try {
+                        log.info("onSubmit formik values", values);
+                        // if (onCreateFormObject) {
+                        //   log.info("onSubmit formik onCreateFormObject", values);
+                        //   await onCreateFormObject(values);
+                        //   await onSubmit(values);
+                        // } else {
+                        //   log.info("onSubmit formik handleAddObjectDialogFormSubmit", values);
+                        //   // setformHelperState(values);
+                        //   await handleAddObjectDialogFormSubmit(values, "param");
+                        // }
+                      } catch (e) {
+                        log.error(e);
+                      } finally {
+                        setSubmitting(false);
+                      }
+                    }}
+                    validateOnChange={false}
+                    validateOnBlur={false}
+                  >
+                    {(formik: FormikProps<Record<string, any>>) => (
+                      <>
+                        <form id={"form." + pageLabel} onSubmit={formik.handleSubmit}>
+                          {resolvedJzodSchema != undefined && resolvedJzodSchema.status == "ok" ? (
+                            <>
+                              <JzodElementEditor
+                                name={"ROOT"}
+                                listKey={"ROOT"}
+                                rootLesslistKey=""
+                                rootLesslistKeyArray={[]}
+                                label={pageLabel}
+                                currentDeploymentUuid={props.deploymentUuid}
+                                currentApplicationSection={props.applicationSection}
+                                rawJzodSchema={currentReportTargetEntityDefinition?.jzodSchema}
+                                resolvedElementJzodSchema={
+                                  resolvedJzodSchema?.status == "ok"
+                                    ? resolvedJzodSchema.element
+                                    : undefined
+                                }
+                                foreignKeyObjects={foreignKeyObjects}
+                                // name={name}
+                                // listKey={listKey}
+                                // rootLesslistKey={rootLesslistKey}
+                                // rootLesslistKeyArray={rootLesslistKeyArray}
+                                // paramMiroirFundamentalJzodSchema={miroirFundamentalJzodSchema as JzodSchema}
+                                // label={label}
+                                // currentDeploymentUuid={context.deploymentUuid}
+                                // currentApplicationSection={"data"}
+                                // rawJzodSchema={rawJzodSchema}
+                                // resolvedElementJzodSchema={resolvedJzodSchema.element}
+                                // foreignKeyObjects={emptyObject}
+                                // formik={formik}
+                                // setFormState={formik.handleChange}
+                              />
+                              <button type="submit" name={pageLabel} form={"form." + pageLabel}>
+                                submit form.{pageLabel}
+                              </button>
+                            </>
+                          ) : (
+                            <div>
+                              could not display editor because schema could not be resolved:{" "}
+                              {JSON.stringify(resolvedJzodSchema)}
+                            </div>
+                          )}
+                        </form>
+                      </>
+                    )}
+                  </Formik>
+                </div>
+              ) : (
+                <div>
+                  <JzodElementDisplay
+                    path={instance?.name}
+                    name={instance?.name}
+                    deploymentUuid={props.deploymentUuid}
+                    // prop drilling!
+                    applicationSection={context.applicationSection as ApplicationSection}
+                    entityUuid={props.entityUuid}
+                    element={instance}
+                    // rootJzodSchema={currentReportTargetEntityDefinition?.jzodSchema}
+                    elementJzodSchema={currentReportTargetEntityDefinition?.jzodSchema}
+                    resolvedElementJzodSchema={(resolvedJzodSchema as any)?.element}
+                    currentReportDeploymentSectionEntities={currentReportDeploymentSectionEntities}
+                    currentEnumJzodSchemaResolver={currentEnumJzodSchemaResolver}
+                  ></JzodElementDisplay>
+                </div>
+              )
             ) : (
-              <div>
-                <pre>{JSON.stringify(instance, null, 2)}</pre>
-              </div>
+              <>
+                {displayEditor ? (
+                  <div>
+                    <span>code! </span>
+                    <ReactCodeMirror
+                      value={JSON.stringify(instance, null, 2)}
+                      height="200px"
+                      extensions={[javascript({ jsx: true })]}
+                      onChange={onCodeEditorChange}
+                    />
+                  </div>
+                ) : (
+                  <div>
+                    <pre>{JSON.stringify(instance, null, 2)}</pre>
+                  </div>
+                )}
+              </>
+              // ):(
+              // )
             )
           ) : (
             <div>
@@ -235,7 +402,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
             </div>
           )}
         </div>
-        <div>
+        {/* <div>
           {displayEditor ? (
             <div>
               <ReactCodeMirror
@@ -250,7 +417,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
               <pre>{JSON.stringify(resolvedJzodSchema, null, 2)}</pre>
             </div>
           )}
-        </div>
+        </div> */}
       </>
     );
   } else {

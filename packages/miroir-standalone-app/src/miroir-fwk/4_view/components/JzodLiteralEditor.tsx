@@ -2,6 +2,7 @@ import { resolvePathOnObject } from "miroir-core";
 import React from "react";
 import { JzodLiteralEditorProps } from "./JzodElementEditorInterface";
 import { J } from "vitest/dist/chunks/reporters.D7Jzd9GS";
+import { useFormikContext } from "formik";
 
 let JzodLiteralEditorRenderCount: number = 0;
 export const JzodLiteralEditor: React.FC<JzodLiteralEditorProps> = (
@@ -11,7 +12,7 @@ export const JzodLiteralEditor: React.FC<JzodLiteralEditorProps> = (
   listKey,
   rootLesslistKey,
   rootLesslistKeyArray,
-  formik,
+  // formik,
   // onChange,
   label,
   // formState,
@@ -30,6 +31,7 @@ export const JzodLiteralEditor: React.FC<JzodLiteralEditorProps> = (
   //   `
   //   // formState: ${JSON.stringify(formState, null, 2)}
   // );
+  const formik = useFormikContext<Record<string, any>>();
   
         // if (props.unionInformation) {
         //   log.info(
