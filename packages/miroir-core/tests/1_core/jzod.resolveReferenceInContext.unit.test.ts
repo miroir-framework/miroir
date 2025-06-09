@@ -110,8 +110,8 @@ import entityDefinitionDeployment from "../../src/assets/admin_model/54b9c72f-d4
 import transformerMenuV1 from "../../src/assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/685440be-7f3f-4774-b90d-bafa82d6832b.json";
 
 import { getMiroirFundamentalJzodSchema} from "../../src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema"
+import { resolveJzodSchemaReferenceInContext } from '../../src/1_core/jzod/jzodResolveSchemaReferenceInContext';
 
-import { resolveJzodSchemaReferenceInContext } from "../../src/1_core/jzod/jzodTypeCheck";
 
 export const defaultMiroirMetaModel: MetaModel = {
   // configuration: [instanceConfigurationReference],

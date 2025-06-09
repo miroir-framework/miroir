@@ -86,6 +86,14 @@ export const jzodUnion_recursivelyUnfold = (
         return subResult;
       }
       
+      // the discriminators are stringified to compare them, since they can be arrays or strings
+      if (jzodUnion.discriminator && subResult.discriminator && JSON.stringify(jzodUnion.discriminator) !== JSON.stringify(subResult.discriminator)) {
+        return {
+          status: "error",
+          error: `Discriminator mismatch: parent union discriminator (${jzodUnion.discriminator}) does not match sub-union discriminator (${subResult.discriminator})`,
+        };
+      }
+
       for (const s of subResult.result) {
         result.push(s);
       }

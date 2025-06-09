@@ -113,7 +113,7 @@ export function resolveObjectExtendClauseAndDefinition(
  * @param relativeReferenceJzodContext 
  * @returns 
  */
-export function unionChoices (
+export function unionObjectChoices (
   concreteUnrolledJzodSchemas: JzodElement[],
   miroirFundamentalJzodSchema: JzodSchema,
   currentModel: MetaModel,
@@ -629,7 +629,7 @@ export function jzodTypeCheck(
            * - there are several discriminators for the union (and / or subunions, 1 level) and exactly 1 possible union branch match of valueObject[discriminators[index]] for any index.
            * - subUnions are supported, but only 1 level deep, and schemaReferences must refer to an object type.
            */
-          const objectUnionChoices = unionChoices(
+          const objectUnionChoices = unionObjectChoices(
             concreteUnrolledJzodSchemas,
             miroirFundamentalJzodSchema,
             currentModel,
