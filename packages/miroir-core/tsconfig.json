@@ -28,5 +28,5 @@
     "./src/**/*.ts",
     "./src/**/*.tsx",
     "./scripts/**/*"
-, "tests/1_core/jzod.recursivelyUnfoldUnionAndReferences.test.ts"  ]
+  ]
 }

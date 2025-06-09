@@ -513,14 +513,26 @@ export function jzodTypeCheck(
       break;
     }
     case "union":{
-      const concreteUnrolledJzodSchemas: JzodElement[] = jzodUnion_recursivelyUnfold(
-        jzodSchema,
+      const unfoldedJzodSchema = jzodUnion_recursivelyUnfold(
+        jzodSchema as JzodUnion,
         new Set(),
         miroirFundamentalJzodSchema,
         currentModel,
         miroirMetaModel,
         relativeReferenceJzodContext
-      ).result;
+      );
+
+      if (unfoldedJzodSchema.status == "error") {
+        return {
+          status: "error",
+          valuePath: currentValuePath,
+          typePath: currentTypePath,
+          error: "jzodTypeCheck union schema " +
+            JSON.stringify(jzodSchema) +
+            " could not be unfolded, error: " + unfoldedJzodSchema.error
+        };
+      }
+      const concreteUnrolledJzodSchemas: JzodElement[] = unfoldedJzodSchema.result;
 
       // log.info(
       //   "jzodTypeCheck called for union",

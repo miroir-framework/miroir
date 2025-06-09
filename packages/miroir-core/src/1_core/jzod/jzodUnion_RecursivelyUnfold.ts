@@ -7,6 +7,18 @@ import {
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { resolveJzodSchemaReferenceInContext } from "./jzodResolveSchemaReferenceInContext";
 
+export interface JzodUnion_RecursivelyUnfold_ReturnTypeOK {
+  status: "ok",
+  result: JzodElement[],
+  expandedReferences: Set<string>
+}
+export interface JzodUnion_RecursivelyUnfold_ReturnTypeError {
+  status: "error",
+  error: string,
+  innerError?: JzodUnion_RecursivelyUnfold_ReturnTypeError,
+}
+export type JzodUnion_RecursivelyUnfold_ReturnType = JzodUnion_RecursivelyUnfold_ReturnTypeError | JzodUnion_RecursivelyUnfold_ReturnTypeOK;
+
 // ################################################################################################
 export const jzodUnion_recursivelyUnfold = (
   jzodUnion: JzodUnion,
@@ -15,68 +27,80 @@ export const jzodUnion_recursivelyUnfold = (
   currentModel: MetaModel,
   miroirMetaModel: MetaModel,
   relativeReferenceJzodContext: { [k: string]: JzodElement }
-): ({
-  result: JzodElement[],
-  expandedReferences: Set<string>,
-}) => {
-  // TODO: handle case when resolved reference is itself a reference
-  // TODO: handle case when resolved reference is itself union with references (is that done?)
+): JzodUnion_RecursivelyUnfold_ReturnType => {
+  try {
+    // TODO: handle case when resolved reference is itself a reference
+    // TODO: handle case when resolved reference is itself union with references (is that done?)
 
-  let result: JzodElement[] = jzodUnion.definition
-  .filter((a: JzodElement) => a.type != "schemaReference" && a.type != "union");
+    let result: JzodElement[] = jzodUnion.definition
+    .filter((a: JzodElement) => a.type != "schemaReference" && a.type != "union");
 
-  // treating references
-  const referencesToBeExplored: JzodReference[] = jzodUnion.definition
-  .filter((a: JzodElement) => a.type == "schemaReference")
-  .filter((a => !expandedReferences.has(a.definition.relativePath as any)))
-  ;
-  const resolvedReferences: JzodElement[] = referencesToBeExplored.map((a: JzodReference) =>
-    resolveJzodSchemaReferenceInContext(
-      miroirFundamentalJzodSchema,
-      a,
-      currentModel,
-      miroirMetaModel,
-      { ...relativeReferenceJzodContext, ...a.context }
-    )
-  );
-
-  for (const r of resolvedReferences.filter((a: JzodElement) => a.type != "union") as JzodElement[]) {
-    result.push(r);
-  }
-
-  
-  // treating unions
-  const newExpandedReferences = new Set(referencesToBeExplored.map((a: JzodReference) => a.definition.relativePath as string));
-  const unionsToBeExplored: JzodUnion[] = [
-    ...jzodUnion.definition.filter((a: JzodElement) => a.type == "union") as JzodUnion[],
-    ...resolvedReferences.filter((a: JzodElement) => a.type == "union") as JzodUnion[]];
-
-  // log.info(
-  //   "recursivelyUnfoldUnionAndReferences called for union",
-  //   jzodUnion,
-  //   "found references to be explored",
-  //   referencesToBeExplored,
-  //   "resolvedReferences",
-  //   resolvedReferences,
-  //   "unionsToBeExplored",
-  //   unionsToBeExplored,
-  // );
-  for (const r of unionsToBeExplored) {
-    const {result: subResult, expandedReferences: subExpandedReferences} = jzodUnion_recursivelyUnfold(
-      r as JzodUnion,
-      newExpandedReferences,
-      miroirFundamentalJzodSchema,
-      currentModel,
-      miroirMetaModel,
-      relativeReferenceJzodContext
+    // treating references
+    const referencesToBeExplored: JzodReference[] = jzodUnion.definition
+    .filter((a: JzodElement) => a.type == "schemaReference")
+    .filter((a => !expandedReferences.has(a.definition.relativePath as any)))
+    ;
+    const resolvedReferences: JzodElement[] = referencesToBeExplored.map((a: JzodReference) =>
+      resolveJzodSchemaReferenceInContext(
+        miroirFundamentalJzodSchema,
+        a,
+        currentModel,
+        miroirMetaModel,
+        { ...relativeReferenceJzodContext, ...a.context }
+      )
     );
-    for (const s of subResult) {
-      result.push(s);
+
+    for (const r of resolvedReferences.filter((a: JzodElement) => a.type != "union") as JzodElement[]) {
+      result.push(r);
     }
-    subExpandedReferences.forEach(ref => newExpandedReferences.add(ref));
-  }
-  return {
-    result,
-    expandedReferences: newExpandedReferences,
+
+    
+    // treating unions
+    const newExpandedReferences = new Set([...referencesToBeExplored.map((a: JzodReference) => a.definition.relativePath as string)]);
+    const unionsToBeExplored: JzodUnion[] = [
+      ...jzodUnion.definition.filter((a: JzodElement) => a.type == "union") as JzodUnion[],
+      ...resolvedReferences.filter((a: JzodElement) => a.type == "union") as JzodUnion[]];
+
+    // log.info(
+    //   "recursivelyUnfoldUnionAndReferences called for union",
+    //   jzodUnion,
+    //   "found references to be explored",
+    //   referencesToBeExplored,
+    //   "resolvedReferences",
+    //   resolvedReferences,
+    //   "unionsToBeExplored",
+    //   unionsToBeExplored,
+    // );
+    for (const r of unionsToBeExplored) {
+      const subResult = jzodUnion_recursivelyUnfold(
+        r as JzodUnion,
+        newExpandedReferences,
+        miroirFundamentalJzodSchema,
+        currentModel,
+        miroirMetaModel,
+        relativeReferenceJzodContext
+      );
+      
+      if (subResult.status === "error") {
+        return subResult;
+      }
+      
+      for (const s of subResult.result) {
+        result.push(s);
+      }
+      subResult.expandedReferences.forEach(ref => newExpandedReferences.add(ref));
+    }
+    
+    return {
+      status: "ok",
+      result,
+      expandedReferences: newExpandedReferences,
+    };
+  } catch (error) {
+    return {
+      status: "error",
+      // error: error instanceof Error ? error.message : String(error)
+      error: `Error while recursively unfolding JzodUnion: ${error instanceof Error ? error.message : String(error)}`,
+    };
   }
 }
