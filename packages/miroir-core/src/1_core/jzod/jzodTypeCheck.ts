@@ -709,13 +709,13 @@ export function jzodTypeCheck(
           const objectJzodSchemaDefintion = Object.fromEntries(
             Object.entries(valueObject).map((a: [string, any]) => {
               const foundAttributeJzodSchema = (currentDiscriminatedObjectJzodSchema?.definition ?? ({} as any))[a[0]];
-              log.info(
-                "jzodTypeCheck for resolved union type calling on object attribute\n"+
-                "valuePath=" + currentValuePath.join(".") + "." + a[0] + "\n" +
-                "typePath=" + [...currentTypePath, JSON.stringify(chosenDiscriminator), a[0]].join(".") +
-                "\n found schema:" + JSON.stringify(foundAttributeJzodSchema, null, 2) +
-                "\n valueObject=" + JSON.stringify(valueObject, null, 2)
-              );
+              // log.info(
+              //   "jzodTypeCheck for resolved union type calling on object attribute\n"+
+              //   "valuePath=" + currentValuePath.join(".") + "." + a[0] + "\n" +
+              //   "typePath=" + [...currentTypePath, JSON.stringify(chosenDiscriminator), a[0]].join(".") +
+              //   "\n found schema:" + JSON.stringify(foundAttributeJzodSchema, null, 2) +
+              //   "\n valueObject=" + JSON.stringify(valueObject, null, 2)
+              // );
               if (foundAttributeJzodSchema) {
                 const subSchema = jzodTypeCheck(
                   foundAttributeJzodSchema,
@@ -892,15 +892,55 @@ export function jzodTypeCheck(
       };
     }
     case "tuple": {
-      return {
-        status: "error",
-        valuePath: currentValuePath,
-        typePath: currentTypePath,
-        error: "jzodTypeCheck can not handle tuple schema " +
-        JSON.stringify(jzodSchema) +
-        " for value " +
-        JSON.stringify(valueObject)
+      if ( !Array.isArray(valueObject)) {
+        return {
+          status: "error",
+          valuePath: currentValuePath,
+          typePath: currentTypePath,
+          error: "jzodTypeCheck can not handle tuple schema " +
+          JSON.stringify(jzodSchema) +
+          " for value " +
+          JSON.stringify(valueObject)
+        }
       }
+      // return {
+      //   status: "error",
+      //   valuePath: currentValuePath,
+      //   typePath: currentTypePath,
+      //   error: "jzodTypeCheck can not handle tuple schema " +
+      //   JSON.stringify(jzodSchema) +
+      //   " for value " +
+      //   JSON.stringify(valueObject)
+      // }
+      const resolvedInnerSchemas: JzodElement[] = jzodSchema.definition.map(
+        (e: JzodElement, index: number) => {
+          const resultSchemaTmp = jzodTypeCheck(
+            e,
+            valueObject[index],
+            [...currentValuePath, index],
+            [...currentTypePath, index],
+            miroirFundamentalJzodSchema,
+            currentModel,
+            miroirMetaModel,
+            relativeReferenceJzodContext
+          );
+          if (resultSchemaTmp.status == "ok") {
+            return resultSchemaTmp.element;
+          } else {
+            log.warn(
+              "jzodTypeCheck tuple could not find schema for element at index " +
+              index +
+              " error:", JSON.stringify(resultSchemaTmp, null, 2)
+            );
+            return { type: "never" }
+          }
+        });
+        return {
+          status: "ok",
+          valuePath: currentValuePath,
+          typePath: currentTypePath,
+          element: { type: "tuple", definition: resolvedInnerSchemas },
+        }
       break;
     }
     case "array": {
@@ -928,7 +968,7 @@ export function jzodTypeCheck(
 
       // log.info("jzodTypeCheck called resolveJzodSchemaReferenceInContext for array found innerSchema", JSON.stringify(innerSchema, null, 2));
 
-      if (innerSchema.type != "union") {
+      if (innerSchema.type != "union") { // TODO: this a shortcut assuming that all items in the array are of the same type, which is not always true
         // log.info(
         //   "jzodTypeCheck array innerSchema not union at path=valueObject." + 
         //   currentValuePath.join("."),

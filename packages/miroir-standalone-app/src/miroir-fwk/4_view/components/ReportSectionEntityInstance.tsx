@@ -232,6 +232,11 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
           {/* <p>
         ReportSectionEntityInstance
         </p> */}
+          {/* <div>
+            <pre>
+              {JSON.stringify(resolvedJzodSchema.element, null, 2)}
+            </pre>
+          </div> */}
           <div>
             <label htmlFor="displayAsStructuredElementSwitch">Display as structured element:</label>
             <Switch

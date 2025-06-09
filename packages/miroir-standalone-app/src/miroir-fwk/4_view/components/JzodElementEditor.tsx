@@ -29,6 +29,7 @@ import {
   JzodObject,
   JzodSchema,
   JzodUnion,
+  JzodUnion_RecursivelyUnfold_ReturnType,
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
@@ -45,6 +46,7 @@ import {
   getDefaultValueForJzodSchemaWithResolution,
   getQueryRunnerParamsForDeploymentEntityState,
   jzodTypeCheck,
+  jzodUnion_recursivelyUnfold,
   resolvePathOnObject,
   unfoldJzodSchemaOnce
 } from "miroir-core";
@@ -249,14 +251,14 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   const usedIndentLevel: number = props.indentLevel ? props.indentLevel : 0;
 
   // log.info(
-  //   "rendering",
+  //   "JzodElementEditor render",
+  //   count,
+  //   "name",
+  //   name,
+  //   "listKey",
   //   props.listKey,
-  //   "type=",
-  //   props.resolvedJzodSchema?.type,
-  //   "jzodSchema=",
-  //   props.resolvedJzodSchema,
-  //   "props=",
-  //   props
+  //   "resolvedElementJzodSchema",
+  //   props.resolvedElementJzodSchema,
   // );
 
   // const currentValue = resolvePathOnObject(props.formik.values, props.rootLesslistKeyArray);
@@ -284,40 +286,20 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   let unfoldedRawSchemaReturnType: ResolvedJzodSchemaReturnType | undefined;
   try {
     unfoldedRawSchemaReturnType = useMemo(() => {
-      // log.info(
-      //   "unfolding rawJzodSchema for",
-      //   props.listKey,
-      //   "count",
-      //   count,
-      //   "rawJzodSchema",
-      //   props.rawJzodSchema
-      // );
       const result = currentMiroirFundamentalJzodSchema
         ? unfoldJzodSchemaOnce(
             currentMiroirFundamentalJzodSchema, // context.miroirFundamentalJzodSchema,
-            // props.rawJzodSchema?.type == "object"?props.rawJzodSchema.definition[attribute[0]]:props.rawJzodSchema?.definition as any,
             props.rawJzodSchema,
             currentModel,
             miroirMetaModel
           )
         : undefined;
-      // log.info(
-      //   "unfolded rawJzodSchema for",
-      //   props.listKey,
-      //   "count",
-      //   count,
-      //   "props.rawJzodSchema",
-      //   props.rawJzodSchema,
-      //   "result",
-      //   result
-      // );
       return {
         ...result,
         valuePath: [],
         typePath: [],
       } as any;
     }, [
-      // props,
       props.rawJzodSchema,
       props.listKey,
       currentMiroirFundamentalJzodSchema /*context.miroirFundamentalJzodSchema,*/,
@@ -376,18 +358,67 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       );
     }
 
+    const recursivelyUnfoldedRawSchema: JzodUnion_RecursivelyUnfold_ReturnType | undefined = useMemo(() => {
+      if (
+        unfoldedRawSchema.type == "union" && currentMiroirFundamentalJzodSchema
+      ) {
+        const result = jzodUnion_recursivelyUnfold(
+          unfoldedRawSchema,
+          new Set(),
+          currentMiroirFundamentalJzodSchema,
+          currentModel,
+          miroirMetaModel,
+          {},// relativeReferenceJzodContext
+          // 
+          // currentMiroirFundamentalJzodSchema, // context.miroirFundamentalJzodSchema,
+          // unfoldedRawSchema,
+          // currentModel,
+          // miroirMetaModel
+        );
+        // log.info(
+        //   "recursivelyUnfoldedRawSchema",
+        //   props.listKey,
+        //   "result",
+        //   result,
+        //   "unfoldedRawSchema",
+        //   unfoldedRawSchema
+        // );
+        return result;
+      } else {
+        return undefined;
+      }
+    }, [unfoldedRawSchema, currentMiroirFundamentalJzodSchema, currentModel, miroirMetaModel]);
+
+    if (
+      recursivelyUnfoldedRawSchema && recursivelyUnfoldedRawSchema.status == "error"
+    ) {
+      return (
+        <div>
+          <p>
+            Error unfolding union schema {props.listKey} {count}:
+          </p>
+          <pre style={{ color: "red" }}>
+            {JSON.stringify(recursivelyUnfoldedRawSchema, null, 2)}
+          </pre>
+        </div>
+      )
+    }
     // ######################### unions #########################
     const objectUniondiscriminatorValues: string[] = useMemo(() => {
       if (
         props.resolvedElementJzodSchema?.type == "object" &&
-        unfoldedRawSchema &&
-        unfoldedRawSchema.type == "union" &&
-        unfoldedRawSchema.discriminator
+        recursivelyUnfoldedRawSchema &&
+        // recursivelyUnfoldedRawSchema.result.type == "union" &&
+        recursivelyUnfoldedRawSchema.discriminator
+        // unfoldedRawSchema &&
+        // unfoldedRawSchema.type == "union" &&
+        // unfoldedRawSchema.discriminator
       ) {
         const discriminator = (unfoldedRawSchema as any).discriminator;
         const result = [
           ...new Set(
-            unfoldedRawSchema.definition.flatMap((branch: any /** JzodObject */) => {
+            // unfoldedRawSchema.definition.flatMap((branch: any /** JzodObject */) => {
+            recursivelyUnfoldedRawSchema.result.flatMap((branch: any /** JzodObject */) => {
               // return (a.definition as any)[(unfoldedRawSchema as any).discriminator].definition}
               switch (
                 typeof branch.definition[discriminator] == "string"
@@ -433,7 +464,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                       " discriminator " +
                       JSON.stringify(branch.definition[discriminator]) +
                       " for union " +
-                      JSON.stringify(unfoldedRawSchema)
+                      JSON.stringify(recursivelyUnfoldedRawSchema)
                   );
                   // return [];
                   break;
@@ -447,18 +478,29 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       } else {
         return [];
       }
-    }, [props.resolvedElementJzodSchema, unfoldedRawSchema]);
+    }, [props.resolvedElementJzodSchema, recursivelyUnfoldedRawSchema]);
 
     const unionInformation = useMemo(() => {
-      return unfoldedRawSchema.type == "union"
+      return unfoldedRawSchema.type == "union" && recursivelyUnfoldedRawSchema && recursivelyUnfoldedRawSchema.status == "ok"
         ? {
             jzodSchema: unfoldedRawSchema,
-            discriminator: unfoldedRawSchema.discriminator as string,
+            objectBranches: recursivelyUnfoldedRawSchema.result,
+            discriminator: recursivelyUnfoldedRawSchema.discriminator as string,
             discriminatorValues: objectUniondiscriminatorValues,
             setItemsOrder: setItemsOrder,
           }
         : undefined;
     }, [unfoldedRawSchema, objectUniondiscriminatorValues]);
+    // const unionInformation = useMemo(() => {
+    //   return unfoldedRawSchema.type == "union"
+    //     ? {
+    //         jzodSchema: unfoldedRawSchema,
+    //         discriminator: unfoldedRawSchema.discriminator as string,
+    //         discriminatorValues: objectUniondiscriminatorValues,
+    //         setItemsOrder: setItemsOrder,
+    //       }
+    //     : undefined;
+    // }, [unfoldedRawSchema, objectUniondiscriminatorValues]);
 
     // ######################### foreignKeyObjects #########################
     const foreignKeyObjectsFetchQueryParams: SyncQueryRunnerParams<DeploymentEntityState> = useMemo(
@@ -500,16 +542,16 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         foreignKeyObjectsFetchQueryParams
       );
 
-    log.info(
-      "JzodElementEditor",
-      props.listKey,
-      "count",
-      count,
-        // "foreignKeyObjectsFetchQueryParams",
-        // JSON.stringify(foreignKeyObjectsFetchQueryParams, null, 2),
-        // "foreignKeyObjects",
-        // JSON.stringify(foreignKeyObjects, null, 2),
-    );
+    // log.info(
+    //   "JzodElementEditor",
+    //   props.listKey,
+    //   "count",
+    //   count,
+    //     // "foreignKeyObjectsFetchQueryParams",
+    //     // JSON.stringify(foreignKeyObjectsFetchQueryParams, null, 2),
+    //     // "foreignKeyObjects",
+    //     // JSON.stringify(foreignKeyObjects, null, 2),
+    // );
 
     // ################################# objects ###################################
     const undefinedOptionalAttributes: string[] = useMemo(() => {
@@ -1093,10 +1135,14 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                         let concreteObjectRawJzodSchema: JzodObject | undefined;
                         let resolvedConcreteObjectJzodSchema: JzodObject | undefined;
 
-                        const possibleObjectTypes = unfoldedRawSchema.definition.filter(
+                        const possibleObjectTypes = unionInformation?.objectBranches.filter(
                           (a: any) =>
                             a.type == "object"
-                        );
+                        )??[]; // useless??
+                        // const possibleObjectTypes = unfoldedRawSchema.definition.filter(
+                        //   (a: any) =>
+                        //     a.type == "object"
+                        // );
 
                         if (possibleObjectTypes.length == 0) {
                           return (
@@ -1319,7 +1365,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                               }
                               defaultValue={attribute[0]}
                             />
-                            attributeName for {attributeRootLessListKeyArray}
+                            {/* attributeName for {attributeRootLessListKeyArray} */}
                           </>
                         ) : (
                           <label htmlFor={attributeListKey}>{attributeDisplayedLabel}:</label>
@@ -1412,6 +1458,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         break;
       }
       // DONE
+      case "tuple":
       case "array": {
         return (
           <JzodArrayEditor
@@ -1449,15 +1496,25 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       }
       case "number":
       case "bigint": {
-        // log.info("selectList for targetEntity", props.resolvedJzodSchema.tag?.value?.targetEntity, "value", selectList, "props.foreignKeyObjects", props.foreignKeyObjects);
+        // log.info(
+        //   "JzodElementEditor number/bigint!",
+        //   props.listKey,
+        //   "fieldProps",
+        //   formik.getFieldProps(props.rootLesslistKey),
+        //   "value",
+        //   currentValue,
+        //   formik.getFieldProps(props.rootLesslistKey).value,
+        // )
         return (
             <>
             {/* <label htmlFor={props.listKey}>{displayedLabel}: </label> */}
             <input
               type="number"
               id={props.rootLesslistKey}
+              // role="textbox"
               role="textbox"
               {...formik.getFieldProps(props.rootLesslistKey)}
+              value={currentValue}
             />
             </>
         );
@@ -1686,13 +1743,23 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       case "record":
       case "schemaReference":
       case "set":
-      case "tuple":
       case "union":
+      // case "tuple":
       default: {
         return (
           <span>
-            default case: {props.resolvedElementJzodSchema.type} {props.listKey} value{" "}
-            {formik.values[props.rootLesslistKey]}
+            default case: {props.resolvedElementJzodSchema.type}, for {props.listKey} values{" "}
+            {/* {JSON.stringify(formik.values[props.rootLesslistKey], null, 2)} */}
+            <pre>
+              {JSON.stringify(currentValue, null, 2)}
+            </pre>
+            <br />
+            <pre>
+              resolved Jzod schema: {JSON.stringify(props.resolvedElementJzodSchema, null, 2)}
+            </pre>
+            <pre>
+              raw Jzod schema: {JSON.stringify(props.rawJzodSchema, null, 2)}
+            </pre>
             {/* <div>
               found schema: {JSON.stringify(props.resolvedJzodSchema, null, 2)}
             </div>

@@ -1,6 +1,6 @@
 import { SelectChangeEvent } from "@mui/material";
 import { FormikProps } from "formik";
-import { ApplicationSection, EntityInstancesUuidIndex, JzodArray, JzodElement, JzodEnum, JzodSchema, JzodUnion, Uuid } from "miroir-core";
+import { ApplicationSection, EntityInstancesUuidIndex, JzodArray, JzodElement, JzodEnum, JzodObject, JzodSchema, JzodTuple, JzodUnion, Uuid } from "miroir-core";
 import { ChangeEvent } from "react";
 
 export interface JzodEditorPropsRoot {
@@ -41,6 +41,7 @@ export interface JzodElementEditorProps extends JzodEditorPropsRoot {
   unionInformation?:
     | {
         jzodSchema: JzodUnion;
+        objectBranches: JzodElement[];
         discriminator: string;
         discriminatorValues: string[];
         // subDiscriminator?: string,
@@ -60,7 +61,7 @@ export interface JzodElementEditorProps extends JzodEditorPropsRoot {
 export interface JzodArrayEditorProps extends JzodEditorPropsRoot {
   currentDeploymentUuid?: Uuid,
   currentApplicationSection?: ApplicationSection;
-  rawJzodSchema: JzodArray;
+  rawJzodSchema: JzodArray | JzodTuple;
   resolvedElementJzodSchema: JzodElement | undefined;
   paramMiroirFundamentalJzodSchema?: JzodSchema; //used only for testing, trouble with using MiroirContextReactProvider
   foreignKeyObjects: Record<string, EntityInstancesUuidIndex>;

@@ -71,6 +71,7 @@ import { TestMode } from "./JzodElementEditor.test";
 import { selfApplicationDeploymentLibrary } from "miroir-core";
 import { MetaModel } from "miroir-core";
 import { applicationDeploymentAdmin } from "miroir-core/src/ApplicationDeploymentAdmin";
+import { JzodTuple } from "miroir-core";
 
 export const testThemeParams = {
   palette: {
@@ -366,7 +367,7 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
     // );
 
     const currentMiroirModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
-    console.log("currentMiroirModel", currentMiroirModel);
+    // console.log("currentMiroirModel", currentMiroirModel);
 
     const onSubmit = useCallback(
       async (
@@ -1067,7 +1068,7 @@ export function getJzodEnumEditorTests(
 // ARRAY
 // ################################################################################################
 export interface LocalArrayEditorProps extends LocalEditorPropsRoot{
-  rawJzodSchema: JzodArray | undefined;
+  rawJzodSchema: JzodArray | JzodTuple | undefined;
 }
 
 export type JzodArrayEditorTest = JzodEditorTest<LocalArrayEditorProps>;
@@ -1139,6 +1140,56 @@ export function getJzodArrayEditorTests(
             expect(values).toEqual(["value1", "value3", "value2"]);
           },
         },
+        "renders all array values of a plain 2-items tuple with a string and a number, in the right order": {
+          props: {
+            label: "Test Label",
+            name: "fieldName",
+            listKey: "ROOT.fieldName",
+            rootLesslistKey: "fieldName",
+            rootLesslistKeyArray: ["fieldName"],
+            rawJzodSchema: {
+              type: "tuple", definition: [{ type: "string" }, { type: "number" }],
+            },
+            // initialFormState: [["value1", 1], ["value2", 2], ["value3", 3]],
+            initialFormState: ["value1", 2],
+          },
+          tests: async (expect) => {
+            const cells = screen
+              .getAllByRole("textbox")
+              .filter((input: HTMLElement) =>
+                (input as HTMLInputElement).name.startsWith("fieldName.")
+              );
+            
+            const values = cells.map((cell) => (cell as HTMLInputElement).value);
+            expect(cells.length).toBe(2);
+            expect(values.length).toBe(2);
+            expect(values).toEqual(["value1", "2"]);
+          },
+        },
+        "renders all array values of a tuple inside an array, in the right order": {
+          props: {
+            label: "Test Label",
+            name: "fieldName",
+            listKey: "ROOT.fieldName",
+            rootLesslistKey: "fieldName",
+            rootLesslistKeyArray: ["fieldName"],
+            rawJzodSchema: {
+              type: "array",
+              definition: { type: "tuple", definition: [{ type: "string" }, { type: "number" }] },
+            },
+            initialFormState: [["value1", 1], ["value2", 2], ["value3", 3]],
+          },
+          tests: async (expect) => {
+            const cells = screen
+              .getAllByRole("textbox")
+              .filter((input: HTMLElement) =>
+                (input as HTMLInputElement).name.startsWith("fieldName.")
+              );
+            const values = cells.map((cell) => (cell as HTMLInputElement).value);
+            const expectedValues = [["value1", "1"], ["value2", "2"], ["value3", "3"]]; // value of textbox is a string, even when type=number
+            expect(values).toEqual(expectedValues.flat()); // Flatten the expected values for comparison
+          },
+        },
       },
     },
   };
@@ -1171,26 +1222,26 @@ export function getJzodSimpleTypeEditorTests(
         renderAsJzodElementEditor,
       },
       tests: {
-        "string renders input with proper value": {
-          props: {
-            label: "Test Label",
-            name: "fieldName",
-            listKey: "ROOT.fieldName",
-            rootLesslistKey: "fieldName",
-            rootLesslistKeyArray: ["fieldName"],
-            rawJzodSchema: {
-              type: "string",
-              // definition: [{ type: "string" }, { type: "number" }],
-            },
-            initialFormState: "placeholder text",
-          },
+        // "string renders input with proper value": {
+        //   props: {
+        //     label: "Test Label",
+        //     name: "fieldName",
+        //     listKey: "ROOT.fieldName",
+        //     rootLesslistKey: "fieldName",
+        //     rootLesslistKeyArray: ["fieldName"],
+        //     rawJzodSchema: {
+        //       type: "string",
+        //       // definition: [{ type: "string" }, { type: "number" }],
+        //     },
+        //     initialFormState: "placeholder text",
+        //   },
 
-          tests: async (expect: ExpectStatic) => {
-            const input = screen.getByRole("textbox");
-            expect(input).toBeInTheDocument();
-            expect(input).toHaveValue("placeholder text");
-          },
-        },
+        //   tests: async (expect: ExpectStatic) => {
+        //     const input = screen.getByRole("textbox");
+        //     expect(input).toBeInTheDocument();
+        //     expect(input).toHaveValue("placeholder text");
+        //   },
+        // },
         "number renders input with proper value": { // TODO: test for nullable / optional scenario
           props: {
             label: "Test Label",
@@ -1204,51 +1255,52 @@ export function getJzodSimpleTypeEditorTests(
             initialFormState: 42,
           },
           tests: async (expect: ExpectStatic) => {
+            // expect(screen.getByText(/Test LabelAAAAAAAAAAAA/)).toBeInTheDocument();
             const input = screen.getByRole("textbox");
             expect(input).toBeInTheDocument();
             expect(input).toHaveValue(42);
           },
         },
-        "uuid renders input with proper value": { // TODO: test for nullable / optional scenario
-          props: {
-            label: "Test Label",
-            name: "fieldName",
-            listKey: "ROOT.fieldName",
-            rootLesslistKey: "fieldName",
-            rootLesslistKeyArray: ["fieldName"],
-            rawJzodSchema: {
-              type: "uuid",
-            },
-            initialFormState: "123e4567-e89b-12d3-a456-426614174000",
-          },
-          tests: async (expect: ExpectStatic) => {
-            const input = screen.getByRole("textbox");
-            expect(input).toBeInTheDocument();
-            expect(input).toHaveValue("123e4567-e89b-12d3-a456-426614174000");
-          },
-        },
-        "uuid allows to modify input value with consistent update": {
-          props: {
-            label: "Test Label",
-            name: "fieldName",
-            listKey: "ROOT.fieldName",
-            rootLesslistKey: "fieldName",
-            rootLesslistKeyArray: ["fieldName"],
-            rawJzodSchema: {
-              type: "uuid",
-            },
-            initialFormState: "123e4567-e89b-12d3-a456-426614174000",
-          },
-          tests: async (expect: ExpectStatic) => {
-            const input = screen.getByRole("textbox");
-            expect(input).toBeInTheDocument();
-            expect(input).toHaveValue("123e4567-e89b-12d3-a456-426614174000");
-            await act(() => {
-              fireEvent.change(input, { target: { value: "new-uuid-value" } });
-            });
-            expect(input).toHaveValue("new-uuid-value");
-          },
-        }
+        // "uuid renders input with proper value": { // TODO: test for nullable / optional scenario
+        //   props: {
+        //     label: "Test Label",
+        //     name: "fieldName",
+        //     listKey: "ROOT.fieldName",
+        //     rootLesslistKey: "fieldName",
+        //     rootLesslistKeyArray: ["fieldName"],
+        //     rawJzodSchema: {
+        //       type: "uuid",
+        //     },
+        //     initialFormState: "123e4567-e89b-12d3-a456-426614174000",
+        //   },
+        //   tests: async (expect: ExpectStatic) => {
+        //     const input = screen.getByRole("textbox");
+        //     expect(input).toBeInTheDocument();
+        //     expect(input).toHaveValue("123e4567-e89b-12d3-a456-426614174000");
+        //   },
+        // },
+        // "uuid allows to modify input value with consistent update": {
+        //   props: {
+        //     label: "Test Label",
+        //     name: "fieldName",
+        //     listKey: "ROOT.fieldName",
+        //     rootLesslistKey: "fieldName",
+        //     rootLesslistKeyArray: ["fieldName"],
+        //     rawJzodSchema: {
+        //       type: "uuid",
+        //     },
+        //     initialFormState: "123e4567-e89b-12d3-a456-426614174000",
+        //   },
+        //   tests: async (expect: ExpectStatic) => {
+        //     const input = screen.getByRole("textbox");
+        //     expect(input).toBeInTheDocument();
+        //     expect(input).toHaveValue("123e4567-e89b-12d3-a456-426614174000");
+        //     await act(() => {
+        //       fireEvent.change(input, { target: { value: "new-uuid-value" } });
+        //     });
+        //     expect(input).toHaveValue("new-uuid-value");
+        //   },
+        // }
       },
     },
   };

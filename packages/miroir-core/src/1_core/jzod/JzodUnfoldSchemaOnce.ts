@@ -9,6 +9,7 @@ import { MiroirLoggerFactory } from "../../4_services/LoggerFactory";
 import { packageName } from "../../constants";
 import { cleanLevel } from "../constants";
 import { resolveJzodSchemaReferenceInContext } from "./jzodResolveSchemaReferenceInContext";
+import { ResolvedJzodSchemaReturnType, ResolvedJzodSchemaReturnTypeOK } from "./jzodTypeCheck";
 
 // export const miroirFundamentalJzodSchema2 = miroirFundamentalJzodSchema;
 // import { miroirFundamentalJzodSchema } from "../tmp/src/0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema";
@@ -21,15 +22,15 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 
 
-export interface ResolvedJzodSchemaReturnTypeOK {
+export interface UnfoldJzodSchemaOnceReturnTypeOK {
   status: "ok",
   element: JzodElement
 }
-export interface ResolvedJzodSchemaReturnTypeError {
+export interface UnfoldJzodSchemaOnceReturnTypeError {
   status: "error",
   error: string
 }
-export type ResolvedJzodSchemaReturnType = ResolvedJzodSchemaReturnTypeError | ResolvedJzodSchemaReturnTypeOK;
+export type UnfoldJzodSchemaOnceReturnType = UnfoldJzodSchemaOnceReturnTypeError | UnfoldJzodSchemaOnceReturnTypeOK;
 
 
 // ################################################################################################
@@ -152,7 +153,7 @@ export function unfoldJzodSchemaOnce(
   currentModel?: MetaModel,
   miroirMetaModel?: MetaModel,
   relativeReferenceJzodContext?: {[k:string]: JzodElement},
-): ResolvedJzodSchemaReturnType {
+): UnfoldJzodSchemaOnceReturnType {
   // log.info(
   //   "unfoldJzodSchemaOnce called for schema",
   //   jzodSchema
@@ -303,7 +304,7 @@ export function unfoldJzodSchemaOnce(
     // ############################################################################################
     case "union":{
       // const unfoldedJzodSchemas: JzodElement[] = jzodSchema.definition.map((a: JzodElement) =>
-      const unfoldedJzodSchemaReturnType: ResolvedJzodSchemaReturnType[] = jzodSchema.definition.map((a: JzodElement) =>
+      const unfoldedJzodSchemaReturnType: UnfoldJzodSchemaOnceReturnType[] = jzodSchema.definition.map((a: JzodElement) =>
         unfoldJzodSchemaOnce(
           miroirFundamentalJzodSchema,
           a,
@@ -332,7 +333,7 @@ export function unfoldJzodSchemaOnce(
       break;
     }
     case "record": {
-      const resultSchemaTmp: ResolvedJzodSchemaReturnType = unfoldJzodSchemaOnce(
+      const resultSchemaTmp: UnfoldJzodSchemaOnceReturnType = unfoldJzodSchemaOnce(
         miroirFundamentalJzodSchema,
         jzodSchema.definition,
         currentModel,
@@ -340,7 +341,7 @@ export function unfoldJzodSchemaOnce(
         relativeReferenceJzodContext
       )
       if (resultSchemaTmp.status == "ok") {
-        const result: ResolvedJzodSchemaReturnType = { status: "ok", element: {type: "record", definition: resultSchemaTmp.element}}
+        const result: UnfoldJzodSchemaOnceReturnType = { status: "ok", element: {type: "record", definition: resultSchemaTmp.element}}
         // log.info("unfoldJzodSchemaOnce record, result", JSON.stringify(result, null, 2))
         return result
       } else {

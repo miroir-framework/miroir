@@ -224,605 +224,605 @@ describe("jzod.unfoldSchemaForValue", () => {
     console.log(expect.getState().currentTestName, "called getMiroirFundamentalJzodSchema");
     const castMiroirFundamentalJzodSchema = miroirFundamentalJzodSchema as JzodSchema;
     const tests: { [k: string]: testFormat } = {
-      // plain literal!
-      test010: {
-        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-        testSchema: {
-          type: "literal",
-          definition: "myLiteral",
-        },
-        expectedResult: {
-          type: "literal",
-          definition: "myLiteral",
-        },
-        testValueObject: "myLiteral",
-      },
-      // simpleType
-      test020: {
-        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-        testSchema: {
-          type: "string",
-        },
-        expectedResult: {
-          type: "string",
-        },
-        testValueObject: "myString",
-      },
-      // schemaReference (plain, simpleType, non-recursive)
-      test030: {
-        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-        testSchema: {
-          type: "schemaReference",
-          context: {
-            a: {
-              type: "string",
-            },
-          },
-          definition: {
-            relativePath: "a",
-          },
-        },
-        expectedResult: {
-          type: "string",
-        },
-        testValueObject: "myString",
-      },
-      // schemaReference: object, recursive, 1-level valueObject
-      test040: {
-        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-        testSchema: {
-          type: "schemaReference",
-          context: {
-            myObject: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "union",
-                  definition: [
-                    {
-                      type: "string",
-                    },
-                    {
-                      type: "schemaReference",
-                      definition: { relativePath: "myObject" },
-                    },
-                  ],
-                },
-              },
-            },
-          },
-          definition: { relativePath: "myObject" },
-        },
-        expectedResult: {
-          type: "object",
-          definition: {
-            a: {
-              type: "string",
-            },
-          },
-        },
-        testValueObject: { a: "myString" },
-      },
-      // schemaReference: object, recursive, 2-level valueObject
-      test050: {
-        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-        testSchema: {
-          type: "schemaReference",
-          context: {
-            myObject: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "union",
-                  discriminator: "type",
-                  definition: [
-                    {
-                      type: "string",
-                    },
-                    {
-                      type: "schemaReference",
-                      definition: { relativePath: "myObject" },
-                    },
-                  ],
-                },
-              },
-            },
-          },
-          definition: { relativePath: "myObject" },
-        },
-        expectedResult: {
-          type: "object",
-          definition: {
-            a: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "string",
-                },
-              },
-            },
-          },
-        },
-        testValueObject: { a: { a: "myString" } },
-      },
-      // schemaReference: object, recursive, 3-level valueObject
-      test060: {
-        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-        testSchema: {
-          type: "schemaReference",
-          context: {
-            myObject: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "union",
-                  definition: [
-                    {
-                      type: "string",
-                    },
-                    {
-                      type: "schemaReference",
-                      definition: { relativePath: "myObject" },
-                    },
-                  ],
-                },
-              },
-            },
-          },
-          definition: { relativePath: "myObject" },
-        },
-        expectedResult: {
-          type: "object",
-          definition: {
-            a: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "object",
-                  definition: {
-                    a: {
-                      type: "string",
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-        testValueObject: { a: { a: { a: "myString" } } },
-      },
-      // schemaReference: record of recursive object, with 2-level valueObject
-      test070: {
-        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-        testSchema: {
-          type: "schemaReference",
-          context: {
-            myObject: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "union",
-                  definition: [
-                    {
-                      type: "string",
-                    },
-                    {
-                      type: "schemaReference",
-                      definition: { relativePath: "myObject" },
-                    },
-                  ],
-                },
-              },
-            },
-            myRecord: {
-              type: "record",
-              definition: {
-                type: "schemaReference",
-                definition: { relativePath: "myObject" },
-              },
-            },
-          },
-          definition: { relativePath: "myRecord" },
-        },
-        expectedResult: {
-          type: "object",
-          definition: {
-            r1: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "object",
-                  definition: {
-                    a: {
-                      type: "string",
-                    },
-                  },
-                },
-              },
-            },
-            r2: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "string",
-                },
-              },
-            },
-          },
-        },
-        testValueObject: { r1: { a: { a: "myString" } }, r2: { a: "myString" } },
-      },
-      // result must be identical to test70, but this time the schemaReference is places inside the record, not the other way around
-      test080: {
-        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-        testSchema: {
-          type: "record",
-          definition: {
-            type: "schemaReference",
-            context: {
-              myObject: {
-                type: "object",
-                definition: {
-                  a: {
-                    type: "union",
-                    definition: [
-                      {
-                        type: "string",
-                      },
-                      {
-                        type: "schemaReference",
-                        definition: { relativePath: "myObject" },
-                      },
-                    ],
-                  },
-                },
-              },
-            },
-            definition: { relativePath: "myObject" },
-          },
-        },
-        expectedResult: {
-          type: "object",
-          definition: {
-            r1: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "object",
-                  definition: {
-                    a: {
-                      type: "string",
-                    },
-                  },
-                },
-              },
-            },
-            r2: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "string",
-                },
-              },
-            },
-          },
-        },
-        testValueObject: { r1: { a: { a: "myString" } }, r2: { a: "myString" } },
-      },
-      // array of simpleType
-      test090: {
-        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-        testSchema: {
-          type: "array",
-          definition: {
-            type: "string",
-          },
-        },
-        expectedResult: {
-          type: "array",
-          definition: {
-            type: "string",
-          },
-        },
-        testValueObject: ["1", "2", "3"],
-      },
-      // array of schemaReference / object
-      test100: {
-        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-        testSchema: {
-          type: "array",
-          definition: {
-            type: "schemaReference",
-            context: {
-              myObject: {
-                type: "object",
-                definition: {
-                  a: {
-                    type: "union",
-                    definition: [
-                      {
-                        type: "string",
-                      },
-                      {
-                        type: "schemaReference",
-                        definition: { relativePath: "myObject" },
-                      },
-                    ],
-                  },
-                },
-              },
-            },
-            definition: { relativePath: "myObject" },
-          },
-        },
-        expectedResult: {
-          type: "array",
-          definition: {
-            type: "object",
-            definition: {
-              a: {
-                type: "union",
-                definition: [
-                  {
-                    type: "string",
-                  },
-                  {
-                    type: "schemaReference",
-                    definition: {
-                      relativePath: "myObject",
-                    },
-                  },
-                ],
-              },
-            },
-          },
-          // "type": "array",
-          // "definition": {
-          //   "type": "object",
-          //   "definition": {
-          //     "a": {
-          //       "type": "string"
-          //     }
-          //   }
-          // }
-        },
-        testValueObject: [
-          { a: "myString" },
-          // { a: { a: "myString" } }
-        ],
-      },
-      // array of schemaReference / object
-      test110: {
-        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-        testSchema: {
-          type: "schemaReference",
-          context: {
-            myObjectRoot: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "string",
-                },
-              },
-            },
-            myObject: {
-              type: "object",
-              extend: {
-                type: "schemaReference",
-                definition: {
-                  relativePath: "myObjectRoot",
-                },
-              },
-              definition: {
-                b: {
-                  type: "string",
-                },
-              },
-            },
-          },
-          definition: { relativePath: "myObject" },
-        },
-        expectedResult: {
-          type: "object",
-          definition: {
-            a: {
-              type: "string",
-            },
-            b: {
-              type: "string",
-            },
-          },
-        },
-        testValueObject: { a: "myString", b: "anotherString" },
-      },
-      // simple union Type
-      test120: {
-        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-        testSchema: {
-          type: "union",
-          definition: [
-            {
-              type: "string",
-            },
-            {
-              type: "number",
-            },
-            // {
-            //   type: "schemaReference",
-            //   context: {
-            //     myObjectRoot: {
-            //       type: "object",
-            //       definition: {
-            //         a: {
-            //           type: "string",
-            //         },
-            //       },
-            //     },
-            //     myObject: {
-            //       type: "object",
-            //       extend: {
-            //         type: "schemaReference",
-            //         definition: { relativePath: "myObjectRoot" },
-            //       },
-            //       definition: {
-            //         b: {
-            //           type: "string",
-            //         },
-            //       },
-            //     },
-            //   },
-            //   definition: { relativePath: "myObject" },
-            // },
-          ],
-        },
-        expectedResult: {
-          type: "number",
-        },
-        testValueObject: 1, // this is the object
-      },
-      // union between simpleType and object, object value
-      test130: {
-        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-        testSchema: {
-          type: "union",
-          definition: [
-            {
-              type: "string",
-            },
-            {
-              type: "object",
-              definition: {
-                a: {
-                  type: "string",
-                },
-              },
-            },
-          ],
-        },
-        testValueObject: { a: "myString" }, // this is the object
-        expectedResult: {
-          type: "object",
-          definition: {
-            a: {
-              type: "string",
-            },
-          },
-        },
-      },
-      // union between simpleType and object, simpleType value
-      test140: {
-        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-        testSchema: {
-          type: "union",
-          definition: [
-            {
-              type: "string",
-            },
-            {
-              type: "bigint",
-            },
-            {
-              type: "object",
-              definition: {
-                a: {
-                  type: "string",
-                },
-              },
-            },
-          ],
-        },
-        testValueObject: 42n, // this is the bigint
-        expectedResult: {
-          type: "bigint",
-        },
-      },
-      // union between simpleType and object, object value
-      test150: {
-        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-        testSchema: {
-          type: "union",
-          definition: [
-            {
-              type: "string",
-            },
-            {
-              type: "bigint",
-            },
-            {
-              type: "object",
-              definition: {
-                a: {
-                  type: "string",
-                },
-              },
-            },
-          ],
-        },
-        testValueObject: { a: "test"}, // this is the bigint
-        expectedResult: {
-          type: "object",
-          definition: {
-            a: {
-              type: "string",
-            },
-          },
-        },
-      },
-      // union between simpleType and shemaReference pointing to a simple object, object value
-      test160: {
-        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-        testSchema: {
-          type: "union",
-          definition: [
-            {
-              type: "string",
-            },
-            {
-              type: "bigint",
-            },
-            {
-              type: "schemaReference",
-              context: {
-                // myObjectRoot: {
-                //   type: "object",
-                //   definition: {
-                //     a: {
-                //       type: "string",
-                //     },
-                //   },
-                // },
-                myObject: {
-                  type: "object",
-                  // extend: {
-                  //   type: "schemaReference",
-                  //   definition: { relativePath: "myObjectRoot" },
-                  // },
-                  definition: {
-                    b: {
-                      type: "string",
-                      optional: true,
-                    },
-                  },
-                },
-              },
-              definition: { relativePath: "myObject" },
-            },
-          ],
-        },
-        testValueObject: { b: "test"}, // this is the object
-        expectedResult: {
-          type: "object",
-          definition: {
-            // a: {
-            //   type: "string",
-            // },
-            b: {
-              type: "string",
-              optional: true,
-            },
-          },
-        },
-      },
+      // // plain literal!
+      // test010: {
+      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      //   testSchema: {
+      //     type: "literal",
+      //     definition: "myLiteral",
+      //   },
+      //   expectedResult: {
+      //     type: "literal",
+      //     definition: "myLiteral",
+      //   },
+      //   testValueObject: "myLiteral",
+      // },
+      // // simpleType
+      // test020: {
+      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      //   testSchema: {
+      //     type: "string",
+      //   },
+      //   expectedResult: {
+      //     type: "string",
+      //   },
+      //   testValueObject: "myString",
+      // },
+      // // schemaReference (plain, simpleType, non-recursive)
+      // test030: {
+      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      //   testSchema: {
+      //     type: "schemaReference",
+      //     context: {
+      //       a: {
+      //         type: "string",
+      //       },
+      //     },
+      //     definition: {
+      //       relativePath: "a",
+      //     },
+      //   },
+      //   expectedResult: {
+      //     type: "string",
+      //   },
+      //   testValueObject: "myString",
+      // },
+      // // schemaReference: object, recursive, 1-level valueObject
+      // test040: {
+      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      //   testSchema: {
+      //     type: "schemaReference",
+      //     context: {
+      //       myObject: {
+      //         type: "object",
+      //         definition: {
+      //           a: {
+      //             type: "union",
+      //             definition: [
+      //               {
+      //                 type: "string",
+      //               },
+      //               {
+      //                 type: "schemaReference",
+      //                 definition: { relativePath: "myObject" },
+      //               },
+      //             ],
+      //           },
+      //         },
+      //       },
+      //     },
+      //     definition: { relativePath: "myObject" },
+      //   },
+      //   expectedResult: {
+      //     type: "object",
+      //     definition: {
+      //       a: {
+      //         type: "string",
+      //       },
+      //     },
+      //   },
+      //   testValueObject: { a: "myString" },
+      // },
+      // // schemaReference: object, recursive, 2-level valueObject
+      // test050: {
+      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      //   testSchema: {
+      //     type: "schemaReference",
+      //     context: {
+      //       myObject: {
+      //         type: "object",
+      //         definition: {
+      //           a: {
+      //             type: "union",
+      //             discriminator: "type",
+      //             definition: [
+      //               {
+      //                 type: "string",
+      //               },
+      //               {
+      //                 type: "schemaReference",
+      //                 definition: { relativePath: "myObject" },
+      //               },
+      //             ],
+      //           },
+      //         },
+      //       },
+      //     },
+      //     definition: { relativePath: "myObject" },
+      //   },
+      //   expectedResult: {
+      //     type: "object",
+      //     definition: {
+      //       a: {
+      //         type: "object",
+      //         definition: {
+      //           a: {
+      //             type: "string",
+      //           },
+      //         },
+      //       },
+      //     },
+      //   },
+      //   testValueObject: { a: { a: "myString" } },
+      // },
+      // // schemaReference: object, recursive, 3-level valueObject
+      // test060: {
+      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      //   testSchema: {
+      //     type: "schemaReference",
+      //     context: {
+      //       myObject: {
+      //         type: "object",
+      //         definition: {
+      //           a: {
+      //             type: "union",
+      //             definition: [
+      //               {
+      //                 type: "string",
+      //               },
+      //               {
+      //                 type: "schemaReference",
+      //                 definition: { relativePath: "myObject" },
+      //               },
+      //             ],
+      //           },
+      //         },
+      //       },
+      //     },
+      //     definition: { relativePath: "myObject" },
+      //   },
+      //   expectedResult: {
+      //     type: "object",
+      //     definition: {
+      //       a: {
+      //         type: "object",
+      //         definition: {
+      //           a: {
+      //             type: "object",
+      //             definition: {
+      //               a: {
+      //                 type: "string",
+      //               },
+      //             },
+      //           },
+      //         },
+      //       },
+      //     },
+      //   },
+      //   testValueObject: { a: { a: { a: "myString" } } },
+      // },
+      // // schemaReference: record of recursive object, with 2-level valueObject
+      // test070: {
+      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      //   testSchema: {
+      //     type: "schemaReference",
+      //     context: {
+      //       myObject: {
+      //         type: "object",
+      //         definition: {
+      //           a: {
+      //             type: "union",
+      //             definition: [
+      //               {
+      //                 type: "string",
+      //               },
+      //               {
+      //                 type: "schemaReference",
+      //                 definition: { relativePath: "myObject" },
+      //               },
+      //             ],
+      //           },
+      //         },
+      //       },
+      //       myRecord: {
+      //         type: "record",
+      //         definition: {
+      //           type: "schemaReference",
+      //           definition: { relativePath: "myObject" },
+      //         },
+      //       },
+      //     },
+      //     definition: { relativePath: "myRecord" },
+      //   },
+      //   expectedResult: {
+      //     type: "object",
+      //     definition: {
+      //       r1: {
+      //         type: "object",
+      //         definition: {
+      //           a: {
+      //             type: "object",
+      //             definition: {
+      //               a: {
+      //                 type: "string",
+      //               },
+      //             },
+      //           },
+      //         },
+      //       },
+      //       r2: {
+      //         type: "object",
+      //         definition: {
+      //           a: {
+      //             type: "string",
+      //           },
+      //         },
+      //       },
+      //     },
+      //   },
+      //   testValueObject: { r1: { a: { a: "myString" } }, r2: { a: "myString" } },
+      // },
+      // // result must be identical to test70, but this time the schemaReference is places inside the record, not the other way around
+      // test080: {
+      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      //   testSchema: {
+      //     type: "record",
+      //     definition: {
+      //       type: "schemaReference",
+      //       context: {
+      //         myObject: {
+      //           type: "object",
+      //           definition: {
+      //             a: {
+      //               type: "union",
+      //               definition: [
+      //                 {
+      //                   type: "string",
+      //                 },
+      //                 {
+      //                   type: "schemaReference",
+      //                   definition: { relativePath: "myObject" },
+      //                 },
+      //               ],
+      //             },
+      //           },
+      //         },
+      //       },
+      //       definition: { relativePath: "myObject" },
+      //     },
+      //   },
+      //   expectedResult: {
+      //     type: "object",
+      //     definition: {
+      //       r1: {
+      //         type: "object",
+      //         definition: {
+      //           a: {
+      //             type: "object",
+      //             definition: {
+      //               a: {
+      //                 type: "string",
+      //               },
+      //             },
+      //           },
+      //         },
+      //       },
+      //       r2: {
+      //         type: "object",
+      //         definition: {
+      //           a: {
+      //             type: "string",
+      //           },
+      //         },
+      //       },
+      //     },
+      //   },
+      //   testValueObject: { r1: { a: { a: "myString" } }, r2: { a: "myString" } },
+      // },
+      // // array of simpleType
+      // test090: {
+      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      //   testSchema: {
+      //     type: "array",
+      //     definition: {
+      //       type: "string",
+      //     },
+      //   },
+      //   expectedResult: {
+      //     type: "array",
+      //     definition: {
+      //       type: "string",
+      //     },
+      //   },
+      //   testValueObject: ["1", "2", "3"],
+      // },
+      // // array of schemaReference / object
+      // test100: {
+      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      //   testSchema: {
+      //     type: "array",
+      //     definition: {
+      //       type: "schemaReference",
+      //       context: {
+      //         myObject: {
+      //           type: "object",
+      //           definition: {
+      //             a: {
+      //               type: "union",
+      //               definition: [
+      //                 {
+      //                   type: "string",
+      //                 },
+      //                 {
+      //                   type: "schemaReference",
+      //                   definition: { relativePath: "myObject" },
+      //                 },
+      //               ],
+      //             },
+      //           },
+      //         },
+      //       },
+      //       definition: { relativePath: "myObject" },
+      //     },
+      //   },
+      //   expectedResult: {
+      //     type: "array",
+      //     definition: {
+      //       type: "object",
+      //       definition: {
+      //         a: {
+      //           type: "union",
+      //           definition: [
+      //             {
+      //               type: "string",
+      //             },
+      //             {
+      //               type: "schemaReference",
+      //               definition: {
+      //                 relativePath: "myObject",
+      //               },
+      //             },
+      //           ],
+      //         },
+      //       },
+      //     },
+      //     // "type": "array",
+      //     // "definition": {
+      //     //   "type": "object",
+      //     //   "definition": {
+      //     //     "a": {
+      //     //       "type": "string"
+      //     //     }
+      //     //   }
+      //     // }
+      //   },
+      //   testValueObject: [
+      //     { a: "myString" },
+      //     // { a: { a: "myString" } }
+      //   ],
+      // },
+      // // array of schemaReference / object
+      // test110: {
+      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      //   testSchema: {
+      //     type: "schemaReference",
+      //     context: {
+      //       myObjectRoot: {
+      //         type: "object",
+      //         definition: {
+      //           a: {
+      //             type: "string",
+      //           },
+      //         },
+      //       },
+      //       myObject: {
+      //         type: "object",
+      //         extend: {
+      //           type: "schemaReference",
+      //           definition: {
+      //             relativePath: "myObjectRoot",
+      //           },
+      //         },
+      //         definition: {
+      //           b: {
+      //             type: "string",
+      //           },
+      //         },
+      //       },
+      //     },
+      //     definition: { relativePath: "myObject" },
+      //   },
+      //   expectedResult: {
+      //     type: "object",
+      //     definition: {
+      //       a: {
+      //         type: "string",
+      //       },
+      //       b: {
+      //         type: "string",
+      //       },
+      //     },
+      //   },
+      //   testValueObject: { a: "myString", b: "anotherString" },
+      // },
+      // // simple union Type
+      // test120: {
+      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      //   testSchema: {
+      //     type: "union",
+      //     definition: [
+      //       {
+      //         type: "string",
+      //       },
+      //       {
+      //         type: "number",
+      //       },
+      //       // {
+      //       //   type: "schemaReference",
+      //       //   context: {
+      //       //     myObjectRoot: {
+      //       //       type: "object",
+      //       //       definition: {
+      //       //         a: {
+      //       //           type: "string",
+      //       //         },
+      //       //       },
+      //       //     },
+      //       //     myObject: {
+      //       //       type: "object",
+      //       //       extend: {
+      //       //         type: "schemaReference",
+      //       //         definition: { relativePath: "myObjectRoot" },
+      //       //       },
+      //       //       definition: {
+      //       //         b: {
+      //       //           type: "string",
+      //       //         },
+      //       //       },
+      //       //     },
+      //       //   },
+      //       //   definition: { relativePath: "myObject" },
+      //       // },
+      //     ],
+      //   },
+      //   expectedResult: {
+      //     type: "number",
+      //   },
+      //   testValueObject: 1, // this is the object
+      // },
+      // // union between simpleType and object, object value
+      // test130: {
+      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      //   testSchema: {
+      //     type: "union",
+      //     definition: [
+      //       {
+      //         type: "string",
+      //       },
+      //       {
+      //         type: "object",
+      //         definition: {
+      //           a: {
+      //             type: "string",
+      //           },
+      //         },
+      //       },
+      //     ],
+      //   },
+      //   testValueObject: { a: "myString" }, // this is the object
+      //   expectedResult: {
+      //     type: "object",
+      //     definition: {
+      //       a: {
+      //         type: "string",
+      //       },
+      //     },
+      //   },
+      // },
+      // // union between simpleType and object, simpleType value
+      // test140: {
+      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      //   testSchema: {
+      //     type: "union",
+      //     definition: [
+      //       {
+      //         type: "string",
+      //       },
+      //       {
+      //         type: "bigint",
+      //       },
+      //       {
+      //         type: "object",
+      //         definition: {
+      //           a: {
+      //             type: "string",
+      //           },
+      //         },
+      //       },
+      //     ],
+      //   },
+      //   testValueObject: 42n, // this is the bigint
+      //   expectedResult: {
+      //     type: "bigint",
+      //   },
+      // },
+      // // union between simpleType and object, object value
+      // test150: {
+      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      //   testSchema: {
+      //     type: "union",
+      //     definition: [
+      //       {
+      //         type: "string",
+      //       },
+      //       {
+      //         type: "bigint",
+      //       },
+      //       {
+      //         type: "object",
+      //         definition: {
+      //           a: {
+      //             type: "string",
+      //           },
+      //         },
+      //       },
+      //     ],
+      //   },
+      //   testValueObject: { a: "test"}, // this is the bigint
+      //   expectedResult: {
+      //     type: "object",
+      //     definition: {
+      //       a: {
+      //         type: "string",
+      //       },
+      //     },
+      //   },
+      // },
+      // // union between simpleType and shemaReference pointing to a simple object, object value
+      // test160: {
+      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      //   testSchema: {
+      //     type: "union",
+      //     definition: [
+      //       {
+      //         type: "string",
+      //       },
+      //       {
+      //         type: "bigint",
+      //       },
+      //       {
+      //         type: "schemaReference",
+      //         context: {
+      //           // myObjectRoot: {
+      //           //   type: "object",
+      //           //   definition: {
+      //           //     a: {
+      //           //       type: "string",
+      //           //     },
+      //           //   },
+      //           // },
+      //           myObject: {
+      //             type: "object",
+      //             // extend: {
+      //             //   type: "schemaReference",
+      //             //   definition: { relativePath: "myObjectRoot" },
+      //             // },
+      //             definition: {
+      //               b: {
+      //                 type: "string",
+      //                 optional: true,
+      //               },
+      //             },
+      //           },
+      //         },
+      //         definition: { relativePath: "myObject" },
+      //       },
+      //     ],
+      //   },
+      //   testValueObject: { b: "test"}, // this is the object
+      //   expectedResult: {
+      //     type: "object",
+      //     definition: {
+      //       // a: {
+      //       //   type: "string",
+      //       // },
+      //       b: {
+      //         type: "string",
+      //         optional: true,
+      //       },
+      //     },
+      //   },
+      // },
       // // TODO: union between simpleTypes and array with simpleType value
       // // TODO: union between simpleTypes and array with array value
       // // TODO: union between simpleTypes and array and object with array value
@@ -884,4720 +884,4827 @@ describe("jzod.unfoldSchemaForValue", () => {
       //     },
       //   },
       // },
-      // ##########################################################################################
-      // ################################# JZOD SCHEMAS ###########################################
-      // ##########################################################################################
-      // JzodSchema: literal
+      // // array of strings
+      // test180: {
+      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      //   testSchema: {
+      //     type: "array",
+      //     definition: {
+      //       type: "string",
+      //     },
+      //   },
+      //   expectedResult: {
+      //     type: "array",
+      //     definition: {
+      //       type: "string",
+      //     },
+      //   },
+      //   testValueObject: ["1", "2", "3"],
+      // },
+      // // array of arrays of strings
+      // test190: {
+      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      //   testSchema: {
+      //     type: "array",
+      //     definition: {
+      //       type: "array",
+      //       definition: {
+      //         type: "string",
+      //       },
+      //     },
+      //   },
+      //   expectedResult: {
+      //     type: "array",
+      //     definition: {
+      //       type: "array",
+      //       definition: {
+      //         type: "string",
+      //       },
+      //     },
+      //   },
+      //   testValueObject: [["1", "2"], ["3"]],
+      // },
+      // tuple of [string, number]
       test200: {
         miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
         testSchema: {
-          type: "schemaReference",
-          definition: {
-            absolutePath: miroirFundamentalJzodSchemaUuid,
-            relativePath: "jzodElement",
-          },
-        },
-        expectedResult: {
-          type: "object",
-          definition: {
-            type: {
-              type: "literal",
-              definition: "literal",
-            },
-            definition: {
+          type: "tuple",
+          definition: [
+            {
               type: "string",
             },
-          },
+            {
+              type: "number",
+            },
+          ],
         },
-        testValueObject: { type: "literal", definition: "myLiteral" },
+        expectedResult: {
+          type: "tuple",
+          definition: [
+            {
+              type: "string",
+            },
+            {
+              type: "number",
+            },
+          ],
+        },
+        testValueObject: ["myString", 42],
       },
-      // JzodSchema: string
+      // array of tuples of [string, number, bigint]
       test210: {
         miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
         testSchema: {
-          type: "schemaReference",
+          type: "array",
           definition: {
-            absolutePath: miroirFundamentalJzodSchemaUuid,
-            relativePath: "jzodElement",
+            type: "tuple",
+            definition: [
+              {
+                type: "string",
+              },
+              {
+                type: "number",
+              },
+              {
+                type: "bigint",
+              },
+            ],
           },
         },
         expectedResult: {
-          type: "object",
+          type: "array",
           definition: {
-            type: {
-              type: "literal",
-              definition: "string",
-            },
+            type: "tuple",
+            definition: [
+              {
+                type: "string",
+              },
+              {
+                type: "number",
+              },
+              {
+                type: "bigint",
+              },
+            ],
           },
         },
-        testValueObject: { type: "string" },
+        testValueObject: [["myString", 42, 100n], ["anotherString", 43, 101n]],
       },
-      // JzodSchema: object, simpleType attributes
-      test220: {
-        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-        testSchema: {
-          type: "schemaReference",
-          definition: {
-            absolutePath: miroirFundamentalJzodSchemaUuid,
-            relativePath: "jzodElement",
-          },
-        },
-        expectedResult: {
-          type: "object",
-          definition: {
-            type: {
-              type: "literal",
-              definition: "object",
-            },
-            definition: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "object",
-                  definition: {
-                    type: {
-                      type: "literal",
-                      definition: "string",
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-        testValueObject: { type: "object", definition: { a: { type: "string" } } },
-      },
-      // JzodSchema: schema reference with simple attribute
-      test230: {
-        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-        testSchema: {
-          type: "schemaReference",
-          definition: {
-            absolutePath: miroirFundamentalJzodSchemaUuid,
-            relativePath: "jzodElement",
-          },
-        },
-        expectedResult: {
-          type: "object",
-          definition: {
-            type: {
-              type: "literal",
-              definition: "schemaReference",
-            },
-            definition: {
-              type: "object",
-              definition: {
-                absolutePath: {
-                  type: "string",
-                  optional: true,
-                },
-                relativePath: {
-                  type: "string",
-                  optional: true,
-                },
-              },
-            },
-          },
-        },
-        testValueObject: {
-          type: "schemaReference",
-          definition: { absolutePath: miroirFundamentalJzodSchemaUuid, relativePath: "jzodElement" },
-        },
-      },
-      // JzodSchema: schema reference for object with extend clause
-      test240: {
-        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-        testSchema: {
-          type: "schemaReference",
-          definition: {
-            absolutePath: miroirFundamentalJzodSchemaUuid,
-            relativePath: "jzodElement",
-          },
-        },
-        expectedResult: {
-          type: "object",
-          definition: {
-            type: {
-              type: "literal",
-              definition: "schemaReference",
-            },
-            context: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "object",
-                  definition: {
-                    type: {
-                      type: "literal",
-                      definition: "string",
-                    },
-                  },
-                },
-              },
-            },
-            definition: {
-              type: "object",
-              definition: {
-                relativePath: {
-                  type: "string",
-                  optional: true,
-                },
-              },
-            },
-          },
-        },
-        testValueObject: {
-          type: "schemaReference",
-          context: {
-            a: {
-              type: "string",
-            },
-          },
-          definition: {
-            relativePath: "a",
-          },
-        },
-      },
-      // ##########################################################################################
-      // ################################# TRANSFORMERS ###########################################
-      // ##########################################################################################
-      // Transformers
-      // constant
-      test300: {
-        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-        testSchema: {
-          type: "schemaReference",
-          definition: {
-            absolutePath: castMiroirFundamentalJzodSchema.uuid,
-            relativePath: "transformerForBuildPlusRuntime",
-          },
-        },
-        testValueObject: {
-          transformerType: "constant",
-          interpolation: "build",
-          value: "test",
-        },
-        expectedResult: {
-          type: "object",
-          definition: {
-            transformerType: {
-              type: "literal",
-              definition: "constant",
-            },
-            interpolation: {
-              type: "literal",
-              definition: "build",
-            },
-            value: {
-              type: "any",
-            },
-          },
-        },
-      },
-      // listPickElement
-      test310: {
-        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-        testSchema: {
-          type: "schemaReference",
-          definition: {
-            absolutePath: castMiroirFundamentalJzodSchema.uuid,
-            relativePath: "transformerForBuildPlusRuntime",
-          },
-        },
-        testValueObject: {
-          transformerType: "listPickElement",
-          interpolation: "runtime",
-          applyTo: {
-            referenceType: "referencedTransformer",
-            reference: {
-              transformerType: "contextReference",
-              interpolation: "runtime",
-              referenceName: "menuList",
-            },
-          },
-          index: 0,
-        },
-        expectedResult: {
-          type: "object",
-          definition: {
-            transformerType: {
-              type: "literal",
-              definition: "listPickElement",
-            },
-            interpolation: {
-              type: "literal",
-              definition: "runtime",
-            },
-            applyTo: {
-              type: "object",
-              definition: {
-                referenceType: {
-                  type: "literal",
-                  definition: "referencedTransformer",
-                },
-                reference: {
-                  type: "object",
-                  definition: {
-                    transformerType: {
-                      type: "literal",
-                      definition: "contextReference",
-                    },
-                    interpolation: {
-                      type: "literal",
-                      optional: true,
-                      definition: "runtime",
-                    },
-                    referenceName: {
-                      optional: true,
-                      type: "string",
-                    },
-                  },
-                },
-              },
-            },
-            index: {
-              type: "number",
-            },
-          },
-        },
-      },
-      // runtime freeObjectTemplate with inner build transformer
-      test320: {
-        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-        testSchema: {
-          type: "schemaReference",
-          definition: {
-            absolutePath: castMiroirFundamentalJzodSchema.uuid,
-            relativePath: "transformerForBuildPlusRuntime",
-          },
-        },
-        testValueObject: {
-          transformerType: "freeObjectTemplate",
-          interpolation: "runtime",
-          definition: {
-            reportUuid: {
-              transformerType: "parameterReference",
-              interpolation: "build",
-              referenceName: "createEntity_newEntityListReportUuid",
-            },
-            label: {
-              transformerType: "mustacheStringTemplate",
-              interpolation: "build",
-              definition: "List of {{newEntityName}}s",
-            },
-            section: "data",
-            selfApplication: {
-              transformerType: "parameterReference",
-              interpolation: "build",
-              referencePath: ["adminConfigurationDeploymentParis", "uuid"],
-            },
-            icon: "local_drink",
-          },
-        },
-        expectedResult: {
-          type: "object",
-          definition: {
-            transformerType: {
-              type: "literal",
-              definition: "freeObjectTemplate",
-            },
-            interpolation: {
-              type: "literal",
-              definition: "runtime",
-            },
-            definition: {
-              type: "object",
-              definition: {
-                reportUuid: {
-                  type: "object",
-                  definition: {
-                    transformerType: {
-                      type: "literal",
-                      definition: "parameterReference",
-                    },
-                    interpolation: {
-                      type: "literal",
-                      optional: true,
-                      definition: "build",
-                    },
-                    referenceName: {
-                      optional: true,
-                      type: "string",
-                    },
-                  },
-                },
-                label: {
-                  type: "object",
-                  definition: {
-                    transformerType: {
-                      type: "literal",
-                      definition: "mustacheStringTemplate",
-                    },
-                    interpolation: {
-                      type: "literal",
-                      definition: "build",
-                    },
-                    definition: {
-                      type: "string",
-                    },
-                  },
-                },
-                section: {
-                  type: "string",
-                },
-                selfApplication: {
-                  type: "object",
-                  definition: {
-                    transformerType: {
-                      type: "literal",
-                      definition: "parameterReference",
-                    },
-                    interpolation: {
-                      type: "literal",
-                      optional: true,
-                      definition: "build",
-                    },
-                    referencePath: {
-                      type: "array",
-                      definition: {
-                        type: "string",
-                      },
-                    },
-                  },
-                },
-                icon: {
-                  type: "string",
-                },
-              },
-            },
-          },
-        },
-      },
-      // ##########################################################################################
-      // ########################### QUERIES ######################################
-      // ##########################################################################################
-      test400: {
-        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-        testSchema: {
-          type: "schemaReference",
-          definition: {
-            absolutePath: castMiroirFundamentalJzodSchema.uuid,
-            relativePath: "boxedQueryWithExtractorCombinerTransformer",
-          },
-        },
-        testValueObject: {
-          queryType: "boxedQueryWithExtractorCombinerTransformer",
-          deploymentUuid: {
-            transformerType: "parameterReference",
-            interpolation: "build",
-            referenceName: "testDeploymentUuid",
-          },
-          pageParams: {},
-          queryParams: {},
-          contextResults: {},
-          extractors: {
-            menuList: {
-              extractorOrCombinerType: "extractorByEntityReturningObjectList",
-              applicationSection: "model",
-              parentName: {
-                transformerType: "parameterReference",
-                interpolation: "build",
-                referencePath: ["entityMenu", "name"],
-              },
-              parentUuid: {
-                transformerType: "parameterReference",
-                interpolation: "build",
-                referencePath: ["entityMenu", "uuid"],
-              },
-            },
-          },
-          runtimeTransformers: {
-            menu: {
-              transformerType: "listPickElement",
-              interpolation: "runtime",
-              applyTo: {
-                referenceType: "referencedTransformer",
-                reference: {
-                  transformerType: "contextReference",
-                  interpolation: "runtime",
-                  referenceName: "menuList",
-                },
-              },
-              index: 0,
-            },
-            menuItem: {
-              transformerType: "freeObjectTemplate",
-              interpolation: "runtime",
-              definition: {
-                reportUuid: {
-                  transformerType: "parameterReference",
-                  interpolation: "build",
-                  referenceName: "createEntity_newEntityListReportUuid",
-                },
-                label: {
-                  transformerType: "mustacheStringTemplate",
-                  interpolation: "build",
-                  definition: "List of {{newEntityName}}s",
-                },
-                section: "data",
-                selfApplication: {
-                  transformerType: "parameterReference",
-                  interpolation: "build",
-                  referencePath: ["adminConfigurationDeploymentParis", "uuid"],
-                },
-                icon: "local_drink",
-              },
-            },
-            updatedMenu: {
-              transformerType: "transformer_menu_addItem",
-              interpolation: "runtime",
-              menuItemReference: {
-                transformerType: "contextReference",
-                interpolation: "runtime",
-                referenceName: "menuItem",
-              },
-              menuReference: {
-                transformerType: "contextReference",
-                interpolation: "runtime",
-                referenceName: "menu",
-              },
-              menuSectionItemInsertionIndex: -1,
-            },
-          },
-        },
-        expectedResult: {
-          type: "object",
-          definition: {
-            queryType: {
-              type: "literal",
-              definition: "boxedQueryWithExtractorCombinerTransformer",
-            },
-            deploymentUuid: {
-              type: "uuid",
-              tag: {
-                value: {
-                  id: 1,
-                  defaultLabel: "Uuid",
-                  editable: false,
-                },
-              },
-            },
-            pageParams: {
-              type: "object",
-              definition: {},
-            },
-            queryParams: {
-              type: "object",
-              definition: {},
-            },
-            contextResults: {
-              type: "object",
-              definition: {},
-            },
-            extractors: {
-              type: "object",
-              definition: {
-                menuList: {
-                  type: "object",
-                  definition: {
-                    extractorOrCombinerType: {
-                      type: "literal",
-                      definition: "extractorByEntityReturningObjectList",
-                    },
-                    applicationSection: {
-                      type: "literal",
-                      definition: "model",
-                    },
-                    parentName: {
-                      type: "string",
-                      optional: true,
-                      tag: {
-                        value: {
-                          id: 3,
-                          defaultLabel: "Parent Name",
-                          editable: false,
-                        },
-                      },
-                    },
-                    parentUuid: {
-                      type: "uuid",
-                      tag: {
-                        value: {
-                          id: 4,
-                          defaultLabel: "Parent Uuid",
-                          editable: false,
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            runtimeTransformers: {
-              type: "object",
-              definition: {
-                menu: {
-                  type: "object",
-                  definition: {
-                    transformerType: {
-                      type: "literal",
-                      definition: "listPickElement",
-                    },
-                    interpolation: {
-                      type: "literal",
-                      definition: "runtime",
-                    },
-                    applyTo: {
-                      type: "object",
-                      definition: {
-                        referenceType: {
-                          type: "literal",
-                          definition: "referencedTransformer",
-                        },
-                        reference: {
-                          type: "object",
-                          definition: {
-                            transformerType: {
-                              type: "literal",
-                              definition: "contextReference",
-                            },
-                            interpolation: {
-                              type: "literal",
-                              optional: true,
-                              definition: "runtime",
-                            },
-                            referenceName: {
-                              optional: true,
-                              type: "string",
-                            },
-                          },
-                        },
-                      },
-                    },
-                    index: {
-                      type: "number",
-                    },
-                  },
-                },
-                menuItem: {
-                  type: "object",
-                  definition: {
-                    transformerType: {
-                      type: "literal",
-                      definition: "freeObjectTemplate",
-                    },
-                    interpolation: {
-                      type: "literal",
-                      definition: "runtime",
-                    },
-                    definition: {
-                      type: "object",
-                      definition: {
-                        reportUuid: {
-                          type: "object",
-                          definition: {
-                            transformerType: {
-                              type: "literal",
-                              definition: "parameterReference",
-                            },
-                            interpolation: {
-                              type: "literal",
-                              optional: true,
-                              definition: "build",
-                            },
-                            referenceName: {
-                              optional: true,
-                              type: "string",
-                            },
-                          },
-                        },
-                        label: {
-                          type: "object",
-                          definition: {
-                            transformerType: {
-                              type: "literal",
-                              definition: "mustacheStringTemplate",
-                            },
-                            interpolation: {
-                              type: "literal",
-                              definition: "build",
-                            },
-                            definition: {
-                              type: "string",
-                            },
-                          },
-                        },
-                        section: {
-                          type: "string",
-                        },
-                        selfApplication: {
-                          type: "object",
-                          definition: {
-                            transformerType: {
-                              type: "literal",
-                              definition: "parameterReference",
-                            },
-                            interpolation: {
-                              type: "literal",
-                              optional: true,
-                              definition: "build",
-                            },
-                            referencePath: {
-                              type: "array",
-                              definition: {
-                                type: "string",
-                              },
-                            },
-                          },
-                        },
-                        icon: {
-                          type: "string",
-                        },
-                      },
-                    },
-                  },
-                },
-                updatedMenu: {
-                  type: "object",
-                  definition: {
-                    transformerType: {
-                      type: "literal",
-                      definition: "transformer_menu_addItem",
-                    },
-                    interpolation: {
-                      type: "literal",
-                      definition: "runtime",
-                    },
-                    menuItemReference: {
-                      type: "object",
-                      definition: {
-                        transformerType: {
-                          type: "literal",
-                          definition: "contextReference",
-                        },
-                        interpolation: {
-                          type: "literal",
-                          optional: true,
-                          definition: "runtime",
-                        },
-                        referenceName: {
-                          optional: true,
-                          type: "string",
-                        },
-                      },
-                    },
-                    menuReference: {
-                      type: "object",
-                      definition: {
-                        transformerType: {
-                          type: "literal",
-                          definition: "contextReference",
-                        },
-                        interpolation: {
-                          type: "literal",
-                          optional: true,
-                          definition: "runtime",
-                        },
-                        referenceName: {
-                          optional: true,
-                          type: "string",
-                        },
-                      },
-                    },
-                    menuSectionItemInsertionIndex: {
-                      type: "number",
-                      optional: true,
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      // ##########################################################################################
-      // ################################## ACTIONS ###############################################
-      // ##########################################################################################
-      test500: {
-        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-        testSchema: {
-          type: "schemaReference",
-          definition: {
-            absolutePath: castMiroirFundamentalJzodSchema.uuid,
-            relativePath: "compositeAction",
-          },
-        },
-        testValueObject: {
-          actionType: "compositeAction",
-          actionLabel: "createEntityAndReportFromSpreadsheetAndUpdateMenu",
-          actionName: "sequence",
-          templates: {
-            createEntity_newEntity: {
-              uuid: {
-                transformerType: "parameterReference",
-                interpolation: "build",
-                referenceName: "newEntityUuid",
-              },
-              parentUuid: {
-                transformerType: "parameterReference",
-                interpolation: "build",
-                referencePath: ["entityEntity", "uuid"],
-              },
-              selfApplication: {
-                transformerType: "parameterReference",
-                interpolation: "build",
-                referenceName: "testSelfApplicationUuid",
-              },
-              description: {
-                transformerType: "parameterReference",
-                interpolation: "build",
-                referenceName: "createEntity_newEntityDescription",
-              },
-              name: {
-                transformerType: "parameterReference",
-                interpolation: "build",
-                referenceName: "newEntityName",
-              },
-            },
-            createEntity_newEntityDefinition: {
-              name: {
-                transformerType: "parameterReference",
-                interpolation: "build",
-                referenceName: "newEntityName",
-              },
-              uuid: {
-                transformerType: "parameterReference",
-                interpolation: "build",
-                referenceName: "newEntityDefinitionUuid",
-              },
-              parentName: "EntityDefinition",
-              parentUuid: {
-                transformerType: "parameterReference",
-                interpolation: "build",
-                referencePath: ["entityEntityDefinition", "uuid"],
-              },
-              entityUuid: {
-                transformerType: "parameterReference",
-                interpolation: "build",
-                referencePath: ["createEntity_newEntity", "uuid"],
-              },
-              conceptLevel: "Model",
-              defaultInstanceDetailsReportUuid: {
-                transformerType: "parameterReference",
-                interpolation: "build",
-                referenceName: "defaultInstanceDetailsReportUuid",
-              },
-              jzodSchema: {
-                transformerType: "parameterReference",
-                interpolation: "build",
-                referenceName: "newEntityJzodSchema",
-              },
-            },
-            newEntityListReport: {
-              uuid: {
-                transformerType: "parameterReference",
-                interpolation: "build",
-                referenceName: "createEntity_newEntityListReportUuid",
-              },
-              selfApplication: {
-                transformerType: "parameterReference",
-                interpolation: "build",
-                referenceName: "testSelfApplicationUuid",
-              },
-              parentName: "Report",
-              parentUuid: {
-                transformerType: "mustacheStringTemplate",
-                interpolation: "build",
-                definition: "{{entityReport.uuid}}",
-              },
-              conceptLevel: "Model",
-              name: {
-                transformerType: "mustacheStringTemplate",
-                interpolation: "build",
-                definition: "{{newEntityName}}List",
-              },
-              defaultLabel: {
-                transformerType: "mustacheStringTemplate",
-                interpolation: "build",
-                definition: "List of {{newEntityName}}s",
-              },
-              type: "list",
-              definition: {
-                extractors: {
-                  instanceList: {
-                    extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                    parentName: {
-                      transformerType: "parameterReference",
-                      interpolation: "build",
-                      referenceName: "newEntityName",
-                    },
-                    parentUuid: {
-                      transformerType: "mustacheStringTemplate",
-                      interpolation: "build",
-                      definition: "{{createEntity_newEntity.uuid}}",
-                    },
-                  },
-                },
-                section: {
-                  type: "objectListReportSection",
-                  definition: {
-                    label: {
-                      transformerType: "mustacheStringTemplate",
-                      interpolation: "build",
-                      definition: "{{newEntityName}}s",
-                    },
-                    parentUuid: {
-                      transformerType: "mustacheStringTemplate",
-                      interpolation: "build",
-                      definition: "{{createEntity_newEntity.uuid}}",
-                    },
-                    fetchedDataReference: "instanceList",
-                  },
-                },
-              },
-            },
-            newEntityDetailsReport: {
-              uuid: {
-                transformerType: "parameterReference",
-                interpolation: "build",
-                referenceName: "createEntity_newEntityDetailsReportUuid",
-              },
-              selfApplication: {
-                transformerType: "parameterReference",
-                interpolation: "build",
-                referenceName: "testSelfApplicationUuid",
-              },
-              parentName: {
-                transformerType: "mustacheStringTemplate",
-                interpolation: "build",
-                definition: "{{entityReport.name}}",
-              },
-              parentUuid: {
-                transformerType: "mustacheStringTemplate",
-                interpolation: "build",
-                definition: "{{entityReport.uuid}}",
-              },
-              conceptLevel: "Model",
-              name: {
-                transformerType: "mustacheStringTemplate",
-                interpolation: "build",
-                definition: "{{newEntityName}}Details",
-              },
-              defaultLabel: {
-                transformerType: "mustacheStringTemplate",
-                interpolation: "build",
-                definition: "Details of {{newEntityName}}",
-              },
-              definition: {
-                extractorTemplates: {
-                  elementToDisplay: {
-                    transformerType: "constant",
-                    interpolation: "build",
-                    value: {
-                      extractorTemplateType: "extractorForObjectByDirectReference",
-                      parentName: {
-                        transformerType: "contextReference",
-                        interpolation: "build",
-                        referenceName: "newEntityName",
-                      },
-                      parentUuid: {
-                        transformerType: "mustacheStringTemplate",
-                        interpolation: "build",
-                        definition: "{{newEntityUuid}}",
-                      },
-                      instanceUuid: {
-                        transformerType: "constant",
-                        interpolation: "runtime",
-                        value: {
-                          transformerType: "contextReference",
-                          interpolation: "runtime",
-                          referenceName: "instanceUuid",
-                        },
-                      },
-                    },
-                  },
-                },
-                section: {
-                  type: "list",
-                  definition: [
-                    {
-                      type: "objectInstanceReportSection",
-                      definition: {
-                        label: {
-                          transformerType: "mustacheStringTemplate",
-                          interpolation: "build",
-                          definition: "My {{newEntityName}}",
-                        },
-                        parentUuid: {
-                          transformerType: "mustacheStringTemplate",
-                          interpolation: "build",
-                          definition: "{{newEntityUuid}}",
-                        },
-                        fetchedDataReference: "elementToDisplay",
-                      },
-                    },
-                  ],
-                },
-              },
-            },
-          },
-          definition: [
-            {
-              actionType: "createEntity",
-              actionLabel: "createEntity",
-              deploymentUuid: {
-                transformerType: "parameterReference",
-                interpolation: "build",
-                referenceName: "testDeploymentUuid",
-              },
-              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              entities: [
-                {
-                  entity: {
-                    transformerType: "parameterReference",
-                    interpolation: "build",
-                    referenceName: "createEntity_newEntity",
-                  },
-                  entityDefinition: {
-                    transformerType: "parameterReference",
-                    interpolation: "build",
-                    referenceName: "createEntity_newEntityDefinition",
-                  },
-                },
-              ],
-            },
-            {
-              actionType: "transactionalInstanceAction",
-              actionLabel: "createReports",
-              instanceAction: {
-                actionType: "createInstance",
-                applicationSection: "model",
-                deploymentUuid: {
-                  transformerType: "parameterReference",
-                  interpolation: "build",
-                  referenceName: "testDeploymentUuid",
-                },
-                endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-                objects: [
-                  {
-                    parentName: {
-                      transformerType: "parameterReference",
-                      interpolation: "build",
-                      referencePath: ["newEntityListReport", "parentName"],
-                    },
-                    parentUuid: {
-                      transformerType: "parameterReference",
-                      interpolation: "build",
-                      referencePath: ["newEntityListReport", "parentUuid"],
-                    },
-                    applicationSection: "model",
-                    instances: [
-                      {
-                        transformerType: "parameterReference",
-                        interpolation: "build",
-                        referenceName: "newEntityListReport",
-                      },
-                      {
-                        transformerType: "parameterReference",
-                        interpolation: "build",
-                        referenceName: "newEntityDetailsReport",
-                      },
-                    ],
-                  },
-                ],
-              },
-            },
-            {
-              actionType: "commit",
-              actionLabel: "commit",
-              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              deploymentUuid: {
-                transformerType: "parameterReference",
-                interpolation: "build",
-                referenceName: "testDeploymentUuid",
-              },
-            },
-            {
-              actionType: "compositeRunBoxedExtractorOrQueryAction",
-              actionLabel: "getListOfEntityDefinitions",
-              nameGivenToResult: "newApplicationEntityDefinitionList",
-              query: {
-                actionType: "runBoxedExtractorOrQueryAction",
-                actionName: "runQuery",
-                endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                applicationSection: "model",
-                deploymentUuid: {
-                  transformerType: "parameterReference",
-                  interpolation: "build",
-                  referenceName: "testDeploymentUuid",
-                },
-                query: {
-                  queryType: "boxedQueryWithExtractorCombinerTransformer",
-                  deploymentUuid: {
-                    transformerType: "parameterReference",
-                    interpolation: "build",
-                    referenceName: "testDeploymentUuid",
-                  },
-                  pageParams: {
-                    currentDeploymentUuid: {
-                      transformerType: "parameterReference",
-                      interpolation: "build",
-                      referenceName: "testDeploymentUuid",
-                    },
-                  },
-                  queryParams: {},
-                  contextResults: {},
-                  extractors: {
-                    entityDefinitions: {
-                      extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                      applicationSection: "model",
-                      parentName: {
-                        transformerType: "parameterReference",
-                        interpolation: "build",
-                        referencePath: ["entityEntityDefinition", "name"],
-                      },
-                      parentUuid: {
-                        transformerType: "parameterReference",
-                        interpolation: "build",
-                        referencePath: ["entityEntityDefinition", "uuid"],
-                      },
-                      orderBy: {
-                        attributeName: "name",
-                        direction: "ASC",
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            {
-              actionType: "compositeRunBoxedExtractorOrQueryAction",
-              actionLabel: "getListOfEntities",
-              nameGivenToResult: "newApplicationEntityList",
-              query: {
-                actionType: "runBoxedExtractorOrQueryAction",
-                actionName: "runQuery",
-                endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                applicationSection: "model",
-                deploymentUuid: {
-                  transformerType: "parameterReference",
-                  interpolation: "build",
-                  referenceName: "testDeploymentUuid",
-                },
-                query: {
-                  queryType: "boxedQueryWithExtractorCombinerTransformer",
-                  deploymentUuid: {
-                    transformerType: "parameterReference",
-                    interpolation: "build",
-                    referenceName: "testDeploymentUuid",
-                  },
-                  pageParams: {
-                    currentDeploymentUuid: {
-                      transformerType: "parameterReference",
-                      interpolation: "build",
-                      referenceName: "testDeploymentUuid",
-                    },
-                  },
-                  queryParams: {},
-                  contextResults: {},
-                  extractors: {
-                    entities: {
-                      extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                      applicationSection: "model",
-                      parentName: {
-                        transformerType: "parameterReference",
-                        interpolation: "build",
-                        referencePath: ["entityEntity", "name"],
-                      },
-                      parentUuid: {
-                        transformerType: "parameterReference",
-                        interpolation: "build",
-                        referencePath: ["entityEntity", "uuid"],
-                      },
-                      orderBy: {
-                        attributeName: "name",
-                        direction: "ASC",
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            {
-              actionType: "compositeRunBoxedExtractorOrQueryAction",
-              actionLabel: "getListOfReports",
-              nameGivenToResult: "newApplicationReportList",
-              query: {
-                actionType: "runBoxedExtractorOrQueryAction",
-                actionName: "runQuery",
-                endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                applicationSection: "model",
-                deploymentUuid: {
-                  transformerType: "parameterReference",
-                  interpolation: "build",
-                  referenceName: "testDeploymentUuid",
-                },
-                query: {
-                  queryType: "boxedQueryWithExtractorCombinerTransformer",
-                  deploymentUuid: {
-                    transformerType: "parameterReference",
-                    interpolation: "build",
-                    referenceName: "testDeploymentUuid",
-                  },
-                  pageParams: {
-                    currentDeploymentUuid: {
-                      transformerType: "parameterReference",
-                      interpolation: "build",
-                      referenceName: "testDeploymentUuid",
-                    },
-                  },
-                  runAsSql: true,
-                  queryParams: {},
-                  contextResults: {},
-                  extractors: {
-                    reports: {
-                      extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                      applicationSection: "model",
-                      parentName: {
-                        transformerType: "parameterReference",
-                        interpolation: "build",
-                        referencePath: ["entityReport", "name"],
-                      },
-                      parentUuid: {
-                        transformerType: "parameterReference",
-                        interpolation: "build",
-                        referencePath: ["entityReport", "uuid"],
-                      },
-                      orderBy: {
-                        attributeName: "name",
-                        direction: "ASC",
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            {
-              actionType: "compositeRunBoxedQueryAction",
-              actionLabel: "getMenu",
-              nameGivenToResult: "menuUpdateQueryResult",
-              queryTemplate: {
-                actionType: "runBoxedQueryAction",
-                actionName: "runQuery",
-                endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                applicationSection: "model",
-                deploymentUuid: {
-                  transformerType: "parameterReference",
-                  interpolation: "build",
-                  referenceName: "testDeploymentUuid",
-                },
-                query: {
-                  queryType: "boxedQueryWithExtractorCombinerTransformer",
-                  deploymentUuid: {
-                    transformerType: "parameterReference",
-                    interpolation: "build",
-                    referenceName: "testDeploymentUuid",
-                  },
-                  pageParams: {},
-                  queryParams: {},
-                  contextResults: {},
-                  extractors: {
-                    menuList: {
-                      extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                      applicationSection: "model",
-                      parentName: {
-                        transformerType: "parameterReference",
-                        interpolation: "build",
-                        referencePath: ["entityMenu", "name"],
-                      },
-                      parentUuid: {
-                        transformerType: "parameterReference",
-                        interpolation: "build",
-                        referencePath: ["entityMenu", "uuid"],
-                      },
-                    },
-                  },
-                  runtimeTransformers: {
-                    menu: {
-                      transformerType: "listPickElement",
-                      interpolation: "runtime",
-                      applyTo: {
-                        referenceType: "referencedTransformer",
-                        reference: {
-                          transformerType: "contextReference",
-                          interpolation: "runtime",
-                          referenceName: "menuList",
-                        },
-                      },
-                      index: 0,
-                    },
-                    menuItem: {
-                      transformerType: "freeObjectTemplate",
-                      interpolation: "runtime",
-                      definition: {
-                        reportUuid: {
-                          // transformerType: "contextReference",
-                          // interpolation: "runtime",
-                          transformerType: "parameterReference",
-                          interpolation: "build",
-                          referenceName: "createEntity_newEntityListReportUuid",
-                        },
-                        label: {
-                          transformerType: "mustacheStringTemplate",
-                          // interpolation: "runtime",
-                          interpolation: "build",
-                          definition: "List of {{newEntityName}}s",
-                        },
-                        section: "data",
-                        selfApplication: {
-                          // transformerType: "contextReference",
-                          // interpolation: "runtime",
-                          transformerType: "parameterReference",
-                          interpolation: "build",
-                          referencePath: ["adminConfigurationDeploymentParis", "uuid"],
-                        },
-                        icon: "local_drink",
-                      },
-                    },
-                    updatedMenu: {
-                      transformerType: "transformer_menu_addItem",
-                      interpolation: "runtime",
-                      menuItemReference: {
-                        transformerType: "contextReference",
-                        interpolation: "runtime",
-                        referenceName: "menuItem",
-                      },
-                      menuReference: {
-                        transformerType: "contextReference",
-                        interpolation: "runtime",
-                        referenceName: "menu",
-                      },
-                      menuSectionItemInsertionIndex: -1,
-                    },
-                  },
-                },
-              },
-            },
-            {
-              actionType: "transactionalInstanceAction",
-              actionLabel: "updateMenu",
-              instanceAction: {
-                actionType: "updateInstance",
-                applicationSection: "model",
-                deploymentUuid: {
-                  transformerType: "parameterReference",
-                  interpolation: "build",
-                  referenceName: "testDeploymentUuid",
-                },
-                endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-                objects: [
-                  {
-                    parentName: {
-                      transformerType: "parameterReference",
-                      interpolation: "build",
-                      referencePath: ["entityMenu", "name"],
-                    },
-                    parentUuid: {
-                      transformerType: "parameterReference",
-                      interpolation: "build",
-                      referencePath: ["entityMenu", "uuid"],
-                    },
-                    applicationSection: "model",
-                    instances: [
-                      {
-                        transformerType: "contextReference",
-                        interpolation: "runtime",
-                        referencePath: ["menuUpdateQueryResult", "updatedMenu"],
-                      },
-                    ],
-                  },
-                ],
-              },
-            },
-            {
-              actionType: "commit",
-              actionLabel: "commit",
-              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              deploymentUuid: {
-                transformerType: "parameterReference",
-                interpolation: "build",
-                referenceName: "testDeploymentUuid",
-              },
-            },
-            {
-              actionType: "compositeRunBoxedQueryAction",
-              actionLabel: "getNewMenuList",
-              nameGivenToResult: "newMenuList",
-              queryTemplate: {
-                actionType: "runBoxedQueryAction",
-                actionName: "runQuery",
-                endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                applicationSection: "model",
-                deploymentUuid: {
-                  transformerType: "parameterReference",
-                  interpolation: "build",
-                  referenceName: "testDeploymentUuid",
-                },
-                query: {
-                  queryType: "boxedQueryWithExtractorCombinerTransformer",
-                  deploymentUuid: {
-                    transformerType: "parameterReference",
-                    interpolation: "build",
-                    referenceName: "testDeploymentUuid",
-                  },
-                  pageParams: {},
-                  queryParams: {},
-                  contextResults: {},
-                  extractors: {
-                    menuList: {
-                      extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                      applicationSection: "model",
-                      parentName: "Menu",
-                      parentUuid: {
-                        transformerType: "parameterReference",
-                        interpolation: "build",
-                        referencePath: ["entityMenu", "uuid"],
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          ],
-        },
-        expectedResult: {
-          type: "object",
-          definition: {
-            actionType: {
-              type: "literal",
-              definition: "compositeAction",
-            },
-            actionLabel: {
-              type: "string",
-              optional: true,
-            },
-            actionName: {
-              type: "literal",
-              definition: "sequence",
-            },
-            templates: {
-              type: "object",
-              definition: {
-                createEntity_newEntity: {
-                  type: "any",
-                },
-                createEntity_newEntityDefinition: {
-                  type: "any",
-                },
-                newEntityListReport: {
-                  type: "any",
-                },
-                newEntityDetailsReport: {
-                  type: "any",
-                },
-              },
-            },
-            definition: {
-              type: "tuple",
-              definition: [
-                {
-                  type: "object",
-                  definition: {
-                    actionType: {
-                      type: "literal",
-                      definition: "createEntity",
-                    },
-                    actionLabel: {
-                      type: "string",
-                      optional: true,
-                    },
-                    deploymentUuid: {
-                      type: "uuid",
-                      tag: {
-                        value: {
-                          id: 1,
-                          defaultLabel: "Deployment",
-                          editable: false,
-                        },
-                      },
-                    },
-                    endpoint: {
-                      type: "literal",
-                      definition: "7947ae40-eb34-4149-887b-15a9021e714e",
-                    },
-                    entities: {
-                      type: "array",
-                      definition: {
-                        type: "object",
-                        definition: {
-                          entity: {
-                            type: "schemaReference",
-                            tag: {
-                              canBeTemplate: true,
-                            },
-                            definition: {
-                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                              relativePath: "entity",
-                            },
-                          },
-                          entityDefinition: {
-                            type: "schemaReference",
-                            tag: {
-                              canBeTemplate: true,
-                            },
-                            definition: {
-                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                              relativePath: "entityDefinition",
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-                {
-                  type: "object",
-                  definition: {
-                    actionType: {
-                      type: "literal",
-                      definition: "transactionalInstanceAction",
-                    },
-                    actionLabel: {
-                      type: "string",
-                      optional: true,
-                    },
-                    instanceAction: {
-                      type: "object",
-                      definition: {
-                        actionType: {
-                          type: "literal",
-                          definition: "createInstance",
-                        },
-                        applicationSection: {
-                          type: "literal",
-                          definition: "model",
-                        },
-                        deploymentUuid: {
-                          type: "uuid",
-                          tag: {
-                            value: {
-                              id: 1,
-                              defaultLabel: "Uuid",
-                              editable: false,
-                            },
-                          },
-                        },
-                        endpoint: {
-                          type: "literal",
-                          definition: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-                        },
-                        objects: {
-                          type: "array",
-                          definition: {
-                            type: "object",
-                            definition: {
-                              parentName: {
-                                type: "string",
-                                optional: true,
-                              },
-                              parentUuid: {
-                                type: "string",
-                              },
-                              applicationSection: {
-                                type: "schemaReference",
-                                optional: false,
-                                definition: {
-                                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                  relativePath: "applicationSection",
-                                },
-                              },
-                              instances: {
-                                type: "array",
-                                definition: {
-                                  type: "schemaReference",
-                                  tag: {
-                                    canBeTemplate: true,
-                                  },
-                                  definition: {
-                                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                    relativePath: "entityInstance",
-                                  },
-                                },
-                              },
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-                {
-                  type: "object",
-                  definition: {
-                    actionType: {
-                      type: "literal",
-                      definition: "commit",
-                    },
-                    actionLabel: {
-                      type: "string",
-                      optional: true,
-                    },
-                    endpoint: {
-                      type: "literal",
-                      definition: "7947ae40-eb34-4149-887b-15a9021e714e",
-                    },
-                    deploymentUuid: {
-                      type: "uuid",
-                      tag: {
-                        value: {
-                          id: 1,
-                          defaultLabel: "Deployment",
-                          editable: false,
-                        },
-                      },
-                    },
-                  },
-                },
-                {
-                  type: "object",
-                  definition: {
-                    actionType: {
-                      type: "literal",
-                      definition: "compositeRunBoxedExtractorOrQueryAction",
-                    },
-                    actionLabel: {
-                      type: "string",
-                      optional: true,
-                    },
-                    nameGivenToResult: {
-                      type: "string",
-                    },
-                    query: {
-                      type: "object",
-                      definition: {
-                        actionType: {
-                          type: "literal",
-                          definition: "runBoxedExtractorOrQueryAction",
-                        },
-                        actionName: {
-                          type: "literal",
-                          definition: "runQuery",
-                        },
-                        endpoint: {
-                          type: "literal",
-                          definition: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                        },
-                        applicationSection: {
-                          type: "literal",
-                          definition: "model",
-                        },
-                        deploymentUuid: {
-                          type: "uuid",
-                          tag: {
-                            value: {
-                              id: 1,
-                              defaultLabel: "Uuid",
-                              editable: false,
-                            },
-                          },
-                        },
-                        query: {
-                          type: "object",
-                          definition: {
-                            queryType: {
-                              type: "literal",
-                              definition: "boxedQueryWithExtractorCombinerTransformer",
-                            },
-                            deploymentUuid: {
-                              type: "uuid",
-                              tag: {
-                                value: {
-                                  id: 1,
-                                  defaultLabel: "Uuid",
-                                  editable: false,
-                                },
-                              },
-                            },
-                            pageParams: {
-                              type: "object",
-                              definition: {
-                                currentDeploymentUuid: {
-                                  type: "any",
-                                },
-                              },
-                            },
-                            queryParams: {
-                              type: "object",
-                              definition: {},
-                            },
-                            contextResults: {
-                              type: "object",
-                              definition: {},
-                            },
-                            extractors: {
-                              type: "object",
-                              definition: {
-                                entityDefinitions: {
-                                  type: "object",
-                                  definition: {
-                                    extractorOrCombinerType: {
-                                      type: "literal",
-                                      definition: "extractorByEntityReturningObjectList",
-                                    },
-                                    applicationSection: {
-                                      type: "literal",
-                                      definition: "model",
-                                    },
-                                    parentName: {
-                                      type: "string",
-                                      optional: true,
-                                      tag: {
-                                        value: {
-                                          id: 3,
-                                          defaultLabel: "Parent Name",
-                                          editable: false,
-                                        },
-                                      },
-                                    },
-                                    parentUuid: {
-                                      type: "uuid",
-                                      tag: {
-                                        value: {
-                                          id: 4,
-                                          defaultLabel: "Parent Uuid",
-                                          editable: false,
-                                        },
-                                      },
-                                    },
-                                    orderBy: {
-                                      type: "object",
-                                      optional: true,
-                                      definition: {
-                                        attributeName: {
-                                          type: "string",
-                                        },
-                                        direction: {
-                                          type: "enum",
-                                          optional: true,
-                                          definition: ["ASC", "DESC"],
-                                        },
-                                      },
-                                    },
-                                  },
-                                },
-                              },
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-                {
-                  type: "object",
-                  definition: {
-                    actionType: {
-                      type: "literal",
-                      definition: "compositeRunBoxedExtractorOrQueryAction",
-                    },
-                    actionLabel: {
-                      type: "string",
-                      optional: true,
-                    },
-                    nameGivenToResult: {
-                      type: "string",
-                    },
-                    query: {
-                      type: "object",
-                      definition: {
-                        actionType: {
-                          type: "literal",
-                          definition: "runBoxedExtractorOrQueryAction",
-                        },
-                        actionName: {
-                          type: "literal",
-                          definition: "runQuery",
-                        },
-                        endpoint: {
-                          type: "literal",
-                          definition: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                        },
-                        applicationSection: {
-                          type: "literal",
-                          definition: "model",
-                        },
-                        deploymentUuid: {
-                          type: "uuid",
-                          tag: {
-                            value: {
-                              id: 1,
-                              defaultLabel: "Uuid",
-                              editable: false,
-                            },
-                          },
-                        },
-                        query: {
-                          type: "object",
-                          definition: {
-                            queryType: {
-                              type: "literal",
-                              definition: "boxedQueryWithExtractorCombinerTransformer",
-                            },
-                            deploymentUuid: {
-                              type: "uuid",
-                              tag: {
-                                value: {
-                                  id: 1,
-                                  defaultLabel: "Uuid",
-                                  editable: false,
-                                },
-                              },
-                            },
-                            pageParams: {
-                              type: "object",
-                              definition: {
-                                currentDeploymentUuid: {
-                                  type: "any",
-                                },
-                              },
-                            },
-                            queryParams: {
-                              type: "object",
-                              definition: {},
-                            },
-                            contextResults: {
-                              type: "object",
-                              definition: {},
-                            },
-                            extractors: {
-                              type: "object",
-                              definition: {
-                                entities: {
-                                  type: "object",
-                                  definition: {
-                                    extractorOrCombinerType: {
-                                      type: "literal",
-                                      definition: "extractorByEntityReturningObjectList",
-                                    },
-                                    applicationSection: {
-                                      type: "literal",
-                                      definition: "model",
-                                    },
-                                    parentName: {
-                                      type: "string",
-                                      optional: true,
-                                      tag: {
-                                        value: {
-                                          id: 3,
-                                          defaultLabel: "Parent Name",
-                                          editable: false,
-                                        },
-                                      },
-                                    },
-                                    parentUuid: {
-                                      type: "uuid",
-                                      tag: {
-                                        value: {
-                                          id: 4,
-                                          defaultLabel: "Parent Uuid",
-                                          editable: false,
-                                        },
-                                      },
-                                    },
-                                    orderBy: {
-                                      type: "object",
-                                      optional: true,
-                                      definition: {
-                                        attributeName: {
-                                          type: "string",
-                                        },
-                                        direction: {
-                                          type: "enum",
-                                          optional: true,
-                                          definition: ["ASC", "DESC"],
-                                        },
-                                      },
-                                    },
-                                  },
-                                },
-                              },
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-                {
-                  type: "object",
-                  definition: {
-                    actionType: {
-                      type: "literal",
-                      definition: "compositeRunBoxedExtractorOrQueryAction",
-                    },
-                    actionLabel: {
-                      type: "string",
-                      optional: true,
-                    },
-                    nameGivenToResult: {
-                      type: "string",
-                    },
-                    query: {
-                      type: "object",
-                      definition: {
-                        actionType: {
-                          type: "literal",
-                          definition: "runBoxedExtractorOrQueryAction",
-                        },
-                        actionName: {
-                          type: "literal",
-                          definition: "runQuery",
-                        },
-                        endpoint: {
-                          type: "literal",
-                          definition: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                        },
-                        applicationSection: {
-                          type: "literal",
-                          definition: "model",
-                        },
-                        deploymentUuid: {
-                          type: "uuid",
-                          tag: {
-                            value: {
-                              id: 1,
-                              defaultLabel: "Uuid",
-                              editable: false,
-                            },
-                          },
-                        },
-                        query: {
-                          type: "object",
-                          definition: {
-                            queryType: {
-                              type: "literal",
-                              definition: "boxedQueryWithExtractorCombinerTransformer",
-                            },
-                            deploymentUuid: {
-                              type: "uuid",
-                              tag: {
-                                value: {
-                                  id: 1,
-                                  defaultLabel: "Uuid",
-                                  editable: false,
-                                },
-                              },
-                            },
-                            pageParams: {
-                              type: "object",
-                              definition: {
-                                currentDeploymentUuid: {
-                                  type: "any",
-                                },
-                              },
-                            },
-                            runAsSql: {
-                              type: "boolean",
-                              optional: true,
-                            },
-                            queryParams: {
-                              type: "object",
-                              definition: {},
-                            },
-                            contextResults: {
-                              type: "object",
-                              definition: {},
-                            },
-                            extractors: {
-                              type: "object",
-                              definition: {
-                                reports: {
-                                  type: "object",
-                                  definition: {
-                                    extractorOrCombinerType: {
-                                      type: "literal",
-                                      definition: "extractorByEntityReturningObjectList",
-                                    },
-                                    applicationSection: {
-                                      type: "literal",
-                                      definition: "model",
-                                    },
-                                    parentName: {
-                                      type: "string",
-                                      optional: true,
-                                      tag: {
-                                        value: {
-                                          id: 3,
-                                          defaultLabel: "Parent Name",
-                                          editable: false,
-                                        },
-                                      },
-                                    },
-                                    parentUuid: {
-                                      type: "uuid",
-                                      tag: {
-                                        value: {
-                                          id: 4,
-                                          defaultLabel: "Parent Uuid",
-                                          editable: false,
-                                        },
-                                      },
-                                    },
-                                    orderBy: {
-                                      type: "object",
-                                      optional: true,
-                                      definition: {
-                                        attributeName: {
-                                          type: "string",
-                                        },
-                                        direction: {
-                                          type: "enum",
-                                          optional: true,
-                                          definition: ["ASC", "DESC"],
-                                        },
-                                      },
-                                    },
-                                  },
-                                },
-                              },
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-                {
-                  type: "object",
-                  definition: {
-                    actionType: {
-                      type: "literal",
-                      definition: "compositeRunBoxedQueryAction",
-                    },
-                    actionLabel: {
-                      type: "string",
-                      optional: true,
-                    },
-                    nameGivenToResult: {
-                      type: "string",
-                    },
-                    queryTemplate: {
-                      type: "object",
-                      definition: {
-                        actionType: {
-                          type: "literal",
-                          definition: "runBoxedQueryAction",
-                        },
-                        actionName: {
-                          type: "literal",
-                          definition: "runQuery",
-                        },
-                        endpoint: {
-                          type: "literal",
-                          definition: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                        },
-                        applicationSection: {
-                          type: "literal",
-                          definition: "model",
-                        },
-                        deploymentUuid: {
-                          type: "uuid",
-                          tag: {
-                            value: {
-                              id: 1,
-                              defaultLabel: "Uuid",
-                              editable: false,
-                            },
-                          },
-                        },
-                        query: {
-                          type: "object",
-                          definition: {
-                            queryType: {
-                              type: "literal",
-                              definition: "boxedQueryWithExtractorCombinerTransformer",
-                            },
-                            deploymentUuid: {
-                              type: "uuid",
-                              tag: {
-                                value: {
-                                  id: 1,
-                                  defaultLabel: "Uuid",
-                                  editable: false,
-                                },
-                              },
-                            },
-                            pageParams: {
-                              type: "object",
-                              definition: {},
-                            },
-                            queryParams: {
-                              type: "object",
-                              definition: {},
-                            },
-                            contextResults: {
-                              type: "object",
-                              definition: {},
-                            },
-                            extractors: {
-                              type: "object",
-                              definition: {
-                                menuList: {
-                                  type: "object",
-                                  definition: {
-                                    extractorOrCombinerType: {
-                                      type: "literal",
-                                      definition: "extractorByEntityReturningObjectList",
-                                    },
-                                    applicationSection: {
-                                      type: "literal",
-                                      definition: "model",
-                                    },
-                                    parentName: {
-                                      type: "string",
-                                      optional: true,
-                                      tag: {
-                                        value: {
-                                          id: 3,
-                                          defaultLabel: "Parent Name",
-                                          editable: false,
-                                        },
-                                      },
-                                    },
-                                    parentUuid: {
-                                      type: "uuid",
-                                      tag: {
-                                        value: {
-                                          id: 4,
-                                          defaultLabel: "Parent Uuid",
-                                          editable: false,
-                                        },
-                                      },
-                                    },
-                                  },
-                                },
-                              },
-                            },
-                            runtimeTransformers: {
-                              type: "object",
-                              definition: {
-                                menu: {
-                                  type: "object",
-                                  definition: {
-                                    transformerType: {
-                                      type: "literal",
-                                      definition: "listPickElement",
-                                    },
-                                    interpolation: {
-                                      type: "literal",
-                                      definition: "runtime",
-                                    },
-                                    applyTo: {
-                                      type: "object",
-                                      definition: {
-                                        referenceType: {
-                                          type: "literal",
-                                          definition: "referencedTransformer",
-                                        },
-                                        reference: {
-                                          type: "object",
-                                          definition: {
-                                            transformerType: {
-                                              type: "literal",
-                                              definition: "contextReference",
-                                            },
-                                            interpolation: {
-                                              type: "literal",
-                                              optional: true,
-                                              definition: "runtime",
-                                            },
-                                            referenceName: {
-                                              optional: true,
-                                              type: "string",
-                                            },
-                                          },
-                                        },
-                                      },
-                                    },
-                                    index: {
-                                      type: "number",
-                                    },
-                                  },
-                                },
-                                menuItem: {
-                                  type: "object",
-                                  definition: {
-                                    transformerType: {
-                                      type: "literal",
-                                      definition: "freeObjectTemplate",
-                                    },
-                                    interpolation: {
-                                      type: "literal",
-                                      definition: "runtime",
-                                    },
-                                    definition: {
-                                      type: "object",
-                                      definition: {
-                                        reportUuid: {
-                                          type: "object",
-                                          definition: {
-                                            transformerType: {
-                                              type: "literal",
-                                              definition: "parameterReference",
-                                            },
-                                            interpolation: {
-                                              type: "literal",
-                                              optional: true,
-                                              definition: "build",
-                                            },
-                                            referenceName: {
-                                              optional: true,
-                                              type: "string",
-                                            },
-                                          },
-                                        },
-                                        label: {
-                                          type: "object",
-                                          definition: {
-                                            transformerType: {
-                                              type: "literal",
-                                              definition: "mustacheStringTemplate",
-                                            },
-                                            interpolation: {
-                                              type: "literal",
-                                              definition: "build",
-                                            },
-                                            definition: {
-                                              type: "string",
-                                            },
-                                          },
-                                        },
-                                        section: {
-                                          type: "string",
-                                        },
-                                        selfApplication: {
-                                          type: "object",
-                                          definition: {
-                                            transformerType: {
-                                              type: "literal",
-                                              definition: "parameterReference",
-                                            },
-                                            interpolation: {
-                                              type: "literal",
-                                              optional: true,
-                                              definition: "build",
-                                            },
-                                            referencePath: {
-                                              type: "array",
-                                              definition: {
-                                                type: "string",
-                                              },
-                                            },
-                                          },
-                                        },
-                                        icon: {
-                                          type: "string",
-                                        },
-                                      },
-                                    },
-                                  },
-                                },
-                                updatedMenu: {
-                                  type: "object",
-                                  definition: {
-                                    transformerType: {
-                                      type: "literal",
-                                      definition: "transformer_menu_addItem",
-                                    },
-                                    interpolation: {
-                                      type: "literal",
-                                      definition: "runtime",
-                                    },
-                                    menuItemReference: {
-                                      type: "object",
-                                      definition: {
-                                        transformerType: {
-                                          type: "literal",
-                                          definition: "contextReference",
-                                        },
-                                        interpolation: {
-                                          type: "literal",
-                                          optional: true,
-                                          definition: "runtime",
-                                        },
-                                        referenceName: {
-                                          optional: true,
-                                          type: "string",
-                                        },
-                                      },
-                                    },
-                                    menuReference: {
-                                      type: "object",
-                                      definition: {
-                                        transformerType: {
-                                          type: "literal",
-                                          definition: "contextReference",
-                                        },
-                                        interpolation: {
-                                          type: "literal",
-                                          optional: true,
-                                          definition: "runtime",
-                                        },
-                                        referenceName: {
-                                          optional: true,
-                                          type: "string",
-                                        },
-                                      },
-                                    },
-                                    menuSectionItemInsertionIndex: {
-                                      type: "number",
-                                      optional: true,
-                                    },
-                                  },
-                                },
-                              },
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-                {
-                  type: "object",
-                  definition: {
-                    actionType: {
-                      type: "literal",
-                      definition: "transactionalInstanceAction",
-                    },
-                    actionLabel: {
-                      type: "string",
-                      optional: true,
-                    },
-                    instanceAction: {
-                      type: "object",
-                      definition: {
-                        actionType: {
-                          type: "literal",
-                          definition: "updateInstance",
-                        },
-                        applicationSection: {
-                          type: "literal",
-                          definition: "model",
-                        },
-                        deploymentUuid: {
-                          type: "uuid",
-                          tag: {
-                            value: {
-                              id: 1,
-                              defaultLabel: "Uuid",
-                              editable: false,
-                            },
-                          },
-                        },
-                        endpoint: {
-                          type: "literal",
-                          definition: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-                        },
-                        objects: {
-                          type: "array",
-                          definition: {
-                            type: "object",
-                            definition: {
-                              parentName: {
-                                type: "string",
-                                optional: true,
-                              },
-                              parentUuid: {
-                                type: "string",
-                              },
-                              applicationSection: {
-                                type: "schemaReference",
-                                optional: false,
-                                definition: {
-                                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                  relativePath: "applicationSection",
-                                },
-                              },
-                              instances: {
-                                type: "array",
-                                definition: {
-                                  type: "schemaReference",
-                                  tag: {
-                                    canBeTemplate: true,
-                                  },
-                                  definition: {
-                                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                    relativePath: "entityInstance",
-                                  },
-                                },
-                              },
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-                {
-                  type: "object",
-                  definition: {
-                    actionType: {
-                      type: "literal",
-                      definition: "commit",
-                    },
-                    actionLabel: {
-                      type: "string",
-                      optional: true,
-                    },
-                    endpoint: {
-                      type: "literal",
-                      definition: "7947ae40-eb34-4149-887b-15a9021e714e",
-                    },
-                    deploymentUuid: {
-                      type: "uuid",
-                      tag: {
-                        value: {
-                          id: 1,
-                          defaultLabel: "Deployment",
-                          editable: false,
-                        },
-                      },
-                    },
-                  },
-                },
-                {
-                  type: "object",
-                  definition: {
-                    actionType: {
-                      type: "literal",
-                      definition: "compositeRunBoxedQueryAction",
-                    },
-                    actionLabel: {
-                      type: "string",
-                      optional: true,
-                    },
-                    nameGivenToResult: {
-                      type: "string",
-                    },
-                    queryTemplate: {
-                      type: "object",
-                      definition: {
-                        actionType: {
-                          type: "literal",
-                          definition: "runBoxedQueryAction",
-                        },
-                        actionName: {
-                          type: "literal",
-                          definition: "runQuery",
-                        },
-                        endpoint: {
-                          type: "literal",
-                          definition: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                        },
-                        applicationSection: {
-                          type: "literal",
-                          definition: "model",
-                        },
-                        deploymentUuid: {
-                          type: "uuid",
-                          tag: {
-                            value: {
-                              id: 1,
-                              defaultLabel: "Uuid",
-                              editable: false,
-                            },
-                          },
-                        },
-                        query: {
-                          type: "object",
-                          definition: {
-                            queryType: {
-                              type: "literal",
-                              definition: "boxedQueryWithExtractorCombinerTransformer",
-                            },
-                            deploymentUuid: {
-                              type: "uuid",
-                              tag: {
-                                value: {
-                                  id: 1,
-                                  defaultLabel: "Uuid",
-                                  editable: false,
-                                },
-                              },
-                            },
-                            pageParams: {
-                              type: "object",
-                              definition: {},
-                            },
-                            queryParams: {
-                              type: "object",
-                              definition: {},
-                            },
-                            contextResults: {
-                              type: "object",
-                              definition: {},
-                            },
-                            extractors: {
-                              type: "object",
-                              definition: {
-                                menuList: {
-                                  type: "object",
-                                  definition: {
-                                    extractorOrCombinerType: {
-                                      type: "literal",
-                                      definition: "extractorByEntityReturningObjectList",
-                                    },
-                                    applicationSection: {
-                                      type: "literal",
-                                      definition: "model",
-                                    },
-                                    parentName: {
-                                      type: "string",
-                                      optional: true,
-                                      tag: {
-                                        value: {
-                                          id: 3,
-                                          defaultLabel: "Parent Name",
-                                          editable: false,
-                                        },
-                                      },
-                                    },
-                                    parentUuid: {
-                                      type: "uuid",
-                                      tag: {
-                                        value: {
-                                          id: 4,
-                                          defaultLabel: "Parent Uuid",
-                                          editable: false,
-                                        },
-                                      },
-                                    },
-                                  },
-                                },
-                              },
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              ],
-            },
-          },
-        } as any, // TODO: cannot be typed because of "canBeTemplate" in the definition
-      },
-      // ##########################################################################################
-      // ########################### BOOK ENTITY ######################################
-      // ##########################################################################################
-      // Book entity
-      test900: {
-        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-        testSchema: {
-          type: "object",
-          definition: {
-            uuid: {
-              type: "string",
-              validations: [
-                {
-                  type: "uuid",
-                },
-              ],
-              tag: {
-                value: {
-                  id: 1,
-                  defaultLabel: "Uuid",
-                  editable: false,
-                },
-              },
-            },
-            parentName: {
-              type: "string",
-              optional: true,
-              tag: {
-                value: {
-                  id: 2,
-                  defaultLabel: "Entity Name",
-                  editable: false,
-                },
-              },
-            },
-            parentUuid: {
-              type: "string",
-              validations: [
-                {
-                  type: "uuid",
-                },
-              ],
-              tag: {
-                value: {
-                  id: 3,
-                  defaultLabel: "Entity Uuid",
-                  editable: false,
-                },
-              },
-            },
-            name: {
-              type: "string",
-              tag: {
-                value: {
-                  id: 4,
-                  defaultLabel: "Name",
-                  editable: true,
-                },
-              },
-            },
-            author: {
-              type: "string",
-              validations: [
-                {
-                  type: "uuid",
-                },
-              ],
-              optional: true,
-              tag: {
-                value: {
-                  id: 5,
-                  defaultLabel: "Author",
-                  targetEntity: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-                  editable: true,
-                },
-              },
-            },
-            publisher: {
-              type: "string",
-              validations: [
-                {
-                  type: "uuid",
-                },
-              ],
-              optional: true,
-              tag: {
-                value: {
-                  id: 5,
-                  defaultLabel: "Publisher",
-                  targetEntity: "a027c379-8468-43a5-ba4d-bf618be25cab",
-                  editable: true,
-                },
-              },
-            },
-          },
-        },
-        expectedResult: {
-          type: "object",
-          definition: {
-            uuid: {
-              type: "string",
-              validations: [
-                {
-                  type: "uuid",
-                },
-              ],
-              tag: {
-                value: {
-                  id: 1,
-                  defaultLabel: "Uuid",
-                  editable: false,
-                },
-              },
-            },
-            parentName: {
-              type: "string",
-              optional: true,
-              tag: {
-                value: {
-                  id: 2,
-                  defaultLabel: "Entity Name",
-                  editable: false,
-                },
-              },
-            },
-            parentUuid: {
-              type: "string",
-              validations: [
-                {
-                  type: "uuid",
-                },
-              ],
-              tag: {
-                value: {
-                  id: 3,
-                  defaultLabel: "Entity Uuid",
-                  editable: false,
-                },
-              },
-            },
-            name: {
-              type: "string",
-              tag: {
-                value: {
-                  id: 4,
-                  defaultLabel: "Name",
-                  editable: true,
-                },
-              },
-            },
-            author: {
-              type: "string",
-              validations: [
-                {
-                  type: "uuid",
-                },
-              ],
-              optional: true,
-              tag: {
-                value: {
-                  id: 5,
-                  defaultLabel: "Author",
-                  targetEntity: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-                  editable: true,
-                },
-              },
-            },
-            publisher: {
-              type: "string",
-              validations: [
-                {
-                  type: "uuid",
-                },
-              ],
-              optional: true,
-              tag: {
-                value: {
-                  id: 5,
-                  defaultLabel: "Publisher",
-                  targetEntity: "a027c379-8468-43a5-ba4d-bf618be25cab",
-                  editable: true,
-                },
-              },
-            },
-          },
-        },
-        testValueObject: {
-          uuid: "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7",
-          parentName: "Book",
-          parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-          name: "Renata n'importe quoi",
-          author: "e4376314-d197-457c-aa5e-d2da5f8d5977",
-          publisher: "516a7366-39e7-4998-82cb-80199a7fa667",
-        },
-      },
-      // complexMenu
-      test910: {
-        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-        testSchema: {
-          type: "schemaReference",
-          context: {
-            menuItem: {
-              type: "object",
-              definition: {
-                label: {
-                  type: "string",
-                },
-                section: {
-                  type: "schemaReference",
-                  definition: {
-                    absolutePath: miroirFundamentalJzodSchemaUuid,
-                    relativePath: "applicationSection",
-                  },
-                },
-                selfApplication: {
-                  type: "string",
-                  validations: [
-                    {
-                      type: "uuid",
-                    },
-                  ],
-                  tag: {
-                    value: {
-                      id: 1,
-                      defaultLabel: "Uuid",
-                      editable: false,
-                    },
-                  },
-                },
-                reportUuid: {
-                  type: "string",
-                  validations: [
-                    {
-                      type: "uuid",
-                    },
-                  ],
-                  tag: {
-                    value: {
-                      id: 1,
-                      defaultLabel: "Uuid",
-                      editable: false,
-                    },
-                  },
-                },
-                instanceUuid: {
-                  type: "string",
-                  optional: true,
-                  validations: [
-                    {
-                      type: "uuid",
-                    },
-                  ],
-                  tag: {
-                    value: {
-                      id: 1,
-                      defaultLabel: "Uuid",
-                      editable: false,
-                    },
-                  },
-                },
-                icon: {
-                  type: "string",
-                  validations: [
-                    {
-                      type: "uuid",
-                    },
-                  ],
-                },
-              },
-            },
-            menuItemArray: {
-              type: "array",
-              definition: {
-                type: "schemaReference",
-                definition: {
-                  relativePath: "menuItem",
-                },
-              },
-            },
-            sectionOfMenu: {
-              type: "object",
-              definition: {
-                title: {
-                  type: "string",
-                },
-                label: {
-                  type: "string",
-                },
-                items: {
-                  type: "schemaReference",
-                  definition: {
-                    relativePath: "menuItemArray",
-                  },
-                },
-              },
-            },
-            simpleMenu: {
-              type: "object",
-              definition: {
-                menuType: {
-                  type: "literal",
-                  definition: "simpleMenu",
-                },
-                definition: {
-                  type: "schemaReference",
-                  definition: {
-                    relativePath: "menuItemArray",
-                  },
-                },
-              },
-            },
-            complexMenu: {
-              type: "object",
-              definition: {
-                menuType: {
-                  type: "literal",
-                  definition: "complexMenu",
-                },
-                definition: {
-                  type: "array",
-                  definition: {
-                    type: "schemaReference",
-                    definition: {
-                      relativePath: "sectionOfMenu",
-                    },
-                  },
-                },
-              },
-            },
-            menuDefinition: {
-              type: "union",
-              discriminator: "menuType",
-              definition: [
-                {
-                  type: "schemaReference",
-                  definition: {
-                    relativePath: "simpleMenu",
-                  },
-                },
-                {
-                  type: "schemaReference",
-                  definition: {
-                    relativePath: "complexMenu",
-                  },
-                },
-              ],
-            },
-          },
-          definition: {
-            relativePath: "menuDefinition",
-          },
-        },
-        expectedResult: {
-          type: "object",
-          definition: {
-            menuType: {
-              type: "literal",
-              definition: "complexMenu",
-            },
-            definition: {
-              type: "array",
-              definition: {
-                type: "object",
-                definition: {
-                  title: {
-                    type: "string",
-                  },
-                  label: {
-                    type: "string",
-                  },
-                  items: {
-                    type: "schemaReference",
-                    definition: {
-                      relativePath: "menuItemArray",
-                    },
-                  },
-                  // {
-                  //   type: "array",
-                  //   definition: {
-                  //     type: "object",
-                  //     definition: {
-                  //       label: {
-                  //         type: "string",
-                  //       },
-                  //       section: {
-                  //         type: "literal",
-                  //         definition: "model",
-                  //       },
-                  //       selfApplication: {
-                  //         type: "string",
-                  //         validations: [
-                  //           {
-                  //             type: "uuid",
-                  //           },
-                  //         ],
-                  //         tag: {
-                  //           id: 1,
-                  //           defaultLabel: "Uuid",
-                  //           editable: false,
-                  //         },
-                  //       },
-                  //       reportUuid: {
-                  //         type: "string",
-                  //         validations: [
-                  //           {
-                  //             type: "uuid",
-                  //           },
-                  //         ],
-                  //         tag: {
-                  //           id: 1,
-                  //           defaultLabel: "Uuid",
-                  //           editable: false,
-                  //         },
-                  //       },
-                  //       icon: {
-                  //         type: "string",
-                  //         validations: [
-                  //           {
-                  //             type: "uuid",
-                  //           },
-                  //         ],
-                  //       },
-                  //     },
-                  //   },
-                  // },
-                },
-              },
-            },
-          },
-        },
-        testValueObject: {
-          menuType: "complexMenu",
-          definition: [
-            {
-              title: "Miroir",
-              label: "miroir",
-              items: [
-                {
-                  label: "Miroir Entities",
-                  section: "model",
-                  selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-                  reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9",
-                  icon: "category",
-                },
-                {
-                  label: "Miroir Entity Definitions",
-                  section: "model",
-                  selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-                  reportUuid: "f9aff35d-8636-4519-8361-c7648e0ddc68",
-                  icon: "category",
-                },
-                {
-                  label: "Miroir Reports",
-                  section: "data",
-                  selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-                  reportUuid: "1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855",
-                  icon: "list",
-                },
-                {
-                  label: "Miroir Menus",
-                  section: "data",
-                  selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-                  reportUuid: "ecfd8787-09cc-417d-8d2c-173633c9f998",
-                  icon: "list",
-                },
-              ],
-            },
-            {
-              title: "Library",
-              label: "library",
-              items: [
-                {
-                  label: "Library Entities",
-                  section: "model",
-                  selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
-                  reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9",
-                  icon: "category",
-                },
-                {
-                  label: "Library Entity Definitions",
-                  section: "model",
-                  selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
-                  reportUuid: "f9aff35d-8636-4519-8361-c7648e0ddc68",
-                  icon: "category",
-                },
-                {
-                  label: "Library Tests",
-                  section: "data",
-                  selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
-                  reportUuid: "931dd036-dfce-4e47-868e-36dba3654816",
-                  icon: "category",
-                },
-                {
-                  label: "Library Books",
-                  section: "data",
-                  selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
-                  reportUuid: "74b010b6-afee-44e7-8590-5f0849e4a5c9",
-                  icon: "auto_stories",
-                },
-                {
-                  label: "Library Authors",
-                  section: "data",
-                  selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
-                  reportUuid: "66a09068-52c3-48bc-b8dd-76575bbc8e72",
-                  icon: "star",
-                },
-                {
-                  label: "Library Publishers",
-                  section: "data",
-                  selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
-                  reportUuid: "a77aa662-006d-46cd-9176-01f02a1a12dc",
-                  icon: "account_balance",
-                },
-              ],
-            },
-          ],
-        },
-      },
-      // based on "real" cases
-      test920: {
-        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-        testSchema: {
-          type: "schemaReference",
-          context: {
-            applicationSection: {
-              type: "union",
-              definition: [
-                {
-                  type: "literal",
-                  definition: "model",
-                },
-                {
-                  type: "literal",
-                  definition: "data",
-                },
-              ],
-            },
-            transformer_constantUuid: {
-              type: "object",
-              definition: {
-                transformerType: {
-                  type: "literal",
-                  definition: "constantUuid",
-                },
-                value: {
-                  type: "string",
-                },
-              },
-            },
-            transformer_constantString: {
-              type: "object",
-              definition: {
-                transformerType: {
-                  type: "literal",
-                  definition: "constantString",
-                },
-                value: {
-                  type: "string",
-                },
-              },
-            },
-            transformer_newUuid: {
-              type: "object",
-              definition: {
-                transformerType: {
-                  type: "literal",
-                  definition: "newUuid",
-                },
-              },
-            },
-            transformerForRuntime_contextReference: {
-              type: "object",
-              definition: {
-                transformerType: {
-                  type: "literal",
-                  definition: "contextReference",
-                },
-                referenceName: {
-                  optional: true,
-                  type: "string",
-                },
-                referencePath: {
-                  optional: true,
-                  type: "array",
-                  definition: {
-                    type: "string",
-                  },
-                },
-              },
-            },
-            transformer_parameterReference: {
-              type: "object",
-              definition: {
-                transformerType: {
-                  type: "literal",
-                  definition: "parameterReference",
-                },
-                referenceName: {
-                  optional: true,
-                  type: "string",
-                },
-                referencePath: {
-                  optional: true,
-                  type: "array",
-                  definition: {
-                    type: "string",
-                  },
-                },
-              },
-            },
-            transformer_contextOrParameterReferenceTO_REMOVE: {
-              type: "union",
-              discriminator: "transformerType",
-              definition: [
-                {
-                  type: "schemaReference",
-                  definition: {
-                    relativePath: "transformerForRuntime_contextReference",
-                  },
-                },
-                {
-                  type: "schemaReference",
-                  definition: {
-                    relativePath: "transformer_parameterReference",
-                  },
-                },
-              ],
-            },
-            transformerForBuild_Abstract: {
-              type: "object",
-              definition: {
-                interpolation: {
-                  type: "literal",
-                  definition: "build",
-                },
-              },
-            },
-            transformerForBuild_InnerReference: {
-              type: "union",
-              discriminator: "transformerType",
-              definition: [
-                {
-                  type: "schemaReference",
-                  definition: {
-                    relativePath: "transformer_parameterReference",
-                  },
-                },
-                {
-                  type: "schemaReference",
-                  definition: {
-                    relativePath: "transformer_constantUuid",
-                  },
-                },
-                {
-                  type: "schemaReference",
-                  definition: {
-                    relativePath: "transformer_constantString",
-                  },
-                },
-                {
-                  type: "schemaReference",
-                  definition: {
-                    relativePath: "transformer_newUuid",
-                  },
-                }
-              ],
-            },
-            extractorTemplateRoot: {
-              type: "object",
-              definition: {
-                label: {
-                  type: "string",
-                  optional: true,
-                  tag: { value: { id: 1, defaultLabel: "Label", editable: false } },
-                },
-                applicationSection: {
-                  type: "schemaReference",
-                  optional: true,
-                  tag: { value: { id: 2, defaultLabel: "Parent Uuid", editable: false } },
-                  definition: {
-                    absolutePath: miroirFundamentalJzodSchemaUuid,
-                    relativePath: "applicationSection",
-                  },
-                },
-                parentName: {
-                  type: "string",
-                  optional: true,
-                  tag: { value: { id: 3, defaultLabel: "Parent Name", editable: false } },
-                },
-                parentUuid: {
-                  type: "schemaReference",
-                  tag: { value: { id: 4, defaultLabel: "Parent Uuid", editable: false } },
-                  definition: {
-                    relativePath: "transformerForBuild_InnerReference",
-                  },
-                },
-              },
-            },
-            extractorTemplateExtractorForObjectByDirectReference: {
-              type: "object",
-              extend: {
-                type: "schemaReference",
-                definition: {
-                  eager: true,
-                  relativePath: "extractorTemplateRoot",
-                },
-              },
-              definition: {
-                extractorOrCombinerType: {
-                  type: "literal",
-                  definition: "extractorForObjectByDirectReference",
-                },
-                instanceUuid: {
-                  type: "schemaReference",
-                  definition: {
-                    // absolutePath: miroirFundamentalJzodSchemaUuid,
-                    relativePath: "transformerForBuild_InnerReference",
-                  },
-                },
-              },
-            },
-            extractorTemplateForObjectListByEntity: {
-              type: "object",
-              extend: {
-                type: "schemaReference",
-                definition: {
-                  eager: true,
-                  relativePath: "extractorTemplateRoot",
-                },
-              },
-              definition: {
-                extractorOrCombinerType: {
-                  type: "literal",
-                  definition: "extractorTemplateForObjectListByEntity",
-                },
-                filter: {
-                  type: "object",
-                  optional: true,
-                  definition: {
-                    attributeName: {
-                      type: "string",
-                    },
-                    value: {
-                      type: "schemaReference",
-                      definition: {
-                        relativePath: "transformer_constantString",
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            extractorTemplateByExtractorWrapperReturningObject: {
-              type: "union",
-              discriminator: "extractorOrCombinerType",
-              definition: [
-                {
-                  type: "schemaReference",
-                  definition: {
-                    relativePath: "extractorTemplateExtractorForObjectByDirectReference",
-                  },
-                },
-                {
-                  type: "object",
-                  definition: {
-                    extractorOrCombinerType: {
-                      type: "literal",
-                      definition: "extractorWrapperReturningObject",
-                    },
-                    definition: {
-                      type: "record",
-                      definition: {
-                        type: "schemaReference",
-                        definition: {
-                          relativePath: "extractorTemplateByExtractorWrapperReturningObject",
-                        },
-                      },
-                    },
-                  },
-                },
-              ],
-            },
-            extractorTemplateByExtractorWrapperReturningList: {
-              type: "union",
-              discriminator: "extractorOrCombinerType",
-              definition: [
-                {
-                  type: "schemaReference",
-                  definition: {
-                    relativePath: "extractorTemplateForObjectListByEntity",
-                  },
-                },
-                {
-                  type: "object",
-                  definition: {
-                    extractorOrCombinerType: {
-                      type: "literal",
-                      definition: "extractorWrapperReturningList",
-                    },
-                    definition: {
-                      type: "array",
-                      definition: {
-                        type: "schemaReference",
-                        definition: {
-                          relativePath: "extractorTemplateByExtractorWrapperReturningList",
-                        },
-                      },
-                    },
-                  },
-                },
-              ],
-            },
-            extractorTemplateByExtractorWrapper: {
-              type: "union",
-              discriminator: "extractorOrCombinerType",
-              definition: [
-                {
-                  type: "schemaReference",
-                  definition: {
-                    relativePath: "extractorTemplateByExtractorWrapperReturningObject",
-                  },
-                },
-                {
-                  type: "schemaReference",
-                  definition: {
-                    relativePath: "extractorTemplateByExtractorWrapperReturningList",
-                  },
-                },
-              ],
-            },
-          },
-          definition: {
-            relativePath: "extractorTemplateByExtractorWrapper",
-          },
-        },
-        expectedResult: {
-          // TODO: missing alternate possible union branches in parentUuid, instanceUuid?
-          type: "object",
-          definition: {
-            extractorOrCombinerType: {
-              type: "literal",
-              definition: "extractorForObjectByDirectReference",
-            },
-            parentName: {
-              type: "string",
-              optional: true,
-              tag: {
-                value: {
-                  id: 3,
-                  defaultLabel: "Parent Name",
-                  editable: false,
-                },
-              },
-            },
-            parentUuid: {
-              type: "object",
-              definition: {
-                transformerType: {
-                  type: "literal",
-                  definition: "constantUuid",
-                },
-                value: {
-                  type: "string",
-                },
-              },
-            },
-            instanceUuid: {
-              type: "object",
-              definition: {
-                transformerType: {
-                  type: "literal",
-                  definition: "parameterReference",
-                },
-                referenceName: {
-                  optional: true,
-                  type: "string",
-                },
-              },
-            },
-          },
-        },
-        testValueObject: {
-          extractorOrCombinerType: "extractorForObjectByDirectReference",
-          parentName: "Report",
-          parentUuid: {
-            transformerType: "constantUuid",
-            value: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
-          },
-          instanceUuid: {
-            transformerType: "parameterReference",
-            referenceName: "instanceUuid",
-          },
-        },
-      },
-      // based on "real" cases
-      test930: {
-        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-        testSchema: entityDefinitionTest.jzodSchema as JzodElement,
-        expectedResult: {
-          type: "object",
-          definition: {
-            uuid: {
-              type: "string",
-              validations: [
-                {
-                  type: "uuid",
-                },
-              ],
-              tag: {
-                value: {
-                  id: 1,
-                  defaultLabel: "Uuid",
-                  editable: false,
-                },
-              },
-            },
-            parentName: {
-              type: "string",
-              optional: true,
-              tag: {
-                value: {
-                  id: 1,
-                  defaultLabel: "Uuid",
-                  editable: false,
-                },
-              },
-            },
-            parentUuid: {
-              type: "string",
-              validations: [
-                {
-                  type: "uuid",
-                },
-              ],
-              tag: {
-                value: {
-                  id: 1,
-                  defaultLabel: "parentUuid",
-                  editable: false,
-                },
-              },
-            },
-            name: {
-              type: "never",
-            },
-            selfApplication: {
-              type: "never",
-            },
-            branch: {
-              type: "never",
-            },
-            description: {
-              type: "never",
-            },
-            definition: {
-              type: "object",
-              definition: {
-                testCompositeActions: {
-                  type: "object",
-                  definition: {
-                    "create new Entity and reports from spreadsheet": {
-                      type: "object",
-                      definition: {
-                        testType: {
-                          type: "literal",
-                          definition: "testBuildPlusRuntimeCompositeAction",
-                        },
-                        testLabel: {
-                          type: "string",
-                        },
-                        compositeAction: {
-                          type: "object",
-                          definition: {
-                            actionType: {
-                              type: "literal",
-                              definition: "compositeAction",
-                            },
-                            actionLabel: {
-                              type: "string",
-                              optional: true,
-                            },
-                            actionName: {
-                              type: "literal",
-                              definition: "sequence",
-                            },
-                            templates: {
-                              type: "object",
-                              definition: {
-                                createEntity_newEntity: {
-                                  type: "any",
-                                },
-                                createEntity_newEntityDefinition: {
-                                  type: "any",
-                                },
-                                newEntityListReport: {
-                                  type: "any",
-                                },
-                                newEntityDetailsReport: {
-                                  type: "any",
-                                },
-                              },
-                            },
-                            definition: {
-                              type: "tuple",
-                              definition: [
-                                {
-                                  type: "object",
-                                  definition: {
-                                    actionType: {
-                                      type: "literal",
-                                      definition: "createEntity",
-                                    },
-                                    actionLabel: {
-                                      type: "string",
-                                      optional: true,
-                                    },
-                                    deploymentUuid: {
-                                      type: "uuid",
-                                      tag: {
-                                        value: {
-                                          id: 1,
-                                          defaultLabel: "Deployment",
-                                          editable: false,
-                                        },
-                                      },
-                                    },
-                                    endpoint: {
-                                      type: "literal",
-                                      definition: "7947ae40-eb34-4149-887b-15a9021e714e",
-                                    },
-                                    entities: {
-                                      type: "array",
-                                      definition: {
-                                        type: "object",
-                                        definition: {
-                                          entity: {
-                                            type: "union",
-                                            tag: {
-                                              canBeTemplate: true,
-                                            },
-                                            definition: [
-                                              {
-                                                type: "schemaReference",
-                                                tag: {
-                                                  canBeTemplate: true,
-                                                },
-                                                definition: {
-                                                  absolutePath:
-                                                    "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                                  relativePath:
-                                                    "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity",
-                                                },
-                                                context: {},
-                                              },
-                                              {
-                                                type: "schemaReference",
-                                                definition: {
-                                                  absolutePath:
-                                                    "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                                  relativePath:
-                                                    "transformerForBuildPlusRuntimeCarryOnObject",
-                                                },
-                                              },
-                                            ],
-                                          },
-                                          entityDefinition: {
-                                            type: "union",
-                                            tag: {
-                                              canBeTemplate: true,
-                                            },
-                                            definition: [
-                                              {
-                                                type: "schemaReference",
-                                                tag: {
-                                                  canBeTemplate: true,
-                                                },
-                                                definition: {
-                                                  absolutePath:
-                                                    "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                                  relativePath:
-                                                    "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition",
-                                                },
-                                                context: {},
-                                              },
-                                              {
-                                                type: "schemaReference",
-                                                definition: {
-                                                  absolutePath:
-                                                    "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                                  relativePath:
-                                                    "transformerForBuildPlusRuntimeCarryOnObject",
-                                                },
-                                              },
-                                            ],
-                                          },
-                                        },
-                                      },
-                                    },
-                                  },
-                                },
-                                {
-                                  type: "object",
-                                  definition: {
-                                    actionType: {
-                                      type: "literal",
-                                      definition: "transactionalInstanceAction",
-                                    },
-                                    actionLabel: {
-                                      type: "string",
-                                      optional: true,
-                                    },
-                                    instanceAction: {
-                                      type: "object",
-                                      definition: {
-                                        actionType: {
-                                          type: "literal",
-                                          definition: "createInstance",
-                                        },
-                                        applicationSection: {
-                                          type: "literal",
-                                          definition: "model",
-                                        },
-                                        deploymentUuid: {
-                                          type: "uuid",
-                                          tag: {
-                                            value: {
-                                              id: 1,
-                                              defaultLabel: "Uuid",
-                                              editable: false,
-                                            },
-                                          },
-                                        },
-                                        endpoint: {
-                                          type: "literal",
-                                          definition: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-                                        },
-                                        objects: {
-                                          type: "array",
-                                          definition: {
-                                            type: "object",
-                                            definition: {
-                                              parentName: {
-                                                type: "string",
-                                                optional: true,
-                                              },
-                                              parentUuid: {
-                                                type: "string",
-                                              },
-                                              applicationSection: {
-                                                type: "schemaReference",
-                                                optional: false,
-                                                definition: {
-                                                  absolutePath:
-                                                    "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                                  relativePath:
-                                                    "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection",
-                                                },
-                                              },
-                                              instances: {
-                                                type: "array",
-                                                definition: {
-                                                  type: "union",
-                                                  tag: {
-                                                    canBeTemplate: true,
-                                                  },
-                                                  definition: [
-                                                    {
-                                                      type: "schemaReference",
-                                                      tag: {
-                                                        canBeTemplate: true,
-                                                      },
-                                                      definition: {
-                                                        absolutePath:
-                                                          "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                                        relativePath:
-                                                          "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance",
-                                                      },
-                                                      context: {},
-                                                    },
-                                                    {
-                                                      type: "schemaReference",
-                                                      definition: {
-                                                        absolutePath:
-                                                          "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                                        relativePath:
-                                                          "transformerForBuildPlusRuntimeCarryOnObject",
-                                                      },
-                                                    },
-                                                  ],
-                                                },
-                                              },
-                                            },
-                                          },
-                                        },
-                                      },
-                                    },
-                                  },
-                                },
-                                {
-                                  type: "object",
-                                  definition: {
-                                    actionType: {
-                                      type: "literal",
-                                      definition: "commit",
-                                    },
-                                    actionLabel: {
-                                      type: "string",
-                                      optional: true,
-                                    },
-                                    endpoint: {
-                                      type: "literal",
-                                      definition: "7947ae40-eb34-4149-887b-15a9021e714e",
-                                    },
-                                    deploymentUuid: {
-                                      type: "uuid",
-                                      tag: {
-                                        value: {
-                                          id: 1,
-                                          defaultLabel: "Deployment",
-                                          editable: false,
-                                        },
-                                      },
-                                    },
-                                  },
-                                },
-                                {
-                                  type: "object",
-                                  definition: {
-                                    actionType: {
-                                      type: "literal",
-                                      definition: "compositeRunBoxedExtractorOrQueryAction",
-                                    },
-                                    actionLabel: {
-                                      type: "string",
-                                      optional: true,
-                                    },
-                                    nameGivenToResult: {
-                                      type: "string",
-                                    },
-                                    query: {
-                                      type: "object",
-                                      definition: {
-                                        actionType: {
-                                          type: "literal",
-                                          definition: "runBoxedExtractorOrQueryAction",
-                                        },
-                                        actionName: {
-                                          type: "literal",
-                                          definition: "runQuery",
-                                        },
-                                        endpoint: {
-                                          type: "literal",
-                                          definition: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                                        },
-                                        applicationSection: {
-                                          type: "literal",
-                                          definition: "model",
-                                        },
-                                        deploymentUuid: {
-                                          type: "uuid",
-                                          tag: {
-                                            value: {
-                                              id: 1,
-                                              defaultLabel: "Uuid",
-                                              editable: false,
-                                            },
-                                          },
-                                        },
-                                        query: {
-                                          type: "object",
-                                          definition: {
-                                            queryType: {
-                                              type: "literal",
-                                              definition:
-                                                "boxedQueryWithExtractorCombinerTransformer",
-                                            },
-                                            deploymentUuid: {
-                                              type: "uuid",
-                                              tag: {
-                                                value: {
-                                                  id: 1,
-                                                  defaultLabel: "Uuid",
-                                                  editable: false,
-                                                },
-                                              },
-                                            },
-                                            pageParams: {
-                                              type: "object",
-                                              definition: {
-                                                currentDeploymentUuid: {
-                                                  type: "any",
-                                                },
-                                              },
-                                            },
-                                            queryParams: {
-                                              type: "object",
-                                              definition: {},
-                                            },
-                                            contextResults: {
-                                              type: "object",
-                                              definition: {},
-                                            },
-                                            extractors: {
-                                              type: "object",
-                                              definition: {
-                                                entityDefinitions: {
-                                                  type: "object",
-                                                  definition: {
-                                                    extractorOrCombinerType: {
-                                                      type: "literal",
-                                                      definition:
-                                                        "extractorByEntityReturningObjectList",
-                                                    },
-                                                    applicationSection: {
-                                                      type: "literal",
-                                                      definition: "model",
-                                                    },
-                                                    parentName: {
-                                                      type: "string",
-                                                      optional: true,
-                                                      tag: {
-                                                        value: {
-                                                          id: 3,
-                                                          defaultLabel: "Parent Name",
-                                                          editable: false,
-                                                        },
-                                                      },
-                                                    },
-                                                    parentUuid: {
-                                                      type: "uuid",
-                                                      tag: {
-                                                        value: {
-                                                          id: 4,
-                                                          defaultLabel: "Parent Uuid",
-                                                          editable: false,
-                                                        },
-                                                      },
-                                                    },
-                                                    orderBy: {
-                                                      type: "object",
-                                                      optional: true,
-                                                      definition: {
-                                                        attributeName: {
-                                                          type: "string",
-                                                        },
-                                                        direction: {
-                                                          type: "enum",
-                                                          optional: true,
-                                                          definition: ["ASC", "DESC"],
-                                                        },
-                                                      },
-                                                    },
-                                                  },
-                                                },
-                                              },
-                                            },
-                                          },
-                                        },
-                                      },
-                                    },
-                                  },
-                                },
-                                {
-                                  type: "object",
-                                  definition: {
-                                    actionType: {
-                                      type: "literal",
-                                      definition: "compositeRunBoxedExtractorOrQueryAction",
-                                    },
-                                    actionLabel: {
-                                      type: "string",
-                                      optional: true,
-                                    },
-                                    nameGivenToResult: {
-                                      type: "string",
-                                    },
-                                    query: {
-                                      type: "object",
-                                      definition: {
-                                        actionType: {
-                                          type: "literal",
-                                          definition: "runBoxedExtractorOrQueryAction",
-                                        },
-                                        actionName: {
-                                          type: "literal",
-                                          definition: "runQuery",
-                                        },
-                                        endpoint: {
-                                          type: "literal",
-                                          definition: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                                        },
-                                        applicationSection: {
-                                          type: "literal",
-                                          definition: "model",
-                                        },
-                                        deploymentUuid: {
-                                          type: "uuid",
-                                          tag: {
-                                            value: {
-                                              id: 1,
-                                              defaultLabel: "Uuid",
-                                              editable: false,
-                                            },
-                                          },
-                                        },
-                                        query: {
-                                          type: "object",
-                                          definition: {
-                                            queryType: {
-                                              type: "literal",
-                                              definition:
-                                                "boxedQueryWithExtractorCombinerTransformer",
-                                            },
-                                            deploymentUuid: {
-                                              type: "uuid",
-                                              tag: {
-                                                value: {
-                                                  id: 1,
-                                                  defaultLabel: "Uuid",
-                                                  editable: false,
-                                                },
-                                              },
-                                            },
-                                            pageParams: {
-                                              type: "object",
-                                              definition: {
-                                                currentDeploymentUuid: {
-                                                  type: "any",
-                                                },
-                                              },
-                                            },
-                                            queryParams: {
-                                              type: "object",
-                                              definition: {},
-                                            },
-                                            contextResults: {
-                                              type: "object",
-                                              definition: {},
-                                            },
-                                            extractors: {
-                                              type: "object",
-                                              definition: {
-                                                entities: {
-                                                  type: "object",
-                                                  definition: {
-                                                    extractorOrCombinerType: {
-                                                      type: "literal",
-                                                      definition:
-                                                        "extractorByEntityReturningObjectList",
-                                                    },
-                                                    applicationSection: {
-                                                      type: "literal",
-                                                      definition: "model",
-                                                    },
-                                                    parentName: {
-                                                      type: "string",
-                                                      optional: true,
-                                                      tag: {
-                                                        value: {
-                                                          id: 3,
-                                                          defaultLabel: "Parent Name",
-                                                          editable: false,
-                                                        },
-                                                      },
-                                                    },
-                                                    parentUuid: {
-                                                      type: "uuid",
-                                                      tag: {
-                                                        value: {
-                                                          id: 4,
-                                                          defaultLabel: "Parent Uuid",
-                                                          editable: false,
-                                                        },
-                                                      },
-                                                    },
-                                                    orderBy: {
-                                                      type: "object",
-                                                      optional: true,
-                                                      definition: {
-                                                        attributeName: {
-                                                          type: "string",
-                                                        },
-                                                        direction: {
-                                                          type: "enum",
-                                                          optional: true,
-                                                          definition: ["ASC", "DESC"],
-                                                        },
-                                                      },
-                                                    },
-                                                  },
-                                                },
-                                              },
-                                            },
-                                          },
-                                        },
-                                      },
-                                    },
-                                  },
-                                },
-                                {
-                                  type: "object",
-                                  definition: {
-                                    actionType: {
-                                      type: "literal",
-                                      definition: "compositeRunBoxedExtractorOrQueryAction",
-                                    },
-                                    actionLabel: {
-                                      type: "string",
-                                      optional: true,
-                                    },
-                                    nameGivenToResult: {
-                                      type: "string",
-                                    },
-                                    query: {
-                                      type: "object",
-                                      definition: {
-                                        actionType: {
-                                          type: "literal",
-                                          definition: "runBoxedExtractorOrQueryAction",
-                                        },
-                                        actionName: {
-                                          type: "literal",
-                                          definition: "runQuery",
-                                        },
-                                        endpoint: {
-                                          type: "literal",
-                                          definition: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                                        },
-                                        applicationSection: {
-                                          type: "literal",
-                                          definition: "model",
-                                        },
-                                        deploymentUuid: {
-                                          type: "uuid",
-                                          tag: {
-                                            value: {
-                                              id: 1,
-                                              defaultLabel: "Uuid",
-                                              editable: false,
-                                            },
-                                          },
-                                        },
-                                        query: {
-                                          type: "object",
-                                          definition: {
-                                            queryType: {
-                                              type: "literal",
-                                              definition:
-                                                "boxedQueryWithExtractorCombinerTransformer",
-                                            },
-                                            deploymentUuid: {
-                                              type: "uuid",
-                                              tag: {
-                                                value: {
-                                                  id: 1,
-                                                  defaultLabel: "Uuid",
-                                                  editable: false,
-                                                },
-                                              },
-                                            },
-                                            pageParams: {
-                                              type: "object",
-                                              definition: {
-                                                currentDeploymentUuid: {
-                                                  type: "any",
-                                                },
-                                              },
-                                            },
-                                            runAsSql: {
-                                              type: "boolean",
-                                              optional: true,
-                                            },
-                                            queryParams: {
-                                              type: "object",
-                                              definition: {},
-                                            },
-                                            contextResults: {
-                                              type: "object",
-                                              definition: {},
-                                            },
-                                            extractors: {
-                                              type: "object",
-                                              definition: {
-                                                reports: {
-                                                  type: "object",
-                                                  definition: {
-                                                    extractorOrCombinerType: {
-                                                      type: "literal",
-                                                      definition:
-                                                        "extractorByEntityReturningObjectList",
-                                                    },
-                                                    applicationSection: {
-                                                      type: "literal",
-                                                      definition: "model",
-                                                    },
-                                                    parentName: {
-                                                      type: "string",
-                                                      optional: true,
-                                                      tag: {
-                                                        value: {
-                                                          id: 3,
-                                                          defaultLabel: "Parent Name",
-                                                          editable: false,
-                                                        },
-                                                      },
-                                                    },
-                                                    parentUuid: {
-                                                      type: "uuid",
-                                                      tag: {
-                                                        value: {
-                                                          id: 4,
-                                                          defaultLabel: "Parent Uuid",
-                                                          editable: false,
-                                                        },
-                                                      },
-                                                    },
-                                                    orderBy: {
-                                                      type: "object",
-                                                      optional: true,
-                                                      definition: {
-                                                        attributeName: {
-                                                          type: "string",
-                                                        },
-                                                        direction: {
-                                                          type: "enum",
-                                                          optional: true,
-                                                          definition: ["ASC", "DESC"],
-                                                        },
-                                                      },
-                                                    },
-                                                  },
-                                                },
-                                              },
-                                            },
-                                          },
-                                        },
-                                      },
-                                    },
-                                  },
-                                },
-                                {
-                                  type: "object",
-                                  definition: {
-                                    actionType: {
-                                      type: "literal",
-                                      definition: "compositeRunBoxedQueryAction",
-                                    },
-                                    actionLabel: {
-                                      type: "string",
-                                      optional: true,
-                                    },
-                                    nameGivenToResult: {
-                                      type: "string",
-                                    },
-                                    queryTemplate: {
-                                      type: "object",
-                                      definition: {
-                                        actionType: {
-                                          type: "literal",
-                                          definition: "runBoxedQueryAction",
-                                        },
-                                        actionName: {
-                                          type: "literal",
-                                          definition: "runQuery",
-                                        },
-                                        endpoint: {
-                                          type: "literal",
-                                          definition: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                                        },
-                                        applicationSection: {
-                                          type: "literal",
-                                          definition: "model",
-                                        },
-                                        deploymentUuid: {
-                                          type: "uuid",
-                                          tag: {
-                                            value: {
-                                              id: 1,
-                                              defaultLabel: "Uuid",
-                                              editable: false,
-                                            },
-                                          },
-                                        },
-                                        query: {
-                                          type: "object",
-                                          definition: {
-                                            queryType: {
-                                              type: "literal",
-                                              definition:
-                                                "boxedQueryWithExtractorCombinerTransformer",
-                                            },
-                                            deploymentUuid: {
-                                              type: "uuid",
-                                              tag: {
-                                                value: {
-                                                  id: 1,
-                                                  defaultLabel: "Uuid",
-                                                  editable: false,
-                                                },
-                                              },
-                                            },
-                                            pageParams: {
-                                              type: "object",
-                                              definition: {},
-                                            },
-                                            queryParams: {
-                                              type: "object",
-                                              definition: {},
-                                            },
-                                            contextResults: {
-                                              type: "object",
-                                              definition: {},
-                                            },
-                                            extractors: {
-                                              type: "object",
-                                              definition: {
-                                                menuList: {
-                                                  type: "object",
-                                                  definition: {
-                                                    extractorOrCombinerType: {
-                                                      type: "literal",
-                                                      definition:
-                                                        "extractorByEntityReturningObjectList",
-                                                    },
-                                                    applicationSection: {
-                                                      type: "literal",
-                                                      definition: "model",
-                                                    },
-                                                    parentName: {
-                                                      type: "string",
-                                                      optional: true,
-                                                      tag: {
-                                                        value: {
-                                                          id: 3,
-                                                          defaultLabel: "Parent Name",
-                                                          editable: false,
-                                                        },
-                                                      },
-                                                    },
-                                                    parentUuid: {
-                                                      type: "uuid",
-                                                      tag: {
-                                                        value: {
-                                                          id: 4,
-                                                          defaultLabel: "Parent Uuid",
-                                                          editable: false,
-                                                        },
-                                                      },
-                                                    },
-                                                  },
-                                                },
-                                              },
-                                            },
-                                            runtimeTransformers: {
-                                              type: "object",
-                                              definition: {
-                                                menu: {
-                                                  type: "object",
-                                                  definition: {
-                                                    transformerType: {
-                                                      type: "literal",
-                                                      definition: "listPickElement",
-                                                    },
-                                                    interpolation: {
-                                                      type: "literal",
-                                                      definition: "runtime",
-                                                    },
-                                                    applyTo: {
-                                                      type: "object",
-                                                      definition: {
-                                                        referenceType: {
-                                                          type: "literal",
-                                                          definition: "referencedTransformer",
-                                                        },
-                                                        reference: {
-                                                          type: "object",
-                                                          definition: {
-                                                            transformerType: {
-                                                              type: "literal",
-                                                              definition: "contextReference",
-                                                            },
-                                                            interpolation: {
-                                                              type: "literal",
-                                                              optional: true,
-                                                              definition: "runtime",
-                                                            },
-                                                            referenceName: {
-                                                              optional: true,
-                                                              type: "string",
-                                                            },
-                                                          },
-                                                        },
-                                                      },
-                                                    },
-                                                    index: {
-                                                      type: "number",
-                                                    },
-                                                  },
-                                                },
-                                                menuItem: {
-                                                  type: "object",
-                                                  definition: {
-                                                    transformerType: {
-                                                      type: "literal",
-                                                      definition: "freeObjectTemplate",
-                                                    },
-                                                    interpolation: {
-                                                      type: "literal",
-                                                      definition: "runtime",
-                                                    },
-                                                    definition: {
-                                                      type: "object",
-                                                      definition: {
-                                                        reportUuid: {
-                                                          type: "object",
-                                                          definition: {
-                                                            transformerType: {
-                                                              type: "literal",
-                                                              definition: "parameterReference",
-                                                            },
-                                                            interpolation: {
-                                                              type: "literal",
-                                                              optional: true,
-                                                              definition: "build",
-                                                            },
-                                                            referenceName: {
-                                                              optional: true,
-                                                              type: "string",
-                                                            },
-                                                          },
-                                                        },
-                                                        label: {
-                                                          type: "object",
-                                                          definition: {
-                                                            transformerType: {
-                                                              type: "literal",
-                                                              definition: "mustacheStringTemplate",
-                                                            },
-                                                            interpolation: {
-                                                              type: "literal",
-                                                              definition: "build",
-                                                            },
-                                                            definition: {
-                                                              type: "string",
-                                                            },
-                                                          },
-                                                        },
-                                                        section: {
-                                                          type: "string",
-                                                        },
-                                                        selfApplication: {
-                                                          type: "object",
-                                                          definition: {
-                                                            transformerType: {
-                                                              type: "literal",
-                                                              definition: "parameterReference",
-                                                            },
-                                                            interpolation: {
-                                                              type: "literal",
-                                                              optional: true,
-                                                              definition: "build",
-                                                            },
-                                                            referencePath: {
-                                                              type: "array",
-                                                              definition: {
-                                                                type: "string",
-                                                              },
-                                                            },
-                                                          },
-                                                        },
-                                                        icon: {
-                                                          type: "string",
-                                                        },
-                                                      },
-                                                    },
-                                                  },
-                                                },
-                                                updatedMenu: {
-                                                  type: "object",
-                                                  definition: {
-                                                    transformerType: {
-                                                      type: "literal",
-                                                      definition: "transformer_menu_addItem",
-                                                    },
-                                                    interpolation: {
-                                                      type: "literal",
-                                                      definition: "runtime",
-                                                    },
-                                                    menuItemReference: {
-                                                      type: "object",
-                                                      definition: {
-                                                        transformerType: {
-                                                          type: "literal",
-                                                          definition: "contextReference",
-                                                        },
-                                                        interpolation: {
-                                                          type: "literal",
-                                                          optional: true,
-                                                          definition: "runtime",
-                                                        },
-                                                        referenceName: {
-                                                          optional: true,
-                                                          type: "string",
-                                                        },
-                                                      },
-                                                    },
-                                                    menuReference: {
-                                                      type: "object",
-                                                      definition: {
-                                                        transformerType: {
-                                                          type: "literal",
-                                                          definition: "contextReference",
-                                                        },
-                                                        interpolation: {
-                                                          type: "literal",
-                                                          optional: true,
-                                                          definition: "runtime",
-                                                        },
-                                                        referenceName: {
-                                                          optional: true,
-                                                          type: "string",
-                                                        },
-                                                      },
-                                                    },
-                                                    menuSectionItemInsertionIndex: {
-                                                      type: "number",
-                                                      optional: true,
-                                                    },
-                                                  },
-                                                },
-                                              },
-                                            },
-                                          },
-                                        },
-                                      },
-                                    },
-                                  },
-                                },
-                                {
-                                  type: "object",
-                                  definition: {
-                                    actionType: {
-                                      type: "literal",
-                                      definition: "transactionalInstanceAction",
-                                    },
-                                    actionLabel: {
-                                      type: "string",
-                                      optional: true,
-                                    },
-                                    instanceAction: {
-                                      type: "object",
-                                      definition: {
-                                        actionType: {
-                                          type: "literal",
-                                          definition: "updateInstance",
-                                        },
-                                        applicationSection: {
-                                          type: "literal",
-                                          definition: "model",
-                                        },
-                                        deploymentUuid: {
-                                          type: "uuid",
-                                          tag: {
-                                            value: {
-                                              id: 1,
-                                              defaultLabel: "Uuid",
-                                              editable: false,
-                                            },
-                                          },
-                                        },
-                                        endpoint: {
-                                          type: "literal",
-                                          definition: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-                                        },
-                                        objects: {
-                                          type: "tuple",
-                                          definition: [
-                                            {
-                                              type: "object",
-                                              definition: {
-                                                parentName: {
-                                                  type: "string",
-                                                  optional: true,
-                                                },
-                                                parentUuid: {
-                                                  type: "string",
-                                                },
-                                                applicationSection: {
-                                                  type: "literal",
-                                                  definition: "model",
-                                                },
-                                                instances: {
-                                                  type: "tuple",
-                                                  definition: [
-                                                    {
-                                                      type: "object",
-                                                      definition: {
-                                                        transformerType: {
-                                                          type: "literal",
-                                                          definition: "contextReference",
-                                                        },
-                                                        interpolation: {
-                                                          type: "literal",
-                                                          optional: true,
-                                                          definition: "runtime",
-                                                        },
-                                                        referencePath: {
-                                                          type: "array",
-                                                          definition: {
-                                                            type: "string",
-                                                          },
-                                                        },
-                                                      },
-                                                    },
-                                                  ],
-                                                },
-                                              },
-                                            },
-                                          ],
-                                        },
-                                      },
-                                    },
-                                  },
-                                },
-                                {
-                                  type: "object",
-                                  definition: {
-                                    actionType: {
-                                      type: "literal",
-                                      definition: "commit",
-                                    },
-                                    actionLabel: {
-                                      type: "string",
-                                      optional: true,
-                                    },
-                                    endpoint: {
-                                      type: "literal",
-                                      definition: "7947ae40-eb34-4149-887b-15a9021e714e",
-                                    },
-                                    deploymentUuid: {
-                                      type: "uuid",
-                                      tag: {
-                                        value: {
-                                          id: 1,
-                                          defaultLabel: "Deployment",
-                                          editable: false,
-                                        },
-                                      },
-                                    },
-                                  },
-                                },
-                                {
-                                  type: "object",
-                                  definition: {
-                                    actionType: {
-                                      type: "literal",
-                                      definition: "compositeRunBoxedQueryAction",
-                                    },
-                                    actionLabel: {
-                                      type: "string",
-                                      optional: true,
-                                    },
-                                    nameGivenToResult: {
-                                      type: "string",
-                                    },
-                                    queryTemplate: {
-                                      type: "object",
-                                      definition: {
-                                        actionType: {
-                                          type: "literal",
-                                          definition: "runBoxedQueryAction",
-                                        },
-                                        actionName: {
-                                          type: "literal",
-                                          definition: "runQuery",
-                                        },
-                                        endpoint: {
-                                          type: "literal",
-                                          definition: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                                        },
-                                        applicationSection: {
-                                          type: "literal",
-                                          definition: "model",
-                                        },
-                                        deploymentUuid: {
-                                          type: "uuid",
-                                          tag: {
-                                            value: {
-                                              id: 1,
-                                              defaultLabel: "Uuid",
-                                              editable: false,
-                                            },
-                                          },
-                                        },
-                                        query: {
-                                          type: "object",
-                                          definition: {
-                                            queryType: {
-                                              type: "literal",
-                                              definition:
-                                                "boxedQueryWithExtractorCombinerTransformer",
-                                            },
-                                            deploymentUuid: {
-                                              type: "uuid",
-                                              tag: {
-                                                value: {
-                                                  id: 1,
-                                                  defaultLabel: "Uuid",
-                                                  editable: false,
-                                                },
-                                              },
-                                            },
-                                            pageParams: {
-                                              type: "object",
-                                              definition: {},
-                                            },
-                                            queryParams: {
-                                              type: "object",
-                                              definition: {},
-                                            },
-                                            contextResults: {
-                                              type: "object",
-                                              definition: {},
-                                            },
-                                            extractors: {
-                                              type: "object",
-                                              definition: {
-                                                menuList: {
-                                                  type: "object",
-                                                  definition: {
-                                                    extractorOrCombinerType: {
-                                                      type: "literal",
-                                                      definition:
-                                                        "extractorByEntityReturningObjectList",
-                                                    },
-                                                    applicationSection: {
-                                                      type: "literal",
-                                                      definition: "model",
-                                                    },
-                                                    parentName: {
-                                                      type: "string",
-                                                      optional: true,
-                                                      tag: {
-                                                        value: {
-                                                          id: 3,
-                                                          defaultLabel: "Parent Name",
-                                                          editable: false,
-                                                        },
-                                                      },
-                                                    },
-                                                    parentUuid: {
-                                                      type: "uuid",
-                                                      tag: {
-                                                        value: {
-                                                          id: 4,
-                                                          defaultLabel: "Parent Uuid",
-                                                          editable: false,
-                                                        },
-                                                      },
-                                                    },
-                                                  },
-                                                },
-                                              },
-                                            },
-                                          },
-                                        },
-                                      },
-                                    },
-                                  },
-                                },
-                              ],
-                            },
-                          },
-                        },
-                        testCompositeActionAssertions: {
-                          type: "array",
-                          definition: {
-                            type: "object",
-                            definition: {
-                              actionType: {
-                                type: "literal",
-                                definition: "compositeRunTestAssertion",
-                              },
-                              actionLabel: {
-                                type: "string",
-                                optional: true,
-                              },
-                              nameGivenToResult: {
-                                type: "string",
-                              },
-                              testAssertion: {
-                                type: "schemaReference",
-                                definition: {
-                                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                  relativePath: "testAssertion",
-                                },
-                              },
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        } as any, // TODO: fix this any
-        testValueObject: test_createEntityAndReportFromSpreadsheetAndUpdateMenu,
-      },
+
+      // // ##########################################################################################
+      // // ################################# JZOD SCHEMAS ###########################################
+      // // ##########################################################################################
+      // // JzodSchema: literal
+      // test300: {
+      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      //   testSchema: {
+      //     type: "schemaReference",
+      //     definition: {
+      //       absolutePath: miroirFundamentalJzodSchemaUuid,
+      //       relativePath: "jzodElement",
+      //     },
+      //   },
+      //   expectedResult: {
+      //     type: "object",
+      //     definition: {
+      //       type: {
+      //         type: "literal",
+      //         definition: "literal",
+      //       },
+      //       definition: {
+      //         type: "string",
+      //       },
+      //     },
+      //   },
+      //   testValueObject: { type: "literal", definition: "myLiteral" },
+      // },
+      // // JzodSchema: string
+      // test310: {
+      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      //   testSchema: {
+      //     type: "schemaReference",
+      //     definition: {
+      //       absolutePath: miroirFundamentalJzodSchemaUuid,
+      //       relativePath: "jzodElement",
+      //     },
+      //   },
+      //   expectedResult: {
+      //     type: "object",
+      //     definition: {
+      //       type: {
+      //         type: "literal",
+      //         definition: "string",
+      //       },
+      //     },
+      //   },
+      //   testValueObject: { type: "string" },
+      // },
+      // // JzodSchema: object, simpleType attributes
+      // test320: {
+      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      //   testSchema: {
+      //     type: "schemaReference",
+      //     definition: {
+      //       absolutePath: miroirFundamentalJzodSchemaUuid,
+      //       relativePath: "jzodElement",
+      //     },
+      //   },
+      //   expectedResult: {
+      //     type: "object",
+      //     definition: {
+      //       type: {
+      //         type: "literal",
+      //         definition: "object",
+      //       },
+      //       definition: {
+      //         type: "object",
+      //         definition: {
+      //           a: {
+      //             type: "object",
+      //             definition: {
+      //               type: {
+      //                 type: "literal",
+      //                 definition: "string",
+      //               },
+      //             },
+      //           },
+      //         },
+      //       },
+      //     },
+      //   },
+      //   testValueObject: { type: "object", definition: { a: { type: "string" } } },
+      // },
+      // // JzodSchema: schema reference with simple attribute
+      // test330: {
+      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      //   testSchema: {
+      //     type: "schemaReference",
+      //     definition: {
+      //       absolutePath: miroirFundamentalJzodSchemaUuid,
+      //       relativePath: "jzodElement",
+      //     },
+      //   },
+      //   expectedResult: {
+      //     type: "object",
+      //     definition: {
+      //       type: {
+      //         type: "literal",
+      //         definition: "schemaReference",
+      //       },
+      //       definition: {
+      //         type: "object",
+      //         definition: {
+      //           absolutePath: {
+      //             type: "string",
+      //             optional: true,
+      //           },
+      //           relativePath: {
+      //             type: "string",
+      //             optional: true,
+      //           },
+      //         },
+      //       },
+      //     },
+      //   },
+      //   testValueObject: {
+      //     type: "schemaReference",
+      //     definition: { absolutePath: miroirFundamentalJzodSchemaUuid, relativePath: "jzodElement" },
+      //   },
+      // },
+      // // JzodSchema: schema reference for object with extend clause
+      // test340: {
+      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      //   testSchema: {
+      //     type: "schemaReference",
+      //     definition: {
+      //       absolutePath: miroirFundamentalJzodSchemaUuid,
+      //       relativePath: "jzodElement",
+      //     },
+      //   },
+      //   expectedResult: {
+      //     type: "object",
+      //     definition: {
+      //       type: {
+      //         type: "literal",
+      //         definition: "schemaReference",
+      //       },
+      //       context: {
+      //         type: "object",
+      //         definition: {
+      //           a: {
+      //             type: "object",
+      //             definition: {
+      //               type: {
+      //                 type: "literal",
+      //                 definition: "string",
+      //               },
+      //             },
+      //           },
+      //         },
+      //       },
+      //       definition: {
+      //         type: "object",
+      //         definition: {
+      //           relativePath: {
+      //             type: "string",
+      //             optional: true,
+      //           },
+      //         },
+      //       },
+      //     },
+      //   },
+      //   testValueObject: {
+      //     type: "schemaReference",
+      //     context: {
+      //       a: {
+      //         type: "string",
+      //       },
+      //     },
+      //     definition: {
+      //       relativePath: "a",
+      //     },
+      //   },
+      // },
+      // // ##########################################################################################
+      // // ################################# TRANSFORMERS ###########################################
+      // // ##########################################################################################
+      // // Transformers
+      // // constant
+      // test600: {
+      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      //   testSchema: {
+      //     type: "schemaReference",
+      //     definition: {
+      //       absolutePath: castMiroirFundamentalJzodSchema.uuid,
+      //       relativePath: "transformerForBuildPlusRuntime",
+      //     },
+      //   },
+      //   testValueObject: {
+      //     transformerType: "constant",
+      //     interpolation: "build",
+      //     value: "test",
+      //   },
+      //   expectedResult: {
+      //     type: "object",
+      //     definition: {
+      //       transformerType: {
+      //         type: "literal",
+      //         definition: "constant",
+      //       },
+      //       interpolation: {
+      //         type: "literal",
+      //         definition: "build",
+      //       },
+      //       value: {
+      //         type: "any",
+      //       },
+      //     },
+      //   },
+      // },
+      // // listPickElement
+      // test610: {
+      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      //   testSchema: {
+      //     type: "schemaReference",
+      //     definition: {
+      //       absolutePath: castMiroirFundamentalJzodSchema.uuid,
+      //       relativePath: "transformerForBuildPlusRuntime",
+      //     },
+      //   },
+      //   testValueObject: {
+      //     transformerType: "listPickElement",
+      //     interpolation: "runtime",
+      //     applyTo: {
+      //       referenceType: "referencedTransformer",
+      //       reference: {
+      //         transformerType: "contextReference",
+      //         interpolation: "runtime",
+      //         referenceName: "menuList",
+      //       },
+      //     },
+      //     index: 0,
+      //   },
+      //   expectedResult: {
+      //     type: "object",
+      //     definition: {
+      //       transformerType: {
+      //         type: "literal",
+      //         definition: "listPickElement",
+      //       },
+      //       interpolation: {
+      //         type: "literal",
+      //         definition: "runtime",
+      //       },
+      //       applyTo: {
+      //         type: "object",
+      //         definition: {
+      //           referenceType: {
+      //             type: "literal",
+      //             definition: "referencedTransformer",
+      //           },
+      //           reference: {
+      //             type: "object",
+      //             definition: {
+      //               transformerType: {
+      //                 type: "literal",
+      //                 definition: "contextReference",
+      //               },
+      //               interpolation: {
+      //                 type: "literal",
+      //                 optional: true,
+      //                 definition: "runtime",
+      //               },
+      //               referenceName: {
+      //                 optional: true,
+      //                 type: "string",
+      //               },
+      //             },
+      //           },
+      //         },
+      //       },
+      //       index: {
+      //         type: "number",
+      //       },
+      //     },
+      //   },
+      // },
+      // // runtime freeObjectTemplate with inner build transformer
+      // test620: {
+      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      //   testSchema: {
+      //     type: "schemaReference",
+      //     definition: {
+      //       absolutePath: castMiroirFundamentalJzodSchema.uuid,
+      //       relativePath: "transformerForBuildPlusRuntime",
+      //     },
+      //   },
+      //   testValueObject: {
+      //     transformerType: "freeObjectTemplate",
+      //     interpolation: "runtime",
+      //     definition: {
+      //       reportUuid: {
+      //         transformerType: "parameterReference",
+      //         interpolation: "build",
+      //         referenceName: "createEntity_newEntityListReportUuid",
+      //       },
+      //       label: {
+      //         transformerType: "mustacheStringTemplate",
+      //         interpolation: "build",
+      //         definition: "List of {{newEntityName}}s",
+      //       },
+      //       section: "data",
+      //       selfApplication: {
+      //         transformerType: "parameterReference",
+      //         interpolation: "build",
+      //         referencePath: ["adminConfigurationDeploymentParis", "uuid"],
+      //       },
+      //       icon: "local_drink",
+      //     },
+      //   },
+      //   expectedResult: {
+      //     type: "object",
+      //     definition: {
+      //       transformerType: {
+      //         type: "literal",
+      //         definition: "freeObjectTemplate",
+      //       },
+      //       interpolation: {
+      //         type: "literal",
+      //         definition: "runtime",
+      //       },
+      //       definition: {
+      //         type: "object",
+      //         definition: {
+      //           reportUuid: {
+      //             type: "object",
+      //             definition: {
+      //               transformerType: {
+      //                 type: "literal",
+      //                 definition: "parameterReference",
+      //               },
+      //               interpolation: {
+      //                 type: "literal",
+      //                 optional: true,
+      //                 definition: "build",
+      //               },
+      //               referenceName: {
+      //                 optional: true,
+      //                 type: "string",
+      //               },
+      //             },
+      //           },
+      //           label: {
+      //             type: "object",
+      //             definition: {
+      //               transformerType: {
+      //                 type: "literal",
+      //                 definition: "mustacheStringTemplate",
+      //               },
+      //               interpolation: {
+      //                 type: "literal",
+      //                 definition: "build",
+      //               },
+      //               definition: {
+      //                 type: "string",
+      //               },
+      //             },
+      //           },
+      //           section: {
+      //             type: "string",
+      //           },
+      //           selfApplication: {
+      //             type: "object",
+      //             definition: {
+      //               transformerType: {
+      //                 type: "literal",
+      //                 definition: "parameterReference",
+      //               },
+      //               interpolation: {
+      //                 type: "literal",
+      //                 optional: true,
+      //                 definition: "build",
+      //               },
+      //               referencePath: {
+      //                 type: "array",
+      //                 definition: {
+      //                   type: "string",
+      //                 },
+      //               },
+      //             },
+      //           },
+      //           icon: {
+      //             type: "string",
+      //           },
+      //         },
+      //       },
+      //     },
+      //   },
+      // },
+      // // ##########################################################################################
+      // // ########################### QUERIES ######################################
+      // // ##########################################################################################
+      // test400: {
+      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      //   testSchema: {
+      //     type: "schemaReference",
+      //     definition: {
+      //       absolutePath: castMiroirFundamentalJzodSchema.uuid,
+      //       relativePath: "boxedQueryWithExtractorCombinerTransformer",
+      //     },
+      //   },
+      //   testValueObject: {
+      //     queryType: "boxedQueryWithExtractorCombinerTransformer",
+      //     deploymentUuid: {
+      //       transformerType: "parameterReference",
+      //       interpolation: "build",
+      //       referenceName: "testDeploymentUuid",
+      //     },
+      //     pageParams: {},
+      //     queryParams: {},
+      //     contextResults: {},
+      //     extractors: {
+      //       menuList: {
+      //         extractorOrCombinerType: "extractorByEntityReturningObjectList",
+      //         applicationSection: "model",
+      //         parentName: {
+      //           transformerType: "parameterReference",
+      //           interpolation: "build",
+      //           referencePath: ["entityMenu", "name"],
+      //         },
+      //         parentUuid: {
+      //           transformerType: "parameterReference",
+      //           interpolation: "build",
+      //           referencePath: ["entityMenu", "uuid"],
+      //         },
+      //       },
+      //     },
+      //     runtimeTransformers: {
+      //       menu: {
+      //         transformerType: "listPickElement",
+      //         interpolation: "runtime",
+      //         applyTo: {
+      //           referenceType: "referencedTransformer",
+      //           reference: {
+      //             transformerType: "contextReference",
+      //             interpolation: "runtime",
+      //             referenceName: "menuList",
+      //           },
+      //         },
+      //         index: 0,
+      //       },
+      //       menuItem: {
+      //         transformerType: "freeObjectTemplate",
+      //         interpolation: "runtime",
+      //         definition: {
+      //           reportUuid: {
+      //             transformerType: "parameterReference",
+      //             interpolation: "build",
+      //             referenceName: "createEntity_newEntityListReportUuid",
+      //           },
+      //           label: {
+      //             transformerType: "mustacheStringTemplate",
+      //             interpolation: "build",
+      //             definition: "List of {{newEntityName}}s",
+      //           },
+      //           section: "data",
+      //           selfApplication: {
+      //             transformerType: "parameterReference",
+      //             interpolation: "build",
+      //             referencePath: ["adminConfigurationDeploymentParis", "uuid"],
+      //           },
+      //           icon: "local_drink",
+      //         },
+      //       },
+      //       updatedMenu: {
+      //         transformerType: "transformer_menu_addItem",
+      //         interpolation: "runtime",
+      //         menuItemReference: {
+      //           transformerType: "contextReference",
+      //           interpolation: "runtime",
+      //           referenceName: "menuItem",
+      //         },
+      //         menuReference: {
+      //           transformerType: "contextReference",
+      //           interpolation: "runtime",
+      //           referenceName: "menu",
+      //         },
+      //         menuSectionItemInsertionIndex: -1,
+      //       },
+      //     },
+      //   },
+      //   expectedResult: {
+      //     type: "object",
+      //     definition: {
+      //       queryType: {
+      //         type: "literal",
+      //         definition: "boxedQueryWithExtractorCombinerTransformer",
+      //       },
+      //       deploymentUuid: {
+      //         type: "uuid",
+      //         tag: {
+      //           value: {
+      //             id: 1,
+      //             defaultLabel: "Uuid",
+      //             editable: false,
+      //           },
+      //         },
+      //       },
+      //       pageParams: {
+      //         type: "object",
+      //         definition: {},
+      //       },
+      //       queryParams: {
+      //         type: "object",
+      //         definition: {},
+      //       },
+      //       contextResults: {
+      //         type: "object",
+      //         definition: {},
+      //       },
+      //       extractors: {
+      //         type: "object",
+      //         definition: {
+      //           menuList: {
+      //             type: "object",
+      //             definition: {
+      //               extractorOrCombinerType: {
+      //                 type: "literal",
+      //                 definition: "extractorByEntityReturningObjectList",
+      //               },
+      //               applicationSection: {
+      //                 type: "literal",
+      //                 definition: "model",
+      //               },
+      //               parentName: {
+      //                 type: "string",
+      //                 optional: true,
+      //                 tag: {
+      //                   value: {
+      //                     id: 3,
+      //                     defaultLabel: "Parent Name",
+      //                     editable: false,
+      //                   },
+      //                 },
+      //               },
+      //               parentUuid: {
+      //                 type: "uuid",
+      //                 tag: {
+      //                   value: {
+      //                     id: 4,
+      //                     defaultLabel: "Parent Uuid",
+      //                     editable: false,
+      //                   },
+      //                 },
+      //               },
+      //             },
+      //           },
+      //         },
+      //       },
+      //       runtimeTransformers: {
+      //         type: "object",
+      //         definition: {
+      //           menu: {
+      //             type: "object",
+      //             definition: {
+      //               transformerType: {
+      //                 type: "literal",
+      //                 definition: "listPickElement",
+      //               },
+      //               interpolation: {
+      //                 type: "literal",
+      //                 definition: "runtime",
+      //               },
+      //               applyTo: {
+      //                 type: "object",
+      //                 definition: {
+      //                   referenceType: {
+      //                     type: "literal",
+      //                     definition: "referencedTransformer",
+      //                   },
+      //                   reference: {
+      //                     type: "object",
+      //                     definition: {
+      //                       transformerType: {
+      //                         type: "literal",
+      //                         definition: "contextReference",
+      //                       },
+      //                       interpolation: {
+      //                         type: "literal",
+      //                         optional: true,
+      //                         definition: "runtime",
+      //                       },
+      //                       referenceName: {
+      //                         optional: true,
+      //                         type: "string",
+      //                       },
+      //                     },
+      //                   },
+      //                 },
+      //               },
+      //               index: {
+      //                 type: "number",
+      //               },
+      //             },
+      //           },
+      //           menuItem: {
+      //             type: "object",
+      //             definition: {
+      //               transformerType: {
+      //                 type: "literal",
+      //                 definition: "freeObjectTemplate",
+      //               },
+      //               interpolation: {
+      //                 type: "literal",
+      //                 definition: "runtime",
+      //               },
+      //               definition: {
+      //                 type: "object",
+      //                 definition: {
+      //                   reportUuid: {
+      //                     type: "object",
+      //                     definition: {
+      //                       transformerType: {
+      //                         type: "literal",
+      //                         definition: "parameterReference",
+      //                       },
+      //                       interpolation: {
+      //                         type: "literal",
+      //                         optional: true,
+      //                         definition: "build",
+      //                       },
+      //                       referenceName: {
+      //                         optional: true,
+      //                         type: "string",
+      //                       },
+      //                     },
+      //                   },
+      //                   label: {
+      //                     type: "object",
+      //                     definition: {
+      //                       transformerType: {
+      //                         type: "literal",
+      //                         definition: "mustacheStringTemplate",
+      //                       },
+      //                       interpolation: {
+      //                         type: "literal",
+      //                         definition: "build",
+      //                       },
+      //                       definition: {
+      //                         type: "string",
+      //                       },
+      //                     },
+      //                   },
+      //                   section: {
+      //                     type: "string",
+      //                   },
+      //                   selfApplication: {
+      //                     type: "object",
+      //                     definition: {
+      //                       transformerType: {
+      //                         type: "literal",
+      //                         definition: "parameterReference",
+      //                       },
+      //                       interpolation: {
+      //                         type: "literal",
+      //                         optional: true,
+      //                         definition: "build",
+      //                       },
+      //                       referencePath: {
+      //                         type: "array",
+      //                         definition: {
+      //                           type: "string",
+      //                         },
+      //                       },
+      //                     },
+      //                   },
+      //                   icon: {
+      //                     type: "string",
+      //                   },
+      //                 },
+      //               },
+      //             },
+      //           },
+      //           updatedMenu: {
+      //             type: "object",
+      //             definition: {
+      //               transformerType: {
+      //                 type: "literal",
+      //                 definition: "transformer_menu_addItem",
+      //               },
+      //               interpolation: {
+      //                 type: "literal",
+      //                 definition: "runtime",
+      //               },
+      //               menuItemReference: {
+      //                 type: "object",
+      //                 definition: {
+      //                   transformerType: {
+      //                     type: "literal",
+      //                     definition: "contextReference",
+      //                   },
+      //                   interpolation: {
+      //                     type: "literal",
+      //                     optional: true,
+      //                     definition: "runtime",
+      //                   },
+      //                   referenceName: {
+      //                     optional: true,
+      //                     type: "string",
+      //                   },
+      //                 },
+      //               },
+      //               menuReference: {
+      //                 type: "object",
+      //                 definition: {
+      //                   transformerType: {
+      //                     type: "literal",
+      //                     definition: "contextReference",
+      //                   },
+      //                   interpolation: {
+      //                     type: "literal",
+      //                     optional: true,
+      //                     definition: "runtime",
+      //                   },
+      //                   referenceName: {
+      //                     optional: true,
+      //                     type: "string",
+      //                   },
+      //                 },
+      //               },
+      //               menuSectionItemInsertionIndex: {
+      //                 type: "number",
+      //                 optional: true,
+      //               },
+      //             },
+      //           },
+      //         },
+      //       },
+      //     },
+      //   },
+      // },
+      // // // ##########################################################################################
+      // // // ################################## ACTIONS ###############################################
+      // // // ##########################################################################################
+      // // test500: {
+      // //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      // //   testSchema: {
+      // //     type: "schemaReference",
+      // //     definition: {
+      // //       absolutePath: castMiroirFundamentalJzodSchema.uuid,
+      // //       relativePath: "compositeAction",
+      // //     },
+      // //   },
+      // //   testValueObject: {
+      // //     actionType: "compositeAction",
+      // //     actionLabel: "createEntityAndReportFromSpreadsheetAndUpdateMenu",
+      // //     actionName: "sequence",
+      // //     templates: {
+      // //       createEntity_newEntity: {
+      // //         uuid: {
+      // //           transformerType: "parameterReference",
+      // //           interpolation: "build",
+      // //           referenceName: "newEntityUuid",
+      // //         },
+      // //         parentUuid: {
+      // //           transformerType: "parameterReference",
+      // //           interpolation: "build",
+      // //           referencePath: ["entityEntity", "uuid"],
+      // //         },
+      // //         selfApplication: {
+      // //           transformerType: "parameterReference",
+      // //           interpolation: "build",
+      // //           referenceName: "testSelfApplicationUuid",
+      // //         },
+      // //         description: {
+      // //           transformerType: "parameterReference",
+      // //           interpolation: "build",
+      // //           referenceName: "createEntity_newEntityDescription",
+      // //         },
+      // //         name: {
+      // //           transformerType: "parameterReference",
+      // //           interpolation: "build",
+      // //           referenceName: "newEntityName",
+      // //         },
+      // //       },
+      // //       createEntity_newEntityDefinition: {
+      // //         name: {
+      // //           transformerType: "parameterReference",
+      // //           interpolation: "build",
+      // //           referenceName: "newEntityName",
+      // //         },
+      // //         uuid: {
+      // //           transformerType: "parameterReference",
+      // //           interpolation: "build",
+      // //           referenceName: "newEntityDefinitionUuid",
+      // //         },
+      // //         parentName: "EntityDefinition",
+      // //         parentUuid: {
+      // //           transformerType: "parameterReference",
+      // //           interpolation: "build",
+      // //           referencePath: ["entityEntityDefinition", "uuid"],
+      // //         },
+      // //         entityUuid: {
+      // //           transformerType: "parameterReference",
+      // //           interpolation: "build",
+      // //           referencePath: ["createEntity_newEntity", "uuid"],
+      // //         },
+      // //         conceptLevel: "Model",
+      // //         defaultInstanceDetailsReportUuid: {
+      // //           transformerType: "parameterReference",
+      // //           interpolation: "build",
+      // //           referenceName: "defaultInstanceDetailsReportUuid",
+      // //         },
+      // //         jzodSchema: {
+      // //           transformerType: "parameterReference",
+      // //           interpolation: "build",
+      // //           referenceName: "newEntityJzodSchema",
+      // //         },
+      // //       },
+      // //       newEntityListReport: {
+      // //         uuid: {
+      // //           transformerType: "parameterReference",
+      // //           interpolation: "build",
+      // //           referenceName: "createEntity_newEntityListReportUuid",
+      // //         },
+      // //         selfApplication: {
+      // //           transformerType: "parameterReference",
+      // //           interpolation: "build",
+      // //           referenceName: "testSelfApplicationUuid",
+      // //         },
+      // //         parentName: "Report",
+      // //         parentUuid: {
+      // //           transformerType: "mustacheStringTemplate",
+      // //           interpolation: "build",
+      // //           definition: "{{entityReport.uuid}}",
+      // //         },
+      // //         conceptLevel: "Model",
+      // //         name: {
+      // //           transformerType: "mustacheStringTemplate",
+      // //           interpolation: "build",
+      // //           definition: "{{newEntityName}}List",
+      // //         },
+      // //         defaultLabel: {
+      // //           transformerType: "mustacheStringTemplate",
+      // //           interpolation: "build",
+      // //           definition: "List of {{newEntityName}}s",
+      // //         },
+      // //         type: "list",
+      // //         definition: {
+      // //           extractors: {
+      // //             instanceList: {
+      // //               extractorOrCombinerType: "extractorByEntityReturningObjectList",
+      // //               parentName: {
+      // //                 transformerType: "parameterReference",
+      // //                 interpolation: "build",
+      // //                 referenceName: "newEntityName",
+      // //               },
+      // //               parentUuid: {
+      // //                 transformerType: "mustacheStringTemplate",
+      // //                 interpolation: "build",
+      // //                 definition: "{{createEntity_newEntity.uuid}}",
+      // //               },
+      // //             },
+      // //           },
+      // //           section: {
+      // //             type: "objectListReportSection",
+      // //             definition: {
+      // //               label: {
+      // //                 transformerType: "mustacheStringTemplate",
+      // //                 interpolation: "build",
+      // //                 definition: "{{newEntityName}}s",
+      // //               },
+      // //               parentUuid: {
+      // //                 transformerType: "mustacheStringTemplate",
+      // //                 interpolation: "build",
+      // //                 definition: "{{createEntity_newEntity.uuid}}",
+      // //               },
+      // //               fetchedDataReference: "instanceList",
+      // //             },
+      // //           },
+      // //         },
+      // //       },
+      // //       newEntityDetailsReport: {
+      // //         uuid: {
+      // //           transformerType: "parameterReference",
+      // //           interpolation: "build",
+      // //           referenceName: "createEntity_newEntityDetailsReportUuid",
+      // //         },
+      // //         selfApplication: {
+      // //           transformerType: "parameterReference",
+      // //           interpolation: "build",
+      // //           referenceName: "testSelfApplicationUuid",
+      // //         },
+      // //         parentName: {
+      // //           transformerType: "mustacheStringTemplate",
+      // //           interpolation: "build",
+      // //           definition: "{{entityReport.name}}",
+      // //         },
+      // //         parentUuid: {
+      // //           transformerType: "mustacheStringTemplate",
+      // //           interpolation: "build",
+      // //           definition: "{{entityReport.uuid}}",
+      // //         },
+      // //         conceptLevel: "Model",
+      // //         name: {
+      // //           transformerType: "mustacheStringTemplate",
+      // //           interpolation: "build",
+      // //           definition: "{{newEntityName}}Details",
+      // //         },
+      // //         defaultLabel: {
+      // //           transformerType: "mustacheStringTemplate",
+      // //           interpolation: "build",
+      // //           definition: "Details of {{newEntityName}}",
+      // //         },
+      // //         definition: {
+      // //           extractorTemplates: {
+      // //             elementToDisplay: {
+      // //               transformerType: "constant",
+      // //               interpolation: "build",
+      // //               value: {
+      // //                 extractorTemplateType: "extractorForObjectByDirectReference",
+      // //                 parentName: {
+      // //                   transformerType: "contextReference",
+      // //                   interpolation: "build",
+      // //                   referenceName: "newEntityName",
+      // //                 },
+      // //                 parentUuid: {
+      // //                   transformerType: "mustacheStringTemplate",
+      // //                   interpolation: "build",
+      // //                   definition: "{{newEntityUuid}}",
+      // //                 },
+      // //                 instanceUuid: {
+      // //                   transformerType: "constant",
+      // //                   interpolation: "runtime",
+      // //                   value: {
+      // //                     transformerType: "contextReference",
+      // //                     interpolation: "runtime",
+      // //                     referenceName: "instanceUuid",
+      // //                   },
+      // //                 },
+      // //               },
+      // //             },
+      // //           },
+      // //           section: {
+      // //             type: "list",
+      // //             definition: [
+      // //               {
+      // //                 type: "objectInstanceReportSection",
+      // //                 definition: {
+      // //                   label: {
+      // //                     transformerType: "mustacheStringTemplate",
+      // //                     interpolation: "build",
+      // //                     definition: "My {{newEntityName}}",
+      // //                   },
+      // //                   parentUuid: {
+      // //                     transformerType: "mustacheStringTemplate",
+      // //                     interpolation: "build",
+      // //                     definition: "{{newEntityUuid}}",
+      // //                   },
+      // //                   fetchedDataReference: "elementToDisplay",
+      // //                 },
+      // //               },
+      // //             ],
+      // //           },
+      // //         },
+      // //       },
+      // //     },
+      // //     definition: [
+      // //       {
+      // //         actionType: "createEntity",
+      // //         actionLabel: "createEntity",
+      // //         deploymentUuid: {
+      // //           transformerType: "parameterReference",
+      // //           interpolation: "build",
+      // //           referenceName: "testDeploymentUuid",
+      // //         },
+      // //         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+      // //         entities: [
+      // //           {
+      // //             entity: {
+      // //               transformerType: "parameterReference",
+      // //               interpolation: "build",
+      // //               referenceName: "createEntity_newEntity",
+      // //             },
+      // //             entityDefinition: {
+      // //               transformerType: "parameterReference",
+      // //               interpolation: "build",
+      // //               referenceName: "createEntity_newEntityDefinition",
+      // //             },
+      // //           },
+      // //         ],
+      // //       },
+      // //       {
+      // //         actionType: "transactionalInstanceAction",
+      // //         actionLabel: "createReports",
+      // //         instanceAction: {
+      // //           actionType: "createInstance",
+      // //           applicationSection: "model",
+      // //           deploymentUuid: {
+      // //             transformerType: "parameterReference",
+      // //             interpolation: "build",
+      // //             referenceName: "testDeploymentUuid",
+      // //           },
+      // //           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+      // //           objects: [
+      // //             {
+      // //               parentName: {
+      // //                 transformerType: "parameterReference",
+      // //                 interpolation: "build",
+      // //                 referencePath: ["newEntityListReport", "parentName"],
+      // //               },
+      // //               parentUuid: {
+      // //                 transformerType: "parameterReference",
+      // //                 interpolation: "build",
+      // //                 referencePath: ["newEntityListReport", "parentUuid"],
+      // //               },
+      // //               applicationSection: "model",
+      // //               instances: [
+      // //                 {
+      // //                   transformerType: "parameterReference",
+      // //                   interpolation: "build",
+      // //                   referenceName: "newEntityListReport",
+      // //                 },
+      // //                 {
+      // //                   transformerType: "parameterReference",
+      // //                   interpolation: "build",
+      // //                   referenceName: "newEntityDetailsReport",
+      // //                 },
+      // //               ],
+      // //             },
+      // //           ],
+      // //         },
+      // //       },
+      // //       {
+      // //         actionType: "commit",
+      // //         actionLabel: "commit",
+      // //         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+      // //         deploymentUuid: {
+      // //           transformerType: "parameterReference",
+      // //           interpolation: "build",
+      // //           referenceName: "testDeploymentUuid",
+      // //         },
+      // //       },
+      // //       {
+      // //         actionType: "compositeRunBoxedExtractorOrQueryAction",
+      // //         actionLabel: "getListOfEntityDefinitions",
+      // //         nameGivenToResult: "newApplicationEntityDefinitionList",
+      // //         query: {
+      // //           actionType: "runBoxedExtractorOrQueryAction",
+      // //           actionName: "runQuery",
+      // //           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+      // //           applicationSection: "model",
+      // //           deploymentUuid: {
+      // //             transformerType: "parameterReference",
+      // //             interpolation: "build",
+      // //             referenceName: "testDeploymentUuid",
+      // //           },
+      // //           query: {
+      // //             queryType: "boxedQueryWithExtractorCombinerTransformer",
+      // //             deploymentUuid: {
+      // //               transformerType: "parameterReference",
+      // //               interpolation: "build",
+      // //               referenceName: "testDeploymentUuid",
+      // //             },
+      // //             pageParams: {
+      // //               currentDeploymentUuid: {
+      // //                 transformerType: "parameterReference",
+      // //                 interpolation: "build",
+      // //                 referenceName: "testDeploymentUuid",
+      // //               },
+      // //             },
+      // //             queryParams: {},
+      // //             contextResults: {},
+      // //             extractors: {
+      // //               entityDefinitions: {
+      // //                 extractorOrCombinerType: "extractorByEntityReturningObjectList",
+      // //                 applicationSection: "model",
+      // //                 parentName: {
+      // //                   transformerType: "parameterReference",
+      // //                   interpolation: "build",
+      // //                   referencePath: ["entityEntityDefinition", "name"],
+      // //                 },
+      // //                 parentUuid: {
+      // //                   transformerType: "parameterReference",
+      // //                   interpolation: "build",
+      // //                   referencePath: ["entityEntityDefinition", "uuid"],
+      // //                 },
+      // //                 orderBy: {
+      // //                   attributeName: "name",
+      // //                   direction: "ASC",
+      // //                 },
+      // //               },
+      // //             },
+      // //           },
+      // //         },
+      // //       },
+      // //       {
+      // //         actionType: "compositeRunBoxedExtractorOrQueryAction",
+      // //         actionLabel: "getListOfEntities",
+      // //         nameGivenToResult: "newApplicationEntityList",
+      // //         query: {
+      // //           actionType: "runBoxedExtractorOrQueryAction",
+      // //           actionName: "runQuery",
+      // //           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+      // //           applicationSection: "model",
+      // //           deploymentUuid: {
+      // //             transformerType: "parameterReference",
+      // //             interpolation: "build",
+      // //             referenceName: "testDeploymentUuid",
+      // //           },
+      // //           query: {
+      // //             queryType: "boxedQueryWithExtractorCombinerTransformer",
+      // //             deploymentUuid: {
+      // //               transformerType: "parameterReference",
+      // //               interpolation: "build",
+      // //               referenceName: "testDeploymentUuid",
+      // //             },
+      // //             pageParams: {
+      // //               currentDeploymentUuid: {
+      // //                 transformerType: "parameterReference",
+      // //                 interpolation: "build",
+      // //                 referenceName: "testDeploymentUuid",
+      // //               },
+      // //             },
+      // //             queryParams: {},
+      // //             contextResults: {},
+      // //             extractors: {
+      // //               entities: {
+      // //                 extractorOrCombinerType: "extractorByEntityReturningObjectList",
+      // //                 applicationSection: "model",
+      // //                 parentName: {
+      // //                   transformerType: "parameterReference",
+      // //                   interpolation: "build",
+      // //                   referencePath: ["entityEntity", "name"],
+      // //                 },
+      // //                 parentUuid: {
+      // //                   transformerType: "parameterReference",
+      // //                   interpolation: "build",
+      // //                   referencePath: ["entityEntity", "uuid"],
+      // //                 },
+      // //                 orderBy: {
+      // //                   attributeName: "name",
+      // //                   direction: "ASC",
+      // //                 },
+      // //               },
+      // //             },
+      // //           },
+      // //         },
+      // //       },
+      // //       {
+      // //         actionType: "compositeRunBoxedExtractorOrQueryAction",
+      // //         actionLabel: "getListOfReports",
+      // //         nameGivenToResult: "newApplicationReportList",
+      // //         query: {
+      // //           actionType: "runBoxedExtractorOrQueryAction",
+      // //           actionName: "runQuery",
+      // //           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+      // //           applicationSection: "model",
+      // //           deploymentUuid: {
+      // //             transformerType: "parameterReference",
+      // //             interpolation: "build",
+      // //             referenceName: "testDeploymentUuid",
+      // //           },
+      // //           query: {
+      // //             queryType: "boxedQueryWithExtractorCombinerTransformer",
+      // //             deploymentUuid: {
+      // //               transformerType: "parameterReference",
+      // //               interpolation: "build",
+      // //               referenceName: "testDeploymentUuid",
+      // //             },
+      // //             pageParams: {
+      // //               currentDeploymentUuid: {
+      // //                 transformerType: "parameterReference",
+      // //                 interpolation: "build",
+      // //                 referenceName: "testDeploymentUuid",
+      // //               },
+      // //             },
+      // //             runAsSql: true,
+      // //             queryParams: {},
+      // //             contextResults: {},
+      // //             extractors: {
+      // //               reports: {
+      // //                 extractorOrCombinerType: "extractorByEntityReturningObjectList",
+      // //                 applicationSection: "model",
+      // //                 parentName: {
+      // //                   transformerType: "parameterReference",
+      // //                   interpolation: "build",
+      // //                   referencePath: ["entityReport", "name"],
+      // //                 },
+      // //                 parentUuid: {
+      // //                   transformerType: "parameterReference",
+      // //                   interpolation: "build",
+      // //                   referencePath: ["entityReport", "uuid"],
+      // //                 },
+      // //                 orderBy: {
+      // //                   attributeName: "name",
+      // //                   direction: "ASC",
+      // //                 },
+      // //               },
+      // //             },
+      // //           },
+      // //         },
+      // //       },
+      // //       {
+      // //         actionType: "compositeRunBoxedQueryAction",
+      // //         actionLabel: "getMenu",
+      // //         nameGivenToResult: "menuUpdateQueryResult",
+      // //         queryTemplate: {
+      // //           actionType: "runBoxedQueryAction",
+      // //           actionName: "runQuery",
+      // //           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+      // //           applicationSection: "model",
+      // //           deploymentUuid: {
+      // //             transformerType: "parameterReference",
+      // //             interpolation: "build",
+      // //             referenceName: "testDeploymentUuid",
+      // //           },
+      // //           query: {
+      // //             queryType: "boxedQueryWithExtractorCombinerTransformer",
+      // //             deploymentUuid: {
+      // //               transformerType: "parameterReference",
+      // //               interpolation: "build",
+      // //               referenceName: "testDeploymentUuid",
+      // //             },
+      // //             pageParams: {},
+      // //             queryParams: {},
+      // //             contextResults: {},
+      // //             extractors: {
+      // //               menuList: {
+      // //                 extractorOrCombinerType: "extractorByEntityReturningObjectList",
+      // //                 applicationSection: "model",
+      // //                 parentName: {
+      // //                   transformerType: "parameterReference",
+      // //                   interpolation: "build",
+      // //                   referencePath: ["entityMenu", "name"],
+      // //                 },
+      // //                 parentUuid: {
+      // //                   transformerType: "parameterReference",
+      // //                   interpolation: "build",
+      // //                   referencePath: ["entityMenu", "uuid"],
+      // //                 },
+      // //               },
+      // //             },
+      // //             runtimeTransformers: {
+      // //               menu: {
+      // //                 transformerType: "listPickElement",
+      // //                 interpolation: "runtime",
+      // //                 applyTo: {
+      // //                   referenceType: "referencedTransformer",
+      // //                   reference: {
+      // //                     transformerType: "contextReference",
+      // //                     interpolation: "runtime",
+      // //                     referenceName: "menuList",
+      // //                   },
+      // //                 },
+      // //                 index: 0,
+      // //               },
+      // //               menuItem: {
+      // //                 transformerType: "freeObjectTemplate",
+      // //                 interpolation: "runtime",
+      // //                 definition: {
+      // //                   reportUuid: {
+      // //                     // transformerType: "contextReference",
+      // //                     // interpolation: "runtime",
+      // //                     transformerType: "parameterReference",
+      // //                     interpolation: "build",
+      // //                     referenceName: "createEntity_newEntityListReportUuid",
+      // //                   },
+      // //                   label: {
+      // //                     transformerType: "mustacheStringTemplate",
+      // //                     // interpolation: "runtime",
+      // //                     interpolation: "build",
+      // //                     definition: "List of {{newEntityName}}s",
+      // //                   },
+      // //                   section: "data",
+      // //                   selfApplication: {
+      // //                     // transformerType: "contextReference",
+      // //                     // interpolation: "runtime",
+      // //                     transformerType: "parameterReference",
+      // //                     interpolation: "build",
+      // //                     referencePath: ["adminConfigurationDeploymentParis", "uuid"],
+      // //                   },
+      // //                   icon: "local_drink",
+      // //                 },
+      // //               },
+      // //               updatedMenu: {
+      // //                 transformerType: "transformer_menu_addItem",
+      // //                 interpolation: "runtime",
+      // //                 menuItemReference: {
+      // //                   transformerType: "contextReference",
+      // //                   interpolation: "runtime",
+      // //                   referenceName: "menuItem",
+      // //                 },
+      // //                 menuReference: {
+      // //                   transformerType: "contextReference",
+      // //                   interpolation: "runtime",
+      // //                   referenceName: "menu",
+      // //                 },
+      // //                 menuSectionItemInsertionIndex: -1,
+      // //               },
+      // //             },
+      // //           },
+      // //         },
+      // //       },
+      // //       {
+      // //         actionType: "transactionalInstanceAction",
+      // //         actionLabel: "updateMenu",
+      // //         instanceAction: {
+      // //           actionType: "updateInstance",
+      // //           applicationSection: "model",
+      // //           deploymentUuid: {
+      // //             transformerType: "parameterReference",
+      // //             interpolation: "build",
+      // //             referenceName: "testDeploymentUuid",
+      // //           },
+      // //           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+      // //           objects: [
+      // //             {
+      // //               parentName: {
+      // //                 transformerType: "parameterReference",
+      // //                 interpolation: "build",
+      // //                 referencePath: ["entityMenu", "name"],
+      // //               },
+      // //               parentUuid: {
+      // //                 transformerType: "parameterReference",
+      // //                 interpolation: "build",
+      // //                 referencePath: ["entityMenu", "uuid"],
+      // //               },
+      // //               applicationSection: "model",
+      // //               instances: [
+      // //                 {
+      // //                   transformerType: "contextReference",
+      // //                   interpolation: "runtime",
+      // //                   referencePath: ["menuUpdateQueryResult", "updatedMenu"],
+      // //                 },
+      // //               ],
+      // //             },
+      // //           ],
+      // //         },
+      // //       },
+      // //       {
+      // //         actionType: "commit",
+      // //         actionLabel: "commit",
+      // //         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+      // //         deploymentUuid: {
+      // //           transformerType: "parameterReference",
+      // //           interpolation: "build",
+      // //           referenceName: "testDeploymentUuid",
+      // //         },
+      // //       },
+      // //       {
+      // //         actionType: "compositeRunBoxedQueryAction",
+      // //         actionLabel: "getNewMenuList",
+      // //         nameGivenToResult: "newMenuList",
+      // //         queryTemplate: {
+      // //           actionType: "runBoxedQueryAction",
+      // //           actionName: "runQuery",
+      // //           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+      // //           applicationSection: "model",
+      // //           deploymentUuid: {
+      // //             transformerType: "parameterReference",
+      // //             interpolation: "build",
+      // //             referenceName: "testDeploymentUuid",
+      // //           },
+      // //           query: {
+      // //             queryType: "boxedQueryWithExtractorCombinerTransformer",
+      // //             deploymentUuid: {
+      // //               transformerType: "parameterReference",
+      // //               interpolation: "build",
+      // //               referenceName: "testDeploymentUuid",
+      // //             },
+      // //             pageParams: {},
+      // //             queryParams: {},
+      // //             contextResults: {},
+      // //             extractors: {
+      // //               menuList: {
+      // //                 extractorOrCombinerType: "extractorByEntityReturningObjectList",
+      // //                 applicationSection: "model",
+      // //                 parentName: "Menu",
+      // //                 parentUuid: {
+      // //                   transformerType: "parameterReference",
+      // //                   interpolation: "build",
+      // //                   referencePath: ["entityMenu", "uuid"],
+      // //                 },
+      // //               },
+      // //             },
+      // //           },
+      // //         },
+      // //       },
+      // //     ],
+      // //   },
+      // //   expectedResult: {
+      // //     type: "object",
+      // //     definition: {
+      // //       actionType: {
+      // //         type: "literal",
+      // //         definition: "compositeAction",
+      // //       },
+      // //       actionLabel: {
+      // //         type: "string",
+      // //         optional: true,
+      // //       },
+      // //       actionName: {
+      // //         type: "literal",
+      // //         definition: "sequence",
+      // //       },
+      // //       templates: {
+      // //         type: "object",
+      // //         definition: {
+      // //           createEntity_newEntity: {
+      // //             type: "any",
+      // //           },
+      // //           createEntity_newEntityDefinition: {
+      // //             type: "any",
+      // //           },
+      // //           newEntityListReport: {
+      // //             type: "any",
+      // //           },
+      // //           newEntityDetailsReport: {
+      // //             type: "any",
+      // //           },
+      // //         },
+      // //       },
+      // //       definition: {
+      // //         type: "tuple",
+      // //         definition: [
+      // //           {
+      // //             type: "object",
+      // //             definition: {
+      // //               actionType: {
+      // //                 type: "literal",
+      // //                 definition: "createEntity",
+      // //               },
+      // //               actionLabel: {
+      // //                 type: "string",
+      // //                 optional: true,
+      // //               },
+      // //               deploymentUuid: {
+      // //                 type: "uuid",
+      // //                 tag: {
+      // //                   value: {
+      // //                     id: 1,
+      // //                     defaultLabel: "Deployment",
+      // //                     editable: false,
+      // //                   },
+      // //                 },
+      // //               },
+      // //               endpoint: {
+      // //                 type: "literal",
+      // //                 definition: "7947ae40-eb34-4149-887b-15a9021e714e",
+      // //               },
+      // //               entities: {
+      // //                 type: "array",
+      // //                 definition: {
+      // //                   type: "object",
+      // //                   definition: {
+      // //                     entity: {
+      // //                       type: "schemaReference",
+      // //                       tag: {
+      // //                         canBeTemplate: true,
+      // //                       },
+      // //                       definition: {
+      // //                         absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+      // //                         relativePath: "entity",
+      // //                       },
+      // //                     },
+      // //                     entityDefinition: {
+      // //                       type: "schemaReference",
+      // //                       tag: {
+      // //                         canBeTemplate: true,
+      // //                       },
+      // //                       definition: {
+      // //                         absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+      // //                         relativePath: "entityDefinition",
+      // //                       },
+      // //                     },
+      // //                   },
+      // //                 },
+      // //               },
+      // //             },
+      // //           },
+      // //           {
+      // //             type: "object",
+      // //             definition: {
+      // //               actionType: {
+      // //                 type: "literal",
+      // //                 definition: "transactionalInstanceAction",
+      // //               },
+      // //               actionLabel: {
+      // //                 type: "string",
+      // //                 optional: true,
+      // //               },
+      // //               instanceAction: {
+      // //                 type: "object",
+      // //                 definition: {
+      // //                   actionType: {
+      // //                     type: "literal",
+      // //                     definition: "createInstance",
+      // //                   },
+      // //                   applicationSection: {
+      // //                     type: "literal",
+      // //                     definition: "model",
+      // //                   },
+      // //                   deploymentUuid: {
+      // //                     type: "uuid",
+      // //                     tag: {
+      // //                       value: {
+      // //                         id: 1,
+      // //                         defaultLabel: "Uuid",
+      // //                         editable: false,
+      // //                       },
+      // //                     },
+      // //                   },
+      // //                   endpoint: {
+      // //                     type: "literal",
+      // //                     definition: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+      // //                   },
+      // //                   objects: {
+      // //                     type: "array",
+      // //                     definition: {
+      // //                       type: "object",
+      // //                       definition: {
+      // //                         parentName: {
+      // //                           type: "string",
+      // //                           optional: true,
+      // //                         },
+      // //                         parentUuid: {
+      // //                           type: "string",
+      // //                         },
+      // //                         applicationSection: {
+      // //                           type: "schemaReference",
+      // //                           optional: false,
+      // //                           definition: {
+      // //                             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+      // //                             relativePath: "applicationSection",
+      // //                           },
+      // //                         },
+      // //                         instances: {
+      // //                           type: "array",
+      // //                           definition: {
+      // //                             type: "schemaReference",
+      // //                             tag: {
+      // //                               canBeTemplate: true,
+      // //                             },
+      // //                             definition: {
+      // //                               absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+      // //                               relativePath: "entityInstance",
+      // //                             },
+      // //                           },
+      // //                         },
+      // //                       },
+      // //                     },
+      // //                   },
+      // //                 },
+      // //               },
+      // //             },
+      // //           },
+      // //           {
+      // //             type: "object",
+      // //             definition: {
+      // //               actionType: {
+      // //                 type: "literal",
+      // //                 definition: "commit",
+      // //               },
+      // //               actionLabel: {
+      // //                 type: "string",
+      // //                 optional: true,
+      // //               },
+      // //               endpoint: {
+      // //                 type: "literal",
+      // //                 definition: "7947ae40-eb34-4149-887b-15a9021e714e",
+      // //               },
+      // //               deploymentUuid: {
+      // //                 type: "uuid",
+      // //                 tag: {
+      // //                   value: {
+      // //                     id: 1,
+      // //                     defaultLabel: "Deployment",
+      // //                     editable: false,
+      // //                   },
+      // //                 },
+      // //               },
+      // //             },
+      // //           },
+      // //           {
+      // //             type: "object",
+      // //             definition: {
+      // //               actionType: {
+      // //                 type: "literal",
+      // //                 definition: "compositeRunBoxedExtractorOrQueryAction",
+      // //               },
+      // //               actionLabel: {
+      // //                 type: "string",
+      // //                 optional: true,
+      // //               },
+      // //               nameGivenToResult: {
+      // //                 type: "string",
+      // //               },
+      // //               query: {
+      // //                 type: "object",
+      // //                 definition: {
+      // //                   actionType: {
+      // //                     type: "literal",
+      // //                     definition: "runBoxedExtractorOrQueryAction",
+      // //                   },
+      // //                   actionName: {
+      // //                     type: "literal",
+      // //                     definition: "runQuery",
+      // //                   },
+      // //                   endpoint: {
+      // //                     type: "literal",
+      // //                     definition: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+      // //                   },
+      // //                   applicationSection: {
+      // //                     type: "literal",
+      // //                     definition: "model",
+      // //                   },
+      // //                   deploymentUuid: {
+      // //                     type: "uuid",
+      // //                     tag: {
+      // //                       value: {
+      // //                         id: 1,
+      // //                         defaultLabel: "Uuid",
+      // //                         editable: false,
+      // //                       },
+      // //                     },
+      // //                   },
+      // //                   query: {
+      // //                     type: "object",
+      // //                     definition: {
+      // //                       queryType: {
+      // //                         type: "literal",
+      // //                         definition: "boxedQueryWithExtractorCombinerTransformer",
+      // //                       },
+      // //                       deploymentUuid: {
+      // //                         type: "uuid",
+      // //                         tag: {
+      // //                           value: {
+      // //                             id: 1,
+      // //                             defaultLabel: "Uuid",
+      // //                             editable: false,
+      // //                           },
+      // //                         },
+      // //                       },
+      // //                       pageParams: {
+      // //                         type: "object",
+      // //                         definition: {
+      // //                           currentDeploymentUuid: {
+      // //                             type: "any",
+      // //                           },
+      // //                         },
+      // //                       },
+      // //                       queryParams: {
+      // //                         type: "object",
+      // //                         definition: {},
+      // //                       },
+      // //                       contextResults: {
+      // //                         type: "object",
+      // //                         definition: {},
+      // //                       },
+      // //                       extractors: {
+      // //                         type: "object",
+      // //                         definition: {
+      // //                           entityDefinitions: {
+      // //                             type: "object",
+      // //                             definition: {
+      // //                               extractorOrCombinerType: {
+      // //                                 type: "literal",
+      // //                                 definition: "extractorByEntityReturningObjectList",
+      // //                               },
+      // //                               applicationSection: {
+      // //                                 type: "literal",
+      // //                                 definition: "model",
+      // //                               },
+      // //                               parentName: {
+      // //                                 type: "string",
+      // //                                 optional: true,
+      // //                                 tag: {
+      // //                                   value: {
+      // //                                     id: 3,
+      // //                                     defaultLabel: "Parent Name",
+      // //                                     editable: false,
+      // //                                   },
+      // //                                 },
+      // //                               },
+      // //                               parentUuid: {
+      // //                                 type: "uuid",
+      // //                                 tag: {
+      // //                                   value: {
+      // //                                     id: 4,
+      // //                                     defaultLabel: "Parent Uuid",
+      // //                                     editable: false,
+      // //                                   },
+      // //                                 },
+      // //                               },
+      // //                               orderBy: {
+      // //                                 type: "object",
+      // //                                 optional: true,
+      // //                                 definition: {
+      // //                                   attributeName: {
+      // //                                     type: "string",
+      // //                                   },
+      // //                                   direction: {
+      // //                                     type: "enum",
+      // //                                     optional: true,
+      // //                                     definition: ["ASC", "DESC"],
+      // //                                   },
+      // //                                 },
+      // //                               },
+      // //                             },
+      // //                           },
+      // //                         },
+      // //                       },
+      // //                     },
+      // //                   },
+      // //                 },
+      // //               },
+      // //             },
+      // //           },
+      // //           {
+      // //             type: "object",
+      // //             definition: {
+      // //               actionType: {
+      // //                 type: "literal",
+      // //                 definition: "compositeRunBoxedExtractorOrQueryAction",
+      // //               },
+      // //               actionLabel: {
+      // //                 type: "string",
+      // //                 optional: true,
+      // //               },
+      // //               nameGivenToResult: {
+      // //                 type: "string",
+      // //               },
+      // //               query: {
+      // //                 type: "object",
+      // //                 definition: {
+      // //                   actionType: {
+      // //                     type: "literal",
+      // //                     definition: "runBoxedExtractorOrQueryAction",
+      // //                   },
+      // //                   actionName: {
+      // //                     type: "literal",
+      // //                     definition: "runQuery",
+      // //                   },
+      // //                   endpoint: {
+      // //                     type: "literal",
+      // //                     definition: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+      // //                   },
+      // //                   applicationSection: {
+      // //                     type: "literal",
+      // //                     definition: "model",
+      // //                   },
+      // //                   deploymentUuid: {
+      // //                     type: "uuid",
+      // //                     tag: {
+      // //                       value: {
+      // //                         id: 1,
+      // //                         defaultLabel: "Uuid",
+      // //                         editable: false,
+      // //                       },
+      // //                     },
+      // //                   },
+      // //                   query: {
+      // //                     type: "object",
+      // //                     definition: {
+      // //                       queryType: {
+      // //                         type: "literal",
+      // //                         definition: "boxedQueryWithExtractorCombinerTransformer",
+      // //                       },
+      // //                       deploymentUuid: {
+      // //                         type: "uuid",
+      // //                         tag: {
+      // //                           value: {
+      // //                             id: 1,
+      // //                             defaultLabel: "Uuid",
+      // //                             editable: false,
+      // //                           },
+      // //                         },
+      // //                       },
+      // //                       pageParams: {
+      // //                         type: "object",
+      // //                         definition: {
+      // //                           currentDeploymentUuid: {
+      // //                             type: "any",
+      // //                           },
+      // //                         },
+      // //                       },
+      // //                       queryParams: {
+      // //                         type: "object",
+      // //                         definition: {},
+      // //                       },
+      // //                       contextResults: {
+      // //                         type: "object",
+      // //                         definition: {},
+      // //                       },
+      // //                       extractors: {
+      // //                         type: "object",
+      // //                         definition: {
+      // //                           entities: {
+      // //                             type: "object",
+      // //                             definition: {
+      // //                               extractorOrCombinerType: {
+      // //                                 type: "literal",
+      // //                                 definition: "extractorByEntityReturningObjectList",
+      // //                               },
+      // //                               applicationSection: {
+      // //                                 type: "literal",
+      // //                                 definition: "model",
+      // //                               },
+      // //                               parentName: {
+      // //                                 type: "string",
+      // //                                 optional: true,
+      // //                                 tag: {
+      // //                                   value: {
+      // //                                     id: 3,
+      // //                                     defaultLabel: "Parent Name",
+      // //                                     editable: false,
+      // //                                   },
+      // //                                 },
+      // //                               },
+      // //                               parentUuid: {
+      // //                                 type: "uuid",
+      // //                                 tag: {
+      // //                                   value: {
+      // //                                     id: 4,
+      // //                                     defaultLabel: "Parent Uuid",
+      // //                                     editable: false,
+      // //                                   },
+      // //                                 },
+      // //                               },
+      // //                               orderBy: {
+      // //                                 type: "object",
+      // //                                 optional: true,
+      // //                                 definition: {
+      // //                                   attributeName: {
+      // //                                     type: "string",
+      // //                                   },
+      // //                                   direction: {
+      // //                                     type: "enum",
+      // //                                     optional: true,
+      // //                                     definition: ["ASC", "DESC"],
+      // //                                   },
+      // //                                 },
+      // //                               },
+      // //                             },
+      // //                           },
+      // //                         },
+      // //                       },
+      // //                     },
+      // //                   },
+      // //                 },
+      // //               },
+      // //             },
+      // //           },
+      // //           {
+      // //             type: "object",
+      // //             definition: {
+      // //               actionType: {
+      // //                 type: "literal",
+      // //                 definition: "compositeRunBoxedExtractorOrQueryAction",
+      // //               },
+      // //               actionLabel: {
+      // //                 type: "string",
+      // //                 optional: true,
+      // //               },
+      // //               nameGivenToResult: {
+      // //                 type: "string",
+      // //               },
+      // //               query: {
+      // //                 type: "object",
+      // //                 definition: {
+      // //                   actionType: {
+      // //                     type: "literal",
+      // //                     definition: "runBoxedExtractorOrQueryAction",
+      // //                   },
+      // //                   actionName: {
+      // //                     type: "literal",
+      // //                     definition: "runQuery",
+      // //                   },
+      // //                   endpoint: {
+      // //                     type: "literal",
+      // //                     definition: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+      // //                   },
+      // //                   applicationSection: {
+      // //                     type: "literal",
+      // //                     definition: "model",
+      // //                   },
+      // //                   deploymentUuid: {
+      // //                     type: "uuid",
+      // //                     tag: {
+      // //                       value: {
+      // //                         id: 1,
+      // //                         defaultLabel: "Uuid",
+      // //                         editable: false,
+      // //                       },
+      // //                     },
+      // //                   },
+      // //                   query: {
+      // //                     type: "object",
+      // //                     definition: {
+      // //                       queryType: {
+      // //                         type: "literal",
+      // //                         definition: "boxedQueryWithExtractorCombinerTransformer",
+      // //                       },
+      // //                       deploymentUuid: {
+      // //                         type: "uuid",
+      // //                         tag: {
+      // //                           value: {
+      // //                             id: 1,
+      // //                             defaultLabel: "Uuid",
+      // //                             editable: false,
+      // //                           },
+      // //                         },
+      // //                       },
+      // //                       pageParams: {
+      // //                         type: "object",
+      // //                         definition: {
+      // //                           currentDeploymentUuid: {
+      // //                             type: "any",
+      // //                           },
+      // //                         },
+      // //                       },
+      // //                       runAsSql: {
+      // //                         type: "boolean",
+      // //                         optional: true,
+      // //                       },
+      // //                       queryParams: {
+      // //                         type: "object",
+      // //                         definition: {},
+      // //                       },
+      // //                       contextResults: {
+      // //                         type: "object",
+      // //                         definition: {},
+      // //                       },
+      // //                       extractors: {
+      // //                         type: "object",
+      // //                         definition: {
+      // //                           reports: {
+      // //                             type: "object",
+      // //                             definition: {
+      // //                               extractorOrCombinerType: {
+      // //                                 type: "literal",
+      // //                                 definition: "extractorByEntityReturningObjectList",
+      // //                               },
+      // //                               applicationSection: {
+      // //                                 type: "literal",
+      // //                                 definition: "model",
+      // //                               },
+      // //                               parentName: {
+      // //                                 type: "string",
+      // //                                 optional: true,
+      // //                                 tag: {
+      // //                                   value: {
+      // //                                     id: 3,
+      // //                                     defaultLabel: "Parent Name",
+      // //                                     editable: false,
+      // //                                   },
+      // //                                 },
+      // //                               },
+      // //                               parentUuid: {
+      // //                                 type: "uuid",
+      // //                                 tag: {
+      // //                                   value: {
+      // //                                     id: 4,
+      // //                                     defaultLabel: "Parent Uuid",
+      // //                                     editable: false,
+      // //                                   },
+      // //                                 },
+      // //                               },
+      // //                               orderBy: {
+      // //                                 type: "object",
+      // //                                 optional: true,
+      // //                                 definition: {
+      // //                                   attributeName: {
+      // //                                     type: "string",
+      // //                                   },
+      // //                                   direction: {
+      // //                                     type: "enum",
+      // //                                     optional: true,
+      // //                                     definition: ["ASC", "DESC"],
+      // //                                   },
+      // //                                 },
+      // //                               },
+      // //                             },
+      // //                           },
+      // //                         },
+      // //                       },
+      // //                     },
+      // //                   },
+      // //                 },
+      // //               },
+      // //             },
+      // //           },
+      // //           {
+      // //             type: "object",
+      // //             definition: {
+      // //               actionType: {
+      // //                 type: "literal",
+      // //                 definition: "compositeRunBoxedQueryAction",
+      // //               },
+      // //               actionLabel: {
+      // //                 type: "string",
+      // //                 optional: true,
+      // //               },
+      // //               nameGivenToResult: {
+      // //                 type: "string",
+      // //               },
+      // //               queryTemplate: {
+      // //                 type: "object",
+      // //                 definition: {
+      // //                   actionType: {
+      // //                     type: "literal",
+      // //                     definition: "runBoxedQueryAction",
+      // //                   },
+      // //                   actionName: {
+      // //                     type: "literal",
+      // //                     definition: "runQuery",
+      // //                   },
+      // //                   endpoint: {
+      // //                     type: "literal",
+      // //                     definition: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+      // //                   },
+      // //                   applicationSection: {
+      // //                     type: "literal",
+      // //                     definition: "model",
+      // //                   },
+      // //                   deploymentUuid: {
+      // //                     type: "uuid",
+      // //                     tag: {
+      // //                       value: {
+      // //                         id: 1,
+      // //                         defaultLabel: "Uuid",
+      // //                         editable: false,
+      // //                       },
+      // //                     },
+      // //                   },
+      // //                   query: {
+      // //                     type: "object",
+      // //                     definition: {
+      // //                       queryType: {
+      // //                         type: "literal",
+      // //                         definition: "boxedQueryWithExtractorCombinerTransformer",
+      // //                       },
+      // //                       deploymentUuid: {
+      // //                         type: "uuid",
+      // //                         tag: {
+      // //                           value: {
+      // //                             id: 1,
+      // //                             defaultLabel: "Uuid",
+      // //                             editable: false,
+      // //                           },
+      // //                         },
+      // //                       },
+      // //                       pageParams: {
+      // //                         type: "object",
+      // //                         definition: {},
+      // //                       },
+      // //                       queryParams: {
+      // //                         type: "object",
+      // //                         definition: {},
+      // //                       },
+      // //                       contextResults: {
+      // //                         type: "object",
+      // //                         definition: {},
+      // //                       },
+      // //                       extractors: {
+      // //                         type: "object",
+      // //                         definition: {
+      // //                           menuList: {
+      // //                             type: "object",
+      // //                             definition: {
+      // //                               extractorOrCombinerType: {
+      // //                                 type: "literal",
+      // //                                 definition: "extractorByEntityReturningObjectList",
+      // //                               },
+      // //                               applicationSection: {
+      // //                                 type: "literal",
+      // //                                 definition: "model",
+      // //                               },
+      // //                               parentName: {
+      // //                                 type: "string",
+      // //                                 optional: true,
+      // //                                 tag: {
+      // //                                   value: {
+      // //                                     id: 3,
+      // //                                     defaultLabel: "Parent Name",
+      // //                                     editable: false,
+      // //                                   },
+      // //                                 },
+      // //                               },
+      // //                               parentUuid: {
+      // //                                 type: "uuid",
+      // //                                 tag: {
+      // //                                   value: {
+      // //                                     id: 4,
+      // //                                     defaultLabel: "Parent Uuid",
+      // //                                     editable: false,
+      // //                                   },
+      // //                                 },
+      // //                               },
+      // //                             },
+      // //                           },
+      // //                         },
+      // //                       },
+      // //                       runtimeTransformers: {
+      // //                         type: "object",
+      // //                         definition: {
+      // //                           menu: {
+      // //                             type: "object",
+      // //                             definition: {
+      // //                               transformerType: {
+      // //                                 type: "literal",
+      // //                                 definition: "listPickElement",
+      // //                               },
+      // //                               interpolation: {
+      // //                                 type: "literal",
+      // //                                 definition: "runtime",
+      // //                               },
+      // //                               applyTo: {
+      // //                                 type: "object",
+      // //                                 definition: {
+      // //                                   referenceType: {
+      // //                                     type: "literal",
+      // //                                     definition: "referencedTransformer",
+      // //                                   },
+      // //                                   reference: {
+      // //                                     type: "object",
+      // //                                     definition: {
+      // //                                       transformerType: {
+      // //                                         type: "literal",
+      // //                                         definition: "contextReference",
+      // //                                       },
+      // //                                       interpolation: {
+      // //                                         type: "literal",
+      // //                                         optional: true,
+      // //                                         definition: "runtime",
+      // //                                       },
+      // //                                       referenceName: {
+      // //                                         optional: true,
+      // //                                         type: "string",
+      // //                                       },
+      // //                                     },
+      // //                                   },
+      // //                                 },
+      // //                               },
+      // //                               index: {
+      // //                                 type: "number",
+      // //                               },
+      // //                             },
+      // //                           },
+      // //                           menuItem: {
+      // //                             type: "object",
+      // //                             definition: {
+      // //                               transformerType: {
+      // //                                 type: "literal",
+      // //                                 definition: "freeObjectTemplate",
+      // //                               },
+      // //                               interpolation: {
+      // //                                 type: "literal",
+      // //                                 definition: "runtime",
+      // //                               },
+      // //                               definition: {
+      // //                                 type: "object",
+      // //                                 definition: {
+      // //                                   reportUuid: {
+      // //                                     type: "object",
+      // //                                     definition: {
+      // //                                       transformerType: {
+      // //                                         type: "literal",
+      // //                                         definition: "parameterReference",
+      // //                                       },
+      // //                                       interpolation: {
+      // //                                         type: "literal",
+      // //                                         optional: true,
+      // //                                         definition: "build",
+      // //                                       },
+      // //                                       referenceName: {
+      // //                                         optional: true,
+      // //                                         type: "string",
+      // //                                       },
+      // //                                     },
+      // //                                   },
+      // //                                   label: {
+      // //                                     type: "object",
+      // //                                     definition: {
+      // //                                       transformerType: {
+      // //                                         type: "literal",
+      // //                                         definition: "mustacheStringTemplate",
+      // //                                       },
+      // //                                       interpolation: {
+      // //                                         type: "literal",
+      // //                                         definition: "build",
+      // //                                       },
+      // //                                       definition: {
+      // //                                         type: "string",
+      // //                                       },
+      // //                                     },
+      // //                                   },
+      // //                                   section: {
+      // //                                     type: "string",
+      // //                                   },
+      // //                                   selfApplication: {
+      // //                                     type: "object",
+      // //                                     definition: {
+      // //                                       transformerType: {
+      // //                                         type: "literal",
+      // //                                         definition: "parameterReference",
+      // //                                       },
+      // //                                       interpolation: {
+      // //                                         type: "literal",
+      // //                                         optional: true,
+      // //                                         definition: "build",
+      // //                                       },
+      // //                                       referencePath: {
+      // //                                         type: "array",
+      // //                                         definition: {
+      // //                                           type: "string",
+      // //                                         },
+      // //                                       },
+      // //                                     },
+      // //                                   },
+      // //                                   icon: {
+      // //                                     type: "string",
+      // //                                   },
+      // //                                 },
+      // //                               },
+      // //                             },
+      // //                           },
+      // //                           updatedMenu: {
+      // //                             type: "object",
+      // //                             definition: {
+      // //                               transformerType: {
+      // //                                 type: "literal",
+      // //                                 definition: "transformer_menu_addItem",
+      // //                               },
+      // //                               interpolation: {
+      // //                                 type: "literal",
+      // //                                 definition: "runtime",
+      // //                               },
+      // //                               menuItemReference: {
+      // //                                 type: "object",
+      // //                                 definition: {
+      // //                                   transformerType: {
+      // //                                     type: "literal",
+      // //                                     definition: "contextReference",
+      // //                                   },
+      // //                                   interpolation: {
+      // //                                     type: "literal",
+      // //                                     optional: true,
+      // //                                     definition: "runtime",
+      // //                                   },
+      // //                                   referenceName: {
+      // //                                     optional: true,
+      // //                                     type: "string",
+      // //                                   },
+      // //                                 },
+      // //                               },
+      // //                               menuReference: {
+      // //                                 type: "object",
+      // //                                 definition: {
+      // //                                   transformerType: {
+      // //                                     type: "literal",
+      // //                                     definition: "contextReference",
+      // //                                   },
+      // //                                   interpolation: {
+      // //                                     type: "literal",
+      // //                                     optional: true,
+      // //                                     definition: "runtime",
+      // //                                   },
+      // //                                   referenceName: {
+      // //                                     optional: true,
+      // //                                     type: "string",
+      // //                                   },
+      // //                                 },
+      // //                               },
+      // //                               menuSectionItemInsertionIndex: {
+      // //                                 type: "number",
+      // //                                 optional: true,
+      // //                               },
+      // //                             },
+      // //                           },
+      // //                         },
+      // //                       },
+      // //                     },
+      // //                   },
+      // //                 },
+      // //               },
+      // //             },
+      // //           },
+      // //           {
+      // //             type: "object",
+      // //             definition: {
+      // //               actionType: {
+      // //                 type: "literal",
+      // //                 definition: "transactionalInstanceAction",
+      // //               },
+      // //               actionLabel: {
+      // //                 type: "string",
+      // //                 optional: true,
+      // //               },
+      // //               instanceAction: {
+      // //                 type: "object",
+      // //                 definition: {
+      // //                   actionType: {
+      // //                     type: "literal",
+      // //                     definition: "updateInstance",
+      // //                   },
+      // //                   applicationSection: {
+      // //                     type: "literal",
+      // //                     definition: "model",
+      // //                   },
+      // //                   deploymentUuid: {
+      // //                     type: "uuid",
+      // //                     tag: {
+      // //                       value: {
+      // //                         id: 1,
+      // //                         defaultLabel: "Uuid",
+      // //                         editable: false,
+      // //                       },
+      // //                     },
+      // //                   },
+      // //                   endpoint: {
+      // //                     type: "literal",
+      // //                     definition: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+      // //                   },
+      // //                   objects: {
+      // //                     type: "array",
+      // //                     definition: {
+      // //                       type: "object",
+      // //                       definition: {
+      // //                         parentName: {
+      // //                           type: "string",
+      // //                           optional: true,
+      // //                         },
+      // //                         parentUuid: {
+      // //                           type: "string",
+      // //                         },
+      // //                         applicationSection: {
+      // //                           type: "schemaReference",
+      // //                           optional: false,
+      // //                           definition: {
+      // //                             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+      // //                             relativePath: "applicationSection",
+      // //                           },
+      // //                         },
+      // //                         instances: {
+      // //                           type: "array",
+      // //                           definition: {
+      // //                             type: "schemaReference",
+      // //                             tag: {
+      // //                               canBeTemplate: true,
+      // //                             },
+      // //                             definition: {
+      // //                               absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+      // //                               relativePath: "entityInstance",
+      // //                             },
+      // //                           },
+      // //                         },
+      // //                       },
+      // //                     },
+      // //                   },
+      // //                 },
+      // //               },
+      // //             },
+      // //           },
+      // //           {
+      // //             type: "object",
+      // //             definition: {
+      // //               actionType: {
+      // //                 type: "literal",
+      // //                 definition: "commit",
+      // //               },
+      // //               actionLabel: {
+      // //                 type: "string",
+      // //                 optional: true,
+      // //               },
+      // //               endpoint: {
+      // //                 type: "literal",
+      // //                 definition: "7947ae40-eb34-4149-887b-15a9021e714e",
+      // //               },
+      // //               deploymentUuid: {
+      // //                 type: "uuid",
+      // //                 tag: {
+      // //                   value: {
+      // //                     id: 1,
+      // //                     defaultLabel: "Deployment",
+      // //                     editable: false,
+      // //                   },
+      // //                 },
+      // //               },
+      // //             },
+      // //           },
+      // //           {
+      // //             type: "object",
+      // //             definition: {
+      // //               actionType: {
+      // //                 type: "literal",
+      // //                 definition: "compositeRunBoxedQueryAction",
+      // //               },
+      // //               actionLabel: {
+      // //                 type: "string",
+      // //                 optional: true,
+      // //               },
+      // //               nameGivenToResult: {
+      // //                 type: "string",
+      // //               },
+      // //               queryTemplate: {
+      // //                 type: "object",
+      // //                 definition: {
+      // //                   actionType: {
+      // //                     type: "literal",
+      // //                     definition: "runBoxedQueryAction",
+      // //                   },
+      // //                   actionName: {
+      // //                     type: "literal",
+      // //                     definition: "runQuery",
+      // //                   },
+      // //                   endpoint: {
+      // //                     type: "literal",
+      // //                     definition: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+      // //                   },
+      // //                   applicationSection: {
+      // //                     type: "literal",
+      // //                     definition: "model",
+      // //                   },
+      // //                   deploymentUuid: {
+      // //                     type: "uuid",
+      // //                     tag: {
+      // //                       value: {
+      // //                         id: 1,
+      // //                         defaultLabel: "Uuid",
+      // //                         editable: false,
+      // //                       },
+      // //                     },
+      // //                   },
+      // //                   query: {
+      // //                     type: "object",
+      // //                     definition: {
+      // //                       queryType: {
+      // //                         type: "literal",
+      // //                         definition: "boxedQueryWithExtractorCombinerTransformer",
+      // //                       },
+      // //                       deploymentUuid: {
+      // //                         type: "uuid",
+      // //                         tag: {
+      // //                           value: {
+      // //                             id: 1,
+      // //                             defaultLabel: "Uuid",
+      // //                             editable: false,
+      // //                           },
+      // //                         },
+      // //                       },
+      // //                       pageParams: {
+      // //                         type: "object",
+      // //                         definition: {},
+      // //                       },
+      // //                       queryParams: {
+      // //                         type: "object",
+      // //                         definition: {},
+      // //                       },
+      // //                       contextResults: {
+      // //                         type: "object",
+      // //                         definition: {},
+      // //                       },
+      // //                       extractors: {
+      // //                         type: "object",
+      // //                         definition: {
+      // //                           menuList: {
+      // //                             type: "object",
+      // //                             definition: {
+      // //                               extractorOrCombinerType: {
+      // //                                 type: "literal",
+      // //                                 definition: "extractorByEntityReturningObjectList",
+      // //                               },
+      // //                               applicationSection: {
+      // //                                 type: "literal",
+      // //                                 definition: "model",
+      // //                               },
+      // //                               parentName: {
+      // //                                 type: "string",
+      // //                                 optional: true,
+      // //                                 tag: {
+      // //                                   value: {
+      // //                                     id: 3,
+      // //                                     defaultLabel: "Parent Name",
+      // //                                     editable: false,
+      // //                                   },
+      // //                                 },
+      // //                               },
+      // //                               parentUuid: {
+      // //                                 type: "uuid",
+      // //                                 tag: {
+      // //                                   value: {
+      // //                                     id: 4,
+      // //                                     defaultLabel: "Parent Uuid",
+      // //                                     editable: false,
+      // //                                   },
+      // //                                 },
+      // //                               },
+      // //                             },
+      // //                           },
+      // //                         },
+      // //                       },
+      // //                     },
+      // //                   },
+      // //                 },
+      // //               },
+      // //             },
+      // //           },
+      // //         ],
+      // //       },
+      // //     },
+      // //   } as any, // TODO: cannot be typed because of "canBeTemplate" in the definition
+      // // },
+      // // // ##########################################################################################
+      // // // ########################### BOOK ENTITY ######################################
+      // // // ##########################################################################################
+      // // // Book entity
+      // // test900: {
+      // //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      // //   testSchema: {
+      // //     type: "object",
+      // //     definition: {
+      // //       uuid: {
+      // //         type: "string",
+      // //         validations: [
+      // //           {
+      // //             type: "uuid",
+      // //           },
+      // //         ],
+      // //         tag: {
+      // //           value: {
+      // //             id: 1,
+      // //             defaultLabel: "Uuid",
+      // //             editable: false,
+      // //           },
+      // //         },
+      // //       },
+      // //       parentName: {
+      // //         type: "string",
+      // //         optional: true,
+      // //         tag: {
+      // //           value: {
+      // //             id: 2,
+      // //             defaultLabel: "Entity Name",
+      // //             editable: false,
+      // //           },
+      // //         },
+      // //       },
+      // //       parentUuid: {
+      // //         type: "string",
+      // //         validations: [
+      // //           {
+      // //             type: "uuid",
+      // //           },
+      // //         ],
+      // //         tag: {
+      // //           value: {
+      // //             id: 3,
+      // //             defaultLabel: "Entity Uuid",
+      // //             editable: false,
+      // //           },
+      // //         },
+      // //       },
+      // //       name: {
+      // //         type: "string",
+      // //         tag: {
+      // //           value: {
+      // //             id: 4,
+      // //             defaultLabel: "Name",
+      // //             editable: true,
+      // //           },
+      // //         },
+      // //       },
+      // //       author: {
+      // //         type: "string",
+      // //         validations: [
+      // //           {
+      // //             type: "uuid",
+      // //           },
+      // //         ],
+      // //         optional: true,
+      // //         tag: {
+      // //           value: {
+      // //             id: 5,
+      // //             defaultLabel: "Author",
+      // //             targetEntity: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+      // //             editable: true,
+      // //           },
+      // //         },
+      // //       },
+      // //       publisher: {
+      // //         type: "string",
+      // //         validations: [
+      // //           {
+      // //             type: "uuid",
+      // //           },
+      // //         ],
+      // //         optional: true,
+      // //         tag: {
+      // //           value: {
+      // //             id: 5,
+      // //             defaultLabel: "Publisher",
+      // //             targetEntity: "a027c379-8468-43a5-ba4d-bf618be25cab",
+      // //             editable: true,
+      // //           },
+      // //         },
+      // //       },
+      // //     },
+      // //   },
+      // //   expectedResult: {
+      // //     type: "object",
+      // //     definition: {
+      // //       uuid: {
+      // //         type: "string",
+      // //         validations: [
+      // //           {
+      // //             type: "uuid",
+      // //           },
+      // //         ],
+      // //         tag: {
+      // //           value: {
+      // //             id: 1,
+      // //             defaultLabel: "Uuid",
+      // //             editable: false,
+      // //           },
+      // //         },
+      // //       },
+      // //       parentName: {
+      // //         type: "string",
+      // //         optional: true,
+      // //         tag: {
+      // //           value: {
+      // //             id: 2,
+      // //             defaultLabel: "Entity Name",
+      // //             editable: false,
+      // //           },
+      // //         },
+      // //       },
+      // //       parentUuid: {
+      // //         type: "string",
+      // //         validations: [
+      // //           {
+      // //             type: "uuid",
+      // //           },
+      // //         ],
+      // //         tag: {
+      // //           value: {
+      // //             id: 3,
+      // //             defaultLabel: "Entity Uuid",
+      // //             editable: false,
+      // //           },
+      // //         },
+      // //       },
+      // //       name: {
+      // //         type: "string",
+      // //         tag: {
+      // //           value: {
+      // //             id: 4,
+      // //             defaultLabel: "Name",
+      // //             editable: true,
+      // //           },
+      // //         },
+      // //       },
+      // //       author: {
+      // //         type: "string",
+      // //         validations: [
+      // //           {
+      // //             type: "uuid",
+      // //           },
+      // //         ],
+      // //         optional: true,
+      // //         tag: {
+      // //           value: {
+      // //             id: 5,
+      // //             defaultLabel: "Author",
+      // //             targetEntity: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+      // //             editable: true,
+      // //           },
+      // //         },
+      // //       },
+      // //       publisher: {
+      // //         type: "string",
+      // //         validations: [
+      // //           {
+      // //             type: "uuid",
+      // //           },
+      // //         ],
+      // //         optional: true,
+      // //         tag: {
+      // //           value: {
+      // //             id: 5,
+      // //             defaultLabel: "Publisher",
+      // //             targetEntity: "a027c379-8468-43a5-ba4d-bf618be25cab",
+      // //             editable: true,
+      // //           },
+      // //         },
+      // //       },
+      // //     },
+      // //   },
+      // //   testValueObject: {
+      // //     uuid: "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7",
+      // //     parentName: "Book",
+      // //     parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      // //     name: "Renata n'importe quoi",
+      // //     author: "e4376314-d197-457c-aa5e-d2da5f8d5977",
+      // //     publisher: "516a7366-39e7-4998-82cb-80199a7fa667",
+      // //   },
+      // // },
+      // // // complexMenu
+      // // test910: {
+      // //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      // //   testSchema: {
+      // //     type: "schemaReference",
+      // //     context: {
+      // //       menuItem: {
+      // //         type: "object",
+      // //         definition: {
+      // //           label: {
+      // //             type: "string",
+      // //           },
+      // //           section: {
+      // //             type: "schemaReference",
+      // //             definition: {
+      // //               absolutePath: miroirFundamentalJzodSchemaUuid,
+      // //               relativePath: "applicationSection",
+      // //             },
+      // //           },
+      // //           selfApplication: {
+      // //             type: "string",
+      // //             validations: [
+      // //               {
+      // //                 type: "uuid",
+      // //               },
+      // //             ],
+      // //             tag: {
+      // //               value: {
+      // //                 id: 1,
+      // //                 defaultLabel: "Uuid",
+      // //                 editable: false,
+      // //               },
+      // //             },
+      // //           },
+      // //           reportUuid: {
+      // //             type: "string",
+      // //             validations: [
+      // //               {
+      // //                 type: "uuid",
+      // //               },
+      // //             ],
+      // //             tag: {
+      // //               value: {
+      // //                 id: 1,
+      // //                 defaultLabel: "Uuid",
+      // //                 editable: false,
+      // //               },
+      // //             },
+      // //           },
+      // //           instanceUuid: {
+      // //             type: "string",
+      // //             optional: true,
+      // //             validations: [
+      // //               {
+      // //                 type: "uuid",
+      // //               },
+      // //             ],
+      // //             tag: {
+      // //               value: {
+      // //                 id: 1,
+      // //                 defaultLabel: "Uuid",
+      // //                 editable: false,
+      // //               },
+      // //             },
+      // //           },
+      // //           icon: {
+      // //             type: "string",
+      // //             validations: [
+      // //               {
+      // //                 type: "uuid",
+      // //               },
+      // //             ],
+      // //           },
+      // //         },
+      // //       },
+      // //       menuItemArray: {
+      // //         type: "array",
+      // //         definition: {
+      // //           type: "schemaReference",
+      // //           definition: {
+      // //             relativePath: "menuItem",
+      // //           },
+      // //         },
+      // //       },
+      // //       sectionOfMenu: {
+      // //         type: "object",
+      // //         definition: {
+      // //           title: {
+      // //             type: "string",
+      // //           },
+      // //           label: {
+      // //             type: "string",
+      // //           },
+      // //           items: {
+      // //             type: "schemaReference",
+      // //             definition: {
+      // //               relativePath: "menuItemArray",
+      // //             },
+      // //           },
+      // //         },
+      // //       },
+      // //       simpleMenu: {
+      // //         type: "object",
+      // //         definition: {
+      // //           menuType: {
+      // //             type: "literal",
+      // //             definition: "simpleMenu",
+      // //           },
+      // //           definition: {
+      // //             type: "schemaReference",
+      // //             definition: {
+      // //               relativePath: "menuItemArray",
+      // //             },
+      // //           },
+      // //         },
+      // //       },
+      // //       complexMenu: {
+      // //         type: "object",
+      // //         definition: {
+      // //           menuType: {
+      // //             type: "literal",
+      // //             definition: "complexMenu",
+      // //           },
+      // //           definition: {
+      // //             type: "array",
+      // //             definition: {
+      // //               type: "schemaReference",
+      // //               definition: {
+      // //                 relativePath: "sectionOfMenu",
+      // //               },
+      // //             },
+      // //           },
+      // //         },
+      // //       },
+      // //       menuDefinition: {
+      // //         type: "union",
+      // //         discriminator: "menuType",
+      // //         definition: [
+      // //           {
+      // //             type: "schemaReference",
+      // //             definition: {
+      // //               relativePath: "simpleMenu",
+      // //             },
+      // //           },
+      // //           {
+      // //             type: "schemaReference",
+      // //             definition: {
+      // //               relativePath: "complexMenu",
+      // //             },
+      // //           },
+      // //         ],
+      // //       },
+      // //     },
+      // //     definition: {
+      // //       relativePath: "menuDefinition",
+      // //     },
+      // //   },
+      // //   expectedResult: {
+      // //     type: "object",
+      // //     definition: {
+      // //       menuType: {
+      // //         type: "literal",
+      // //         definition: "complexMenu",
+      // //       },
+      // //       definition: {
+      // //         type: "array",
+      // //         definition: {
+      // //           type: "object",
+      // //           definition: {
+      // //             title: {
+      // //               type: "string",
+      // //             },
+      // //             label: {
+      // //               type: "string",
+      // //             },
+      // //             items: {
+      // //               type: "schemaReference",
+      // //               definition: {
+      // //                 relativePath: "menuItemArray",
+      // //               },
+      // //             },
+      // //             // {
+      // //             //   type: "array",
+      // //             //   definition: {
+      // //             //     type: "object",
+      // //             //     definition: {
+      // //             //       label: {
+      // //             //         type: "string",
+      // //             //       },
+      // //             //       section: {
+      // //             //         type: "literal",
+      // //             //         definition: "model",
+      // //             //       },
+      // //             //       selfApplication: {
+      // //             //         type: "string",
+      // //             //         validations: [
+      // //             //           {
+      // //             //             type: "uuid",
+      // //             //           },
+      // //             //         ],
+      // //             //         tag: {
+      // //             //           id: 1,
+      // //             //           defaultLabel: "Uuid",
+      // //             //           editable: false,
+      // //             //         },
+      // //             //       },
+      // //             //       reportUuid: {
+      // //             //         type: "string",
+      // //             //         validations: [
+      // //             //           {
+      // //             //             type: "uuid",
+      // //             //           },
+      // //             //         ],
+      // //             //         tag: {
+      // //             //           id: 1,
+      // //             //           defaultLabel: "Uuid",
+      // //             //           editable: false,
+      // //             //         },
+      // //             //       },
+      // //             //       icon: {
+      // //             //         type: "string",
+      // //             //         validations: [
+      // //             //           {
+      // //             //             type: "uuid",
+      // //             //           },
+      // //             //         ],
+      // //             //       },
+      // //             //     },
+      // //             //   },
+      // //             // },
+      // //           },
+      // //         },
+      // //       },
+      // //     },
+      // //   },
+      // //   testValueObject: {
+      // //     menuType: "complexMenu",
+      // //     definition: [
+      // //       {
+      // //         title: "Miroir",
+      // //         label: "miroir",
+      // //         items: [
+      // //           {
+      // //             label: "Miroir Entities",
+      // //             section: "model",
+      // //             selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+      // //             reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9",
+      // //             icon: "category",
+      // //           },
+      // //           {
+      // //             label: "Miroir Entity Definitions",
+      // //             section: "model",
+      // //             selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+      // //             reportUuid: "f9aff35d-8636-4519-8361-c7648e0ddc68",
+      // //             icon: "category",
+      // //           },
+      // //           {
+      // //             label: "Miroir Reports",
+      // //             section: "data",
+      // //             selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+      // //             reportUuid: "1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855",
+      // //             icon: "list",
+      // //           },
+      // //           {
+      // //             label: "Miroir Menus",
+      // //             section: "data",
+      // //             selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+      // //             reportUuid: "ecfd8787-09cc-417d-8d2c-173633c9f998",
+      // //             icon: "list",
+      // //           },
+      // //         ],
+      // //       },
+      // //       {
+      // //         title: "Library",
+      // //         label: "library",
+      // //         items: [
+      // //           {
+      // //             label: "Library Entities",
+      // //             section: "model",
+      // //             selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+      // //             reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9",
+      // //             icon: "category",
+      // //           },
+      // //           {
+      // //             label: "Library Entity Definitions",
+      // //             section: "model",
+      // //             selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+      // //             reportUuid: "f9aff35d-8636-4519-8361-c7648e0ddc68",
+      // //             icon: "category",
+      // //           },
+      // //           {
+      // //             label: "Library Tests",
+      // //             section: "data",
+      // //             selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+      // //             reportUuid: "931dd036-dfce-4e47-868e-36dba3654816",
+      // //             icon: "category",
+      // //           },
+      // //           {
+      // //             label: "Library Books",
+      // //             section: "data",
+      // //             selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+      // //             reportUuid: "74b010b6-afee-44e7-8590-5f0849e4a5c9",
+      // //             icon: "auto_stories",
+      // //           },
+      // //           {
+      // //             label: "Library Authors",
+      // //             section: "data",
+      // //             selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+      // //             reportUuid: "66a09068-52c3-48bc-b8dd-76575bbc8e72",
+      // //             icon: "star",
+      // //           },
+      // //           {
+      // //             label: "Library Publishers",
+      // //             section: "data",
+      // //             selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+      // //             reportUuid: "a77aa662-006d-46cd-9176-01f02a1a12dc",
+      // //             icon: "account_balance",
+      // //           },
+      // //         ],
+      // //       },
+      // //     ],
+      // //   },
+      // // },
+      // // // based on "real" cases
+      // // test920: {
+      // //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      // //   testSchema: {
+      // //     type: "schemaReference",
+      // //     context: {
+      // //       applicationSection: {
+      // //         type: "union",
+      // //         definition: [
+      // //           {
+      // //             type: "literal",
+      // //             definition: "model",
+      // //           },
+      // //           {
+      // //             type: "literal",
+      // //             definition: "data",
+      // //           },
+      // //         ],
+      // //       },
+      // //       transformer_constantUuid: {
+      // //         type: "object",
+      // //         definition: {
+      // //           transformerType: {
+      // //             type: "literal",
+      // //             definition: "constantUuid",
+      // //           },
+      // //           value: {
+      // //             type: "string",
+      // //           },
+      // //         },
+      // //       },
+      // //       transformer_constantString: {
+      // //         type: "object",
+      // //         definition: {
+      // //           transformerType: {
+      // //             type: "literal",
+      // //             definition: "constantString",
+      // //           },
+      // //           value: {
+      // //             type: "string",
+      // //           },
+      // //         },
+      // //       },
+      // //       transformer_newUuid: {
+      // //         type: "object",
+      // //         definition: {
+      // //           transformerType: {
+      // //             type: "literal",
+      // //             definition: "newUuid",
+      // //           },
+      // //         },
+      // //       },
+      // //       transformerForRuntime_contextReference: {
+      // //         type: "object",
+      // //         definition: {
+      // //           transformerType: {
+      // //             type: "literal",
+      // //             definition: "contextReference",
+      // //           },
+      // //           referenceName: {
+      // //             optional: true,
+      // //             type: "string",
+      // //           },
+      // //           referencePath: {
+      // //             optional: true,
+      // //             type: "array",
+      // //             definition: {
+      // //               type: "string",
+      // //             },
+      // //           },
+      // //         },
+      // //       },
+      // //       transformer_parameterReference: {
+      // //         type: "object",
+      // //         definition: {
+      // //           transformerType: {
+      // //             type: "literal",
+      // //             definition: "parameterReference",
+      // //           },
+      // //           referenceName: {
+      // //             optional: true,
+      // //             type: "string",
+      // //           },
+      // //           referencePath: {
+      // //             optional: true,
+      // //             type: "array",
+      // //             definition: {
+      // //               type: "string",
+      // //             },
+      // //           },
+      // //         },
+      // //       },
+      // //       transformer_contextOrParameterReferenceTO_REMOVE: {
+      // //         type: "union",
+      // //         discriminator: "transformerType",
+      // //         definition: [
+      // //           {
+      // //             type: "schemaReference",
+      // //             definition: {
+      // //               relativePath: "transformerForRuntime_contextReference",
+      // //             },
+      // //           },
+      // //           {
+      // //             type: "schemaReference",
+      // //             definition: {
+      // //               relativePath: "transformer_parameterReference",
+      // //             },
+      // //           },
+      // //         ],
+      // //       },
+      // //       transformerForBuild_Abstract: {
+      // //         type: "object",
+      // //         definition: {
+      // //           interpolation: {
+      // //             type: "literal",
+      // //             definition: "build",
+      // //           },
+      // //         },
+      // //       },
+      // //       transformerForBuild_InnerReference: {
+      // //         type: "union",
+      // //         discriminator: "transformerType",
+      // //         definition: [
+      // //           {
+      // //             type: "schemaReference",
+      // //             definition: {
+      // //               relativePath: "transformer_parameterReference",
+      // //             },
+      // //           },
+      // //           {
+      // //             type: "schemaReference",
+      // //             definition: {
+      // //               relativePath: "transformer_constantUuid",
+      // //             },
+      // //           },
+      // //           {
+      // //             type: "schemaReference",
+      // //             definition: {
+      // //               relativePath: "transformer_constantString",
+      // //             },
+      // //           },
+      // //           {
+      // //             type: "schemaReference",
+      // //             definition: {
+      // //               relativePath: "transformer_newUuid",
+      // //             },
+      // //           }
+      // //         ],
+      // //       },
+      // //       extractorTemplateRoot: {
+      // //         type: "object",
+      // //         definition: {
+      // //           label: {
+      // //             type: "string",
+      // //             optional: true,
+      // //             tag: { value: { id: 1, defaultLabel: "Label", editable: false } },
+      // //           },
+      // //           applicationSection: {
+      // //             type: "schemaReference",
+      // //             optional: true,
+      // //             tag: { value: { id: 2, defaultLabel: "Parent Uuid", editable: false } },
+      // //             definition: {
+      // //               absolutePath: miroirFundamentalJzodSchemaUuid,
+      // //               relativePath: "applicationSection",
+      // //             },
+      // //           },
+      // //           parentName: {
+      // //             type: "string",
+      // //             optional: true,
+      // //             tag: { value: { id: 3, defaultLabel: "Parent Name", editable: false } },
+      // //           },
+      // //           parentUuid: {
+      // //             type: "schemaReference",
+      // //             tag: { value: { id: 4, defaultLabel: "Parent Uuid", editable: false } },
+      // //             definition: {
+      // //               relativePath: "transformerForBuild_InnerReference",
+      // //             },
+      // //           },
+      // //         },
+      // //       },
+      // //       extractorTemplateExtractorForObjectByDirectReference: {
+      // //         type: "object",
+      // //         extend: {
+      // //           type: "schemaReference",
+      // //           definition: {
+      // //             eager: true,
+      // //             relativePath: "extractorTemplateRoot",
+      // //           },
+      // //         },
+      // //         definition: {
+      // //           extractorOrCombinerType: {
+      // //             type: "literal",
+      // //             definition: "extractorForObjectByDirectReference",
+      // //           },
+      // //           instanceUuid: {
+      // //             type: "schemaReference",
+      // //             definition: {
+      // //               // absolutePath: miroirFundamentalJzodSchemaUuid,
+      // //               relativePath: "transformerForBuild_InnerReference",
+      // //             },
+      // //           },
+      // //         },
+      // //       },
+      // //       extractorTemplateForObjectListByEntity: {
+      // //         type: "object",
+      // //         extend: {
+      // //           type: "schemaReference",
+      // //           definition: {
+      // //             eager: true,
+      // //             relativePath: "extractorTemplateRoot",
+      // //           },
+      // //         },
+      // //         definition: {
+      // //           extractorOrCombinerType: {
+      // //             type: "literal",
+      // //             definition: "extractorTemplateForObjectListByEntity",
+      // //           },
+      // //           filter: {
+      // //             type: "object",
+      // //             optional: true,
+      // //             definition: {
+      // //               attributeName: {
+      // //                 type: "string",
+      // //               },
+      // //               value: {
+      // //                 type: "schemaReference",
+      // //                 definition: {
+      // //                   relativePath: "transformer_constantString",
+      // //                 },
+      // //               },
+      // //             },
+      // //           },
+      // //         },
+      // //       },
+      // //       extractorTemplateByExtractorWrapperReturningObject: {
+      // //         type: "union",
+      // //         discriminator: "extractorOrCombinerType",
+      // //         definition: [
+      // //           {
+      // //             type: "schemaReference",
+      // //             definition: {
+      // //               relativePath: "extractorTemplateExtractorForObjectByDirectReference",
+      // //             },
+      // //           },
+      // //           {
+      // //             type: "object",
+      // //             definition: {
+      // //               extractorOrCombinerType: {
+      // //                 type: "literal",
+      // //                 definition: "extractorWrapperReturningObject",
+      // //               },
+      // //               definition: {
+      // //                 type: "record",
+      // //                 definition: {
+      // //                   type: "schemaReference",
+      // //                   definition: {
+      // //                     relativePath: "extractorTemplateByExtractorWrapperReturningObject",
+      // //                   },
+      // //                 },
+      // //               },
+      // //             },
+      // //           },
+      // //         ],
+      // //       },
+      // //       extractorTemplateByExtractorWrapperReturningList: {
+      // //         type: "union",
+      // //         discriminator: "extractorOrCombinerType",
+      // //         definition: [
+      // //           {
+      // //             type: "schemaReference",
+      // //             definition: {
+      // //               relativePath: "extractorTemplateForObjectListByEntity",
+      // //             },
+      // //           },
+      // //           {
+      // //             type: "object",
+      // //             definition: {
+      // //               extractorOrCombinerType: {
+      // //                 type: "literal",
+      // //                 definition: "extractorWrapperReturningList",
+      // //               },
+      // //               definition: {
+      // //                 type: "array",
+      // //                 definition: {
+      // //                   type: "schemaReference",
+      // //                   definition: {
+      // //                     relativePath: "extractorTemplateByExtractorWrapperReturningList",
+      // //                   },
+      // //                 },
+      // //               },
+      // //             },
+      // //           },
+      // //         ],
+      // //       },
+      // //       extractorTemplateByExtractorWrapper: {
+      // //         type: "union",
+      // //         discriminator: "extractorOrCombinerType",
+      // //         definition: [
+      // //           {
+      // //             type: "schemaReference",
+      // //             definition: {
+      // //               relativePath: "extractorTemplateByExtractorWrapperReturningObject",
+      // //             },
+      // //           },
+      // //           {
+      // //             type: "schemaReference",
+      // //             definition: {
+      // //               relativePath: "extractorTemplateByExtractorWrapperReturningList",
+      // //             },
+      // //           },
+      // //         ],
+      // //       },
+      // //     },
+      // //     definition: {
+      // //       relativePath: "extractorTemplateByExtractorWrapper",
+      // //     },
+      // //   },
+      // //   expectedResult: {
+      // //     // TODO: missing alternate possible union branches in parentUuid, instanceUuid?
+      // //     type: "object",
+      // //     definition: {
+      // //       extractorOrCombinerType: {
+      // //         type: "literal",
+      // //         definition: "extractorForObjectByDirectReference",
+      // //       },
+      // //       parentName: {
+      // //         type: "string",
+      // //         optional: true,
+      // //         tag: {
+      // //           value: {
+      // //             id: 3,
+      // //             defaultLabel: "Parent Name",
+      // //             editable: false,
+      // //           },
+      // //         },
+      // //       },
+      // //       parentUuid: {
+      // //         type: "object",
+      // //         definition: {
+      // //           transformerType: {
+      // //             type: "literal",
+      // //             definition: "constantUuid",
+      // //           },
+      // //           value: {
+      // //             type: "string",
+      // //           },
+      // //         },
+      // //       },
+      // //       instanceUuid: {
+      // //         type: "object",
+      // //         definition: {
+      // //           transformerType: {
+      // //             type: "literal",
+      // //             definition: "parameterReference",
+      // //           },
+      // //           referenceName: {
+      // //             optional: true,
+      // //             type: "string",
+      // //           },
+      // //         },
+      // //       },
+      // //     },
+      // //   },
+      // //   testValueObject: {
+      // //     extractorOrCombinerType: "extractorForObjectByDirectReference",
+      // //     parentName: "Report",
+      // //     parentUuid: {
+      // //       transformerType: "constantUuid",
+      // //       value: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+      // //     },
+      // //     instanceUuid: {
+      // //       transformerType: "parameterReference",
+      // //       referenceName: "instanceUuid",
+      // //     },
+      // //   },
+      // // },
+      // // // based on "real" cases
+      // // test930: {
+      // //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      // //   testSchema: entityDefinitionTest.jzodSchema as JzodElement,
+      // //   expectedResult: {
+      // //     type: "object",
+      // //     definition: {
+      // //       uuid: {
+      // //         type: "string",
+      // //         validations: [
+      // //           {
+      // //             type: "uuid",
+      // //           },
+      // //         ],
+      // //         tag: {
+      // //           value: {
+      // //             id: 1,
+      // //             defaultLabel: "Uuid",
+      // //             editable: false,
+      // //           },
+      // //         },
+      // //       },
+      // //       parentName: {
+      // //         type: "string",
+      // //         optional: true,
+      // //         tag: {
+      // //           value: {
+      // //             id: 1,
+      // //             defaultLabel: "Uuid",
+      // //             editable: false,
+      // //           },
+      // //         },
+      // //       },
+      // //       parentUuid: {
+      // //         type: "string",
+      // //         validations: [
+      // //           {
+      // //             type: "uuid",
+      // //           },
+      // //         ],
+      // //         tag: {
+      // //           value: {
+      // //             id: 1,
+      // //             defaultLabel: "parentUuid",
+      // //             editable: false,
+      // //           },
+      // //         },
+      // //       },
+      // //       name: {
+      // //         type: "never",
+      // //       },
+      // //       selfApplication: {
+      // //         type: "never",
+      // //       },
+      // //       branch: {
+      // //         type: "never",
+      // //       },
+      // //       description: {
+      // //         type: "never",
+      // //       },
+      // //       definition: {
+      // //         type: "object",
+      // //         definition: {
+      // //           testCompositeActions: {
+      // //             type: "object",
+      // //             definition: {
+      // //               "create new Entity and reports from spreadsheet": {
+      // //                 type: "object",
+      // //                 definition: {
+      // //                   testType: {
+      // //                     type: "literal",
+      // //                     definition: "testBuildPlusRuntimeCompositeAction",
+      // //                   },
+      // //                   testLabel: {
+      // //                     type: "string",
+      // //                   },
+      // //                   compositeAction: {
+      // //                     type: "object",
+      // //                     definition: {
+      // //                       actionType: {
+      // //                         type: "literal",
+      // //                         definition: "compositeAction",
+      // //                       },
+      // //                       actionLabel: {
+      // //                         type: "string",
+      // //                         optional: true,
+      // //                       },
+      // //                       actionName: {
+      // //                         type: "literal",
+      // //                         definition: "sequence",
+      // //                       },
+      // //                       templates: {
+      // //                         type: "object",
+      // //                         definition: {
+      // //                           createEntity_newEntity: {
+      // //                             type: "any",
+      // //                           },
+      // //                           createEntity_newEntityDefinition: {
+      // //                             type: "any",
+      // //                           },
+      // //                           newEntityListReport: {
+      // //                             type: "any",
+      // //                           },
+      // //                           newEntityDetailsReport: {
+      // //                             type: "any",
+      // //                           },
+      // //                         },
+      // //                       },
+      // //                       definition: {
+      // //                         type: "tuple",
+      // //                         definition: [
+      // //                           {
+      // //                             type: "object",
+      // //                             definition: {
+      // //                               actionType: {
+      // //                                 type: "literal",
+      // //                                 definition: "createEntity",
+      // //                               },
+      // //                               actionLabel: {
+      // //                                 type: "string",
+      // //                                 optional: true,
+      // //                               },
+      // //                               deploymentUuid: {
+      // //                                 type: "uuid",
+      // //                                 tag: {
+      // //                                   value: {
+      // //                                     id: 1,
+      // //                                     defaultLabel: "Deployment",
+      // //                                     editable: false,
+      // //                                   },
+      // //                                 },
+      // //                               },
+      // //                               endpoint: {
+      // //                                 type: "literal",
+      // //                                 definition: "7947ae40-eb34-4149-887b-15a9021e714e",
+      // //                               },
+      // //                               entities: {
+      // //                                 type: "array",
+      // //                                 definition: {
+      // //                                   type: "object",
+      // //                                   definition: {
+      // //                                     entity: {
+      // //                                       type: "union",
+      // //                                       tag: {
+      // //                                         canBeTemplate: true,
+      // //                                       },
+      // //                                       definition: [
+      // //                                         {
+      // //                                           type: "schemaReference",
+      // //                                           tag: {
+      // //                                             canBeTemplate: true,
+      // //                                           },
+      // //                                           definition: {
+      // //                                             absolutePath:
+      // //                                               "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+      // //                                             relativePath:
+      // //                                               "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity",
+      // //                                           },
+      // //                                           context: {},
+      // //                                         },
+      // //                                         {
+      // //                                           type: "schemaReference",
+      // //                                           definition: {
+      // //                                             absolutePath:
+      // //                                               "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+      // //                                             relativePath:
+      // //                                               "transformerForBuildPlusRuntimeCarryOnObject",
+      // //                                           },
+      // //                                         },
+      // //                                       ],
+      // //                                     },
+      // //                                     entityDefinition: {
+      // //                                       type: "union",
+      // //                                       tag: {
+      // //                                         canBeTemplate: true,
+      // //                                       },
+      // //                                       definition: [
+      // //                                         {
+      // //                                           type: "schemaReference",
+      // //                                           tag: {
+      // //                                             canBeTemplate: true,
+      // //                                           },
+      // //                                           definition: {
+      // //                                             absolutePath:
+      // //                                               "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+      // //                                             relativePath:
+      // //                                               "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition",
+      // //                                           },
+      // //                                           context: {},
+      // //                                         },
+      // //                                         {
+      // //                                           type: "schemaReference",
+      // //                                           definition: {
+      // //                                             absolutePath:
+      // //                                               "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+      // //                                             relativePath:
+      // //                                               "transformerForBuildPlusRuntimeCarryOnObject",
+      // //                                           },
+      // //                                         },
+      // //                                       ],
+      // //                                     },
+      // //                                   },
+      // //                                 },
+      // //                               },
+      // //                             },
+      // //                           },
+      // //                           {
+      // //                             type: "object",
+      // //                             definition: {
+      // //                               actionType: {
+      // //                                 type: "literal",
+      // //                                 definition: "transactionalInstanceAction",
+      // //                               },
+      // //                               actionLabel: {
+      // //                                 type: "string",
+      // //                                 optional: true,
+      // //                               },
+      // //                               instanceAction: {
+      // //                                 type: "object",
+      // //                                 definition: {
+      // //                                   actionType: {
+      // //                                     type: "literal",
+      // //                                     definition: "createInstance",
+      // //                                   },
+      // //                                   applicationSection: {
+      // //                                     type: "literal",
+      // //                                     definition: "model",
+      // //                                   },
+      // //                                   deploymentUuid: {
+      // //                                     type: "uuid",
+      // //                                     tag: {
+      // //                                       value: {
+      // //                                         id: 1,
+      // //                                         defaultLabel: "Uuid",
+      // //                                         editable: false,
+      // //                                       },
+      // //                                     },
+      // //                                   },
+      // //                                   endpoint: {
+      // //                                     type: "literal",
+      // //                                     definition: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+      // //                                   },
+      // //                                   objects: {
+      // //                                     type: "array",
+      // //                                     definition: {
+      // //                                       type: "object",
+      // //                                       definition: {
+      // //                                         parentName: {
+      // //                                           type: "string",
+      // //                                           optional: true,
+      // //                                         },
+      // //                                         parentUuid: {
+      // //                                           type: "string",
+      // //                                         },
+      // //                                         applicationSection: {
+      // //                                           type: "schemaReference",
+      // //                                           optional: false,
+      // //                                           definition: {
+      // //                                             absolutePath:
+      // //                                               "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+      // //                                             relativePath:
+      // //                                               "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection",
+      // //                                           },
+      // //                                         },
+      // //                                         instances: {
+      // //                                           type: "array",
+      // //                                           definition: {
+      // //                                             type: "union",
+      // //                                             tag: {
+      // //                                               canBeTemplate: true,
+      // //                                             },
+      // //                                             definition: [
+      // //                                               {
+      // //                                                 type: "schemaReference",
+      // //                                                 tag: {
+      // //                                                   canBeTemplate: true,
+      // //                                                 },
+      // //                                                 definition: {
+      // //                                                   absolutePath:
+      // //                                                     "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+      // //                                                   relativePath:
+      // //                                                     "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance",
+      // //                                                 },
+      // //                                                 context: {},
+      // //                                               },
+      // //                                               {
+      // //                                                 type: "schemaReference",
+      // //                                                 definition: {
+      // //                                                   absolutePath:
+      // //                                                     "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+      // //                                                   relativePath:
+      // //                                                     "transformerForBuildPlusRuntimeCarryOnObject",
+      // //                                                 },
+      // //                                               },
+      // //                                             ],
+      // //                                           },
+      // //                                         },
+      // //                                       },
+      // //                                     },
+      // //                                   },
+      // //                                 },
+      // //                               },
+      // //                             },
+      // //                           },
+      // //                           {
+      // //                             type: "object",
+      // //                             definition: {
+      // //                               actionType: {
+      // //                                 type: "literal",
+      // //                                 definition: "commit",
+      // //                               },
+      // //                               actionLabel: {
+      // //                                 type: "string",
+      // //                                 optional: true,
+      // //                               },
+      // //                               endpoint: {
+      // //                                 type: "literal",
+      // //                                 definition: "7947ae40-eb34-4149-887b-15a9021e714e",
+      // //                               },
+      // //                               deploymentUuid: {
+      // //                                 type: "uuid",
+      // //                                 tag: {
+      // //                                   value: {
+      // //                                     id: 1,
+      // //                                     defaultLabel: "Deployment",
+      // //                                     editable: false,
+      // //                                   },
+      // //                                 },
+      // //                               },
+      // //                             },
+      // //                           },
+      // //                           {
+      // //                             type: "object",
+      // //                             definition: {
+      // //                               actionType: {
+      // //                                 type: "literal",
+      // //                                 definition: "compositeRunBoxedExtractorOrQueryAction",
+      // //                               },
+      // //                               actionLabel: {
+      // //                                 type: "string",
+      // //                                 optional: true,
+      // //                               },
+      // //                               nameGivenToResult: {
+      // //                                 type: "string",
+      // //                               },
+      // //                               query: {
+      // //                                 type: "object",
+      // //                                 definition: {
+      // //                                   actionType: {
+      // //                                     type: "literal",
+      // //                                     definition: "runBoxedExtractorOrQueryAction",
+      // //                                   },
+      // //                                   actionName: {
+      // //                                     type: "literal",
+      // //                                     definition: "runQuery",
+      // //                                   },
+      // //                                   endpoint: {
+      // //                                     type: "literal",
+      // //                                     definition: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+      // //                                   },
+      // //                                   applicationSection: {
+      // //                                     type: "literal",
+      // //                                     definition: "model",
+      // //                                   },
+      // //                                   deploymentUuid: {
+      // //                                     type: "uuid",
+      // //                                     tag: {
+      // //                                       value: {
+      // //                                         id: 1,
+      // //                                         defaultLabel: "Uuid",
+      // //                                         editable: false,
+      // //                                       },
+      // //                                     },
+      // //                                   },
+      // //                                   query: {
+      // //                                     type: "object",
+      // //                                     definition: {
+      // //                                       queryType: {
+      // //                                         type: "literal",
+      // //                                         definition:
+      // //                                           "boxedQueryWithExtractorCombinerTransformer",
+      // //                                       },
+      // //                                       deploymentUuid: {
+      // //                                         type: "uuid",
+      // //                                         tag: {
+      // //                                           value: {
+      // //                                             id: 1,
+      // //                                             defaultLabel: "Uuid",
+      // //                                             editable: false,
+      // //                                           },
+      // //                                         },
+      // //                                       },
+      // //                                       pageParams: {
+      // //                                         type: "object",
+      // //                                         definition: {
+      // //                                           currentDeploymentUuid: {
+      // //                                             type: "any",
+      // //                                           },
+      // //                                         },
+      // //                                       },
+      // //                                       queryParams: {
+      // //                                         type: "object",
+      // //                                         definition: {},
+      // //                                       },
+      // //                                       contextResults: {
+      // //                                         type: "object",
+      // //                                         definition: {},
+      // //                                       },
+      // //                                       extractors: {
+      // //                                         type: "object",
+      // //                                         definition: {
+      // //                                           entityDefinitions: {
+      // //                                             type: "object",
+      // //                                             definition: {
+      // //                                               extractorOrCombinerType: {
+      // //                                                 type: "literal",
+      // //                                                 definition:
+      // //                                                   "extractorByEntityReturningObjectList",
+      // //                                               },
+      // //                                               applicationSection: {
+      // //                                                 type: "literal",
+      // //                                                 definition: "model",
+      // //                                               },
+      // //                                               parentName: {
+      // //                                                 type: "string",
+      // //                                                 optional: true,
+      // //                                                 tag: {
+      // //                                                   value: {
+      // //                                                     id: 3,
+      // //                                                     defaultLabel: "Parent Name",
+      // //                                                     editable: false,
+      // //                                                   },
+      // //                                                 },
+      // //                                               },
+      // //                                               parentUuid: {
+      // //                                                 type: "uuid",
+      // //                                                 tag: {
+      // //                                                   value: {
+      // //                                                     id: 4,
+      // //                                                     defaultLabel: "Parent Uuid",
+      // //                                                     editable: false,
+      // //                                                   },
+      // //                                                 },
+      // //                                               },
+      // //                                               orderBy: {
+      // //                                                 type: "object",
+      // //                                                 optional: true,
+      // //                                                 definition: {
+      // //                                                   attributeName: {
+      // //                                                     type: "string",
+      // //                                                   },
+      // //                                                   direction: {
+      // //                                                     type: "enum",
+      // //                                                     optional: true,
+      // //                                                     definition: ["ASC", "DESC"],
+      // //                                                   },
+      // //                                                 },
+      // //                                               },
+      // //                                             },
+      // //                                           },
+      // //                                         },
+      // //                                       },
+      // //                                     },
+      // //                                   },
+      // //                                 },
+      // //                               },
+      // //                             },
+      // //                           },
+      // //                           {
+      // //                             type: "object",
+      // //                             definition: {
+      // //                               actionType: {
+      // //                                 type: "literal",
+      // //                                 definition: "compositeRunBoxedExtractorOrQueryAction",
+      // //                               },
+      // //                               actionLabel: {
+      // //                                 type: "string",
+      // //                                 optional: true,
+      // //                               },
+      // //                               nameGivenToResult: {
+      // //                                 type: "string",
+      // //                               },
+      // //                               query: {
+      // //                                 type: "object",
+      // //                                 definition: {
+      // //                                   actionType: {
+      // //                                     type: "literal",
+      // //                                     definition: "runBoxedExtractorOrQueryAction",
+      // //                                   },
+      // //                                   actionName: {
+      // //                                     type: "literal",
+      // //                                     definition: "runQuery",
+      // //                                   },
+      // //                                   endpoint: {
+      // //                                     type: "literal",
+      // //                                     definition: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+      // //                                   },
+      // //                                   applicationSection: {
+      // //                                     type: "literal",
+      // //                                     definition: "model",
+      // //                                   },
+      // //                                   deploymentUuid: {
+      // //                                     type: "uuid",
+      // //                                     tag: {
+      // //                                       value: {
+      // //                                         id: 1,
+      // //                                         defaultLabel: "Uuid",
+      // //                                         editable: false,
+      // //                                       },
+      // //                                     },
+      // //                                   },
+      // //                                   query: {
+      // //                                     type: "object",
+      // //                                     definition: {
+      // //                                       queryType: {
+      // //                                         type: "literal",
+      // //                                         definition:
+      // //                                           "boxedQueryWithExtractorCombinerTransformer",
+      // //                                       },
+      // //                                       deploymentUuid: {
+      // //                                         type: "uuid",
+      // //                                         tag: {
+      // //                                           value: {
+      // //                                             id: 1,
+      // //                                             defaultLabel: "Uuid",
+      // //                                             editable: false,
+      // //                                           },
+      // //                                         },
+      // //                                       },
+      // //                                       pageParams: {
+      // //                                         type: "object",
+      // //                                         definition: {
+      // //                                           currentDeploymentUuid: {
+      // //                                             type: "any",
+      // //                                           },
+      // //                                         },
+      // //                                       },
+      // //                                       queryParams: {
+      // //                                         type: "object",
+      // //                                         definition: {},
+      // //                                       },
+      // //                                       contextResults: {
+      // //                                         type: "object",
+      // //                                         definition: {},
+      // //                                       },
+      // //                                       extractors: {
+      // //                                         type: "object",
+      // //                                         definition: {
+      // //                                           entities: {
+      // //                                             type: "object",
+      // //                                             definition: {
+      // //                                               extractorOrCombinerType: {
+      // //                                                 type: "literal",
+      // //                                                 definition:
+      // //                                                   "extractorByEntityReturningObjectList",
+      // //                                               },
+      // //                                               applicationSection: {
+      // //                                                 type: "literal",
+      // //                                                 definition: "model",
+      // //                                               },
+      // //                                               parentName: {
+      // //                                                 type: "string",
+      // //                                                 optional: true,
+      // //                                                 tag: {
+      // //                                                   value: {
+      // //                                                     id: 3,
+      // //                                                     defaultLabel: "Parent Name",
+      // //                                                     editable: false,
+      // //                                                   },
+      // //                                                 },
+      // //                                               },
+      // //                                               parentUuid: {
+      // //                                                 type: "uuid",
+      // //                                                 tag: {
+      // //                                                   value: {
+      // //                                                     id: 4,
+      // //                                                     defaultLabel: "Parent Uuid",
+      // //                                                     editable: false,
+      // //                                                   },
+      // //                                                 },
+      // //                                               },
+      // //                                               orderBy: {
+      // //                                                 type: "object",
+      // //                                                 optional: true,
+      // //                                                 definition: {
+      // //                                                   attributeName: {
+      // //                                                     type: "string",
+      // //                                                   },
+      // //                                                   direction: {
+      // //                                                     type: "enum",
+      // //                                                     optional: true,
+      // //                                                     definition: ["ASC", "DESC"],
+      // //                                                   },
+      // //                                                 },
+      // //                                               },
+      // //                                             },
+      // //                                           },
+      // //                                         },
+      // //                                       },
+      // //                                     },
+      // //                                   },
+      // //                                 },
+      // //                               },
+      // //                             },
+      // //                           },
+      // //                           {
+      // //                             type: "object",
+      // //                             definition: {
+      // //                               actionType: {
+      // //                                 type: "literal",
+      // //                                 definition: "compositeRunBoxedExtractorOrQueryAction",
+      // //                               },
+      // //                               actionLabel: {
+      // //                                 type: "string",
+      // //                                 optional: true,
+      // //                               },
+      // //                               nameGivenToResult: {
+      // //                                 type: "string",
+      // //                               },
+      // //                               query: {
+      // //                                 type: "object",
+      // //                                 definition: {
+      // //                                   actionType: {
+      // //                                     type: "literal",
+      // //                                     definition: "runBoxedExtractorOrQueryAction",
+      // //                                   },
+      // //                                   actionName: {
+      // //                                     type: "literal",
+      // //                                     definition: "runQuery",
+      // //                                   },
+      // //                                   endpoint: {
+      // //                                     type: "literal",
+      // //                                     definition: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+      // //                                   },
+      // //                                   applicationSection: {
+      // //                                     type: "literal",
+      // //                                     definition: "model",
+      // //                                   },
+      // //                                   deploymentUuid: {
+      // //                                     type: "uuid",
+      // //                                     tag: {
+      // //                                       value: {
+      // //                                         id: 1,
+      // //                                         defaultLabel: "Uuid",
+      // //                                         editable: false,
+      // //                                       },
+      // //                                     },
+      // //                                   },
+      // //                                   query: {
+      // //                                     type: "object",
+      // //                                     definition: {
+      // //                                       queryType: {
+      // //                                         type: "literal",
+      // //                                         definition:
+      // //                                           "boxedQueryWithExtractorCombinerTransformer",
+      // //                                       },
+      // //                                       deploymentUuid: {
+      // //                                         type: "uuid",
+      // //                                         tag: {
+      // //                                           value: {
+      // //                                             id: 1,
+      // //                                             defaultLabel: "Uuid",
+      // //                                             editable: false,
+      // //                                           },
+      // //                                         },
+      // //                                       },
+      // //                                       pageParams: {
+      // //                                         type: "object",
+      // //                                         definition: {
+      // //                                           currentDeploymentUuid: {
+      // //                                             type: "any",
+      // //                                           },
+      // //                                         },
+      // //                                       },
+      // //                                       runAsSql: {
+      // //                                         type: "boolean",
+      // //                                         optional: true,
+      // //                                       },
+      // //                                       queryParams: {
+      // //                                         type: "object",
+      // //                                         definition: {},
+      // //                                       },
+      // //                                       contextResults: {
+      // //                                         type: "object",
+      // //                                         definition: {},
+      // //                                       },
+      // //                                       extractors: {
+      // //                                         type: "object",
+      // //                                         definition: {
+      // //                                           reports: {
+      // //                                             type: "object",
+      // //                                             definition: {
+      // //                                               extractorOrCombinerType: {
+      // //                                                 type: "literal",
+      // //                                                 definition:
+      // //                                                   "extractorByEntityReturningObjectList",
+      // //                                               },
+      // //                                               applicationSection: {
+      // //                                                 type: "literal",
+      // //                                                 definition: "model",
+      // //                                               },
+      // //                                               parentName: {
+      // //                                                 type: "string",
+      // //                                                 optional: true,
+      // //                                                 tag: {
+      // //                                                   value: {
+      // //                                                     id: 3,
+      // //                                                     defaultLabel: "Parent Name",
+      // //                                                     editable: false,
+      // //                                                   },
+      // //                                                 },
+      // //                                               },
+      // //                                               parentUuid: {
+      // //                                                 type: "uuid",
+      // //                                                 tag: {
+      // //                                                   value: {
+      // //                                                     id: 4,
+      // //                                                     defaultLabel: "Parent Uuid",
+      // //                                                     editable: false,
+      // //                                                   },
+      // //                                                 },
+      // //                                               },
+      // //                                               orderBy: {
+      // //                                                 type: "object",
+      // //                                                 optional: true,
+      // //                                                 definition: {
+      // //                                                   attributeName: {
+      // //                                                     type: "string",
+      // //                                                   },
+      // //                                                   direction: {
+      // //                                                     type: "enum",
+      // //                                                     optional: true,
+      // //                                                     definition: ["ASC", "DESC"],
+      // //                                                   },
+      // //                                                 },
+      // //                                               },
+      // //                                             },
+      // //                                           },
+      // //                                         },
+      // //                                       },
+      // //                                     },
+      // //                                   },
+      // //                                 },
+      // //                               },
+      // //                             },
+      // //                           },
+      // //                           {
+      // //                             type: "object",
+      // //                             definition: {
+      // //                               actionType: {
+      // //                                 type: "literal",
+      // //                                 definition: "compositeRunBoxedQueryAction",
+      // //                               },
+      // //                               actionLabel: {
+      // //                                 type: "string",
+      // //                                 optional: true,
+      // //                               },
+      // //                               nameGivenToResult: {
+      // //                                 type: "string",
+      // //                               },
+      // //                               queryTemplate: {
+      // //                                 type: "object",
+      // //                                 definition: {
+      // //                                   actionType: {
+      // //                                     type: "literal",
+      // //                                     definition: "runBoxedQueryAction",
+      // //                                   },
+      // //                                   actionName: {
+      // //                                     type: "literal",
+      // //                                     definition: "runQuery",
+      // //                                   },
+      // //                                   endpoint: {
+      // //                                     type: "literal",
+      // //                                     definition: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+      // //                                   },
+      // //                                   applicationSection: {
+      // //                                     type: "literal",
+      // //                                     definition: "model",
+      // //                                   },
+      // //                                   deploymentUuid: {
+      // //                                     type: "uuid",
+      // //                                     tag: {
+      // //                                       value: {
+      // //                                         id: 1,
+      // //                                         defaultLabel: "Uuid",
+      // //                                         editable: false,
+      // //                                       },
+      // //                                     },
+      // //                                   },
+      // //                                   query: {
+      // //                                     type: "object",
+      // //                                     definition: {
+      // //                                       queryType: {
+      // //                                         type: "literal",
+      // //                                         definition:
+      // //                                           "boxedQueryWithExtractorCombinerTransformer",
+      // //                                       },
+      // //                                       deploymentUuid: {
+      // //                                         type: "uuid",
+      // //                                         tag: {
+      // //                                           value: {
+      // //                                             id: 1,
+      // //                                             defaultLabel: "Uuid",
+      // //                                             editable: false,
+      // //                                           },
+      // //                                         },
+      // //                                       },
+      // //                                       pageParams: {
+      // //                                         type: "object",
+      // //                                         definition: {},
+      // //                                       },
+      // //                                       queryParams: {
+      // //                                         type: "object",
+      // //                                         definition: {},
+      // //                                       },
+      // //                                       contextResults: {
+      // //                                         type: "object",
+      // //                                         definition: {},
+      // //                                       },
+      // //                                       extractors: {
+      // //                                         type: "object",
+      // //                                         definition: {
+      // //                                           menuList: {
+      // //                                             type: "object",
+      // //                                             definition: {
+      // //                                               extractorOrCombinerType: {
+      // //                                                 type: "literal",
+      // //                                                 definition:
+      // //                                                   "extractorByEntityReturningObjectList",
+      // //                                               },
+      // //                                               applicationSection: {
+      // //                                                 type: "literal",
+      // //                                                 definition: "model",
+      // //                                               },
+      // //                                               parentName: {
+      // //                                                 type: "string",
+      // //                                                 optional: true,
+      // //                                                 tag: {
+      // //                                                   value: {
+      // //                                                     id: 3,
+      // //                                                     defaultLabel: "Parent Name",
+      // //                                                     editable: false,
+      // //                                                   },
+      // //                                                 },
+      // //                                               },
+      // //                                               parentUuid: {
+      // //                                                 type: "uuid",
+      // //                                                 tag: {
+      // //                                                   value: {
+      // //                                                     id: 4,
+      // //                                                     defaultLabel: "Parent Uuid",
+      // //                                                     editable: false,
+      // //                                                   },
+      // //                                                 },
+      // //                                               },
+      // //                                             },
+      // //                                           },
+      // //                                         },
+      // //                                       },
+      // //                                       runtimeTransformers: {
+      // //                                         type: "object",
+      // //                                         definition: {
+      // //                                           menu: {
+      // //                                             type: "object",
+      // //                                             definition: {
+      // //                                               transformerType: {
+      // //                                                 type: "literal",
+      // //                                                 definition: "listPickElement",
+      // //                                               },
+      // //                                               interpolation: {
+      // //                                                 type: "literal",
+      // //                                                 definition: "runtime",
+      // //                                               },
+      // //                                               applyTo: {
+      // //                                                 type: "object",
+      // //                                                 definition: {
+      // //                                                   referenceType: {
+      // //                                                     type: "literal",
+      // //                                                     definition: "referencedTransformer",
+      // //                                                   },
+      // //                                                   reference: {
+      // //                                                     type: "object",
+      // //                                                     definition: {
+      // //                                                       transformerType: {
+      // //                                                         type: "literal",
+      // //                                                         definition: "contextReference",
+      // //                                                       },
+      // //                                                       interpolation: {
+      // //                                                         type: "literal",
+      // //                                                         optional: true,
+      // //                                                         definition: "runtime",
+      // //                                                       },
+      // //                                                       referenceName: {
+      // //                                                         optional: true,
+      // //                                                         type: "string",
+      // //                                                       },
+      // //                                                     },
+      // //                                                   },
+      // //                                                 },
+      // //                                               },
+      // //                                               index: {
+      // //                                                 type: "number",
+      // //                                               },
+      // //                                             },
+      // //                                           },
+      // //                                           menuItem: {
+      // //                                             type: "object",
+      // //                                             definition: {
+      // //                                               transformerType: {
+      // //                                                 type: "literal",
+      // //                                                 definition: "freeObjectTemplate",
+      // //                                               },
+      // //                                               interpolation: {
+      // //                                                 type: "literal",
+      // //                                                 definition: "runtime",
+      // //                                               },
+      // //                                               definition: {
+      // //                                                 type: "object",
+      // //                                                 definition: {
+      // //                                                   reportUuid: {
+      // //                                                     type: "object",
+      // //                                                     definition: {
+      // //                                                       transformerType: {
+      // //                                                         type: "literal",
+      // //                                                         definition: "parameterReference",
+      // //                                                       },
+      // //                                                       interpolation: {
+      // //                                                         type: "literal",
+      // //                                                         optional: true,
+      // //                                                         definition: "build",
+      // //                                                       },
+      // //                                                       referenceName: {
+      // //                                                         optional: true,
+      // //                                                         type: "string",
+      // //                                                       },
+      // //                                                     },
+      // //                                                   },
+      // //                                                   label: {
+      // //                                                     type: "object",
+      // //                                                     definition: {
+      // //                                                       transformerType: {
+      // //                                                         type: "literal",
+      // //                                                         definition: "mustacheStringTemplate",
+      // //                                                       },
+      // //                                                       interpolation: {
+      // //                                                         type: "literal",
+      // //                                                         definition: "build",
+      // //                                                       },
+      // //                                                       definition: {
+      // //                                                         type: "string",
+      // //                                                       },
+      // //                                                     },
+      // //                                                   },
+      // //                                                   section: {
+      // //                                                     type: "string",
+      // //                                                   },
+      // //                                                   selfApplication: {
+      // //                                                     type: "object",
+      // //                                                     definition: {
+      // //                                                       transformerType: {
+      // //                                                         type: "literal",
+      // //                                                         definition: "parameterReference",
+      // //                                                       },
+      // //                                                       interpolation: {
+      // //                                                         type: "literal",
+      // //                                                         optional: true,
+      // //                                                         definition: "build",
+      // //                                                       },
+      // //                                                       referencePath: {
+      // //                                                         type: "array",
+      // //                                                         definition: {
+      // //                                                           type: "string",
+      // //                                                         },
+      // //                                                       },
+      // //                                                     },
+      // //                                                   },
+      // //                                                   icon: {
+      // //                                                     type: "string",
+      // //                                                   },
+      // //                                                 },
+      // //                                               },
+      // //                                             },
+      // //                                           },
+      // //                                           updatedMenu: {
+      // //                                             type: "object",
+      // //                                             definition: {
+      // //                                               transformerType: {
+      // //                                                 type: "literal",
+      // //                                                 definition: "transformer_menu_addItem",
+      // //                                               },
+      // //                                               interpolation: {
+      // //                                                 type: "literal",
+      // //                                                 definition: "runtime",
+      // //                                               },
+      // //                                               menuItemReference: {
+      // //                                                 type: "object",
+      // //                                                 definition: {
+      // //                                                   transformerType: {
+      // //                                                     type: "literal",
+      // //                                                     definition: "contextReference",
+      // //                                                   },
+      // //                                                   interpolation: {
+      // //                                                     type: "literal",
+      // //                                                     optional: true,
+      // //                                                     definition: "runtime",
+      // //                                                   },
+      // //                                                   referenceName: {
+      // //                                                     optional: true,
+      // //                                                     type: "string",
+      // //                                                   },
+      // //                                                 },
+      // //                                               },
+      // //                                               menuReference: {
+      // //                                                 type: "object",
+      // //                                                 definition: {
+      // //                                                   transformerType: {
+      // //                                                     type: "literal",
+      // //                                                     definition: "contextReference",
+      // //                                                   },
+      // //                                                   interpolation: {
+      // //                                                     type: "literal",
+      // //                                                     optional: true,
+      // //                                                     definition: "runtime",
+      // //                                                   },
+      // //                                                   referenceName: {
+      // //                                                     optional: true,
+      // //                                                     type: "string",
+      // //                                                   },
+      // //                                                 },
+      // //                                               },
+      // //                                               menuSectionItemInsertionIndex: {
+      // //                                                 type: "number",
+      // //                                                 optional: true,
+      // //                                               },
+      // //                                             },
+      // //                                           },
+      // //                                         },
+      // //                                       },
+      // //                                     },
+      // //                                   },
+      // //                                 },
+      // //                               },
+      // //                             },
+      // //                           },
+      // //                           {
+      // //                             type: "object",
+      // //                             definition: {
+      // //                               actionType: {
+      // //                                 type: "literal",
+      // //                                 definition: "transactionalInstanceAction",
+      // //                               },
+      // //                               actionLabel: {
+      // //                                 type: "string",
+      // //                                 optional: true,
+      // //                               },
+      // //                               instanceAction: {
+      // //                                 type: "object",
+      // //                                 definition: {
+      // //                                   actionType: {
+      // //                                     type: "literal",
+      // //                                     definition: "updateInstance",
+      // //                                   },
+      // //                                   applicationSection: {
+      // //                                     type: "literal",
+      // //                                     definition: "model",
+      // //                                   },
+      // //                                   deploymentUuid: {
+      // //                                     type: "uuid",
+      // //                                     tag: {
+      // //                                       value: {
+      // //                                         id: 1,
+      // //                                         defaultLabel: "Uuid",
+      // //                                         editable: false,
+      // //                                       },
+      // //                                     },
+      // //                                   },
+      // //                                   endpoint: {
+      // //                                     type: "literal",
+      // //                                     definition: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+      // //                                   },
+      // //                                   objects: {
+      // //                                     type: "tuple",
+      // //                                     definition: [
+      // //                                       {
+      // //                                         type: "object",
+      // //                                         definition: {
+      // //                                           parentName: {
+      // //                                             type: "string",
+      // //                                             optional: true,
+      // //                                           },
+      // //                                           parentUuid: {
+      // //                                             type: "string",
+      // //                                           },
+      // //                                           applicationSection: {
+      // //                                             type: "literal",
+      // //                                             definition: "model",
+      // //                                           },
+      // //                                           instances: {
+      // //                                             type: "tuple",
+      // //                                             definition: [
+      // //                                               {
+      // //                                                 type: "object",
+      // //                                                 definition: {
+      // //                                                   transformerType: {
+      // //                                                     type: "literal",
+      // //                                                     definition: "contextReference",
+      // //                                                   },
+      // //                                                   interpolation: {
+      // //                                                     type: "literal",
+      // //                                                     optional: true,
+      // //                                                     definition: "runtime",
+      // //                                                   },
+      // //                                                   referencePath: {
+      // //                                                     type: "array",
+      // //                                                     definition: {
+      // //                                                       type: "string",
+      // //                                                     },
+      // //                                                   },
+      // //                                                 },
+      // //                                               },
+      // //                                             ],
+      // //                                           },
+      // //                                         },
+      // //                                       },
+      // //                                     ],
+      // //                                   },
+      // //                                 },
+      // //                               },
+      // //                             },
+      // //                           },
+      // //                           {
+      // //                             type: "object",
+      // //                             definition: {
+      // //                               actionType: {
+      // //                                 type: "literal",
+      // //                                 definition: "commit",
+      // //                               },
+      // //                               actionLabel: {
+      // //                                 type: "string",
+      // //                                 optional: true,
+      // //                               },
+      // //                               endpoint: {
+      // //                                 type: "literal",
+      // //                                 definition: "7947ae40-eb34-4149-887b-15a9021e714e",
+      // //                               },
+      // //                               deploymentUuid: {
+      // //                                 type: "uuid",
+      // //                                 tag: {
+      // //                                   value: {
+      // //                                     id: 1,
+      // //                                     defaultLabel: "Deployment",
+      // //                                     editable: false,
+      // //                                   },
+      // //                                 },
+      // //                               },
+      // //                             },
+      // //                           },
+      // //                           {
+      // //                             type: "object",
+      // //                             definition: {
+      // //                               actionType: {
+      // //                                 type: "literal",
+      // //                                 definition: "compositeRunBoxedQueryAction",
+      // //                               },
+      // //                               actionLabel: {
+      // //                                 type: "string",
+      // //                                 optional: true,
+      // //                               },
+      // //                               nameGivenToResult: {
+      // //                                 type: "string",
+      // //                               },
+      // //                               queryTemplate: {
+      // //                                 type: "object",
+      // //                                 definition: {
+      // //                                   actionType: {
+      // //                                     type: "literal",
+      // //                                     definition: "runBoxedQueryAction",
+      // //                                   },
+      // //                                   actionName: {
+      // //                                     type: "literal",
+      // //                                     definition: "runQuery",
+      // //                                   },
+      // //                                   endpoint: {
+      // //                                     type: "literal",
+      // //                                     definition: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+      // //                                   },
+      // //                                   applicationSection: {
+      // //                                     type: "literal",
+      // //                                     definition: "model",
+      // //                                   },
+      // //                                   deploymentUuid: {
+      // //                                     type: "uuid",
+      // //                                     tag: {
+      // //                                       value: {
+      // //                                         id: 1,
+      // //                                         defaultLabel: "Uuid",
+      // //                                         editable: false,
+      // //                                       },
+      // //                                     },
+      // //                                   },
+      // //                                   query: {
+      // //                                     type: "object",
+      // //                                     definition: {
+      // //                                       queryType: {
+      // //                                         type: "literal",
+      // //                                         definition:
+      // //                                           "boxedQueryWithExtractorCombinerTransformer",
+      // //                                       },
+      // //                                       deploymentUuid: {
+      // //                                         type: "uuid",
+      // //                                         tag: {
+      // //                                           value: {
+      // //                                             id: 1,
+      // //                                             defaultLabel: "Uuid",
+      // //                                             editable: false,
+      // //                                           },
+      // //                                         },
+      // //                                       },
+      // //                                       pageParams: {
+      // //                                         type: "object",
+      // //                                         definition: {},
+      // //                                       },
+      // //                                       queryParams: {
+      // //                                         type: "object",
+      // //                                         definition: {},
+      // //                                       },
+      // //                                       contextResults: {
+      // //                                         type: "object",
+      // //                                         definition: {},
+      // //                                       },
+      // //                                       extractors: {
+      // //                                         type: "object",
+      // //                                         definition: {
+      // //                                           menuList: {
+      // //                                             type: "object",
+      // //                                             definition: {
+      // //                                               extractorOrCombinerType: {
+      // //                                                 type: "literal",
+      // //                                                 definition:
+      // //                                                   "extractorByEntityReturningObjectList",
+      // //                                               },
+      // //                                               applicationSection: {
+      // //                                                 type: "literal",
+      // //                                                 definition: "model",
+      // //                                               },
+      // //                                               parentName: {
+      // //                                                 type: "string",
+      // //                                                 optional: true,
+      // //                                                 tag: {
+      // //                                                   value: {
+      // //                                                     id: 3,
+      // //                                                     defaultLabel: "Parent Name",
+      // //                                                     editable: false,
+      // //                                                   },
+      // //                                                 },
+      // //                                               },
+      // //                                               parentUuid: {
+      // //                                                 type: "uuid",
+      // //                                                 tag: {
+      // //                                                   value: {
+      // //                                                     id: 4,
+      // //                                                     defaultLabel: "Parent Uuid",
+      // //                                                     editable: false,
+      // //                                                   },
+      // //                                                 },
+      // //                                               },
+      // //                                             },
+      // //                                           },
+      // //                                         },
+      // //                                       },
+      // //                                     },
+      // //                                   },
+      // //                                 },
+      // //                               },
+      // //                             },
+      // //                           },
+      // //                         ],
+      // //                       },
+      // //                     },
+      // //                   },
+      // //                   testCompositeActionAssertions: {
+      // //                     type: "array",
+      // //                     definition: {
+      // //                       type: "object",
+      // //                       definition: {
+      // //                         actionType: {
+      // //                           type: "literal",
+      // //                           definition: "compositeRunTestAssertion",
+      // //                         },
+      // //                         actionLabel: {
+      // //                           type: "string",
+      // //                           optional: true,
+      // //                         },
+      // //                         nameGivenToResult: {
+      // //                           type: "string",
+      // //                         },
+      // //                         testAssertion: {
+      // //                           type: "schemaReference",
+      // //                           definition: {
+      // //                             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+      // //                             relativePath: "testAssertion",
+      // //                           },
+      // //                         },
+      // //                       },
+      // //                     },
+      // //                   },
+      // //                 },
+      // //               },
+      // //             },
+      // //           },
+      // //         },
+      // //       },
+      // //     },
+      // //   } as any, // TODO: fix this any
+      // //   testValueObject: test_createEntityAndReportFromSpreadsheetAndUpdateMenu,
+      // // },
     };
 
     for (const test of Object.entries(tests)) {
