@@ -226,55 +226,6 @@ describe("jzodUnion_RecursiveUnfold", () => {
     });
   });
 
-  // it("jzodUnion_RecursiveUnfold expand a reference definition with discriminator when reference is itself a union with discriminator", () => {
-  //   const schema: JzodUnion = {
-  //     type: "union",
-  //     discriminator: "myObjectType",
-  //     definition: [
-  //       { type: "number" },
-  //       {
-  //         type: "object",
-  //         definition: {
-  //           myObjectType: { type: "literal", definition: "A" },
-  //         },
-  //       }
-  //       {
-  //         type: "schemaReference",
-  //         definition: {
-  //           relativePath: "MyReference",
-  //         },
-  //       },
-  //     ],
-  //   };
-
-  //   const result = jzodUnion_recursivelyUnfold(
-  //     schema,
-  //     new Set(),
-  //     miroirFundamentalJzodSchema as JzodSchema,
-  //     currentModel as any as MetaModel,
-  //     currentMiroirModel as any as MetaModel,
-  //     {
-  //       "MyReference": {
-  //           type: "union",
-  //           discriminator: "myObjectType",
-  //           definition: [
-  //             { type: "object", definition: { myObjecttype: { type: "literal", definition: "B"}} },
-  //             { type: "object", definition: { myObjecttype: { type: "literal", definition: "C"}} },
-  //           ],
-  //         }}
-  //   );
-
-  //   expect(result).toEqual({
-  //     status: "ok",
-  //     result: [
-  //       { type: "number" },
-  //       { type: "object", discriminatorValue: "stringType" },
-  //       { type: "boolean", discriminatorValue: "booleanType" },
-  //     ],
-  //     expandedReferences: new Set(["MyReference"]),
-  //   });
-  // });
-
   it("jzodUnion_RecursiveUnfold returns error when reference is not found in context", () => {
     const schema: JzodUnion = {
       type: "union",
@@ -296,4 +247,56 @@ describe("jzodUnion_RecursiveUnfold", () => {
     expect(result.status).toBe("error");
     expect((result as JzodUnion_RecursivelyUnfold_ReturnTypeError).error).toMatch(/^Error while recursively unfolding JzodUnion/);
   });
+
+  it("jzodUnion_RecursiveUnfold expand a reference definition with discriminator when reference is itself a union with discriminator", () => {
+    const schema: JzodUnion = {
+      type: "union",
+      discriminator: "myObjectType",
+      definition: [
+        { type: "number" },
+        {
+          type: "object",
+          definition: {
+            myObjectType: { type: "literal", definition: "A" },
+          },
+        },
+        {
+          type: "schemaReference",
+          definition: {
+            relativePath: "MyReference",
+          },
+        },
+      ],
+    };
+
+    const result = jzodUnion_recursivelyUnfold(
+      schema,
+      new Set(),
+      miroirFundamentalJzodSchema as JzodSchema,
+      currentModel as any as MetaModel,
+      currentMiroirModel as any as MetaModel,
+      {
+        "MyReference": {
+            type: "union",
+            discriminator: "myObjectType",
+            definition: [
+              { type: "object", definition: { myObjectType: { type: "literal", definition: "B"}} },
+              { type: "object", definition: { myObjectType: { type: "literal", definition: "C"}} },
+            ],
+          }}
+    );
+
+    expect(result).toEqual({
+      status: "ok",
+      result: [
+        { type: "number" },
+        { type: "object", definition: { myObjectType: { type: "literal", definition: "A"}} },
+        { type: "object", definition: { myObjectType: { type: "literal", definition: "B"}} },
+        { type: "object", definition: { myObjectType: { type: "literal", definition: "C"}} },
+      ],
+      discriminator: "myObjectType",
+      expandedReferences: new Set(["MyReference"]),
+    });
+  });
+
 });

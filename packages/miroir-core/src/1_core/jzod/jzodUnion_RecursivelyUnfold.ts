@@ -10,7 +10,8 @@ import { resolveJzodSchemaReferenceInContext } from "./jzodResolveSchemaReferenc
 export interface JzodUnion_RecursivelyUnfold_ReturnTypeOK {
   status: "ok",
   result: JzodElement[],
-  expandedReferences: Set<string>
+  expandedReferences: Set<string>,
+  discriminator?: (string | string[]) | undefined
 }
 export interface JzodUnion_RecursivelyUnfold_ReturnTypeError {
   status: "error",
@@ -95,6 +96,7 @@ export const jzodUnion_recursivelyUnfold = (
       status: "ok",
       result,
       expandedReferences: newExpandedReferences,
+      discriminator: jzodUnion.discriminator,
     };
   } catch (error) {
     return {
