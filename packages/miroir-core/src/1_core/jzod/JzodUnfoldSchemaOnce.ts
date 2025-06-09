@@ -8,7 +8,7 @@ import { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../../4_services/LoggerFactory";
 import { packageName } from "../../constants";
 import { cleanLevel } from "../constants";
-import { resolveJzodSchemaReferenceInContext } from "./jzodTypeCheck";
+import { resolveJzodSchemaReferenceInContext } from "./jzodResolveSchemaReferenceInContext";
 
 // export const miroirFundamentalJzodSchema2 = miroirFundamentalJzodSchema;
 // import { miroirFundamentalJzodSchema } from "../tmp/src/0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema";
@@ -322,7 +322,9 @@ export function unfoldJzodSchemaOnce(
         };
       }
       // log.info("unfoldJzodSchemaOnce for union ",jzodSchema, "unfoldedJzodSchemaReturnType", unfoldedJzodSchemaReturnType);
-      const unfoldedJzodSchemas: JzodElement[] = (unfoldedJzodSchemaReturnType as ResolvedJzodSchemaReturnTypeOK[]).map((a: ResolvedJzodSchemaReturnTypeOK) =>a.element)
+      const unfoldedJzodSchemas: JzodElement[] = (
+        unfoldedJzodSchemaReturnType as ResolvedJzodSchemaReturnTypeOK[]
+      ).map((a: ResolvedJzodSchemaReturnTypeOK) => a.element);
       // log.info("unfoldJzodSchemaOnce union unfoldedJzodSchemas", unfoldedJzodSchemas);
       const resultElement = { ...jzodSchema, definition: unfoldedJzodSchemas}
       // log.info("unfoldJzodSchemaOnce union resultElement", resultElement);

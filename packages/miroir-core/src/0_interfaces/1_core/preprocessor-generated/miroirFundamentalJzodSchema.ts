@@ -10521,7 +10521,7 @@ export const miroirFundamentalJzodSchema = {
       },
       "extractorTemplateReturningObject": {
         "type": "union",
-        "discriminator": "queryType",
+        "discriminator": "extractorTemplateType",
         "definition": [
           {
             "type": "schemaReference",
@@ -10696,7 +10696,7 @@ export const miroirFundamentalJzodSchema = {
       },
       "extractorTemplateReturningObjectList": {
         "type": "union",
-        "discriminator": "queryType",
+        "discriminator": "extractorTemplateType",
         "definition": [
           {
             "type": "schemaReference",
@@ -10755,6 +10755,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "rootExtractorOrReference": {
             "type": "union",
+            "discriminator": "extractorOrCombinerType",
             "definition": [
               {
                 "type": "schemaReference",
@@ -10834,7 +10835,7 @@ export const miroirFundamentalJzodSchema = {
       },
       "extractorTemplateByExtractorWrapper": {
         "type": "union",
-        "discriminator": "queryType",
+        "discriminator": "extractorTemplateType",
         "definition": [
           {
             "type": "schemaReference",
@@ -10856,7 +10857,7 @@ export const miroirFundamentalJzodSchema = {
       },
       "extractorOrCombinerTemplate": {
         "type": "union",
-        "discriminator": "queryType",
+        "discriminator": "extractorTemplateType",
         "definition": [
           {
             "type": "schemaReference",
@@ -11309,6 +11310,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "rootExtractorOrReference": {
             "type": "union",
+            "discriminator": "extractorOrCombinerType",
             "definition": [
               {
                 "type": "schemaReference",
@@ -11357,6 +11359,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "record",
             "definition": {
               "type": "union",
+              "discriminator": "extractorOrCombinerType",
               "definition": [
                 {
                   "type": "schemaReference",
@@ -11390,6 +11393,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "array",
             "definition": {
               "type": "union",
+              "discriminator": "extractorOrCombinerType",
               "definition": [
                 {
                   "type": "schemaReference",
@@ -37831,6 +37835,7 @@ export const miroirFundamentalJzodSchema = {
               },
               "rootExtractorOrReference": {
                 "type": "union",
+                "discriminator": "extractorOrCombinerType",
                 "definition": [
                   {
                     "type": "schemaReference",
@@ -41449,6 +41454,7 @@ export const miroirFundamentalJzodSchema = {
                     "type": "record",
                     "definition": {
                       "type": "union",
+                      "discriminator": "extractorOrCombinerType",
                       "definition": [
                         {
                           "type": "schemaReference",
@@ -41519,6 +41525,7 @@ export const miroirFundamentalJzodSchema = {
                     "type": "array",
                     "definition": {
                       "type": "union",
+                      "discriminator": "extractorOrCombinerType",
                       "definition": [
                         {
                           "type": "schemaReference",
@@ -41583,7 +41590,7 @@ export const miroirFundamentalJzodSchema = {
       },
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerTemplate": {
         "type": "union",
-        "discriminator": "queryType",
+        "discriminator": "extractorTemplateType",
         "definition": [
           {
             "type": "schemaReference",
@@ -42838,7 +42845,7 @@ export const miroirFundamentalJzodSchema = {
       },
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateByExtractorWrapper": {
         "type": "union",
-        "discriminator": "queryType",
+        "discriminator": "extractorTemplateType",
         "definition": [
           {
             "type": "schemaReference",
@@ -42924,7 +42931,7 @@ export const miroirFundamentalJzodSchema = {
       },
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateReturningObjectList": {
         "type": "union",
-        "discriminator": "queryType",
+        "discriminator": "extractorTemplateType",
         "definition": [
           {
             "type": "schemaReference",
@@ -43342,6 +43349,7 @@ export const miroirFundamentalJzodSchema = {
               },
               "rootExtractorOrReference": {
                 "type": "union",
+                "discriminator": "extractorOrCombinerType",
                 "definition": [
                   {
                     "type": "schemaReference",
@@ -43666,7 +43674,7 @@ export const miroirFundamentalJzodSchema = {
       },
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateReturningObject": {
         "type": "union",
-        "discriminator": "queryType",
+        "discriminator": "extractorTemplateType",
         "definition": [
           {
             "type": "schemaReference",

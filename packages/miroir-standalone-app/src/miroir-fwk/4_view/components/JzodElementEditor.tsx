@@ -387,19 +387,19 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         const discriminator = (unfoldedRawSchema as any).discriminator;
         const result = [
           ...new Set(
-            unfoldedRawSchema.definition.flatMap((a: any /** JzodObject */) => {
+            unfoldedRawSchema.definition.flatMap((branch: any /** JzodObject */) => {
               // return (a.definition as any)[(unfoldedRawSchema as any).discriminator].definition}
               switch (
-                typeof a.definition[discriminator] == "string"
+                typeof branch.definition[discriminator] == "string"
                   ? "literal"
-                  : a.definition[discriminator]?.type
+                  : branch.definition[discriminator]?.type
               ) {
                 case "literal": {
-                  return a.definition[discriminator].definition;
+                  return branch.definition[discriminator].definition;
                   break;
                 }
                 case "enum": {
-                  return a.definition[discriminator].definition;
+                  return branch.definition[discriminator].definition;
                 }
                 case "object":
                 case "string":
@@ -429,9 +429,9 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                 default: {
                   throw new Error(
                     "objectUniondiscriminatorValues could not handle union branch object: discriminator type " +
-                      a.definition[discriminator]?.type +
+                      branch.definition[discriminator]?.type +
                       " discriminator " +
-                      JSON.stringify(a.definition[discriminator]) +
+                      JSON.stringify(branch.definition[discriminator]) +
                       " for union " +
                       JSON.stringify(unfoldedRawSchema)
                   );

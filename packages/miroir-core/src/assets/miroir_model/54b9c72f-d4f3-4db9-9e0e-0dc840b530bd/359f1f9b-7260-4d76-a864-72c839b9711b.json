@@ -269,7 +269,7 @@
           },
           "extractorTemplateReturningObject": {
             "type": "union",
-            "discriminator": "queryType",
+            "discriminator": "extractorTemplateType",
             "definition": [
               {
                 "type": "schemaReference",
@@ -425,7 +425,7 @@
           },
           "extractorTemplateReturningObjectList": {
             "type": "union",
-            "discriminator": "queryType",
+            "discriminator": "extractorTemplateType",
             "definition": [
               {
                 "type": "schemaReference",
@@ -474,6 +474,7 @@
               },
               "rootExtractorOrReference": {
                 "type": "union",
+                "discriminator": "extractorOrCombinerType",
                 "definition": [
                   {
                     "type": "schemaReference",
@@ -546,7 +547,7 @@
           },
           "extractorTemplateByExtractorWrapper": {
             "type": "union",
-            "discriminator": "queryType",
+            "discriminator": "extractorTemplateType",
             "definition": [
               {
                 "type": "schemaReference",
@@ -564,7 +565,7 @@
           },
           "extractorOrCombinerTemplate": {
             "type": "union",
-            "discriminator": "queryType",
+            "discriminator": "extractorTemplateType",
             "definition": [
               {
                 "type": "schemaReference",
@@ -960,6 +961,7 @@
               },
               "rootExtractorOrReference": {
                 "type": "union",
+                "discriminator": "extractorOrCombinerType",
                 "definition": [
                   {
                     "type": "schemaReference",
@@ -1005,6 +1007,7 @@
                 "type": "record",
                 "definition": {
                   "type": "union",
+                  "discriminator": "extractorOrCombinerType",
                   "definition": [
                     {
                       "type": "schemaReference",
@@ -1034,6 +1037,7 @@
                 "type": "array",
                 "definition": {
                   "type": "union",
+                  "discriminator": "extractorOrCombinerType",
                   "definition": [
                     {
                       "type": "schemaReference",

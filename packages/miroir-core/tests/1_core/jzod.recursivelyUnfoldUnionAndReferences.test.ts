@@ -7,9 +7,7 @@ import {
 import { miroirFundamentalJzodSchema } from '../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema';
 import currentModel from "./currentModel.json";
 import currentMiroirModel from "./currentMiroirModel.json";
-import {
-  recursivelyUnfoldUnionAndReferences
-} from "../../src/1_core/jzod/jzodTypeCheck";
+import { jzodUnion_recursivelyUnfold } from "../../src/1_core/jzod/jzodUnion_RecursivelyUnfold";
 
 
 describe("recursivelyUnfoldUnionAndReferences", () => {
@@ -24,7 +22,7 @@ describe("recursivelyUnfoldUnionAndReferences", () => {
       ],
     };
 
-    const result = recursivelyUnfoldUnionAndReferences(
+    const result = jzodUnion_recursivelyUnfold(
       schema,
       new Set(),
       {} as JzodSchema,
@@ -60,7 +58,7 @@ describe("recursivelyUnfoldUnionAndReferences", () => {
       ],
     };
 
-    const result = recursivelyUnfoldUnionAndReferences(
+    const result = jzodUnion_recursivelyUnfold(
       schema,
       new Set(),
       miroirFundamentalJzodSchema as JzodSchema,
@@ -89,7 +87,7 @@ describe("recursivelyUnfoldUnionAndReferences", () => {
       ],
     };
 
-    const result = recursivelyUnfoldUnionAndReferences(
+    const result = jzodUnion_recursivelyUnfold(
       schema,
       new Set(),
       miroirFundamentalJzodSchema as JzodSchema,
@@ -122,7 +120,7 @@ describe("recursivelyUnfoldUnionAndReferences", () => {
       ],
     };
 
-    const result = recursivelyUnfoldUnionAndReferences(
+    const result = jzodUnion_recursivelyUnfold(
       schema,
       new Set(),
       miroirFundamentalJzodSchema as JzodSchema,
@@ -162,7 +160,7 @@ describe("recursivelyUnfoldUnionAndReferences", () => {
       ],
     };
 
-    const result = recursivelyUnfoldUnionAndReferences(
+    const result = jzodUnion_recursivelyUnfold(
       schema,
       new Set(),
       miroirFundamentalJzodSchema as JzodSchema,
@@ -196,7 +194,7 @@ describe("recursivelyUnfoldUnionAndReferences", () => {
       ],
     };
 
-    const result = recursivelyUnfoldUnionAndReferences(
+    const result = jzodUnion_recursivelyUnfold(
       schema,
       new Set(),
       miroirFundamentalJzodSchema as JzodSchema,
