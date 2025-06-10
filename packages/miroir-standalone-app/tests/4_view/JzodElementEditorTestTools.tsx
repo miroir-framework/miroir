@@ -1371,6 +1371,38 @@ export function getJzodObjectEditorTests(
             expect(values).toEqual({ a: "test string", b: "42" });
           },
         },
+        "object with bigint attribute renders as json-like input fields with proper value": {
+          props: {
+            label: "Test Label",
+            name: "fieldName",
+            listKey: "ROOT.fieldName",
+            rootLesslistKey: "fieldName",
+            rootLesslistKeyArray: ["fieldName"],
+            rawJzodSchema: {
+              type: "object",
+              definition: { e:{ type: "bigint" } },
+            },
+            initialFormState: {
+              e: 123n,
+              // e: 123,
+              // e: "123",
+            },
+          },
+          tests: async (expect: ExpectStatic) => {
+            let inputs: HTMLElement[] = [];
+            try {
+              inputs = screen.getAllByRole("textbox");
+            } catch (e) {
+              // No textbox found, leave inputs as empty array
+            }
+            const values: Record<string, any> = {};
+            inputs.forEach((input: HTMLElement) => {
+              const name = (input as HTMLInputElement).name.replace(/^fieldName\./, "");
+              values[name] = (input as HTMLInputElement).value || BigInt((input as HTMLInputElement).value);
+            });
+            expect(values).toEqual({ e: "123" });
+          },
+        },
         "object can be updated through displayed input fields": {
           props: {
             label: "Test Label",
@@ -1407,7 +1439,7 @@ export function getJzodObjectEditorTests(
             expect(inputB).toHaveValue(100);
           },
         },
-        "object with bigint attribute renders as json-like input fields with proper value": {
+        "object with optional attributes can receive a value for the first optional attribute (alphabetical order) by clicking on the add button": {
           props: {
             label: "Test Label",
             name: "fieldName",
@@ -1416,29 +1448,24 @@ export function getJzodObjectEditorTests(
             rootLesslistKeyArray: ["fieldName"],
             rawJzodSchema: {
               type: "object",
-              definition: { e:{ type: "bigint" } },
+              definition: { a:{ type: "string", optional: true }, b:{ type: "number" }, c:{ type: "boolean", optional: true } },
             },
             initialFormState: {
-              e: 123n,
-              // e: 123,
-              // e: "123",
+              b: 42,
             },
           },
           tests: async (expect: ExpectStatic) => {
-            let inputs: HTMLElement[] = [];
-            try {
-              inputs = screen.getAllByRole("textbox");
-            } catch (e) {
-              // No textbox found, leave inputs as empty array
-            }
-            const values: Record<string, any> = {};
-            inputs.forEach((input: HTMLElement) => {
-              const name = (input as HTMLInputElement).name.replace(/^fieldName\./, "");
-              values[name] = (input as HTMLInputElement).value || BigInt((input as HTMLInputElement).value);
+            const addButton = screen.getByRole("button", { name: "fieldName.addObjectOptionalAttribute" });
+            await act(() => {
+              fireEvent.click(addButton);
             });
-            expect(values).toEqual({ e: "123" });
+            const screenValues: Record<string, any> = extractValuesFromRenderedElements(expect);
+            expect(screenValues).toEqual({
+              "a": "",
+              "b": 42,
+            });
           },
-        }
+        },
       },
     },
   };

@@ -286,8 +286,11 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
         {label}:
         {rawJzodSchema.type == "array" ? (
           <div>
-            {/* <SizedButton variant="text" name={listKey + ".add"} onClick={addNewArrayItem}> */}
-            <SizedButton variant="text" aria-label={listKey + ".add"} onClick={addNewArrayItem}>
+            <SizedButton
+              variant="text"
+              aria-label={rootLesslistKey + ".add"}
+              onClick={addNewArrayItem}
+            >
               <SizedAddBox />
             </SizedButton>
             add new item:
