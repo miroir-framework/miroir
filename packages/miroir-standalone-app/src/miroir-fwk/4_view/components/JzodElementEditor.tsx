@@ -27,6 +27,7 @@ import {
   JzodEnum,
   JzodLiteral,
   JzodObject,
+  JzodRecord,
   JzodSchema,
   JzodUnion,
   JzodUnion_RecursivelyUnfold_ReturnType,
@@ -902,14 +903,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     switch (localResolvedElementJzodSchema.type) {
     // switch (unfoldedRawSchema.type) {
       case "object": {
-        // let resolvedElementJzodSchema: JzodObject = props.resolvedElementJzodSchema;
-        // let resolvedElementJzodSchema: JzodObject = localResolvedElementJzodSchema;
-        // if (unfoldedRawSchema.type == "union" && !unfoldedRawSchema.discriminator) {
-        //   throw new Error(
-        //     "JzodElementEditor could not compute allSchemaObjectAttributes, no discriminator found in " +
-        //       JSON.stringify(unfoldedRawSchema, null, 2)
-        //   );
-        // }
         // log.info(
         //   "JzodElementEditor object",
         //   props.listKey,
@@ -922,10 +915,10 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         // );
         // #######################
         // uses setFormState to update the formik state
-        const addNewRecordAttribute = useCallback(async () => {
+        const addExtraRecordEntry = useCallback(async () => {
           log.info(
-            "addMissingRecordAttribute clicked!",
-            props.listKey,
+            "addExtraRecordEntry clicked!",
+            props.rootLesslistKey,
             itemsOrder,
             // Object.keys(resolvedElementJzodSchema.definition),
             Object.keys(localResolvedElementJzodSchema.definition),
@@ -934,9 +927,16 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             "formik",
             formik.values
           );
-          if (unfoldedRawSchema.type != "record") {
-            throw "addMissingRecordAttribute called for non-record type: " + unfoldedRawSchema.type;
+          if (unfoldedRawSchema.type != "record" || props.rawJzodSchema?.type != "record") {
+            throw "addExtraRecordEntry called for non-record type: " + unfoldedRawSchema.type;
           }
+
+          // const newAttributeType: JzodElement = resolvePathOnObject(props.rawJzodSchema, ["definition"]);
+          const newAttributeType: JzodElement = (props.rawJzodSchema as JzodRecord)?.definition;
+          log.info(
+            "addExtraRecordEntry newAttributeType",
+            JSON.stringify(newAttributeType, null, 2),
+          )
           const newAttributeValue = currentMiroirFundamentalJzodSchema
             ? getDefaultValueForJzodSchemaWithResolution(
                 unfoldedRawSchema.definition,
@@ -947,23 +947,39 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             : undefined;
 
           const currentValue = resolvePathOnObject(formik.values, props.rootLesslistKeyArray);
-          const newValue: any = { ["NEWATTRIBUTE"]: newAttributeValue, ...currentValue };
-          log.info("addMissingRecordAttribute", "newValue", newValue);
+          const newRecordValue: any = { ["newRecordEntry"]: newAttributeValue, ...currentValue };
+          log.info("addExtraRecordEntry", "newValue", newRecordValue);
           // setNestedObjectValues(props.listKey, e.target.value);
           const newFormValue = alterObjectAtPath(
             formik.values,
             props.rootLesslistKeyArray,
-            newValue
+            newRecordValue
           );
-          log.info("addMissingRecordAttribute", "newFormValue", newFormValue);
+          log.info("addExtraRecordEntry", "newFormValue", newFormValue);
           // props.setFormState(newFormValue);
-          formik.setFormikState(newFormValue);
-          setItemsOrder(getItemsOrder(newValue, props.rawJzodSchema));
-          // setItemsOrder(getItemsOrder(newValue, props.resolvedElementJzodSchema));
-          // await props.setFormState({"deploymentUuid2": "test!"});
-          // await props.formik.setFieldValue("deploymentUuid2", "test!");
+          // formik.setFormikState(newFormValue);
+          const newItemsOrder = getItemsOrder(newRecordValue, props.rawJzodSchema);
           log.info(
-            "addMissingRecordAttribute clicked2!",
+            "addExtraRecordEntry",
+            "itemsOrder",
+            itemsOrder,
+            "newItemsOrder",
+            newItemsOrder,
+          );
+
+          formik.setFieldValue(props.rootLesslistKey, newRecordValue);
+          setItemsOrder(getItemsOrder(newRecordValue, props.rawJzodSchema));
+
+          setLocalResolvedElementJzodSchema({
+            ...localResolvedElementJzodSchema,
+            definition: {
+              ...localResolvedElementJzodSchema.definition,
+              newRecordEntry: newAttributeType,
+              // [undefinedOptionalAttributes[0]]: resolvePathOnObject(props.rawJzodSchema, ["definition",undefinedOptionalAttributes[0]])
+            },
+          })
+          log.info(
+            "addExtraRecordEntry clicked2!",
             props.listKey,
             itemsOrder,
             Object.keys(localResolvedElementJzodSchema.definition),
@@ -1109,7 +1125,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                     <SizedButton
                       variant="text"
                       aria-label={props.rootLesslistKey + ".addRecordAttribute"}
-                      onClick={addNewRecordAttribute}
+                      onClick={addExtraRecordEntry}
                     >
                       {/* <SizedIcon>addBox</SizedIcon> */}
                       {/* <Icon>add</Icon> */}
@@ -1414,7 +1430,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                             <input
                               id={attributeListKey + "Name"}
                               key={attributeListKey + "Name"}
-                              name={attributeListKey + "Name"}
+                              // name={attributeListKey + "Name"}
+                              name={attributeRootLessListKey + "Name"}
                               onChange={(e) =>
                                 handleAttributeNameChange(e, attributeRootLessListKeyArray.slice())
                               }
@@ -1631,7 +1648,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               id={props.rootLesslistKey}
               key={props.rootLesslistKey}
               // role="textbox"
-              aria-label={props.label}
+              // aria-label={props.label}
+              aria-label={props.rootLesslistKey}
               labelId="demo-simple-select-label"
               variant="standard"
               {...formik.getFieldProps(props.rootLesslistKey)}

@@ -52,9 +52,8 @@ const StyledLabel = styled("label")(({ theme }) => ({
 
 // ################################ TO MOVE ELESEWHERE ####################################
 // #####################################################################################################
-export function getItemsOrder(currentValue: any, resolvedJzodSchema: JzodElement
-  | undefined) {
-  return resolvedJzodSchema?.type == "object" &&
+export function getItemsOrder(currentValue: any, jzodSchema: JzodElement | undefined) {
+  return (jzodSchema?.type == "object" || jzodSchema?.type == "record") &&
     typeof currentValue == "object" &&
     currentValue !== null
     ? Object.keys(currentValue)

@@ -157,16 +157,20 @@ export function getDefaultValueForJzodSchema(
   }
 }
 
+// ################################################################################################
 export function getDefaultValueForJzodSchemaWithResolution(
-  jzodSchema:JzodElement,
+  jzodSchema: JzodElement,
   miroirFundamentalJzodSchema: JzodSchema,
   currentModel?: MetaModel,
   miroirMetaModel?: MetaModel,
-  relativeReferenceJzodContext?: {[k:string]: JzodElement},
+  relativeReferenceJzodContext?: { [k: string]: JzodElement }
 ): any {
-  log.info("getDefaultValueForJzodSchemaWithResolution handleSelectLiteralChange called with jzodSchema", jzodSchema)
+  log.info(
+    "getDefaultValueForJzodSchemaWithResolution handleSelectLiteralChange called with jzodSchema",
+    jzodSchema
+  );
   if (jzodSchema.optional) {
-    return undefined
+    return undefined;
   }
   // let result
   switch (jzodSchema.type) {
@@ -177,24 +181,30 @@ export function getDefaultValueForJzodSchemaWithResolution(
         currentModel,
         miroirMetaModel,
         relativeReferenceJzodContext
-      )
-      log.info("getDefaultValueForJzodSchemaWithResolution handleSelectLiteralChange called with resolvedObjectType", resolvedObjectType)
+      );
+      log.info(
+        "getDefaultValueForJzodSchemaWithResolution handleSelectLiteralChange called with resolvedObjectType",
+        resolvedObjectType
+      );
       const result = Object.fromEntries(
         // Object.entries(jzodSchema.definition)
         Object.entries(resolvedObjectType.definition)
-        .filter(
-          a => !a[1].optional
-        )
-        .map(
-          a => [a[0], getDefaultValueForJzodSchemaWithResolution(
-            a[1],
-            miroirFundamentalJzodSchema,
-            currentModel,
-            miroirMetaModel,
-            relativeReferenceJzodContext,
-          )]
-      ));
-      log.info("getDefaultValueForJzodSchemaWithResolution handleSelectLiteralChange result", result)
+          .filter((a) => !a[1].optional)
+          .map((a) => [
+            a[0],
+            getDefaultValueForJzodSchemaWithResolution(
+              a[1],
+              miroirFundamentalJzodSchema,
+              currentModel,
+              miroirMetaModel,
+              relativeReferenceJzodContext
+            ),
+          ])
+      );
+      log.info(
+        "getDefaultValueForJzodSchemaWithResolution handleSelectLiteralChange result",
+        result
+      );
       return result;
     }
     case "string": {
@@ -210,7 +220,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
     case "date": {
       return new Date();
     }
-    case "any": 
+    case "any":
     case "undefined":
     case "null": {
       return undefined;
@@ -219,7 +229,10 @@ export function getDefaultValueForJzodSchemaWithResolution(
     case "unknown":
     case "never":
     case "void": {
-      throw new Error("getDefaultValueForJzodSchemaWithResolution can not generate value for schema type " + jzodSchema.type);
+      throw new Error(
+        "getDefaultValueForJzodSchemaWithResolution can not generate value for schema type " +
+          jzodSchema.type
+      );
       break;
     }
     // case "simpleType": {
@@ -240,7 +253,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
     //     case "date": {
     //       return new Date();
     //     }
-    //     case "any": 
+    //     case "any":
     //     case "undefined":
     //     case "null": {
     //       return undefined;
@@ -259,10 +272,10 @@ export function getDefaultValueForJzodSchemaWithResolution(
     //   }
     // }
     case "literal": {
-      return jzodSchema.definition
+      return jzodSchema.definition;
     }
     case "array": {
-      return []
+      return [];
     }
     case "map": {
       return new Map();
@@ -271,7 +284,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
       return new Set();
     }
     case "record": {
-      return {}
+      return {};
     }
     case "schemaReference": {
       const resolvedReference = resolveJzodSchemaReferenceInContext(
@@ -279,33 +292,39 @@ export function getDefaultValueForJzodSchemaWithResolution(
         jzodSchema,
         currentModel,
         miroirMetaModel,
-        relativeReferenceJzodContext,
-      )
+        relativeReferenceJzodContext
+      );
       return getDefaultValueForJzodSchemaWithResolution(
         resolvedReference,
         miroirFundamentalJzodSchema,
         currentModel,
         miroirMetaModel,
-        relativeReferenceJzodContext,
+        relativeReferenceJzodContext
       );
-      throw new Error("getDefaultValueForJzodSchemaWithResolution does not support schema references, please resolve schema in advance: " + JSON.stringify(jzodSchema, null, 2));
+      throw new Error(
+        "getDefaultValueForJzodSchemaWithResolution does not support schema references, please resolve schema in advance: " +
+          JSON.stringify(jzodSchema, null, 2)
+      );
     }
     case "union": {
       // throw new Error("getDefaultValueForJzodSchemaWithResolution does not handle type: " + jzodSchema.type + " for jzodSchema="  + JSON.stringify(jzodSchema, null, 2));
       // just take the first choice for default value
       if (jzodSchema.definition.length == 0) {
-        throw new Error("getDefaultValueForJzodSchemaWithResolution union definition is empty for jzodSchema="  + JSON.stringify(jzodSchema, null, 2));
+        throw new Error(
+          "getDefaultValueForJzodSchemaWithResolution union definition is empty for jzodSchema=" +
+            JSON.stringify(jzodSchema, null, 2)
+        );
       }
       if (jzodSchema.tag?.value?.initializeTo) {
-        return jzodSchema.tag?.value?.initializeTo
+        return jzodSchema.tag?.value?.initializeTo;
       } else {
         return getDefaultValueForJzodSchemaWithResolution(
           jzodSchema.definition[0],
           miroirFundamentalJzodSchema,
           currentModel,
           miroirMetaModel,
-          relativeReferenceJzodContext,
-        )
+          relativeReferenceJzodContext
+        );
       }
       break;
     }
@@ -315,11 +334,19 @@ export function getDefaultValueForJzodSchemaWithResolution(
     case "intersection":
     case "promise":
     case "tuple": {
-      throw new Error("getDefaultValueForJzodSchemaWithResolution does not handle type: " + jzodSchema.type + " for jzodSchema="  + JSON.stringify(jzodSchema, null, 2));
+      throw new Error(
+        "getDefaultValueForJzodSchemaWithResolution does not handle type: " +
+          jzodSchema.type +
+          " for jzodSchema=" +
+          JSON.stringify(jzodSchema, null, 2)
+      );
       break;
     }
     default: {
-      throw new Error("getDefaultValueForJzodSchemaWithResolution reached default case for type, this is a bug: " + JSON.stringify(jzodSchema, null, 2));
+      throw new Error(
+        "getDefaultValueForJzodSchemaWithResolution reached default case for type, this is a bug: " +
+          JSON.stringify(jzodSchema, null, 2)
+      );
       break;
     }
   }

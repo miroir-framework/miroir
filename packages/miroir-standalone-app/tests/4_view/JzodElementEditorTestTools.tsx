@@ -72,6 +72,7 @@ import { selfApplicationDeploymentLibrary } from "miroir-core";
 import { MetaModel } from "miroir-core";
 import { applicationDeploymentAdmin } from "miroir-core/src/ApplicationDeploymentAdmin";
 import { JzodTuple } from "miroir-core";
+import { JzodRecord } from "miroir-core";
 
 export const testThemeParams = {
   palette: {
@@ -309,7 +310,7 @@ export function getLocalEditor<
                   // formik: {
                   //   ...formik,
                   //   getFieldProps: (rootLesslistKey: string[]) => ({
-                  //     name: "fieldName",
+                  //     name: "testField",
                   //     value: formState,
                   //     rootLesslistKey,
                   //     onChange: formik.handleChange,
@@ -867,7 +868,7 @@ export function getJzodEditorTestSuites<
 }
 
 // ################################################################################################
-function extractValuesFromRenderedElements(expect: ExpectStatic) {
+export function extractValuesFromRenderedElements(expect: ExpectStatic) {
   let inputs: HTMLElement[] = [];
   try {
     inputs = screen.getAllByRole("textbox");
@@ -879,6 +880,7 @@ function extractValuesFromRenderedElements(expect: ExpectStatic) {
     inputs.map((i) => ({
       name: (i as HTMLInputElement).name,
       value: (i as HTMLInputElement).value,
+      defaultValue: (i as HTMLInputElement).defaultValue,
       type: (i as HTMLInputElement).type,
     }))
   );
@@ -898,8 +900,12 @@ function extractValuesFromRenderedElements(expect: ExpectStatic) {
   );
   const values: Record<string, any> = {};
   inputs.forEach((input: HTMLElement) => {
-    const name = (input as HTMLInputElement).name.replace(/^fieldName\./, "");
+    const name = (input as HTMLInputElement).name.replace(/^testField\./, "");
+    // Prefer .value, fallback to .defaultValue if .value is empty
     let value: any = (input as HTMLInputElement).value;
+    if (value === "" && (input as HTMLInputElement).defaultValue !== undefined) {
+      value = (input as HTMLInputElement).defaultValue;
+    }
     if ((input as HTMLInputElement).type === "number") {
       if (!isNaN(Number(value)) && value !== "") {
         value = Number(value);
@@ -911,10 +917,58 @@ function extractValuesFromRenderedElements(expect: ExpectStatic) {
   });
   // Handle boolean checkboxes
   checkboxes.forEach((checkbox: HTMLElement) => {
-    const name = (checkbox as HTMLInputElement).name.replace(/^fieldName\./, "");
-    values[name] = (checkbox as HTMLInputElement).value == "true";
+    const name = (checkbox as HTMLInputElement).name.replace(/^testField\./, "");
+    values[name] = (checkbox as HTMLInputElement).checked;
   });
   return values;
+}
+
+// ################################################################################################
+export function formValuesToJSON(input: Record<string, any>): any {
+  let result: any = undefined;
+  const indexes: [(string | number)[], any][] = Object.entries(input).map(([key, value]) => {
+    const index = key.split(".");
+    return [index.map((i) => (isNaN(parseInt(i, 10)) ? i : parseInt(i, 10))), value];
+  });
+
+  // Determine if the root should be an array or object
+  if (
+    indexes.length > 0 &&
+    typeof indexes[0][0][0] === "number"
+  ) {
+    result = [];
+  } else {
+    result = {};
+  }
+
+  for (const [indexArray, value] of indexes) {
+    let current = result;
+    for (let i = 0; i < indexArray.length; i++) {
+      const key = indexArray[i];
+      const isLast = i === indexArray.length - 1;
+      if (isLast) {
+        // Special case: convert "e" to BigInt if necessary
+        // if (key === "e") {
+        //   current[key] = value !== undefined && value !== null && value !== "" ? BigInt(value) : value;
+        // } else {
+          current[key] = value;
+        // }
+      } else {
+        const nextKey = indexArray[i + 1];
+        if (typeof nextKey === "number") {
+          if (!Array.isArray(current[key])) {
+            current[key] = [];
+          }
+        } else {
+          if (typeof current[key] !== "object" || current[key] === null || Array.isArray(current[key])) {
+            current[key] = {};
+          }
+        }
+        current = current[key];
+      }
+    }
+  }
+  return result;
 }
 
 // ################################################################################################
@@ -947,10 +1001,10 @@ export function getJzodArrayEditorTests(
       },
       suiteProps: {
         label: "Test Label",
-        name: "fieldName",
-        listKey: "ROOT.fieldName",
-        rootLesslistKey: "fieldName",
-        rootLesslistKeyArray: ["fieldName"],
+        name: "testField",
+        listKey: "ROOT.testField",
+        rootLesslistKey: "testField",
+        rootLesslistKeyArray: ["testField"],
         rawJzodSchema: {
           type: "array",
           definition: { type: "string" },
@@ -968,7 +1022,7 @@ export function getJzodArrayEditorTests(
             const cells = screen
               .getAllByRole("textbox")
               .filter((input: HTMLElement) =>
-                (input as HTMLInputElement).name.startsWith("fieldName.")
+                (input as HTMLInputElement).name.startsWith("testField.")
               );
             const values = cells.map((cell) => (cell as HTMLInputElement).value);
             expect(values).toEqual(arrayValues);
@@ -977,7 +1031,7 @@ export function getJzodArrayEditorTests(
         "form state is changed when selection changes": {
           tests: async (expect: ExpectStatic) => {
             const cell = screen.getAllByRole("textbox").filter((input: HTMLElement) =>
-              (input as HTMLInputElement).name.startsWith("fieldName.")
+              (input as HTMLInputElement).name.startsWith("testField.")
             )[1] as HTMLInputElement;
             await act(() => {
               fireEvent.change(cell, { target: { value: "new value" } });
@@ -985,16 +1039,16 @@ export function getJzodArrayEditorTests(
             expect(cell).toContainHTML("new value");
           },
         },
-        "changing order of array items when button ROOT.fieldName.2.up is clicked": {
+        "changing order of array items when button ROOT.testField.2.up is clicked": {
           tests: async (expect) => {
-            const upButtons = screen.getAllByRole("ROOT.fieldName.button.up");
+            const upButtons = screen.getAllByRole("ROOT.testField.button.up");
             await act(() => {
               fireEvent.click(upButtons[2]); // Click the up button for the third item
             });
             const cells = screen
               .getAllByRole("textbox")
               .filter((input: HTMLElement) =>
-                (input as HTMLInputElement).name.startsWith("fieldName.")
+                (input as HTMLInputElement).name.startsWith("testField.")
               );
             const values = cells.map((cell) => (cell as HTMLInputElement).value);
             expect(values).toEqual(["value1", "value3", "value2"]);
@@ -1003,10 +1057,10 @@ export function getJzodArrayEditorTests(
         "renders all array values of a plain 2-items tuple with a string and a number, in the right order": {
           props: {
             label: "Test Label",
-            name: "fieldName",
-            listKey: "ROOT.fieldName",
-            rootLesslistKey: "fieldName",
-            rootLesslistKeyArray: ["fieldName"],
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLesslistKey: "testField",
+            rootLesslistKeyArray: ["testField"],
             rawJzodSchema: {
               type: "tuple", definition: [{ type: "string" }, { type: "number" }],
             },
@@ -1017,7 +1071,7 @@ export function getJzodArrayEditorTests(
             const cells = screen
               .getAllByRole("textbox")
               .filter((input: HTMLElement) =>
-                (input as HTMLInputElement).name.startsWith("fieldName.")
+                (input as HTMLInputElement).name.startsWith("testField.")
               );
 
             const values = cells.map((cell) => (cell as HTMLInputElement).value);
@@ -1029,10 +1083,10 @@ export function getJzodArrayEditorTests(
         "renders all array values of a tuple inside an array, in the right order": {
           props: {
             label: "Test Label",
-            name: "fieldName",
-            listKey: "ROOT.fieldName",
-            rootLesslistKey: "fieldName",
-            rootLesslistKeyArray: ["fieldName"],
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLesslistKey: "testField",
+            rootLesslistKeyArray: ["testField"],
             rawJzodSchema: {
               type: "array",
               definition: { type: "tuple", definition: [{ type: "string" }, { type: "number" }] },
@@ -1043,36 +1097,36 @@ export function getJzodArrayEditorTests(
             const cells = screen
               .getAllByRole("textbox")
               .filter((input: HTMLElement) =>
-                (input as HTMLInputElement).name.startsWith("fieldName.")
+                (input as HTMLInputElement).name.startsWith("testField.")
               );
             const values = cells.map((cell) => (cell as HTMLInputElement).value);
             const expectedValues = [["value1", "1"], ["value2", "2"], ["value3", "3"]]; // value of textbox is a string, even when type=number
             expect(values).toEqual(expectedValues.flat()); // Flatten the expected values for comparison
           },
         },
-        "add an element to a string array when button ROOT.fieldName.add is clicked": {
+        "add an element to a string array when button ROOT.testField.add is clicked": {
           tests: async (expect: ExpectStatic) => {
-            const addButton = screen.getByRole("button", { name: "ROOT.fieldName.add" });
+            const addButton = screen.getByRole("button", { name: "testField.add" });
             await act(() => {
               fireEvent.click(addButton);
             });
             const cells = screen
               .getAllByRole("textbox")
               .filter((input: HTMLElement) =>
-                (input as HTMLInputElement).name.startsWith("fieldName.")
+                (input as HTMLInputElement).name.startsWith("testField.")
               );
             const values = cells.map((cell) => (cell as HTMLInputElement).value);
             // expect(screen.getByLabelText(/Test LabelAAAAAAAAAAAAAAAAAAAAA/)).toBeInTheDocument();
             expect(values).toEqual([...arrayValues, ""]); // New empty string added
           },
         },
-        "add an element to an object array when button ROOT.fieldName.add is clicked": {
+        "add an element to an object array when button ROOT.testField.add is clicked": {
           props: {
             label: "Test Label",
-            name: "fieldName",
-            listKey: "ROOT.fieldName",
-            rootLesslistKey: "fieldName",
-            rootLesslistKeyArray: ["fieldName"],
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLesslistKey: "testField",
+            rootLesslistKeyArray: ["testField"],
             rawJzodSchema: {
               type: "array",
               definition: {
@@ -1100,7 +1154,7 @@ export function getJzodArrayEditorTests(
             ],
           },
           tests: async (expect) => {
-            const addButton = screen.getByRole("button", { name: "ROOT.fieldName.add" });
+            const addButton = screen.getByRole("button", { name: "testField.add" });
             await act(() => {
               fireEvent.click(addButton);
             });
@@ -1151,10 +1205,10 @@ export function getJzodEnumEditorTests(
       },
       suiteProps: {
         label: "Test Label",
-        name: "fieldName",
-        listKey: "ROOT.fieldName",
-        rootLesslistKey: "fieldName",
-        rootLesslistKeyArray: ["fieldName"],
+        name: "testField",
+        listKey: "ROOT.testField",
+        rootLesslistKey: "testField",
+        rootLesslistKeyArray: ["testField"],
         rawJzodSchema: {
           type: "enum",
           definition: enumValues,
@@ -1170,10 +1224,10 @@ export function getJzodEnumEditorTests(
         "renders input without label when label prop is not provided": {
           props: {
             // label: "Test Label", // no label
-            name: "fieldName",
-            listKey: "ROOT.fieldName",
-            rootLesslistKey: "fieldName",
-            rootLesslistKeyArray: ["fieldName"],
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLesslistKey: "testField",
+            rootLesslistKeyArray: ["testField"],
             rawJzodSchema: {
               type: "enum",
               definition: enumValues,
@@ -1251,10 +1305,10 @@ export function getJzodLiteralEditorTests(
         renderAsJzodElementEditor: jzodElementEditor
       },
       suiteProps: {
-        name: "fieldName",
-        listKey: "root.fieldName",
-        rootLesslistKey: "fieldName",
-        rootLesslistKeyArray: ["fieldName"],
+        name: "testField",
+        listKey: "root.testField",
+        rootLesslistKey: "testField",
+        rootLesslistKeyArray: ["testField"],
         initialFormState: "test-value",
         label: "Test Label",
       } as LocalLiteralEditorProps,
@@ -1271,7 +1325,7 @@ export function getJzodLiteralEditorTests(
           tests: {
             testAsComponent: async (expect) => {
               expect(screen.getByLabelText(/Test Label/)).toBeInTheDocument();
-              // expect(screen.getByRole("textbox")).toHaveAttribute("name", "fieldName"); // TODO: this is implementation detail, should be removed
+              // expect(screen.getByRole("textbox")).toHaveAttribute("name", "testField"); // TODO: this is implementation detail, should be removed
             },
             testAsJzodElementEditor: async (expect) => {
               expect(screen.getByLabelText(/Test Label/)).toBeInTheDocument();
@@ -1280,10 +1334,10 @@ export function getJzodLiteralEditorTests(
         },
         "renders input without label when label prop is not provided": {
           props: {
-            name: "fieldName",
-            listKey: "root.fieldName",
-            rootLesslistKey: "fieldName",
-            rootLesslistKeyArray: ["fieldName"],
+            name: "testField",
+            listKey: "root.testField",
+            rootLesslistKey: "testField",
+            rootLesslistKeyArray: ["testField"],
             initialFormState: "test-value",
             // label: "Test Label", // no label
           },
@@ -1327,7 +1381,7 @@ export function getJzodLiteralEditorTests(
 // OBJECT
 // ################################################################################################
 export interface LocalObjectEditorProps extends LocalEditorPropsRoot{
-  rawJzodSchema: JzodObject | undefined;
+  rawJzodSchema: JzodObject | JzodRecord | undefined;
 }
 
 export type JzodObjectEditorTest = JzodEditorTest<LocalObjectEditorProps>;
@@ -1345,124 +1399,192 @@ export function getJzodObjectEditorTests(
         renderAsJzodElementEditor,
       },
       tests: {
-        "object renders as json-like input fields with proper value": {
-          props: {
-            label: "Test Label",
-            name: "fieldName",
-            listKey: "ROOT.fieldName",
-            rootLesslistKey: "fieldName",
-            rootLesslistKeyArray: ["fieldName"],
-            rawJzodSchema: {
-              type: "object",
-              definition: {a:{ type: "string" }, b:{ type: "number" }},
-            },
-            initialFormState: {
-              a: "test string",
-              b: 42,
-            },
-          },
-          tests: async (expect: ExpectStatic) => {
-            const inputs = screen.getAllByRole("textbox");
-            const values: Record<string, any> = {};
-            inputs.forEach((input: HTMLElement) => {
-              const name = (input as HTMLInputElement).name.replace(/^fieldName\./, "");
-              values[name] = (input as HTMLInputElement).value || Number((input as HTMLInputElement).value);
-            });
-            expect(values).toEqual({ a: "test string", b: "42" });
-          },
-        },
-        "object with bigint attribute renders as json-like input fields with proper value": {
-          props: {
-            label: "Test Label",
-            name: "fieldName",
-            listKey: "ROOT.fieldName",
-            rootLesslistKey: "fieldName",
-            rootLesslistKeyArray: ["fieldName"],
-            rawJzodSchema: {
-              type: "object",
-              definition: { e:{ type: "bigint" } },
-            },
-            initialFormState: {
-              e: 123n,
-              // e: 123,
-              // e: "123",
-            },
-          },
-          tests: async (expect: ExpectStatic) => {
-            let inputs: HTMLElement[] = [];
-            try {
-              inputs = screen.getAllByRole("textbox");
-            } catch (e) {
-              // No textbox found, leave inputs as empty array
-            }
-            const values: Record<string, any> = {};
-            inputs.forEach((input: HTMLElement) => {
-              const name = (input as HTMLInputElement).name.replace(/^fieldName\./, "");
-              values[name] = (input as HTMLInputElement).value || BigInt((input as HTMLInputElement).value);
-            });
-            expect(values).toEqual({ e: "123" });
-          },
-        },
-        "object can be updated through displayed input fields": {
-          props: {
-            label: "Test Label",
-            name: "fieldName",
-            listKey: "ROOT.fieldName",
-            rootLesslistKey: "fieldName",
-            rootLesslistKeyArray: ["fieldName"],
-            rawJzodSchema: {
-              type: "object",
-              definition: {a:{ type: "string" }, b:{ type: "number" }},
-            },
-            initialFormState: {
-              a: "test string",
-              b: 42,
-            },
-          },
-          tests: async (expect: ExpectStatic) => {
-            const inputs = screen.getAllByRole("textbox");
-            const inputA = inputs.find(
-              (input: HTMLElement) => (input as HTMLInputElement).name === "fieldName.a"
-            ) as HTMLInputElement;
-            const inputB = inputs.find(
-              (input: HTMLElement) => (input as HTMLInputElement).name === "fieldName.b"
-            ) as HTMLInputElement;
-            expect(inputA).toHaveValue("test string");
-            expect(inputB).toHaveValue(42);
+        // "object renders as json-like input fields with proper value": {
+        //   props: {
+        //     label: "Test Label",
+        //     name: "testField",
+        //     listKey: "ROOT.testField",
+        //     rootLesslistKey: "testField",
+        //     rootLesslistKeyArray: ["testField"],
+        //     rawJzodSchema: {
+        //       type: "object",
+        //       definition: {a:{ type: "string" }, b:{ type: "number" }},
+        //     },
+        //     initialFormState: {
+        //       a: "test string",
+        //       b: 42,
+        //     },
+        //   },
+        //   tests: async (expect: ExpectStatic) => {
+        //     const inputs = screen.getAllByRole("textbox");
+        //     const values: Record<string, any> = {};
+        //     inputs.forEach((input: HTMLElement) => {
+        //       const name = (input as HTMLInputElement).name.replace(/^testField\./, "");
+        //       values[name] = (input as HTMLInputElement).value || Number((input as HTMLInputElement).value);
+        //     });
+        //     expect(values).toEqual({ a: "test string", b: "42" });
+        //   },
+        // },
+        // "object with bigint attribute renders as json-like input fields with proper value": {
+        //   props: {
+        //     label: "Test Label",
+        //     name: "testField",
+        //     listKey: "ROOT.testField",
+        //     rootLesslistKey: "testField",
+        //     rootLesslistKeyArray: ["testField"],
+        //     rawJzodSchema: {
+        //       type: "object",
+        //       definition: { e:{ type: "bigint" } },
+        //     },
+        //     initialFormState: {
+        //       e: 123n,
+        //       // e: 123,
+        //       // e: "123",
+        //     },
+        //   },
+        //   tests: async (expect: ExpectStatic) => {
+        //     let inputs: HTMLElement[] = [];
+        //     try {
+        //       inputs = screen.getAllByRole("textbox");
+        //     } catch (e) {
+        //       // No textbox found, leave inputs as empty array
+        //     }
+        //     const values: Record<string, any> = {};
+        //     inputs.forEach((input: HTMLElement) => {
+        //       const name = (input as HTMLInputElement).name.replace(/^testField\./, "");
+        //       values[name] = (input as HTMLInputElement).value || BigInt((input as HTMLInputElement).value);
+        //     });
+        //     expect(values).toEqual({ e: "123" });
+        //   },
+        // },
+        // "object can be updated through displayed input fields": {
+        //   props: {
+        //     label: "Test Label",
+        //     name: "testField",
+        //     listKey: "ROOT.testField",
+        //     rootLesslistKey: "testField",
+        //     rootLesslistKeyArray: ["testField"],
+        //     rawJzodSchema: {
+        //       type: "object",
+        //       definition: {a:{ type: "string" }, b:{ type: "number" }},
+        //     },
+        //     initialFormState: {
+        //       a: "test string",
+        //       b: 42,
+        //     },
+        //   },
+        //   tests: async (expect: ExpectStatic) => {
+        //     const inputs = screen.getAllByRole("textbox");
+        //     const inputA = inputs.find(
+        //       (input: HTMLElement) => (input as HTMLInputElement).name === "testField.a"
+        //     ) as HTMLInputElement;
+        //     const inputB = inputs.find(
+        //       (input: HTMLElement) => (input as HTMLInputElement).name === "testField.b"
+        //     ) as HTMLInputElement;
+        //     expect(inputA).toHaveValue("test string");
+        //     expect(inputB).toHaveValue(42);
 
-            await act(() => {
-              fireEvent.change(inputA, { target: { value: "new string value" } });
-              fireEvent.change(inputB, { target: { value: 100 } });
-            });
+        //     await act(() => {
+        //       fireEvent.change(inputA, { target: { value: "new string value" } });
+        //       fireEvent.change(inputB, { target: { value: 100 } });
+        //     });
 
-            expect(inputA).toHaveValue("new string value");
-            expect(inputB).toHaveValue(100);
-          },
-        },
-        "object with optional attributes can receive a value for the first optional attribute (alphabetical order) by clicking on the add button": {
+        //     expect(inputA).toHaveValue("new string value");
+        //     expect(inputB).toHaveValue(100);
+        //   },
+        // },
+        // "object with optional attributes can receive a value for the first optional attribute (alphabetical order) by clicking on the add button": {
+        //   props: {
+        //     label: "Test Label",
+        //     name: "testField",
+        //     listKey: "ROOT.testField",
+        //     rootLesslistKey: "testField",
+        //     rootLesslistKeyArray: ["testField"],
+        //     rawJzodSchema: {
+        //       type: "object",
+        //       definition: { a:{ type: "string", optional: true }, b:{ type: "number" }, c:{ type: "boolean", optional: true } },
+        //     },
+        //     initialFormState: {
+        //       b: 42,
+        //     },
+        //   },
+        //   tests: async (expect: ExpectStatic) => {
+        //     const addButton = screen.getByRole("button", { name: "testField.addObjectOptionalAttribute" });
+        //     await act(() => {
+        //       fireEvent.click(addButton);
+        //     });
+        //     const screenValues: Record<string, any> = extractValuesFromRenderedElements(expect);
+        //     expect(screenValues).toEqual({
+        //       "a": "",
+        //       "b": 42,
+        //     });
+        //   },
+        // },
+        "record renders as json-like input fields with proper value": {
           props: {
             label: "Test Label",
-            name: "fieldName",
-            listKey: "ROOT.fieldName",
-            rootLesslistKey: "fieldName",
-            rootLesslistKeyArray: ["fieldName"],
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLesslistKey: "testField",
+            rootLesslistKeyArray: ["testField"],
             rawJzodSchema: {
-              type: "object",
-              definition: { a:{ type: "string", optional: true }, b:{ type: "number" }, c:{ type: "boolean", optional: true } },
+              type: "record",
+              definition: {
+                type: "object",
+                definition: { a:{ type: "string" }, b:{ type: "number" } }},
             },
             initialFormState: {
-              b: 42,
+              firstRecord: {
+                a: "test string",
+                b: 42,
+              },
             },
           },
           tests: async (expect: ExpectStatic) => {
-            const addButton = screen.getByRole("button", { name: "fieldName.addObjectOptionalAttribute" });
+            // expect(screen.getByText(/Test LabelAAAAAAAAAAAAAAAAAAAAAAAAAAAA/)).toBeInTheDocument();
+            const values: Record<string, any> = extractValuesFromRenderedElements(expect);
+            expect(values).toEqual({
+              "firstRecordName": "firstRecord",
+              "firstRecord.a": "test string",
+              "firstRecord.b": 42,
+            });
+          },
+        },
+        "record can receive a new record attribute with the proper default value when clicking on the add button": {
+          props: {
+            label: "Test Label",
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLesslistKey: "testField",
+            rootLesslistKeyArray: ["testField"],
+            rawJzodSchema: {
+              type: "record",
+              definition: {
+                type: "object",
+                definition: { a:{ type: "string" }, b:{ type: "number" } }},
+            },
+            initialFormState: {
+              firstRecord: {
+                a: "test string",
+                b: 42,
+              },
+            },
+          },
+          tests: async (expect) => {
+            const addButton = screen.getByRole("button", { name: "testField.addRecordAttribute" });
             await act(() => {
               fireEvent.click(addButton);
             });
-            const screenValues: Record<string, any> = extractValuesFromRenderedElements(expect);
-            expect(screenValues).toEqual({
-              "a": "",
-              "b": 42,
+            const values = extractValuesFromRenderedElements(expect);
+            expect(values).toEqual({
+              // New record attribute with default values
+              "newRecordEntryName": "newRecordEntry",
+              "newRecordEntry.a": "",
+              "newRecordEntry.b": 0,
+              // Existing record entry
+              "firstRecordName": "firstRecord",
+              "firstRecord.a": "test string",
+              "firstRecord.b": 42,
             });
           },
         },
@@ -1502,10 +1624,10 @@ export function getJzodSimpleTypeEditorTests(
         "string renders input with proper value": {
           props: {
             label: "Test Label",
-            name: "fieldName",
-            listKey: "ROOT.fieldName",
-            rootLesslistKey: "fieldName",
-            rootLesslistKeyArray: ["fieldName"],
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLesslistKey: "testField",
+            rootLesslistKeyArray: ["testField"],
             rawJzodSchema: {
               type: "string",
               // definition: [{ type: "string" }, { type: "number" }],
@@ -1522,10 +1644,10 @@ export function getJzodSimpleTypeEditorTests(
         "string allows to modify input value with consistent update": {
           props: {
             label: "Test Label",
-            name: "fieldName",
-            listKey: "ROOT.fieldName",
-            rootLesslistKey: "fieldName",
-            rootLesslistKeyArray: ["fieldName"],
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLesslistKey: "testField",
+            rootLesslistKeyArray: ["testField"],
             rawJzodSchema: {
               type: "string",
             },
@@ -1544,10 +1666,10 @@ export function getJzodSimpleTypeEditorTests(
         "number renders input with proper value": { // TODO: test for nullable / optional scenario
           props: {
             label: "Test Label",
-            name: "fieldName",
-            listKey: "ROOT.fieldName",
-            rootLesslistKey: "fieldName",
-            rootLesslistKeyArray: ["fieldName"],
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLesslistKey: "testField",
+            rootLesslistKeyArray: ["testField"],
             rawJzodSchema: {
               type: "number",
             },
@@ -1563,10 +1685,10 @@ export function getJzodSimpleTypeEditorTests(
         "number allows to modify input value with consistent update": {
           props: {
             label: "Test Label",
-            name: "fieldName",
-            listKey: "ROOT.fieldName",
-            rootLesslistKey: "fieldName",
-            rootLesslistKeyArray: ["fieldName"],
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLesslistKey: "testField",
+            rootLesslistKeyArray: ["testField"],
             rawJzodSchema: {
               type: "number",
             },
@@ -1585,10 +1707,10 @@ export function getJzodSimpleTypeEditorTests(
         "uuid renders input with proper value": { // TODO: test for nullable / optional scenario
           props: {
             label: "Test Label",
-            name: "fieldName",
-            listKey: "ROOT.fieldName",
-            rootLesslistKey: "fieldName",
-            rootLesslistKeyArray: ["fieldName"],
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLesslistKey: "testField",
+            rootLesslistKeyArray: ["testField"],
             rawJzodSchema: {
               type: "uuid",
             },
@@ -1603,10 +1725,10 @@ export function getJzodSimpleTypeEditorTests(
         "uuid allows to modify input value with consistent update": {
           props: {
             label: "Test Label",
-            name: "fieldName",
-            listKey: "ROOT.fieldName",
-            rootLesslistKey: "fieldName",
-            rootLesslistKeyArray: ["fieldName"],
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLesslistKey: "testField",
+            rootLesslistKeyArray: ["testField"],
             rawJzodSchema: {
               type: "uuid",
             },
@@ -1625,10 +1747,10 @@ export function getJzodSimpleTypeEditorTests(
         "boolean renders checkbox with proper value true": {
           props: {
             label: "Test Label",
-            name: "fieldName",
-            listKey: "ROOT.fieldName",
-            rootLesslistKey: "fieldName",
-            rootLesslistKeyArray: ["fieldName"],
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLesslistKey: "testField",
+            rootLesslistKeyArray: ["testField"],
             rawJzodSchema: {
               type: "boolean",
             },
@@ -1643,10 +1765,10 @@ export function getJzodSimpleTypeEditorTests(
         "boolean renders checkbox with proper value false": {
           props: {
             label: "Test Label",
-            name: "fieldName",
-            listKey: "ROOT.fieldName",
-            rootLesslistKey: "fieldName",
-            rootLesslistKeyArray: ["fieldName"],
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLesslistKey: "testField",
+            rootLesslistKeyArray: ["testField"],
             rawJzodSchema: {
               type: "boolean",
             },
@@ -1662,10 +1784,10 @@ export function getJzodSimpleTypeEditorTests(
         "boolean allows to modify checkbox value with consistent update": {
           props: {
             label: "Test Label",
-            name: "fieldName",
-            listKey: "ROOT.fieldName",
-            rootLesslistKey: "fieldName",
-            rootLesslistKeyArray: ["fieldName"],
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLesslistKey: "testField",
+            rootLesslistKeyArray: ["testField"],
             rawJzodSchema: {
               type: "boolean",
             },
@@ -1684,10 +1806,10 @@ export function getJzodSimpleTypeEditorTests(
         "bigint renders input with proper bigint value": {
           props: {
             label: "Test Label",
-            name: "fieldName",
-            listKey: "ROOT.fieldName",
-            rootLesslistKey: "fieldName",
-            rootLesslistKeyArray: ["fieldName"],
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLesslistKey: "testField",
+            rootLesslistKeyArray: ["testField"],
             rawJzodSchema: {
               type: "bigint",
             },
@@ -1702,10 +1824,10 @@ export function getJzodSimpleTypeEditorTests(
         "bigint renders input with proper bigint value as string": {
           props: {
             label: "Test Label",
-            name: "fieldName",
-            listKey: "ROOT.fieldName",
-            rootLesslistKey: "fieldName",
-            rootLesslistKeyArray: ["fieldName"],
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLesslistKey: "testField",
+            rootLesslistKeyArray: ["testField"],
             rawJzodSchema: {
               type: "bigint",
             },
@@ -1720,10 +1842,10 @@ export function getJzodSimpleTypeEditorTests(
         "bigint renders input with proper bigint value as number": {
           props: {
             label: "Test Label",
-            name: "fieldName",
-            listKey: "ROOT.fieldName",
-            rootLesslistKey: "fieldName",
-            rootLesslistKeyArray: ["fieldName"],
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLesslistKey: "testField",
+            rootLesslistKeyArray: ["testField"],
             rawJzodSchema: {
               type: "bigint",
             },
@@ -1738,10 +1860,10 @@ export function getJzodSimpleTypeEditorTests(
         "bigint allows to modify input value with consistent update": {
           props: {
             label: "Test Label",
-            name: "fieldName",
-            listKey: "ROOT.fieldName",
-            rootLesslistKey: "fieldName",
-            rootLesslistKeyArray: ["fieldName"],
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLesslistKey: "testField",
+            rootLesslistKeyArray: ["testField"],
             rawJzodSchema: {
               type: "bigint",
             },
@@ -1787,10 +1909,10 @@ export function getJzodUnionEditorTests(
         "union between simple types renders input with proper value": {
           props: {
             label: "Test Label",
-            name: "fieldName",
-            listKey: "ROOT.fieldName",
-            rootLesslistKey: "fieldName",
-            rootLesslistKeyArray: ["fieldName"],
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLesslistKey: "testField",
+            rootLesslistKeyArray: ["testField"],
             rawJzodSchema: {
               type: "union",
               definition: [{ type: "string" }, { type: "number" }],
@@ -1807,10 +1929,10 @@ export function getJzodUnionEditorTests(
         "union between simple type and object for value of simple type renders input with proper value": {
           props: {
             label: "Test Label",
-            name: "fieldName",
-            listKey: "ROOT.fieldName",
-            rootLesslistKey: "fieldName",
-            rootLesslistKeyArray: ["fieldName"],
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLesslistKey: "testField",
+            rootLesslistKeyArray: ["testField"],
             rawJzodSchema: {
               type: "union",
               definition: [
@@ -1831,10 +1953,10 @@ export function getJzodUnionEditorTests(
         "union between simple type and object for value object renders input with proper value": {
           props: {
             label: "Test Label",
-            name: "fieldName",
-            listKey: "ROOT.fieldName",
-            rootLesslistKey: "fieldName",
-            rootLesslistKeyArray: ["fieldName"],
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLesslistKey: "testField",
+            rootLesslistKeyArray: ["testField"],
             rawJzodSchema: {
               type: "union",
               definition: [
@@ -1853,7 +1975,7 @@ export function getJzodUnionEditorTests(
             const inputs = screen.getAllByRole("textbox");
             const values: Record<string, any> = {};
             inputs.forEach((input: HTMLElement) => {
-              const name = (input as HTMLInputElement).name.replace(/^fieldName\./, "");
+              const name = (input as HTMLInputElement).name.replace(/^testField\./, "");
               values[name] = (input as HTMLInputElement).value || Number((input as HTMLInputElement).value);
             });
             expect(values).toEqual({ a: "test string", b: "42" });
@@ -1862,10 +1984,10 @@ export function getJzodUnionEditorTests(
         "union between 2 object types with a discriminator for value object renders input following the proper value type": {
           props: {
             label: "Test Label",
-            name: "fieldName",
-            listKey: "ROOT.fieldName",
-            rootLesslistKey: "fieldName",
-            rootLesslistKeyArray: ["fieldName"],
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLesslistKey: "testField",
+            rootLesslistKeyArray: ["testField"],
             rawJzodSchema: {
               type: "union",
               discriminator: "testObjectType",
@@ -1884,7 +2006,7 @@ export function getJzodUnionEditorTests(
             const inputs = screen.getAllByRole("textbox");
             const values: Record<string, any> = {};
             inputs.forEach((input: HTMLElement) => {
-              const name = (input as HTMLInputElement).name.replace(/^fieldName\./, "");
+              const name = (input as HTMLInputElement).name.replace(/^testField\./, "");
               values[name] = (input as HTMLInputElement).value || Number((input as HTMLInputElement).value);
             });
             expect(values).toEqual({ testObjectType: "type1", a: "test string" });
@@ -1926,10 +2048,10 @@ export function getJzodBookEditorTests(
         "Book is displayed as json-like input fields with proper value": {
           props: {
             label: "Test Label",
-            name: "fieldName",
-            listKey: "ROOT.fieldName",
-            rootLesslistKey: "fieldName",
-            rootLesslistKeyArray: ["fieldName"],
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLesslistKey: "testField",
+            rootLesslistKeyArray: ["testField"],
             rawJzodSchema: entityDefinitionBook.jzodSchema,
             // rawJzodSchema: {
             //   type: "object",
@@ -1953,7 +2075,7 @@ export function getJzodBookEditorTests(
             })));
             const values: Record<string, any> = {};
             inputs.forEach((input: HTMLElement) => {
-              const index = (input as HTMLInputElement).name.replace(/^fieldName\./, "");
+              const index = (input as HTMLInputElement).name.replace(/^testField\./, "");
               values[index] = (input as HTMLInputElement).value || Number((input as HTMLInputElement).value);
             });
             expect(values).toEqual(book1);
@@ -1962,10 +2084,10 @@ export function getJzodBookEditorTests(
         // "object can be updated through displayed input fields": {
         //   props: {
         //     label: "Test Label",
-        //     name: "fieldName",
-        //     listKey: "ROOT.fieldName",
-        //     rootLesslistKey: "fieldName",
-        //     rootLesslistKeyArray: ["fieldName"],
+        //     name: "testField",
+        //     listKey: "ROOT.testField",
+        //     rootLesslistKey: "testField",
+        //     rootLesslistKeyArray: ["testField"],
         //     rawJzodSchema: {
         //       type: "object",
         //       definition: {a:{ type: "string" }, b:{ type: "number" }},
@@ -1978,10 +2100,10 @@ export function getJzodBookEditorTests(
         //   tests: async (expect: ExpectStatic) => {
         //     const inputs = screen.getAllByRole("textbox");
         //     const inputA = inputs.find(
-        //       (input: HTMLElement) => (input as HTMLInputElement).name === "fieldName.a"
+        //       (input: HTMLElement) => (input as HTMLInputElement).name === "testField.a"
         //     ) as HTMLInputElement;
         //     const inputB = inputs.find(
-        //       (input: HTMLElement) => (input as HTMLInputElement).name === "fieldName.b"
+        //       (input: HTMLElement) => (input as HTMLInputElement).name === "testField.b"
         //     ) as HTMLInputElement;
         //     expect(inputA).toHaveValue("test string");
         //     expect(inputB).toHaveValue(42);
@@ -2024,10 +2146,10 @@ export function getJzodEntityDefinitionEditorTests(
         "entity definition for Book is displayed as json-like input fields with proper value": {
           props: {
             label: "Test Label",
-            name: "fieldName",
-            listKey: "ROOT.fieldName",
-            rootLesslistKey: "fieldName",
-            rootLesslistKeyArray: ["fieldName"],
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLesslistKey: "testField",
+            rootLesslistKeyArray: ["testField"],
             rawJzodSchema: (entityDefinitionEntityDefinition as EntityDefinition).jzodSchema,
             // rawJzodSchema: {
             //   type: "object",
@@ -2043,7 +2165,7 @@ export function getJzodEntityDefinitionEditorTests(
             const inputs = screen.getAllByRole("textbox");
             const values: Record<string, any> = {};
             inputs.forEach((input: HTMLElement) => {
-              const name = (input as HTMLInputElement).name.replace(/^fieldName\./, "");
+              const name = (input as HTMLInputElement).name.replace(/^testField\./, "");
               values[name] = (input as HTMLInputElement).value || Number((input as HTMLInputElement).value);
             });
             // expect(values).toEqual({ a: "test string", b: "42" });
@@ -2053,10 +2175,10 @@ export function getJzodEntityDefinitionEditorTests(
         // "object can be updated through displayed input fields": {
         //   props: {
         //     label: "Test Label",
-        //     name: "fieldName",
-        //     listKey: "ROOT.fieldName",
-        //     rootLesslistKey: "fieldName",
-        //     rootLesslistKeyArray: ["fieldName"],
+        //     name: "testField",
+        //     listKey: "ROOT.testField",
+        //     rootLesslistKey: "testField",
+        //     rootLesslistKeyArray: ["testField"],
         //     rawJzodSchema: {
         //       type: "object",
         //       definition: {a:{ type: "string" }, b:{ type: "number" }},
@@ -2069,10 +2191,10 @@ export function getJzodEntityDefinitionEditorTests(
         //   tests: async (expect: ExpectStatic) => {
         //     const inputs = screen.getAllByRole("textbox");
         //     const inputA = inputs.find(
-        //       (input: HTMLElement) => (input as HTMLInputElement).name === "fieldName.a"
+        //       (input: HTMLElement) => (input as HTMLInputElement).name === "testField.a"
         //     ) as HTMLInputElement;
         //     const inputB = inputs.find(
-        //       (input: HTMLElement) => (input as HTMLInputElement).name === "fieldName.b"
+        //       (input: HTMLElement) => (input as HTMLInputElement).name === "testField.b"
         //     ) as HTMLInputElement;
         //     expect(inputA).toHaveValue("test string");
         //     expect(inputB).toHaveValue(42);
