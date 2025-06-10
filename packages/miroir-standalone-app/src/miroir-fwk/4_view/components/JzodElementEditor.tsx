@@ -67,6 +67,7 @@ import { JzodEnumEditor } from "./JzodEnumEditor.js";
 import { JzodLiteralEditor } from "./JzodLiteralEditor.js";
 import { MenuItem } from "@mui/material";
 import { JzodElementEditorProps } from "./JzodElementEditorInterface.js";
+import { getItemsOrder, LineIconButton, SizedAddBox, SizedButton, SmallIconButton, StyledSelect } from "./Style.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -93,37 +94,31 @@ export interface EditorAttribute {
 // ################################################################################################
 // ################################################################################################
 // #####################################################################################################
-const SizedButton = styled(Button)(({ theme }) => ({
-  height: "1em",
-  width: "auto",
-  padding: "0px",
-}));
-const SizedAddBox = styled(AddBox)(({ theme }) => ({ height: "1em", width: "1em" }));
-const SizedIcon = styled(Icon)(({ theme }) => ({ height: "1em", width: "1em" }));
-// const SizedIcon = styled(Icon)(({ theme }) => ({height: "0.5em", width: "0.5em", padding: 0, boxSizing:"border-box"}));
-// const SizedIcon = styled(Icon)(({ theme }) => ({sx: { }, fontSize:"small", padding: 0, boxSizing:"border-box"}));
-// const SizedIcon = styled(Icon)(({ theme }) => ({height: 0.5, width: 0.5, padding: 0, }));
-// const SizedIcon = styled(Icon)(({ theme }) => ({ fontSize:"inherit" }));
-const SmallIconButton = styled(IconButton)(({ theme }) => ({ size: "small" }));
-// const LineIconButton = styled(IconButton)(({ theme }) => ({ maxHeight: "1em", transform: {scale: 1.5} }));
-const LineIconButton = styled(IconButton)(({ theme }) => ({
-  padding: 0,
-  // boxSizing: "border-box",
-  maxHeight: "1em",
-  // transform: "scale(1.5)",
-}));
-// const SizedIcon = styled(Clear)(({ theme }) => ({height: "10px", width: "10px"}));
-// const SizedIcon = styled(Clear)(({ theme }) => ({size:}));
-const StyledSelect = styled(Select)(({ theme }) => ({
-  // backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
-  // ...theme.typography.body2,
-  // padding: theme.spacing(1),
-  // textAlign: "left",
-  // display: "flex",
-  maxHeight: "1.5em",
-  // height: '80vh',
-  // color: theme.palette.text.secondary,
-}));
+// const SizedButton = styled(Button)(({ theme }) => ({
+//   height: "1em",
+//   width: "auto",
+//   padding: "0px",
+// }));
+// const SizedAddBox = styled(AddBox)(({ theme }) => ({ height: "1em", width: "1em" }));
+// const SizedIcon = styled(Icon)(({ theme }) => ({ height: "1em", width: "1em" }));
+// const SmallIconButton = styled(IconButton)(({ theme }) => ({ size: "small" }));
+// // const LineIconButton = styled(IconButton)(({ theme }) => ({ maxHeight: "1em", transform: {scale: 1.5} }));
+// const LineIconButton = styled(IconButton)(({ theme }) => ({
+//   padding: 0,
+//   // boxSizing: "border-box",
+//   maxHeight: "1em",
+//   // transform: "scale(1.5)",
+// }));
+// const StyledSelect = styled(Select)(({ theme }) => ({
+//   // backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
+//   // ...theme.typography.body2,
+//   // padding: theme.spacing(1),
+//   // textAlign: "left",
+//   // display: "flex",
+//   maxHeight: "1.5em",
+//   // height: '80vh',
+//   // color: theme.palette.text.secondary,
+// }));
 
 // const Item = styled(Paper)(({ theme }) => ({
 //   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -136,14 +131,14 @@ const StyledSelect = styled(Select)(({ theme }) => ({
 //   color: theme.palette.text.secondary,
 // }));
 
-const labelStyle = {
-  paddingRight: "10px",
-};
+// const labelStyle = {
+//   paddingRight: "10px",
+// };
 
-const StyledLabel = styled("label")(({ theme }) => ({
-  ...theme,
-  paddingRight: "10px",
-}));
+// const StyledLabel = styled("label")(({ theme }) => ({
+//   ...theme,
+//   paddingRight: "10px",
+// }));
 
 
 // ################################################################################################
@@ -191,28 +186,18 @@ export const ExpandOrFoldObjectAttributes = (props: {
   );
 };
 
-// #####################################################################################################
-function getItemsOrder(currentValue: any, resolvedJzodSchema: JzodElement | undefined) {
-  return resolvedJzodSchema?.type == "object" &&
-    typeof currentValue == "object" &&
-    currentValue !== null
-    ? Object.keys(currentValue)
-    : Array.isArray(currentValue)
-    ? currentValue.map((e: any, k: number) => k)
-    : [];
-}
 
-// #####################################################################################################
-function Fallback({ error, resetErrorBoundary }: any) {
-  // Call resetErrorBoundary() to reset the error boundary and retry the render.
+// // #####################################################################################################
+// function Fallback({ error, resetErrorBoundary }: any) {
+//   // Call resetErrorBoundary() to reset the error boundary and retry the render.
 
-  return (
-    <div role="alert">
-      <p>Something went wrong:</p>
-      <pre style={{ color: "red" }}>{error.message}</pre>
-    </div>
-  );
-}
+//   return (
+//     <div role="alert">
+//       <p>Something went wrong:</p>
+//       <pre style={{ color: "red" }}>{error.message}</pre>
+//     </div>
+//   );
+// }
 
 // #####################################################################################################
 const objectTypes: string[] = ["record", "object", "union"];
@@ -900,16 +885,16 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         //       JSON.stringify(unfoldedRawSchema, null, 2)
         //   );
         // }
-        log.info(
-          "JzodElementEditor",
-          props.listKey,
-          "count",
-          count,
-          "props.resolvedElementJzodSchema",
-          JSON.stringify(props.resolvedElementJzodSchema, null, 2),
-          "unfoldedRawSchema",
-          JSON.stringify(unfoldedRawSchema, null, 2)
-        );
+        // log.info(
+        //   "JzodElementEditor object",
+        //   props.listKey,
+        //   "count",
+        //   count,
+        //   "props.resolvedElementJzodSchema",
+        //   JSON.stringify(props.resolvedElementJzodSchema, null, 2),
+        //   "unfoldedRawSchema",
+        //   JSON.stringify(unfoldedRawSchema, null, 2)
+        // );
         // #######################
         // uses setFormState to update the formik state
         const addNewRecordAttribute = useCallback(async () => {
@@ -1032,7 +1017,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         // ########################################################################################
         // const allSchemaObjectAttributes = unfoldedRawSchema.type == "record"?["ANY"]:
         return (
-          <>
+          <div id={props.rootLesslistKey} key={props.rootLesslistKey}>
             <span id={props.rootLesslistKey} key={props.rootLesslistKey + "head"}>
               <span>
                 {"{"}
@@ -1335,6 +1320,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                       : "hidden";
                     return (
                       <div
+                        // key={attributeListKey}
                         key={attributeListKey}
                         // style={{ marginLeft: `calc(${usedIndentLevel}*(${indentShift}))`}}
                         // style={{ marginLeft: `calc(${indentShift})`}}
@@ -1453,7 +1439,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               {"}"}
             </div>
             {/* <p style={{}}/> */}
-          </>
+          </div>
         );
         break;
       }
@@ -1463,6 +1449,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         return (
           <JzodArrayEditor
             {...props}
+            key={props.rootLesslistKey}
             itemsOrder={itemsOrder}
             setItemsOrder={setItemsOrder}
             hiddenFormItems={hiddenFormItems}
@@ -1482,19 +1469,30 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       case "boolean": {
         // log.info("JzodElementEditor boolean!",props.listKey,"formState",props.formState)
         return (
-          <>
-            <Checkbox
-              defaultChecked={formik.values[props.rootLesslistKey]}
-              id={props.listKey}
-              // name={props.listKey}
-              {...formik.getFieldProps(props.listKey)}
-              // onChange={handleSelectValueChange}
-            />
-          </>
+          <Checkbox
+            defaultChecked={formik.values[props.rootLesslistKey]}
+            id={props.rootLesslistKey}
+            key={props.rootLesslistKey}
+            // name={props.listKey}
+            {...formik.getFieldProps(props.rootLesslistKey)}
+            // onChange={handleSelectValueChange}
+          />
         );
         break;
       }
-      case "number":
+      case "number": {
+        // log.info("JzodElementEditor number!", props.listKey, "formState", props.formState);
+        return (
+          <input
+            type="number"
+            id={props.rootLesslistKey}
+            key={props.rootLesslistKey}
+            role="textbox"
+            {...formik.getFieldProps(props.rootLesslistKey)}
+          />
+        );
+        break;
+      }
       case "bigint": {
         // log.info(
         //   "JzodElementEditor number/bigint!",
@@ -1506,32 +1504,38 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         //   formik.getFieldProps(props.rootLesslistKey).value,
         // )
         return (
-            <>
-            {/* <label htmlFor={props.listKey}>{displayedLabel}: </label> */}
-            <input
-              type="number"
-              id={props.rootLesslistKey}
-              // role="textbox"
-              role="textbox"
-              {...formik.getFieldProps(props.rootLesslistKey)}
-              value={currentValue}
-            />
-            </>
+          <input
+            // type="number"
+            type="text"
+            id={props.rootLesslistKey}
+            key={props.rootLesslistKey}
+            // role="textbox"
+            role="textbox"
+            {...formik.getFieldProps(props.rootLesslistKey)}
+            // value={formik.values[props.rootLesslistKey].toString()} // Convert bigint to string
+            value={currentValue.toString()} // Convert bigint to string
+            onChange={(e) => {
+              const value = e.target.value;
+              // formik.setFieldValue(props.rootLesslistKey, value ? BigInt(value) : BigInt(0)); // Convert string back to bigint
+              formik.setFieldValue(props.rootLesslistKey, value ? BigInt(value) : BigInt(0)); // Convert string back to bigint
+            }}
+            // value={bigintValue.toString()} // Convert bigint to string
+            // onChange={(e) => setBigintValue(BigInt(e.target.value))} // Convert string back to bigint
+            // value={currentValue}
+          />
         );
         break;
       }
       case "string": {
         // log.info("selectList for targetEntity", props.resolvedJzodSchema.tag?.value?.targetEntity, "value", selectList, "props.foreignKeyObjects", props.foreignKeyObjects);
         return (
-            <>
-            {/* <label htmlFor={props.listKey}>{displayedLabel}: </label> */}
-            <input
-              type="text"
-              role="textbox"
-              id={props.rootLesslistKey}
-              {...formik.getFieldProps(props.rootLesslistKey)}
-            />
-            </>
+          <input
+            type="text"
+            role="textbox"
+            id={props.rootLesslistKey}
+            key={props.rootLesslistKey}
+            {...formik.getFieldProps(props.rootLesslistKey)}
+          />
         );
         break;
       }
@@ -1551,10 +1555,9 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         //   </>
         // )
         return props.resolvedElementJzodSchema.tag?.value?.targetEntity ? (
-          <>
-            {/* <label htmlFor={props.listKey}>{displayedLabel}: </label> */}
-            <StyledSelect
-              id={props.listKey}
+          <StyledSelect
+              id={props.rootLesslistKey}
+              key={props.rootLesslistKey}
               // role="textbox"
               aria-label={props.label}
               labelId="demo-simple-select-label"
@@ -1576,17 +1579,14 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               ))}
 
             </StyledSelect>
-          </>
         ) : (
-          <>
-            {/* <label htmlFor={props.listKey}>{displayedLabel}: </label> */}
-            <input
-              type="text"
-              id={props.rootLesslistKey}
-              role="textbox"
-              {...formik.getFieldProps(props.rootLesslistKey)}
-            />
-          </>
+          <input
+            type="text"
+            id={props.rootLesslistKey}
+            key={props.rootLesslistKey}
+            role="textbox"
+            {...formik.getFieldProps(props.rootLesslistKey)}
+          />
         );
         break;
       }
@@ -1596,6 +1596,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         return (
           <JzodLiteralEditor
             name={props.name}
+            key={props.rootLesslistKey}
             listKey={props.listKey}
             rootLesslistKey={props.rootLesslistKey}
             // value={currentValue}
@@ -1719,6 +1720,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         return (
           <JzodEnumEditor
             name={props.name}
+            key={props.rootLesslistKey}
             listKey={props.listKey}
             rootLesslistKey={props.rootLesslistKey}
             rootLesslistKeyArray={props.rootLesslistKeyArray}

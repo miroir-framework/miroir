@@ -1,5 +1,6 @@
 ﻿import {
   adminConfigurationDeploymentMiroir,
+  getDefaultValueForJzodSchema,
   JzodArray,
   JzodElement,
   JzodTuple,
@@ -14,7 +15,7 @@
   UnfoldJzodSchemaOnceReturnType,
   UnfoldJzodSchemaOnceReturnTypeOK,
 } from "miroir-core";
-import React from "react";
+import React, { useCallback } from "react";
 import { packageName } from "../../../constants";
 import { cleanLevel } from "../constants";
 import {
@@ -25,6 +26,7 @@ import { useCurrentModel } from "../ReduxHooks";
 import { ExpandOrFoldObjectAttributes, JzodElementEditor } from "./JzodElementEditor";
 import { JzodArrayEditorProps } from "./JzodElementEditorInterface";
 import { useFormikContext } from "formik";
+import { getItemsOrder, SizedAddBox, SizedButton } from "./Style";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -144,11 +146,156 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
   const arrayValueObject = resolvePathOnObject(formik.values, rootLesslistKeyArray);
   // log.info("array",arrayValueObject, "resolvedJzodSchema",props.resolvedJzodSchema);
 
+  // const addNewArrayItem = useCallback(
+  //   async (newItem: any) => {
+  //     if (!rawJzodSchema || rawJzodSchema.type != "array") {
+  //       throw new Error(
+  //         "JzodArrayEditor addNewArrayItem called with a non-array schema: " +
+  //           JSON.stringify(rawJzodSchema, null, 2)
+  //       );
+  //     }
+  //     const newArrayValue = [
+  //       ...arrayValueObject,
+  //       getDefaultValueForJzodSchema(rawJzodSchema.definition),
+  //     ];
+
+  //     const newAttributeValue = {
+  //       [rootLesslistKey]: newArrayValue,
+  //     };
+  //     log.info(
+  //       "JzodArrayEditor addNewArrayItem",
+  //       "listKey",
+  //       listKey,
+  //       "rootLesslistKey",
+  //       rootLesslistKey,
+  //       "rootLesslistKeyArray",
+  //       rootLesslistKeyArray,
+  //       // "newItem",
+  //       // newItem,
+  //       "rawJzodSchema",
+  //       rawJzodSchema,
+  //       "newAttributeValue",
+  //       JSON.stringify(newAttributeValue, null, 2),
+  //       "arrayValueObject",
+  //       JSON.stringify(arrayValueObject, null, 2),
+  //       "formik.values",
+  //       JSON.stringify(formik.values, null, 2),
+  //       "itemsOrder",
+  //       JSON.stringify(itemsOrder, null, 2)
+  //       // `"${newItemValue}"`,
+  //     );
+  //     // formik.setFieldValue(
+  //     //   rootLesslistKey,
+  //     //   [...arrayValueObject, newItemValue],
+  //     //   // [...formik.values[rootLesslistKey], newItemValue],
+  //     //   false // do not validate
+  //     // );
+  //     formik.setValues({
+  //       ...formik.values,
+  //       // [rootLesslistKey]: newArrayValue,
+  //       ...newAttributeValue,
+  //       // newArrayValue
+  //       // [rootLesslistKey]: [...formik.values[rootLesslistKey], newItemValue],
+  //     });
+  //     setItemsOrder(getItemsOrder(newArrayValue, resolvedElementJzodSchema));
+
+  //     // log.info(
+  //     //   "JzodArrayEditor addNewArrayItem after setValues",
+  //     //   "formik.values",
+  //     //   JSON.stringify(formik.values, null, 2),
+  //     // );
+  //     setTimeout(() => {
+  //       log.info("Updated formik.values:", JSON.stringify(formik.values, null, 2));
+  //       log.info("Updated itemsOrder:", JSON.stringify(itemsOrder, null, 2));
+  //     }, 0);
+  //   },
+  //   [
+  //     rawJzodSchema,
+  //     listKey,
+  //     rootLesslistKey,
+  //     rootLesslistKeyArray,
+  //     formik.values,
+  //     arrayValueObject,
+  //     itemsOrder,
+  //   ]
+  // );
+  const addNewArrayItem = useCallback(
+    async () => {
+      if (!rawJzodSchema || rawJzodSchema.type !== "array") {
+        throw new Error(
+          "JzodArrayEditor addNewArrayItem called with a non-array schema: " +
+            JSON.stringify(rawJzodSchema, null, 2)
+        );
+      }
+
+      const newItem = getDefaultValueForJzodSchema(rawJzodSchema.definition)
+      // log.info(
+      //   "JzodArrayEditor addNewArrayItem",
+      //   "newItem",
+      //   JSON.stringify(newItem, null, 2),
+      // );
+      // Create the new array value
+      const newArrayValue = [
+        ...arrayValueObject,
+        newItem,
+        // "value4",
+        // "",
+      ];
+
+      // log.info(
+      //   "JzodArrayEditor addNewArrayItem",
+      //   "listKey",
+      //   listKey,
+      //   "rootLesslistKey",
+      //   rootLesslistKey,
+      //   "rootLesslistKeyArray",
+      //   rootLesslistKeyArray,
+      //   "rawJzodSchema",
+      //   rawJzodSchema,
+      //   "newArrayValue",
+      //   JSON.stringify(newArrayValue, null, 2),
+      //   "arrayValueObject",
+      //   JSON.stringify(arrayValueObject, null, 2),
+      //   "formik.values",
+      //   JSON.stringify(formik.values, null, 2),
+      //   "itemsOrder",
+      //   JSON.stringify(itemsOrder, null, 2),
+      //   "getItemsOrder(newArrayValue, resolvedElementJzodSchema)",
+      //   JSON.stringify(getItemsOrder(newArrayValue, resolvedElementJzodSchema), null, 2)
+      // );
+
+      // Update the specific field in Formik state
+      formik.setFieldValue("fieldName", newArrayValue, false); // Disable validation
+
+      // Update the items order
+      setItemsOrder(getItemsOrder(newArrayValue, resolvedElementJzodSchema));
+    },
+    [
+      formik,
+      rawJzodSchema,
+      arrayValueObject,
+      resolvedElementJzodSchema,
+      setItemsOrder,
+    ]
+  );
   return (
     // <div style={{ marginLeft: `calc(${usedIndentLevel}*(${indentShift}))` }}>
     // <div style={{ marginLeft: `calc(${indentShift})` }}>
-    <>
-      <div>{label}:</div>
+    <div id={rootLesslistKey} key={rootLesslistKey}>
+      <div>
+        {label}:
+        {rawJzodSchema.type == "array" ? (
+          <div>
+            {/* <SizedButton variant="text" name={listKey + ".add"} onClick={addNewArrayItem}> */}
+            <SizedButton variant="text" aria-label={listKey + ".add"} onClick={addNewArrayItem}>
+              <SizedAddBox />
+            </SizedButton>
+            add new item:
+          </div>
+        ) : (
+          <div>JzodArrayEditor not an array! {JSON.stringify(rawJzodSchema)}</div>
+        )}
+      </div>
       <span>
         {" ["}{" "}
         <ExpandOrFoldObjectAttributes
@@ -158,6 +305,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
         ></ExpandOrFoldObjectAttributes>
         <div
           id={listKey + ".inner"}
+          key={listKey + ".inner"}
           style={{ display: hiddenFormItems[listKey] ? "none" : "block" }}
         >
           {(itemsOrder as number[])
@@ -195,9 +343,8 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
                     : undefined
                   : undefined;
               const resolutionError =
-                currentArrayElementRawDefinition &&
-                currentArrayElementRawDefinition.status != "ok";
-                // currentArrayElementRawDefinition.find((e) => e.status != "ok");
+                currentArrayElementRawDefinition && currentArrayElementRawDefinition.status != "ok";
+              // currentArrayElementRawDefinition.find((e) => e.status != "ok");
               if (!currentArrayElementRawDefinition || resolutionError) {
                 throw new Error(
                   "JzodArrayEditor could not unfold jzod schema: " +
@@ -218,7 +365,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
               //   JSON.stringify(attributeParam[1], null, 2)
               // );
               return (
-                <div>
+                <div key={rootLesslistKey + "." + index}>
                   {/* <div>
                     <pre>
                       JzodArray: {JSON.stringify(resolvedElementJzodSchema, null, 2)}
@@ -277,6 +424,6 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
         </div>
         <div style={{ marginLeft: `calc(${indentShift})` }}>{"]"}</div>
       </span>
-    </>
+    </div>
   );
 };

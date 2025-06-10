@@ -245,7 +245,7 @@ export function unfoldJzodSchemaOnce(
       } else {
         extendedJzodSchema = jzodSchema
       }
-      log.info("unfoldJzodSchemaOnce object extendedJzodSchema",extendedJzodSchema)
+      // log.info("unfoldJzodSchemaOnce object extendedJzodSchema",extendedJzodSchema)
 
       const resolvedObjectEntries:[string, JzodElement][] = Object.entries(extendedJzodSchema.definition).map(
         (e: [string, any]) => {

@@ -237,17 +237,39 @@ describe("jzod.unfoldSchemaForValue", () => {
       //   },
       //   testValueObject: "myLiteral",
       // },
-      // // simpleType
-      // test020: {
-      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-      //   testSchema: {
-      //     type: "string",
-      //   },
-      //   expectedResult: {
-      //     type: "string",
-      //   },
-      //   testValueObject: "myString",
-      // },
+      // simpleType: string
+      test020: {
+        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+        testSchema: {
+          type: "string",
+        },
+        expectedResult: {
+          type: "string",
+        },
+        testValueObject: "myString",
+      },
+      // simpleType: boolean TRUE
+      test022: {
+        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+        testSchema: {
+          type: "boolean",
+        },
+        expectedResult: {
+          type: "boolean",
+        },
+        testValueObject: true,
+      },
+      // simpleType: boolean TRUE
+      test024: {
+        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+        testSchema: {
+          type: "boolean",
+        },
+        expectedResult: {
+          type: "boolean",
+        },
+        testValueObject: false,
+      },
       // // schemaReference (plain, simpleType, non-recursive)
       // test030: {
       //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,

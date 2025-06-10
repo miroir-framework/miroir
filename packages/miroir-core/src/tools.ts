@@ -50,47 +50,28 @@ export type ResultAccessPath = (string | number | {
 
 // ################################################################################################
 // TODO: unit tests!
-export function safeResolvePathOnObject(valueObject:any, path: ResultAccessPath) {
+export function safeResolvePathOnObject(valueObject: any, path: ResultAccessPath) {
   if (path.length === 0 || valueObject === undefined) {
     return valueObject;
   }
-  return path.reduce((acc, curr, index) => {
+  return path.reduce((acc, curr) => {
+    if (acc === undefined || acc === null) {
+      return undefined;
+    }
     if (typeof curr === "object") {
       if (typeof acc !== "object" || !Array.isArray(acc)) {
         return undefined;
-        // throw new Error(
-        //   "resolvePathOnObject value object=" +
-        //     valueObject +
-        //     ", path=" +
-        //     path +
-        //     " either attribute " +
-        //     curr +
-        //     " not found in " +
-        //     acc +
-        //     " or not last in path but leading to undefined " +
-        //     (curr as any)[acc]
-        // );
       } else {
-        return acc.map((item: any) => item[curr.key]);
+        return acc.map((item: any) => item?.[curr.key]);
       }
     } else {
-      // if (!Object.hasOwn(acc, curr)) {
-      if (!acc[curr]) {
-        // throw new Error(
-        //   "resolvePathOnObject value object=" +
-        //     valueObject +
-        //     ", path=" +
-        //     path +
-        //     " either attribute " +
-        //     curr +
-        //     " not found in " +
-        //     acc +
-        //     " or not last in path but leading to undefined " +
-        //     (curr as any)[acc]
-        // );
+      if (
+        (typeof acc !== "object") ||
+        (Array.isArray(acc) && (Number(curr) >= acc.length || Number(curr) < 0)) ||
+        (!Array.isArray(acc) && !Object.hasOwn(acc, curr))
+      ) {
         return undefined;
       } else {
-        // console.log("safeResolvePathOnObject called with", valueObject, "path", path, "result", acc[curr])
         return acc[curr];
       }
     }
@@ -98,6 +79,7 @@ export function safeResolvePathOnObject(valueObject:any, path: ResultAccessPath)
 }
 // ################################################################################################
 export function resolvePathOnObject(valueObject:any, path: ResultAccessPath) {
+  // console.log("resolvePathOnObject called with", valueObject, "path", path);
   return path.reduce((acc, curr, index) => {
     if (typeof curr === "object") {
       if (typeof acc !== "object" || !Array.isArray(acc)) {
@@ -117,17 +99,25 @@ export function resolvePathOnObject(valueObject:any, path: ResultAccessPath) {
         return acc.map((item: any) => item[curr.key]);
       }
     } else {
-      // if (!Object.hasOwn(acc, curr)) {
-      if (!acc[curr]) {
+      if (typeof acc !== "object" ||
+        (Array.isArray(acc) && acc.length < Number(curr) ) ||
+        (!Array.isArray(acc) && !Object.hasOwn(acc, curr )) 
+      ) {
         throw new Error(
           "resolvePathOnObject value object=" +
-            JSON.stringify(valueObject) +
+            JSON.stringify(acc) +
+            " of type " +
+            typeof valueObject +
             ", path=" +
             path +
             " either attribute " +
             curr +
+            " of type " +
+            typeof curr +
             " not found in " +
             JSON.stringify(acc) +
+            " of type " +
+            typeof acc +
             " or not last in path but leading to undefined " +
             (curr as any)[acc]
         );

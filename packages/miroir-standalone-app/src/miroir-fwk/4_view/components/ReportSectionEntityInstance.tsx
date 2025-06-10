@@ -171,41 +171,41 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const foreignKeyObjectsFetchQueryParams: SyncQueryRunnerParams<DeploymentEntityState> = useMemo(
     () =>
       getQueryRunnerParamsForDeploymentEntityState(
-            props.deploymentUuid &&
-              resolvedJzodSchema.element.type == "uuid" &&
-              resolvedJzodSchema.element.tag?.value?.targetEntity
-              ? {
-                  queryType: "boxedQueryWithExtractorCombinerTransformer",
-                  deploymentUuid: props.deploymentUuid,
-                  pageParams: {},
-                  queryParams: {},
-                  contextResults: {},
-                  extractors: {
-                    [resolvedJzodSchema.element.tag?.value?.targetEntity]: {
-                      extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                      applicationSection: getApplicationSection(
-                        props.deploymentUuid,
-                        resolvedJzodSchema.element.tag?.value?.targetEntity
-                      ),
-                      parentName: "",
-                      parentUuid: resolvedJzodSchema.element.tag?.value?.targetEntity,
-                    },
-                  },
-                }
-              : dummyDomainManyQueryWithDeploymentUuid,
-            deploymentEntityStateSelectorMap
-          ),
-        [deploymentEntityStateSelectorMap, props.deploymentUuid, resolvedJzodSchema]
-      );
+        props.deploymentUuid &&
+          resolvedJzodSchema.element.type == "uuid" &&
+          resolvedJzodSchema.element.tag?.value?.targetEntity
+          ? {
+              queryType: "boxedQueryWithExtractorCombinerTransformer",
+              deploymentUuid: props.deploymentUuid,
+              pageParams: {},
+              queryParams: {},
+              contextResults: {},
+              extractors: {
+                [resolvedJzodSchema.element.tag?.value?.targetEntity]: {
+                  extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                  applicationSection: getApplicationSection(
+                    props.deploymentUuid,
+                    resolvedJzodSchema.element.tag?.value?.targetEntity
+                  ),
+                  parentName: "",
+                  parentUuid: resolvedJzodSchema.element.tag?.value?.targetEntity,
+                },
+              },
+            }
+          : dummyDomainManyQueryWithDeploymentUuid,
+        deploymentEntityStateSelectorMap
+      ),
+    [deploymentEntityStateSelectorMap, props.deploymentUuid, resolvedJzodSchema]
+  );
   
-      const foreignKeyObjects: Record<string, EntityInstancesUuidIndex> =
-        useDeploymentEntityStateQuerySelectorForCleanedResult(
-          deploymentEntityStateSelectorMap.runQuery as SyncQueryRunner<
-            DeploymentEntityState,
-            Domain2QueryReturnType<DomainElementSuccess>
-          >,
-          foreignKeyObjectsFetchQueryParams
-        );
+  const foreignKeyObjects: Record<string, EntityInstancesUuidIndex> =
+    useDeploymentEntityStateQuerySelectorForCleanedResult(
+      deploymentEntityStateSelectorMap.runQuery as SyncQueryRunner<
+        DeploymentEntityState,
+        Domain2QueryReturnType<DomainElementSuccess>
+      >,
+      foreignKeyObjectsFetchQueryParams
+    );
   
   // ##############################################################################################
   const handleDisplayAsStructuredElementSwitchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
