@@ -15,14 +15,15 @@ export interface JzodEditorPropsRoot {
   // enumValues: string[];
   // onChange: (event: SelectChangeEvent<any>) => void;
   // forceTestingMode?: boolean;
-  // unionInformation:
-  //   | {
-  //       jzodSchema: JzodUnion;
-  //       discriminator: string;
-  //       discriminatorValues: string[];
-  //       setItemsOrder: React.Dispatch<React.SetStateAction<any[]>>;
-  //     }
-  //   | undefined;
+  unionInformation?:
+    | {
+        jzodSchema: JzodUnion;
+        discriminator: string;
+        discriminatorValues: string[];
+        setItemsOrder: React.Dispatch<React.SetStateAction<any[]>>;
+      }
+    | undefined;
+  handleSelectLiteralChange?: (event: any) => void;
 }
 
 // ################################################################################################
@@ -98,7 +99,17 @@ export interface JzodEnumEditorProps extends JzodEditorPropsRoot {
     | undefined;
 }
 
+// #################################################################################################
 export interface JzodLiteralEditorProps extends JzodEditorPropsRoot {
+  // unionInformation:
+  //   | {
+  //       jzodSchema: JzodUnion;
+  //       discriminator: string;
+  //       discriminatorValues: string[];
+  //       setItemsOrder: React.Dispatch<React.SetStateAction<any[]>>;
+  //     }
+  //   | undefined;
+  // handleSelectLiteralChange: (event: any) => void;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 

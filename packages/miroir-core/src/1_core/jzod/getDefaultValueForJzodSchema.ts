@@ -20,7 +20,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 export function getDefaultValueForJzodSchema(
   jzodSchema:JzodElement
 ): any {
-  log.info("called with jzodSchema", jzodSchema)
+  log.info("getDefaultValueForJzodSchema called with jzodSchema", jzodSchema)
   if (jzodSchema.optional) {
     return undefined
   }

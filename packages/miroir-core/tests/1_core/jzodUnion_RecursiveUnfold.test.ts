@@ -1,14 +1,44 @@
 import { describe, expect, it } from "vitest";
 import { miroirFundamentalJzodSchema } from '../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema';
 import {
+  JzodElement,
   JzodSchema,
   JzodUnion,
   MetaModel
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { jzodUnion_recursivelyUnfold, JzodUnion_RecursivelyUnfold_ReturnTypeError, JzodUnion_RecursivelyUnfold_ReturnTypeOK } from "../../src/1_core/jzod/jzodUnion_RecursivelyUnfold";
+import {
+  jzodUnion_recursivelyUnfold,
+  JzodUnion_RecursivelyUnfold_ReturnTypeError,
+  JzodUnion_RecursivelyUnfold_ReturnTypeOK,
+} from "../../src/1_core/jzod/jzodUnion_RecursivelyUnfold";
 import currentMiroirModel from "./currentMiroirModel.json";
 import currentModel from "./currentModel.json";
+import { unfoldJzodSchemaOnce } from "../../src/1_core/jzod/JzodUnfoldSchemaOnce";
 
+function local_jzodUnion_recursivelyUnfold(
+  schema: JzodUnion,
+  relativeReferenceJzodContext: { [k: string]: JzodElement } = {}
+): JzodUnion_RecursivelyUnfold_ReturnTypeOK | JzodUnion_RecursivelyUnfold_ReturnTypeError {
+  // TODO: test on schemaReference which unfold to unions
+  // const unfoldedSchema = unfoldJzodSchemaOnce(
+  //   miroirFundamentalJzodSchema as JzodSchema, // context.miroirFundamentalJzodSchema,
+  //   schema,
+  //   currentModel as any as MetaModel,
+  //   currentMiroirModel as any as MetaModel
+  // );
+  // if (unfoldedSchema.status === "error") {
+  //   throw new Error(`Error while unfolding JzodUnion: ${unfoldedSchema.error}`);
+  // }
+  return jzodUnion_recursivelyUnfold(
+    schema,
+    // unfoldedSchema as JzodUnion,
+    new Set(),
+    miroirFundamentalJzodSchema as JzodSchema,
+    currentModel as any as MetaModel,
+    currentMiroirModel as any as MetaModel,
+    relativeReferenceJzodContext
+  );
+}
 
 describe("jzodUnion_RecursiveUnfold", () => {
   it("jzodUnion_RecursiveUnfold returns basic types at the root of the union", () => {
@@ -22,14 +52,7 @@ describe("jzodUnion_RecursiveUnfold", () => {
       ],
     };
 
-    const result = jzodUnion_recursivelyUnfold(
-      schema,
-      new Set(),
-      {} as JzodSchema,
-      {} as MetaModel,
-      {} as MetaModel,
-      {}
-    );
+    const result = local_jzodUnion_recursivelyUnfold(schema);
 
     expect(result).toEqual({
       status: "ok",
@@ -59,14 +82,7 @@ describe("jzodUnion_RecursiveUnfold", () => {
       ],
     };
 
-    const result = jzodUnion_recursivelyUnfold(
-      schema,
-      new Set(),
-      miroirFundamentalJzodSchema as JzodSchema,
-      currentModel as any as MetaModel,
-      currentMiroirModel as any as MetaModel,
-      {}
-    );
+    const result = local_jzodUnion_recursivelyUnfold(schema);
 
     expect(result).toEqual({
       status: "ok",
@@ -89,14 +105,7 @@ describe("jzodUnion_RecursiveUnfold", () => {
       ],
     };
 
-    const result = jzodUnion_recursivelyUnfold(
-      schema,
-      new Set(),
-      miroirFundamentalJzodSchema as JzodSchema,
-      currentModel as any as MetaModel,
-      currentMiroirModel as any as MetaModel,
-      {MyReference: { type: "string" }}
-    );
+    const result = local_jzodUnion_recursivelyUnfold(schema, {MyReference: { type: "string" }});
 
     expect(result).toEqual({
       status: "ok",
@@ -123,14 +132,7 @@ describe("jzodUnion_RecursiveUnfold", () => {
       ],
     };
 
-    const result = jzodUnion_recursivelyUnfold(
-      schema,
-      new Set(),
-      miroirFundamentalJzodSchema as JzodSchema,
-      currentModel as any as MetaModel,
-      currentMiroirModel as any as MetaModel,
-      {MyReference: { type: "boolean" }}
-    );
+    const result = local_jzodUnion_recursivelyUnfold(schema, {MyReference: { type: "boolean" }});
 
     expect(result).toEqual({
       status: "ok",
@@ -164,14 +166,7 @@ describe("jzodUnion_RecursiveUnfold", () => {
       ],
     };
 
-    const result = jzodUnion_recursivelyUnfold(
-      schema,
-      new Set(),
-      miroirFundamentalJzodSchema as JzodSchema,
-      currentModel as any as MetaModel,
-      currentMiroirModel as any as MetaModel,
-      {MyReference: { type: "null" }}
-    );
+    const result = local_jzodUnion_recursivelyUnfold(schema, {MyReference: { type: "null" }});
 
     expect(result).toEqual({
       status: "ok",
@@ -199,21 +194,15 @@ describe("jzodUnion_RecursiveUnfold", () => {
       ],
     };
 
-    const result = jzodUnion_recursivelyUnfold(
-      schema,
-      new Set(),
-      miroirFundamentalJzodSchema as JzodSchema,
-      currentModel as any as MetaModel,
-      currentMiroirModel as any as MetaModel,
-      {
-        "MyReference": {
-            type: "union",
-            definition: [
-              { type: "string" },
-              { type: "boolean" },
-            ],
-          }}
-    );
+    const result = local_jzodUnion_recursivelyUnfold(schema, {
+      "MyReference": {
+        type: "union",
+        definition: [
+          { type: "string" },
+          { type: "boolean" },
+        ],
+      }
+    });
 
     expect(result).toEqual({
       status: "ok",
@@ -235,14 +224,7 @@ describe("jzodUnion_RecursiveUnfold", () => {
       ],
     };
 
-    const result = jzodUnion_recursivelyUnfold(
-      schema,
-      new Set(),
-      miroirFundamentalJzodSchema as JzodSchema,
-      currentModel as any as MetaModel,
-      currentMiroirModel as any as MetaModel,
-      {}
-    );
+    const result = local_jzodUnion_recursivelyUnfold(schema);
 
     expect(result.status).toBe("error");
     expect((result as JzodUnion_RecursivelyUnfold_ReturnTypeError).error).toMatch(/^Error while recursively unfolding JzodUnion/);
@@ -269,22 +251,16 @@ describe("jzodUnion_RecursiveUnfold", () => {
       ],
     };
 
-    const result = jzodUnion_recursivelyUnfold(
-      schema,
-      new Set(),
-      miroirFundamentalJzodSchema as JzodSchema,
-      currentModel as any as MetaModel,
-      currentMiroirModel as any as MetaModel,
-      {
-        "MyReference": {
-            type: "union",
-            discriminator: "myObjectType",
-            definition: [
-              { type: "object", definition: { myObjectType: { type: "literal", definition: "B"}} },
-              { type: "object", definition: { myObjectType: { type: "literal", definition: "C"}} },
-            ],
-          }}
-    );
+    const result = local_jzodUnion_recursivelyUnfold(schema, {
+      "MyReference": {
+        type: "union",
+        discriminator: "myObjectType",
+        definition: [
+          { type: "object", definition: { myObjectType: { type: "literal", definition: "B" } } },
+          { type: "object", definition: { myObjectType: { type: "literal", definition: "C" } } },
+        ],
+      }
+    });
 
     expect(result).toEqual({
       status: "ok",
@@ -319,29 +295,16 @@ describe("jzodUnion_RecursiveUnfold", () => {
         },
       ],
     };
-    const result = jzodUnion_recursivelyUnfold(
-      schema,
-      new Set(),
-      miroirFundamentalJzodSchema as JzodSchema,
-      currentModel as any as MetaModel,
-      currentMiroirModel as any as MetaModel,
-      {
-        MyReference: {
-          type: "union",
-          discriminator: "myOtherObjectType",
-          definition: [
-            {
-              type: "object",
-              definition: { myOtherObjectType: { type: "literal", definition: "B" } },
-            },
-            {
-              type: "object",
-              definition: { myOtherObjectType: { type: "literal", definition: "C" } },
-            },
-          ],
-        },
+    const result = local_jzodUnion_recursivelyUnfold(schema, {
+      MyReference: {
+        type: "union",
+        discriminator: "myOtherObjectType",
+        definition: [
+          { type: "object", definition: { myOtherObjectType: { type: "literal", definition: "B" } } },
+          { type: "object", definition: { myOtherObjectType: { type: "literal", definition: "C" } } },
+        ],
       }
-    );
+    });
     expect(result.status).toBe("error");
     expect((result as JzodUnion_RecursivelyUnfold_ReturnTypeError).error).toMatch(
       "Discriminator mismatch: parent union discriminator (myObjectType) does not match sub-union discriminator (myOtherObjectType)"

@@ -259,7 +259,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
     const discriminator = "type";
     const objA = makeObjectWithLiteralDiscriminators([[discriminator, "C"]]);
     const valueObject = { type: "A", foo: "bar" };
-    const { currentDiscriminatedObjectJzodSchema, currentDiscriminatedObjectJzodSchemas } =
+    const { currentDiscriminatedObjectJzodSchema, flattenedUnionChoices } =
       selectUnionBranchFromDiscriminator(
         [objA],
         discriminator,
@@ -271,7 +271,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
         defaultMiroirMetaModel,
         {}
       );
-    expect(currentDiscriminatedObjectJzodSchemas.length).toBe(1);
+    expect(flattenedUnionChoices.length).toBe(1);
     expect(currentDiscriminatedObjectJzodSchema).toEqual(objA);
   });
 
@@ -282,7 +282,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
   //   const objB = { type: "string" }; // A simple string type
   //   const valueObject = { type: "A", foo: "bar" };
 
-  //   const { currentDiscriminatedObjectJzodSchema, currentDiscriminatedObjectJzodSchemas } =
+  //   const { currentDiscriminatedObjectJzodSchema, flattenedUnionChoices } =
   //     selectUnionBranchFromDiscriminator(
   //       [objA, objB],
   //       discriminator,
@@ -295,7 +295,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
   //       {}
   //     );
 
-  //   expect(currentDiscriminatedObjectJzodSchemas.length).toBe(1);
+  //   expect(flattenedUnionChoices.length).toBe(1);
   //   expect(currentDiscriminatedObjectJzodSchema).toEqual(objA);
   // });
 
@@ -306,7 +306,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
     const objB = makeObjectWithLiteralDiscriminators([[discriminator, "B"]]);
     const valueObject = { type: "B", foo: "bar" };
 
-    const { currentDiscriminatedObjectJzodSchema, currentDiscriminatedObjectJzodSchemas } =
+    const { currentDiscriminatedObjectJzodSchema, flattenedUnionChoices } =
       selectUnionBranchFromDiscriminator(
         [objA, objB],
         discriminator,
@@ -319,7 +319,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
         {}
       );
 
-    expect(currentDiscriminatedObjectJzodSchemas.length).toBe(1);
+    expect(flattenedUnionChoices.length).toBe(1);
     expect(currentDiscriminatedObjectJzodSchema).toEqual(objB);
   });
 
@@ -330,7 +330,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
     const objOther = makeObjectWithLiteralDiscriminators([[discriminator, "Z"]]);
     const valueObject = { kind: "Y", foo: "baz" };
 
-    const { currentDiscriminatedObjectJzodSchema, currentDiscriminatedObjectJzodSchemas } =
+    const { currentDiscriminatedObjectJzodSchema, flattenedUnionChoices } =
       selectUnionBranchFromDiscriminator(
         [objEnum, objOther],
         discriminator,
@@ -343,7 +343,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
         {}
       );
 
-    expect(currentDiscriminatedObjectJzodSchemas.length).toBe(1);
+    expect(flattenedUnionChoices.length).toBe(1);
     expect(currentDiscriminatedObjectJzodSchema).toEqual(objEnum);
   });
 
@@ -353,7 +353,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
     const objEnum = makeObjectWithEnumDiscriminator(discriminator, ["X", "Y", "Z"]);
     const valueObject = { kind: "Z", foo: "baz" };
 
-    const { currentDiscriminatedObjectJzodSchema, currentDiscriminatedObjectJzodSchemas } =
+    const { currentDiscriminatedObjectJzodSchema, flattenedUnionChoices } =
       selectUnionBranchFromDiscriminator(
         [objEnum],
         discriminator,
@@ -366,7 +366,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
         {}
       );
 
-    expect(currentDiscriminatedObjectJzodSchemas.length).toBe(1);
+    expect(flattenedUnionChoices.length).toBe(1);
     expect(currentDiscriminatedObjectJzodSchema).toEqual(objEnum);
   });
 
@@ -377,7 +377,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
     const objB = makeObjectWithLiteralDiscriminators([[discriminator[0], "B"]]);
     const valueObject = { type: "B", foo: "bar" };
 
-    const { currentDiscriminatedObjectJzodSchema, currentDiscriminatedObjectJzodSchemas } =
+    const { currentDiscriminatedObjectJzodSchema, flattenedUnionChoices } =
       selectUnionBranchFromDiscriminator(
         [objA, objB],
         discriminator,
@@ -390,7 +390,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
         {}
       );
 
-    expect(currentDiscriminatedObjectJzodSchemas.length).toBe(1);
+    expect(flattenedUnionChoices.length).toBe(1);
     expect(currentDiscriminatedObjectJzodSchema).toEqual(objB);
   });
 
@@ -400,7 +400,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
     const objA = makeObjectWithLiteralDiscriminators([[discriminator[0], "A"], [discriminator[1], "A"]]);
     const objB = makeObjectWithLiteralDiscriminators([[discriminator[0], "A"], [discriminator[1], "B"]]);
     const valueObject = { type: "A", kind: "B", foo: "bar" };
-    const { currentDiscriminatedObjectJzodSchema, currentDiscriminatedObjectJzodSchemas } =
+    const { currentDiscriminatedObjectJzodSchema, flattenedUnionChoices } =
       selectUnionBranchFromDiscriminator(
         [objA, objB],
         discriminator,
@@ -412,7 +412,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
         defaultMiroirMetaModel,
         {}
       );
-    expect(currentDiscriminatedObjectJzodSchemas.length).toBe(1);
+    expect(flattenedUnionChoices.length).toBe(1);
     expect(currentDiscriminatedObjectJzodSchema).toEqual(objB);
   });
 
@@ -438,7 +438,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
     };
     const objB = makeObjectWithLiteralDiscriminators([[discriminator[0], "B"], [discriminator[1], "B"]]);
     const valueObject = { type: "A", kind: "A", foo: "bar" };
-    const { currentDiscriminatedObjectJzodSchema, currentDiscriminatedObjectJzodSchemas } =
+    const { currentDiscriminatedObjectJzodSchema, flattenedUnionChoices } =
       selectUnionBranchFromDiscriminator(
         [objA, objB],
         discriminator,
@@ -458,7 +458,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
         }
       );
     // console.log("currentDiscriminatedObjectJzodSchema", JSON.stringify(currentDiscriminatedObjectJzodSchema, null, 2));
-    expect(currentDiscriminatedObjectJzodSchemas.length).toBe(1);
+    expect(flattenedUnionChoices.length).toBe(1);
     expect(currentDiscriminatedObjectJzodSchema).toEqual({
       type: "object",
       definition: {
@@ -2622,7 +2622,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
         },
       },
     ];
-    const { currentDiscriminatedObjectJzodSchema, currentDiscriminatedObjectJzodSchemas } =
+    const { currentDiscriminatedObjectJzodSchema, flattenedUnionChoices } =
       selectUnionBranchFromDiscriminator(
         unionBranches as any,
         discriminator,

@@ -229,11 +229,17 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
       }
 
       const newItem = getDefaultValueForJzodSchema(rawJzodSchema.definition)
-      // log.info(
-      //   "JzodArrayEditor addNewArrayItem",
-      //   "newItem",
-      //   JSON.stringify(newItem, null, 2),
-      // );
+      log.info(
+        "JzodArrayEditor addNewArrayItem",
+        "rootLesslistKey",
+        rootLesslistKey,
+        "newItem",
+        JSON.stringify(newItem, null, 2),
+        "rawJzodSchema",
+        JSON.stringify(rawJzodSchema, null, 2),
+        "formik.values",
+        JSON.stringify(formik.values, null, 2),
+      );
       // Create the new array value
       const newArrayValue = [
         ...arrayValueObject,
@@ -265,7 +271,8 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
       // );
 
       // Update the specific field in Formik state
-      formik.setFieldValue("fieldName", newArrayValue, false); // Disable validation
+      // formik.setFieldValue("testField", newArrayValue, false); // Disable validation
+      formik.setFieldValue(rootLesslistKey, newArrayValue, false); // Disable validation
 
       // Update the items order
       setItemsOrder(getItemsOrder(newArrayValue, resolvedElementJzodSchema));

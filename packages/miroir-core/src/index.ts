@@ -844,6 +844,7 @@ export {
   ResultAccessPath,
   safeResolvePathOnObject,
   stringTuple,
+  mStringify,
 } from "./tools";
 
 export {

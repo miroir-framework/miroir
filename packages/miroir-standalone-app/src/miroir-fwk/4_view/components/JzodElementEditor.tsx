@@ -49,6 +49,7 @@ import {
   getQueryRunnerParamsForDeploymentEntityState,
   jzodTypeCheck,
   jzodUnion_recursivelyUnfold,
+  mStringify,
   resolvePathOnObject,
   unfoldJzodSchemaOnce
 } from "miroir-core";
@@ -205,14 +206,93 @@ export const ExpandOrFoldObjectAttributes = (props: {
 const objectTypes: string[] = ["record", "object", "union"];
 const enumTypes: string[] = ["enum", "literal"];
 
+
+// #####################################################################################################
+function getObjectUniondiscriminatorValuesFromResolvedSchema(
+  resolvedElementJzodSchema: JzodElement | undefined, // is it needed?
+  unfoldedRawSchema: JzodElement | undefined, // is it needed?
+  recursivelyUnfoldedRawSchemaList: JzodElement[],
+  recursivelyUnfoldedRawSchemaDiscriminator?: (string | string[]) | undefined
+) {
+  if (
+    resolvedElementJzodSchema?.type == "object" &&
+    // recursivelyUnfoldedRawSchema &&
+    recursivelyUnfoldedRawSchemaDiscriminator
+  ) {
+    const discriminator = (unfoldedRawSchema as any).discriminator;
+    const result = [
+      ...new Set(
+        // recursivelyUnfoldedRawSchema.result.flatMap((branch: any /** JzodObject */) => {
+        recursivelyUnfoldedRawSchemaList.flatMap((branch: any /** JzodObject */) => {
+          // return (a.definition as any)[(unfoldedRawSchema as any).discriminator].definition}
+          switch (
+            typeof branch.definition[discriminator] == "string"
+              ? "literal"
+              : branch.definition[discriminator]?.type
+          ) {
+            case "literal": {
+              return branch.definition[discriminator].definition;
+              break;
+            }
+            case "enum": {
+              return branch.definition[discriminator].definition;
+            }
+            case "object":
+            case "string":
+            case "number":
+            case "bigint":
+            case "boolean":
+            case "undefined":
+            case "function":
+            case "array":
+            // case "simpleType":
+            case "any":
+            case "date":
+            case "never":
+            case "null":
+            case "uuid":
+            case "unknown":
+            case "void":
+            case "lazy":
+            case "intersection":
+            case "map":
+            case "promise":
+            case "record":
+            case "schemaReference":
+            case "set":
+            case "tuple":
+            case "union":
+            default: {
+              throw new Error(
+                "objectUniondiscriminatorValues could not handle union branch object: discriminator type " +
+                  branch.definition[discriminator]?.type +
+                  " discriminator " +
+                  JSON.stringify(branch.definition[discriminator]) +
+                  " for union " +
+                  JSON.stringify(recursivelyUnfoldedRawSchemaList, null, 2)
+              );
+              // return [];
+              break;
+            }
+          }
+        })
+      ),
+    ];
+    log.info("objectUniondiscriminatorValues found ", result);
+    return result;
+  } else {
+    return [];
+  }
+}
+
+// #####################################################################################################
+// #####################################################################################################
+// #####################################################################################################
+// #####################################################################################################
+// #####################################################################################################
+// #####################################################################################################
+// #####################################################################################################
 let count = 0;
-// #####################################################################################################
-// #####################################################################################################
-// #####################################################################################################
-// #####################################################################################################
-// #####################################################################################################
-// #####################################################################################################
-// #####################################################################################################
 
 // export const JzodElementEditor = (props: JzodObjectEditorProps): JSX.Element => {
 export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
@@ -250,8 +330,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
 
   // const currentValue = resolvePathOnObject(props.formik.values, props.rootLesslistKeyArray);
   const currentValue = resolvePathOnObject(formik.values, props.rootLesslistKeyArray);
-  // log.info("#####################################################################################");
-  // log.info("JzodElementEditor", props.listKey, "count", count, "currentValue", currentValue);
+  log.info("#####################################################################################");
+  log.info("JzodElementEditor rendering for", props.listKey, "count", count, "currentValue", currentValue, "rawJzodSchema", props.rawJzodSchema?.type, props.rawJzodSchema);
   // log.info("JzodElementEditor", props.listKey, "count", count, "resolvedJzodSchema", props.resolvedJzodSchema);
   // log.info("JzodElementEditor", props.listKey, "count", count, "rawJzodSchema", props.rawJzodSchema?.type, props.rawJzodSchema);
 
@@ -374,20 +454,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           currentModel,
           miroirMetaModel,
           {},// relativeReferenceJzodContext
-          // 
-          // currentMiroirFundamentalJzodSchema, // context.miroirFundamentalJzodSchema,
-          // unfoldedRawSchema,
-          // currentModel,
-          // miroirMetaModel
         );
-        // log.info(
-        //   "recursivelyUnfoldedRawSchema",
-        //   props.listKey,
-        //   "result",
-        //   result,
-        //   "unfoldedRawSchema",
-        //   unfoldedRawSchema
-        // );
         return result;
       } else {
         return undefined;
@@ -410,80 +477,15 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     }
     // ######################### unions #########################
     const objectUniondiscriminatorValues: string[] = useMemo(() => {
-      if (
-        props.resolvedElementJzodSchema?.type == "object" &&
-        recursivelyUnfoldedRawSchema &&
-        // recursivelyUnfoldedRawSchema.result.type == "union" &&
-        recursivelyUnfoldedRawSchema.discriminator
-        // unfoldedRawSchema &&
-        // unfoldedRawSchema.type == "union" &&
-        // unfoldedRawSchema.discriminator
-      ) {
-        const discriminator = (unfoldedRawSchema as any).discriminator;
-        const result = [
-          ...new Set(
-            // unfoldedRawSchema.definition.flatMap((branch: any /** JzodObject */) => {
-            recursivelyUnfoldedRawSchema.result.flatMap((branch: any /** JzodObject */) => {
-              // return (a.definition as any)[(unfoldedRawSchema as any).discriminator].definition}
-              switch (
-                typeof branch.definition[discriminator] == "string"
-                  ? "literal"
-                  : branch.definition[discriminator]?.type
-              ) {
-                case "literal": {
-                  return branch.definition[discriminator].definition;
-                  break;
-                }
-                case "enum": {
-                  return branch.definition[discriminator].definition;
-                }
-                case "object":
-                case "string":
-                case "number":
-                case "bigint":
-                case "boolean":
-                case "undefined":
-                case "function":
-                case "array":
-                // case "simpleType":
-                case "any":
-                case "date":
-                case "never":
-                case "null":
-                case "uuid":
-                case "unknown":
-                case "void":
-                case "lazy":
-                case "intersection":
-                case "map":
-                case "promise":
-                case "record":
-                case "schemaReference":
-                case "set":
-                case "tuple":
-                case "union":
-                default: {
-                  throw new Error(
-                    "objectUniondiscriminatorValues could not handle union branch object: discriminator type " +
-                      branch.definition[discriminator]?.type +
-                      " discriminator " +
-                      JSON.stringify(branch.definition[discriminator]) +
-                      " for union " +
-                      JSON.stringify(recursivelyUnfoldedRawSchema)
-                  );
-                  // return [];
-                  break;
-                }
-              }
-            })
-          ),
-        ];
-        log.info("objectUniondiscriminatorValues found ", result);
-        return result;
-      } else {
-        return [];
-      }
-    }, [props.resolvedElementJzodSchema, recursivelyUnfoldedRawSchema]);
+      return getObjectUniondiscriminatorValuesFromResolvedSchema(
+        // props.resolvedElementJzodSchema,
+        localResolvedElementJzodSchema,
+        unfoldedRawSchema,
+        recursivelyUnfoldedRawSchema?.result ?? [],
+        recursivelyUnfoldedRawSchema?.discriminator
+      );
+    }, [localResolvedElementJzodSchema, unfoldedRawSchema, recursivelyUnfoldedRawSchema]);
+    // }, [props.resolvedElementJzodSchema, unfoldedRawSchema, recursivelyUnfoldedRawSchema]);
 
     const unionInformation = useMemo(() => {
       return unfoldedRawSchema.type == "union" && recursivelyUnfoldedRawSchema && recursivelyUnfoldedRawSchema.status == "ok"
@@ -901,18 +903,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     // ############################################################################################
     // switch (props.resolvedElementJzodSchema.type) {
     switch (localResolvedElementJzodSchema.type) {
-    // switch (unfoldedRawSchema.type) {
       case "object": {
-        // log.info(
-        //   "JzodElementEditor object",
-        //   props.listKey,
-        //   "count",
-        //   count,
-        //   "props.resolvedElementJzodSchema",
-        //   JSON.stringify(props.resolvedElementJzodSchema, null, 2),
-        //   "unfoldedRawSchema",
-        //   JSON.stringify(unfoldedRawSchema, null, 2)
-        // );
         // #######################
         // uses setFormState to update the formik state
         const addExtraRecordEntry = useCallback(async () => {
@@ -935,8 +926,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           const newAttributeType: JzodElement = (props.rawJzodSchema as JzodRecord)?.definition;
           log.info(
             "addExtraRecordEntry newAttributeType",
-            JSON.stringify(newAttributeType, null, 2),
-          )
+            JSON.stringify(newAttributeType, null, 2)
+          );
           const newAttributeValue = currentMiroirFundamentalJzodSchema
             ? getDefaultValueForJzodSchemaWithResolution(
                 unfoldedRawSchema.definition,
@@ -949,35 +940,49 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           const currentValue = resolvePathOnObject(formik.values, props.rootLesslistKeyArray);
           const newRecordValue: any = { ["newRecordEntry"]: newAttributeValue, ...currentValue };
           log.info("addExtraRecordEntry", "newValue", newRecordValue);
-          // setNestedObjectValues(props.listKey, e.target.value);
-          const newFormValue = alterObjectAtPath(
-            formik.values,
-            props.rootLesslistKeyArray,
-            newRecordValue
-          );
-          log.info("addExtraRecordEntry", "newFormValue", newFormValue);
-          // props.setFormState(newFormValue);
-          // formik.setFormikState(newFormValue);
+
           const newItemsOrder = getItemsOrder(newRecordValue, props.rawJzodSchema);
-          log.info(
-            "addExtraRecordEntry",
-            "itemsOrder",
-            itemsOrder,
-            "newItemsOrder",
-            newItemsOrder,
-          );
+          log.info("addExtraRecordEntry", "itemsOrder", itemsOrder, "newItemsOrder", newItemsOrder);
 
           formik.setFieldValue(props.rootLesslistKey, newRecordValue);
           setItemsOrder(getItemsOrder(newRecordValue, props.rawJzodSchema));
+
+          if (!currentMiroirFundamentalJzodSchema) {
+            throw new Error(
+              "addExtraRecordEntry called without currentMiroirFundamentalJzodSchema! This should not happen!"
+            );
+          }
+
+          const newRecordResolvedElementJzodSchema = jzodTypeCheck(
+            newAttributeType,
+            newAttributeValue,
+            [], // currentValuePath
+            [], // currentTypePath
+            currentMiroirFundamentalJzodSchema,
+            currentModel,
+            miroirMetaModel,
+            {}
+          );
+          if (
+            !newRecordResolvedElementJzodSchema ||
+            newRecordResolvedElementJzodSchema.status != "ok"
+          ) {
+            throw new Error(
+              "addExtraRecordEntry could not resolve schema " +
+                JSON.stringify(newAttributeType, null, 2) +
+                " value " +
+                JSON.stringify(newRecordValue, null, 2)
+            );
+          }
 
           setLocalResolvedElementJzodSchema({
             ...localResolvedElementJzodSchema,
             definition: {
               ...localResolvedElementJzodSchema.definition,
-              newRecordEntry: newAttributeType,
+              newRecordEntry: newRecordResolvedElementJzodSchema.element,
               // [undefinedOptionalAttributes[0]]: resolvePathOnObject(props.rawJzodSchema, ["definition",undefinedOptionalAttributes[0]])
             },
-          })
+          });
           log.info(
             "addExtraRecordEntry clicked2!",
             props.listKey,
@@ -990,9 +995,10 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             formik.values
           );
         }, [props, itemsOrder, localResolvedElementJzodSchema]);
-        // }, [props, itemsOrder, resolvedElementJzodSchema]);
+
         // #######################
-        // uses setFormState to update the formik state
+        // #######################
+        // #######################
         const addObjectOptionalAttribute = useCallback(async () => {
           log.info(
             "addObjectOptionalAttribute clicked!",
@@ -1014,15 +1020,26 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           //     ? { ...formik.values, [undefinedOptionalAttributes[0]]: "test!" }
           //     : formik.values;
           const currentObjectValue = resolvePathOnObject(formik.values, props.rootLesslistKeyArray);
-          const newAttributeType: JzodElement = resolvePathOnObject(props.rawJzodSchema, ["definition",undefinedOptionalAttributes[0]]);
-          const newAttributeValue = getDefaultValueForJzodSchema(newAttributeType)
-          
+          const newAttributeType: JzodElement = resolvePathOnObject(props.rawJzodSchema, [
+            "definition",
+            undefinedOptionalAttributes[0],
+          ]);
+          // const newAttributeValue = getDefaultValueForJzodSchema(newAttributeType)
+          const newAttributeValue = currentMiroirFundamentalJzodSchema
+            ? getDefaultValueForJzodSchemaWithResolution(
+                newAttributeType,
+                currentMiroirFundamentalJzodSchema, // context.miroirFundamentalJzodSchema,
+                currentModel,
+                miroirMetaModel
+              )
+            : undefined;
+
           const newObjectValue = {
             ...currentObjectValue,
             [undefinedOptionalAttributes[0]]: newAttributeValue,
-          }
+          };
           const newItemsOrder = getItemsOrder(newObjectValue, props.rawJzodSchema);
-          
+
           // props.setFormState(newFormState);
           // formik.setFormikState(newFormState);
           formik.setFieldValue(props.rootLesslistKey, newObjectValue, false);
@@ -1036,7 +1053,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               [undefinedOptionalAttributes[0]]: newAttributeType,
               // [undefinedOptionalAttributes[0]]: resolvePathOnObject(props.rawJzodSchema, ["definition",undefinedOptionalAttributes[0]])
             },
-          })
+          });
           log.info(
             "addObjectOptionalAttribute clicked2!",
             props.listKey,
@@ -1057,7 +1074,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         }, [props, itemsOrder, localResolvedElementJzodSchema]);
         // }, [props, itemsOrder, resolvedElementJzodSchema]);
         // #######################
-        // uses setFormState to update the formik state
+        // #######################
+        // #######################
         const removeOptionalAttribute = useCallback(
           (listKey: string) => {
             log.info(
@@ -1147,7 +1165,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                   .map((attribute: [string, JzodElement], attributeNumber: number) => {
                     const currentAttributeDefinition =
                       localResolvedElementJzodSchema.definition[attribute[0]];
-                      // resolvedElementJzodSchema.definition[attribute[0]];
+                    // resolvedElementJzodSchema.definition[attribute[0]];
                     const attributeListKey = props.listKey + "." + attribute[0];
                     const attributeRootLessListKey =
                       props.rootLesslistKey.length > 0
@@ -1234,7 +1252,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                                 unfoldedRawSchema +
                                 " " +
                                 localResolvedElementJzodSchema
-                                // props.resolvedElementJzodSchema
+                              // props.resolvedElementJzodSchema
                               // JSON.stringify(props.resolvedJzodSchema, null, 2)
                             );
                           }
@@ -1487,7 +1505,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                             }
                             currentDeploymentUuid={props.currentDeploymentUuid}
                             rawJzodSchema={attributeRawJzodSchema}
-                            unionInformation={unionInformation}
                             currentApplicationSection={props.currentApplicationSection}
                             resolvedElementJzodSchema={currentAttributeDefinition}
                             foreignKeyObjects={props.foreignKeyObjects}
@@ -1495,6 +1512,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                             // formik={props.formik}
                             // setFormState={props.setFormState}
                             // formState={props.formState}
+                            unionInformation={unionInformation}
+                            handleSelectLiteralChange={handleSelectLiteralChange}
                             parentObjectItemsOrder={itemsOrder}
                             parentObjectSetItemsOrder={setItemsOrder}
                           />
@@ -1538,6 +1557,9 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           <JzodArrayEditor
             {...props}
             key={props.rootLesslistKey}
+            rootLesslistKeyArray={props.rootLesslistKeyArray}
+            rootLesslistKey={props.rootLesslistKey}
+            rawJzodSchema={props.rawJzodSchema as any}
             itemsOrder={itemsOrder}
             setItemsOrder={setItemsOrder}
             hiddenFormItems={hiddenFormItems}
@@ -1548,14 +1570,20 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             foreignKeyObjects={props.foreignKeyObjects}
             // setFormState={props.setFormState}
             // formik={props.formik}
-            rootLesslistKeyArray={props.rootLesslistKeyArray}
-            rootLesslistKey={props.rootLesslistKey}
-            rawJzodSchema={props.rawJzodSchema as any}
+            unionInformation={props.unionInformation}
+            handleSelectLiteralChange={props.handleSelectLiteralChange}
           ></JzodArrayEditor>
-        ) 
+        );
       }
       case "boolean": {
-        // log.info("JzodElementEditor boolean!",props.listKey,"formState",props.formState)
+        log.info(
+          "JzodElementEditor boolean!",
+          props.listKey,
+          "formik.getFieldProps",
+          mStringify(formik.getFieldProps(props.rootLesslistKey)),
+          "formik.values[props.rootLesslistKey]",
+          formik.values[props.rootLesslistKey]
+        );
         return (
           <Checkbox
             defaultChecked={formik.values[props.rootLesslistKey]}
@@ -1563,6 +1591,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             key={props.rootLesslistKey}
             // name={props.listKey}
             {...formik.getFieldProps(props.rootLesslistKey)}
+            // checked={formik.values[props.rootLesslistKey]}
+            checked={currentValue}
             // onChange={handleSelectValueChange}
           />
         );
@@ -1582,40 +1612,23 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         break;
       }
       case "bigint": {
-        // log.info(
-        //   "JzodElementEditor number/bigint!",
-        //   props.listKey,
-        //   "fieldProps",
-        //   formik.getFieldProps(props.rootLesslistKey),
-        //   "value",
-        //   currentValue,
-        //   formik.getFieldProps(props.rootLesslistKey).value,
-        // )
         return (
           <input
-            // type="number"
             type="text"
             id={props.rootLesslistKey}
             key={props.rootLesslistKey}
-            // role="textbox"
             role="textbox"
             {...formik.getFieldProps(props.rootLesslistKey)}
-            // value={formik.values[props.rootLesslistKey].toString()} // Convert bigint to string
             value={currentValue.toString()} // Convert bigint to string
             onChange={(e) => {
               const value = e.target.value;
-              // formik.setFieldValue(props.rootLesslistKey, value ? BigInt(value) : BigInt(0)); // Convert string back to bigint
               formik.setFieldValue(props.rootLesslistKey, value ? BigInt(value) : BigInt(0)); // Convert string back to bigint
             }}
-            // value={bigintValue.toString()} // Convert bigint to string
-            // onChange={(e) => setBigintValue(BigInt(e.target.value))} // Convert string back to bigint
-            // value={currentValue}
           />
         );
         break;
       }
       case "string": {
-        // log.info("selectList for targetEntity", props.resolvedJzodSchema.tag?.value?.targetEntity, "value", selectList, "props.foreignKeyObjects", props.foreignKeyObjects);
         return (
           <input
             type="text"
@@ -1628,47 +1641,22 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         break;
       }
       case "uuid": {
-        // return (
-        //   <>
-        //     {/* <label htmlFor={props.listKey}>{displayedLabel}: </label> */}
-        //     <input
-        //       type="text"
-        //       id={props.rootLesslistKey}
-        //       role="textbox"
-        //       {...props.formik.getFieldProps(props.rootLesslistKey)}
-        //       // name={props.name}
-        //       // onChange={props.handleChange}
-        //       // value={currentValue}
-        //     />
-        //   </>
-        // )
-        // return props.resolvedElementJzodSchema.tag?.value?.targetEntity ? (
         return localResolvedElementJzodSchema.tag?.value?.targetEntity ? (
           <StyledSelect
-              id={props.rootLesslistKey}
-              key={props.rootLesslistKey}
-              // role="textbox"
-              // aria-label={props.label}
-              aria-label={props.rootLesslistKey}
-              labelId="demo-simple-select-label"
-              variant="standard"
-              {...formik.getFieldProps(props.rootLesslistKey)}
-              name={props.rootLesslistKey}
-            >
-              {/* {unionInformation?.discriminatorValues.map((v) => {
-                return (
-                  <MenuItem key={v} value={v}>
-                    {v}
-                  </MenuItem>
-                );
-              }) */}
-              {stringSelectList.map((e: [string, EntityInstance], index: number) => (
-                <MenuItem id={props.rootLesslistKey + "." + index} key={e[1].uuid} value={e[1].uuid}>
-                  {(e[1] as EntityInstanceWithName).name}
-                </MenuItem>
-              ))}
-
-            </StyledSelect>
+            id={props.rootLesslistKey}
+            key={props.rootLesslistKey}
+            aria-label={props.rootLesslistKey}
+            labelId="demo-simple-select-label"
+            variant="standard"
+            {...formik.getFieldProps(props.rootLesslistKey)}
+            name={props.rootLesslistKey}
+          >
+            {stringSelectList.map((e: [string, EntityInstance], index: number) => (
+              <MenuItem id={props.rootLesslistKey + "." + index} key={e[1].uuid} value={e[1].uuid}>
+                {(e[1] as EntityInstanceWithName).name}
+              </MenuItem>
+            ))}
+          </StyledSelect>
         ) : (
           <input
             type="text"
@@ -1682,91 +1670,19 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       }
       // DONE
       case "literal": {
-        // log.info("rendering literal", props.listKey);
         return (
           <JzodLiteralEditor
             name={props.name}
             key={props.rootLesslistKey}
             listKey={props.listKey}
             rootLesslistKey={props.rootLesslistKey}
-            // value={currentValue}
-            // formik={props.formik}
-            // formState={props.formState}
             rootLesslistKeyArray={props.rootLesslistKeyArray}
             onChange={handleSelectLiteralChange}
             label={props.label}
+            unionInformation={props.unionInformation}
+            handleSelectLiteralChange={props.handleSelectLiteralChange}
           />
         );
-        // if (props.unionInformation) {
-        //   log.info(
-        //     "literal with unionInformation",
-        //     props.listKey,
-        //     "discriminator=",
-        //     props.unionInformation.discriminator,
-        //     // "subDiscriminator=",
-        //     // props.unionInformation.subDiscriminator,
-        //     "unionInformation=",
-        //     props.unionInformation
-        //   );
-        // }
-        // return (
-        //   <>
-        //     {/* <label htmlFor={props.listKey}>{displayedLabel}: </label> */}
-        //     {props.unionInformation ? (
-        //       <>
-        //         {props.unionInformation.discriminator &&
-        //         props.unionInformation.discriminatorValues &&
-        //         props.name == props.unionInformation.discriminator ? (
-        //           <>
-        //             <StyledSelect
-        //               variant="standard"
-        //               labelId="demo-simple-select-label"
-        //               id={props.listKey}
-        //               value={currentValue}
-        //               label={props.name}
-        //               formik={props.formik}
-        //               name={props.name}
-        //               onChange={handleSelectLiteralChange}
-        //             >
-        //               {props.unionInformation.discriminatorValues.map((v) => {
-        //                 return (
-        //                   <MenuItem key={v} value={v}>
-        //                     {v}
-        //                   </MenuItem>
-        //                 );
-        //               })}
-        //             </StyledSelect>{" "}
-        //             literal discriminator
-        //             {/* <div>
-        //                 discriminator: {JSON.stringify(props.unionInformation.discriminatorValues)}
-        //               </div> */}
-        //           </>
-        //         ) : (
-        //           <>
-        //             <input
-        //               id={props.listKey}
-        //               form={"form." + props.name}
-        //               name={props.name}
-        //               {...props.formik.getFieldProps(props.rootLesslistKey)}
-        //               onChange={props.handleChange}
-        //             />{" "}
-        //             {JSON.stringify(unfoldedRawSchema)} literal
-        //           </>
-        //         )}
-        //       </>
-        //     ) : (
-        //       <>
-        //         <input
-        //           id={props.listKey}
-        //           form={"form." + props.name}
-        //           name={props.name}
-        //           {...props.formik.getFieldProps(props.rootLesslistKey)}
-        //         />{" "}
-        //         {JSON.stringify(unfoldedRawSchema)}
-        //       </>
-        //     )}
-        //   </>
-        // );
       }
       // DONE
       case "enum": {
@@ -1816,9 +1732,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             rootLesslistKey={props.rootLesslistKey}
             rootLesslistKeyArray={props.rootLesslistKeyArray}
             enumValues={enumValues}
-            // currentValue={currentValue}
-            // formState={props.formState}
-            // formik={props.formik}
             // onChange={handleSelectEnumChange}
             label={props.label}
             unionInformation={unionInformation}
@@ -1844,16 +1757,12 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             {/* default case: {props.resolvedElementJzodSchema.type}, for {props.listKey} values{" "} */}
             default case: {localResolvedElementJzodSchema.type}, for {props.listKey} values{" "}
             {/* {JSON.stringify(formik.values[props.rootLesslistKey], null, 2)} */}
-            <pre>
-              {JSON.stringify(currentValue, null, 2)}
-            </pre>
+            <pre>{JSON.stringify(currentValue, null, 2)}</pre>
             <br />
             <pre>
               resolved Jzod schema: {JSON.stringify(props.resolvedElementJzodSchema, null, 2)}
             </pre>
-            <pre>
-              raw Jzod schema: {JSON.stringify(props.rawJzodSchema, null, 2)}
-            </pre>
+            <pre>raw Jzod schema: {JSON.stringify(props.rawJzodSchema, null, 2)}</pre>
             {/* <div>
               found schema: {JSON.stringify(props.resolvedJzodSchema, null, 2)}
             </div>

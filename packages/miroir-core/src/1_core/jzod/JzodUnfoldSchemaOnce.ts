@@ -7,6 +7,7 @@ import {
 import { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../../4_services/LoggerFactory";
 import { packageName } from "../../constants";
+import { mStringify } from "../../tools";
 import { cleanLevel } from "../constants";
 import { resolveJzodSchemaReferenceInContext } from "./jzodResolveSchemaReferenceInContext";
 import { ResolvedJzodSchemaReturnType, ResolvedJzodSchemaReturnTypeOK } from "./jzodTypeCheck";
@@ -183,7 +184,7 @@ export function unfoldJzodSchemaOnce(
         {...relativeReferenceJzodContext, ...unfoldedReferenceJzodSchema.context} // local context (unfoldedReferenceJzodSchema.context) is not taken into account by resolveJzodSchemaReferenceInContext
       )
 
-      log.info("unfoldJzodSchemaOnce resolvedJzodSchema", JSON.stringify(resolvedJzodSchema, null, 2));
+      log.info("unfoldJzodSchemaOnce resolvedJzodSchema", mStringify(resolvedJzodSchema, null, 2));
       const resultJzodSchema = {...resolvedJzodSchema}
       // {
         // ...jzodSchema, // could be an issue if resolvedJzodSchema forces a value for an attribute already in jzodSchema (example: jzodSchema.optional = true, resolvedJzodSchema.optional=false)

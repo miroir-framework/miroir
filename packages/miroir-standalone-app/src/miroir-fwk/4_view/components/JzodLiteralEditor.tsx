@@ -1,8 +1,18 @@
-import { resolvePathOnObject } from "miroir-core";
+import { LoggerInterface, MiroirLoggerFactory, resolvePathOnObject } from "miroir-core";
 import React from "react";
 import { JzodLiteralEditorProps } from "./JzodElementEditorInterface";
-import { J } from "vitest/dist/chunks/reporters.D7Jzd9GS";
 import { useFormikContext } from "formik";
+import { packageName } from "../../../constants";
+import { cleanLevel } from "../constants";
+import { StyledSelect } from "./Style";
+import { MenuItem } from "@mui/material";
+
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodLiteralEditor")
+).then((logger: LoggerInterface) => {
+  log = logger;
+});
 
 let JzodLiteralEditorRenderCount: number = 0;
 export const JzodLiteralEditor: React.FC<JzodLiteralEditorProps> = (
@@ -14,6 +24,8 @@ export const JzodLiteralEditor: React.FC<JzodLiteralEditorProps> = (
   rootLesslistKeyArray,
   // formik,
   // onChange,
+  unionInformation,
+  handleSelectLiteralChange,
   label,
   // formState,
   }
@@ -33,85 +45,74 @@ export const JzodLiteralEditor: React.FC<JzodLiteralEditorProps> = (
   // );
   const formik = useFormikContext<Record<string, any>>();
   
-        // if (props.unionInformation) {
-        //   log.info(
-        //     "literal with unionInformation",
-        //     props.listKey,
-        //     "discriminator=",
-        //     props.unionInformation.discriminator,
-        //     // "subDiscriminator=",
-        //     // props.unionInformation.subDiscriminator,
-        //     "unionInformation=",
-        //     props.unionInformation
-        //   );
-        // }
-        // return (
-        //   <>
-        //     {/* <label htmlFor={props.listKey}>{displayedLabel}: </label> */}
-        //     {/* {props.unionInformation ? ( */}
-        //       // <>
-        //       //   {props.unionInformation.discriminator &&
-        //       //   props.unionInformation.discriminatorValues &&
-        //       //   props.name == props.unionInformation.discriminator ? (
-        //       //     <>
-        //       //       <StyledSelect
-        //       //         variant="standard"
-        //       //         labelId="demo-simple-select-label"
-        //       //         id={props.listKey}
-        //       //         value={currentValue}
-        //       //         label={props.name}
-        //       //         onChange={handleSelectLiteralChange}
-        //       //       >
-        //       //         {props.unionInformation.discriminatorValues.map((v) => {
-        //       //           return (
-        //       //             <MenuItem key={v} value={v}>
-        //       //               {v}
-        //       //             </MenuItem>
-        //       //           );
-        //       //         })}
-        //       //       </StyledSelect>{" "}
-        //       //       literal discriminator
-        //       //       {/* <div>
-        //       //           discriminator: {JSON.stringify(props.unionInformation.discriminatorValues)}
-        //       //         </div> */}
-        //       //     </>
-        //       //   ) : (
-        //       //     <>
-        //       //       <input
-        //       //         id={props.listKey}
-        //       //         form={"form." + props.name}
-        //       //         name={props.name}
-        //       //         {...props.formik.getFieldProps(props.rootLesslistKey)}
-        //       //         onChange={props.handleChange}
-        //       //       />{" "}
-        //       //       {JSON.stringify(unfoldedRawSchema)} literal
-        //       //     </>
-        //       //   )}
-        //       // </>
-        //     {/* ) : (
-        //       <>
-        //         <input
-        //           id={props.listKey}
-        //           form={"form." + props.name}
-        //           name={props.name}
-        //           {...props.formik.getFieldProps(props.rootLesslistKey)}
-        //         />{" "}
-        //         {JSON.stringify(unfoldedRawSchema)}
-        //       </>
-        //     )} */}
-        //   </>
-        // );
+  if (unionInformation) {
+    log.info(
+      "literal with unionInformation",
+      listKey,
+      "discriminator=",
+      unionInformation.discriminator,
+      // "subDiscriminator=",
+      // props.unionInformation.subDiscriminator,
+      "unionInformation=",
+      unionInformation
+    );
+  }
   return (
     <>
-      {label && <label htmlFor={rootLesslistKey}>{label}: </label>}
-      <input
-        type="text"
-        id={rootLesslistKey}
-        aria-label={label}
-        form={"form." + name}
-        {...formik.getFieldProps(rootLesslistKey)}
-        name={name}
-      />
+      <>
+        {unionInformation &&
+        unionInformation.discriminator &&
+        unionInformation.discriminatorValues &&
+        name == unionInformation.discriminator ? (
+          <>
+            <StyledSelect
+              variant="standard"
+              labelId="demo-simple-select-label"
+              id={listKey}
+              value={formik.values[rootLesslistKey]}
+              label={name}
+              onChange={handleSelectLiteralChange}
+            >
+              {unionInformation.discriminatorValues.map((v) => {
+                return (
+                  <MenuItem key={v} value={v}>
+                    {v}
+                  </MenuItem>
+                );
+              })}
+            </StyledSelect>{" "}
+            literal discriminator
+            {/* <div>
+              discriminator: {JSON.stringify(props.unionInformation.discriminatorValues)}
+            </div> */}
+          </>
+        ) : (
+          <>
+            {label && <label htmlFor={rootLesslistKey}>{label}: </label>}
+            <input
+              type="text"
+              id={rootLesslistKey}
+              aria-label={label}
+              form={"form." + name}
+              {...formik.getFieldProps(rootLesslistKey)}
+              name={name}
+            />
+          </>
+        )}
+      </>
     </>
   );
+  // return (
+  //   <>
+  //     {label && <label htmlFor={rootLesslistKey}>{label}: </label>}
+  //     <input
+  //       type="text"
+  //       id={rootLesslistKey}
+  //       aria-label={label}
+  //       form={"form." + name}
+  //       {...formik.getFieldProps(rootLesslistKey)}
+  //       name={name}
+  //     />
+  //   </>
+  // );
 };

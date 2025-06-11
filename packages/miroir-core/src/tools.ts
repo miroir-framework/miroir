@@ -77,6 +77,7 @@ export function safeResolvePathOnObject(valueObject: any, path: ResultAccessPath
     }
   }, valueObject);
 }
+
 // ################################################################################################
 export function resolvePathOnObject(valueObject:any, path: ResultAccessPath) {
   // console.log("resolvePathOnObject called with", valueObject, "path", path);
@@ -127,4 +128,16 @@ export function resolvePathOnObject(valueObject:any, path: ResultAccessPath) {
       }
     }
   }, valueObject);
+}
+
+// ################################################################################################
+// const doStringify: boolean = false;
+const doStringify: boolean = true;
+
+export function mStringify(
+  value: any,
+  replacer?: ((key: string, value: any) => any) | null,
+  space?: string | number
+): string {
+  return doStringify?JSON.stringify(value, replacer??undefined, space??2):value;
 }
