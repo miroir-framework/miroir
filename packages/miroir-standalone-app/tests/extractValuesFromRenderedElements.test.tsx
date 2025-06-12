@@ -1,14 +1,13 @@
-import { describe, it, expect, vi } from "vitest";
-import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import { extractValuesFromRenderedElements } from "./4_view/JzodElementEditorTestTools";
 
 describe("extractValuesFromRenderedElements", () => {
   const dummy = ()=>{}
-    it("should convert number textbox values to numbers", () => {
+  it("should convert number textbox values to numbers", () => {
     render(
       <div>
-        <input role="textbox" type="number" name="testField.g" defaultValue="123" />
+        <input role="textbox" type="number" name="testField.g" defaultValue="123" readOnly />
       </div>
     );
     const values = extractValuesFromRenderedElements(expect);
@@ -22,7 +21,7 @@ describe("extractValuesFromRenderedElements", () => {
     const spy = vi.spyOn(console, "warn").mockImplementation(() => {});
     render(
       <div>
-        <input role="textbox" type="number" name="testField.h" defaultValue="notanumber" />
+        <input role="textbox" type="number" name="testField.h" value="notanumber" onChange={dummy}/>
       </div>
     );
     // The expect inside extractValuesFromRenderedElements will fail, but we want to check it doesn't throw
@@ -38,10 +37,10 @@ describe("extractValuesFromRenderedElements", () => {
     render(
       <div>
         {/* <input type="text" name="testField.a" defaultValue="foo" /> */}
-        <input role="textbox" type="text" name="testField.a" value="foo" onChange={dummy} />
+        <input role="textbox" type="text" name="testField.a" defaultValue="foo" readOnly />
         <input role="textbox" type="number" name="testField.b" value="42" onChange={dummy}/>
-        <input role="combobox" type="checkbox" name="testField.c" value="true" defaultChecked onChange={dummy}/>
-        <input role="combobox" type="checkbox" name="testField.d" value="false" onChange={dummy}/>
+        <input role="checkbox" type="checkbox" name="testField.c" defaultValue="true" defaultChecked readOnly/>
+        <input role="checkbox" type="checkbox" name="testField.d" value="false" onChange={dummy}/>
       </div>
     );
     const values = extractValuesFromRenderedElements(expect);
@@ -56,8 +55,8 @@ describe("extractValuesFromRenderedElements", () => {
   it("should handle empty textboxes and unchecked checkboxes", () => {
     render(
       <div>
-        <input role="textbox" type="text" name="testField.e" defaultValue="" />
-        <input role="combobox" type="checkbox" name="testField.f" value="false" />
+        <input role="textbox" type="text" name="testField.e" value="" onChange={dummy}/>
+        <input role="checkbox" type="checkbox" name="testField.f" defaultValue="false" readOnly/>
       </div>
     );
     const values = extractValuesFromRenderedElements(expect);

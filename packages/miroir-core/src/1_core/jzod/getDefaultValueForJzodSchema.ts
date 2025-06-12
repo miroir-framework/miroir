@@ -166,7 +166,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
   relativeReferenceJzodContext?: { [k: string]: JzodElement }
 ): any {
   log.info(
-    "getDefaultValueForJzodSchemaWithResolution handleSelectLiteralChange called with jzodSchema",
+    "getDefaultValueForJzodSchemaWithResolution called with jzodSchema",
     jzodSchema
   );
   if (jzodSchema.optional) {
@@ -183,7 +183,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
         relativeReferenceJzodContext
       );
       log.info(
-        "getDefaultValueForJzodSchemaWithResolution handleSelectLiteralChange called with resolvedObjectType",
+        "getDefaultValueForJzodSchemaWithResolution called with resolvedObjectType",
         resolvedObjectType
       );
       const result = Object.fromEntries(
@@ -202,7 +202,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
           ])
       );
       log.info(
-        "getDefaultValueForJzodSchemaWithResolution handleSelectLiteralChange result",
+        "getDefaultValueForJzodSchemaWithResolution result",
         result
       );
       return result;

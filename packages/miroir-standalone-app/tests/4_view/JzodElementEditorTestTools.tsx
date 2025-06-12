@@ -190,34 +190,8 @@ export interface JzodElementEditorProps_Test {
   listKey: string;
   rootLesslistKey: string;
   rootLesslistKeyArray: string[];
-  // indentLevel?: number;
   initialFormState: any;
   rawJzodSchema: JzodElement | undefined;
-  // formik: any;
-  // resolvedElementJzodSchema: JzodElement | undefined;
-  // unresolvedJzodSchema?: JzodElement | undefined;
-  // paramMiroirFundamentalJzodSchema?: JzodSchema; //used only for testing, trouble with using MiroirContextReactProvider
-  // unionInformation?:
-  //   | {
-  //       jzodSchema: JzodUnion;
-  //       discriminator: string;
-  //       discriminatorValues: string[];
-  //       // subDiscriminator?: string,
-  //       // subDiscriminatorValues?: string[],
-  //       setItemsOrder: React.Dispatch<React.SetStateAction<any[]>>;
-  //     }
-  //   | undefined;
-  // foreignKeyObjects: Record<string, EntityInstancesUuidIndex>;
-  // currentDeploymentUuid?: Uuid;
-  // currentApplicationSection?: ApplicationSection;
-  // handleChange: (e: ChangeEvent<any>) => Promise<void>;
-  // setFormState: React.Dispatch<
-  //   React.SetStateAction<{
-  //     [k: string]: any;
-  //   }>
-  // >;
-  // parentObjectSetItemsOrder?: React.Dispatch<React.SetStateAction<any[]>>;
-  // parentObjectItemsOrder?: any[];
 }
 
 
@@ -868,57 +842,114 @@ export function getJzodEditorTestSuites<
 }
 
 // ################################################################################################
-export function extractValuesFromRenderedElements(expect: ExpectStatic) {
-  let inputs: HTMLElement[] = [];
+export function extractValuesFromRenderedElements(
+  expect: ExpectStatic,
+  label: string = "testField",
+  step?: string,
+): Record<string, any> {
+  console.log("########### extractValuesFromRenderedElements for label", label, "step", step);
+  let textBoxes: HTMLElement[] = [];
   try {
-    inputs = screen.getAllByRole("textbox");
+    textBoxes = screen.getAllByRole("textbox");
   } catch (e) {
     // No textbox found, leave inputs as empty array
   }
-  console.log(
-    "inputs",
-    inputs.map((i) => ({
-      name: (i as HTMLInputElement).name,
+  const textBoxesInfo = textBoxes.map((i) => {
+    return {
+      name: (i as HTMLInputElement).name.replace(new RegExp(`^${label}\\.`), ""),
       value: (i as HTMLInputElement).value,
       defaultValue: (i as HTMLInputElement).defaultValue,
       type: (i as HTMLInputElement).type,
-    }))
-  );
+    };
+  });
+  console.log("textBoxes", textBoxesInfo);
+
+  // #############################################################
   let checkboxes: HTMLElement[] = [];
   try {
     checkboxes = screen.getAllByRole("checkbox");
   } catch (e) {
     // No checkbox found, leave checkboxes as empty array
   }
-  console.log(
-    "checkboxes",
-    checkboxes.map((c) => ({
-      name: (c as HTMLInputElement).name,
+  const checkboxesInfo = checkboxes.map((c) => {
+    return {
+      name: (c as HTMLInputElement).name.replace(new RegExp(`^${label}\\.`), ""),
       value: (c as HTMLInputElement).value,
       checked: (c as HTMLInputElement).checked,
-    }))
-  );
+    };
+  });
+  console.log("checkboxes", checkboxesInfo);
+
+  // #############################################################
+  let comboboxes: HTMLElement[] = [];
+  try {
+    comboboxes = screen.getAllByRole("combobox");
+  } catch (e) {
+    // No combobox found, leave comboboxes as empty array
+  }
+  const comboBoxInfo = comboboxes.map((c) => {
+    const input = (c as HTMLElement).nextElementSibling as HTMLInputElement;
+    return {
+      name: (input as HTMLInputElement).name,
+      value: input?.value,
+      selectedIndex: (c as HTMLSelectElement).tabIndex,
+      options: Array.from((c as HTMLSelectElement).options || []).map((o) => o.value),
+    };
+  });
+  console.log("comboboxes", comboBoxInfo);
+
+  // #############################################################
+  let options: HTMLElement[] = [];
+  try {
+    options = screen
+      .getAllByRole<HTMLLIElement>("option")
+      .filter((o: any) => o.getAttribute("aria-label").startsWith(label));
+    options = screen.getAllByRole<HTMLElement>("option");
+  } catch (e) {
+    // No option found, leave options as empty array
+  }
+  const optionsInfo = options.map((o) => {
+    return {
+      value: (o as HTMLOptionElement).textContent,
+      // name: (o as HTMLOptionElement).textContent,
+      name: o.getAttribute("aria-label"),
+      selected: o.getAttribute("aria-selected"),
+    };
+  });
+  console.log("options", optionsInfo);
+
+  // #############################################################
   const values: Record<string, any> = {};
-  inputs.forEach((input: HTMLElement) => {
-    const name = (input as HTMLInputElement).name.replace(/^testField\./, "");
-    // Prefer .value, fallback to .defaultValue if .value is empty
-    let value: any = (input as HTMLInputElement).value;
-    if (value === "" && (input as HTMLInputElement).defaultValue !== undefined) {
-      value = (input as HTMLInputElement).defaultValue;
+  textBoxesInfo.forEach((c) => {
+    let value: any = c.value;
+    if (c.value === "" && c.defaultValue !== undefined) {
+      value = c.defaultValue;
     }
-    if ((input as HTMLInputElement).type === "number") {
+    if (c.type === "number") {
       if (!isNaN(Number(value)) && value !== "") {
         value = Number(value);
       } else {
-        expect(false, "number textBox content is not a number for " + name).toBeTruthy();
+        expect(false, "number textBox content is not a number for " + c.name).toBeTruthy();
       }
     }
-    values[name] = value;
+    values[c.name] = value;
   });
   // Handle boolean checkboxes
-  checkboxes.forEach((checkbox: HTMLElement) => {
-    const name = (checkbox as HTMLInputElement).name.replace(/^testField\./, "");
-    values[name] = (checkbox as HTMLInputElement).checked;
+  checkboxesInfo.forEach((c) => {
+    values[c.name] = c.checked;
+  });
+  // Handle comboboxes (select elements)
+  comboBoxInfo.forEach((c) => {
+    values[c.name] = c.value;
+  });
+  // Optionally, you could add optionsInfo to the return value if needed
+  // values["_options"] = optionsInfo;
+  optionsInfo.forEach((o) => {
+    // values[o.name as any] = o.value;
+    if (values[label] === undefined) {
+      values[label] = [];
+    }
+    values[label].push(o.value);
   });
   return values;
 }
@@ -1217,44 +1248,50 @@ export function getJzodEnumEditorTests(
         initialFormState: "value2",
       },
       tests: {
-        "renders input with label when label prop is provided": {
-          tests: async (expect: ExpectStatic) => {
-            expect(screen.getByLabelText(/Test Label/)).toBeInTheDocument();
-          },
-        },
-        "renders input without label when label prop is not provided": {
-          props: {
-            // label: "Test Label", // no label
-            name: "testField",
-            listKey: "ROOT.testField",
-            rootLesslistKey: "testField",
-            rootLesslistKeyArray: ["testField"],
-            rawJzodSchema: {
-              type: "enum",
-              definition: enumValues,
-            },
-            initialFormState: "value2",
-          },
-          tests: async (expect) => {
-            expect(screen.queryByLabelText(/Test Label/)).not.toBeInTheDocument();
-            // expect(screen.getByRole("textbox")).toBeInTheDocument();
-          },
-        },
+        // "renders input with label when label prop is provided": {
+        //   tests: async (expect: ExpectStatic) => {
+        //     expect(screen.getByLabelText(/Test Label/)).toBeInTheDocument();
+        //   },
+        // },
+        // "renders input without label when label prop is not provided": {
+        //   props: {
+        //     // label: "Test Label", // no label
+        //     name: "testField",
+        //     listKey: "ROOT.testField",
+        //     rootLesslistKey: "testField",
+        //     rootLesslistKeyArray: ["testField"],
+        //     rawJzodSchema: {
+        //       type: "enum",
+        //       definition: enumValues,
+        //     },
+        //     initialFormState: "value2",
+        //   },
+        //   tests: async (expect) => {
+        //     expect(screen.queryByLabelText(/Test Label/)).not.toBeInTheDocument();
+        //     // expect(screen.getByRole("textbox")).toBeInTheDocument();
+        //   },
+        // },
         "renders select with correct value": {
           tests: async (expect: ExpectStatic) => {
-            const combobox = screen.getByRole("combobox");
-            expect(combobox).toContainHTML("value2");
-            // expect(screen.getByLabelText(/Test Label/)).toBeInTheDocument();
+            const values: Record<string, any> = extractValuesFromRenderedElements(expect, "testField", "initial");
+            expect(values).toEqual({
+              "testField": "value2",
+            });
           },
         },
         "renders all enum options": {
           tests: async (expect: ExpectStatic) => {
             const combobox = screen.getByRole("combobox");
+            const valuesInitial: Record<string, any> = extractValuesFromRenderedElements(expect, "testField", "initial");
+            expect(valuesInitial).toEqual({
+              "testField": "value2",
+            });
             await act(() => {
               fireEvent.mouseDown(combobox);
             });
-            enumValues.forEach((val) => {
-              expect(screen.getByRole("option", { name: val })).toBeInTheDocument();
+            const valuesListDisplayed: Record<string, any> = extractValuesFromRenderedElements(expect, "testField", "after mouseDown");
+            expect(valuesListDisplayed).toEqual({
+              "testField": ["value1", "value2", "value3"],
             });
           },
         },
@@ -1265,10 +1302,16 @@ export function getJzodEnumEditorTests(
               fireEvent.mouseDown(combobox);
             });
             await act(() => {
-              fireEvent.click(screen.getByRole("option", { name: "value3" }));
+              fireEvent.click(screen.getByRole("option", { name: "testField.2" }));
             });
-            // expect(screen.getByLabelText(/Test LabelSSSSSSSSSSSSSSSSSSSSSSSS/)).toBeInTheDocument();
-            expect(combobox).toContainHTML("value3");
+            const valuesInitial: Record<string, any> = extractValuesFromRenderedElements(
+              expect,
+              "testField",
+              "after selection change"
+            );
+            expect(valuesInitial).toEqual({
+              "testField": "value3",
+            });
           },
         },
       },
@@ -1368,9 +1411,10 @@ export function getJzodLiteralEditorTests(
               expect(screen.getByDisplayValue("test-value")).toBeInTheDocument();
               const input = screen.getByDisplayValue("test-value");
               await act(() => {
-                fireEvent.change(input, { target: { value: "new value" } });
+                console.log("##################### ACTION", );
+                fireEvent.change(input, { target: { value: "new value" } }) // React testing library does not throw error on editing disabled textbox, so we simulate it
               });
-              expect(screen.getByDisplayValue(/new value/)).toBeInTheDocument();
+              expect(screen.getByDisplayValue(/test-value/)).toBeInTheDocument(); // value has not changed, because it is a literal
             }
         },
       }
@@ -1758,9 +1802,10 @@ export function getJzodSimpleTypeEditorTests(
             initialFormState: true,
           },
           tests: async (expect: ExpectStatic) => {
-            const checkbox = screen.getByRole("checkbox");
-            expect(checkbox).toBeInTheDocument();
-            expect(checkbox).toBeChecked();
+            const values: Record<string, any> = extractValuesFromRenderedElements(expect);
+            expect(values).toEqual({
+              "testField": true,
+            });
           },
         },
         "boolean renders checkbox with proper value false": {
@@ -1776,10 +1821,11 @@ export function getJzodSimpleTypeEditorTests(
             initialFormState: false,
           },
           tests: async (expect: ExpectStatic) => {
-            // expect(screen.getByLabelText(/Test LabelAAAAAAAAAAAAAAAAAAAAAA/)).toBeInTheDocument();
-            const checkbox = screen.getByRole("checkbox");
-            expect(checkbox).toBeInTheDocument();
-            expect(checkbox).not.toBeChecked();
+            const values: Record<string, any> = extractValuesFromRenderedElements(expect);
+            expect(values).toEqual({
+              "testField": false,
+            });
+
           },
         },
         "boolean allows to modify checkbox value with consistent update": {
@@ -1801,7 +1847,10 @@ export function getJzodSimpleTypeEditorTests(
             await act(() => {
               fireEvent.click(checkbox);
             });
-            expect(checkbox).not.toBeChecked();
+            const values: Record<string, any> = extractValuesFromRenderedElements(expect);
+            expect(values).toEqual({
+              "testField": false,
+            });
           },
         },
         "bigint renders input with proper bigint value": {
@@ -2003,14 +2052,16 @@ export function getJzodUnionEditorTests(
             },
           },
           tests: async (expect: ExpectStatic) => {
-            // expect(screen.getByText(/Test Label/)).toBeInTheDocument();
-            const inputs = screen.getAllByRole("textbox");
-            const values: Record<string, any> = {};
-            inputs.forEach((input: HTMLElement) => {
-              const name = (input as HTMLInputElement).name.replace(/^testField\./, "");
-              values[name] = (input as HTMLInputElement).value || Number((input as HTMLInputElement).value);
+            const values: Record<string, any> = extractValuesFromRenderedElements(expect, "testField", "initial form state");
+            console.log("Extracted initial values:", values);
+            expect(values).toEqual({ a: "test string", "testField.testObjectType": "type1" });
+            const input = screen.getByDisplayValue("type1");
+            console.log("Input for type1:", input.innerHTML);
+            console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ACTION");
+            await act(() => {
+              fireEvent.change(input, { target: { value: "type2" } });
             });
-            expect(values).toEqual({ testObjectType: "type1", a: "test string" });
+            // expect(screen.getByLabelText(/NOOOOOOOOOO/)).toBeInTheDocument();
           },
         },
       },

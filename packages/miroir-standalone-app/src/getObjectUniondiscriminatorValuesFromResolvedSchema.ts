@@ -17,7 +17,6 @@ export function getObjectUniondiscriminatorValuesFromResolvedSchema(
 ) {
   if (
     resolvedElementJzodSchema?.type == "object" &&
-    // recursivelyUnfoldedRawSchema &&
     recursivelyUnfoldedRawSchemaDiscriminator
   ) {
     const discriminator = (unfoldedRawSchema as any).discriminator;

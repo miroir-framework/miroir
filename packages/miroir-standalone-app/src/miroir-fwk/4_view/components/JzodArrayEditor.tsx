@@ -1,32 +1,27 @@
-﻿import {
+﻿import { FormikContextType, useFormikContext } from "formik";
+import {
   adminConfigurationDeploymentMiroir,
   getDefaultValueForJzodSchema,
   JzodArray,
   JzodElement,
   JzodTuple,
-  JzodUnion_RecursivelyUnfold_ReturnType,
-  JzodUnion_RecursivelyUnfold_ReturnTypeOK,
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
-  ResolvedJzodSchemaReturnType,
   resolvePathOnObject,
   unfoldJzodSchemaOnce,
-  UnfoldJzodSchemaOnceReturnType,
-  UnfoldJzodSchemaOnceReturnTypeOK,
+  UnfoldJzodSchemaOnceReturnType
 } from "miroir-core";
 import React, { useCallback } from "react";
 import { packageName } from "../../../constants";
 import { cleanLevel } from "../constants";
 import {
-  useMiroirContextformHelperState,
-  useMiroirContextService,
+  useMiroirContextService
 } from "../MiroirContextReactProvider";
 import { useCurrentModel } from "../ReduxHooks";
 import { ExpandOrFoldObjectAttributes, JzodElementEditor } from "./JzodElementEditor";
 import { JzodArrayEditorProps } from "./JzodElementEditorInterface";
-import { useFormikContext } from "formik";
-import { getItemsOrder, SizedAddBox, SizedButton } from "./Style";
+import { SizedAddBox, SizedButton } from "./Style";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -42,9 +37,12 @@ interface JzodArrayMoveButtonProps {
   index: number;
   itemsOrder: number[];
   listKey: string;
-  setItemsOrder: React.Dispatch<React.SetStateAction<number[]>>;
-  formHelperState: any;
-  setformHelperState: (state: any) => void;
+  rootLessListKey: string;
+  formik: FormikContextType<Record<string, any>>; // useFormikContext<Record<string, any>>()
+  currentValue: any;
+  // setItemsOrder: React.Dispatch<React.SetStateAction<number[]>>;
+  // formHelperState: any;
+  // setformHelperState: (state: any) => void;
 }
 
 export const JzodArrayEditorMoveButton: React.FC<JzodArrayMoveButtonProps> = ({
@@ -52,36 +50,32 @@ export const JzodArrayEditorMoveButton: React.FC<JzodArrayMoveButtonProps> = ({
   index,
   itemsOrder,
   listKey,
-  setItemsOrder,
-  formHelperState,
-  setformHelperState,
+  formik,
+  currentValue,
+  rootLessListKey
 }) => {
   const isDisabled = direction === "up" ? index === 0 : index === itemsOrder.length - 1;
 
   const handleClick = (e: React.MouseEvent) => {
     const currentItemIndex: number = index;
-    let newItemsOrder = itemsOrder.slice();
-    const cutOut = newItemsOrder.splice(currentItemIndex, 1)[0];
 
-    // Insert at new position based on direction
-    const newPosition = direction === "up" ? currentItemIndex - 1 : currentItemIndex + 1;
-
-    newItemsOrder.splice(newPosition, 0, cutOut);
-
-    setformHelperState(Object.assign(formHelperState, { [listKey]: newItemsOrder }));
+    const newList: any[] = currentValue.slice();
+    const movedItem = newList.splice(currentItemIndex, 1)[0];
+    const insertAt = direction === "up" ? currentItemIndex - 1 : currentItemIndex + 1;
+    newList.splice(insertAt, 0, movedItem);
 
     log.info(
       `JzodArrayMoveButton array moving ${direction} item`,
       currentItemIndex,
       "in object with items",
       itemsOrder,
-      "cutOut",
-      cutOut,
-      "new order",
-      newItemsOrder
+      "newlist",
+      JSON.stringify(newList, null, 2),
+      "formik.values",
+      JSON.stringify(formik.values, null, 2),
     );
 
-    setItemsOrder(newItemsOrder);
+    formik.setFieldValue(rootLessListKey, newList, false); // do not validate
   };
 
   return (
@@ -116,109 +110,37 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     hiddenFormItems,
     setHiddenFormItems,
     itemsOrder,
-    setItemsOrder,
+    // setItemsOrder,
   }
 ) => {
   // log.info("############################################### JzodArrayEditor array rootLesslistKey", props.rootLesslistKey, "values", props.formik.values);
   jzodArrayEditorRenderCount++;
   const context = useMiroirContextService();
 
-  // log.info(
-  //   "JzodArrayEditor render",
-  //   jzodArrayEditorRenderCount,
-  //   "name",
-  //   name,
-  //   "listKey",
-  //   listKey,
-  //   "itemsOrder",
-  //   itemsOrder,
-  //   "resolvedElementJzodSchema",
-  //   resolvedElementJzodSchema,
-  // );
+  const formik = useFormikContext<Record<string, any>>();
+  const currentValue = resolvePathOnObject(
+    formik.values,
+    rootLesslistKeyArray
+  );
+  log.info(
+    "JzodArrayEditor render",
+    jzodArrayEditorRenderCount,
+    "name",
+    name,
+    "listKey",
+    listKey,
+    "itemsOrder",
+    itemsOrder,
+    "resolvedElementJzodSchema",
+    resolvedElementJzodSchema,
+  );
 
   const currentModel: MetaModel = useCurrentModel(currentDeploymentUuid);
   const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
-  const formik = useFormikContext<Record<string, any>>();
   // ??
-  const [formHelperState, setformHelperState] = useMiroirContextformHelperState();
   const usedIndentLevel: number = indentLevel ?? 0;
 
   const arrayValueObject = resolvePathOnObject(formik.values, rootLesslistKeyArray);
-  // log.info("array",arrayValueObject, "resolvedJzodSchema",props.resolvedJzodSchema);
-
-  // const addNewArrayItem = useCallback(
-  //   async (newItem: any) => {
-  //     if (!rawJzodSchema || rawJzodSchema.type != "array") {
-  //       throw new Error(
-  //         "JzodArrayEditor addNewArrayItem called with a non-array schema: " +
-  //           JSON.stringify(rawJzodSchema, null, 2)
-  //       );
-  //     }
-  //     const newArrayValue = [
-  //       ...arrayValueObject,
-  //       getDefaultValueForJzodSchema(rawJzodSchema.definition),
-  //     ];
-
-  //     const newAttributeValue = {
-  //       [rootLesslistKey]: newArrayValue,
-  //     };
-  //     log.info(
-  //       "JzodArrayEditor addNewArrayItem",
-  //       "listKey",
-  //       listKey,
-  //       "rootLesslistKey",
-  //       rootLesslistKey,
-  //       "rootLesslistKeyArray",
-  //       rootLesslistKeyArray,
-  //       // "newItem",
-  //       // newItem,
-  //       "rawJzodSchema",
-  //       rawJzodSchema,
-  //       "newAttributeValue",
-  //       JSON.stringify(newAttributeValue, null, 2),
-  //       "arrayValueObject",
-  //       JSON.stringify(arrayValueObject, null, 2),
-  //       "formik.values",
-  //       JSON.stringify(formik.values, null, 2),
-  //       "itemsOrder",
-  //       JSON.stringify(itemsOrder, null, 2)
-  //       // `"${newItemValue}"`,
-  //     );
-  //     // formik.setFieldValue(
-  //     //   rootLesslistKey,
-  //     //   [...arrayValueObject, newItemValue],
-  //     //   // [...formik.values[rootLesslistKey], newItemValue],
-  //     //   false // do not validate
-  //     // );
-  //     formik.setValues({
-  //       ...formik.values,
-  //       // [rootLesslistKey]: newArrayValue,
-  //       ...newAttributeValue,
-  //       // newArrayValue
-  //       // [rootLesslistKey]: [...formik.values[rootLesslistKey], newItemValue],
-  //     });
-  //     setItemsOrder(getItemsOrder(newArrayValue, resolvedElementJzodSchema));
-
-  //     // log.info(
-  //     //   "JzodArrayEditor addNewArrayItem after setValues",
-  //     //   "formik.values",
-  //     //   JSON.stringify(formik.values, null, 2),
-  //     // );
-  //     setTimeout(() => {
-  //       log.info("Updated formik.values:", JSON.stringify(formik.values, null, 2));
-  //       log.info("Updated itemsOrder:", JSON.stringify(itemsOrder, null, 2));
-  //     }, 0);
-  //   },
-  //   [
-  //     rawJzodSchema,
-  //     listKey,
-  //     rootLesslistKey,
-  //     rootLesslistKeyArray,
-  //     formik.values,
-  //     arrayValueObject,
-  //     itemsOrder,
-  //   ]
-  // );
   const addNewArrayItem = useCallback(
     async () => {
       if (!rawJzodSchema || rawJzodSchema.type !== "array") {
@@ -274,15 +196,14 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
       // formik.setFieldValue("testField", newArrayValue, false); // Disable validation
       formik.setFieldValue(rootLesslistKey, newArrayValue, false); // Disable validation
 
-      // Update the items order
-      setItemsOrder(getItemsOrder(newArrayValue, resolvedElementJzodSchema));
+      // // Update the items order
+      // setItemsOrder(getItemsOrder(newArrayValue, resolvedElementJzodSchema));
     },
     [
       formik,
       rawJzodSchema,
       arrayValueObject,
       resolvedElementJzodSchema,
-      setItemsOrder,
     ]
   );
   return (
@@ -322,7 +243,6 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
             .map((i: number): [number, JzodElement] => [i, arrayValueObject[i]])
             .map((attributeParam: [number, JzodElement]) => {
               const index: number = attributeParam[0];
-              // const attribute = attributeParam[1];
               // HACK HACK HACK
               // TODO: allow individualized schmema resolution for items of an array, in case the definition of the array schema is a union type
               // resulting type of an array type would be a tuple type.
@@ -354,11 +274,9 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
                   : undefined;
               const resolutionError =
                 currentArrayElementRawDefinition && currentArrayElementRawDefinition.status != "ok";
-              // currentArrayElementRawDefinition.find((e) => e.status != "ok");
               if (!currentArrayElementRawDefinition || resolutionError) {
                 throw new Error(
                   "JzodArrayEditor could not unfold jzod schema: " +
-                    // JSON.stringify(currentArrayElementRawDefinition, null, 2)
                     JSON.stringify(currentArrayElementRawDefinition, null, 2) +
                     " at " +
                     JSON.stringify(resolutionError, null, 2)
@@ -391,23 +309,22 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
                       index={index}
                       itemsOrder={itemsOrder as number[]}
                       listKey={listKey}
-                      setItemsOrder={setItemsOrder}
-                      formHelperState={formHelperState}
-                      setformHelperState={setformHelperState}
+                      rootLessListKey={rootLesslistKey}
+                      formik={formik}
+                      currentValue={currentValue}
                     />
                     <JzodArrayEditorMoveButton
                       direction="up"
                       index={index}
                       itemsOrder={itemsOrder as number[]}
                       listKey={listKey}
-                      setItemsOrder={setItemsOrder}
-                      formHelperState={formHelperState}
-                      setformHelperState={setformHelperState}
+                      rootLessListKey={rootLesslistKey}
+                      formik={formik}
+                      currentValue={currentValue}
                     />
                     <JzodElementEditor
                       name={"" + index}
                       listKey={listKey + "." + index}
-                      // currentEnumJzodSchemaResolver={props.currentEnumJzodSchemaResolver}
                       indentLevel={usedIndentLevel + 1}
                       label={resolvedElementJzodSchema?.tag?.value?.defaultLabel}
                       paramMiroirFundamentalJzodSchema={paramMiroirFundamentalJzodSchema}

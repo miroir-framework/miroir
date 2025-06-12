@@ -1,11 +1,25 @@
-import { LoggerInterface, MiroirLoggerFactory, resolvePathOnObject } from "miroir-core";
-import React from "react";
-import { JzodLiteralEditorProps } from "./JzodElementEditorInterface";
+import { MenuItem } from "@mui/material";
 import { useFormikContext } from "formik";
+import React from "react";
+
+
+import {
+  adminConfigurationDeploymentMiroir,
+  getDefaultValueForJzodSchemaWithResolution,
+  JzodElement,
+  JzodLiteral,
+  JzodObject,
+  LoggerInterface,
+  MetaModel,
+  MiroirLoggerFactory,
+} from "miroir-core";
+
 import { packageName } from "../../../constants";
 import { cleanLevel } from "../constants";
+import { useMiroirContextService } from "../MiroirContextReactProvider";
+import { useCurrentModel } from "../ReduxHooks";
+import { JzodLiteralEditorProps } from "./JzodElementEditorInterface";
 import { StyledSelect } from "./Style";
-import { MenuItem } from "@mui/material";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -22,39 +36,113 @@ export const JzodLiteralEditor: React.FC<JzodLiteralEditorProps> = (
   listKey,
   rootLesslistKey,
   rootLesslistKeyArray,
-  // formik,
-  // onChange,
+  currentDeploymentUuid,
+  currentApplicationSection,
   unionInformation,
-  handleSelectLiteralChange,
+  resolvedElementJzodSchema,  // handleSelectLiteralChange,
   label,
-  // formState,
   }
 ) => {
   JzodLiteralEditorRenderCount++;
-  // const currentValue = resolvePathOnObject(formik.values, rootLesslistKeyArray);
-  // console.log(
-  //   `JzodLiteralEditor render #${JzodLiteralEditorRenderCount}
-  //   name: ${name}
-  //   listKey: ${listKey}
-  //   rootLesslistKey: ${rootLesslistKey}
-  //   rootLesslistKeyArray: ${rootLesslistKeyArray}
-  //   label: ${label}
-  //   formik.values: ${JSON.stringify(formik.values, null, 2)}
-  //   `
-  //   // formState: ${JSON.stringify(formState, null, 2)}
-  // );
+  const context = useMiroirContextService();
+  const currentModel: MetaModel = useCurrentModel(currentDeploymentUuid);
+  const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
+  const currentMiroirFundamentalJzodSchema = context.miroirFundamentalJzodSchema;
+
   const formik = useFormikContext<Record<string, any>>();
-  
+  // ############################################################################################
+  // uses setFormState to update the formik state (updating the parent value)
+  const handleSelectLiteralChange = (event: any) => {
+    // This literal is the discriminator of a discriminated union object.
+
+    if (!unionInformation) {
+      throw new Error(
+        "handleSelectLiteralChange called but current object does not have information about the discriminated union type it must be part of!"
+      );
+    }
+    if (!unionInformation.jzodSchema.discriminator) {
+      throw new Error(
+        "handleSelectLiteralChange called but current object does not have a discriminated union type!"
+      );
+    }
+
+
+      const currentAttributeName =
+        rootLesslistKeyArray[rootLesslistKeyArray.length - 1];
+
+      log.info(
+        "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ handleSelectLiteralChange event",
+        event.target.value,
+        "rootLesslistKey",
+        rootLesslistKey,
+        "attribute",
+        currentAttributeName,
+        "name",
+        name,
+        "unionInformation",
+        JSON.stringify(unionInformation, null, 2),
+        "formik.values",
+        formik.values,
+      );
+
+      const newJzodSchema: JzodElement | undefined = // attribute is either discriminator or sub-discriminator
+        (unionInformation.jzodSchema.definition as JzodObject[]).find(
+          (a: JzodObject) =>
+            a.type == "object" &&
+            a.definition[(unionInformation as any).jzodSchema.discriminator].type ==
+              "literal" &&
+            (a.definition[(unionInformation as any).jzodSchema.discriminator] as JzodLiteral)
+              .definition == event.target.value
+        );
+      if (!newJzodSchema) {
+        throw new Error(
+          "handleSelectLiteralChange could not find union branch for discriminator " +
+            unionInformation.discriminator +
+            " in " +
+            JSON.stringify(unionInformation.jzodSchema)
+        );
+      } else {
+        log.info(
+          "handleSelectLiteralChange found newJzodSchema",
+          newJzodSchema,
+          "for discriminator",
+          unionInformation.discriminator,
+          "value",
+          event.target.value
+        );
+      }
+      const newJzodSchemaWithOptional = unionInformation.jzodSchema.optional
+        ? {
+            ...newJzodSchema,
+            optional: true,
+          }
+        : newJzodSchema;
+      log.info("handleSelectLiteralChange newJzodSchemaWithOptional", newJzodSchemaWithOptional);
+
+      const defaultValue = currentMiroirFundamentalJzodSchema
+        ? getDefaultValueForJzodSchemaWithResolution(
+            newJzodSchemaWithOptional,
+            currentMiroirFundamentalJzodSchema, // context.miroirFundamentalJzodSchema,
+            currentModel,
+            miroirMetaModel
+          )
+        : undefined;
+      log.info("handleSelectLiteralChange defaultValue", defaultValue, "formik.values", JSON.stringify(formik.values, null, 2));
+      formik.setFieldValue( // replacing parent value (the object containing the discriminator Literal)
+        rootLesslistKeyArray.slice(0, rootLesslistKeyArray.length - 1).join("."),
+        defaultValue,
+        false // do not validate on change
+      );
+  };
+
   if (unionInformation) {
     log.info(
       "literal with unionInformation",
       listKey,
       "discriminator=",
       unionInformation.discriminator,
-      // "subDiscriminator=",
-      // props.unionInformation.subDiscriminator,
       "unionInformation=",
-      unionInformation
+      JSON.stringify(unionInformation, null, 2)
     );
   }
   return (
@@ -66,11 +154,13 @@ export const JzodLiteralEditor: React.FC<JzodLiteralEditorProps> = (
         name == unionInformation.discriminator ? (
           <>
             <StyledSelect
-              variant="standard"
-              labelId="demo-simple-select-label"
-              id={listKey}
-              value={formik.values[rootLesslistKey]}
+              id={rootLesslistKey}
+              aria-label={label}
               label={name}
+              variant="standard"
+
+              labelId="demo-simple-select-label"
+              {...formik.getFieldProps(rootLesslistKey)}
               onChange={handleSelectLiteralChange}
             >
               {unionInformation.discriminatorValues.map((v) => {
@@ -92,27 +182,16 @@ export const JzodLiteralEditor: React.FC<JzodLiteralEditorProps> = (
             <input
               type="text"
               id={rootLesslistKey}
+              name={rootLesslistKey}
               aria-label={label}
               form={"form." + name}
-              {...formik.getFieldProps(rootLesslistKey)}
-              name={name}
+              value={formik.getFieldProps(rootLesslistKey).value}
+              readOnly
+              disabled
             />
           </>
         )}
       </>
     </>
   );
-  // return (
-  //   <>
-  //     {label && <label htmlFor={rootLesslistKey}>{label}: </label>}
-  //     <input
-  //       type="text"
-  //       id={rootLesslistKey}
-  //       aria-label={label}
-  //       form={"form." + name}
-  //       {...formik.getFieldProps(rootLesslistKey)}
-  //       name={name}
-  //     />
-  //   </>
-  // );
 };

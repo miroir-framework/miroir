@@ -42,16 +42,16 @@ export const JzodEnumEditor: React.FC<JzodEnumEditorProps> = (
       name == unionInformation?.discriminator ? ( // NOT USED, unionInformation is null!!
         <>
           <StyledSelect
-            id={listKey}
-            aria-label={label}
+            id={rootLesslistKey}
+            aria-label={rootLesslistKey}
             labelId="demo-simple-select-label"
             variant="standard"
             {...formik.getFieldProps(rootLesslistKey)}
             name={rootLesslistKey}
           >
-            {unionInformation?.discriminatorValues.map((v) => {
+            {unionInformation?.discriminatorValues.map((v, index) => {
               return (
-                <MenuItem key={v} value={v}>
+                <MenuItem key={v} value={v} aria-label={rootLesslistKey + "." + index}>
                   {v}
                 </MenuItem>
               );
@@ -63,16 +63,15 @@ export const JzodEnumEditor: React.FC<JzodEnumEditorProps> = (
         <>
           <StyledSelect
             id={listKey}
-            // role="textbox"
-            aria-label={label}
+            aria-label={rootLesslistKey}
             labelId="demo-simple-select-label"
             variant="standard"
             {...formik.getFieldProps(rootLesslistKey)}
             name={rootLesslistKey}
           >
-            {(rawJzodSchema as JzodEnum).definition.map((v) => {
+            {(rawJzodSchema as JzodEnum).definition.map((v, index) => {
               return (
-                <MenuItem key={v} value={v}>
+                <MenuItem key={v} value={v} aria-label={rootLesslistKey + "." + index}>
                   {v}
                 </MenuItem>
               );

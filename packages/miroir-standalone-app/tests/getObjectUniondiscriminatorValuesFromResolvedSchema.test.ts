@@ -15,9 +15,6 @@ import currentModel from "./currentModel.json";
 import { JzodUnion_RecursivelyUnfold_ReturnType } from "miroir-core";
 import { ResolvedJzodSchemaReturnType } from "miroir-core";
 import { jzodTypeCheck } from "miroir-core";
-import { JzodObject } from "miroir-core";
-import { entityDefinitionBook } from "miroir-core";
-import { book1 } from "miroir-core";
 
 function local_test(schema: JzodElement, instance: any): string[] {
   const resolvedElementJzodSchema: ResolvedJzodSchemaReturnType | undefined = jzodTypeCheck(
@@ -67,13 +64,6 @@ function local_test(schema: JzodElement, instance: any): string[] {
 }
 
 describe("getObjectUniondiscriminatorValuesFromResolvedSchema", () => {
-  // it("returns correct result for a Book instance", () => {
-  //   const bookSchema: JzodObject = entityDefinitionBook.jzodSchema as JzodObject;
-  //   const result = local_test(bookSchema, book1);
-  //   console.log("Result for book1:", JSON.stringify(result, null, 2));
-  //   expect(result).toEqual(undefined);
-  // });
-
     it("returns correct result for a simple union of objects with discriminator", () => {
       const schema: JzodUnion = {
         type: "union",
