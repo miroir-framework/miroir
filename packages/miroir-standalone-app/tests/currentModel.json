@@ -2772,14 +2772,14 @@
                     "type": "record",
                     "optional": true,
                     "definition": {
-                      "type": "string"
+                      "type": "any"
                     }
                   },
                   "reportParameters": {
                     "type": "record",
                     "optional": true,
                     "definition": {
-                      "type": "string"
+                      "type": "any"
                     }
                   },
                   "extractorTemplates": {
