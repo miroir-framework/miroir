@@ -60,9 +60,17 @@ import { JzodArrayEditor, indentShift } from "./JzodArrayEditor.js";
 import { JzodElementEditorProps } from "./JzodElementEditorInterface.js";
 import { JzodEnumEditor } from "./JzodEnumEditor.js";
 import { JzodLiteralEditor } from "./JzodLiteralEditor.js";
-import { LineIconButton, SizedAddBox, SizedButton, SmallIconButton, StyledSelect, getItemsOrder } from "./Style.js";
+import {
+  LineIconButton,
+  SizedAddBox,
+  SizedButton,
+  SmallIconButton,
+  StyledSelect,
+  getItemsOrder,
+} from "./Style.js";
 import ReactCodeMirror from "@uiw/react-codemirror";
 import { javascript } from "@codemirror/lang-javascript";
+import { JzodAnyEditor } from "./JzodAnyEditor.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -378,6 +386,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
 
   if (localResolvedElementJzodSchemaBasedOnValue && props.rawJzodSchema) {
     if (
+      props.rawJzodSchema?.type != "any" &&
       localResolvedElementJzodSchemaBasedOnValue.type != props.rawJzodSchema?.type &&
       ((localResolvedElementJzodSchemaBasedOnValue.type == "object" &&
         !objectTypes.includes(props.rawJzodSchema.type)) ||
@@ -1333,6 +1342,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             listKey={props.listKey}
             rootLesslistKey={props.rootLesslistKey}
             rootLesslistKeyArray={props.rootLesslistKeyArray}
+            rawJzodSchema={props.rawJzodSchema as JzodLiteral}
             resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
             label={props.label}
             unionInformation={props.unionInformation}
@@ -1367,108 +1377,23 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         );
         break;
       }
+      case "undefined":
       case "any": {
-        // ##############################################################################################
-        const [codeMirrorIsValidJson, setCodeMirrorIsValidJson] = useState(true);
-        const [codeMirrorValue, setCodeMirrorValue] = useState(() =>
-          JSON.stringify(currentValue, null, 2)
-        );
-        const codeMirrorRef = useRef<any>(null);
-
-        // Update editor value if currentValue changes (external change)
-        useEffect(() => {
-          try {
-            if (JSON.stringify(JSON.parse(codeMirrorValue)) !== JSON.stringify(currentValue)) {
-              setCodeMirrorValue(JSON.stringify(currentValue, null, 2));
-            }
-          } catch {
-            // ignore parse error, user is editing
-          }
-          // eslint-disable-next-line react-hooks/exhaustive-deps
-        }, [currentValue]);
-
-        const handleChange = useCallback((value: string, viewUpdate?: any) => {
-          setCodeMirrorValue(value);
-          try {
-            JSON.parse(value);
-            setCodeMirrorIsValidJson(true);
-          } catch {
-            setCodeMirrorIsValidJson(false);
-          }
-        }, []);
-
-        // Format JSON and try to keep cursor position
-        const handleFormat = useCallback(() => {
-          try {
-            const editor = codeMirrorRef.current?.view;
-            const parsed = JSON.parse(codeMirrorValue);
-            const formatted = JSON.stringify(parsed, null, 2);
-
-            // Try to keep cursor position steady
-            if (editor) {
-              const { state } = editor;
-              const selection = state.selection.main;
-              // Calculate offset from start
-              const offset = selection.from;
-              setCodeMirrorValue(formatted);
-
-              // After value update, set cursor position
-              setTimeout(() => {
-                // Find the closest position in the new text
-                const newOffset = Math.min(offset, formatted.length);
-                editor.dispatch({
-                  selection: { anchor: newOffset },
-                  scrollIntoView: true,
-                });
-              }, 0);
-            } else {
-              setCodeMirrorValue(formatted);
-            }
-            setCodeMirrorIsValidJson(true);
-          } catch {
-            setCodeMirrorIsValidJson(false);
-          }
-        }, [codeMirrorValue]);
-
         return (
-          <div
-            style={{
-              border: `2px solid ${codeMirrorIsValidJson ? "green" : "red"}`,
-              borderRadius: "4px",
-              padding: "2px",
-              display: "inline-block",
-              minWidth: "40ch",
-              position: "relative",
-            }}
-          >
-            <button
-              type="button"
-              aria-label="Format JSON"
-              style={{
-                position: "absolute",
-                top: 4,
-                right: 4,
-                zIndex: 2,
-                background: "#eee",
-                border: "1px solid #ccc",
-                borderRadius: "3px",
-                padding: "2px 6px",
-                cursor: "pointer",
-                fontWeight: "bold",
-              }}
-              onClick={handleFormat}
-              title="Format JSON"
-            >
-              {"{}"}
-            </button>
-            <ReactCodeMirror
-              ref={codeMirrorRef}
-              value={codeMirrorValue}
-              height="200px"
-              extensions={[javascript({ jsx: true })]}
-              onChange={handleChange}
-            />
-          </div>
+          <JzodAnyEditor
+            name={props.name}
+            key={props.rootLesslistKey}
+            currentApplicationSection={props.currentApplicationSection}
+            currentDeploymentUuid={props.currentDeploymentUuid}
+            listKey={props.listKey}
+            rootLesslistKey={props.rootLesslistKey}
+            rootLesslistKeyArray={props.rootLesslistKeyArray}
+            rawJzodSchema={props.rawJzodSchema as JzodLiteral}
+            resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
+            label={props.label}
+            unionInformation={props.unionInformation}
+            // setParentResolvedElementJzodSchema={setLocalResolvedElementJzodSchema}
+          />
         );
         break;
       }
@@ -1481,7 +1406,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       case "schemaReference":
       case "set":
       case "union":
-      case "undefined":
       case "never":
       case "null":
       case "unknown":

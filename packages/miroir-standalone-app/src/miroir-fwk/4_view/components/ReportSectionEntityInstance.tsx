@@ -283,9 +283,9 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                         //   await onCreateFormObject(values);
                         //   await onSubmit(values);
                         // } else {
-                        //   log.info("onSubmit formik handleAddObjectDialogFormSubmit", values);
-                        //   // setformHelperState(values);
-                        //   await handleAddObjectDialogFormSubmit(values, "param");
+                          // log.info("onSubmit formik handleAddObjectDialogFormSubmit", values);
+                          // // setformHelperState(values);
+                          // await handleAddObjectDialogFormSubmit(values, "param");
                         // }
                       } catch (e) {
                         log.error(e);
@@ -330,7 +330,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                                 // formik={formik}
                                 // setFormState={formik.handleChange}
                               />
-                              <button type="submit" name={pageLabel} form={"form." + pageLabel}>
+                              <button type="submit" role="form" name={pageLabel} form={"form." + pageLabel}>
                                 submit form.{pageLabel}
                               </button>
                             </>

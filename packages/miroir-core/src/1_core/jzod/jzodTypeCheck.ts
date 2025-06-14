@@ -1,3 +1,4 @@
+import { valueToJzod } from "@miroir-framework/jzod";
 import {
   JzodElement,
   JzodEnum,
@@ -565,18 +566,18 @@ export function jzodTypeCheck(
               (a.type == typeof valueObject)
           );
           if (resultJzodSchema) {
-            log.info(
-              "jzodTypeCheck object at",
-              currentValuePath.join("."),
-              "type:",
-              JSON.stringify(resultJzodSchema, null, 2),
-              "validates",
-              JSON.stringify(
-                valueObject,
-                (key, value) =>typeof value === "bigint" ? value.toString() : value,
-                2
-              )
-            );
+            // log.info(
+            //   "jzodTypeCheck object at",
+            //   currentValuePath.join("."),
+            //   "type:",
+            //   JSON.stringify(resultJzodSchema, null, 2),
+            //   "validates",
+            //   JSON.stringify(
+            //     valueObject,
+            //     (key, value) =>typeof value === "bigint" ? value.toString() : value,
+            //     2
+            //   )
+            // );
             return {
               status: "ok",
               valuePath: currentValuePath,
@@ -605,14 +606,14 @@ export function jzodTypeCheck(
               (a.type == "literal" && a.definition == valueObject)
           );
           if (resultJzodSchema) {
-            log.info(
-              "jzodTypeCheck object at",
-              currentValuePath.join("."),
-              "type:",
-              JSON.stringify(resultJzodSchema, null, 2),
-              "validates",
-              JSON.stringify(valueObject, null, 2)
-            );
+            // log.info(
+            //   "jzodTypeCheck object at",
+            //   currentValuePath.join("."),
+            //   "type:",
+            //   JSON.stringify(resultJzodSchema, null, 2),
+            //   "validates",
+            //   JSON.stringify(valueObject, null, 2)
+            // );
             return {
               status: "ok",
               valuePath: currentValuePath,
@@ -672,11 +673,11 @@ export function jzodTypeCheck(
           // if there is only one object candidate, use this one
           if (objectUnionChoices.length == 1) {
             // only possible object choice, no need for a discriminator
-            log.info(
-              "jzodTypeCheck object at path=valueObject." + 
-              currentValuePath.join("."),
-              "only 1 object choice found, no discriminator needed",
-            );
+            // log.info(
+            //   "jzodTypeCheck object at path=valueObject." + 
+            //   currentValuePath.join("."),
+            //   "only 1 object choice found, no discriminator needed",
+            // );
             const subElementSchema = jzodTypeCheck(
               objectUnionChoices[0],
               valueObject,
@@ -722,18 +723,18 @@ export function jzodTypeCheck(
           );
           // TODO: test for selectUnionBranchFromDiscriminator result instead of using a try-catch block
 
-          log.info(
-            "jzodTypeCheck object at path=valueObject." + 
-            currentValuePath.join("."),
-            "typePath=",
-            currentTypePath.join("."),
-            "found",
-            flattenedUnionChoices.length,
-            "object choices in union, chosenDiscriminator=",
-            JSON.stringify(chosenDiscriminator, null, 2),
-            "flattenedUnionChoices=",
-            flattenedUnionChoices
-          );
+          // log.info(
+          //   "jzodTypeCheck object at path=valueObject." + 
+          //   currentValuePath.join("."),
+          //   "typePath=",
+          //   currentTypePath.join("."),
+          //   "found",
+          //   flattenedUnionChoices.length,
+          //   "object choices in union, chosenDiscriminator=",
+          //   JSON.stringify(chosenDiscriminator, null, 2),
+          //   "flattenedUnionChoices=",
+          //   flattenedUnionChoices
+          // );
 
           const objectJzodSchemaDefintion = Object.fromEntries(
             Object.entries(valueObject).map((a: [string, any]) => {
@@ -783,14 +784,14 @@ export function jzodTypeCheck(
           );
 
           if (flattenedUnionChoices) {
-            log.info(
-              "jzodTypeCheck object at path=valueObject." +
-              currentValuePath.join("."),
-              ", type:",
-              JSON.stringify({ type: "object", definition: objectJzodSchemaDefintion }, null, 2),
-              "validates",
-              JSON.stringify(valueObject, null, 2)
-            );
+            // log.info(
+            //   "jzodTypeCheck object at path=valueObject." +
+            //   currentValuePath.join("."),
+            //   ", type:",
+            //   JSON.stringify({ type: "object", definition: objectJzodSchemaDefintion }, null, 2),
+            //   "validates",
+            //   JSON.stringify(valueObject, null, 2)
+            // );
 
             return {
               status: "ok",
@@ -1057,13 +1058,15 @@ export function jzodTypeCheck(
       break;
     }
     // plain Attributes
+    case "any": {
+      return { status: "ok", valuePath: currentValuePath, typePath: currentTypePath, element: valueToJzod(valueObject) as JzodElement}
+    }
     case "uuid":
     case "string":
     case "number":
     case "bigint":
     case "boolean":
     case "undefined":
-    case "any":
     case "date":
     case "never":
     case "null":

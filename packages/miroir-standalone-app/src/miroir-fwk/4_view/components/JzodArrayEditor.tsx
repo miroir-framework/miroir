@@ -212,7 +212,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     <div id={rootLesslistKey} key={rootLesslistKey}>
       <div>
         {label}:
-        {rawJzodSchema.type == "array" ? (
+        {rawJzodSchema?.type == "array" ? (
           <div>
             <SizedButton
               variant="text"
@@ -256,14 +256,14 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
               const currentArrayElementRawDefinition: UnfoldJzodSchemaOnceReturnType | undefined =
                 context.miroirFundamentalJzodSchema
                   ? // const currentArrayElementRawDefinition= context.miroirFundamentalJzodSchema
-                    rawJzodSchema.type == "array"
+                    rawJzodSchema?.type == "array"
                     ? unfoldJzodSchemaOnce(
                         context.miroirFundamentalJzodSchema,
                         rawJzodSchema.definition,
                         currentModel,
                         miroirMetaModel
                       )
-                    : rawJzodSchema.type == "tuple"
+                    : rawJzodSchema?.type == "tuple"
                     ? unfoldJzodSchemaOnce(
                         context.miroirFundamentalJzodSchema as any, // OK: dereferencing prevents correct type-checking.
                         rawJzodSchema.definition[index],

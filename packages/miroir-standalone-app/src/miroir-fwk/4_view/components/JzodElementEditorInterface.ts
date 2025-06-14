@@ -12,6 +12,7 @@ export interface JzodEditorPropsRoot {
   currentDeploymentUuid?: Uuid,
   currentApplicationSection?: ApplicationSection;
   initialFormState?: any;
+  rawJzodSchema: JzodElement | undefined;
   resolvedElementJzodSchema: JzodElement | undefined;
   unionInformation?:
     | {
@@ -27,7 +28,7 @@ export interface JzodEditorPropsRoot {
 export interface JzodElementEditorProps extends JzodEditorPropsRoot {
   forceTestingMode?: boolean;
   indentLevel?: number;
-  rawJzodSchema: JzodElement | undefined;
+  // rawJzodSchema: JzodElement | undefined;
   unresolvedJzodSchema?: JzodElement | undefined;
   paramMiroirFundamentalJzodSchema?: JzodSchema; //used only for testing, trouble with using MiroirContextReactProvider
   foreignKeyObjects: Record<string, EntityInstancesUuidIndex>;
@@ -39,7 +40,7 @@ export interface JzodElementEditorProps extends JzodEditorPropsRoot {
 export interface JzodArrayEditorProps extends JzodEditorPropsRoot {
   currentDeploymentUuid?: Uuid,
   currentApplicationSection?: ApplicationSection;
-  rawJzodSchema: JzodArray | JzodTuple;
+  // rawJzodSchema: JzodArray | JzodTuple;
   resolvedElementJzodSchema: JzodElement | undefined;
   paramMiroirFundamentalJzodSchema?: JzodSchema; //used only for testing, trouble with using MiroirContextReactProvider
   foreignKeyObjects: Record<string, EntityInstancesUuidIndex>;
@@ -56,7 +57,7 @@ export interface JzodArrayEditorProps extends JzodEditorPropsRoot {
 
 // #################################################################################################
 export interface JzodEnumEditorProps extends JzodEditorPropsRoot {
-  rawJzodSchema: JzodEnum | undefined;
+  // rawJzodSchema: JzodEnum | undefined;
   // 
   enumValues: string[];
   forceTestingMode?: boolean;
@@ -64,5 +65,9 @@ export interface JzodEnumEditorProps extends JzodEditorPropsRoot {
 
 // #################################################################################################
 export interface JzodLiteralEditorProps extends JzodEditorPropsRoot {
+}
+
+// #################################################################################################
+export interface JzodAnyEditorProps extends JzodEditorPropsRoot {
 }
 

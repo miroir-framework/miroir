@@ -1,7 +1,8 @@
 import _ from "lodash";
 
 import { javascript } from '@codemirror/lang-javascript';
-import { Dialog, DialogTitle, Paper, styled } from "@mui/material";
+import { Dialog, DialogTitle, Paper} from "@mui/material";
+import { styled } from "@mui/material/styles"; // For MUI v5
 import CodeMirror from '@uiw/react-codemirror';
 import { ChangeEvent, useCallback, useMemo } from "react";
 
@@ -88,7 +89,7 @@ const Item = styled(Paper)(({ theme }) => ({
 // not used
 const reorderObjectField = (dataParam:any, orderUpdatePathParam:string[], newOrder:string[]):any=>{
   log.info(
-    "handleAddObjectDialogFormSubmit reorderObjectField",
+    "JsonObjectEditFormDialog reorderObjectField",
     orderUpdatePathParam.length,
     "path",
     orderUpdatePathParam,
@@ -102,7 +103,7 @@ const reorderObjectField = (dataParam:any, orderUpdatePathParam:string[], newOrd
   if (orderUpdatePathParam.length == 1) {
     const newFieldValue = newOrder.reduce((acc,curr)=>({...acc,[curr]:dataParam[orderUpdatePathParam[0]][curr]}),{})
     const result = {[orderUpdatePathParam[0]]:newFieldValue}
-    log.info("handleAddObjectDialogFormSubmit reorderObjectField final",newFieldValue,"result",result);
+    log.info("JsonObjectEditFormDialog reorderObjectField final",newFieldValue,"result",result);
     return result;
   } else {
     if (orderUpdatePathParam.length == 0) {
@@ -111,7 +112,7 @@ const reorderObjectField = (dataParam:any, orderUpdatePathParam:string[], newOrd
       const recursiveReorder = reorderObjectField(dataParam[orderUpdatePathParam[0]],orderUpdatePathParam.slice(1),newOrder)
       const result:any = {...dataParam, [orderUpdatePathParam[0]]:recursiveReorder};
       log.info(
-        "handleAddObjectDialogFormSubmit reorderObjectField",
+        "JsonObjectEditFormDialog reorderObjectField",
         orderUpdatePathParam.length,
         "path",
         orderUpdatePathParam,
@@ -137,7 +138,7 @@ const reorderArrayField = (
   newOrder: number[]
 ): any => {
   log.info(
-    "handleAddObjectDialogFormSubmit reorderArrayField",
+    "JsonObjectEditFormDialog reorderArrayField",
     orderUpdatePathParam.length,
     "path",
     orderUpdatePathParam,
@@ -151,7 +152,7 @@ const reorderArrayField = (
   if (orderUpdatePathParam.length == 1) {
     const newFieldValue = newOrder.reduce((acc:any, curr:number) => [...acc, dataParam[orderUpdatePathParam[0]][curr]], []);
     const result = { ...dataParam, [orderUpdatePathParam[0]]: newFieldValue };
-    log.info("handleAddObjectDialogFormSubmit reorderArrayField final", newFieldValue, "result", result);
+    log.info("JsonObjectEditFormDialog reorderArrayField final", newFieldValue, "result", result);
     return result;
   } else {
     if (orderUpdatePathParam.length == 0) {
@@ -164,7 +165,7 @@ const reorderArrayField = (
       );
       const result: any = { ...dataParam, [orderUpdatePathParam[0]]: recursiveReorder };
       log.info(
-        "handleAddObjectDialogFormSubmit reorderField",
+        "JsonObjectEditFormDialog reorderField",
         orderUpdatePathParam.length,
         "path",
         orderUpdatePathParam,
