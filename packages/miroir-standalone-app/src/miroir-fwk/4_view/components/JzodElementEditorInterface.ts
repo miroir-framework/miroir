@@ -35,11 +35,11 @@ export interface JzodEditorPropsRoot {
 // ################################################################################################
 export interface JzodElementEditorProps extends JzodEditorPropsRoot {
   forceTestingMode?: boolean;
-  indentLevel?: number;
   unresolvedJzodSchema?: JzodElement | undefined;
+  indentLevel?: number;
   // paramMiroirFundamentalJzodSchema?: JzodSchema; //used only for testing, trouble with using MiroirContextReactProvider
-  currentDeploymentUuid?: Uuid;
-  currentApplicationSection?: ApplicationSection;
+  // currentDeploymentUuid?: Uuid;
+  // currentApplicationSection?: ApplicationSection;
 }
 
 // ################################################################################################
@@ -75,6 +75,12 @@ export interface JzodLiteralEditorProps extends JzodEditorPropsRoot {
 // #################################################################################################
 export interface JzodAnyEditorProps extends JzodEditorPropsRoot {
   // visible?: boolean;
+}
+
+// #################################################################################################
+export interface JzodObjectEditorProps extends JzodEditorPropsRoot {
+  // visible?: boolean;
+  indentLevel?: number;
 }
 
 // ################################################################################################
