@@ -175,16 +175,11 @@ function JzodObjectFormEditorWrapper(props: JsonElementEditorWrapperProps) {
             listKey={props.listKey}
             rootLesslistKey={props.rootLesslistKey}
             rootLesslistKeyArray={props.rootLesslistKeyArray}
-            paramMiroirFundamentalJzodSchema={miroirFundamentalJzodSchema as any}
             foreignKeyObjects={props.foreignKeyObjects}
             unresolvedJzodSchema={props.unresolvedJzodSchema}
             unionInformation={props.unionInformation}
             rawJzodSchema={props?.rawJzodSchema}
             resolvedElementJzodSchema={props.resolvedJzodSchema}
-            handleChange={handleChange1}
-            formik={formik}
-            formState={dialogOuterFormObject}
-            setFormState={setdialogOuterFormObject}
           />
         )
       }

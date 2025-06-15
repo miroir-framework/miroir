@@ -102,7 +102,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     rootLesslistKeyArray,
     rawJzodSchema,
     resolvedElementJzodSchema,
-    paramMiroirFundamentalJzodSchema,
+    // paramMiroirFundamentalJzodSchema,
     currentDeploymentUuid,
     currentApplicationSection,
     indentLevel,
@@ -110,6 +110,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     hiddenFormItems,
     setHiddenFormItems,
     itemsOrder,
+    insideAny,
     // setItemsOrder,
   }
 ) => {
@@ -327,7 +328,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
                       listKey={listKey + "." + index}
                       indentLevel={usedIndentLevel + 1}
                       label={resolvedElementJzodSchema?.tag?.value?.defaultLabel}
-                      paramMiroirFundamentalJzodSchema={paramMiroirFundamentalJzodSchema}
+                      // paramMiroirFundamentalJzodSchema={paramMiroirFundamentalJzodSchema}
                       currentDeploymentUuid={currentDeploymentUuid}
                       currentApplicationSection={currentApplicationSection}
                       rootLesslistKey={
@@ -343,6 +344,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
                             ] as JzodElement)
                       } // TODO: wrong type seen for props.resolvedJzodSchema! (cannot be undefined, really)
                       foreignKeyObjects={foreignKeyObjects}
+                      insideAny={insideAny}
                     />
                   </div>
                 </div>

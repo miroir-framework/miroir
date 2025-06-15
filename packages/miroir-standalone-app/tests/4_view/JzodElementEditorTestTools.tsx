@@ -1,15 +1,14 @@
+import { expect, ExpectStatic, vi } from "vitest";
 import { ThemeProvider } from "@emotion/react";
 import { createTheme, StyledEngineProvider } from "@mui/material";
 import { blue } from "@mui/material/colors";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { Formik, FormikProps } from "formik";
-import { ChangeEvent, Dispatch, SetStateAction, useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
 import { Provider } from "react-redux";
-import { expect, ExpectStatic, vi } from "vitest";
 
 import {
   adminConfigurationDeploymentMiroir,
-  alterObjectAtPath,
   ConfigurationService,
   DomainControllerInterface,
   JzodArray,
@@ -50,8 +49,11 @@ import {
   JzodAttributePlainNumberWithValidations,
   JzodAttributePlainStringWithValidations,
   JzodObject,
+  JzodRecord,
+  JzodTuple,
   JzodUnion,
   menuDefaultLibrary,
+  MetaModel,
   reportAuthorDetails,
   reportAuthorList,
   reportBookDetails,
@@ -59,7 +61,7 @@ import {
   reportBookList,
   reportCountryList,
   reportPublisherList,
-  resolvePathOnObject,
+  selfApplicationDeploymentLibrary
 } from "miroir-core";
 import { JzodElementEditor } from "../../src/miroir-fwk/4_view/components/JzodElementEditor";
 import { JzodEditorPropsRoot } from "../../src/miroir-fwk/4_view/components/JzodElementEditorInterface";
@@ -68,11 +70,6 @@ import { useCurrentModel } from "../../src/miroir-fwk/4_view/ReduxHooks";
 import { emptyObject } from "../../src/miroir-fwk/4_view/routes/Tools";
 import { libraryApplicationInstances } from "../../src/miroir-fwk/4_view/uploadBooksAndReports";
 import { TestMode } from "./JzodElementEditor.test";
-import { selfApplicationDeploymentLibrary } from "miroir-core";
-import { MetaModel } from "miroir-core";
-import { applicationDeploymentAdmin } from "miroir-core/src/ApplicationDeploymentAdmin";
-import { JzodTuple } from "miroir-core";
-import { JzodRecord } from "miroir-core";
 
 export const testThemeParams = {
   palette: {
@@ -492,7 +489,6 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
                       listKey={listKey}
                       rootLesslistKey={rootLesslistKey}
                       rootLesslistKeyArray={rootLesslistKeyArray}
-                      paramMiroirFundamentalJzodSchema={miroirFundamentalJzodSchema as JzodSchema}
                       label={label}
                       currentDeploymentUuid={context.deploymentUuid}
                       currentApplicationSection={"data"}
@@ -1734,227 +1730,227 @@ export function getJzodSimpleTypeEditorTests(
             });
           },
         },
-        // "number renders input with proper value": { // TODO: test for nullable / optional scenario
-        //   props: {
-        //     label: "Test Label",
-        //     name: "testField",
-        //     listKey: "ROOT.testField",
-        //     rootLesslistKey: "testField",
-        //     rootLesslistKeyArray: ["testField"],
-        //     rawJzodSchema: {
-        //       type: "number",
-        //     },
-        //     initialFormState: 42,
-        //   },
-        //   tests: async (expect: ExpectStatic) => {
-        //     // expect(screen.getByText(/Test LabelAAAAAAAAAAAA/)).toBeInTheDocument();
-        //     const input = screen.getByRole("textbox");
-        //     expect(input).toBeInTheDocument();
-        //     expect(input).toHaveValue(42);
-        //   },
-        // },
-        // "number allows to modify input value with consistent update": {
-        //   props: {
-        //     label: "Test Label",
-        //     name: "testField",
-        //     listKey: "ROOT.testField",
-        //     rootLesslistKey: "testField",
-        //     rootLesslistKeyArray: ["testField"],
-        //     rawJzodSchema: {
-        //       type: "number",
-        //     },
-        //     initialFormState: 42,
-        //   },
-        //   tests: async (expect: ExpectStatic) => {
-        //     const input = screen.getByRole("textbox");
-        //     expect(input).toBeInTheDocument();
-        //     expect(input).toHaveValue(42);
-        //     await act(() => {
-        //       fireEvent.change(input, { target: { value: 100 } });
-        //     });
-        //     expect(input).toHaveValue(100);
-        //   },
-        // },
-        // "uuid renders input with proper value": { // TODO: test for nullable / optional scenario
-        //   props: {
-        //     label: "Test Label",
-        //     name: "testField",
-        //     listKey: "ROOT.testField",
-        //     rootLesslistKey: "testField",
-        //     rootLesslistKeyArray: ["testField"],
-        //     rawJzodSchema: {
-        //       type: "uuid",
-        //     },
-        //     initialFormState: "123e4567-e89b-12d3-a456-426614174000",
-        //   },
-        //   tests: async (expect: ExpectStatic) => {
-        //     const input = screen.getByRole("textbox");
-        //     expect(input).toBeInTheDocument();
-        //     expect(input).toHaveValue("123e4567-e89b-12d3-a456-426614174000");
-        //   },
-        // },
-        // "uuid allows to modify input value with consistent update": {
-        //   props: {
-        //     label: "Test Label",
-        //     name: "testField",
-        //     listKey: "ROOT.testField",
-        //     rootLesslistKey: "testField",
-        //     rootLesslistKeyArray: ["testField"],
-        //     rawJzodSchema: {
-        //       type: "uuid",
-        //     },
-        //     initialFormState: "123e4567-e89b-12d3-a456-426614174000",
-        //   },
-        //   tests: async (expect: ExpectStatic) => {
-        //     const input = screen.getByRole("textbox");
-        //     expect(input).toBeInTheDocument();
-        //     expect(input).toHaveValue("123e4567-e89b-12d3-a456-426614174000");
-        //     await act(() => {
-        //       fireEvent.change(input, { target: { value: "new-uuid-value" } });
-        //     });
-        //     expect(input).toHaveValue("new-uuid-value");
-        //   },
-        // },
-        // "boolean renders checkbox with proper value true": {
-        //   props: {
-        //     label: "Test Label",
-        //     name: "testField",
-        //     listKey: "ROOT.testField",
-        //     rootLesslistKey: "testField",
-        //     rootLesslistKeyArray: ["testField"],
-        //     rawJzodSchema: {
-        //       type: "boolean",
-        //     },
-        //     initialFormState: true,
-        //   },
-        //   tests: async (expect: ExpectStatic) => {
-        //     const values: Record<string, any> = extractValuesFromRenderedElements(expect);
-        //     expect(values).toEqual({
-        //       "testField": true,
-        //     });
-        //   },
-        // },
-        // "boolean renders checkbox with proper value false": {
-        //   props: {
-        //     label: "Test Label",
-        //     name: "testField",
-        //     listKey: "ROOT.testField",
-        //     rootLesslistKey: "testField",
-        //     rootLesslistKeyArray: ["testField"],
-        //     rawJzodSchema: {
-        //       type: "boolean",
-        //     },
-        //     initialFormState: false,
-        //   },
-        //   tests: async (expect: ExpectStatic) => {
-        //     const values: Record<string, any> = extractValuesFromRenderedElements(expect);
-        //     expect(values).toEqual({
-        //       "testField": false,
-        //     });
+        "number renders input with proper value": { // TODO: test for nullable / optional scenario
+          props: {
+            label: "Test Label",
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLesslistKey: "testField",
+            rootLesslistKeyArray: ["testField"],
+            rawJzodSchema: {
+              type: "number",
+            },
+            initialFormState: 42,
+          },
+          tests: async (expect: ExpectStatic) => {
+            // expect(screen.getByText(/Test LabelAAAAAAAAAAAA/)).toBeInTheDocument();
+            const input = screen.getByRole("textbox");
+            expect(input).toBeInTheDocument();
+            expect(input).toHaveValue(42);
+          },
+        },
+        "number allows to modify input value with consistent update": {
+          props: {
+            label: "Test Label",
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLesslistKey: "testField",
+            rootLesslistKeyArray: ["testField"],
+            rawJzodSchema: {
+              type: "number",
+            },
+            initialFormState: 42,
+          },
+          tests: async (expect: ExpectStatic) => {
+            const input = screen.getByRole("textbox");
+            expect(input).toBeInTheDocument();
+            expect(input).toHaveValue(42);
+            await act(() => {
+              fireEvent.change(input, { target: { value: 100 } });
+            });
+            expect(input).toHaveValue(100);
+          },
+        },
+        "uuid renders input with proper value": { // TODO: test for nullable / optional scenario
+          props: {
+            label: "Test Label",
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLesslistKey: "testField",
+            rootLesslistKeyArray: ["testField"],
+            rawJzodSchema: {
+              type: "uuid",
+            },
+            initialFormState: "123e4567-e89b-12d3-a456-426614174000",
+          },
+          tests: async (expect: ExpectStatic) => {
+            const input = screen.getByRole("textbox");
+            expect(input).toBeInTheDocument();
+            expect(input).toHaveValue("123e4567-e89b-12d3-a456-426614174000");
+          },
+        },
+        "uuid allows to modify input value with consistent update": {
+          props: {
+            label: "Test Label",
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLesslistKey: "testField",
+            rootLesslistKeyArray: ["testField"],
+            rawJzodSchema: {
+              type: "uuid",
+            },
+            initialFormState: "123e4567-e89b-12d3-a456-426614174000",
+          },
+          tests: async (expect: ExpectStatic) => {
+            const input = screen.getByRole("textbox");
+            expect(input).toBeInTheDocument();
+            expect(input).toHaveValue("123e4567-e89b-12d3-a456-426614174000");
+            await act(() => {
+              fireEvent.change(input, { target: { value: "new-uuid-value" } });
+            });
+            expect(input).toHaveValue("new-uuid-value");
+          },
+        },
+        "boolean renders checkbox with proper value true": {
+          props: {
+            label: "Test Label",
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLesslistKey: "testField",
+            rootLesslistKeyArray: ["testField"],
+            rawJzodSchema: {
+              type: "boolean",
+            },
+            initialFormState: true,
+          },
+          tests: async (expect: ExpectStatic) => {
+            const values: Record<string, any> = extractValuesFromRenderedElements(expect);
+            expect(values).toEqual({
+              "testField": true,
+            });
+          },
+        },
+        "boolean renders checkbox with proper value false": {
+          props: {
+            label: "Test Label",
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLesslistKey: "testField",
+            rootLesslistKeyArray: ["testField"],
+            rawJzodSchema: {
+              type: "boolean",
+            },
+            initialFormState: false,
+          },
+          tests: async (expect: ExpectStatic) => {
+            const values: Record<string, any> = extractValuesFromRenderedElements(expect);
+            expect(values).toEqual({
+              "testField": false,
+            });
 
-        //   },
-        // },
-        // "boolean allows to modify checkbox value with consistent update": {
-        //   props: {
-        //     label: "Test Label",
-        //     name: "testField",
-        //     listKey: "ROOT.testField",
-        //     rootLesslistKey: "testField",
-        //     rootLesslistKeyArray: ["testField"],
-        //     rawJzodSchema: {
-        //       type: "boolean",
-        //     },
-        //     initialFormState: true,
-        //   },
-        //   tests: async (expect: ExpectStatic) => {
-        //     const checkbox = screen.getByRole("checkbox");
-        //     expect(checkbox).toBeInTheDocument();
-        //     expect(checkbox).toBeChecked();
-        //     await act(() => {
-        //       fireEvent.click(checkbox);
-        //     });
-        //     const values: Record<string, any> = extractValuesFromRenderedElements(expect);
-        //     expect(values).toEqual({
-        //       "testField": false,
-        //     });
-        //   },
-        // },
-        // "bigint renders input with proper bigint value": {
-        //   props: {
-        //     label: "Test Label",
-        //     name: "testField",
-        //     listKey: "ROOT.testField",
-        //     rootLesslistKey: "testField",
-        //     rootLesslistKeyArray: ["testField"],
-        //     rawJzodSchema: {
-        //       type: "bigint",
-        //     },
-        //     initialFormState: BigInt("12345678901234567890"),
-        //   },
-        //   tests: async (expect: ExpectStatic) => {
-        //     const input = screen.getByRole("textbox");
-        //     expect(input).toBeInTheDocument();
-        //     expect(input).toHaveValue("12345678901234567890");
-        //   },
-        // },
-        // "bigint renders input with proper bigint value as string": {
-        //   props: {
-        //     label: "Test Label",
-        //     name: "testField",
-        //     listKey: "ROOT.testField",
-        //     rootLesslistKey: "testField",
-        //     rootLesslistKeyArray: ["testField"],
-        //     rawJzodSchema: {
-        //       type: "bigint",
-        //     },
-        //     initialFormState: "12345678901234567890", // string representation of bigint
-        //   },
-        //   tests: async (expect: ExpectStatic) => {
-        //     const input = screen.getByRole("textbox");
-        //     expect(input).toBeInTheDocument();
-        //     expect(input).toHaveValue("12345678901234567890");
-        //   },
-        // },
-        // "bigint renders input with proper bigint value as number": {
-        //   props: {
-        //     label: "Test Label",
-        //     name: "testField",
-        //     listKey: "ROOT.testField",
-        //     rootLesslistKey: "testField",
-        //     rootLesslistKeyArray: ["testField"],
-        //     rawJzodSchema: {
-        //       type: "bigint",
-        //     },
-        //     initialFormState: 1234, // string representation of bigint
-        //   },
-        //   tests: async (expect: ExpectStatic) => {
-        //     const input = screen.getByRole("textbox");
-        //     expect(input).toBeInTheDocument();
-        //     expect(input).toHaveValue("1234");
-        //   },
-        // },
-        // "bigint allows to modify input value with consistent update": {
-        //   props: {
-        //     label: "Test Label",
-        //     name: "testField",
-        //     listKey: "ROOT.testField",
-        //     rootLesslistKey: "testField",
-        //     rootLesslistKeyArray: ["testField"],
-        //     rawJzodSchema: {
-        //       type: "bigint",
-        //     },
-        //     initialFormState: 12345678901234567890n,
-        //   },
-        //   tests: async (expect: ExpectStatic) => {
-        //     const input = screen.getByRole("textbox");
-        //     expect(input).toBeInTheDocument();
-        //     expect(input).toHaveValue("12345678901234567890");
-        //     await act(() => {
-        //       fireEvent.change(input, { target: { value: 98765432109876543210n } });
-        //     });
-        //     expect(input).toHaveValue("98765432109876543210");
-        //   },
-        // },
+          },
+        },
+        "boolean allows to modify checkbox value with consistent update": {
+          props: {
+            label: "Test Label",
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLesslistKey: "testField",
+            rootLesslistKeyArray: ["testField"],
+            rawJzodSchema: {
+              type: "boolean",
+            },
+            initialFormState: true,
+          },
+          tests: async (expect: ExpectStatic) => {
+            const checkbox = screen.getByRole("checkbox");
+            expect(checkbox).toBeInTheDocument();
+            expect(checkbox).toBeChecked();
+            await act(() => {
+              fireEvent.click(checkbox);
+            });
+            const values: Record<string, any> = extractValuesFromRenderedElements(expect);
+            expect(values).toEqual({
+              "testField": false,
+            });
+          },
+        },
+        "bigint renders input with proper bigint value": {
+          props: {
+            label: "Test Label",
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLesslistKey: "testField",
+            rootLesslistKeyArray: ["testField"],
+            rawJzodSchema: {
+              type: "bigint",
+            },
+            initialFormState: BigInt("12345678901234567890"),
+          },
+          tests: async (expect: ExpectStatic) => {
+            const input = screen.getByRole("textbox");
+            expect(input).toBeInTheDocument();
+            expect(input).toHaveValue("12345678901234567890");
+          },
+        },
+        "bigint renders input with proper bigint value as string": {
+          props: {
+            label: "Test Label",
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLesslistKey: "testField",
+            rootLesslistKeyArray: ["testField"],
+            rawJzodSchema: {
+              type: "bigint",
+            },
+            initialFormState: "12345678901234567890", // string representation of bigint
+          },
+          tests: async (expect: ExpectStatic) => {
+            const input = screen.getByRole("textbox");
+            expect(input).toBeInTheDocument();
+            expect(input).toHaveValue("12345678901234567890");
+          },
+        },
+        "bigint renders input with proper bigint value as number": {
+          props: {
+            label: "Test Label",
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLesslistKey: "testField",
+            rootLesslistKeyArray: ["testField"],
+            rawJzodSchema: {
+              type: "bigint",
+            },
+            initialFormState: 1234, // string representation of bigint
+          },
+          tests: async (expect: ExpectStatic) => {
+            const input = screen.getByRole("textbox");
+            expect(input).toBeInTheDocument();
+            expect(input).toHaveValue("1234");
+          },
+        },
+        "bigint allows to modify input value with consistent update": {
+          props: {
+            label: "Test Label",
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLesslistKey: "testField",
+            rootLesslistKeyArray: ["testField"],
+            rawJzodSchema: {
+              type: "bigint",
+            },
+            initialFormState: 12345678901234567890n,
+          },
+          tests: async (expect: ExpectStatic) => {
+            const input = screen.getByRole("textbox");
+            expect(input).toBeInTheDocument();
+            expect(input).toHaveValue("12345678901234567890");
+            await act(() => {
+              fireEvent.change(input, { target: { value: 98765432109876543210n } });
+            });
+            expect(input).toHaveValue("98765432109876543210");
+          },
+        },
       },
     },
   };

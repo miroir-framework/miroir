@@ -1,12 +1,9 @@
-import { useFormikContext } from "formik";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
 
 import {
-  adminConfigurationDeploymentMiroir,
   alterObjectAtPath,
   LoggerInterface,
-  MetaModel,
   MiroirLoggerFactory,
   resolvePathOnObject
 } from "miroir-core";
@@ -15,8 +12,8 @@ import { javascript } from "@codemirror/lang-javascript";
 import ReactCodeMirror from "@uiw/react-codemirror";
 import { packageName } from "../../../constants";
 import { cleanLevel } from "../constants";
-import { useMiroirContextService } from "../MiroirContextReactProvider";
-import { useCurrentModel } from "../ReduxHooks";
+import { JzodElementEditor } from "./JzodElementEditor";
+import { getJzodElementEditorHooks } from "./JzodElementEditorHooks";
 import { JzodAnyEditorProps } from "./JzodElementEditorInterface";
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -26,10 +23,12 @@ MiroirLoggerFactory.registerLoggerToStart(
   log = logger;
 });
 
-let JzodLiteralEditorRenderCount: number = 0;
+let JzodAnyEditorRenderCount: number = 0;
 export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
-  // props: JzodLiteralEditorProps
-  {
+  props: JzodAnyEditorProps
+) => {
+  JzodAnyEditorRenderCount++;
+  const {
     name,
     listKey,
     rootLesslistKey,
@@ -37,39 +36,42 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
     rawJzodSchema,
     currentDeploymentUuid,
     currentApplicationSection,
+    foreignKeyObjects,
     unionInformation,
     resolvedElementJzodSchema, // handleSelectLiteralChange,
     label,
-  }
-) => {
-  JzodLiteralEditorRenderCount++;
-  const context = useMiroirContextService();
-  // const currentModel: MetaModel = useCurrentModel(currentDeploymentUuid);
-  // const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
-  // const currentMiroirFundamentalJzodSchema = context.miroirFundamentalJzodSchema;
-
-  const formik = useFormikContext<Record<string, any>>();
+    insideAny
+    // visible = true, // added visibility prop
+  } = props;
+    const {
+      // context,
+      // currentModel,
+      // deploymentEntityStateSelectorMap,
+      formik,
+      // miroirMetaModel,
+      codeMirrorRef,
+      codeMirrorIsValidJson,
+      setCodeMirrorIsValidJson,
+      codeMirrorValue,
+      setCodeMirrorValue,
+    } = getJzodElementEditorHooks(props, JzodAnyEditorRenderCount, "JzodAnyEditor");
+  
   const currentValue = resolvePathOnObject(formik.values, rootLesslistKeyArray);
-  // ############################################################################################
-  const [codeMirrorIsValidJson, setCodeMirrorIsValidJson] = useState(true);
-  const [codeMirrorValue, setCodeMirrorValue] = useState<string>(() =>
-    JSON.stringify(currentValue, null, 2)
-  );
-  const codeMirrorRef = useRef<any>(null);
 
   // Update editor value if currentValue changes (external change)
-  useEffect(() => {
-    try {
-      if (JSON.stringify(JSON.parse(codeMirrorValue)) !== JSON.stringify(currentValue)) {
-        setCodeMirrorValue(JSON.stringify(currentValue, null, 2));
-      }
-    } catch {
-      // ignore parse error, user is editing
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentValue]);
+  // useEffect(() => {
+  //   try {
+  //     if (JSON.stringify(JSON.parse(codeMirrorValue)) !== JSON.stringify(currentValue)) {
+  //       setCodeMirrorValue(JSON.stringify(currentValue, null, 2));
+  //     }
+  //   } catch {
+  //     // ignore parse error, user is editing
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [currentValue]);
 
-  const handleChange = useCallback((value: string, viewUpdate?: any) => {
+  // const handleChange = useCallback((value: string, viewUpdate?: any) => {
+  const handleChange = (value: string, viewUpdate?: any) => {
     setCodeMirrorValue(value);
     try {
       JSON.parse(value);
@@ -77,10 +79,12 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
     } catch {
       setCodeMirrorIsValidJson(false);
     }
-  }, []);
+  }
+  // , []);
 
   // Format JSON and try to keep cursor position
-  const handleFormat = useCallback(() => {
+  // const handleFormat = useCallback(() => {
+  const handleFormat = () => {
     try {
       const editor = codeMirrorRef.current?.view;
       const parsed = JSON.parse(codeMirrorValue);
@@ -110,10 +114,12 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
     } catch {
       setCodeMirrorIsValidJson(false);
     }
-  }, [codeMirrorValue]);
+  };
+  // }, [codeMirrorValue]);
 
   // Synchronise codemirror content with formik
-  const handleCheck = useCallback(() => {
+  // const handleCheck = useCallback(() => {
+  const handleCheck = () => {
     try {
       const parsed = JSON.parse(codeMirrorValue);
       // formik.setFieldValue(rootLesslistKey, parsed, false);
@@ -124,88 +130,91 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
     } catch {
       setCodeMirrorIsValidJson(false);
     }
-  }, [codeMirrorValue, formik, rootLesslistKey]);
+  };
+  // }, [codeMirrorValue, formik, rootLesslistKey]);
 
-  if (rawJzodSchema?.type == "any") {
-    return (
-      <div
-        key={rootLesslistKey}
-        style={{
-          border: `2px solid ${codeMirrorIsValidJson ? "green" : "red"}`,
-          borderRadius: "4px",
-          padding: "2px",
-          display: "inline-block",
-          minWidth: "40ch",
-          position: "relative",
-        }}
-      >
-        <button
-          type="button"
-          aria-label="Format JSON"
-          style={{
-            position: "absolute",
-            top: 4,
-            right: 36,
-            zIndex: 2,
-            background: "#eee",
-            border: "1px solid #ccc",
-            borderRadius: "3px",
-            padding: "2px 6px",
-            cursor: "pointer",
-            fontWeight: "bold",
-          }}
-          onClick={handleFormat}
-          title="Format JSON"
-        >
-          {"{}"}
-        </button>
-        <button
-          type="button"
-          aria-label="Check and Apply JSON"
-          style={{
-            position: "absolute",
-            top: 4,
-            right: 4,
-            zIndex: 2,
-            background: "#eee",
-            border: "1px solid #ccc",
-            borderRadius: "3px",
-            padding: "2px 6px",
-            cursor: codeMirrorIsValidJson ? "pointer" : "not-allowed",
-            fontWeight: "bold",
-            color: codeMirrorIsValidJson ? "green" : "gray",
-          }}
-          onClick={handleCheck}
-          title="Check and Apply JSON"
-          disabled={!codeMirrorIsValidJson}
-        >
-          ✓
-        </button>
-        <ReactCodeMirror
-          ref={codeMirrorRef}
-          value={codeMirrorValue}
-          height="200px"
-          extensions={[javascript({ jsx: true })]}
-          onChange={handleChange}
-        />
-      </div>
-    );
-  } else {
+  // if (resolvedElementJzodSchema?.type == "undefined") {
     return (
       <div key={rootLesslistKey}>
-        <span>
-          undefined case: {resolvedElementJzodSchema?.type}, for {rootLesslistKey}{" "}
-          values{" "}
-          {/* default case: {localResolvedElementJzodSchema.type}, for {props.listKey} values{" "} */}
-          <pre>{JSON.stringify(currentValue, null, 2)}</pre>
-          <br />
-          <pre>
-            resolved Jzod schema: {JSON.stringify(resolvedElementJzodSchema, null, 2)}
-          </pre>
-          <pre>raw Jzod schema: {JSON.stringify(rawJzodSchema, null, 2)}</pre>
-        </span>
+        <div
+          style={{
+            border: `2px solid ${codeMirrorIsValidJson ? "green" : "red"}`,
+            borderRadius: "4px",
+            padding: "2px",
+            minWidth: "40ch",
+            position: "relative",
+            // display: "inline-block",
+            display: !insideAny ? "inline-block" : "none", // control visibility
+          }}
+        >
+          <button
+            type="button"
+            aria-label="Format JSON"
+            style={{
+              position: "absolute",
+              top: 4,
+              right: 36,
+              zIndex: 2,
+              background: "#eee",
+              border: "1px solid #ccc",
+              borderRadius: "3px",
+              padding: "2px 6px",
+              cursor: "pointer",
+              fontWeight: "bold",
+            }}
+            onClick={handleFormat}
+            title="Format JSON"
+          >
+            {"{}"}
+          </button>
+          <button
+            type="button"
+            aria-label="Check and Apply JSON"
+            style={{
+              position: "absolute",
+              top: 4,
+              right: 4,
+              zIndex: 2,
+              background: "#eee",
+              border: "1px solid #ccc",
+              borderRadius: "3px",
+              padding: "2px 6px",
+              cursor: codeMirrorIsValidJson ? "pointer" : "not-allowed",
+              fontWeight: "bold",
+              color: codeMirrorIsValidJson ? "green" : "gray",
+            }}
+            onClick={handleCheck}
+            title="Check and Apply JSON"
+            disabled={!codeMirrorIsValidJson}
+          >
+            ✓
+          </button>
+          <ReactCodeMirror
+            ref={codeMirrorRef}
+            value={codeMirrorValue}
+            height="200px"
+            extensions={[javascript({ jsx: true })]}
+            onChange={handleChange}
+          />
+        </div>
+        <div>
+          <JzodElementEditor
+            name={name}
+            listKey={listKey}
+            rootLesslistKey={rootLesslistKey}
+            rootLesslistKeyArray={rootLesslistKeyArray}
+            rawJzodSchema={rawJzodSchema}
+            currentDeploymentUuid={currentDeploymentUuid}
+            currentApplicationSection={currentApplicationSection}
+            unionInformation={unionInformation}
+            resolvedElementJzodSchema={resolvedElementJzodSchema}
+            label={label}
+            foreignKeyObjects={foreignKeyObjects}
+            insideAny={true}
+            returnsEmptyElement={resolvedElementJzodSchema?.type === "undefined" ? true : false}
+          />
+        </div>
       </div>
     );
-  }
 
 };

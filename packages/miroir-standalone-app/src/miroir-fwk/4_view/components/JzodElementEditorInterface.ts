@@ -1,7 +1,12 @@
-import { SelectChangeEvent } from "@mui/material";
-import { FormikProps } from "formik";
-import { ApplicationSection, EntityInstancesUuidIndex, JzodArray, JzodElement, JzodEnum, JzodObject, JzodSchema, JzodTuple, JzodUnion, Uuid } from "miroir-core";
-import { ChangeEvent } from "react";
+
+import {
+  ApplicationSection,
+  EntityInstance,
+  EntityInstancesUuidIndex,
+  JzodElement,
+  JzodUnion,
+  Uuid
+} from "miroir-core";
 
 export interface JzodEditorPropsRoot {
   label?: string;
@@ -21,6 +26,9 @@ export interface JzodEditorPropsRoot {
         discriminatorValues: string[];
       }
     | undefined;
+  foreignKeyObjects: Record<string, EntityInstancesUuidIndex>; // prop drilling
+  returnsEmptyElement?: boolean; // used to force the editor to return an empty element
+  insideAny?: boolean;
   // handleSelectLiteralChange?: (event: any) => void;
 }
 
@@ -28,10 +36,8 @@ export interface JzodEditorPropsRoot {
 export interface JzodElementEditorProps extends JzodEditorPropsRoot {
   forceTestingMode?: boolean;
   indentLevel?: number;
-  // rawJzodSchema: JzodElement | undefined;
   unresolvedJzodSchema?: JzodElement | undefined;
-  paramMiroirFundamentalJzodSchema?: JzodSchema; //used only for testing, trouble with using MiroirContextReactProvider
-  foreignKeyObjects: Record<string, EntityInstancesUuidIndex>;
+  // paramMiroirFundamentalJzodSchema?: JzodSchema; //used only for testing, trouble with using MiroirContextReactProvider
   currentDeploymentUuid?: Uuid;
   currentApplicationSection?: ApplicationSection;
 }
@@ -42,8 +48,7 @@ export interface JzodArrayEditorProps extends JzodEditorPropsRoot {
   currentApplicationSection?: ApplicationSection;
   // rawJzodSchema: JzodArray | JzodTuple;
   resolvedElementJzodSchema: JzodElement | undefined;
-  paramMiroirFundamentalJzodSchema?: JzodSchema; //used only for testing, trouble with using MiroirContextReactProvider
-  foreignKeyObjects: Record<string, EntityInstancesUuidIndex>;
+  // paramMiroirFundamentalJzodSchema?: JzodSchema; //used only for testing, trouble with using MiroirContextReactProvider
   indentLevel?: number;
   hiddenFormItems: { [k: string]: boolean };  
   setHiddenFormItems: React.Dispatch<
@@ -69,5 +74,17 @@ export interface JzodLiteralEditorProps extends JzodEditorPropsRoot {
 
 // #################################################################################################
 export interface JzodAnyEditorProps extends JzodEditorPropsRoot {
+  // visible?: boolean;
 }
+
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+export const noValue = {
+  uuid: "31f3a03a-f150-416d-9315-d3a752cb4eb4",
+  name: "no value",
+  parentUuid: "",
+} as EntityInstance;
 
