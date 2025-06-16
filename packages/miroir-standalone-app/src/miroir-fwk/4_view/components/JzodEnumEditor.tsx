@@ -34,7 +34,10 @@ export const JzodEnumEditor: React.FC<JzodEnumEditorProps> = (
   
   // const currentValue = resolvePathOnObject(props.formik.values, props.rootLesslistKeyArray);
   const formik = useFormikContext<Record<string, any>>();
-
+  log.info(
+    `JzodEnumEditor: render for ${name}, rootLesslistKey=${rootLesslistKey}, rawJzodSchema=${JSON.stringify(rawJzodSchema)}`,
+    `unionInformation=${JSON.stringify(unionInformation)}`
+  );
   return (
     <>
       {unionInformation?.discriminator &&

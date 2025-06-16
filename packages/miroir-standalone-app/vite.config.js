@@ -3,7 +3,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
 // import { babelImport } from 'vite-plugin-babel-import';
-// import * as path from "path";
+import * as path from "path";
 
 export default defineConfig({
   root: 'src',
@@ -16,8 +16,26 @@ export default defineConfig({
     // },
   },
   // resolve: {
+  // // //   alias: {
+  // // //     src: path.resolve(__dirname, 'src'),
+  // // //   }
   //   alias: {
-  //     src: path.resolve(__dirname, 'src'),
+  //     '@uiw/react-codemirror': path.resolve(__dirname, '../../node_modules/@uiw/react-codemirror/cjs/useCodeMirror.js'),
+  //     // '@uiw/react-codemirror': path.resolve(__dirname, '../../node_modules/@uiw/react-codemirror/cjs/useCodeMirror.js'),
+  // //     '@codemirror/state': path.resolve(__dirname, './node_modules/@codemirror/state/dist/index.cjs'),
+  // //     // '@codemirror/state': path.resolve(__dirname, '../../node_modules/@codemirror/state/dist/index.cjs'),
+  // //     // '@codemirror/state': path.resolve(__dirname, 'node_modules/@codemirror/state/dist/index.cjs'),
+  // //     // '@codemirror/state': path.resolve(
+  // //     //   __dirname,
+  // //     //   './node_modules/@codemirror/state/dist/index.cjs'
+  // //     // ),
+  // //     // // '@codemirror/lang-yaml': path.resolve(
+  // //     // //   __dirname,
+  // //     // // ),
+  // //     // '@codemirror/lang-json': path.resolve(
+  // //     //   __dirname,
+  // //     //   './node_modules/@codemirror/lang-json/dist/index.cjs'
+  // //     // )
   //   }
   // },
   plugins: [

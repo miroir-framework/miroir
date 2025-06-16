@@ -1,5 +1,6 @@
 import express, { Request } from 'express';
 import bodyParser from 'body-parser';
+// import {bodyParser} from 'body-parser';
 import { readFileSync } from 'fs';
 import log from 'loglevelnext'; // TODO: use this? or plain "console" log?
 
@@ -170,7 +171,7 @@ for (const op of restServerDefaultHandlers) {
 }
 
 // ##############################################################################################
-app.get('/', (req,res) => {
+app.get('/', (req: any,res: any) => {
   res.send('App Works !!!!');
 });
     

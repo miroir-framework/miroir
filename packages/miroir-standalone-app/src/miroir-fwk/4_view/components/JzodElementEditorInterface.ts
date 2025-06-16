@@ -29,6 +29,8 @@ export interface JzodEditorPropsRoot {
   foreignKeyObjects: Record<string, EntityInstancesUuidIndex>; // prop drilling
   returnsEmptyElement?: boolean; // used to force the editor to return an empty element
   insideAny?: boolean;
+  hidden?: boolean; // used to control visibility of the editor
+  // displayAsCode?: boolean; // used to display the editor as a structured element, not as code editor
   // handleSelectLiteralChange?: (event: any) => void;
 }
 
@@ -37,6 +39,7 @@ export interface JzodElementEditorProps extends JzodEditorPropsRoot {
   forceTestingMode?: boolean;
   unresolvedJzodSchema?: JzodElement | undefined;
   indentLevel?: number;
+  submitButton?: JSX.Element; // used to display a submit button in the editor
   // paramMiroirFundamentalJzodSchema?: JzodSchema; //used only for testing, trouble with using MiroirContextReactProvider
   // currentDeploymentUuid?: Uuid;
   // currentApplicationSection?: ApplicationSection;
@@ -58,6 +61,7 @@ export interface JzodArrayEditorProps extends JzodEditorPropsRoot {
   >;
   // setItemsOrder: React.Dispatch<React.SetStateAction<any[]>>
   itemsOrder: any[];
+  switches?: JSX.Element; // used to display switches in the editor
 }
 
 // #################################################################################################
@@ -81,6 +85,7 @@ export interface JzodAnyEditorProps extends JzodEditorPropsRoot {
 export interface JzodObjectEditorProps extends JzodEditorPropsRoot {
   // visible?: boolean;
   indentLevel?: number;
+  switches?: JSX.Element; // used to display switches in the editor
 }
 
 // ################################################################################################

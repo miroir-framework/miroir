@@ -1,7 +1,9 @@
 import { FormikProps, useFormikContext } from "formik";
+import { useEffect, useMemo, useRef, useState } from "react";
+
+
 import { SyncBoxedExtractorOrQueryRunnerMap, DeploymentEntityState, MetaModel, JzodElement, JzodUnion_RecursivelyUnfold_ReturnType, JzodUnion, adminConfigurationDeploymentMiroir, resolvePathOnObject, ResolvedJzodSchemaReturnType, jzodTypeCheck, unfoldJzodSchemaOnce, jzodUnion_recursivelyUnfold, LoggerInterface, MiroirLoggerFactory, Domain2QueryReturnType, DomainElementSuccess, EntityInstancesUuidIndex, SyncQueryRunner, SyncQueryRunnerParams, dummyDomainManyQueryWithDeploymentUuid, getApplicationSection, getQueryRunnerParamsForDeploymentEntityState, EntityInstance } from "miroir-core";
 import { getMemoizedDeploymentEntityStateSelectorMap } from "miroir-localcache-redux";
-import { useEffect, useMemo, useRef, useState } from "react";
 import { getUnionInformation } from "../1-core/getUnionInformation";
 import { MiroirReactContext, useMiroirContextService } from "../MiroirContextReactProvider";
 import { useCurrentModel, useDeploymentEntityStateQuerySelectorForCleanedResult } from "../ReduxHooks";
@@ -19,13 +21,25 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 // ##################################################################################################
 export interface JzodElementEditorHooks {
+  // environment
   context: MiroirReactContext;
-  deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState>;
-  formik: FormikProps<Record<string, any>>;
   currentModel: MetaModel;
-  localResolvedElementJzodSchemaBasedOnValue: JzodElement;
   miroirMetaModel: MetaModel;
-  // unfoldedRawSchemaReturnType: ResolvedJzodSchemaReturnType | undefined;
+  // ??
+  deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState>;
+  // state
+  formik: FormikProps<Record<string, any>>;
+  currentValue: any; // current value of the jzod element
+  codeMirrorValue: string;
+  setCodeMirrorValue: React.Dispatch<React.SetStateAction<string>>;
+  codeMirrorIsValidJson: boolean;
+  setCodeMirrorIsValidJson: React.Dispatch<React.SetStateAction<boolean>>;
+  displayAsStructuredElement: boolean;
+  setDisplayAsStructuredElement: React.Dispatch<React.SetStateAction<boolean>>;
+  // displayEditor: boolean;
+  // setDisplayEditor: React.Dispatch<React.SetStateAction<boolean>>;
+  // currentValue jzod schema
+  localResolvedElementJzodSchemaBasedOnValue: JzodElement;
   recursivelyUnfoldedRawSchema: JzodUnion_RecursivelyUnfold_ReturnType | undefined;
   unfoldedRawSchema: JzodElement;
   // union
@@ -50,12 +64,6 @@ export interface JzodElementEditorHooks {
       [k: string]: boolean;
     }>
   >;
-  // any
-  codeMirrorRef: React.RefObject<any>;
-  codeMirrorIsValidJson: boolean;
-  setCodeMirrorIsValidJson: React.Dispatch<React.SetStateAction<boolean>>;
-  codeMirrorValue: string;
-  setCodeMirrorValue: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export function getJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
@@ -68,11 +76,40 @@ export function getJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
   // general use
   const context = useMiroirContextService();
   const currentModel: MetaModel = useCurrentModel(props.currentDeploymentUuid);
-  const formik = useFormikContext<Record<string, any>>();
   const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
 
-  const currentValue = resolvePathOnObject(formik.values, props.rootLesslistKeyArray);
+  
+  // ################################################################################################
+  // codeMirror state
+  const formik = useFormikContext<Record<string, any>>();
+  
+  const currentValue =
+  props.rootLesslistKeyArray.length > 0
+  ? resolvePathOnObject(formik.values, props.rootLesslistKeyArray)
+  : formik.values;
+  // log.info(
+  //   "getJzodElementEditorHooks",
+  //   "currentValue",
+  //   currentValue,
+  //   "props.rootLesslistKeyArray",
+  //   props.rootLesslistKeyArray,
+  //   'formik.values',
+  //   formik.values,
+  //   // JSON.stringify(formik.values, null, 2),
+  // );
+  const [codeMirrorValue, setCodeMirrorValue] = useState<string>(""
+    // () =>
+    // // "\"start!\""
+    // JSON.stringify(currentValue, null, 2)
+  );
+  const [codeMirrorIsValidJson, setCodeMirrorIsValidJson] = useState(true);
 
+  const [displayAsStructuredElement, setDisplayAsStructuredElement] = useState(true);
+  // const [displayEditor, setDisplayEditor] = useState(true);
+
+
+  // ################################################################################################
+  // value schema
   const returnedLocalResolvedElementJzodSchemaBasedOnValue:
     | ResolvedJzodSchemaReturnType
     | undefined = useMemo(() => {
@@ -101,6 +138,7 @@ export function getJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
         caller +
         " could not resolve jzod schema for " +
         props.listKey +
+        JSON.stringify(props.rootLesslistKeyArray) +
         " count " +
         count +
         " currentValue " +
@@ -302,41 +340,25 @@ export function getJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
     return [];
   }, [localResolvedElementJzodSchemaBasedOnValue, foreignKeyObjectsFetchQueryParams]);
 
-  // ##############################################################################################
-  // ANY
-  const codeMirrorRef = useRef<any>(null);
-  const [codeMirrorIsValidJson, setCodeMirrorIsValidJson] = useState(true);
-  const [codeMirrorValue, setCodeMirrorValue] = useState<string>(() =>
-    JSON.stringify(currentValue, null, 2)
-  );
-  
-  useEffect(() => {
-    if (props.rawJzodSchema?.type == "any") {
-      try {
-        if (JSON.stringify(JSON.parse(codeMirrorValue)) !== JSON.stringify(currentValue)) {
-          setCodeMirrorValue(JSON.stringify(currentValue, null, 2));
-        }
-      } catch {
-        // ignore parse error, user is editing
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentValue]);
-  
   return {
     context,
-    formik,
-    deploymentEntityStateSelectorMap,
     currentModel,
-    // returnedLocalResolvedElementJzodSchemaBasedOnValue,
-    localResolvedElementJzodSchemaBasedOnValue,
     miroirMetaModel,
-    // unfoldedRawSchemaReturnType,
+    currentValue,
+    formik,
+    displayAsStructuredElement,
+    setDisplayAsStructuredElement,
+    // displayEditor,
+    // setDisplayEditor,
+    codeMirrorValue,
+    setCodeMirrorValue,
+    codeMirrorIsValidJson,
+    setCodeMirrorIsValidJson,
+    deploymentEntityStateSelectorMap,
+    localResolvedElementJzodSchemaBasedOnValue,
     recursivelyUnfoldedRawSchema,
     unfoldedRawSchema,
-    // uuid
     foreignKeyObjects,
-    // union
     unionInformation,
     // Array / Object fold / unfold state
     hiddenFormItems,
@@ -345,11 +367,5 @@ export function getJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
     definedOptionalAttributes,
     stringSelectList,
     undefinedOptionalAttributes,
-    // any
-    codeMirrorRef,
-    codeMirrorIsValidJson,
-    setCodeMirrorIsValidJson,
-    codeMirrorValue,
-    setCodeMirrorValue,
   };
 }

@@ -342,7 +342,8 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
             setHiddenFormItems={setHiddenFormItems}
             listKey={props.listKey}
           ></ExpandOrFoldObjectAttributes>
-          {localResolvedElementJzodSchemaBasedOnValue.type} {unfoldedRawSchema.type}
+          {unfoldedRawSchema.type} {localResolvedElementJzodSchemaBasedOnValue.type} 
+          {props.switches??<></>}
         </span>
         <div
           id={props.listKey + ".inner"}
@@ -638,14 +639,19 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
                       );
                       return (
                         <div role="alert">
-                          <p>Something went wrong:</p>
                           <div style={{ color: "red" }}>
+                            <p>Something went wrong:</p>
                             <div key="1">object {props.listKey}</div>
                             <div key="2">attribute {attributeListKey}</div>
-                            value {JSON.stringify(currentValue)}
-                            <div key="3"></div>
-                            resolved type{" "}
-                            {JSON.stringify(localResolvedElementJzodSchemaBasedOnValue)}
+                            <div>
+                              value <pre>{JSON.stringify(currentValue, null, 2)}</pre>
+                            </div>
+                            <div key="3">
+                              rawJzodSchema: <pre>{JSON.stringify(props.rawJzodSchema, null, 2)}</pre>
+                            </div>
+                            <div key="4"></div>
+                            resolved type:{" "}
+                            <pre>{JSON.stringify(localResolvedElementJzodSchemaBasedOnValue, null, 2)}</pre>
                             {/* resolved type {JSON.stringify(localResolvedElementJzodSchema)} */}
                             <div key="4">error {error.message}</div>
                           </div>

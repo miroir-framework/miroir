@@ -14,9 +14,9 @@
     "startDev": "vite --host --cors",
     "build": "vite build --emptyOutDir",
     "build5": "npm run build",
-    "test": "vitest run --poolOptions.threads.singleThread --passWithNoTests -t",
-    "testByFile": "vitest run --reporter=verbose --poolOptions.forks.singleFork --passWithNoTests",
-    "testByFileWithFullLog": "cross-env DEBUG='vite-node:*' vitest run --reporter=verbose --poolOptions.threads.singleThread --disable-console-intercept --passWithNoTests"
+    "test": "cross-env VITE_TEST_MODE='true' vitest run --poolOptions.threads.singleThread --passWithNoTests -t",
+    "testByFile": "cross-env VITE_TEST_MODE='true' vitest run --reporter=verbose --poolOptions.forks.singleFork --passWithNoTests",
+    "testByFileWithFullLog": "cross-env VITE_TEST_MODE='true' DEBUG='vite-node:*' vitest run --reporter=verbose --poolOptions.threads.singleThread --disable-console-intercept --passWithNoTests"
   },
   "dependencies": {
     "@codemirror/lang-javascript": "^6.2.2",
@@ -28,7 +28,7 @@
     "@mui/icons-material": "^5.11.16",
     "@mui/material": "^5.10.14",
     "@redux-devtools/core": "^3.13.1",
-    "@uiw/react-codemirror": "^4.21.25",
+    "@uiw/react-codemirror": "^4.23.13",
     "ag-grid-community": "^31.2.0",
     "ag-grid-react": "^31.2.0",
     "cross-fetch": "^4.0.0",

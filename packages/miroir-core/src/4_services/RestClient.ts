@@ -49,7 +49,7 @@ export class RestClient implements RestClientInterface {
       const response = await this.customFetch(endpoint, config);
 
       const responseText: string = await response.text();
-      log.info("RestClient response length", responseText.length, responseText);
+      log.info("RestClient response length", responseText.length);
       const data = responseText.length > 0 ? JSON.parse(responseText) : undefined;
       // log.info("RestClient parsed response", data);
       if (response.ok) {
