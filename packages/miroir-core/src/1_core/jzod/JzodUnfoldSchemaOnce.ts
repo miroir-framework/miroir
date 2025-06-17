@@ -175,7 +175,6 @@ export function unfoldJzodSchemaOnce(
         {...relativeReferenceJzodContext, ...jzodSchema.context}
       );
 
-      // log.info("unfoldJzodSchemaOnce unfoldedReferenceJzodSchema", JSON.stringify(unfoldedReferenceJzodSchema, null, 2));
       const resolvedJzodSchema = resolveJzodSchemaReferenceInContext(
         miroirFundamentalJzodSchema,
         {type: "schemaReference", context: unfoldedReferenceJzodSchema.context, definition:jzodSchema.definition},
@@ -184,8 +183,7 @@ export function unfoldJzodSchemaOnce(
         {...relativeReferenceJzodContext, ...unfoldedReferenceJzodSchema.context} // local context (unfoldedReferenceJzodSchema.context) is not taken into account by resolveJzodSchemaReferenceInContext
       )
 
-      // log.info("unfoldJzodSchemaOnce resolvedJzodSchema", mStringify(resolvedJzodSchema, null, 2));
-      log.info("unfoldJzodSchemaOnce resolvedJzodSchema", resolvedJzodSchema);
+      // log.info("unfoldJzodSchemaOnce resolvedJzodSchema", resolvedJzodSchema);
       const resultJzodSchema = {...resolvedJzodSchema}
       // {
         // ...jzodSchema, // could be an issue if resolvedJzodSchema forces a value for an attribute already in jzodSchema (example: jzodSchema.optional = true, resolvedJzodSchema.optional=false)
@@ -263,10 +261,6 @@ export function unfoldJzodSchemaOnce(
             if (resultSchemaTmp.status == "ok") {
               return [
                 e[0],
-                // {
-                //   ...e[1], // all properties of JzodSchema tag, optional, nullable...
-                  // ...resultSchemaTmp.element,
-                // }
                 resultSchemaTmp.element
               ]
             } else {

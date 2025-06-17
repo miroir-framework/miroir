@@ -136,11 +136,10 @@ export function getJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
     throw new Error(
       "getJzodElementEditorHooks " +
         caller +
-        " could not resolve jzod schema for " +
-        props.listKey +
-        JSON.stringify(props.rootLesslistKeyArray) +
-        " count " +
+        " render " +
         count +
+        "path '" + props.rootLesslistKey +
+        "' could not resolve jzod schema for " +
         " currentValue " +
         JSON.stringify(currentValue, null, 2) +
         " rawJzodSchema " +

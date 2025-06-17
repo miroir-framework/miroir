@@ -634,9 +634,10 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           <span key={props.rootLesslistKey} id={props.rootLesslistKey}>
             <span
               style={{
-                display: hideSubJzodEditor
-                  ? "none" // control visibility
-                  : "inline-block",
+                display: "inline-block"
+                // display: hideSubJzodEditor
+                //   ? "none" // control visibility
+                //   : "inline-block",
               }}
             >
               <JzodAnyEditor
@@ -652,7 +653,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                 rawJzodSchema={props.rawJzodSchema as JzodLiteral}
                 resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
                 unionInformation={props.unionInformation}
-                insideAny={props.insideAny}
+                // insideAny={props.insideAny}
               />
             </span>
           </span>
@@ -723,7 +724,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       </div>
       <span
         style={{
-          display: !hideSubJzodEditor ? "none" : "inline-block",
+          display: !hideSubJzodEditor || (props.rawJzodSchema?.type == "any" && ["undefined", "any"].includes(localResolvedElementJzodSchemaBasedOnValue.type)) ? "none" : "inline-block",
         }}
       >
         {codeEditor}

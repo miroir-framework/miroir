@@ -23,6 +23,7 @@ import { JzodObjectEditorProps } from "./JzodElementEditorInterface";
 import { SizedButton, SizedAddBox, SmallIconButton, getItemsOrder } from "./Style";
 import { packageName } from "../../../constants";
 import { cleanLevel } from "../constants";
+import { useCallback } from "react";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -37,6 +38,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
   const {
     name,
     listKey,
+    label,
     rootLesslistKey,
     rootLesslistKeyArray,
     rawJzodSchema,
@@ -46,7 +48,6 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     // unionInformation,
     indentLevel,
     resolvedElementJzodSchema, // handleSelectLiteralChange,
-    label,
     insideAny,
   } = props;
 
@@ -94,8 +95,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
   const currentValue = resolvePathOnObject(formik.values, props.rootLesslistKeyArray);
 
   // ##############################################################################################
-  // const addExtraRecordEntry = useCallback(async () => {
-  const addExtraRecordEntry = async () => {
+  const addExtraRecordEntry = useCallback(async () => {
     if (localResolvedElementJzodSchemaBasedOnValue.type != "object") {
       throw (
         "addExtraRecordEntry called for non-object type: " +
@@ -141,13 +141,22 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
       "formik",
       formik.values
     );
-  };
+  }, [
+    props,
+    itemsOrder,
+    localResolvedElementJzodSchemaBasedOnValue,
+    unfoldedRawSchema,
+    currentMiroirFundamentalJzodSchema,
+    currentModel,
+    miroirMetaModel,
+    formik.values,
+  ]);
 
   // #######################
   // #######################
   // #######################
-  // const addObjectOptionalAttribute = useCallback(async () => {
-  const addObjectOptionalAttribute = async () => {
+  const addObjectOptionalAttribute = useCallback(async () => {
+  // const addObjectOptionalAttribute = async () => {
     if (localResolvedElementJzodSchemaBasedOnValue.type != "object") {
       throw "addObjectOptionalAttribute called for non-object type: " + unfoldedRawSchema.type;
     }
@@ -203,41 +212,61 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
       "props.rawJzodSchema",
       JSON.stringify(props.rawJzodSchema, null, 2)
     );
-  };
+  }, [ props,
+    itemsOrder,
+    localResolvedElementJzodSchemaBasedOnValue,
+    unfoldedRawSchema,
+    currentMiroirFundamentalJzodSchema,
+    currentModel,
+    miroirMetaModel,
+    formik.values,
+    formik.setFieldValue,
+    // props.rawJzodSchema, // TODO: remove this dependency, it is not used in the function
+    undefinedOptionalAttributes[0]]);
   // }, [props, itemsOrder, localResolvedElementJzodSchemaBasedOnValue]);
   // #######################
   // #######################
   // #######################
-  // const removeObjectOptionalAttribute = useCallback(
-  const removeObjectOptionalAttribute = (listKey: string) => {
-    if (localResolvedElementJzodSchemaBasedOnValue.type != "object") {
-      throw "removeObjectOptionalAttribute called for non-object type: " + unfoldedRawSchema.type;
-    }
+  const removeObjectOptionalAttribute = useCallback(
+    (listKey: string) => {
+      // const removeObjectOptionalAttribute = (listKey: string) => {
+      if (localResolvedElementJzodSchemaBasedOnValue.type != "object") {
+        throw "removeObjectOptionalAttribute called for non-object type: " + unfoldedRawSchema.type;
+      }
 
-    log.info(
-      "removeOptionalAttribute clicked!",
-      listKey,
+      log.info(
+        "removeOptionalAttribute clicked!",
+        listKey,
+        itemsOrder,
+        Object.keys(localResolvedElementJzodSchemaBasedOnValue.definition),
+        "formik",
+        formik.values
+      );
+      const newFormState: any = { ...formik.values };
+      delete newFormState[listKey];
+      formik.setFormikState(newFormState);
+      const currentValue = resolvePathOnObject(newFormState, props.rootLesslistKeyArray);
+      log.info(
+        "clicked2!",
+        listKey,
+        itemsOrder,
+        Object.keys(localResolvedElementJzodSchemaBasedOnValue.definition),
+        "formik",
+        formik.values
+      );
+    },
+    [
+      props,
       itemsOrder,
-      Object.keys(localResolvedElementJzodSchemaBasedOnValue.definition),
-      "formik",
-      formik.values
-    );
-    const newFormState: any = { ...formik.values };
-    delete newFormState[listKey];
-    formik.setFormikState(newFormState);
-    const currentValue = resolvePathOnObject(newFormState, props.rootLesslistKeyArray);
-    log.info(
-      "clicked2!",
-      listKey,
-      itemsOrder,
-      Object.keys(localResolvedElementJzodSchemaBasedOnValue.definition),
-      "formik",
-      formik.values
-    );
-  };
-  //   ,
-  //   [props, itemsOrder, localResolvedElementJzodSchemaBasedOnValue]
-  // );
+      localResolvedElementJzodSchemaBasedOnValue,
+      unfoldedRawSchema,
+      formik.values,
+      formik.setFormikState,
+      currentMiroirFundamentalJzodSchema,
+      currentModel,
+      miroirMetaModel,
+    ]
+  );
   // #######################
   // #######################
   // #######################
@@ -297,7 +326,8 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
 
     // log.info("handleSelectValueChange called with event", event, "current Value",props.formik.values,"newFormState", newFormState)
     // props.setFormState(newFormState2);
-    formik.setFormikState(newFormState2);
+    // formik.setFormikState(newFormState2);
+    formik.setValues(newFormState2);
     if (itemsOrder) {
       log.info(
         "handleAttributeNameChange reading path",
@@ -554,35 +584,8 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
                     resolvedConcreteObjectJzodSchema = concreteObjectRawJzodSchema;
                   }
 
-                  // if (attribute[0] == discriminator) {
-                  //   attributeRawJzodSchema =
-                  //     currentAttributeDefinition.type == "enum"
-                  //       ? currentAttributeDefinition
-                  //       : { type: "literal", definition: "literal" }; // definition is not taken into account, possible values come from unionInformation
-                  // } else {
                   attributeRawJzodSchema =
                     resolvedConcreteObjectJzodSchema.definition[attribute[0]];
-                  // }
-
-                  // log.info(
-                  //   "JzodElementEditor attribute for object",
-                  //   currentValue,
-                  //   "listKey",
-                  //   props.listKey,
-                  //   "attribute",
-                  //   attribute[0],
-                  //   "attributeListkey",
-                  //   attributeListKey,
-                  //   "props.resolvedElementJzodSchema",
-                  //   props.resolvedElementJzodSchema,
-                  //   "unfoldedRawSchema",
-                  //   unfoldedRawSchema,
-                  //   "resolvedConcreteObjectJzodSchema",
-                  //   resolvedConcreteObjectJzodSchema,
-                  //   "attributeRawJzodSchema",
-                  //   attributeRawJzodSchema,
-                  // );
-                  // log.info("unfoldedRawSchema",unfoldedRawSchema,"attributeRawJzodSchema", attributeRawJzodSchema)
                   break;
                 }
                 default: {
@@ -653,7 +656,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
                             resolved type:{" "}
                             <pre>{JSON.stringify(localResolvedElementJzodSchemaBasedOnValue, null, 2)}</pre>
                             {/* resolved type {JSON.stringify(localResolvedElementJzodSchema)} */}
-                            <div key="4">error {error.message}</div>
+                            <div key="5">error {error.message}</div>
                           </div>
                         </div>
                       );

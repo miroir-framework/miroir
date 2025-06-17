@@ -135,16 +135,16 @@ export const JzodLiteralEditor: React.FC<JzodLiteralEditorProps> = (
       );
   };
 
-  if (unionInformation) {
-    log.info(
-      "literal with unionInformation",
-      listKey,
-      "discriminator=",
-      unionInformation.discriminator,
-      "unionInformation=",
-      JSON.stringify(unionInformation, null, 2)
-    );
-  }
+  // if (unionInformation) {
+  //   log.info(
+  //     "literal with unionInformation",
+  //     listKey,
+  //     "discriminator=",
+  //     unionInformation.discriminator,
+  //     "unionInformation=",
+  //     JSON.stringify(unionInformation, null, 2)
+  //   );
+  // }
   return (
     <>
       <>
@@ -171,10 +171,7 @@ export const JzodLiteralEditor: React.FC<JzodLiteralEditorProps> = (
                 );
               })}
             </StyledSelect>{" "}
-            literal discriminator
-            {/* <div>
-              discriminator: {JSON.stringify(props.unionInformation.discriminatorValues)}
-            </div> */}
+            (literal discriminator)
           </>
         ) : (
           <>
