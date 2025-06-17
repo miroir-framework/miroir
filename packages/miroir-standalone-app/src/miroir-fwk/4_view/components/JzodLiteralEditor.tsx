@@ -173,7 +173,7 @@ export const JzodLiteralEditor: React.FC<JzodLiteralEditorProps> = (
                   </MenuItem>
                 );
               })}
-            </StyledSelect>{" "}
+            </StyledSelect>
             (literal discriminator)
           </>
         ) : (

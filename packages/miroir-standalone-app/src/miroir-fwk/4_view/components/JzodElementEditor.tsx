@@ -458,7 +458,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                   ? "none" // control visibility
                   : "inline-block",
               }}
-            >              <input
+            >
+              <input
                 type="number"
                 id={props.rootLesslistKey}
                 key={props.rootLesslistKey}
@@ -483,7 +484,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                   : "inline-block",
               }}
             >
-              {" "}
               <input
                 type="text"
                 id={props.rootLesslistKey}
@@ -513,7 +513,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                   ? "none" // control visibility
                   : "inline-block",
               }}
-            >              <input
+            >
+              <input
                 type="text"
                 role="textbox"
                 id={props.rootLesslistKey}
@@ -538,13 +539,13 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               }}
             >
               {localResolvedElementJzodSchemaBasedOnValue.tag?.value?.targetEntity ? (
-                // result = localResolvedElementJzodSchemaBasedOnValue.tag?.value?.targetEntity ? (
                 <StyledSelect
                   id={props.rootLesslistKey}
                   key={props.rootLesslistKey}
                   aria-label={props.rootLesslistKey}
                   labelId="demo-simple-select-label"
                   variant="standard"
+                  style={{ width: "100%" }}
                   {...formik.getFieldProps(props.rootLesslistKey)}
                   name={props.rootLesslistKey}
                 >
@@ -564,6 +565,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                   id={props.rootLesslistKey}
                   key={props.rootLesslistKey}
                   role="textbox"
+                  style={{ width: "100%" }}
                   {...formik.getFieldProps(props.rootLesslistKey)}
                 />
               )}
@@ -585,22 +587,24 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                   : "inline-block",
               }}
             >
-              <JzodLiteralEditor
-                name={props.name}
-                key={props.rootLesslistKey}
-                label={props.label}
-                currentApplicationSection={props.currentApplicationSection}
-                currentDeploymentUuid={props.currentDeploymentUuid}
-                listKey={props.listKey}
-                rootLesslistKey={props.rootLesslistKey}
-                rootLesslistKeyArray={props.rootLesslistKeyArray}
-                foreignKeyObjects={props.foreignKeyObjects}
-                rawJzodSchema={props.rawJzodSchema as JzodLiteral}
-                resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
-                unionInformation={props.unionInformation}
-                insideAny={props.insideAny}
-                // setParentResolvedElementJzodSchema={setLocalResolvedElementJzodSchema}
-              />
+              <div style={{ width: "100%" }}>
+                <JzodLiteralEditor
+                  name={props.name}
+                  key={props.rootLesslistKey}
+                  label={props.label}
+                  currentApplicationSection={props.currentApplicationSection}
+                  currentDeploymentUuid={props.currentDeploymentUuid}
+                  listKey={props.listKey}
+                  rootLesslistKey={props.rootLesslistKey}
+                  rootLesslistKeyArray={props.rootLesslistKeyArray}
+                  foreignKeyObjects={props.foreignKeyObjects}
+                  rawJzodSchema={props.rawJzodSchema as JzodLiteral}
+                  resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
+                  unionInformation={props.unionInformation}
+                  insideAny={props.insideAny}
+                  // setParentResolvedElementJzodSchema={setLocalResolvedElementJzodSchema}
+                />
+              </div>
             </span>
           </span>
         );
@@ -625,23 +629,25 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                   : "inline-block",
               }}
             >
-              <JzodEnumEditor
-                name={props.name}
-                label={props.label}
-                key={props.rootLesslistKey}
-                listKey={props.listKey}
-                rootLesslistKey={props.rootLesslistKey}
-                rootLesslistKeyArray={props.rootLesslistKeyArray}
-                rawJzodSchema={props.rawJzodSchema as any}
-                resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
-                foreignKeyObjects={props.foreignKeyObjects}
-                currentApplicationSection={props.currentApplicationSection}
-                currentDeploymentUuid={props.currentDeploymentUuid}
-                enumValues={enumValues}
-                unionInformation={props.unionInformation}
-                forceTestingMode={props.forceTestingMode}
-                insideAny={props.insideAny}
-              />
+              <div style={{ width: "100%" }}>
+                <JzodEnumEditor
+                  name={props.name}
+                  label={props.label}
+                  key={props.rootLesslistKey}
+                  listKey={props.listKey}
+                  rootLesslistKey={props.rootLesslistKey}
+                  rootLesslistKeyArray={props.rootLesslistKeyArray}
+                  rawJzodSchema={props.rawJzodSchema as any}
+                  resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
+                  foreignKeyObjects={props.foreignKeyObjects}
+                  currentApplicationSection={props.currentApplicationSection}
+                  currentDeploymentUuid={props.currentDeploymentUuid}
+                  enumValues={enumValues}
+                  unionInformation={props.unionInformation}
+                  forceTestingMode={props.forceTestingMode}
+                  insideAny={props.insideAny}
+                />
+              </div>
             </span>
           </span>
         );
@@ -653,7 +659,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           <span key={props.rootLesslistKey} id={props.rootLesslistKey}>
             <span
               style={{
-                display: "inline-block"
+                display: "inline-block",
                 // display: hideSubJzodEditor
                 //   ? "none" // control visibility
                 //   : "inline-block",
@@ -696,9 +702,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       default: {
         mainElement = (
           <span>
-            default case: {localResolvedElementJzodSchemaBasedOnValue.type}, for {props.listKey}{" "}
-            values{" "}
-            {/* default case: {localResolvedElementJzodSchema.type}, for {props.listKey} values{" "} */}
+            default case: {localResolvedElementJzodSchemaBasedOnValue.type}, for {props.listKey} 
+            values 
             <pre>{JSON.stringify(currentValue, null, 2)}</pre>
             <br />
             <pre>
@@ -733,14 +738,15 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   // const isOptionalAttribute = localResolvedElementJzodSchemaBasedOnValue?.optional;
   
   // Create the clear button for optional attributes
-  const clearButton = props.optional ? (
+  // const clearButton = props.optional ? (
+  const clearButton = (
     <SmallIconButton
       onClick={removeOptionalAttribute}
-      style={{ padding: 0 }}
+      style={{ padding: 0, visibility: props.optional ? "visible" : "hidden" }}
     >
       <Clear />
     </SmallIconButton>
-  ) : null;
+  );
 
   const mainElementBlock: JSX.Element = (
     <span
@@ -825,22 +831,32 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           >
             {mainElement}
           </span>
-        </Card>      ) : (
-        <span style={{ 
-          display: "flex", 
-          alignItems: "center",
-          width: "100%"
-        }}>
+        </Card>
+      ) : (
+        <span
+          style={{
+            display: "flex",
+            alignItems: "center",
+            width: "100%",
+          }}
+        >
           {clearButton}
-          <label style={{ 
-            minWidth: "120px", 
-            flexShrink: 0,
-            marginRight: "10px" 
-          }}>{props.label}: </label>
+          <label
+            style={{
+              minWidth: "120px",
+              flexShrink: 0,
+              marginRight: "10px",
+              textAlign: "left", // Left-align the label
+              justifyContent: "flex-start",
+              display: "flex",
+            }}
+          >
+            {props.label}:
+          </label>
           <span
             style={{
               display: !hideSubJzodEditor ? "none" : "inline-block",
-              flexGrow: 1
+              flexGrow: 1,
             }}
           >
             {codeEditor}
@@ -849,7 +865,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             style={{
               display: hideSubJzodEditor ? "none" : "inline-block",
               margin: "2px 0 2px 0",
-              flexGrow: 1
+              flexGrow: 1,
             }}
           >
             {mainElement}

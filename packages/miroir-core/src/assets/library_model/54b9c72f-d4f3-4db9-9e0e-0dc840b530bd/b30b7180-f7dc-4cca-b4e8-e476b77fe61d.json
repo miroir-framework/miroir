@@ -125,7 +125,7 @@
         "tag": {
           "value": {
             "id": 9,
-            "defaultLabel": "Gender (narrow-minded)",
+            "defaultLabel": "Icon",
             "editable": true
           }
         }
@@ -136,7 +136,7 @@
         "tag": {
           "value": {
             "id": 10,
-            "defaultLabel": "Gender (narrow-minded)",
+            "defaultLabel": "Icons",
             "editable": true
           }
         }

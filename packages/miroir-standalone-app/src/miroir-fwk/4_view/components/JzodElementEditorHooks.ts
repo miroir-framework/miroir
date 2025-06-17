@@ -147,20 +147,6 @@ export function getJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
         " returnedLocalResolvedElementJzodSchemaBasedOnValue " +
         JSON.stringify(returnedLocalResolvedElementJzodSchemaBasedOnValue, null, 2)
     );
-    // return (
-    //   <div>
-    //     <p>
-    //       Error resolving jzod schema for {props.listKey} {count}:
-    //     </p>
-    //     <pre style={{ color: "red" }}>
-    //       {JSON.stringify(returnedLocalResolvedElementJzodSchemaBasedOnValue, null, 2)}
-    //     </pre>
-    //     jzod schema:{" "}
-    //     <pre style={{ color: "red" }}>
-    //       {JSON.stringify(props.rawJzodSchema, null, 2)}
-    //     </pre>
-    //   </div>
-    // );
   }
   const localResolvedElementJzodSchemaBasedOnValue: JzodElement =
     returnedLocalResolvedElementJzodSchemaBasedOnValue.element;
@@ -193,18 +179,30 @@ export function getJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
       miroirMetaModel,
     ]);
   } catch (e) {
-    log.error(
-      "caught error upon calling unfoldJzodSchemaOnce! count",
-      count,
-      "key",
-      props.rootLesslistKey,
-      "error",
-      e
-    );
+    throw e as Error; // rethrow the error to be caught by the error boundary
+    // log.error(
+    //   "caught error upon calling unfoldJzodSchemaOnce! count",
+    //   count,
+    //   "key",
+    //   props.rootLesslistKey,
+    //   "error",
+    //   e
+    // );
   }
   if (!unfoldedRawSchemaReturnType || unfoldedRawSchemaReturnType.status == "error") {
+    // return (
+    //   <div>
+    //     <span style={{ color: "red" }}>
+    //       JzodElementEditor could not unfold raw schema {JSON.stringify(props.rawJzodSchema, null, 2)}{" "}
+    //       count {count} result {JSON.stringify(unfoldedRawSchemaReturnType, null, 2)}{" "}
+    //       miroirFundamentalJzodSchema {context.miroirFundamentalJzodSchema}
+    //     </span>
+    // )
     throw new Error(
       "JzodElementEditor could not unfold raw schema " +
+       "error " +
+        JSON.stringify(unfoldedRawSchemaReturnType, null, 2) +
+        " props.rawJzodSchema " +
         JSON.stringify(props.rawJzodSchema, null, 2) +
         // props.rawJzodSchema +
         " count " +

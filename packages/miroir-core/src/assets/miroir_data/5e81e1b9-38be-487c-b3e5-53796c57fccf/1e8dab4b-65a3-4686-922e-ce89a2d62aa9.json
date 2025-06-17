@@ -25,6 +25,7 @@
                   "type": "schemaReference",
                   "optional": true,
                   "definition": {
+                    "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
                     "relativePath": "jzodElement"
                   }
                 },
@@ -32,6 +33,7 @@
                   "type": "schemaReference",
                   "optional": true,
                   "definition": {
+                    "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
                     "relativePath": "jzodElement"
                   }
                 }
@@ -73,6 +75,38 @@
           "nullable": {
             "type": "boolean",
             "optional": true
+          },
+          "tag": {
+            "type": "object",
+            "optional": true,
+            "definition": {
+              "value": {
+                "type": "object",
+                "optional": true,
+                "definition": {
+                  "id": {
+                    "type": "number",
+                    "optional": true
+                  },
+                  "defaultLabel": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "initializeTo": {
+                    "type": "any",
+                    "optional": true
+                  },
+                  "targetEntity": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "editable": {
+                    "type": "boolean",
+                    "optional": true
+                  }
+                }
+              }
+            }
           }
         }
       },
@@ -679,8 +713,8 @@
                 "type": "union",
                 "optional": true,
                 "definition": [
-                  { "type": "schemaReference", "definition": { "relativePath": "jzodReference" } },
-                  { "type": "schemaReference", "definition": { "relativePath": "jzodObject" } }
+                  { "type": "schemaReference", "definition": { "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", "relativePath": "jzodReference" } },
+                  { "type": "schemaReference", "definition": { "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", "relativePath": "jzodObject" } }
                 ]
               },
               {
@@ -691,9 +725,9 @@
                   "definition": [
                     {
                       "type": "schemaReference",
-                      "definition": { "relativePath": "jzodReference" }
+                      "definition": { "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", "relativePath": "jzodReference" }
                     },
-                    { "type": "schemaReference", "definition": { "relativePath": "jzodObject" } }
+                    { "type": "schemaReference", "definition": { "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", "relativePath": "jzodObject" } }
                   ]
                 }
               }

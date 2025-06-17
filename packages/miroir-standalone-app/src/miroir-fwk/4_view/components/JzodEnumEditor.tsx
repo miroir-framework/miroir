@@ -59,7 +59,7 @@ export const JzodEnumEditor: React.FC<JzodEnumEditorProps> = (
                 </MenuItem>
               );
             })}
-          </StyledSelect>{" "}
+          </StyledSelect>
           enum
         </>
       ) : (

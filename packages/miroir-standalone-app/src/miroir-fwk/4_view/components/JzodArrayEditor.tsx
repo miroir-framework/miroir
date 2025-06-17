@@ -229,7 +229,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
         )}
       </div>
       <span>
-        {" ["}{" "}
+        {" ["}
         <ExpandOrFoldObjectAttributes
           hiddenFormItems={hiddenFormItems}
           setHiddenFormItems={setHiddenFormItems}
