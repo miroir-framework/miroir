@@ -2,6 +2,7 @@ import { withErrorBoundary } from "react-error-boundary";
 
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
+import InfoOutlined from "@mui/icons-material/InfoOutlined";
 import Clear from "@mui/icons-material/Clear";
 import Checkbox from "@mui/material/Checkbox";
 
@@ -743,7 +744,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     <span
       style={{
         display: hideSubJzodEditor ? "none" : "inline-block",
-        margin: "5px 0 5px 0",
+        margin: "10px 0 10px 0",
       }}
     >
       {mainElement}
@@ -755,8 +756,43 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         <Card
           id={props.rootLesslistKey}
           key={props.rootLesslistKey}
-          style={{ padding: "1px", margin: "1px 0" }}
+          style={{ padding: "1px", margin: "1px 0", position: "relative" }}
         >
+          {/* Top-right info icon with tooltip */}
+          <span
+            style={{
+              position: "absolute",
+              top: 4,
+              right: 4,
+              zIndex: 2,
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <span
+              // title={JSON.stringify(localResolvedElementJzodSchemaBasedOnValue, null, 2)}
+              title={JSON.stringify(props.rawJzodSchema, null, 2)}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                color: "#888",
+                background: "#fff",
+                borderRadius: "50%",
+                padding: "2px",
+                border: "1px solid #ddd",
+                fontSize: "18px",
+                width: "24px",
+                height: "24px",
+                justifyContent: "center",
+              }}
+            >
+              {/* Use MUI InfoOutlined icon for info */}
+              <span style={{ display: "flex", alignItems: "center" }}>
+                <InfoOutlined fontSize="small" sx={{ color: "#888" }} />
+              </span>
+            </span>
+          </span>
           <div>
             {props.submitButton}
             <span
@@ -779,7 +815,14 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           >
             {codeEditor}
           </span>
-          {mainElementBlock}
+          <span
+            style={{
+              display: hideSubJzodEditor ? "none" : "inline-block",
+              margin: "10px 0 10px 0",
+            }}
+          >
+            {mainElement}
+          </span>
         </Card>
       ) : (
         <span style={{ display: "flex", alignItems: "center" }}>
@@ -792,7 +835,14 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           >
             {codeEditor}
           </span>
-          {mainElementBlock}
+          <span
+            style={{
+              display: hideSubJzodEditor ? "none" : "inline-block",
+              margin: "2px 0 2px 0",
+            }}
+          >
+            {mainElement}
+          </span>
         </span>
       )}
     </span>

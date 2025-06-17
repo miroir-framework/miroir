@@ -38,6 +38,13 @@ export default defineConfig({
   // //     // )
   //   }
   // },
+  optimizeDeps: {
+    include: [
+      '@emotion/react', 
+      '@emotion/styled', 
+      '@mui/material/Tooltip'
+    ],
+  },
   plugins: [
     nodePolyfills({
       // To add only specific polyfills, add them here. If no option is passed, adds all polyfills
@@ -62,6 +69,9 @@ export default defineConfig({
       jsxImportSource: '@emotion/react',
       // Use React plugin in all *.jsx and *.tsx files
       include: '../src/**/*.{jsx,tsx}',
+      babel: {
+        plugins: ['@emotion/babel-plugin'],
+      },
     }),
     // babelImport([
     //   {
