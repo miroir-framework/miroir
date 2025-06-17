@@ -366,7 +366,11 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     switch (localResolvedElementJzodSchemaBasedOnValue.type) {
       case "object": {
         mainElement = (
-          <span key={props.rootLesslistKey} id={props.rootLesslistKey}>
+          <span
+            key={props.rootLesslistKey}
+            id={props.rootLesslistKey}
+            style={{ width: "100%", display: "block" }}
+          >
             <JzodObjectEditor
               name={props.name}
               label={props.label}
@@ -390,7 +394,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       case "tuple":
       case "array": {
         mainElement = (
-          <span key={props.rootLesslistKey}>
+          <span key={props.rootLesslistKey} style={{ width: "100%", display: "block" }}>
             <JzodArrayEditor
               {...props}
               key={props.rootLesslistKey}
@@ -589,7 +593,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                   : "inline-block",
               }}
             >
-              <div style={{ width: "100%" }}>
+              <div style={{ width: "100%", display: "block" }}>
                 <JzodLiteralEditor
                   name={props.name}
                   key={props.rootLesslistKey}
@@ -707,8 +711,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       default: {
         mainElement = (
           <span>
-            default case: {localResolvedElementJzodSchemaBasedOnValue.type}, for {props.listKey} 
-            values 
+            default case: {localResolvedElementJzodSchemaBasedOnValue.type}, for {props.listKey}
+            values
             <pre>{JSON.stringify(currentValue, null, 2)}</pre>
             <br />
             <pre>
@@ -816,11 +820,12 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           key={props.rootLesslistKey}
           style={{
             padding: "1px",
-            margin: "1px 0",
+            // margin: "5px 0 5px 5px",
             position: "relative",
             backgroundColor: bgColor,
             border: "1px solid #ddd",
-            boxShadow: "none"
+            boxShadow: "none",
+            width: "100%",
           }}
         >
           {/* Top-right info icon with tooltip */}
@@ -849,8 +854,9 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           </span>
           <span
             style={{
-              display: hideSubJzodEditor ? "none" : "inline-block",
-              margin: "10px 0 10px 0",
+              display: hideSubJzodEditor ? "none" : "block",
+              margin: "2px 5px 5px 0",
+              width: "100%",
             }}
           >
             {mainElement}
