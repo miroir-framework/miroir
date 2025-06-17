@@ -19,7 +19,7 @@
             "type": "record",
             "definition": {
               "type": "union",
-              "discriminator": ["transformerType", "interpolation"],
+            "discriminator": "transformerType",
               "definition":[
                 {
                   "type": "schemaReference",

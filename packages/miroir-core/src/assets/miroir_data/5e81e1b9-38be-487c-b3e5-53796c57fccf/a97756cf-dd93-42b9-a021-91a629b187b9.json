@@ -151,7 +151,7 @@
           },
           "reference": {
             "type": "union",
-            "discriminator": ["transformerType", "interpolation"],
+            "discriminator": "transformerType",
             "definition": [
               {
                 "type": "string"
@@ -176,7 +176,7 @@
           },
           "reference": {
             "type": "union",
-            "discriminator": ["transformerType", "interpolation"],
+            "discriminator": "transformerType",
             "definition": [
               {
                 "type": "string"
@@ -266,7 +266,7 @@
       },
       "transformerForRuntime_constants": {
         "type": "union",
-        "discriminator": ["transformerType", "interpolation"],
+        "discriminator": "transformerType",
         "definition": [
           {
             "type": "schemaReference",
@@ -332,7 +332,7 @@
       },
       "transformerForBuild_InnerReference": {
         "type": "union",
-        "discriminator": ["transformerType", "interpolation"],
+        "discriminator": "transformerType",
         "definition": [
           {
             "type": "schemaReference",
@@ -386,7 +386,7 @@
       },
       "transformerForRuntime_InnerReference": {
         "type": "union",
-        "discriminator": ["transformerType", "interpolation"],
+        "discriminator": "transformerType",
         "definition": [
           {
             "type": "schemaReference",

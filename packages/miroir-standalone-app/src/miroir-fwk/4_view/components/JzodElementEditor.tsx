@@ -371,6 +371,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               name={props.name}
               label={props.label}
               listKey={props.listKey}
+              indentLevel={props.indentLevel + 1}
               rootLesslistKey={props.rootLesslistKey}
               rootLesslistKeyArray={props.rootLesslistKeyArray}
               rawJzodSchema={props.rawJzodSchema}
@@ -396,6 +397,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               rootLesslistKeyArray={props.rootLesslistKeyArray}
               rootLesslistKey={props.rootLesslistKey}
               rawJzodSchema={props.rawJzodSchema as any}
+              indentLevel={props.indentLevel + 1}
               itemsOrder={itemsOrder}
               hiddenFormItems={hiddenFormItems}
               setHiddenFormItems={setHiddenFormItems}
@@ -595,6 +597,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                   currentApplicationSection={props.currentApplicationSection}
                   currentDeploymentUuid={props.currentDeploymentUuid}
                   listKey={props.listKey}
+                  // indentLevel={props.indentLevel}
                   rootLesslistKey={props.rootLesslistKey}
                   rootLesslistKeyArray={props.rootLesslistKeyArray}
                   foreignKeyObjects={props.foreignKeyObjects}
@@ -635,6 +638,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                   label={props.label}
                   key={props.rootLesslistKey}
                   listKey={props.listKey}
+                  // indentLevel={props.indentLevel}
                   rootLesslistKey={props.rootLesslistKey}
                   rootLesslistKeyArray={props.rootLesslistKeyArray}
                   rawJzodSchema={props.rawJzodSchema as any}
@@ -670,6 +674,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                 label={props.label}
                 key={props.rootLesslistKey}
                 listKey={props.listKey}
+                // indentLevel={props.indentLevel}
                 rootLesslistKey={props.rootLesslistKey}
                 rootLesslistKeyArray={props.rootLesslistKeyArray}
                 foreignKeyObjects={props.foreignKeyObjects}
@@ -758,49 +763,68 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       {mainElement}
     </span>
   );
+  const JzodSchemaTooltip: JSX.Element = (
+    <span
+      style={{
+        position: "absolute",
+        top: 4,
+        right: 4,
+        zIndex: 2,
+        cursor: "pointer",
+        display: "flex",
+        alignItems: "center",
+      }}
+    >
+      <span
+        // title={JSON.stringify(localResolvedElementJzodSchemaBasedOnValue, null, 2)}
+        title={JSON.stringify(props.rawJzodSchema, null, 2)}
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          color: "#888",
+          background: "#fff",
+          borderRadius: "50%",
+          padding: "2px",
+          border: "1px solid #ddd",
+          fontSize: "18px",
+          width: "24px",
+          height: "24px",
+          justifyContent: "center",
+        }}
+      >
+        {/* Use MUI InfoOutlined icon for info */}
+        <span style={{ display: "flex", alignItems: "center" }}>
+          <InfoOutlined fontSize="small" sx={{ color: "#888" }} />
+        </span>
+      </span>
+    </span>
+  );  // Define Prettier-like colors for nested structures
+  const prettierColors = [
+    "#f8f8f8", // Light gray
+    "#f0f0f0", // Slightly darker gray
+    "#e8e8e8"  // Even darker gray
+  ];
+
+  // Get appropriate background color based on indent level
+  const bgColor = prettierColors[(props.indentLevel || 0) % 3];
+
   return (
     <span>
       {objectOrArrayOrAny ? (
         <Card
           id={props.rootLesslistKey}
           key={props.rootLesslistKey}
-          style={{ padding: "1px", margin: "1px 0", position: "relative" }}
+          style={{
+            padding: "1px",
+            margin: "1px 0",
+            position: "relative",
+            backgroundColor: bgColor,
+            border: "1px solid #ddd",
+            boxShadow: "none"
+          }}
         >
           {/* Top-right info icon with tooltip */}
-          <span
-            style={{
-              position: "absolute",
-              top: 4,
-              right: 4,
-              zIndex: 2,
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
-            <span
-              // title={JSON.stringify(localResolvedElementJzodSchemaBasedOnValue, null, 2)}
-              title={JSON.stringify(props.rawJzodSchema, null, 2)}
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                color: "#888",
-                background: "#fff",
-                borderRadius: "50%",
-                padding: "2px",
-                border: "1px solid #ddd",
-                fontSize: "18px",
-                width: "24px",
-                height: "24px",
-                justifyContent: "center",
-              }}
-            >
-              {/* Use MUI InfoOutlined icon for info */}
-              <span style={{ display: "flex", alignItems: "center" }}>
-                <InfoOutlined fontSize="small" sx={{ color: "#888" }} />
-              </span>
-            </span>
-          </span>
+          {JzodSchemaTooltip}
           <div>
             {props.submitButton}
             <span
@@ -845,7 +869,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             style={{
               minWidth: "120px",
               flexShrink: 0,
-              marginRight: "10px",
               textAlign: "left", // Left-align the label
               justifyContent: "flex-start",
               display: "flex",

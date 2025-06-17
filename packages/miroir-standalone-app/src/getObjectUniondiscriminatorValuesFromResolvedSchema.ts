@@ -23,10 +23,26 @@ export function getObjectUniondiscriminatorValuesFromResolvedSchema(
     const result = [
       ...new Set(
         // recursivelyUnfoldedRawSchema.result.flatMap((branch: any /** JzodObject */) => {
-        recursivelyUnfoldedRawSchemaList.flatMap((branch: any /** JzodObject */) => {
+        recursivelyUnfoldedRawSchemaList
+        .filter((branch: any /** JzodObject */) => {
+          // filter branches that have a discriminator
+          // return branch && branch.definition && branch.definition[discriminator];
+          return branch && branch.definition;
+        })
+        .flatMap((branch: any /** JzodObject */) => {
           // return (a.definition as any)[(unfoldedRawSchema as any).discriminator].definition}
+          if (!branch || !branch.definition || !branch.definition[discriminator]) {
+            throw new Error(
+              "objectUniondiscriminatorValues found object branch without discriminator: " + 
+              JSON.stringify(branch, null, 2) +
+              " in recursivelyUnfoldedRawSchemaList: " + 
+              recursivelyUnfoldedRawSchemaList
+            );
+            // return [];
+          }
           switch (
-            typeof branch.definition[discriminator] == "string"
+            // typeof branch.definition[discriminator] == "string"
+            (typeof branch.definition[discriminator]) == "object"
               ? "literal"
               : branch.definition[discriminator]?.type
           ) {
@@ -64,11 +80,16 @@ export function getObjectUniondiscriminatorValuesFromResolvedSchema(
             case "union":
             default: {
               throw new Error(
-                "objectUniondiscriminatorValues could not handle union branch object: discriminator type " +
-                  branch.definition[discriminator]?.type +
-                  " discriminator " +
+                "objectUniondiscriminatorValues could not handle union branch object:" +
+                " discriminator " +
+                  discriminator +
+                // " discriminator type " +
+                //   branch.definition[discriminator]?.type +
+                  ", found branch discriminator " +
                   JSON.stringify(branch.definition[discriminator]) +
-                  " for union " +
+                  ", for branch " +
+                  JSON.stringify(branch, null, 2) +
+                  ", for union " +
                   JSON.stringify(recursivelyUnfoldedRawSchemaList, null, 2)
               );
               // return [];

@@ -619,7 +619,8 @@ export function getMiroirFundamentalJzodSchema(
         transformerForBuild_unique: miroirTransformersForBuild.transformer_unique,
         transformerForBuild: {
           type: "union",
-          discriminator: ["transformerType", "interpolation"],
+          // discriminator: ["transformerType", "interpolation"],
+          discriminator: "transformerType",
           definition: [
             ...transformerForBuildNames.map((e: any) => ({
               type: "schemaReference",
@@ -697,7 +698,8 @@ export function getMiroirFundamentalJzodSchema(
         // },
         transformerForRuntime: {
           type: "union",
-          discriminator: ["transformerType", "interpolation"],
+          // discriminator: ["transformerType", "interpolation"],
+          discriminator: "transformerType",
           definition: [
             ...transformerForRuntimeNames.map((e: any) => ({
               type: "schemaReference",
@@ -724,7 +726,7 @@ export function getMiroirFundamentalJzodSchema(
         },
         extendedTransformerForRuntime: {
           type: "union",
-          discriminator: ["transformerType", "interpolation"],
+          "discriminator": "transformerType",
           definition: [
             {
               type: "schemaReference",

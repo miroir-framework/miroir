@@ -378,6 +378,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                               rootLesslistKey=""
                               rootLesslistKeyArray={[]}
                               label={pageLabel}
+                              indentLevel={0}
                               currentDeploymentUuid={props.deploymentUuid}
                               currentApplicationSection={props.applicationSection}
                               rawJzodSchema={currentReportTargetEntityDefinition?.jzodSchema}

@@ -227,156 +227,139 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
   // #######################
   // #######################
   // #######################
-  const removeObjectOptionalAttribute = useCallback(
-    (listKey: string) => {
-      // const removeObjectOptionalAttribute = (listKey: string) => {
-      if (localResolvedElementJzodSchemaBasedOnValue.type != "object") {
-        throw "removeObjectOptionalAttribute called for non-object type: " + unfoldedRawSchema.type;
-      }
+  // const removeObjectOptionalAttribute = useCallback(
+  //   (listKey: string) => {
+  //     // const removeObjectOptionalAttribute = (listKey: string) => {
+  //     if (localResolvedElementJzodSchemaBasedOnValue.type != "object") {
+  //       throw "removeObjectOptionalAttribute called for non-object type: " + unfoldedRawSchema.type;
+  //     }
 
-      log.info(
-        "removeOptionalAttribute clicked!",
-        listKey,
-        itemsOrder,
-        Object.keys(localResolvedElementJzodSchemaBasedOnValue.definition),
-        "formik",
-        formik.values
-      );
-      const newFormState: any = { ...formik.values };
-      delete newFormState[listKey];
-      formik.setFormikState(newFormState);
-      const currentValue = resolvePathOnObject(newFormState, props.rootLesslistKeyArray);
-      log.info(
-        "clicked2!",
-        listKey,
-        itemsOrder,
-        Object.keys(localResolvedElementJzodSchemaBasedOnValue.definition),
-        "formik",
-        formik.values
-      );
-    },
-    [
-      props,
-      itemsOrder,
-      localResolvedElementJzodSchemaBasedOnValue,
-      unfoldedRawSchema,
-      formik.values,
-      formik.setFormikState,
-      currentMiroirFundamentalJzodSchema,
-      currentModel,
-      miroirMetaModel,
-    ]
-  );
+  //     log.info(
+  //       "removeOptionalAttribute clicked!",
+  //       listKey,
+  //       itemsOrder,
+  //       Object.keys(localResolvedElementJzodSchemaBasedOnValue.definition),
+  //       "formik",
+  //       formik.values
+  //     );
+  //     const newFormState: any = { ...formik.values };
+  //     delete newFormState[listKey];
+  //     formik.setFormikState(newFormState);
+  //     const currentValue = resolvePathOnObject(newFormState, props.rootLesslistKeyArray);
+  //     log.info(
+  //       "clicked2!",
+  //       listKey,
+  //       itemsOrder,
+  //       Object.keys(localResolvedElementJzodSchemaBasedOnValue.definition),
+  //       "formik",
+  //       formik.values
+  //     );
+  //   },
+  //   [
+  //     props,
+  //     itemsOrder,
+  //     localResolvedElementJzodSchemaBasedOnValue,
+  //     unfoldedRawSchema,
+  //     formik.values,
+  //     formik.setFormikState,
+  //     currentMiroirFundamentalJzodSchema,
+  //     currentModel,
+  //     miroirMetaModel,
+  //   ]
+  // );
   // #######################
   // #######################
   // #######################
-  const handleAttributeNameChange = (event: any, attributeRootLessListKeyArray: string[]) => {
-    const localAttributeRootLessListKeyArray: string[] = attributeRootLessListKeyArray.slice();
-    const newAttributeName = event.target.value;
-    const oldAttributeName =
-      localAttributeRootLessListKeyArray[localAttributeRootLessListKeyArray.length - 1];
-    log.info(
-      "handleAttributeNameChange renaming attribute",
-      oldAttributeName,
-      "into",
-      newAttributeName,
-      "called with event",
-      event,
-      "current Value",
-      formik.values,
-      "props.rootLesslistKey",
-      props.rootLesslistKey,
-      "attributeRootLessListKeyArray",
-      attributeRootLessListKeyArray,
-      attributeRootLessListKeyArray.length,
-      // "localAttributeRootLessListKeyArray",
-      // localAttributeRootLessListKeyArray,
-      // localAttributeRootLessListKeyArray.length,
-      "props.resolvedJzodSchema",
-      props.resolvedElementJzodSchema
-    );
-    const subObject = resolvePathOnObject(formik.values, localAttributeRootLessListKeyArray);
-    const newFormState1: any = deleteObjectAtPath(
-      formik.values,
-      localAttributeRootLessListKeyArray
-    );
-    log.info(
-      "handleAttributeNameChange newFormState1",
-      newFormState1,
-      localAttributeRootLessListKeyArray
-    );
-    // const newPath = attributeRootLessListKeyArray.slice(0,attributeRootLessListKeyArray.length-1);
-    const parentPath = localAttributeRootLessListKeyArray.slice(
-      0,
-      localAttributeRootLessListKeyArray.length - 1
-    );
-    const newPath = localAttributeRootLessListKeyArray.slice(
-      0,
-      localAttributeRootLessListKeyArray.length - 1
-    );
-    log.info(
-      "handleAttributeNameChange newPath before push",
-      newPath,
-      localAttributeRootLessListKeyArray
-    );
-    newPath.push(newAttributeName);
-    log.info("handleAttributeNameChange newPath", newPath);
-    const newFormState2: any = alterObjectAtPath(newFormState1, newPath, subObject);
-    log.info("handleAttributeNameChange newFormState2", newFormState2);
+  // const handleAttributeNameChange = (event: any, attributeRootLessListKeyArray: string[]) => {
+  //   const localAttributeRootLessListKeyArray: string[] = attributeRootLessListKeyArray.slice();
+  //   const newAttributeName = event.target.value;
+  //   const oldAttributeName =
+  //     localAttributeRootLessListKeyArray[localAttributeRootLessListKeyArray.length - 1];
+  //   log.info(
+  //     "handleAttributeNameChange renaming attribute",
+  //     oldAttributeName,
+  //     "into",
+  //     newAttributeName,
+  //     "called with event",
+  //     event,
+  //     "current Value",
+  //     formik.values,
+  //     "props.rootLesslistKey",
+  //     props.rootLesslistKey,
+  //     "attributeRootLessListKeyArray",
+  //     attributeRootLessListKeyArray,
+  //     attributeRootLessListKeyArray.length,
+  //     // "localAttributeRootLessListKeyArray",
+  //     // localAttributeRootLessListKeyArray,
+  //     // localAttributeRootLessListKeyArray.length,
+  //     "props.resolvedJzodSchema",
+  //     props.resolvedElementJzodSchema
+  //   );
+  //   const subObject = resolvePathOnObject(formik.values, localAttributeRootLessListKeyArray);
+  //   const newFormState1: any = deleteObjectAtPath(
+  //     formik.values,
+  //     localAttributeRootLessListKeyArray
+  //   );
+  //   log.info(
+  //     "handleAttributeNameChange newFormState1",
+  //     newFormState1,
+  //     localAttributeRootLessListKeyArray
+  //   );
+  //   // const newPath = attributeRootLessListKeyArray.slice(0,attributeRootLessListKeyArray.length-1);
+  //   const parentPath = localAttributeRootLessListKeyArray.slice(
+  //     0,
+  //     localAttributeRootLessListKeyArray.length - 1
+  //   );
+  //   const newPath = localAttributeRootLessListKeyArray.slice(
+  //     0,
+  //     localAttributeRootLessListKeyArray.length - 1
+  //   );
+  //   log.info(
+  //     "handleAttributeNameChange newPath before push",
+  //     newPath,
+  //     localAttributeRootLessListKeyArray
+  //   );
+  //   newPath.push(newAttributeName);
+  //   log.info("handleAttributeNameChange newPath", newPath);
+  //   const newFormState2: any = alterObjectAtPath(newFormState1, newPath, subObject);
+  //   log.info("handleAttributeNameChange newFormState2", newFormState2);
 
-    // log.info("handleSelectValueChange called with event", event, "current Value",props.formik.values,"newFormState", newFormState)
-    // props.setFormState(newFormState2);
-    // formik.setFormikState(newFormState2);
-    formik.setValues(newFormState2);
-    if (itemsOrder) {
-      log.info(
-        "handleAttributeNameChange reading path",
-        props.rootLesslistKey,
-        "from currentParentValue",
-        newFormState2,
-        "itemsOrder",
-        itemsOrder
-      );
-      const localItemsOrder = itemsOrder.slice();
-      const attributePosition = localItemsOrder?.indexOf(oldAttributeName);
-      // const newItemsOrder = parentItemsOrder?.splice(uuidPosition,1)
-      if (attributePosition != -1) {
-        localItemsOrder[attributePosition] = newAttributeName;
-      }
-      log.info(
-        "handleAttributeNameChange for path",
-        props.rootLesslistKey,
-        "new itemsOrder to be computed should be",
-        localItemsOrder
-      );
-      // setItemsOrder(localItemsOrder);
-    } else {
-      log.warn("handleAttributeNameChange reading path", parentPath, "itemsOrder is undefined!");
-    }
-    // log.info(
-    //   "handleAttributeNameChange new parent object items order",
-    //   parentItemsOrder,
-    // );
-    // const currentParentValue = resolvePathOnObject(newFormState2,parentPath);
-  };
+  //   // log.info("handleSelectValueChange called with event", event, "current Value",props.formik.values,"newFormState", newFormState)
+  //   // props.setFormState(newFormState2);
+  //   // formik.setFormikState(newFormState2);
+  //   formik.setValues(newFormState2);
+  //   if (itemsOrder) {
+  //     log.info(
+  //       "handleAttributeNameChange reading path",
+  //       props.rootLesslistKey,
+  //       "from currentParentValue",
+  //       newFormState2,
+  //       "itemsOrder",
+  //       itemsOrder
+  //     );
+  //     const localItemsOrder = itemsOrder.slice();
+  //     const attributePosition = localItemsOrder?.indexOf(oldAttributeName);
+  //     // const newItemsOrder = parentItemsOrder?.splice(uuidPosition,1)
+  //     if (attributePosition != -1) {
+  //       localItemsOrder[attributePosition] = newAttributeName;
+  //     }
+  //     log.info(
+  //       "handleAttributeNameChange for path",
+  //       props.rootLesslistKey,
+  //       "new itemsOrder to be computed should be",
+  //       localItemsOrder
+  //     );
+  //     // setItemsOrder(localItemsOrder);
+  //   } else {
+  //     log.warn("handleAttributeNameChange reading path", parentPath, "itemsOrder is undefined!");
+  //   }
+  //   // log.info(
+  //   //   "handleAttributeNameChange new parent object items order",
+  //   //   parentItemsOrder,
+  //   // );
+  //   // const currentParentValue = resolvePathOnObject(newFormState2,parentPath);
+  // };
   
-
-  
-          //   {unfoldedRawSchema?.type == "record" ? (
-          //   <>
-          //     {/* <input
-          //       id={rootLesslistKey + "Name"}
-          //       key={rootLesslistKey + "Name"}
-          //       name={rootLesslistKey + "Name"}
-          //       onChange={(e) =>
-          //         handleAttributeNameChange(e, rootLesslistKeyArray.slice())
-          //       }
-          //       defaultValue={name}
-          //     /> */}
-          //   </>
-          // ) : (
-          //   <label htmlFor={props.rootLesslistKey + "head"}>{label}:</label>
-          // )}
   return (
     // result = (
     <div id={props.rootLesslistKey} key={props.rootLesslistKey}>
@@ -647,28 +630,44 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
                         "Object errorboundary for",
                         attributeListKey,
                         "currentValue",
-                        currentValue
+                        currentValue,
+                        "error",
+                        error,
                       );
                       return (
                         <div role="alert">
                           <div style={{ color: "red" }}>
                             <p>Something went wrong:</p>
-                            <div key="1">object {props.listKey}</div>
-                            <div key="2">attribute {attributeListKey}</div>
+                            <div key="1">object {props.rootLesslistKey}</div>
+                            <div key="2">attribute {attributeRootLessListKeyArray}</div>
                             <div>
-                              value <pre>{JSON.stringify(currentValue, null, 2)}</pre>
+                              calc attribute value{" "}
+                              {JSON.stringify(
+                                resolvePathOnObject(formik.values, attributeRootLessListKeyArray),
+                                null,
+                                2
+                              )}
                             </div>
-                            <div key="3">
+                            <div key="3">attribute name {attribute[0]}</div>
+                            <div>
+                              object value <pre>{JSON.stringify(currentValue, null, 2)}</pre>
+                            </div>
+                            <div>
+                              attribute value{" "}
+                              <pre>{JSON.stringify(currentValue[attribute[0]], null, 2)}</pre>
+                            </div>
+                            <div key="5">
                               rawJzodSchema:{" "}
                               <pre>{JSON.stringify(props.rawJzodSchema, null, 2)}</pre>
                             </div>
-                            <div key="4"></div>
+                            <div key="6"></div>
                             resolved type:{" "}
                             <pre>
                               {JSON.stringify(localResolvedElementJzodSchemaBasedOnValue, null, 2)}
                             </pre>
                             {/* resolved type {JSON.stringify(localResolvedElementJzodSchema)} */}
-                            <div key="5">error {error.message}</div>
+                            <div>error {error.message}</div>
+                            {/* <div key="7">error {JSON.stringify(error, null, 2)}</div> */}
                           </div>
                         </div>
                       );

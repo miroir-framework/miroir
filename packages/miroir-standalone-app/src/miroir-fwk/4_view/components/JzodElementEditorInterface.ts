@@ -39,7 +39,7 @@ export interface JzodEditorPropsRoot {
 export interface JzodElementEditorProps extends JzodEditorPropsRoot {
   forceTestingMode?: boolean;
   unresolvedJzodSchema?: JzodElement | undefined;
-  indentLevel?: number;
+  indentLevel: number;
   submitButton?: JSX.Element; // used to display a submit button in the editor
   // paramMiroirFundamentalJzodSchema?: JzodSchema; //used only for testing, trouble with using MiroirContextReactProvider
   // currentDeploymentUuid?: Uuid;

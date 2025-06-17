@@ -203,7 +203,8 @@
                 }
               },
               "parentUuid": {
-                "type": "schemaReference",
+                "type": "union",
+                "discriminator": "transformerType",
                 "tag": {
                   "value": {
                     "id": 4,
@@ -211,10 +212,16 @@
                     "editable": false
                   }
                 },
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "transformerForBuild_InnerReference"
-                }
+                "definition": [
+                  { "type": "string" },
+                  {
+                    "type":"schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "transformerForBuild_InnerReference"
+                    }
+                  }
+                ]
               }
             }
           },

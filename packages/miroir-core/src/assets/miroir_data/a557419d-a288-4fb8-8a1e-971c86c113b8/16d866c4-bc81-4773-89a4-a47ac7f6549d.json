@@ -41,7 +41,7 @@
               "definition": {
                 "attributeKey": {
                   "type": "union",
-                  "discriminator": ["transformerType", "interpolation"],
+                  "discriminator": "transformerType",
                   "definition": [
                     {
                       "type": "string"

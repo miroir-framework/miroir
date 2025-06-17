@@ -19,6 +19,7 @@
             "type": "array",
             "definition": { 
               "type": "union",
+              "discriminator": "transformerType",
               "definition": [
                 {
                   "type": "schemaReference",
