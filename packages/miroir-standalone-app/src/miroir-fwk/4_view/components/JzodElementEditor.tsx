@@ -15,7 +15,7 @@ import {
   resolvePathOnObject
 } from "miroir-core";
 
-import { MenuItem, Switch } from "@mui/material";
+import { Card, MenuItem, Switch } from "@mui/material";
 import { packageName } from "../../../constants.js";
 import { cleanLevel } from "../constants.js";
 import { JzodAnyEditor } from "./JzodAnyEditor.js";
@@ -710,51 +710,59 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       </div>
     );
   }
-  return objectOrArrayOrAny?(
-    <div>
-      <div>
-      {props.submitButton}
-      <span
-        style={{
-          display: !hideSubJzodEditor ? "none" : "inline-block",
-        }}
-      >
-        {objectOrArraySwitches}
-      </span>
-      </div>
-      <span
-        style={{
-          display: !hideSubJzodEditor || (props.rawJzodSchema?.type == "any" && ["undefined", "any"].includes(localResolvedElementJzodSchemaBasedOnValue.type)) ? "none" : "inline-block",
-        }}
-      >
-        {codeEditor}
-      </span>
-      <span
-        style={{
-          display: hideSubJzodEditor ? "none" : "inline-block",
-        }}
-      >
-        {mainElement}
-      </span>
-    </div>
-  ):(
+  return (
     <span>
-      <span
-        style={{
-          display: !hideSubJzodEditor ? "none" : "inline-block",
-        }}
-      >
-        {codeEditor}
-      </span>
-      <span
-        style={{
-          display: hideSubJzodEditor ? "none" : "inline-block",
-        }}
-      >
-        {mainElement}
-      </span>
+      {/* <label htmlFor={props.rootLesslistKey}>{props.label}: </label> */}
+      {
+        objectOrArrayOrAny?(
+          <Card id={props.rootLesslistKey} key={props.rootLesslistKey} style={{ padding: "1px", margin: "1px 0" }}>
+            <div>
+            {props.submitButton}
+            <span
+              style={{
+                display: !hideSubJzodEditor ? "none" : "inline-block",
+              }}
+            >
+              {objectOrArraySwitches}
+            </span>
+            </div>
+            <span
+              style={{
+                display: !hideSubJzodEditor || (props.rawJzodSchema?.type == "any" && ["undefined", "any"].includes(localResolvedElementJzodSchemaBasedOnValue.type)) ? "none" : "inline-block",
+              }}
+            >
+              {codeEditor}
+            </span>
+            <span
+              style={{
+                display: hideSubJzodEditor ? "none" : "inline-block",
+              }}
+            >
+              {mainElement}
+            </span>
+          </Card>
+        ):(
+          <span>
+            <label>{props.label}: </label>
+            <span
+              style={{
+                display: !hideSubJzodEditor ? "none" : "inline-block",
+              }}
+            >
+              {codeEditor}
+            </span>
+            <span
+              style={{
+                display: hideSubJzodEditor ? "none" : "inline-block",
+              }}
+            >
+              {mainElement}
+            </span>
+          </span>
+        )
+      }
     </span>
-  );
+  )
 }
 
 export const JzodObjectEditorWithErrorBoundary = withErrorBoundary(JzodElementEditor, {

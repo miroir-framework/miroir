@@ -361,20 +361,38 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
   };
   
 
+  
+          //   {unfoldedRawSchema?.type == "record" ? (
+          //   <>
+          //     {/* <input
+          //       id={rootLesslistKey + "Name"}
+          //       key={rootLesslistKey + "Name"}
+          //       name={rootLesslistKey + "Name"}
+          //       onChange={(e) =>
+          //         handleAttributeNameChange(e, rootLesslistKeyArray.slice())
+          //       }
+          //       defaultValue={name}
+          //     /> */}
+          //   </>
+          // ) : (
+          //   <label htmlFor={props.rootLesslistKey + "head"}>{label}:</label>
+          // )}
   return (
     // result = (
     <div id={props.rootLesslistKey} key={props.rootLesslistKey}>
-      <span id={props.rootLesslistKey} key={props.rootLesslistKey + "head"}>
-        <span>
-          {"{"}
+      <span>
+        <label>{label}</label>
+        <span id={props.rootLesslistKey + "head"} key={props.rootLesslistKey + "head"}>
+          {/* {"{"} */}
           <ExpandOrFoldObjectAttributes
             hiddenFormItems={hiddenFormItems}
             setHiddenFormItems={setHiddenFormItems}
             listKey={props.listKey}
           ></ExpandOrFoldObjectAttributes>
-          {unfoldedRawSchema.type} {localResolvedElementJzodSchemaBasedOnValue.type} 
-          {props.switches??<></>}
+          {props.switches ?? <></>}
+          ({unfoldedRawSchema.type} / {localResolvedElementJzodSchemaBasedOnValue.type})
         </span>
+        {/* <label htmlFor={props.rootLesslistKey + "head"}>{label}</label> */}
         <div
           id={props.listKey + ".inner"}
           style={{
@@ -386,13 +404,14 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
           {unfoldedRawSchema.type == "record" || unfoldedRawSchema.type == "any" ? (
             <div>
               <SizedButton
+                id={props.rootLesslistKey + ".addRecordAttribute"}
                 variant="text"
                 aria-label={props.rootLesslistKey + ".addRecordAttribute"}
                 onClick={addExtraRecordEntry}
               >
                 <SizedAddBox />
               </SizedButton>
-              add new record:
+              {/* add new record: */}
             </div>
           ) : (
             <></>
@@ -613,7 +632,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
                   >
                     <Clear />
                   </SmallIconButton>
-                  {unfoldedRawSchema?.type == "record" ? (
+                  {/* {unfoldedRawSchema?.type == "record" ? (
                     <>
                       <input
                         id={attributeListKey + "Name"}
@@ -625,11 +644,10 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
                         }
                         defaultValue={attribute[0]}
                       />
-                      {/* attributeName for {attributeRootLessListKeyArray} */}
                     </>
                   ) : (
                     <label htmlFor={attributeListKey}>{attributeDisplayedLabel}:</label>
-                  )}
+                  )} */}
                   <ErrorBoundary
                     // FallbackComponent={Fallback}
                     FallbackComponent={({ error, resetErrorBoundary }: any) => {
@@ -650,11 +668,14 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
                               value <pre>{JSON.stringify(currentValue, null, 2)}</pre>
                             </div>
                             <div key="3">
-                              rawJzodSchema: <pre>{JSON.stringify(props.rawJzodSchema, null, 2)}</pre>
+                              rawJzodSchema:{" "}
+                              <pre>{JSON.stringify(props.rawJzodSchema, null, 2)}</pre>
                             </div>
                             <div key="4"></div>
                             resolved type:{" "}
-                            <pre>{JSON.stringify(localResolvedElementJzodSchemaBasedOnValue, null, 2)}</pre>
+                            <pre>
+                              {JSON.stringify(localResolvedElementJzodSchemaBasedOnValue, null, 2)}
+                            </pre>
                             {/* resolved type {JSON.stringify(localResolvedElementJzodSchema)} */}
                             <div key="5">error {error.message}</div>
                           </div>
@@ -667,12 +688,12 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
                   >
                     <JzodElementEditor
                       name={attribute[0]}
+                      label={currentAttributeDefinition?.tag?.value?.defaultLabel || attribute[0]}
                       key={attribute[0]}
                       listKey={attributeListKey}
                       rootLesslistKey={attributeRootLessListKey}
                       rootLesslistKeyArray={[...props.rootLesslistKeyArray, attribute[0]]}
                       indentLevel={usedIndentLevel + 1}
-                      label={currentAttributeDefinition?.tag?.value?.defaultLabel}
                       currentDeploymentUuid={props.currentDeploymentUuid}
                       rawJzodSchema={attributeRawJzodSchema}
                       currentApplicationSection={props.currentApplicationSection}
