@@ -1,12 +1,10 @@
-
-
 // import ReactCodeMirror from "@uiw/react-codemirror";
 import { javascript } from "@codemirror/lang-javascript";
 // import CodeMirror from '@uiw/react-codemirror';
 // import {ReactCodeMirror} from '@uiw/react-codemirror';
 import ReactCodeMirror, { useCodeMirror } from '@uiw/react-codemirror';
 import { alterObjectAtPath, JzodElement } from "miroir-core";
-import { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 // import * as reactCodeMirror from '@uiw/react-codemirror';
 
 // const { ReactCodeMirror } = reactCodeMirror;
@@ -33,7 +31,7 @@ type JzodElementEditorReactCodeMirrorProps = {
 
 const extensions = [javascript()];
 
-export const JzodElementEditorReactCodeMirror: React.FC<JzodElementEditorReactCodeMirrorProps> = (
+const JzodElementEditorReactCodeMirrorComponent: React.FC<JzodElementEditorReactCodeMirrorProps> = (
   props: JzodElementEditorReactCodeMirrorProps
 ) => {
   const {
@@ -49,51 +47,22 @@ export const JzodElementEditorReactCodeMirror: React.FC<JzodElementEditorReactCo
     insideAny,
     // displayAsCode,
   } = props;
-  // const codeMirrorRef = useRef<any>(null);
-  // const editor = useRef();
-  // const { setContainer } = useCodeMirror({
-  //   container: editor.current,
-  //   extensions,
-  //   value: code,
-  // });
-
-  // useEffect(() => {
-  //   if (editor.current) {
-  //     setContainer(editor.current);
-  //   }
-  // }, [editor.current]);
-
   
-  // const [codeMirrorIsValidJson, setCodeMirrorIsValidJson] = useState(true);
-  // const [codeMirrorValue, setCodeMirrorValue] = useState<string>(() =>
-  //   // "\"start!\""
-  //   JSON.stringify(currentValue, null, 2)
-  // );
-  
-  // useEffect(() => {
-  //   if (props.rawJzodSchema?.type == "any") {
-  //     try {
-  //       if (JSON.stringify(JSON.parse(codeMirrorValue)) !== JSON.stringify(currentValue)) {
-  //         setCodeMirrorValue(JSON.stringify(currentValue, null, 2));
-  //       }
-  //     } catch {
-  //       // ignore parse error, user is editing
-  //     }
-  //     // const editor = codeMirrorRef.current?.view;
-
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [currentValue]);
-
-  // useEffect(() => {
-  //   const editor = codeMirrorRef.current?.view;
-
-  //   return () => {
-  //     if (editor) {
-  //       editor.destroy(); // Ensure cleanup
-  //     }
-  //   };
-  // }, []);
+  // Initialize CodeMirror value from current value when it changes
+  useEffect(() => {
+    // Only update if the value doesn't match current JSON
+    try {
+      const currentValueString = JSON.stringify(currentValue, null, 2);
+      if (codeMirrorValue === "" || (
+        codeMirrorIsValidJson && 
+        JSON.stringify(JSON.parse(codeMirrorValue)) !== JSON.stringify(currentValue)
+      )) {
+        setCodeMirrorValue(currentValueString);
+      }
+    } catch (e) {
+      // Ignore JSON parse errors - leave the current editor state
+    }
+  }, [currentValue, codeMirrorValue, codeMirrorIsValidJson]);
 
   if (props.isUnderTest) {
     // For testing purposes, return a simple div with the value
@@ -103,38 +72,19 @@ export const JzodElementEditorReactCodeMirror: React.FC<JzodElementEditorReactCo
       </div>
     );
   }
-  const handleFormat = () => {
+  
+  const handleFormat = useCallback(() => {
     try {
-      // const editor = codeMirrorRef.current?.view;
       const parsed = JSON.parse(codeMirrorValue);
       const formatted = JSON.stringify(parsed, null, 2);
-
-      // Try to keep cursor position steady
-      // if (editor) {
-      //   const { state } = editor;
-      //   const selection = state.selection.main;
-      //   // Calculate offset from start
-      //   const offset = selection.from;
-      //   setCodeMirrorValue(formatted);
-
-      //   // After value update, set cursor position
-      //   setTimeout(() => {
-      //     // Find the closest position in the new text
-      //     const newOffset = Math.min(offset, formatted.length);
-      //     editor.dispatch({
-      //       selection: { anchor: newOffset },
-      //       scrollIntoView: true,
-      //     });
-      //   }, 0);
-      // } else {
-        setCodeMirrorValue(formatted);
-      // }
+      setCodeMirrorValue(formatted);
       setCodeMirrorIsValidJson(true);
     } catch {
       setCodeMirrorIsValidJson(false);
     }
-  };
-  const handleChange = (value: string, viewUpdate?: any) => {
+  }, [codeMirrorValue, setCodeMirrorValue, setCodeMirrorIsValidJson]);
+  
+  const handleChange = useCallback((value: string) => {
     setCodeMirrorValue(value);
     try {
       JSON.parse(value);
@@ -142,30 +92,23 @@ export const JzodElementEditorReactCodeMirror: React.FC<JzodElementEditorReactCo
     } catch {
       setCodeMirrorIsValidJson(false);
     }
-  }
-  const handleCheck = () => {
+  }, [setCodeMirrorValue, setCodeMirrorIsValidJson]);
+  
+  const handleCheck = useCallback(() => {
     try {
       const parsed = JSON.parse(codeMirrorValue);
-      // formik.setFieldValue(rootLesslistKey, parsed, false);
-      // const newFormState = alterObjectAtPath(formik.values, rootLesslistKeyArray, parsed);
-      // formik.setValues(newFormState, false); // do not validate on change
-      // formik.setFieldTouched(props.rootLesslistKey, true, false); // mark field as touched
-      setCodeMirrorValue(parsed);
+      setCodeMirrorValue(JSON.stringify(parsed, null, 2));
       setCodeMirrorIsValidJson(true);
     } catch {
       setCodeMirrorIsValidJson(false);
     }
-  };
+  }, [codeMirrorValue, setCodeMirrorValue, setCodeMirrorIsValidJson]);
+
+  // Calculate height once
+  const editorHeight = `${(codeMirrorValue.match(/\n/g)?.length || 0) * 20 + 60}px`;
 
   return (
     <span>
-      {/* ici */}
-      {/* {props.switches && (
-        <span style={{ marginBottom: "10px" }}>
-          {props.switches}
-        </span>
-      )} */}
-      {/* la */}
       <span
         style={{
           border: `2px solid ${codeMirrorIsValidJson ? "green" : "red"}`,
@@ -173,7 +116,6 @@ export const JzodElementEditorReactCodeMirror: React.FC<JzodElementEditorReactCo
           padding: "2px",
           minWidth: "40ch",
           position: "relative",
-          // display: "inline-block",
           display: !hidden && !insideAny ? "inline-block" : "none", // control visibility
         }}
       >
@@ -221,12 +163,27 @@ export const JzodElementEditorReactCodeMirror: React.FC<JzodElementEditorReactCo
           ✓
         </button>
         <ReactCodeMirror
-          height={`${(codeMirrorValue.match(/\n/g)?.length || 0) * 20 + 60}px`}
+          height={editorHeight}
           value={codeMirrorValue}
           extensions={extensions}
-          onChange={handleChange} // ref={codeMirrorRef}
+          onChange={handleChange}
         />
       </span>
     </span>
   );
+}
+
+// Apply memoization to prevent unnecessary re-renders
+export const JzodElementEditorReactCodeMirror = React.memo(
+  JzodElementEditorReactCodeMirrorComponent,
+  (prevProps, nextProps) => {
+    // Custom comparison function to determine if the component should re-render
+    return (
+      prevProps.codeMirrorValue === nextProps.codeMirrorValue &&
+      prevProps.codeMirrorIsValidJson === nextProps.codeMirrorIsValidJson &&
+      prevProps.hidden === nextProps.hidden &&
+      prevProps.insideAny === nextProps.insideAny &&
+      JSON.stringify(prevProps.initialValue) === JSON.stringify(nextProps.initialValue)
+    );
   }
+);

@@ -1,4 +1,5 @@
 import { withErrorBoundary } from "react-error-boundary";
+import React, { useCallback, useMemo } from "react";
 
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
@@ -33,7 +34,6 @@ import {
   SmallIconButton,
   StyledSelect
 } from "./Style.js";
-import { useCallback } from "react";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -42,6 +42,7 @@ MiroirLoggerFactory.registerLoggerToStart(
   log = logger;
 });
 
+// #####################################################################################################
 // const isUnderTest = true;
 let isUnderTest = false;
 if ((import.meta as any).env?.VITE_TEST_MODE) {
@@ -50,6 +51,11 @@ if ((import.meta as any).env?.VITE_TEST_MODE) {
 } else {
   log.info("############################### JzodElementEditor is NOT under test mode #########################################");
 }
+
+// #####################################################################################################
+const objectTypes: string[] = ["record", "object", "union"];
+const enumTypes: string[] = ["enum", "literal"];
+
 // #####################################################################################################
 export type JzodObjectFormEditorInputs = { [a: string]: any };
 
@@ -59,9 +65,8 @@ export interface EditorAttribute {
 }
 
 // ################################################################################################
-export const ExpandOrFoldObjectAttributes = (props: {
+export const ExpandOrFoldObjectAttributes = React.memo((props: {
   hiddenFormItems: { [k: string]: boolean };
-  // setHiddenFormItems: any,
   setHiddenFormItems: React.Dispatch<
     React.SetStateAction<{
       [k: string]: boolean;
@@ -69,62 +74,38 @@ export const ExpandOrFoldObjectAttributes = (props: {
   >;
   listKey: string;
 }): JSX.Element => {
+  const handleClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    props.setHiddenFormItems((prev) => ({
+      ...prev,
+      [props.listKey]: !prev[props.listKey],
+    }));
+  }, [props.listKey, props.setHiddenFormItems]);
+
   return (
     <LineIconButton
       style={{
         border: 0,
         backgroundColor: "transparent",
       }}
-      onClick={(e) => {
-        e.stopPropagation();
-        e.preventDefault();
-        props.setHiddenFormItems({
-          ...props.hiddenFormItems,
-          [props.listKey]: props.hiddenFormItems[props.listKey] ? false : true,
-        });
-      }}
+      onClick={handleClick}
     >
       {props.hiddenFormItems[props.listKey] ? (
         <ExpandMore sx={{ color: "darkgreen" }} />
       ) : (
-        // <ExpandMore sx={{ color: "darkred",maxWidth: "15px", maxHeight: "15px" }} />
-        // <ExpandLess sx={{ maxWidth: "15px", maxHeight: "15px" }} />
         <ExpandLess />
       )}
     </LineIconButton>
   );
-};
+});
+ExpandOrFoldObjectAttributes.displayName = "ExpandOrFoldObjectAttributes";
 
-// // #####################################################################################################
-// function Fallback({ error, resetErrorBoundary }: any) {
-//   // Call resetErrorBoundary() to reset the error boundary and retry the render.
-
-//   return (
-//     <div role="alert">
-//       <p>Something went wrong:</p>
-//       <pre style={{ color: "red" }}>{error.message}</pre>
-//     </div>
-//   );
-// }
-
-// #####################################################################################################
-const objectTypes: string[] = ["record", "object", "union"];
-const enumTypes: string[] = ["enum", "literal"];
-
-
-
-
-
-// #####################################################################################################
-// #####################################################################################################
-// #####################################################################################################
-// #####################################################################################################
 // #####################################################################################################
 // #####################################################################################################
 let count = 0;
 
-// export const JzodElementEditor = (props: JzodObjectEditorProps): JSX.Element => {
-export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
+function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element {
   count++;
   const {
     // general use
@@ -170,73 +151,21 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     }
   }, [formik, props.rootLesslistKey]);
 
-  // const currentMiroirFundamentalJzodSchema = context.miroirFundamentalJzodSchema;
-  // const usedIndentLevel: number = props.indentLevel ? props.indentLevel : 0;
-  // let result: JSX.Element = <></>;
-
-  // log.info("#####################################################################################");
-  // log.info(
-  //   "JzodElementEditor rendering for",
-  //   props.listKey,
-  //   "count",
-  //   count,
-  //   "formik.values",
-  //   formik.values,
-  //   // JSON.stringify(formik.values, null, 2),
-  //   "props.rawJzodSchema",
-  //   props.rawJzodSchema,
-  //   // JSON.stringify(props.rawJzodSchema, null, 2),
-  // );
-
-  // const currentValue = resolvePathOnObject(formik.values, props.rootLesslistKeyArray);
-
-  // ##############################################################################################
-
-  if (props.returnsEmptyElement || props.hidden) {
-    return <></>;
-  }
-
-  // ##############################################################################################
+  // Handle switch for structured element display
   const handleDisplayAsStructuredElementSwitchChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
-      // log.info(
-      //   "handleDisplayAsStructuredElementSwitchChange",
-      //   "event.target.checked",
-      //   event.target.checked,
-      //   "props.rootLesslistKey",
-      //   props.rootLesslistKey,
-      //   "codeMirrorValue",
-      //   codeMirrorValue,
-      //   "formik.values",
-      //   formik.values,
-      //   "currentValue",
-      //   currentValue
-      // );
       if (event.target.checked) {
-        const parsedCodeMirrorValue = JSON.parse(codeMirrorValue); // set the value to the current codeMirrorValue
-        // log.info(
-        //   "handleDisplayAsStructuredElementSwitchChange",
-        //   "parsedCodeMirrorValue",
-        //   parsedCodeMirrorValue,
-        // );
-        if (props.rootLesslistKey && props.rootLesslistKey.length > 0) {
-          // log.info(
-          //   "handleDisplayAsStructuredElementSwitchChange",
-          //   "setting formik.setFieldValue",
-          //   "props.rootLesslistKey",
-          //   props.rootLesslistKey,
-          //   "parsedCodeMirrorValue",
-          //   parsedCodeMirrorValue
-          // );
-          formik.setFieldValue(props.rootLesslistKey, parsedCodeMirrorValue);
-        } else {
-          // log.info(
-          //   "handleDisplayAsStructuredElementSwitchChange",
-          //   "setting formik.setFormikState",
-          //   "parsedCodeMirrorValue",
-          //   parsedCodeMirrorValue
-          // );
-          formik.setValues(parsedCodeMirrorValue); // set the value to the current codeMirrorValue
+        try {
+          const parsedCodeMirrorValue = JSON.parse(codeMirrorValue);
+          if (props.rootLesslistKey && props.rootLesslistKey.length > 0) {
+            formik.setFieldValue(props.rootLesslistKey, parsedCodeMirrorValue);
+          } else {
+            formik.setValues(parsedCodeMirrorValue);
+          }
+        } catch (e) {
+          log.error("Failed to parse JSON in switch handler:", e);
+          // Keep display mode as is in case of error
+          return;
         }
       } else {
         // if switching to code editor, reset the codeMirrorValue to the current value
@@ -253,18 +182,17 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       setDisplayAsStructuredElement,
     ]
   );
-    
-    // ##############################################################################################
-    // const handleDisplayEditorSwitchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    //   setDisplayEditor(event.target.checked);
-    // };
   
-  const objectOrArrayOrAny = ["any", "object", "record", "array", "tuple"].includes(
-    localResolvedElementJzodSchemaBasedOnValue.type
+  // Determine if the element is an object, array or any type
+  const objectOrArrayOrAny = useMemo(() => 
+    ["any", "object", "record", "array", "tuple"].includes(
+      localResolvedElementJzodSchemaBasedOnValue.type
+    ), [localResolvedElementJzodSchemaBasedOnValue.type]
   );
-  const objectOrArraySwitches: JSX.Element = (
+  
+  // Switches for display mode
+  const objectOrArraySwitches: JSX.Element = useMemo(() => (
     <>
-      {/* <label htmlFor="displayAsStructuredElementSwitch">Display {props.rawJzodSchema?.type? props.rawJzodSchema?.type+ " ":""}as structured element:</label> */}
       { objectOrArrayOrAny ? (
         <Switch
           checked={displayAsStructuredElement}
@@ -275,16 +203,16 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         />
       ): <></>
       }
-      {/* <label htmlFor="displayEditorSwitch">Display editor:</label> */}
-      {/* <Switch
-        checked={displayEditor}
-        id="displayEditorSwitch"
-        onChange={handleDisplayEditorSwitchChange}
-        inputProps={{ "aria-label": "Edit" }}
-      /> */}
     </>
+  ), [objectOrArrayOrAny, displayAsStructuredElement, handleDisplayAsStructuredElementSwitchChange, codeMirrorIsValidJson]);
+
+  const hideSubJzodEditor = useMemo(() => 
+    props.hidden || props.insideAny || !displayAsStructuredElement, 
+    [props.hidden, props.insideAny, displayAsStructuredElement]
   );
-  const codeEditor: JSX.Element = !isUnderTest ? (
+
+  // Code editor element
+  const codeEditor: JSX.Element = useMemo(() => !isUnderTest ? (
     <JzodElementEditorReactCodeMirror
       codeMirrorValue={codeMirrorValue}
       setCodeMirrorValue={setCodeMirrorValue}
@@ -292,482 +220,19 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       setCodeMirrorIsValidJson={setCodeMirrorIsValidJson}
       rootLesslistKey={props.rootLesslistKey}
       rootLesslistKeyArray={props.rootLesslistKeyArray}
-      hidden={props.hidden || displayAsStructuredElement} // hidden if this JzodElementEditor is hidden or displayAsCode is false
+      hidden={props.hidden || displayAsStructuredElement}
       insideAny={props.insideAny}
       initialValue={currentValue}
       isUnderTest={isUnderTest}
     />
   ) : (
     <></>
-  );
+  ), [isUnderTest, codeMirrorValue, setCodeMirrorValue, codeMirrorIsValidJson, setCodeMirrorIsValidJson,
+      props.rootLesslistKey, props.rootLesslistKeyArray, props.hidden, displayAsStructuredElement, 
+      props.insideAny, currentValue]);
 
-  let mainElement: JSX.Element | undefined = undefined;
-  const hideSubJzodEditor = props.hidden || props.insideAny || !displayAsStructuredElement;
-
-  if (localResolvedElementJzodSchemaBasedOnValue && props.rawJzodSchema) {
-    if (
-      props.rawJzodSchema?.type != "any" &&
-      localResolvedElementJzodSchemaBasedOnValue.type != props.rawJzodSchema?.type &&
-      ((localResolvedElementJzodSchemaBasedOnValue.type == "object" &&
-        !objectTypes.includes(props.rawJzodSchema.type)) ||
-        (props.rawJzodSchema.type == "enum" &&
-          // !enumTypes.includes(localResolvedElementJzodSchema.type)))
-          !enumTypes.includes(localResolvedElementJzodSchemaBasedOnValue.type)))
-    ) {
-      throw new Error(
-        "JzodElementEditor mismatching jzod schemas, resolved schema " +
-          JSON.stringify(props.resolvedElementJzodSchema, null, 2) +
-          " raw schema " +
-          JSON.stringify(props.rawJzodSchema, null, 2)
-      );
-    }
-
-    if (recursivelyUnfoldedRawSchema && recursivelyUnfoldedRawSchema.status == "error") {
-      return (
-        <div>
-          <p>
-            Error unfolding union schema {props.listKey} {count}:
-          </p>
-          <pre style={{ color: "red" }}>
-            {JSON.stringify(recursivelyUnfoldedRawSchema, null, 2)}
-          </pre>
-        </div>
-      );
-    }
-
-    // ############################################################################################
-    // ############################################################################################
-    // ############################################################################################
-    if (props.rawJzodSchema?.type == "any" && !props.insideAny) {
-      return (
-        <span key={props.rootLesslistKey}>
-          {codeEditor}
-          <JzodAnyEditor
-            name={props.name}
-            listKey={props.listKey}
-            rootLesslistKey={props.rootLesslistKey}
-            rootLesslistKeyArray={props.rootLesslistKeyArray}
-            rawJzodSchema={props.rawJzodSchema}
-            currentDeploymentUuid={props.currentDeploymentUuid}
-            currentApplicationSection={props.currentApplicationSection}
-            unionInformation={unionInformation}
-            resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
-            label={props.label}
-            foreignKeyObjects={props.foreignKeyObjects}
-          ></JzodAnyEditor>
-        </span>
-      );
-    }
-
-    // ############################################################################################
-    // ############################################################################################
-    // ############################################################################################
-    // ############################################################################################
-    switch (localResolvedElementJzodSchemaBasedOnValue.type) {
-      case "object": {
-        mainElement = (
-          <span
-            key={props.rootLesslistKey}
-            id={props.rootLesslistKey}
-            style={{ width: "100%", display: "block" }}
-          >
-            <JzodObjectEditor
-              name={props.name}
-              label={props.label}
-              listKey={props.listKey}
-              indentLevel={props.indentLevel + 1}
-              rootLesslistKey={props.rootLesslistKey}
-              rootLesslistKeyArray={props.rootLesslistKeyArray}
-              rawJzodSchema={props.rawJzodSchema}
-              currentDeploymentUuid={props.currentDeploymentUuid}
-              currentApplicationSection={props.currentApplicationSection}
-              unionInformation={unionInformation}
-              resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
-              foreignKeyObjects={foreignKeyObjects}
-              hidden={hideSubJzodEditor}
-              switches={objectOrArraySwitches}
-            ></JzodObjectEditor>
-          </span>
-        );
-        break;
-      }
-      case "tuple":
-      case "array": {
-        mainElement = (
-          <span key={props.rootLesslistKey} style={{ width: "100%", display: "block" }}>
-            <JzodArrayEditor
-              {...props}
-              key={props.rootLesslistKey}
-              rootLesslistKeyArray={props.rootLesslistKeyArray}
-              rootLesslistKey={props.rootLesslistKey}
-              rawJzodSchema={props.rawJzodSchema as any}
-              indentLevel={props.indentLevel + 1}
-              itemsOrder={itemsOrder}
-              hiddenFormItems={hiddenFormItems}
-              setHiddenFormItems={setHiddenFormItems}
-              currentApplicationSection={props.currentApplicationSection}
-              currentDeploymentUuid={props.currentDeploymentUuid}
-              foreignKeyObjects={props.foreignKeyObjects}
-              unionInformation={props.unionInformation}
-              insideAny={props.insideAny}
-              hidden={hideSubJzodEditor}
-              switches={objectOrArraySwitches}
-            ></JzodArrayEditor>
-          </span>
-        );
-        break;
-      }
-      case "boolean": {
-        log.info(
-          "JzodElementEditor boolean!",
-          props.listKey,
-          "formik.getFieldProps",
-          mStringify(formik.getFieldProps(props.rootLesslistKey)),
-          "formik.values[props.rootLesslistKey]",
-          formik.values[props.rootLesslistKey]
-        );
-        const fieldProps = formik.getFieldProps(props.rootLesslistKey);
-        mainElement = (
-          // result = (
-          <span key={props.rootLesslistKey} id={props.rootLesslistKey}>
-            <span
-              style={{
-                display: hideSubJzodEditor
-                  ? "none" // control visibility
-                  : "inline-block",
-              }}
-            >
-              {/* {props.label && <label htmlFor={props.rootLesslistKey}>{props.label}: </label>} */}
-              <Checkbox
-                // defaultChecked={formik.values[props.rootLesslistKey]}
-                id={props.rootLesslistKey}
-                key={props.rootLesslistKey}
-                aria-label={props.rootLesslistKey}
-                {...fieldProps}
-                name={props.rootLesslistKey}
-                checked={fieldProps.value}
-              />
-            </span>
-          </span>
-        );
-        break;
-      }
-      case "number": {
-        // log.info("JzodElementEditor number!", props.listKey, "formState", props.formState);
-        mainElement = (
-          // result = (
-          <span key={props.rootLesslistKey} id={props.rootLesslistKey}>
-            {/* {codeEditor} */}
-            <span
-              style={{
-                display: hideSubJzodEditor
-                  ? "none" // control visibility
-                  : "inline-block",
-              }}
-            >
-              <input
-                type="number"
-                id={props.rootLesslistKey}
-                key={props.rootLesslistKey}
-                role="textbox"
-                style={{ width: "100%" }}
-                {...formik.getFieldProps(props.rootLesslistKey)}
-              />
-            </span>
-          </span>
-        );
-        break;
-      }
-      case "bigint": {
-        mainElement = (
-          // result = (
-          <span key={props.rootLesslistKey} id={props.rootLesslistKey}>
-            {/* {codeEditor} */}
-            <span
-              style={{
-                display: hideSubJzodEditor
-                  ? "none" // control visibility
-                  : "inline-block",
-              }}
-            >
-              <input
-                type="text"
-                id={props.rootLesslistKey}
-                key={props.rootLesslistKey}
-                role="textbox"
-                style={{ width: "100%" }}
-                {...formik.getFieldProps(props.rootLesslistKey)}
-                value={currentValue.toString()} // Convert bigint to string
-                onChange={(e) => {
-                  const value = e.target.value;
-                  formik.setFieldValue(props.rootLesslistKey, value ? BigInt(value) : BigInt(0)); // Convert string back to bigint
-                }}
-              />
-            </span>
-          </span>
-        );
-        break;
-      }
-      case "string": {
-        mainElement = (
-          // result = (
-          <span key={props.rootLesslistKey} id={props.rootLesslistKey}>
-            {/* {codeEditor} */}
-            <span
-              style={{
-                display: hideSubJzodEditor
-                  ? "none" // control visibility
-                  : "inline-block",
-              }}
-            >
-              <input
-                type="text"
-                role="textbox"
-                id={props.rootLesslistKey}
-                key={props.rootLesslistKey}
-                style={{ width: "100%" }}
-                {...formik.getFieldProps(props.rootLesslistKey)}
-              />
-            </span>
-          </span>
-        );
-        break;
-      }
-      case "uuid": {
-        mainElement = (
-          <span key={props.rootLesslistKey} id={props.rootLesslistKey}>
-            {/* {codeEditor} */}
-            <span
-              style={{
-                display: hideSubJzodEditor
-                  ? "none" // control visibility
-                  : "inline-block",
-              }}
-            >
-              {localResolvedElementJzodSchemaBasedOnValue.tag?.value?.targetEntity ? (
-                <StyledSelect
-                  id={props.rootLesslistKey}
-                  key={props.rootLesslistKey}
-                  aria-label={props.rootLesslistKey}
-                  labelId="demo-simple-select-label"
-                  variant="standard"
-                  style={{ width: "100%" }}
-                  {...formik.getFieldProps(props.rootLesslistKey)}
-                  name={props.rootLesslistKey}
-                >
-                  {stringSelectList.map((e: [string, EntityInstance], index: number) => (
-                    <MenuItem
-                      id={props.rootLesslistKey + "." + index}
-                      key={e[1].uuid}
-                      value={e[1].uuid}
-                    >
-                      {(e[1] as EntityInstanceWithName).name}
-                    </MenuItem>
-                  ))}
-                </StyledSelect>
-              ) : (
-                <input
-                  type="text"
-                  id={props.rootLesslistKey}
-                  key={props.rootLesslistKey}
-                  role="textbox"
-                  style={{ width: "100%" }}
-                  {...formik.getFieldProps(props.rootLesslistKey)}
-                />
-              )}
-            </span>
-          </span>
-        );
-        break;
-      }
-      // DONE
-      case "literal": {
-        mainElement = (
-          // result = (
-          <span key={props.rootLesslistKey} id={props.rootLesslistKey}>
-            {/* {codeEditor} */}
-            <span
-              style={{
-                display: hideSubJzodEditor
-                  ? "none" // control visibility
-                  : "inline-block",
-              }}
-            >
-              <div style={{ width: "100%", display: "block" }}>
-                <JzodLiteralEditor
-                  name={props.name}
-                  key={props.rootLesslistKey}
-                  label={props.label}
-                  currentApplicationSection={props.currentApplicationSection}
-                  currentDeploymentUuid={props.currentDeploymentUuid}
-                  listKey={props.listKey}
-                  // indentLevel={props.indentLevel}
-                  rootLesslistKey={props.rootLesslistKey}
-                  rootLesslistKeyArray={props.rootLesslistKeyArray}
-                  foreignKeyObjects={props.foreignKeyObjects}
-                  rawJzodSchema={props.rawJzodSchema as JzodLiteral}
-                  resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
-                  unionInformation={props.unionInformation}
-                  insideAny={props.insideAny}
-                  // setParentResolvedElementJzodSchema={setLocalResolvedElementJzodSchema}
-                />
-              </div>
-            </span>
-          </span>
-        );
-        break;
-      }
-      // DONE
-      case "enum": {
-        const enumValues: string[] =
-          // (localResolvedElementJzodSchema && localResolvedElementJzodSchema.definition) ||
-          (localResolvedElementJzodSchemaBasedOnValue &&
-            localResolvedElementJzodSchemaBasedOnValue.definition) ||
-          (props.rawJzodSchema && ((props.rawJzodSchema as any).definition ?? [])) ||
-          [];
-        mainElement = (
-          // result = (
-          <span key={props.rootLesslistKey} id={props.rootLesslistKey}>
-            {/* {codeEditor} */}
-            <span
-              style={{
-                display: hideSubJzodEditor
-                  ? "none" // control visibility
-                  : "inline-block",
-              }}
-            >
-              <div style={{ width: "100%" }}>
-                <JzodEnumEditor
-                  name={props.name}
-                  label={props.label}
-                  key={props.rootLesslistKey}
-                  listKey={props.listKey}
-                  // indentLevel={props.indentLevel}
-                  rootLesslistKey={props.rootLesslistKey}
-                  rootLesslistKeyArray={props.rootLesslistKeyArray}
-                  rawJzodSchema={props.rawJzodSchema as any}
-                  resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
-                  foreignKeyObjects={props.foreignKeyObjects}
-                  currentApplicationSection={props.currentApplicationSection}
-                  currentDeploymentUuid={props.currentDeploymentUuid}
-                  enumValues={enumValues}
-                  unionInformation={props.unionInformation}
-                  forceTestingMode={props.forceTestingMode}
-                  insideAny={props.insideAny}
-                />
-              </div>
-            </span>
-          </span>
-        );
-        break;
-      }
-      case "undefined":
-      case "any": {
-        mainElement = (
-          <span key={props.rootLesslistKey} id={props.rootLesslistKey}>
-            <span
-              style={{
-                display: "inline-block",
-                // display: hideSubJzodEditor
-                //   ? "none" // control visibility
-                //   : "inline-block",
-              }}
-            >
-              <JzodAnyEditor
-                name={props.name}
-                label={props.label}
-                key={props.rootLesslistKey}
-                listKey={props.listKey}
-                // indentLevel={props.indentLevel}
-                rootLesslistKey={props.rootLesslistKey}
-                rootLesslistKeyArray={props.rootLesslistKeyArray}
-                foreignKeyObjects={props.foreignKeyObjects}
-                currentApplicationSection={props.currentApplicationSection}
-                currentDeploymentUuid={props.currentDeploymentUuid}
-                rawJzodSchema={props.rawJzodSchema as JzodLiteral}
-                resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
-                unionInformation={props.unionInformation}
-                // insideAny={props.insideAny}
-              />
-            </span>
-          </span>
-        );
-        break;
-      }
-      case "function":
-      case "lazy":
-      case "intersection":
-      case "map":
-      case "promise":
-      case "record":
-      case "schemaReference":
-      case "set":
-      case "union":
-      case "never":
-      case "null":
-      case "unknown":
-      case "void":
-      case "date":
-      default: {
-        mainElement = (
-          <span>
-            default case: {localResolvedElementJzodSchemaBasedOnValue.type}, for {props.listKey}
-            values
-            <pre>{JSON.stringify(currentValue, null, 2)}</pre>
-            <br />
-            <pre>
-              resolved Jzod schema: {JSON.stringify(props.resolvedElementJzodSchema, null, 2)}
-            </pre>
-            <pre>raw Jzod schema: {JSON.stringify(props.rawJzodSchema, null, 2)}</pre>
-            {/* <div>
-              found schema: {JSON.stringify(props.resolvedJzodSchema, null, 2)}
-            </div>
-            <div>
-              for object: {JSON.stringify(props.initialValuesObject, null, 2)}
-            </div> */}
-          </span>
-        );
-        break;
-      }
-    }
-  } else {
-    mainElement = (
-      <div>
-        Could not find schema for item: {props.rootLesslistKey}
-        <br />
-        value {formik.values[props.rootLesslistKey]}
-        <br />
-        raw Jzod schema: {JSON.stringify(props.rawJzodSchema)}
-        <br />
-        resolved schema: {JSON.stringify(localResolvedElementJzodSchemaBasedOnValue)}
-      </div>
-    );
-  }  // Check if this attribute is optional and can be removed
-  // const isOptionalAttribute = props.rootLesslistKey && definedOptionalAttributes?.has(props.name);
-  // const isOptionalAttribute = localResolvedElementJzodSchemaBasedOnValue?.optional;
-  
-  // Create the clear button for optional attributes
-  // const clearButton = props.optional ? (
-  const clearButton = (
-    <SmallIconButton
-      onClick={removeOptionalAttribute}
-      style={{ padding: 0, visibility: props.optional ? "visible" : "hidden" }}
-    >
-      <Clear />
-    </SmallIconButton>
-  );
-
-  const mainElementBlock: JSX.Element = (
-    <span
-      style={{
-        display: hideSubJzodEditor ? "none" : "inline-block",
-        margin: "10px 0 10px 0",
-      }}
-    >
-      {mainElement}
-    </span>
-  );
-  const JzodSchemaTooltip: JSX.Element = (
+  // JzodSchemaTooltip
+  const JzodSchemaTooltip: JSX.Element = useMemo(() => (
     <span
       style={{
         position: "absolute",
@@ -780,7 +245,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       }}
     >
       <span
-        // title={JSON.stringify(localResolvedElementJzodSchemaBasedOnValue, null, 2)}
         title={JSON.stringify(props.rawJzodSchema, null, 2)}
         style={{
           display: "inline-flex",
@@ -796,21 +260,341 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           justifyContent: "center",
         }}
       >
-        {/* Use MUI InfoOutlined icon for info */}
         <span style={{ display: "flex", alignItems: "center" }}>
           <InfoOutlined fontSize="small" sx={{ color: "#888" }} />
         </span>
       </span>
     </span>
-  );  // Define Prettier-like colors for nested structures
-  const prettierColors = [
+  ), [props.rawJzodSchema]);
+
+  // Define Prettier-like colors for nested structures
+  const prettierColors = useMemo(() => [
     "#f8f8f8", // Light gray
     "#f0f0f0", // Slightly darker gray
     "#e8e8e8"  // Even darker gray
-  ];
+  ], []);
 
   // Get appropriate background color based on indent level
-  const bgColor = prettierColors[(props.indentLevel || 0) % 3];
+  const bgColor = useMemo(() => 
+    prettierColors[(props.indentLevel || 0) % 3],
+    [prettierColors, props.indentLevel]
+  );
+
+  // Clear button for optional attributes
+  const clearButton = useMemo(() => (
+    <SmallIconButton
+      onClick={removeOptionalAttribute}
+      style={{ padding: 0, visibility: props.optional ? "visible" : "hidden" }}
+    >
+      <Clear />
+    </SmallIconButton>
+  ), [removeOptionalAttribute, props.optional]);
+
+  // Create the main element based on the schema type
+  const mainElement = useMemo(() => {
+    if (props.returnsEmptyElement || props.hidden) {
+      return null;
+    }
+
+    if (!localResolvedElementJzodSchemaBasedOnValue || !props.rawJzodSchema) {
+      return (
+        <div>
+          Could not find schema for item: {props.rootLesslistKey}
+          <br />
+          value {formik.values[props.rootLesslistKey]}
+          <br />
+          raw Jzod schema: {JSON.stringify(props.rawJzodSchema)}
+          <br />
+          resolved schema: {JSON.stringify(localResolvedElementJzodSchemaBasedOnValue)}
+        </div>
+      );
+    }
+
+    if (props.rawJzodSchema.type !== "any" &&
+      localResolvedElementJzodSchemaBasedOnValue.type !== props.rawJzodSchema.type &&
+      ((localResolvedElementJzodSchemaBasedOnValue.type === "object" &&
+        !objectTypes.includes(props.rawJzodSchema.type)) ||
+        (props.rawJzodSchema.type === "enum" &&
+          !enumTypes.includes(localResolvedElementJzodSchemaBasedOnValue.type)))
+    ) {
+      throw new Error(
+        "JzodElementEditor mismatching jzod schemas, resolved schema " +
+          JSON.stringify(props.resolvedElementJzodSchema, null, 2) +
+          " raw schema " +
+          JSON.stringify(props.rawJzodSchema, null, 2)
+      );
+    }
+
+    if (recursivelyUnfoldedRawSchema && recursivelyUnfoldedRawSchema.status === "error") {
+      return (
+        <div>
+          <p>
+            Error unfolding union schema {props.listKey} {count}:
+          </p>
+          <pre style={{ color: "red" }}>
+            {JSON.stringify(recursivelyUnfoldedRawSchema, null, 2)}
+          </pre>
+        </div>
+      );
+    }
+
+    // Handle "any" type
+    if (props.rawJzodSchema?.type === "any" && !props.insideAny) {
+      return (
+        <JzodAnyEditor
+          name={props.name}
+          listKey={props.listKey}
+          rootLesslistKey={props.rootLesslistKey}
+          rootLesslistKeyArray={props.rootLesslistKeyArray}
+          rawJzodSchema={props.rawJzodSchema}
+          currentDeploymentUuid={props.currentDeploymentUuid}
+          currentApplicationSection={props.currentApplicationSection}
+          unionInformation={unionInformation}
+          resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
+          label={props.label}
+          foreignKeyObjects={props.foreignKeyObjects}
+        />
+      );
+    }
+
+    // Generate element based on schema type
+    switch (localResolvedElementJzodSchemaBasedOnValue.type) {
+      case "object": {
+        return (
+          <JzodObjectEditor
+            name={props.name}
+            label={props.label}
+            listKey={props.listKey}
+            indentLevel={props.indentLevel + 1}
+            rootLesslistKey={props.rootLesslistKey}
+            rootLesslistKeyArray={props.rootLesslistKeyArray}
+            rawJzodSchema={props.rawJzodSchema}
+            currentDeploymentUuid={props.currentDeploymentUuid}
+            currentApplicationSection={props.currentApplicationSection}
+            unionInformation={unionInformation}
+            resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
+            foreignKeyObjects={foreignKeyObjects}
+            hidden={hideSubJzodEditor}
+            switches={objectOrArraySwitches}
+          />
+        );
+      }
+      case "tuple":
+      case "array": {
+        return (
+          <JzodArrayEditor
+            {...props}
+            key={props.rootLesslistKey}
+            rootLesslistKeyArray={props.rootLesslistKeyArray}
+            rootLesslistKey={props.rootLesslistKey}
+            rawJzodSchema={props.rawJzodSchema as any}
+            indentLevel={props.indentLevel + 1}
+            itemsOrder={itemsOrder}
+            hiddenFormItems={hiddenFormItems}
+            setHiddenFormItems={setHiddenFormItems}
+            currentApplicationSection={props.currentApplicationSection}
+            currentDeploymentUuid={props.currentDeploymentUuid}
+            foreignKeyObjects={props.foreignKeyObjects}
+            unionInformation={props.unionInformation}
+            insideAny={props.insideAny}
+            hidden={hideSubJzodEditor}
+            switches={objectOrArraySwitches}
+          />
+        );
+      }
+      case "boolean": {
+        const fieldProps = formik.getFieldProps(props.rootLesslistKey);
+        return (
+          <Checkbox
+            id={props.rootLesslistKey}
+            key={props.rootLesslistKey}
+            aria-label={props.rootLesslistKey}
+            {...fieldProps}
+            name={props.rootLesslistKey}
+            checked={fieldProps.value}
+          />
+        );
+      }
+      case "number": {
+        return (
+          <input
+            type="number"
+            id={props.rootLesslistKey}
+            key={props.rootLesslistKey}
+            role="textbox"
+            style={{ width: "100%" }}
+            {...formik.getFieldProps(props.rootLesslistKey)}
+          />
+        );
+      }
+      case "bigint": {
+        return (
+          <input
+            type="text"
+            id={props.rootLesslistKey}
+            key={props.rootLesslistKey}
+            role="textbox"
+            style={{ width: "100%" }}
+            {...formik.getFieldProps(props.rootLesslistKey)}
+            value={currentValue.toString()}
+            onChange={(e) => {
+              const value = e.target.value;
+              formik.setFieldValue(props.rootLesslistKey, value ? BigInt(value) : BigInt(0));
+            }}
+          />
+        );
+      }
+      case "string": {
+        return (
+          <input
+            type="text"
+            role="textbox"
+            id={props.rootLesslistKey}
+            key={props.rootLesslistKey}
+            style={{ width: "100%" }}
+            {...formik.getFieldProps(props.rootLesslistKey)}
+          />
+        );
+      }
+      case "uuid": {
+        if (localResolvedElementJzodSchemaBasedOnValue.tag?.value?.targetEntity) {
+          return (
+            <StyledSelect
+              id={props.rootLesslistKey}
+              key={props.rootLesslistKey}
+              aria-label={props.rootLesslistKey}
+              labelId="demo-simple-select-label"
+              variant="standard"
+              style={{ width: "100%" }}
+              {...formik.getFieldProps(props.rootLesslistKey)}
+              name={props.rootLesslistKey}
+            >
+              {stringSelectList.map((e: [string, EntityInstance], index: number) => (
+                <MenuItem
+                  id={props.rootLesslistKey + "." + index}
+                  key={e[1].uuid}
+                  value={e[1].uuid}
+                >
+                  {(e[1] as EntityInstanceWithName).name}
+                </MenuItem>
+              ))}
+            </StyledSelect>
+          );
+        } else {
+          return (
+            <input
+              type="text"
+              id={props.rootLesslistKey}
+              key={props.rootLesslistKey}
+              role="textbox"
+              style={{ width: "100%" }}
+              {...formik.getFieldProps(props.rootLesslistKey)}
+            />
+          );
+        }
+      }
+      case "literal": {
+        return (
+          <div style={{ width: "100%", display: "block" }}>
+            <JzodLiteralEditor
+              name={props.name}
+              key={props.rootLesslistKey}
+              label={props.label}
+              currentApplicationSection={props.currentApplicationSection}
+              currentDeploymentUuid={props.currentDeploymentUuid}
+              listKey={props.listKey}
+              rootLesslistKey={props.rootLesslistKey}
+              rootLesslistKeyArray={props.rootLesslistKeyArray}
+              foreignKeyObjects={props.foreignKeyObjects}
+              rawJzodSchema={props.rawJzodSchema as JzodLiteral}
+              resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
+              unionInformation={props.unionInformation}
+              insideAny={props.insideAny}
+            />
+          </div>
+        );
+      }
+      case "enum": {
+        const enumValues: string[] =
+          (localResolvedElementJzodSchemaBasedOnValue &&
+            localResolvedElementJzodSchemaBasedOnValue.definition) ||
+          (props.rawJzodSchema && ((props.rawJzodSchema as any).definition ?? [])) ||
+          [];
+        return (
+          <div style={{ width: "100%" }}>
+            <JzodEnumEditor
+              name={props.name}
+              label={props.label}
+              key={props.rootLesslistKey}
+              listKey={props.listKey}
+              rootLesslistKey={props.rootLesslistKey}
+              rootLesslistKeyArray={props.rootLesslistKeyArray}
+              rawJzodSchema={props.rawJzodSchema as any}
+              resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
+              foreignKeyObjects={props.foreignKeyObjects}
+              currentApplicationSection={props.currentApplicationSection}
+              currentDeploymentUuid={props.currentDeploymentUuid}
+              enumValues={enumValues}
+              unionInformation={props.unionInformation}
+              forceTestingMode={props.forceTestingMode}
+              insideAny={props.insideAny}
+            />
+          </div>
+        );
+      }
+      case "undefined":
+      case "any": {
+        return (
+          <JzodAnyEditor
+            name={props.name}
+            label={props.label}
+            key={props.rootLesslistKey}
+            listKey={props.listKey}
+            rootLesslistKey={props.rootLesslistKey}
+            rootLesslistKeyArray={props.rootLesslistKeyArray}
+            foreignKeyObjects={props.foreignKeyObjects}
+            currentApplicationSection={props.currentApplicationSection}
+            currentDeploymentUuid={props.currentDeploymentUuid}
+            rawJzodSchema={props.rawJzodSchema as JzodLiteral}
+            resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
+            unionInformation={props.unionInformation}
+          />
+        );
+      }
+      default: {
+        return (
+          <span>
+            default case: {localResolvedElementJzodSchemaBasedOnValue.type}, for {props.listKey}
+            values
+            <pre>{JSON.stringify(currentValue, null, 2)}</pre>
+            <br />
+            <pre>
+              resolved Jzod schema: {JSON.stringify(props.resolvedElementJzodSchema, null, 2)}
+            </pre>
+            <pre>raw Jzod schema: {JSON.stringify(props.rawJzodSchema, null, 2)}</pre>
+          </span>
+        );
+      }
+    }
+  }, [
+    props, 
+    localResolvedElementJzodSchemaBasedOnValue, 
+    formik, 
+    currentValue, 
+    recursivelyUnfoldedRawSchema,
+    unionInformation,
+    foreignKeyObjects,
+    hideSubJzodEditor,
+    objectOrArraySwitches,
+    hiddenFormItems,
+    setHiddenFormItems,
+    itemsOrder,
+    stringSelectList
+  ]);
+
+  if (props.returnsEmptyElement || props.hidden) {
+    return <></>;
+  }
 
   return (
     <span>
@@ -820,16 +604,14 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           key={props.rootLesslistKey}
           style={{
             padding: "1px",
-            // margin: "5px 0 5px 5px",
-             width: "calc(100% - 10px)", // Adjust width to account for margin
-            margin: "5px 10px 5px 0", // Add 10px right margin
+            width: "calc(100% - 10px)",
+            margin: "5px 10px 5px 0",
             position: "relative",
             backgroundColor: bgColor,
             border: "1px solid #ddd",
             boxShadow: "none",
           }}
         >
-          {/* Top-right info icon with tooltip */}
           {JzodSchemaTooltip}
           <div>
             {props.submitButton}
@@ -857,8 +639,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             style={{
               display: hideSubJzodEditor ? "none" : "block",
               margin: "2px 5px 5px 5px",
-              // width: "100%",
-              width: "calc(100% - 15px)", // Adjust width to account for margin
+              width: "calc(100% - 15px)",
               flexGrow: 1,
             }}
           >
@@ -878,7 +659,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             style={{
               minWidth: "120px",
               flexShrink: 0,
-              textAlign: "left", // Left-align the label
+              textAlign: "left",
               justifyContent: "flex-start",
               display: "flex",
             }}
@@ -908,11 +689,12 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   );
 }
 
+// Use React.memo to prevent unnecessary re-renders
+export const JzodElementEditor = React.memo(JzodElementEditorComponent);
+
 export const JzodObjectEditorWithErrorBoundary = withErrorBoundary(JzodElementEditor, {
   fallback: <div>Something went wrong</div>,
   onError(error, info) {
     log.error("JzodElementEditor error", error);
-    // Do something with the error
-    // E.g. log to an error logging client here
   },
 });

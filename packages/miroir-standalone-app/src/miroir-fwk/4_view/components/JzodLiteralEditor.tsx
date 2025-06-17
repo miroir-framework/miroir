@@ -1,6 +1,6 @@
 import { MenuItem } from "@mui/material";
 import { useFormikContext } from "formik";
-import React from "react";
+import React, { useCallback, useMemo } from "react";
 
 
 import {
@@ -29,7 +29,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 });
 
 let JzodLiteralEditorRenderCount: number = 0;
-export const JzodLiteralEditor: React.FC<JzodLiteralEditorProps> = (
+export const JzodLiteralEditor = React.memo<JzodLiteralEditorProps>(function JzodLiteralEditorComponent(
   // props: JzodLiteralEditorProps
   {
     name,
@@ -42,7 +42,7 @@ export const JzodLiteralEditor: React.FC<JzodLiteralEditorProps> = (
     unionInformation,
     resolvedElementJzodSchema, // handleSelectLiteralChange,
   }
-) => {
+) {
   JzodLiteralEditorRenderCount++;
   const context = useMiroirContextService();
   const currentModel: MetaModel = useCurrentModel(currentDeploymentUuid);
@@ -50,9 +50,18 @@ export const JzodLiteralEditor: React.FC<JzodLiteralEditorProps> = (
   const currentMiroirFundamentalJzodSchema = context.miroirFundamentalJzodSchema;
 
   const formik = useFormikContext<Record<string, any>>();
+  
+  // Check if this literal is a discriminator
+  const isDiscriminator = useMemo(() => 
+    unionInformation?.discriminator && 
+    unionInformation?.discriminatorValues && 
+    name === unionInformation?.discriminator,
+    [unionInformation, name]
+  );
+  
   // ############################################################################################
   // uses setFormState to update the formik state (updating the parent value)
-  const handleSelectLiteralChange = (event: any) => {
+  const handleSelectLiteralChange = useCallback((event: any) => {
     // This literal is the discriminator of a discriminated union object.
 
     if (!unionInformation) {
@@ -136,62 +145,69 @@ export const JzodLiteralEditor: React.FC<JzodLiteralEditorProps> = (
       defaultValue,
       false // do not validate on change
     );
-  };
+  }, [
+    unionInformation,
+    rootLesslistKeyArray,
+    rootLesslistKey,
+    name,
+    formik,
+    currentMiroirFundamentalJzodSchema,
+    currentModel,
+    miroirMetaModel
+  ]);
 
-  // if (unionInformation) {
-  //   log.info(
-  //     "literal with unionInformation",
-  //     listKey,
-  //     "discriminator=",
-  //     unionInformation.discriminator,
-  //     "unionInformation=",
-  //     JSON.stringify(unionInformation, null, 2)
-  //   );
-  // }
+  // Memoize discriminator values for better rendering performance
+  const discriminatorMenuItems = useMemo(() => {
+    if (isDiscriminator && unionInformation?.discriminatorValues) {
+      return unionInformation.discriminatorValues.map((v) => (
+        <MenuItem key={v} value={v}>
+          {v}
+        </MenuItem>
+      ));
+    }
+    return null;
+  }, [isDiscriminator, unionInformation]);
+
   return (
     <>
-      <>
-        {unionInformation &&
-        unionInformation.discriminator &&
-        unionInformation.discriminatorValues &&
-        name == unionInformation.discriminator ? (
-          <>
-            {/* {label && <label htmlFor={rootLesslistKey}>{label}: </label>} */}
-            <StyledSelect
-              id={rootLesslistKey}
-              aria-label={label}
-              label={name}
-              variant="standard"
-              labelId="demo-simple-select-label"
-              {...formik.getFieldProps(rootLesslistKey)}
-              onChange={handleSelectLiteralChange}
-            >
-              {unionInformation.discriminatorValues.map((v) => {
-                return (
-                  <MenuItem key={v} value={v}>
-                    {v}
-                  </MenuItem>
-                );
-              })}
-            </StyledSelect>
-            (literal discriminator)
-          </>
-        ) : (
-          <>
-            {label && <label htmlFor={rootLesslistKey}>{label}: </label>}
-            <input
-              type="text"
-              id={rootLesslistKey}
-              name={rootLesslistKey}
-              aria-label={label}
-              form={"form." + name}
-              value={formik.getFieldProps(rootLesslistKey).value}
-              readOnly
-              disabled
-            />
-          </>
-        )}
-      </>
+      {isDiscriminator ? (
+        <>
+          <StyledSelect
+            id={rootLesslistKey}
+            aria-label={label}
+            label={name}
+            variant="standard"
+            labelId="demo-simple-select-label"
+            {...formik.getFieldProps(rootLesslistKey)}
+            onChange={handleSelectLiteralChange}
+          >
+            {discriminatorMenuItems}
+          </StyledSelect>
+          (literal discriminator)
+        </>
+      ) : (
+        <>
+          {label && <label htmlFor={rootLesslistKey}>{label}: </label>}
+          <input
+            type="text"
+            id={rootLesslistKey}
+            name={rootLesslistKey}
+            aria-label={label}
+            form={"form." + name}
+            value={formik.getFieldProps(rootLesslistKey).value}
+            readOnly
+            disabled
+          />
+        </>
+      )}
     </>
   );
-};
+}, (prevProps, nextProps) => {
+  // Custom comparison for React.memo
+  return (
+    prevProps.rootLesslistKey === nextProps.rootLesslistKey &&
+    prevProps.name === nextProps.name &&
+    prevProps.currentDeploymentUuid === nextProps.currentDeploymentUuid &&
+    JSON.stringify(prevProps.unionInformation) === JSON.stringify(nextProps.unionInformation)
+  );
+});

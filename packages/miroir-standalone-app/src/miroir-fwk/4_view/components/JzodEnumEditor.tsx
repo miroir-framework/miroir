@@ -3,7 +3,7 @@ import { LoggerInterface, MiroirLoggerFactory, resolvePathOnObject } from "miroi
 import {
   JzodEnum
 } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import React from "react";
+import React, { useMemo } from "react";
 import { packageName } from "../../../constants";
 import { cleanLevel } from "../constants";
 import { JzodEnumEditorProps } from "./JzodElementEditorInterface";
@@ -18,31 +18,47 @@ MiroirLoggerFactory.registerLoggerToStart(
 });
 
 
-export const JzodEnumEditor: React.FC<JzodEnumEditorProps> = (
-  // props: JzodEnumEditorProps
-  {
-    name,
-    label,
-    rawJzodSchema,
-    listKey,
-    rootLesslistKey,
-    rootLesslistKeyArray,
-    forceTestingMode,
-    unionInformation
-  }
-) => {
+export const JzodEnumEditor = React.memo(function JzodEnumEditorComponent(
+  { name, label, rawJzodSchema, listKey, rootLesslistKey, rootLesslistKeyArray, forceTestingMode, unionInformation }: JzodEnumEditorProps
+) {
   
   // const currentValue = resolvePathOnObject(props.formik.values, props.rootLesslistKeyArray);
   const formik = useFormikContext<Record<string, any>>();
+  
+  // Log only when component renders to track performance
   log.info(
     `JzodEnumEditor: render for ${name}, rootLesslistKey=${rootLesslistKey}, rawJzodSchema=${JSON.stringify(rawJzodSchema)}`,
     `unionInformation=${JSON.stringify(unionInformation)}`
   );
+  
+  // Memoize the discrimination case check
+  const isDiscriminator = useMemo(() => 
+    unionInformation?.discriminator && 
+    unionInformation?.discriminatorValues && 
+    name === unionInformation?.discriminator,
+    [unionInformation, name]
+  );
+  
+  // Memoize the menu items for better performance
+  const menuItems = useMemo(() => {
+    if (isDiscriminator) {
+      return unionInformation?.discriminatorValues.map((v, index) => (
+        <MenuItem key={v} value={v} aria-label={rootLesslistKey + "." + index}>
+          {v}
+        </MenuItem>
+      ));
+    } else {
+      return (rawJzodSchema as JzodEnum).definition.map((v, index) => (
+        <MenuItem key={v} value={v} aria-label={rootLesslistKey + "." + index}>
+          {v}
+        </MenuItem>
+      ));
+    }
+  }, [isDiscriminator, unionInformation, rawJzodSchema, rootLesslistKey]);
+  
   return (
     <>
-      {unionInformation?.discriminator &&
-      unionInformation?.discriminatorValues &&
-      name == unionInformation?.discriminator ? ( // NOT USED, unionInformation is null!!
+      {isDiscriminator ? ( 
         <>
           <StyledSelect
             id={rootLesslistKey}
@@ -52,13 +68,7 @@ export const JzodEnumEditor: React.FC<JzodEnumEditorProps> = (
             {...formik.getFieldProps(rootLesslistKey)}
             name={rootLesslistKey}
           >
-            {unionInformation?.discriminatorValues.map((v, index) => {
-              return (
-                <MenuItem key={v} value={v} aria-label={rootLesslistKey + "." + index}>
-                  {v}
-                </MenuItem>
-              );
-            })}
+            {menuItems}
           </StyledSelect>
           enum
         </>
@@ -72,13 +82,7 @@ export const JzodEnumEditor: React.FC<JzodEnumEditorProps> = (
             {...formik.getFieldProps(rootLesslistKey)}
             name={rootLesslistKey}
           >
-            {(rawJzodSchema as JzodEnum).definition.map((v, index) => {
-              return (
-                <MenuItem key={v} value={v} aria-label={rootLesslistKey + "." + index}>
-                  {v}
-                </MenuItem>
-              );
-            })}
+            {menuItems}
           </StyledSelect>
         </>
       )}
@@ -89,4 +93,12 @@ export const JzodEnumEditor: React.FC<JzodEnumEditorProps> = (
       )}
     </>
   );
-};
+}, (prevProps, nextProps) => {
+  // Custom comparison for React.memo
+  return (
+    prevProps.rootLesslistKey === nextProps.rootLesslistKey &&
+    prevProps.name === nextProps.name &&
+    JSON.stringify(prevProps.rawJzodSchema) === JSON.stringify(nextProps.rawJzodSchema) &&
+    JSON.stringify(prevProps.unionInformation) === JSON.stringify(nextProps.unionInformation)
+  );
+});

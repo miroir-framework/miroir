@@ -1,5 +1,5 @@
 import { FormikProps, useFormikContext } from "formik";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 
 
 import { SyncBoxedExtractorOrQueryRunnerMap, DeploymentEntityState, MetaModel, JzodElement, JzodUnion_RecursivelyUnfold_ReturnType, JzodUnion, adminConfigurationDeploymentMiroir, resolvePathOnObject, ResolvedJzodSchemaReturnType, jzodTypeCheck, unfoldJzodSchemaOnce, jzodUnion_recursivelyUnfold, LoggerInterface, MiroirLoggerFactory, Domain2QueryReturnType, DomainElementSuccess, EntityInstancesUuidIndex, SyncQueryRunner, SyncQueryRunnerParams, dummyDomainManyQueryWithDeploymentUuid, getApplicationSection, getQueryRunnerParamsForDeploymentEntityState, EntityInstance } from "miroir-core";
@@ -83,20 +83,12 @@ export function getJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
   // codeMirror state
   const formik = useFormikContext<Record<string, any>>();
   
-  const currentValue =
-  props.rootLesslistKeyArray.length > 0
-  ? resolvePathOnObject(formik.values, props.rootLesslistKeyArray)
-  : formik.values;
-  // log.info(
-  //   "getJzodElementEditorHooks",
-  //   "currentValue",
-  //   currentValue,
-  //   "props.rootLesslistKeyArray",
-  //   props.rootLesslistKeyArray,
-  //   'formik.values',
-  //   formik.values,
-  //   // JSON.stringify(formik.values, null, 2),
-  // );
+  const currentValue = useMemo(() => {
+    return props.rootLesslistKeyArray.length > 0
+      ? resolvePathOnObject(formik.values, props.rootLesslistKeyArray)
+      : formik.values;
+  }, [formik.values, props.rootLesslistKeyArray]);
+
   const [codeMirrorValue, setCodeMirrorValue] = useState<string>(""
     // () =>
     // // "\"start!\""
@@ -127,7 +119,7 @@ export function getJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
           )
         : undefined;
     return newRecordResolvedElementJzodSchema;
-  }, [currentValue, props.rawJzodSchema, context.miroirFundamentalJzodSchema]);
+  }, [currentValue, props.rawJzodSchema, context.miroirFundamentalJzodSchema, currentModel, miroirMetaModel]);
 
   if (
     !returnedLocalResolvedElementJzodSchemaBasedOnValue ||
@@ -335,7 +327,7 @@ export function getJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
       ];
     }
     return [];
-  }, [localResolvedElementJzodSchemaBasedOnValue, foreignKeyObjectsFetchQueryParams]);
+  }, [localResolvedElementJzodSchemaBasedOnValue, foreignKeyObjects]);
 
   return {
     context,
@@ -345,8 +337,6 @@ export function getJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
     formik,
     displayAsStructuredElement,
     setDisplayAsStructuredElement,
-    // displayEditor,
-    // setDisplayEditor,
     codeMirrorValue,
     setCodeMirrorValue,
     codeMirrorIsValidJson,
