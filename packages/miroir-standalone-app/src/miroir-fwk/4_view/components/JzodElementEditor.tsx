@@ -2,6 +2,7 @@ import { withErrorBoundary } from "react-error-boundary";
 
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
+import Clear from "@mui/icons-material/Clear";
 import Checkbox from "@mui/material/Checkbox";
 
 import {
@@ -28,6 +29,7 @@ import { JzodLiteralEditor } from "./JzodLiteralEditor.js";
 import { JzodObjectEditor } from "./JzodObjectEditor.js";
 import {
   LineIconButton,
+  SmallIconButton,
   StyledSelect
 } from "./Style.js";
 import { useCallback } from "react";
@@ -153,7 +155,19 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     setHiddenFormItems,
     itemsOrder,
     stringSelectList,
+    // object
+    definedOptionalAttributes,
   } = getJzodElementEditorHooks(props, count, "JzodElementEditor");
+  
+  // Function to remove an optional attribute
+  const removeOptionalAttribute = useCallback(() => {
+    if (props.rootLesslistKey) {
+      const newFormState = { ...formik.values };
+      delete newFormState[props.rootLesslistKey];
+      formik.setValues(newFormState);
+      log.info("Removed optional attribute:", props.rootLesslistKey);
+    }
+  }, [formik, props.rootLesslistKey]);
 
   // const currentMiroirFundamentalJzodSchema = context.miroirFundamentalJzodSchema;
   // const usedIndentLevel: number = props.indentLevel ? props.indentLevel : 0;
@@ -709,7 +723,20 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         resolved schema: {JSON.stringify(localResolvedElementJzodSchemaBasedOnValue)}
       </div>
     );
-  }
+  }  // Check if this attribute is optional and can be removed
+  // const isOptionalAttribute = props.rootLesslistKey && definedOptionalAttributes?.has(props.name);
+  // const isOptionalAttribute = localResolvedElementJzodSchemaBasedOnValue?.optional;
+  
+  // Create the clear button for optional attributes
+  const clearButton = props.optional ? (
+    <SmallIconButton
+      onClick={removeOptionalAttribute}
+      style={{ padding: 0 }}
+    >
+      <Clear />
+    </SmallIconButton>
+  ) : null;
+
   return (
     <span>
       {/* <label htmlFor={props.rootLesslistKey}>{props.label}: </label> */}
@@ -742,7 +769,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             </span>
           </Card>
         ):(
-          <span>
+          <span style={{ display: "flex", alignItems: "center" }}>
+            {clearButton}
             <label>{props.label}: </label>
             <span
               style={{

@@ -620,18 +620,9 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
                   );
                   break;
                 }
-              }
-              const attributeCanBeRemoved = definedOptionalAttributes.has(attribute[0])
-                ? "visible"
-                : "hidden";
+              }              // Button display is now handled in JzodElementEditor
               return (
                 <div key={attributeListKey}>
-                  <SmallIconButton
-                    onClick={() => removeObjectOptionalAttribute(attributeRootLessListKey)}
-                    style={{ visibility: attributeCanBeRemoved, padding: 0 }}
-                  >
-                    <Clear />
-                  </SmallIconButton>
                   {/* {unfoldedRawSchema?.type == "record" ? (
                     <>
                       <input
@@ -701,6 +692,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
                       foreignKeyObjects={props.foreignKeyObjects}
                       unionInformation={unionInformation}
                       insideAny={props.insideAny}
+                      optional={definedOptionalAttributes.has(attribute[0])}
                     />
                   </ErrorBoundary>
                 </div>

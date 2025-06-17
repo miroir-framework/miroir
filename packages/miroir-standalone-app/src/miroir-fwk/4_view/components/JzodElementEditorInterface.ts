@@ -30,6 +30,7 @@ export interface JzodEditorPropsRoot {
   returnsEmptyElement?: boolean; // used to force the editor to return an empty element
   insideAny?: boolean;
   hidden?: boolean; // used to control visibility of the editor
+  optional?: boolean; // used to control if the displayed element can be removed or not
   // displayAsCode?: boolean; // used to display the editor as a structured element, not as code editor
   // handleSelectLiteralChange?: (event: any) => void;
 }
