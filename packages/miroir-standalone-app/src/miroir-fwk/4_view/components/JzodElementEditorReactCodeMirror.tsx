@@ -177,11 +177,7 @@ export const JzodElementEditorReactCodeMirror: React.FC<JzodElementEditorReactCo
           display: !hidden && !insideAny ? "inline-block" : "none", // control visibility
         }}
       >
-        {props.switches && (
-          <span style={{ marginBottom: "10px" }}>
-            {props.switches}
-          </span>
-        )}
+        {props.switches && <span style={{ marginBottom: "10px" }}>{props.switches}</span>}
         <button
           type="button"
           aria-label="Format JSON"
@@ -225,15 +221,12 @@ export const JzodElementEditorReactCodeMirror: React.FC<JzodElementEditorReactCo
           ✓
         </button>
         <ReactCodeMirror
-          // ref={codeMirrorRef}
+          height={`${(codeMirrorValue.match(/\n/g)?.length || 0) * 20 + 60}px`}
           value={codeMirrorValue}
-          height="200px"
-          // extensions={[javascript({ jsx: true })]}
           extensions={extensions}
-          onChange={handleChange}
+          onChange={handleChange} // ref={codeMirrorRef}
         />
       </span>
-
     </span>
   );
   }
