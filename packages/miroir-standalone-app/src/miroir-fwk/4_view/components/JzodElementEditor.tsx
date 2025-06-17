@@ -458,12 +458,12 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                   ? "none" // control visibility
                   : "inline-block",
               }}
-            >
-              <input
+            >              <input
                 type="number"
                 id={props.rootLesslistKey}
                 key={props.rootLesslistKey}
                 role="textbox"
+                style={{ width: "100%" }}
                 {...formik.getFieldProps(props.rootLesslistKey)}
               />
             </span>
@@ -483,11 +483,13 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                   : "inline-block",
               }}
             >
+              {" "}
               <input
                 type="text"
                 id={props.rootLesslistKey}
                 key={props.rootLesslistKey}
                 role="textbox"
+                style={{ width: "100%" }}
                 {...formik.getFieldProps(props.rootLesslistKey)}
                 value={currentValue.toString()} // Convert bigint to string
                 onChange={(e) => {
@@ -511,12 +513,12 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                   ? "none" // control visibility
                   : "inline-block",
               }}
-            >
-              <input
+            >              <input
                 type="text"
                 role="textbox"
                 id={props.rootLesslistKey}
                 key={props.rootLesslistKey}
+                style={{ width: "100%" }}
                 {...formik.getFieldProps(props.rootLesslistKey)}
               />
             </span>
@@ -823,14 +825,22 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           >
             {mainElement}
           </span>
-        </Card>
-      ) : (
-        <span style={{ display: "flex", alignItems: "center" }}>
+        </Card>      ) : (
+        <span style={{ 
+          display: "flex", 
+          alignItems: "center",
+          width: "100%"
+        }}>
           {clearButton}
-          <label>{props.label}: </label>
+          <label style={{ 
+            minWidth: "120px", 
+            flexShrink: 0,
+            marginRight: "10px" 
+          }}>{props.label}: </label>
           <span
             style={{
               display: !hideSubJzodEditor ? "none" : "inline-block",
+              flexGrow: 1
             }}
           >
             {codeEditor}
@@ -839,6 +849,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             style={{
               display: hideSubJzodEditor ? "none" : "inline-block",
               margin: "2px 0 2px 0",
+              flexGrow: 1
             }}
           >
             {mainElement}
