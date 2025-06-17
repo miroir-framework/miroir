@@ -821,11 +821,12 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           style={{
             padding: "1px",
             // margin: "5px 0 5px 5px",
+             width: "calc(100% - 10px)", // Adjust width to account for margin
+            margin: "5px 10px 5px 0", // Add 10px right margin
             position: "relative",
             backgroundColor: bgColor,
             border: "1px solid #ddd",
             boxShadow: "none",
-            width: "100%",
           }}
         >
           {/* Top-right info icon with tooltip */}
@@ -855,8 +856,10 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           <span
             style={{
               display: hideSubJzodEditor ? "none" : "block",
-              margin: "2px 5px 5px 0",
-              width: "100%",
+              margin: "2px 5px 5px 5px",
+              // width: "100%",
+              width: "calc(100% - 15px)", // Adjust width to account for margin
+              flexGrow: 1,
             }}
           >
             {mainElement}
