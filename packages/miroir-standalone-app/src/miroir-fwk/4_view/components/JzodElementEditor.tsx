@@ -258,7 +258,9 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     //   setDisplayEditor(event.target.checked);
     // };
   
-  const objectOrArrayOrAny = ["any", "object", "record", "array", "tuple"].includes(props.rawJzodSchema?.type??"");
+  const objectOrArrayOrAny = ["any", "object", "record", "array", "tuple"].includes(
+    localResolvedElementJzodSchemaBasedOnValue.type
+  );
   const objectOrArraySwitches: JSX.Element = (
     <>
       {/* <label htmlFor="displayAsStructuredElementSwitch">Display {props.rawJzodSchema?.type? props.rawJzodSchema?.type+ " ":""}as structured element:</label> */}
@@ -366,6 +368,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           <span key={props.rootLesslistKey} id={props.rootLesslistKey}>
             <JzodObjectEditor
               name={props.name}
+              label={props.label}
               listKey={props.listKey}
               rootLesslistKey={props.rootLesslistKey}
               rootLesslistKeyArray={props.rootLesslistKeyArray}
@@ -374,7 +377,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               currentApplicationSection={props.currentApplicationSection}
               unionInformation={unionInformation}
               resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
-              label={props.label}
               foreignKeyObjects={foreignKeyObjects}
               hidden={hideSubJzodEditor}
               switches={objectOrArraySwitches}
@@ -421,7 +423,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         mainElement = (
           // result = (
           <span key={props.rootLesslistKey} id={props.rootLesslistKey}>
-            {/* {codeEditor} */}
             <span
               style={{
                 display: hideSubJzodEditor
@@ -429,6 +430,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                   : "inline-block",
               }}
             >
+              {/* {props.label && <label htmlFor={props.rootLesslistKey}>{props.label}: </label>} */}
               <Checkbox
                 // defaultChecked={formik.values[props.rootLesslistKey]}
                 id={props.rootLesslistKey}
@@ -583,6 +585,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               <JzodLiteralEditor
                 name={props.name}
                 key={props.rootLesslistKey}
+                label={props.label}
                 currentApplicationSection={props.currentApplicationSection}
                 currentDeploymentUuid={props.currentDeploymentUuid}
                 listKey={props.listKey}
@@ -591,7 +594,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                 foreignKeyObjects={props.foreignKeyObjects}
                 rawJzodSchema={props.rawJzodSchema as JzodLiteral}
                 resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
-                label={props.label}
                 unionInformation={props.unionInformation}
                 insideAny={props.insideAny}
                 // setParentResolvedElementJzodSchema={setLocalResolvedElementJzodSchema}
@@ -737,13 +739,25 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     </SmallIconButton>
   ) : null;
 
+  const mainElementBlock: JSX.Element = (
+    <span
+      style={{
+        display: hideSubJzodEditor ? "none" : "inline-block",
+        margin: "5px 0 5px 0",
+      }}
+    >
+      {mainElement}
+    </span>
+  );
   return (
     <span>
-      {/* <label htmlFor={props.rootLesslistKey}>{props.label}: </label> */}
-      {
-        objectOrArrayOrAny?(
-          <Card id={props.rootLesslistKey} key={props.rootLesslistKey} style={{ padding: "1px", margin: "1px 0" }}>
-            <div>
+      {objectOrArrayOrAny ? (
+        <Card
+          id={props.rootLesslistKey}
+          key={props.rootLesslistKey}
+          style={{ padding: "1px", margin: "1px 0" }}
+        >
+          <div>
             {props.submitButton}
             <span
               style={{
@@ -752,45 +766,37 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             >
               {objectOrArraySwitches}
             </span>
-            </div>
-            <span
-              style={{
-                display: !hideSubJzodEditor || (props.rawJzodSchema?.type == "any" && ["undefined", "any"].includes(localResolvedElementJzodSchemaBasedOnValue.type)) ? "none" : "inline-block",
-              }}
-            >
-              {codeEditor}
-            </span>
-            <span
-              style={{
-                display: hideSubJzodEditor ? "none" : "inline-block",
-              }}
-            >
-              {mainElement}
-            </span>
-          </Card>
-        ):(
-          <span style={{ display: "flex", alignItems: "center" }}>
-            {clearButton}
-            <label>{props.label}: </label>
-            <span
-              style={{
-                display: !hideSubJzodEditor ? "none" : "inline-block",
-              }}
-            >
-              {codeEditor}
-            </span>
-            <span
-              style={{
-                display: hideSubJzodEditor ? "none" : "inline-block",
-              }}
-            >
-              {mainElement}
-            </span>
+          </div>
+          <span
+            style={{
+              display:
+                !hideSubJzodEditor ||
+                (props.rawJzodSchema?.type == "any" &&
+                  ["undefined", "any"].includes(localResolvedElementJzodSchemaBasedOnValue.type))
+                  ? "none"
+                  : "inline-block",
+            }}
+          >
+            {codeEditor}
           </span>
-        )
-      }
+          {mainElementBlock}
+        </Card>
+      ) : (
+        <span style={{ display: "flex", alignItems: "center" }}>
+          {clearButton}
+          <label>{props.label}: </label>
+          <span
+            style={{
+              display: !hideSubJzodEditor ? "none" : "inline-block",
+            }}
+          >
+            {codeEditor}
+          </span>
+          {mainElementBlock}
+        </span>
+      )}
     </span>
-  )
+  );
 }
 
 export const JzodObjectEditorWithErrorBoundary = withErrorBoundary(JzodElementEditor, {

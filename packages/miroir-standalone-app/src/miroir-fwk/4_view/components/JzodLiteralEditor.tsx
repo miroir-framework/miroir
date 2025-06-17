@@ -32,15 +32,15 @@ let JzodLiteralEditorRenderCount: number = 0;
 export const JzodLiteralEditor: React.FC<JzodLiteralEditorProps> = (
   // props: JzodLiteralEditorProps
   {
-  name,
-  listKey,
-  rootLesslistKey,
-  rootLesslistKeyArray,
-  currentDeploymentUuid,
-  currentApplicationSection,
-  unionInformation,
-  resolvedElementJzodSchema,  // handleSelectLiteralChange,
-  label,
+    name,
+    label,
+    listKey,
+    rootLesslistKey,
+    rootLesslistKeyArray,
+    currentDeploymentUuid,
+    currentApplicationSection,
+    unionInformation,
+    resolvedElementJzodSchema, // handleSelectLiteralChange,
   }
 ) => {
   JzodLiteralEditorRenderCount++;
@@ -66,73 +66,76 @@ export const JzodLiteralEditor: React.FC<JzodLiteralEditorProps> = (
       );
     }
 
+    const currentAttributeName = rootLesslistKeyArray[rootLesslistKeyArray.length - 1];
 
-      const currentAttributeName =
-        rootLesslistKeyArray[rootLesslistKeyArray.length - 1];
+    log.info(
+      "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ handleSelectLiteralChange event",
+      event.target.value,
+      "rootLesslistKey",
+      rootLesslistKey,
+      "attribute",
+      currentAttributeName,
+      "name",
+      name,
+      "unionInformation",
+      JSON.stringify(unionInformation, null, 2),
+      "formik.values",
+      formik.values
+    );
 
+    const newJzodSchema: JzodElement | undefined = // attribute is either discriminator or sub-discriminator
+      (unionInformation.jzodSchema.definition as JzodObject[]).find(
+        (a: JzodObject) =>
+          a.type == "object" &&
+          a.definition[(unionInformation as any).jzodSchema.discriminator].type == "literal" &&
+          (a.definition[(unionInformation as any).jzodSchema.discriminator] as JzodLiteral)
+            .definition == event.target.value
+      );
+    if (!newJzodSchema) {
+      throw new Error(
+        "handleSelectLiteralChange could not find union branch for discriminator " +
+          unionInformation.discriminator +
+          " in " +
+          JSON.stringify(unionInformation.jzodSchema)
+      );
+    } else {
       log.info(
-        "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ handleSelectLiteralChange event",
-        event.target.value,
-        "rootLesslistKey",
-        rootLesslistKey,
-        "attribute",
-        currentAttributeName,
-        "name",
-        name,
-        "unionInformation",
-        JSON.stringify(unionInformation, null, 2),
-        "formik.values",
-        formik.values,
+        "handleSelectLiteralChange found newJzodSchema",
+        newJzodSchema,
+        "for discriminator",
+        unionInformation.discriminator,
+        "value",
+        event.target.value
       );
+    }
+    const newJzodSchemaWithOptional = unionInformation.jzodSchema.optional
+      ? {
+          ...newJzodSchema,
+          optional: true,
+        }
+      : newJzodSchema;
+    log.info("handleSelectLiteralChange newJzodSchemaWithOptional", newJzodSchemaWithOptional);
 
-      const newJzodSchema: JzodElement | undefined = // attribute is either discriminator or sub-discriminator
-        (unionInformation.jzodSchema.definition as JzodObject[]).find(
-          (a: JzodObject) =>
-            a.type == "object" &&
-            a.definition[(unionInformation as any).jzodSchema.discriminator].type ==
-              "literal" &&
-            (a.definition[(unionInformation as any).jzodSchema.discriminator] as JzodLiteral)
-              .definition == event.target.value
-        );
-      if (!newJzodSchema) {
-        throw new Error(
-          "handleSelectLiteralChange could not find union branch for discriminator " +
-            unionInformation.discriminator +
-            " in " +
-            JSON.stringify(unionInformation.jzodSchema)
-        );
-      } else {
-        log.info(
-          "handleSelectLiteralChange found newJzodSchema",
-          newJzodSchema,
-          "for discriminator",
-          unionInformation.discriminator,
-          "value",
-          event.target.value
-        );
-      }
-      const newJzodSchemaWithOptional = unionInformation.jzodSchema.optional
-        ? {
-            ...newJzodSchema,
-            optional: true,
-          }
-        : newJzodSchema;
-      log.info("handleSelectLiteralChange newJzodSchemaWithOptional", newJzodSchemaWithOptional);
-
-      const defaultValue = currentMiroirFundamentalJzodSchema
-        ? getDefaultValueForJzodSchemaWithResolution(
-            newJzodSchemaWithOptional,
-            currentMiroirFundamentalJzodSchema, // context.miroirFundamentalJzodSchema,
-            currentModel,
-            miroirMetaModel
-          )
-        : undefined;
-      log.info("handleSelectLiteralChange defaultValue", defaultValue, "formik.values", JSON.stringify(formik.values, null, 2));
-      formik.setFieldValue( // replacing parent value (the object containing the discriminator Literal)
-        rootLesslistKeyArray.slice(0, rootLesslistKeyArray.length - 1).join("."),
-        defaultValue,
-        false // do not validate on change
-      );
+    const defaultValue = currentMiroirFundamentalJzodSchema
+      ? getDefaultValueForJzodSchemaWithResolution(
+          newJzodSchemaWithOptional,
+          currentMiroirFundamentalJzodSchema, // context.miroirFundamentalJzodSchema,
+          currentModel,
+          miroirMetaModel
+        )
+      : undefined;
+    log.info(
+      "handleSelectLiteralChange defaultValue",
+      defaultValue,
+      "formik.values",
+      JSON.stringify(formik.values, null, 2)
+    );
+    formik.setFieldValue(
+      // replacing parent value (the object containing the discriminator Literal)
+      rootLesslistKeyArray.slice(0, rootLesslistKeyArray.length - 1).join("."),
+      defaultValue,
+      false // do not validate on change
+    );
   };
 
   // if (unionInformation) {
@@ -153,12 +156,12 @@ export const JzodLiteralEditor: React.FC<JzodLiteralEditorProps> = (
         unionInformation.discriminatorValues &&
         name == unionInformation.discriminator ? (
           <>
+            {/* {label && <label htmlFor={rootLesslistKey}>{label}: </label>} */}
             <StyledSelect
               id={rootLesslistKey}
               aria-label={label}
               label={name}
               variant="standard"
-
               labelId="demo-simple-select-label"
               {...formik.getFieldProps(rootLesslistKey)}
               onChange={handleSelectLiteralChange}

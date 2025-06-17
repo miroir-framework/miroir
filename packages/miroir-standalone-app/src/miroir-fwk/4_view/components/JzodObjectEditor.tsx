@@ -714,8 +714,8 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
           )}
         </div>
       </span>
-      <br />
-      <div style={{ marginLeft: `calc(${indentShift})` }}>{"}"}</div>
+      {/* <br /> */}
+      {/* <div style={{ marginLeft: `calc(${indentShift})` }}>{"}"}</div> */}
     </div>
   );
 }
