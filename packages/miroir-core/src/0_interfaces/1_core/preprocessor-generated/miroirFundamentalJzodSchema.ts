@@ -1895,6 +1895,186 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
+      "zodParseErrorIssueInvalidUnion": {
+        "type": "object",
+        "definition": {
+          "code": {
+            "type": "literal",
+            "definition": "invalid_union"
+          },
+          "path": {
+            "type": "array",
+            "definition": {
+              "type": "union",
+              "definition": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                }
+              ]
+            }
+          },
+          "message": {
+            "type": "string"
+          },
+          "unionErrors": {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "relativePath": "zodParseError",
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+              },
+              "context": {}
+            }
+          }
+        }
+      },
+      "zodParseErrorIssueUnrecognizedKeys": {
+        "type": "object",
+        "definition": {
+          "code": {
+            "type": "literal",
+            "definition": "unrecognized_keys"
+          },
+          "keys": {
+            "type": "array",
+            "definition": {
+              "type": "string"
+            }
+          },
+          "path": {
+            "type": "array",
+            "definition": {
+              "type": "union",
+              "definition": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                }
+              ]
+            }
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "zodParseErrorIssueInvalidLiteral": {
+        "type": "object",
+        "definition": {
+          "code": {
+            "type": "literal",
+            "definition": "invalid_literal"
+          },
+          "expected": {
+            "type": "string"
+          },
+          "path": {
+            "type": "array",
+            "definition": {
+              "type": "union",
+              "definition": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                }
+              ]
+            }
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "zodParseErrorIssue": {
+        "type": "union",
+        "discriminator": "code",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "zodParseErrorIssueInvalidUnion",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            },
+            "context": {}
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "zodParseErrorIssueUnrecognizedKeys",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            },
+            "context": {}
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "zodParseErrorIssueInvalidLiteral",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            },
+            "context": {}
+          },
+          {
+            "type": "object",
+            "definition": {
+              "code": {
+                "type": "literal",
+                "definition": "invalid_type"
+              },
+              "expected": {
+                "type": "string"
+              },
+              "received": {
+                "type": "string"
+              },
+              "path": {
+                "type": "array",
+                "definition": {
+                  "type": "union",
+                  "definition": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "number"
+                    }
+                  ]
+                }
+              },
+              "message": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "zodParseError": {
+        "type": "object",
+        "definition": {
+          "name": {
+            "type": "literal",
+            "definition": "ZodError"
+          },
+          "issues": {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "relativePath": "zodParseErrorIssue",
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+              },
+              "context": {}
+            }
+          }
+        }
+      },
       "transformerForBuild_menu_addItem": {
         "type": "object",
         "extend": [

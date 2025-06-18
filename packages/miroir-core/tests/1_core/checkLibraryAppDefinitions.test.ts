@@ -1,5 +1,5 @@
 import { describe, expect } from 'vitest';
-import { ZodType, ZodTypeAny, z } from "zod";
+import { z } from "zod";
 
 import {
   entity,

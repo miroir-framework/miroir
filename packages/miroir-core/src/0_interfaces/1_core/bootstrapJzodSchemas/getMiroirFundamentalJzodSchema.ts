@@ -27,6 +27,7 @@ import { MiroirLoggerFactory } from "../../../4_services/LoggerFactory";
 import { packageName } from "../../../constants";
 import { LoggerInterface } from "../../4-services/LoggerInterface";
 import { testSuitesResultsSchema } from "../../4-services/TestInterface";
+import { zodParseErrorJzodSchema, zodParseErrorIssueJzodSchema } from "../zodParseError";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -45,7 +46,7 @@ export const miroirFundamentalJzodSchemaUuid = "fe9b7d99-f216-44de-bb6e-60e1a1eb
  * @param force
  * @returns
  */
-function makeReferencesAbsolute(jzodSchema: any /** JzodElement */, absolutePath: string, force?: boolean): any /** JzodElement */ {
+export function makeReferencesAbsolute(jzodSchema: any /** JzodElement */, absolutePath: string, force?: boolean): any /** JzodElement */ {
   // log.info("makeReferencesAbsolute received", JSON.stringify(jzodSchema), absolutePath, force);
   switch (jzodSchema.type) {
     case "schemaReference": {
@@ -579,6 +580,14 @@ export function getMiroirFundamentalJzodSchema(
             { type: "object", definition: e.transformerInterface.transformerParameterSchema },
           ])
         ),
+        // ########################################################################################
+        ...makeReferencesAbsolute(
+          (zodParseErrorJzodSchema as any),
+          miroirFundamentalJzodSchemaUuid,
+          true
+        ).context, // gives "transformerForBuild_InnerReference", "transformerForBuild", "actionHandler"
+        // zodParseErrorIssue: zodParseError.context.zodParseErrorIssue as any,
+        // zodParseError: zodParseError.context.zodParseError as any,
         // ########################################################################################
         transformerForBuild_menu_addItem: miroirTransformersForBuild.transformer_menu_addItem,
         //
