@@ -13,10 +13,12 @@
         "parentName": "Author",
         "parentUuid": {
           "transformerType": "constantUuid",
+          "interpolation": "build",
           "value": "d7a144ff-d1b9-4135-800c-a7cfc1f38733"
         },
         "instanceUuid": {
           "transformerType": "parameterReference",
+          "interpolation": "build",
           "referenceName": "instanceUuid"
         }
       }
@@ -28,6 +30,7 @@
         "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
         "objectReference": {
           "transformerType": "contextReference",
+          "interpolation": "runtime",
           "referenceName": "author"
         },
         "AttributeOfListObjectToCompareToReferenceUuid": "author"
@@ -37,10 +40,12 @@
         "parentName": "Publisher",
         "parentUuid": {
           "transformerType": "constantUuid",
+          "interpolation": "build",
           "value": "a027c379-8468-43a5-ba4d-bf618be25cab"
         },
         "objectListReference": {
           "transformerType": "contextReference",
+          "interpolation": "runtime",
           "referenceName": "booksOfAuthor"
         },
         "objectListReferenceAttribute": "publisher"
@@ -50,10 +55,12 @@
         "parentName": "Book",
         "parentUuid": {
           "transformerType": "constantUuid",
+          "interpolation": "build",
           "value": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
         },
         "objectListReference": {
           "transformerType": "contextReference",
+          "interpolation": "runtime",
           "referenceName": "publishersOfBooks"
         },
         "AttributeOfRootListObjectToCompareToListReferenceUuid": "publisher"

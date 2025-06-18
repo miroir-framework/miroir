@@ -1,7 +1,16 @@
 import { describe, expect } from 'vitest';
 import { ZodType, ZodTypeAny, z } from "zod";
 
-import { entity, entityDefinition, extractorOrCombinerTemplate, extractorOrCombinerTemplateRecord, report, rootReport, transformerForBuild_constantUuid, transformerForBuild_InnerReference } from '../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType';
+import {
+  entity,
+  entityDefinition,
+  extractorOrCombinerTemplate,
+  extractorOrCombinerTemplateRecord,
+  report,
+  rootReport,
+  transformerForBuild_constantUuid,
+  transformerForBuild_InnerReference,
+} from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 import entityPublisher from "../../src/assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a027c379-8468-43a5-ba4d-bf618be25cab.json";
 import entityUser from "../../src/assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/ca794e28-b2dc-45b3-8137-00151557eea8.json";
@@ -39,9 +48,6 @@ const reports = [
   "details",
 ]
 
-// const libraryAppEntityDefinitions = libraryEntities.map((entity) => {
-//   return `entityDefinition${entity.charAt(0).toUpperCase() + entity.slice(1)}`
-// });
 const libraryAppEntityDefinitions = {
   author: entityDefinitionAuthor,
   book: entityDefinitionBook,
@@ -58,11 +64,10 @@ const libraryAppEntities = {
 };
 
 const libraryAppReports = {
-  // author: [reportAuthorList, reportAuthorDetails],
+  author: [reportAuthorList, reportAuthorDetails],
   book: [
     reportBookList, 
     reportBookDetails,
-    // reportBookInstance
   ],
   country: [reportCountryList],
   publisher: [reportPublisherList],
@@ -87,37 +92,46 @@ describe('check library entities', () => {
       }
     );
   });
-  // it.each(Object.entries(libraryAppEntities))('should parse entity %s using entity schema', (entityToTestName, entityToTest) => {
-  //   expect(() => entity.parse(entityToTest)).not.toThrow();
-  //   // expect(entityToTest).toHaveProperty('name', entityToTestName);
-  // });
 
-  it("reportCountryList.definition.extractorTemplates.countries.parentUuid is parsable by transformerForBuild_InnerReference", () => {
-    const zodSchema = z.union([z.string(), z.lazy(() => transformerForBuild_InnerReference)])
-    const transformer = libraryAppReports.country[0].definition.extractorTemplates.countries.parentUuid;
-    console.log("transformer to test=", JSON.stringify(transformer, null, 2));
-    expect(() => zodSchema.parse(transformer)).not.toThrow();
-  });
+  describe("reportCountryList",
+    ()  => {
+      it("reportCountryList.definition.extractorTemplates.countries.parentUuid is parsable by transformerForBuild_InnerReference", () => {
+        const zodSchema = z.union([z.string(), z.lazy(() => transformerForBuild_InnerReference)])
+        const transformer = reportCountryList.definition.extractorTemplates.countries.parentUuid;
+        console.log("transformer to test=", JSON.stringify(transformer, null, 2));
+        expect(() => zodSchema.parse(transformer)).not.toThrow();
+      });
+    
+      it("reportCountryList.definition.extractorTemplates.countries is parsable by extractorOrCombinerTemplate", () => {
+        const zodSchema = extractorOrCombinerTemplate
+        const transformer = reportCountryList.definition.extractorTemplates.countries;
+        console.log("transformer to test=", JSON.stringify(transformer, null, 2));
+        expect(() => zodSchema.parse(transformer)).not.toThrow();
+      });
+    
+      it("reportCountryList.definition.extractorTemplates is parsable by extractorOrCombinerTemplateRecord", () => {
+        const zodSchema = extractorOrCombinerTemplateRecord
+        const transformer = reportCountryList.definition.extractorTemplates;
+        console.log("transformer to test=", JSON.stringify(transformer, null, 2));
+        expect(() => zodSchema.parse(transformer)).not.toThrow();
+      });
+    
+      it("reportCountryList.definition is parsable by rootReport", () => {
+        const zodSchema = rootReport
+        const transformer = reportCountryList.definition;
+        console.log("transformer to test=", JSON.stringify(transformer, null, 2));
+        expect(() => zodSchema.parse(transformer)).not.toThrow();
+      });
+    }
+  )
 
-  it("reportCountryList.definition.extractorTemplates.countries is parsable by extractorOrCombinerTemplate", () => {
-    const zodSchema = extractorOrCombinerTemplate
-    const transformer = libraryAppReports.country[0].definition.extractorTemplates.countries;
-    console.log("transformer to test=", JSON.stringify(transformer, null, 2));
-    expect(() => zodSchema.parse(transformer)).not.toThrow();
-  });
-
-  it("reportCountryList.definition.extractorTemplates is parsable by extractorOrCombinerTemplateRecord", () => {
-    const zodSchema = extractorOrCombinerTemplateRecord
-    const transformer = libraryAppReports.country[0].definition.extractorTemplates;
-    console.log("transformer to test=", JSON.stringify(transformer, null, 2));
-    expect(() => zodSchema.parse(transformer)).not.toThrow();
-  });
-
-  it("reportCountryList.definition is parsable by rootReport", () => {
-    const zodSchema = rootReport
-    const transformer = libraryAppReports.country[0].definition;
-    console.log("transformer to test=", JSON.stringify(transformer, null, 2));
-    expect(() => zodSchema.parse(transformer)).not.toThrow();
+  describe("reportAuthorList", () => {
+    it("reportBookDetails.definition.combinerTemplates.publisher is parsable by extractorOrCombinerTemplate", () => {
+      const zodSchema = extractorOrCombinerTemplate;
+      const transformer = reportBookDetails.definition.combinerTemplates.publisher;
+      console.log("transformer to test=", JSON.stringify(transformer, null, 2));
+      expect(() => zodSchema.parse(transformer)).not.toThrow();
+    });
   });
 
   it.each(Object.entries(libraryAppReports))(
@@ -129,7 +143,13 @@ describe('check library entities', () => {
           report.parse(reportToTest);
           result = true;
         } catch (e) {
-          console.error(`Error parsing report ${reportName}:`, JSON.stringify(e, null, 2));
+          // console.error(`Error parsing report ${reportName}:`, JSON.stringify(e, null, 2));
+          const firstIssue = (e as any).issues[0];
+          console.error(
+            `Error parsing report ${reportName}, ${firstIssue.code}, path ${
+              firstIssue.path.join(".")
+            }, message ${firstIssue.message}`
+          );
         }
         expect(result, `Report ${reportName} failed to parse`).toBe(true);
       });
