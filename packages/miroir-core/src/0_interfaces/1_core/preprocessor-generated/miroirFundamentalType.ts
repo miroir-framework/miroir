@@ -2506,7 +2506,10 @@ export type ExtractorTemplateByManyToManyRelationReturningObjectList = {
     objectListReferenceAttribute?: string | undefined;
     AttributeOfRootListObjectToCompareToListReferenceUuid?: string | undefined;
 };
-export type ExtractorTemplateReturningObjectList = ExtractorTemplateForObjectListByEntity | ExtractorTemplateByRelationReturningObjectList | ExtractorTemplateByManyToManyRelationReturningObjectList;
+export type ExtractorTemplateReturningObjectList =
+  | ExtractorTemplateForObjectListByEntity
+  | ExtractorTemplateByRelationReturningObjectList
+  | ExtractorTemplateByManyToManyRelationReturningObjectList;
 export type ExtractorTemplateReturningObjectOrObjectList = ExtractorTemplateReturningObject | ExtractorTemplateReturningObjectList;
 export type ExtractorTemplateByExtractorCombiner = {
     extractorTemplateType: "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList";
@@ -2527,10 +2530,18 @@ export type ExtractorTemplateByExtractorWrapperReturningList = {
     definition: Transformer_contextOrParameterReferenceTO_REMOVE[];
 };
 export type ExtractorTemplateByExtractorWrapper = ExtractorTemplateByExtractorWrapperReturningObject | ExtractorTemplateByExtractorWrapperReturningList;
-export type ExtractorOrCombinerTemplate = ExtractorTemplateByExtractorWrapper | ExtractorTemplateExtractorForObjectByDirectReference | ExtractorTemplateReturningObjectList | ExtractorTemplateCombinerForObjectByRelation | ExtractorTemplateByRelationReturningObjectList | ExtractorTemplateByManyToManyRelationReturningObjectList | ExtractorTemplateByExtractorCombiner | {
-    extractorTemplateType: "literal";
-    definition: string;
-};
+export type ExtractorOrCombinerTemplate =
+  | ExtractorTemplateByExtractorWrapper
+  | ExtractorTemplateExtractorForObjectByDirectReference
+  | ExtractorTemplateReturningObjectList
+  | ExtractorTemplateCombinerForObjectByRelation
+  | ExtractorTemplateByRelationReturningObjectList
+  | ExtractorTemplateByManyToManyRelationReturningObjectList
+  | ExtractorTemplateByExtractorCombiner
+  | {
+      extractorTemplateType: "literal";
+      definition: string;
+    };
 export type ExtractorOrCombinerTemplateRecord = {
     [x: string]: ExtractorOrCombinerTemplate;
 };
@@ -8470,7 +8481,17 @@ export const transformer_inner_elementTransformer_transformerForBuild: z.ZodType
 export const transformer_inner_elementTransformer_transformerForRuntime: z.ZodType<Transformer_inner_elementTransformer_transformerForRuntime> = z.lazy(() =>transformerForRuntime);
 export const transformer_inner_elementTransformer_transformerForBuildPlusRuntime: z.ZodType<Transformer_inner_elementTransformer_transformerForBuildPlusRuntime> = z.lazy(() =>transformerForBuildPlusRuntime);
 export const transformerForRuntime_constants: z.ZodType<TransformerForRuntime_constants> = z.union([z.lazy(() =>transformerForRuntime_constant), z.lazy(() =>transformerForRuntime_constantAsExtractor), z.lazy(() =>transformerForRuntime_constantArray), z.lazy(() =>transformerForRuntime_constantBigint), z.lazy(() =>transformerForRuntime_constantBoolean), z.lazy(() =>transformerForRuntime_constantUuid), z.lazy(() =>transformerForRuntime_constantObject), z.lazy(() =>transformerForRuntime_constantNumber), z.lazy(() =>transformerForRuntime_constantString), z.lazy(() =>transformerForRuntime_newUuid)]);
-export const transformerForBuild_InnerReference: z.ZodType<TransformerForBuild_InnerReference> = z.union([z.lazy(() =>transformerForBuild_mustacheStringTemplate), z.lazy(() =>transformerForBuild_constant), z.lazy(() =>transformerForBuild_parameterReference), z.lazy(() =>transformerForBuild_constantUuid), z.lazy(() =>transformerForBuild_constantObject), z.lazy(() =>transformerForBuild_constantString), z.lazy(() =>transformerForBuild_newUuid), z.lazy(() =>transformerForBuild_objectDynamicAccess)]);
+export const transformerForBuild_InnerReference: z.ZodType<TransformerForBuild_InnerReference> =
+  z.union([
+    z.lazy(() => transformerForBuild_mustacheStringTemplate),
+    z.lazy(() => transformerForBuild_constant),
+    z.lazy(() => transformerForBuild_parameterReference),
+    z.lazy(() => transformerForBuild_constantUuid),
+    z.lazy(() => transformerForBuild_constantObject),
+    z.lazy(() => transformerForBuild_constantString),
+    z.lazy(() => transformerForBuild_newUuid),
+    z.lazy(() => transformerForBuild_objectDynamicAccess),
+  ]);
 export const transformerForRuntime_InnerReference: z.ZodType<TransformerForRuntime_InnerReference> = z.union([z.lazy(() =>transformerForRuntime_constant), z.lazy(() =>transformerForRuntime_constantUuid), z.lazy(() =>transformerForRuntime_constantObject), z.lazy(() =>transformerForRuntime_constantString), z.lazy(() =>transformerForRuntime_newUuid), z.lazy(() =>transformerForRuntime_contextReference), z.lazy(() =>transformerForRuntime_objectDynamicAccess)]);
 export const transformerForBuildPlusRuntime_InnerReference: z.ZodType<TransformerForBuildPlusRuntime_InnerReference> = z.union([z.lazy(() =>transformerForBuildPlusRuntime_constant), z.lazy(() =>transformerForBuildPlusRuntime_constantUuid), z.lazy(() =>transformerForBuildPlusRuntime_constantObject), z.lazy(() =>transformerForBuildPlusRuntime_constantString), z.lazy(() =>transformerForBuildPlusRuntime_newUuid), z.lazy(() =>transformerForBuildPlusRuntime_contextReference), z.lazy(() =>transformerForBuildPlusRuntime_objectDynamicAccess)]);
 export const transformerForBuild_dataflowSequence: z.ZodType<TransformerForBuild_dataflowSequence> = z.object({label:z.string().optional(), interpolation:z.literal("build"), transformerType:z.literal("dataflowSequence"), definition:z.array(z.lazy(() =>transformerForBuild))}).strict();
@@ -8619,10 +8640,39 @@ export const objectListReportSection: z.ZodType<ObjectListReportSection> = z.obj
 export const gridReportSection: z.ZodType<GridReportSection> = z.object({type:z.literal("grid"), combinerTemplates:z.lazy(() =>extractorOrCombinerTemplateRecord).optional(), runtimeTransformers:z.record(z.string(),z.lazy(() =>transformerForRuntime)).optional(), selectData:z.lazy(() =>extractorOrCombinerTemplateRecord).optional(), definition:z.array(z.array(z.lazy(() =>reportSection)))}).strict();
 export const listReportSection: z.ZodType<ListReportSection> = z.object({type:z.literal("list"), combinerTemplates:z.lazy(() =>extractorOrCombinerTemplateRecord).optional(), runtimeTransformers:z.record(z.string(),z.lazy(() =>transformerForRuntime)).optional(), selectData:z.lazy(() =>extractorOrCombinerTemplateRecord).optional(), definition:z.array(z.union([z.lazy(() =>objectInstanceReportSection), z.lazy(() =>objectListReportSection)]))}).strict();
 export const reportSection: z.ZodType<ReportSection> = z.union([z.lazy(() =>gridReportSection), z.lazy(() =>listReportSection), z.lazy(() =>objectListReportSection), z.lazy(() =>objectInstanceReportSection)]);
-export const rootReport: z.ZodType<RootReport> = z.object({reportParametersToFetchQueryParametersTransformer:z.record(z.string(),z.any()).optional(), reportParameters:z.record(z.string(),z.any()).optional(), extractorTemplates:z.lazy(() =>extractorOrCombinerTemplateRecord).optional(), extractors:z.lazy(() =>extractorOrCombinerRecord).optional(), combiners:z.lazy(() =>extractorOrCombinerRecord).optional(), combinerTemplates:z.lazy(() =>extractorOrCombinerTemplateRecord).optional(), runtimeTransformers:z.record(z.string(),z.lazy(() =>transformerForRuntime)).optional(), section:z.lazy(() =>reportSection)}).strict();
+export const rootReport: z.ZodType<RootReport> = z
+  .object({
+    reportParametersToFetchQueryParametersTransformer: z.record(z.string(), z.any()).optional(),
+    reportParameters: z.record(z.string(), z.any()).optional(),
+    extractorTemplates: z.lazy(() => extractorOrCombinerTemplateRecord).optional(),
+    extractors: z.lazy(() => extractorOrCombinerRecord).optional(),
+    combiners: z.lazy(() => extractorOrCombinerRecord).optional(),
+    combinerTemplates: z.lazy(() => extractorOrCombinerTemplateRecord).optional(),
+    runtimeTransformers: z
+      .record(
+        z.string(),
+        z.lazy(() => transformerForRuntime)
+      )
+      .optional(),
+    section: z.lazy(() => reportSection),
+  })
+  .strict();
 export const jzodObjectOrReference: z.ZodType<JzodObjectOrReference> = z.union([z.lazy(() =>jzodReference), z.lazy(() =>jzodObject)]);
 export const jzodSchema: z.ZodType<JzodSchema> = z.object({uuid:z.string().uuid(), parentName:z.string(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), name:z.string(), conceptLevel:z.enum(["MetaModel","Model","Data"]).optional(), defaultLabel:z.string().optional(), description:z.string().optional(), definition:z.lazy(() =>jzodObjectOrReference).optional()}).strict();
-export const report: z.ZodType<Report> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data"]).optional(), name:z.string(), defaultLabel:z.string(), type:z.enum(["list","grid"]).optional(), selfApplication:z.string().uuid().optional(), definition:z.lazy(() =>rootReport)}).strict();
+export const report: z.ZodType<Report> = z
+  .object({
+    uuid: z.string().uuid(),
+    parentName: z.string().optional(),
+    parentUuid: z.string().uuid(),
+    parentDefinitionVersionUuid: z.string().uuid().optional(),
+    conceptLevel: z.enum(["MetaModel", "Model", "Data"]).optional(),
+    name: z.string(),
+    defaultLabel: z.string(),
+    type: z.enum(["list", "grid"]).optional(),
+    selfApplication: z.string().uuid().optional(),
+    definition: z.lazy(() => rootReport),
+  })
+  .strict();
 export const metaModel: z.ZodType<MetaModel> = z.object({applicationVersions:z.array(z.lazy(() =>applicationVersion)), applicationVersionCrossEntityDefinition:z.array(z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), conceptLevel:z.enum(["MetaModel","Model","Data"]).optional(), applicationVersion:z.string().uuid(), entityDefinition:z.string().uuid()}).strict()), entities:z.array(z.lazy(() =>entity)), entityDefinitions:z.array(z.lazy(() =>entityDefinition)), jzodSchemas:z.array(z.lazy(() =>jzodSchema)), menus:z.array(z.lazy(() =>menu)), reports:z.array(z.lazy(() =>report))}).strict();
 export const _________________________________configuration_and_bundles_________________________________: z.ZodType<_________________________________configuration_and_bundles_________________________________> = z.never();
 export const indexedDbStoreSectionConfiguration: z.ZodType<IndexedDbStoreSectionConfiguration> = z.object({emulatedServerType:z.literal("indexedDb"), indexedDbName:z.string()}).strict();
@@ -8644,17 +8694,55 @@ export const queryFailed: z.ZodType<QueryFailed> = z.object({queryFailure:z.enum
 export const extractorTemplateCombinerForObjectByRelation: z.ZodType<ExtractorTemplateCombinerForObjectByRelation> = z.object({label:z.string().optional(), applicationSection:z.lazy(() =>applicationSection).optional(), parentName:z.string().optional(), parentUuid:z.union([z.string(), z.lazy(() =>transformerForBuild_InnerReference)]), extractorTemplateType:z.literal("combinerForObjectByRelation"), objectReference:z.lazy(() =>transformerForRuntime_InnerReference), AttributeOfObjectToCompareToReferenceUuid:z.string()}).strict();
 export const extractorTemplateExtractorForObjectByDirectReference: z.ZodType<ExtractorTemplateExtractorForObjectByDirectReference> = z.object({label:z.string().optional(), applicationSection:z.lazy(() =>applicationSection).optional(), parentName:z.string().optional(), parentUuid:z.union([z.string(), z.lazy(() =>transformerForBuild_InnerReference)]), extractorTemplateType:z.literal("extractorForObjectByDirectReference"), instanceUuid:z.lazy(() =>transformerForBuild_InnerReference)}).strict();
 export const extractorTemplateReturningObject: z.ZodType<ExtractorTemplateReturningObject> = z.union([z.lazy(() =>extractorTemplateCombinerForObjectByRelation), z.lazy(() =>extractorTemplateExtractorForObjectByDirectReference)]);
-export const extractorTemplateForObjectListByEntity: z.ZodType<ExtractorTemplateForObjectListByEntity> = z.object({label:z.string().optional(), applicationSection:z.lazy(() =>applicationSection).optional(), parentName:z.string().optional(), parentUuid:z.union([z.string(), z.lazy(() =>transformerForBuild_InnerReference)]), extractorTemplateType:z.literal("extractorTemplateForObjectListByEntity"), orderBy:z.object({attributeName:z.string(), direction:z.enum(["ASC","DESC"]).optional()}).strict().optional(), filter:z.object({attributeName:z.string(), value:z.lazy(() =>transformerForRuntime_constantString)}).strict().optional()}).strict();
+export const extractorTemplateForObjectListByEntity: z.ZodType<ExtractorTemplateForObjectListByEntity> =
+  z
+    .object({
+      label: z.string().optional(),
+      applicationSection: z.lazy(() => applicationSection).optional(),
+      parentName: z.string().optional(),
+      parentUuid: z.union([z.string(), z.lazy(() => transformerForBuild_InnerReference)]),
+      extractorTemplateType: z.literal("extractorTemplateForObjectListByEntity"),
+      orderBy: z
+        .object({ attributeName: z.string(), direction: z.enum(["ASC", "DESC"]).optional() })
+        .strict()
+        .optional(),
+      filter: z
+        .object({
+          attributeName: z.string(),
+          value: z.lazy(() => transformerForRuntime_constantString),
+        })
+        .strict()
+        .optional(),
+    })
+    .strict();
 export const extractorTemplateByRelationReturningObjectList: z.ZodType<ExtractorTemplateByRelationReturningObjectList> = z.object({label:z.string().optional(), applicationSection:z.lazy(() =>applicationSection).optional(), parentName:z.string().optional(), parentUuid:z.union([z.string(), z.lazy(() =>transformerForBuild_InnerReference)]), extractorTemplateType:z.literal("combinerByRelationReturningObjectList"), orderBy:z.object({attributeName:z.string(), direction:z.enum(["ASC","DESC"]).optional()}).strict().optional(), objectReference:z.lazy(() =>transformerForRuntime_InnerReference), objectReferenceAttribute:z.string().optional(), AttributeOfListObjectToCompareToReferenceUuid:z.string()}).strict();
 export const extractorTemplateByManyToManyRelationReturningObjectList: z.ZodType<ExtractorTemplateByManyToManyRelationReturningObjectList> = z.object({label:z.string().optional(), applicationSection:z.lazy(() =>applicationSection).optional(), parentName:z.string().optional(), parentUuid:z.union([z.string(), z.lazy(() =>transformerForBuild_InnerReference)]), extractorTemplateType:z.literal("combinerByManyToManyRelationReturningObjectList"), orderBy:z.object({attributeName:z.string(), direction:z.enum(["ASC","DESC"]).optional()}).strict().optional(), objectListReference:z.lazy(() =>transformerForRuntime_contextReference), objectListReferenceAttribute:z.string().optional(), AttributeOfRootListObjectToCompareToListReferenceUuid:z.string().optional()}).strict();
-export const extractorTemplateReturningObjectList: z.ZodType<ExtractorTemplateReturningObjectList> = z.union([z.lazy(() =>extractorTemplateForObjectListByEntity), z.lazy(() =>extractorTemplateByRelationReturningObjectList), z.lazy(() =>extractorTemplateByManyToManyRelationReturningObjectList)]);
+export const extractorTemplateReturningObjectList: z.ZodType<ExtractorTemplateReturningObjectList> =
+  z.union([
+    z.lazy(() => extractorTemplateForObjectListByEntity),
+    z.lazy(() => extractorTemplateByRelationReturningObjectList),
+    z.lazy(() => extractorTemplateByManyToManyRelationReturningObjectList),
+  ]);
 export const extractorTemplateReturningObjectOrObjectList: z.ZodType<ExtractorTemplateReturningObjectOrObjectList> = z.union([z.lazy(() =>extractorTemplateReturningObject), z.lazy(() =>extractorTemplateReturningObjectList)]);
 export const extractorTemplateByExtractorCombiner: z.ZodType<ExtractorTemplateByExtractorCombiner> = z.object({extractorTemplateType:z.literal("extractorCombinerByHeteronomousManyToManyReturningListOfObjectList"), rootExtractorOrReference:z.union([z.lazy(() =>extractorOrCombinerTemplate), z.string()]), subQueryTemplate:z.object({query:z.lazy(() =>extractorOrCombinerTemplate), rootQueryObjectTransformer:z.lazy(() =>recordOfTransformers)}).strict()}).strict();
 export const extractorTemplateByExtractorWrapperReturningObject: z.ZodType<ExtractorTemplateByExtractorWrapperReturningObject> = z.object({extractorTemplateType:z.literal("extractorTemplateByExtractorWrapperReturningObject"), definition:z.record(z.string(),z.lazy(() =>transformer_contextOrParameterReferenceTO_REMOVE))}).strict();
 export const extractorTemplateByExtractorWrapperReturningList: z.ZodType<ExtractorTemplateByExtractorWrapperReturningList> = z.object({extractorTemplateType:z.literal("extractorTemplateByExtractorWrapperReturningList"), definition:z.array(z.lazy(() =>transformer_contextOrParameterReferenceTO_REMOVE))}).strict();
 export const extractorTemplateByExtractorWrapper: z.ZodType<ExtractorTemplateByExtractorWrapper> = z.union([z.lazy(() =>extractorTemplateByExtractorWrapperReturningObject), z.lazy(() =>extractorTemplateByExtractorWrapperReturningList)]);
-export const extractorOrCombinerTemplate: z.ZodType<ExtractorOrCombinerTemplate> = z.union([z.lazy(() =>extractorTemplateByExtractorWrapper), z.lazy(() =>extractorTemplateExtractorForObjectByDirectReference), z.lazy(() =>extractorTemplateReturningObjectList), z.lazy(() =>extractorTemplateCombinerForObjectByRelation), z.lazy(() =>extractorTemplateByRelationReturningObjectList), z.lazy(() =>extractorTemplateByManyToManyRelationReturningObjectList), z.lazy(() =>extractorTemplateByExtractorCombiner), z.object({extractorTemplateType:z.literal("literal"), definition:z.string()}).strict()]);
-export const extractorOrCombinerTemplateRecord: z.ZodType<ExtractorOrCombinerTemplateRecord> = z.record(z.string(),z.lazy(() =>extractorOrCombinerTemplate));
+export const extractorOrCombinerTemplate: z.ZodType<ExtractorOrCombinerTemplate> = z.union([
+  z.lazy(() => extractorTemplateByExtractorWrapper),
+  z.lazy(() => extractorTemplateExtractorForObjectByDirectReference),
+  z.lazy(() => extractorTemplateReturningObjectList),
+  z.lazy(() => extractorTemplateCombinerForObjectByRelation),
+  z.lazy(() => extractorTemplateByRelationReturningObjectList),
+  z.lazy(() => extractorTemplateByManyToManyRelationReturningObjectList),
+  z.lazy(() => extractorTemplateByExtractorCombiner),
+  z.object({ extractorTemplateType: z.literal("literal"), definition: z.string() }).strict(),
+]);
+export const extractorOrCombinerTemplateRecord: z.ZodType<ExtractorOrCombinerTemplateRecord> =
+  z.record(
+    z.string(),
+    z.lazy(() => extractorOrCombinerTemplate)
+  );
 export const extractorOrCombinerContextReference: z.ZodType<ExtractorOrCombinerContextReference> = z.object({extractorOrCombinerType:z.literal("extractorOrCombinerContextReference"), extractorOrCombinerContextReference:z.string()}).strict();
 export const combinerForObjectByRelation: z.ZodType<CombinerForObjectByRelation> = z.object({label:z.string().optional(), applicationSection:z.lazy(() =>applicationSection).optional(), parentName:z.string().optional(), parentUuid:z.string().uuid(), extractorOrCombinerType:z.literal("combinerForObjectByRelation"), objectReference:z.string(), AttributeOfObjectToCompareToReferenceUuid:z.string()}).strict();
 export const extractorForObjectByDirectReference: z.ZodType<ExtractorForObjectByDirectReference> = z.object({label:z.string().optional(), applicationSection:z.lazy(() =>applicationSection).optional(), parentName:z.string().optional(), parentUuid:z.string().uuid(), extractorOrCombinerType:z.literal("extractorForObjectByDirectReference"), instanceUuid:z.string().uuid()}).strict();
