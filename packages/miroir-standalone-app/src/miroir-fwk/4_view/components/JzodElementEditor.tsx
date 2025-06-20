@@ -6,6 +6,7 @@ import ExpandMore from "@mui/icons-material/ExpandMore";
 import InfoOutlined from "@mui/icons-material/InfoOutlined";
 import Clear from "@mui/icons-material/Clear";
 import Checkbox from "@mui/material/Checkbox";
+import TextField from '@mui/material/TextField';
 
 import {
   EntityAttribute,
@@ -446,14 +447,34 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
       }
       case "string": {
         return (
-          <input
-            type="text"
+          // <span
+          //   contentEditable
+          //   style={{ minWidth: "100px", width: "auto", maxWidth: "100%", boxSizing: "border-box" }}
+          // >
+          <TextField
+            // fullWidth
+            variant="standard"
             role="textbox"
             id={props.rootLesslistKey}
             key={props.rootLesslistKey}
-            style={{ width: "100%" }}
             {...formik.getFieldProps(props.rootLesslistKey)}
           />
+          // <input
+          //   type="text"
+          //   role="textbox"
+          //   id={props.rootLesslistKey}
+          //   key={props.rootLesslistKey}
+          //   {...formik.getFieldProps(props.rootLesslistKey)}
+          //   style={{
+          //     minWidth: "100px",
+          //     width: "fit-content",
+          //     maxWidth: "100%",
+          //     boxSizing: "border-box",
+          //   }}
+          //   />
+          // style={{ width: "100%" }}
+          // style={{ minWidth: "100px", maxWidth:"100%", boxSizing: "border-box" }}
+          // </span>
         );
       }
       case "uuid": {
@@ -481,16 +502,20 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
             </StyledSelect>
           );
         } else {
-          return (
-            <input
-              type="text"
-              id={props.rootLesslistKey}
-              key={props.rootLesslistKey}
-              role="textbox"
-              style={{ width: "100%" }}
-              {...formik.getFieldProps(props.rootLesslistKey)}
-            />
-          );
+            return (
+              <input
+                type="text"
+                id={props.rootLesslistKey}
+                key={props.rootLesslistKey}
+                role="textbox"
+                style={{
+                  // width: "100%",
+                  minWidth: "100px",
+                  boxSizing: "border-box",
+                }}
+                {...formik.getFieldProps(props.rootLesslistKey)}
+              />
+            );
         }
       }
       case "literal": {

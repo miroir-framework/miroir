@@ -1145,7 +1145,15 @@ export type Transformer_inner_elementTransformer_transformerForBuild = Transform
 export type Transformer_inner_elementTransformer_transformerForRuntime = TransformerForRuntime;
 export type Transformer_inner_elementTransformer_transformerForBuildPlusRuntime = TransformerForBuildPlusRuntime;
 export type TransformerForRuntime_constants = TransformerForRuntime_constant | TransformerForRuntime_constantAsExtractor | TransformerForRuntime_constantArray | TransformerForRuntime_constantBigint | TransformerForRuntime_constantBoolean | TransformerForRuntime_constantUuid | TransformerForRuntime_constantObject | TransformerForRuntime_constantNumber | TransformerForRuntime_constantString | TransformerForRuntime_newUuid;
-export type TransformerForBuild_InnerReference = TransformerForBuild_mustacheStringTemplate | TransformerForBuild_constant | TransformerForBuild_parameterReference | TransformerForBuild_constantUuid | TransformerForBuild_constantObject | TransformerForBuild_constantString | TransformerForBuild_newUuid | TransformerForBuild_objectDynamicAccess;
+export type TransformerForBuild_InnerReference =
+  | TransformerForBuild_mustacheStringTemplate
+  | TransformerForBuild_constant
+  | TransformerForBuild_parameterReference
+  | TransformerForBuild_constantUuid
+  | TransformerForBuild_constantObject
+  | TransformerForBuild_constantString
+  | TransformerForBuild_newUuid
+  | TransformerForBuild_objectDynamicAccess;
 export type TransformerForRuntime_InnerReference = TransformerForRuntime_constant | TransformerForRuntime_constantUuid | TransformerForRuntime_constantObject | TransformerForRuntime_constantString | TransformerForRuntime_newUuid | TransformerForRuntime_contextReference | TransformerForRuntime_objectDynamicAccess;
 export type TransformerForBuildPlusRuntime_InnerReference = TransformerForBuildPlusRuntime_constant | TransformerForBuildPlusRuntime_constantUuid | TransformerForBuildPlusRuntime_constantObject | TransformerForBuildPlusRuntime_constantString | TransformerForBuildPlusRuntime_newUuid | TransformerForBuildPlusRuntime_contextReference | TransformerForBuildPlusRuntime_objectDynamicAccess;
 export type TransformerForBuild_dataflowSequence = {
@@ -1407,7 +1415,35 @@ export type TransformerForBuild_unique = {
     applyTo: any[] | Transformer_inner_referenced_transformerForBuild;
     attribute: string;
 };
-export type TransformerForBuild = TransformerForBuild_menu_addItem | TransformerForBuild_constant | TransformerForBuild_constantArray | TransformerForBuild_constantBoolean | TransformerForBuild_constantNumber | TransformerForBuild_constantObject | TransformerForBuild_constantString | TransformerForBuild_constantUuid | TransformerForBuild_constantAsExtractor | TransformerForBuild_count | TransformerForBuild_dataflowObject | TransformerForBuild_freeObjectTemplate | TransformerForBuild_listPickElement | TransformerForBuild_listReducerToIndexObject | TransformerForBuild_listReducerToSpreadObject | TransformerForBuild_mapperListToList | TransformerForBuild_mustacheStringTemplate | TransformerForBuild_newUuid | TransformerForBuild_objectAlter | TransformerForBuild_objectDynamicAccess | TransformerForBuild_objectEntries | TransformerForBuild_objectValues | TransformerForBuild_object_fullTemplate | TransformerForBuild_parameterReference | TransformerForBuild_unique | TransformerForBuild_constantBigint | TransformerForBuild_InnerReference | TransformerForBuild_dataflowSequence;
+export type TransformerForBuild =
+  | TransformerForBuild_menu_addItem
+  | TransformerForBuild_constant
+  | TransformerForBuild_constantArray
+  | TransformerForBuild_constantBoolean
+  | TransformerForBuild_constantNumber
+  | TransformerForBuild_constantObject
+  | TransformerForBuild_constantString
+  | TransformerForBuild_constantUuid
+  | TransformerForBuild_constantAsExtractor
+  | TransformerForBuild_count
+  | TransformerForBuild_dataflowObject
+  | TransformerForBuild_freeObjectTemplate
+  | TransformerForBuild_listPickElement
+  | TransformerForBuild_listReducerToIndexObject
+  | TransformerForBuild_listReducerToSpreadObject
+  | TransformerForBuild_mapperListToList
+  | TransformerForBuild_mustacheStringTemplate
+  | TransformerForBuild_newUuid
+  | TransformerForBuild_objectAlter
+  | TransformerForBuild_objectDynamicAccess
+  | TransformerForBuild_objectEntries
+  | TransformerForBuild_objectValues
+  | TransformerForBuild_object_fullTemplate
+  | TransformerForBuild_parameterReference
+  | TransformerForBuild_unique
+  | TransformerForBuild_constantBigint
+  | TransformerForBuild_InnerReference
+  | TransformerForBuild_dataflowSequence;
 export type TransformerForRuntime_menu_addItem = {
     label?: string | undefined;
     interpolation: "runtime";

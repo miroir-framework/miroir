@@ -425,6 +425,10 @@ export {
   TransformerForRuntime_unique,
   UndoRedoAction,
   undoRedoAction,
+  ZodParseError,
+  zodParseError,
+  ZodParseErrorIssue,
+  zodParseErrorIssue,
 } from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 export {
@@ -653,6 +657,7 @@ export {
 } from "./1_core/Model.js";
 export {} from "./1_core/Report";
 export {} from "./1_core/Report.js";
+export { zodErrorFirstIssueLeaf, zodErrorDeepestIssueLeaves } from "./1_core/zodParseErrorHandler";
 export {
   asyncApplyExtractorTransformerInMemory,
   asyncExtractEntityInstanceListWithObjectListExtractor,

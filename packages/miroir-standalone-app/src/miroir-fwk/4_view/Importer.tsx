@@ -2403,9 +2403,9 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                         rawJzodSchema={rawSchema}
                         resolvedElementJzodSchema={resolvedJzodSchema}
                         foreignKeyObjects={emptyObject}
-                        handleChange={formik.handleChange as any}
-                        formik={formik}
-                        setFormState={setFormState}
+                        // handleChange={formik.handleChange as any}
+                        // formik={formik}
+                        // setFormState={setFormState}
                         // formState={formState}
                       />
                       <button type="submit" name={pageLabel} form={"form." + pageLabel}>submit form.{pageLabel}</button>

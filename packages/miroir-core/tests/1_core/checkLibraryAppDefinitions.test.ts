@@ -73,6 +73,7 @@ const libraryAppReports = {
   publisher: [reportPublisherList],
 };
 
+// TODO: check menus, check actions / services, check tests
 describe('check library entities', () => {
   describe("check library entities definitions", () => {
     it.each(Object.entries(libraryAppEntityDefinitions))(

@@ -36,8 +36,6 @@ export interface JzodElementEditorHooks {
   setCodeMirrorIsValidJson: React.Dispatch<React.SetStateAction<boolean>>;
   displayAsStructuredElement: boolean;
   setDisplayAsStructuredElement: React.Dispatch<React.SetStateAction<boolean>>;
-  // displayEditor: boolean;
-  // setDisplayEditor: React.Dispatch<React.SetStateAction<boolean>>;
   // currentValue jzod schema
   localResolvedElementJzodSchemaBasedOnValue: JzodElement;
   recursivelyUnfoldedRawSchema: JzodUnion_RecursivelyUnfold_ReturnType | undefined;
@@ -100,6 +98,9 @@ export function getJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
   // const [displayEditor, setDisplayEditor] = useState(true);
 
 
+  // ################################################################################################
+  // ################################################################################################
+  // ################################################################################################
   // ################################################################################################
   // value schema
   const returnedLocalResolvedElementJzodSchemaBasedOnValue:
@@ -226,6 +227,10 @@ export function getJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
       }
     }, [unfoldedRawSchema, context.miroirFundamentalJzodSchema, currentModel, miroirMetaModel]);
 
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
   // ##############################################################################################
   // ########################## unionInformation #########################
   const unionInformation = useMemo(() => {

@@ -5,6 +5,7 @@ import { jzodToZod } from "@miroir-framework/jzod";
 // import { zodSchemaToTsTypeText } from "@miroir-framework/jzod-ts";
 
 import {
+  transformerForBuild,
   ZodParseError,
   zodParseError,
   ZodParseErrorIssue,
@@ -12,31 +13,33 @@ import {
   ZodParseErrorIssueInvalidUnion,
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
+// import test_createEntityAndReportFromSpreadsheetAndUpdateMenu from "../../src/assets/miroir_data/c37625c7-0b35-4d6a-811d-8181eb978301/ffe6ab3c-8296-4293-8aaf-ebbad1f0ac9a.json";
+
 import { zodParseErrorJzodSchema } from "../../src/0_interfaces/1_core/zodParseError";
 import zodParseErrorExample from "./zodParseErrorExample.json";
 import { zodErrorDeepestIssueLeaves, zodErrorFirstIssueLeaf } from "../../src/1_core/zodParseErrorHandler";
 
 describe("zodParseError", () => {
-  // it("zodParseError type parses actual Zod parse error example", () => {
-  //   zodParseErrorIssue.parse(zodParseErrorExample.issues[0].unionErrors[0].issues[0]);
-  //   zodParseErrorIssue.parse(zodParseErrorExample.issues[0].unionErrors[0].issues[1]);
-  //   zodParseErrorIssue.parse(zodParseErrorExample.issues[0].unionErrors[0].issues[2]);
-  //   zodParseErrorIssue.parse(zodParseErrorExample.issues[0].unionErrors[0].issues[3]);
-  //   // console.log(
-  //   //   "zodParseErrorExample.issues[0].unionErrors[0].issues[4]",
-  //   //   JSON.stringify(zodParseErrorExample.issues[0].unionErrors[0].issues[4], null, 2)
-  //   // );
-  //   zodParseErrorIssue.parse(zodParseErrorExample.issues[0].unionErrors[0].issues[4]);
-  //   z.array(zodParseErrorIssue).parse(zodParseErrorExample.issues[0].unionErrors[0].issues);
-  //   z.array(zodParseError).parse(zodParseErrorExample.issues[0].unionErrors);
-  //   z.array(zodParseErrorIssue).parse(zodParseErrorExample.issues);
-  //   zodParseError.parse(zodParseErrorExample);
-  // });
+  it("zodParseError type parses actual Zod parse error example", () => {
+    zodParseErrorIssue.parse(zodParseErrorExample.issues[0].unionErrors[0].issues[0]);
+    zodParseErrorIssue.parse(zodParseErrorExample.issues[0].unionErrors[0].issues[1]);
+    zodParseErrorIssue.parse(zodParseErrorExample.issues[0].unionErrors[0].issues[2]);
+    zodParseErrorIssue.parse(zodParseErrorExample.issues[0].unionErrors[0].issues[3]);
+    // console.log(
+    //   "zodParseErrorExample.issues[0].unionErrors[0].issues[4]",
+    //   JSON.stringify(zodParseErrorExample.issues[0].unionErrors[0].issues[4], null, 2)
+    // );
+    zodParseErrorIssue.parse(zodParseErrorExample.issues[0].unionErrors[0].issues[4]);
+    z.array(zodParseErrorIssue).parse(zodParseErrorExample.issues[0].unionErrors[0].issues);
+    z.array(zodParseError).parse(zodParseErrorExample.issues[0].unionErrors);
+    z.array(zodParseErrorIssue).parse(zodParseErrorExample.issues);
+    zodParseError.parse(zodParseErrorExample);
+  });
 
-  // it("zodParseError type parses actual error", () => {
-  //   const zodParseErrorZodSchema = jzodToZod(zodParseErrorJzodSchema as any);
-  //   zodParseErrorZodSchema.parse(zodParseErrorExample);
-  // });
+  it("zodParseError type parses actual error", () => {
+    const zodParseErrorZodSchema = jzodToZod(zodParseErrorJzodSchema as any);
+    zodParseErrorZodSchema.parse(zodParseErrorExample);
+  });
 
   describe("zodErrorFirstIssueLeaf", () => {
     it("should return undefined when the error has no issues", () => {
@@ -367,6 +370,41 @@ describe("zodParseError", () => {
         issues: [issue1, issue2]
       });
     });
+
+    describe("real world zodParseErrorExample", () => {
+      it("should clenan-up error on parsing TransformerForBuild", () => {
+        const zodSchema = transformerForBuild;
+        const transformer = "model"; //conceptLevel as a string, not a full-blown object
+        // test_createEntityAndReportFromSpreadsheetAndUpdateMenu.definition.testCompositeActions[
+        //     "create new Entity and reports from spreadsheet"
+        //   ].compositeAction.templates.newEntityListReport.definition.conceptLevel
+        let zodParseError: ZodParseError | undefined = undefined;
+        try {
+          zodSchema.parse(transformer);
+          expect(true).toBe(true); // Pass the test if parsing does not throw an error
+        } catch (error) {
+          // const zodParseError = error as ZodError;
+          zodParseError = error as ZodParseError;
+        }
+        expect(zodParseError).toBeDefined();
+        if (!zodParseError) {
+          throw new Error("zodParseError is undefined, test should not have reached this point");
+        }
+        const issueLeaves = zodErrorDeepestIssueLeaves(zodParseError);
+        console.error("Zod parse error :", JSON.stringify(zodErrorDeepestIssueLeaves(zodParseError), null, 2));
+        expect(issueLeaves).toEqual({
+          depth: 0,
+          issues: [
+            {
+              code: "invalid_type",
+              expected: "object",
+              received: "string",
+              path: [],
+              message: "Expected object, received string",
+            },
+          ],
+        });
+      });
+    });
   });
-  
 });

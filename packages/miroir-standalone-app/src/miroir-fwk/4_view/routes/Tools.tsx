@@ -514,7 +514,9 @@ export const ToolsPage: React.FC<any> = (
         //   ],
         // );
     
-        const globalTestSuiteResults = TestSuiteContext.getTestSuiteResult(Object.keys(testSuitesForBuildPlusRuntimeCompositeAction)[0]);
+        const globalTestSuiteResults = TestSuiteContext.getTestSuiteResult(
+          Object.keys(testSuitesForBuildPlusRuntimeCompositeAction)[0]
+        );
         setTestResults(globalTestSuiteResults);
         log.info("testResults", globalTestSuiteResults);
 
@@ -586,7 +588,7 @@ export const ToolsPage: React.FC<any> = (
           <div>could not display test results!</div>
         )}
       </div>
-      <div>
+      {/* <div>
         {
           dialogOuterFormObject ? (
             <MyReactCodeMirror
@@ -599,7 +601,7 @@ export const ToolsPage: React.FC<any> = (
             <></>
           )
         }
-      </div>
+      </div> */}
       <div>
         <Formik
           enableReinitialize={true}
@@ -630,9 +632,10 @@ export const ToolsPage: React.FC<any> = (
                       rawJzodSchema={rawSchema}
                       resolvedElementJzodSchema={resolvedJzodSchema}
                       foreignKeyObjects={emptyObject}
-                      handleChange={formik.handleChange as any}
-                      formik={formik}
-                      setFormState={setFormState}
+                      indentLevel={0}
+                      // handleChange={formik.handleChange as any}
+                      // formik={formik}
+                      // setFormState={setFormState}
                       // formState={formState}
                     />
                     <button type="submit" name={pageLabel} form={"form." + pageLabel}>

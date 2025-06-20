@@ -53,6 +53,13 @@ const pages: MiroirMenuItem[] = [
     "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9",
     "icon": "category"
   },
+  {
+    "label": "check",
+    "section": "model",
+    "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", //not used
+    "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9", //not used
+    "icon": "category"
+  },
 ];
 const settings = ['Setting1', 'Setting2', 'Setting3', 'Setting4'];
 

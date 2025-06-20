@@ -8,6 +8,9 @@ safeResolvePathOnObject,
 resolvePathOnObject,
 ResultAccessPath,
 } from '../src/tools';
+import { mergeIfUnique, pushIfUnique } from '../src/1_core/tools';
+import { ZodParseErrorIssue } from '../dist';
+import path from 'path';
 
 describe("stringTuple", () => {
   it("returns the tuple as is", () => {
@@ -113,4 +116,178 @@ describe("resolvePathOnObject", () => {
     const path: ResultAccessPath = [{ type: "map", key: "foo" }];
     expect(resolvePathOnObject(arr, path)).toEqual([1, 2]);
   });
+});
+
+describe("pushIfUnique", () => {
+  it("adds the item when the array is empty", () => {
+    const array: number[] = [];
+    pushIfUnique(array, 1);
+    expect(array).toEqual([1]);
+  });
+
+  it("adds the item when it doesn't exist in the array", () => {
+    const array = [1, 2, 3];
+    pushIfUnique(array, 4);
+    expect(array).toEqual([1, 2, 3, 4]);
+  });
+
+  it("doesn't add the item when it already exists in the array", () => {
+    const array = [1, 2, 3];
+    pushIfUnique(array, 2);
+    expect(array).toEqual([1, 2, 3]);
+  });
+
+  it("handles objects with deep equality check", () => {
+    const array = [{ a: 1 }, { b: 2 }];
+    pushIfUnique(array, { a: 1 });
+    expect(array).toEqual([{ a: 1 }, { b: 2 }]);
+  });
+
+  it("adds different objects", () => {
+    const array = [{ a: 1 }, { b: 2 }];
+    pushIfUnique(array, { c: 3 } as any);
+    expect(array).toEqual([{ a: 1 }, { b: 2 }, { c: 3 }]);
+  });
+
+  it("works with complex nested objects", () => {
+    const array = [{ a: { b: [1, 2] } }];
+    pushIfUnique(array, { a: { b: [1, 2] } });
+    pushIfUnique(array, { a: { b: [1, 3] } });
+    expect(array).toEqual([{ a: { b: [1, 2] } }, { a: { b: [1, 3] } }]);
+  });
+
+  it("handles Zod ParseError objects", () => {
+    const array: any[] = [];
+    // const error = new Error("Test error");
+    // (error as any).issues = [{ code: "test", message: "Test issue" }];
+    const errors = [
+      {
+        code: "invalid_type",
+        expected: "object",
+        received: "string",
+        path: [],
+        message: "Expected object, received string",
+      },
+      {
+        code: "invalid_type",
+        expected: "object",
+        received: "string",
+        path: [],
+        message: "Expected object, received string",
+      },
+      {
+        code: "invalid_type",
+        expected: "object",
+        received: "string",
+        path: [],
+        message: "Expected object, received string",
+      },
+    ];
+    errors.forEach(error => {
+      // error.issues = [error];
+      pushIfUnique(array, error);
+    });
+    // pushIfUnique(array, error);
+    expect(array).toEqual([
+      {
+        code: "invalid_type",
+        expected: "object",
+        received: "string",
+        path: [],
+        message: "Expected object, received string",
+      },
+    ]);
+  });
+});
+describe("mergeIfUnique", () => {
+  it("adds all items to an empty array", () => {
+    const array: number[] = [];
+    mergeIfUnique(array, [1, 2, 3]);
+    expect(array).toEqual([1, 2, 3]);
+  });
+
+  it("only adds items that don't exist in the array", () => {
+    const array = [1, 2, 3];
+    mergeIfUnique(array, [3, 4, 5]);
+    expect(array).toEqual([1, 2, 3, 4, 5]);
+  });
+
+  it("doesn't modify the array when all items already exist", () => {
+    const array = [1, 2, 3];
+    mergeIfUnique(array, [1, 2, 3]);
+    expect(array).toEqual([1, 2, 3]);
+  });
+
+  it("handles objects with deep equality check", () => {
+    const array = [{ a: 1 }, { b: 2 }];
+    mergeIfUnique(array, [{ a: 1 }, { c: 3 } as any]);
+    expect(array).toEqual([{ a: 1 }, { b: 2 }, { c: 3 }]);
+  });
+
+  it("works with duplicate items in the input array", () => {
+    const array: number[] = [];
+    mergeIfUnique(array, [1, 2, 2, 3, 3, 3]);
+    expect(array).toEqual([1, 2, 3]);
+  });
+
+  it("handles complex nested objects", () => {
+    const array = [{ a: { b: [1, 2] } }];
+    mergeIfUnique(array, [
+      { a: { b: [1, 2] } },
+      { a: { b: [1, 3] } },
+      { a: { b: [1, 4] } }
+    ]);
+    expect(array).toEqual([
+      { a: { b: [1, 2] } },
+      { a: { b: [1, 3] } },
+      { a: { b: [1, 4] } }
+    ]);
+  });
+
+  it("works with empty input array", () => {
+    const array = [1, 2, 3];
+    mergeIfUnique(array, []);
+    expect(array).toEqual([1, 2, 3]);
+  });
+
+  it("handles Zod ParseError objects", () => {
+    const array: ZodParseErrorIssue[] = [
+      {
+        code: "invalid_type",
+        expected: "object",
+        received: "string",
+        path: [],
+        message: "Expected object, received string",
+      },
+    ];
+    // const error = new Error("Test error");
+    // (error as any).issues = [{ code: "test", message: "Test issue" }];
+    const errors: ZodParseErrorIssue[] = [
+      {
+        code: "invalid_type",
+        expected: "object",
+        received: "string",
+        path: [],
+        message: "Expected object, received string",
+      },
+      {
+        code: "invalid_type",
+        expected: "object",
+        received: "string",
+        path: [],
+        message: "Expected object, received string",
+      },
+    ];
+    mergeIfUnique(array, errors);
+    expect(array).toEqual([
+      {
+        code: "invalid_type",
+        expected: "object",
+        received: "string",
+        path: [],
+        message: "Expected object, received string",
+      },
+    ]);
+  });
+
 });

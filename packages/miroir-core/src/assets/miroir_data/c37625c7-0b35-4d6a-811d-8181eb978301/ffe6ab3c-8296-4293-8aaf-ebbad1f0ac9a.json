@@ -17,210 +17,258 @@
           "actionName": "sequence",
           "templates": {
             "createEntity_newEntity": {
-              "uuid": {
-                "transformerType": "parameterReference",
-                "interpolation": "build",
-                "referenceName": "newEntityUuid"
-              },
-              "parentUuid": {
-                "transformerType": "parameterReference",
-                "interpolation": "build",
-                "referencePath": ["entityEntity", "uuid"]
-              },
-              "selfApplication": {
-                "transformerType": "parameterReference",
-                "interpolation": "build",
-                "referenceName": "testSelfApplicationUuid"
-              },
-              "description": {
-                "transformerType": "parameterReference",
-                "interpolation": "build",
-                "referenceName": "createEntity_newEntityDescription"
-              },
-              "name": {
-                "transformerType": "parameterReference",
-                "interpolation": "build",
-                "referenceName": "newEntityName"
+              "transformerType": "freeObjectTemplate",
+              "interpolation": "build",
+              "definition": {
+                "uuid": {
+                  "transformerType": "parameterReference",
+                  "interpolation": "build",
+                  "referenceName": "newEntityUuid"
+                },
+                "parentUuid": {
+                  "transformerType": "parameterReference",
+                  "interpolation": "build",
+                  "referencePath": ["entityEntity", "uuid"]
+                },
+                "selfApplication": {
+                  "transformerType": "parameterReference",
+                  "interpolation": "build",
+                  "referenceName": "testSelfApplicationUuid"
+                },
+                "description": {
+                  "transformerType": "parameterReference",
+                  "interpolation": "build",
+                  "referenceName": "createEntity_newEntityDescription"
+                },
+                "name": {
+                  "transformerType": "parameterReference",
+                  "interpolation": "build",
+                  "referenceName": "newEntityName"
+                }
               }
             },
             "createEntity_newEntityDefinition": {
-              "name": {
-                "transformerType": "parameterReference",
-                "interpolation": "build",
-                "referenceName": "newEntityName"
-              },
-              "uuid": {
-                "transformerType": "parameterReference",
-                "interpolation": "build",
-                "referenceName": "newEntityDefinitionUuid"
-              },
-              "parentName": "EntityDefinition",
-              "parentUuid": {
-                "transformerType": "parameterReference",
-                "interpolation": "build",
-                "referencePath": ["entityEntityDefinition", "uuid"]
-              },
-              "entityUuid": {
-                "transformerType": "parameterReference",
-                "interpolation": "build",
-                "referencePath": ["createEntity_newEntity", "uuid"]
-              },
-              "conceptLevel": "Model",
-              "defaultInstanceDetailsReportUuid": {
-                "transformerType": "parameterReference",
-                "interpolation": "build",
-                "referenceName": "defaultInstanceDetailsReportUuid"
-              },
-              "jzodSchema": {
-                "transformerType": "parameterReference",
-                "interpolation": "build",
-                "referenceName": "newEntityJzodSchema"
+              "transformerType": "freeObjectTemplate",
+              "interpolation": "build",
+              "definition": {
+                "name": {
+                  "transformerType": "parameterReference",
+                  "interpolation": "build",
+                  "referenceName": "newEntityName"
+                },
+                "uuid": {
+                  "transformerType": "parameterReference",
+                  "interpolation": "build",
+                  "referenceName": "newEntityDefinitionUuid"
+                },
+                "parentName": "EntityDefinition",
+                "parentUuid": {
+                  "transformerType": "parameterReference",
+                  "interpolation": "build",
+                  "referencePath": ["entityEntityDefinition", "uuid"]
+                },
+                "entityUuid": {
+                  "transformerType": "parameterReference",
+                  "interpolation": "build",
+                  "referencePath": ["createEntity_newEntity", "uuid"]
+                },
+                "conceptLevel": "Model",
+                "defaultInstanceDetailsReportUuid": {
+                  "transformerType": "parameterReference",
+                  "interpolation": "build",
+                  "referenceName": "defaultInstanceDetailsReportUuid"
+                },
+                "jzodSchema": {
+                  "transformerType": "parameterReference",
+                  "interpolation": "build",
+                  "referenceName": "newEntityJzodSchema"
+                }
               }
             },
             "newEntityListReport": {
-              "uuid": {
-                "transformerType": "parameterReference",
-                "interpolation": "build",
-                "referenceName": "createEntity_newEntityListReportUuid"
-              },
-              "selfApplication": {
-                "transformerType": "parameterReference",
-                "interpolation": "build",
-                "referenceName": "testSelfApplicationUuid"
-              },
-              "parentName": "Report",
-              "parentUuid": {
-                "transformerType": "mustacheStringTemplate",
-                "interpolation": "build",
-                "definition": "{{entityReport.uuid}}"
-              },
-              "conceptLevel": "Model",
-              "name": {
-                "transformerType": "mustacheStringTemplate",
-                "interpolation": "build",
-                "definition": "{{newEntityName}}List"
-              },
-              "defaultLabel": {
-                "transformerType": "mustacheStringTemplate",
-                "interpolation": "build",
-                "definition": "List of {{newEntityName}}s"
-              },
-              "type": "list",
+              "transformerType": "freeObjectTemplate",
+              "interpolation": "build",
               "definition": {
-                "extractors": {
-                  "instanceList": {
-                    "extractorOrCombinerType": "extractorByEntityReturningObjectList",
-                    "parentName": {
-                      "transformerType": "parameterReference",
-                      "interpolation": "build",
-                      "referenceName": "newEntityName"
-                    },
-                    "parentUuid": {
-                      "transformerType": "mustacheStringTemplate",
-                      "interpolation": "build",
-                      "definition": "{{createEntity_newEntity.uuid}}"
-                    }
-                  }
+                "uuid": {
+                  "transformerType": "parameterReference",
+                  "interpolation": "build",
+                  "referenceName": "createEntity_newEntityListReportUuid"
                 },
-                "section": {
-                  "type": "objectListReportSection",
+                "selfApplication": {
+                  "transformerType": "parameterReference",
+                  "interpolation": "build",
+                  "referenceName": "testSelfApplicationUuid"
+                },
+                "parentName": {
+                  "transformerType": "constant",
+                  "interpolation": "build",
+                  "value": "Report"
+                },
+                "parentUuid": {
+                  "transformerType": "mustacheStringTemplate",
+                  "interpolation": "build",
+                  "definition": "{{entityReport.uuid}}"
+                },
+                "conceptLevel": {
+                  "transformerType": "constant",
+                  "interpolation": "build",
+                  "value": "Report"
+                },
+                "name": {
+                  "transformerType": "mustacheStringTemplate",
+                  "interpolation": "build",
+                  "definition": "{{newEntityName}}List"
+                },
+                "defaultLabel": {
+                  "transformerType": "mustacheStringTemplate",
+                  "interpolation": "build",
+                  "definition": "List of {{newEntityName}}s"
+                },
+                "type": {
+                  "transformerType": "constant",
+                  "interpolation": "build",
+                  "value": "list"
+                },
+                "definition": {
+                  "transformerType": "freeObjectTemplate",
+                  "interpolation": "build",
                   "definition": {
-                    "label": {
-                      "transformerType": "mustacheStringTemplate",
+                    "extractors": {
+                      "transformerType": "freeObjectTemplate",
                       "interpolation": "build",
-                      "definition": "{{newEntityName}}s"
-                    },
-                    "parentUuid": {
-                      "transformerType": "mustacheStringTemplate",
-                      "interpolation": "build",
-                      "definition": "{{createEntity_newEntity.uuid}}"
-                    },
-                    "fetchedDataReference": "instanceList"
+                      "definition": {
+                        "instanceList": {
+                          "extractorOrCombinerType": "extractorByEntityReturningObjectList",
+                          "parentName": {
+                            "transformerType": "parameterReference",
+                            "interpolation": "build",
+                            "referenceName": "newEntityName"
+                          },
+                          "parentUuid": {
+                            "transformerType": "mustacheStringTemplate",
+                            "interpolation": "build",
+                            "definition": "{{createEntity_newEntity.uuid}}"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "section": {
+                    "transformerType": "freeObjectTemplate",
+                    "interpolation": "build",
+                    "definition": {
+                      "type": {
+                        "transformerType": "constant",
+                        "interpolation": "build",
+                        "value": "objectListReportSection"
+                      },
+                      "definition": {
+                        "label": {
+                          "transformerType": "mustacheStringTemplate",
+                          "interpolation": "build",
+                          "definition": "{{newEntityName}}s"
+                        },
+                        "parentUuid": {
+                          "transformerType": "mustacheStringTemplate",
+                          "interpolation": "build",
+                          "definition": "{{createEntity_newEntity.uuid}}"
+                        },
+                        "fetchedDataReference": {
+                          "transformerType": "constant",
+                          "interpolation": "build",
+                          "value": "instanceList"
+                        }
+                      }
+                    }
                   }
                 }
               }
             },
             "newEntityDetailsReport": {
-              "uuid": {
-                "transformerType": "parameterReference",
-                "interpolation": "build",
-                "referenceName": "createEntity_newEntityDetailsReportUuid"
-              },
-              "selfApplication": {
-                "transformerType": "parameterReference",
-                "interpolation": "build",
-                "referenceName": "testSelfApplicationUuid"
-              },
-              "parentName": {
-                "transformerType": "mustacheStringTemplate",
-                "interpolation": "build",
-                "definition": "{{entityReport.name}}"
-              },
-              "parentUuid": {
-                "transformerType": "mustacheStringTemplate",
-                "interpolation": "build",
-                "definition": "{{entityReport.uuid}}"
-              },
-              "conceptLevel": "Model",
-              "name": {
-                "transformerType": "mustacheStringTemplate",
-                "interpolation": "build",
-                "definition": "{{newEntityName}}Details"
-              },
-              "defaultLabel": {
-                "transformerType": "mustacheStringTemplate",
-                "interpolation": "build",
-                "definition": "Details of {{newEntityName}}"
-              },
+              "transformerType": "freeObjectTemplate",
+              "interpolation": "build",
               "definition": {
-                "extractorTemplates": {
-                  "elementToDisplay": {
-                    "transformerType": "constant",
-                    "interpolation": "build",
-                    "value": {
-                      "extractorTemplateType": "extractorForObjectByDirectReference",
-                      "parentName": {
-                        "transformerType": "contextReference",
-                        "interpolation": "build",
-                        "referenceName": "newEntityName"
-                      },
-                      "parentUuid": {
-                        "transformerType": "mustacheStringTemplate",
-                        "interpolation": "build",
-                        "definition": "{{newEntityUuid}}"
-                      },
-                      "instanceUuid": {
-                        "transformerType": "constant",
-                        "interpolation": "runtime",
-                        "value": {
-                          "transformerType": "contextReference",
-                          "interpolation": "runtime",
-                          "referenceName": "instanceUuid"
-                        }
-                      }
-                    }
-                  }
+                "uuid": {
+                  "transformerType": "parameterReference",
+                  "interpolation": "build",
+                  "referenceName": "createEntity_newEntityDetailsReportUuid"
                 },
-                "section": {
-                  "type": "list",
-                  "definition": [
-                    {
-                      "type": "objectInstanceReportSection",
-                      "definition": {
-                        "label": {
-                          "transformerType": "mustacheStringTemplate",
+                "selfApplication": {
+                  "transformerType": "parameterReference",
+                  "interpolation": "build",
+                  "referenceName": "testSelfApplicationUuid"
+                },
+                "parentName": {
+                  "transformerType": "mustacheStringTemplate",
+                  "interpolation": "build",
+                  "definition": "{{entityReport.name}}"
+                },
+                "parentUuid": {
+                  "transformerType": "mustacheStringTemplate",
+                  "interpolation": "build",
+                  "definition": "{{entityReport.uuid}}"
+                },
+                "conceptLevel": "Model",
+                "name": {
+                  "transformerType": "mustacheStringTemplate",
+                  "interpolation": "build",
+                  "definition": "{{newEntityName}}Details"
+                },
+                "defaultLabel": {
+                  "transformerType": "mustacheStringTemplate",
+                  "interpolation": "build",
+                  "definition": "Details of {{newEntityName}}"
+                },
+                "definition": {
+                  "extractorTemplates": {
+                    "elementToDisplay": {
+                      "transformerType": "constant",
+                      "interpolation": "build",
+                      "value": {
+                        "extractorTemplateType": "extractorForObjectByDirectReference",
+                        "parentName": {
+                          "transformerType": "contextReference",
                           "interpolation": "build",
-                          "definition": "My {{newEntityName}}"
+                          "referenceName": "newEntityName"
                         },
                         "parentUuid": {
                           "transformerType": "mustacheStringTemplate",
                           "interpolation": "build",
                           "definition": "{{newEntityUuid}}"
                         },
-                        "fetchedDataReference": "elementToDisplay"
+                        "instanceUuid": {
+                          "transformerType": "constant",
+                          "interpolation": "runtime",
+                          "value": {
+                            "transformerType": "contextReference",
+                            "interpolation": "runtime",
+                            "referenceName": "instanceUuid"
+                          }
+                        }
                       }
                     }
-                  ]
+                  },
+                  "section": {
+                    "type": "list",
+                    "definition": [
+                      {
+                        "type": "objectInstanceReportSection",
+                        "definition": {
+                          "label": {
+                            "transformerType": "mustacheStringTemplate",
+                            "interpolation": "build",
+                            "definition": "My {{newEntityName}}"
+                          },
+                          "parentUuid": {
+                            "transformerType": "mustacheStringTemplate",
+                            "interpolation": "build",
+                            "definition": "{{newEntityUuid}}"
+                          },
+                          "fetchedDataReference": "elementToDisplay"
+                        }
+                      }
+                    ]
+                  }
                 }
               }
             }

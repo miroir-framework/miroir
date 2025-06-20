@@ -1,4 +1,5 @@
 import { ZodParseError, ZodParseErrorIssue } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { mergeIfUnique, pushIfUnique } from "./tools";
 
 export function zodErrorFirstIssueLeaf(error:ZodParseError): undefined | ZodParseErrorIssue {
   if (error.issues.length === 0) {
@@ -32,10 +33,12 @@ export function zodErrorDeepestIssueLeaves(error: ZodParseError): {depth: number
         const subLeaves = zodErrorDeepestIssueLeaves(unionError);
         if (subLeaves.depth > deepestDepth) {
           deepestLeaves.length = 0; // Clear previous leaves
-          deepestLeaves.push(...subLeaves.issues);
+          // deepestLeaves.push(...subLeaves.issues);
+          mergeIfUnique(deepestLeaves, subLeaves.issues);
           deepestDepth = subLeaves.depth;
         } else if (subLeaves.depth === deepestDepth) {
-          deepestLeaves.push(...subLeaves.issues);
+          // deepestLeaves.push(...subLeaves.issues);
+          mergeIfUnique(deepestLeaves, subLeaves.issues);
         }
       }
     } else {
@@ -44,7 +47,8 @@ export function zodErrorDeepestIssueLeaves(error: ZodParseError): {depth: number
         deepestDepth = issue.path.length;
       }
       if (issue.path.length === deepestDepth) {
-        deepestLeaves.push(issue);
+        // deepestLeaves.push(issue);
+        pushIfUnique(deepestLeaves, issue);
       }
     }
   }
