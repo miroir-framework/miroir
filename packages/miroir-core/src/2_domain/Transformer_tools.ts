@@ -50,7 +50,11 @@ export function transformerInterfaceFromDefinition(
   referenceMap: Record<string, string> = {},
   optionalInterpolation: boolean = false
 ): JzodElement {
-  let innerReferenceRelativePath: "transformer_inner_referenced_transformerForBuild" | "transformer_inner_referenced_transformerForRuntime" | "transformer_inner_referenced_transformerForBuildPlusRuntime" | undefined = undefined;
+  let innerReferenceRelativePath:
+    | "transformer_inner_referenced_transformerForBuild"
+    | "transformer_inner_referenced_transformerForRuntime"
+    | "transformer_inner_referenced_transformerForBuildPlusRuntime"
+    | undefined = undefined;
   switch (target) {
     case "build":
       innerReferenceRelativePath = "transformer_inner_referenced_transformerForBuild";

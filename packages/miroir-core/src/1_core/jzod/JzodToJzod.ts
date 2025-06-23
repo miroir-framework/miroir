@@ -63,8 +63,13 @@ export interface ApplyCarryOnSchemaOnLevelReturnType { resultSchema: JzodElement
  * 
  * @param baseSchema 
  * @param carryOnSchema 
+ * @param alwaysPropagate if true, the result is a union of the baseSchema and the carryOnSchema
  * @param applyOnFirstLevel if true, the result is a union of the baseSchema and the carryOnSchema
+ * @param carryOnPrefix the prefix to use for carryOn references, if any
+ * @param localReferencePrefix the prefix to use for local references, if any
+ * @param suffixForReferences the suffix to use for references, if any
  * @param resolveJzodReference the reference resolution function. Corollary: the definition of absolute references must be known at carryOn-application time.
+ * @param convertedReferences the references already converted, to be used for reference resolution
  * @returns transformed @param baseSchema joined with @param carryOnSchema
  */
 export function applyLimitedCarryOnSchemaOnLevel(

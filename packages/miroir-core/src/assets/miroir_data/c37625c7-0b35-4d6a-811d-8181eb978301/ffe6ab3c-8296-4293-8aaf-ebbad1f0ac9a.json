@@ -109,11 +109,7 @@
                   "interpolation": "build",
                   "definition": "{{entityReport.uuid}}"
                 },
-                "conceptLevel": {
-                  "transformerType": "constant",
-                  "interpolation": "build",
-                  "value": "Report"
-                },
+                "conceptLevel": "model",
                 "name": {
                   "transformerType": "mustacheStringTemplate",
                   "interpolation": "build",
@@ -124,11 +120,7 @@
                   "interpolation": "build",
                   "definition": "List of {{newEntityName}}s"
                 },
-                "type": {
-                  "transformerType": "constant",
-                  "interpolation": "build",
-                  "value": "list"
-                },
+                "type": "list",
                 "definition": {
                   "transformerType": "freeObjectTemplate",
                   "interpolation": "build",
@@ -151,32 +143,32 @@
                           }
                         }
                       }
-                    }
-                  },
-                  "section": {
-                    "transformerType": "freeObjectTemplate",
-                    "interpolation": "build",
-                    "definition": {
-                      "type": {
-                        "transformerType": "constant",
-                        "interpolation": "build",
-                        "value": "objectListReportSection"
-                      },
+                    },
+                    "section": {
+                      "transformerType": "freeObjectTemplate",
+                      "interpolation": "build",
                       "definition": {
-                        "label": {
-                          "transformerType": "mustacheStringTemplate",
-                          "interpolation": "build",
-                          "definition": "{{newEntityName}}s"
-                        },
-                        "parentUuid": {
-                          "transformerType": "mustacheStringTemplate",
-                          "interpolation": "build",
-                          "definition": "{{createEntity_newEntity.uuid}}"
-                        },
-                        "fetchedDataReference": {
+                        "type": {
                           "transformerType": "constant",
                           "interpolation": "build",
-                          "value": "instanceList"
+                          "value": "objectListReportSection"
+                        },
+                        "definition": {
+                          "label": {
+                            "transformerType": "mustacheStringTemplate",
+                            "interpolation": "build",
+                            "definition": "{{newEntityName}}s"
+                          },
+                          "parentUuid": {
+                            "transformerType": "mustacheStringTemplate",
+                            "interpolation": "build",
+                            "definition": "{{createEntity_newEntity.uuid}}"
+                          },
+                          "fetchedDataReference": {
+                            "transformerType": "constant",
+                            "interpolation": "build",
+                            "value": "instanceList"
+                          }
                         }
                       }
                     }

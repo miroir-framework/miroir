@@ -661,7 +661,7 @@ function handleTransformer_object_fullTemplate(
       { rawLeftValue: Domain2QueryReturnType<DomainElementSuccess>; finalLeftValue: Domain2QueryReturnType<DomainElementSuccess> },
       { renderedRightValue: Domain2QueryReturnType<DomainElementSuccess>; finalRightValue: Domain2QueryReturnType<DomainElementSuccess> }
     ] => {
-      const rawLeftValue: Domain2QueryReturnType<DomainElementSuccess> = typeof innerEntry.attributeKey == "object" && innerEntry.attributeKey.transformerType
+      const rawLeftValue: Domain2QueryReturnType<DomainElementSuccess> = typeof innerEntry.attributeKey == "object" && Object.hasOwn(innerEntry.attributeKey,"transformerType")
         ? defaultTransformers.transformer_extended_apply(
             step,
             objectName, // is this correct? or should it be undefined?
@@ -2393,7 +2393,7 @@ export function transformer_extended_apply_wrapper(
     if (result instanceof Domain2ElementFailed) {
       log.error(
         "transformer_extended_apply_wrapper failed for",
-        label??transformer.transformerType,
+        label??(transformer as any)["transformerType"],
         "step",
         step,
         "transformer",

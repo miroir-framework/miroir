@@ -3121,6 +3121,7 @@ export const miroirFundamentalJzodSchema = {
       "transformerForBuild": {
         "type": "union",
         "discriminator": "transformerType",
+        "optInDiscriminator": true,
         "definition": [
           {
             "type": "schemaReference",
@@ -4365,6 +4366,7 @@ export const miroirFundamentalJzodSchema = {
       },
       "transformerForRuntime": {
         "type": "union",
+        "optInDiscriminator": true,
         "discriminator": "transformerType",
         "definition": [
           {
@@ -5630,6 +5632,7 @@ export const miroirFundamentalJzodSchema = {
       },
       "transformerForBuildPlusRuntime": {
         "type": "union",
+        "optInDiscriminator": true,
         "discriminator": [
           "transformerType",
           "interpolation"
@@ -27439,6 +27442,7 @@ export const miroirFundamentalJzodSchema = {
       },
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime": {
         "type": "union",
+        "optInDiscriminator": true,
         "discriminator": [
           "transformerType",
           "interpolation"
@@ -27777,6 +27781,7 @@ export const miroirFundamentalJzodSchema = {
       },
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime": {
         "type": "union",
+        "optInDiscriminator": true,
         "discriminator": "transformerType",
         "definition": [
           {
@@ -32262,6 +32267,7 @@ export const miroirFundamentalJzodSchema = {
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild": {
         "type": "union",
         "discriminator": "transformerType",
+        "optInDiscriminator": true,
         "definition": [
           {
             "type": "schemaReference",
@@ -57564,6 +57570,7 @@ export const miroirFundamentalJzodSchema = {
       "transformerForBuildCarryOnObject": {
         "type": "union",
         "discriminator": "transformerType",
+        "optInDiscriminator": true,
         "definition": [
           {
             "type": "schemaReference",
@@ -57766,6 +57773,7 @@ export const miroirFundamentalJzodSchema = {
       "transformerForRuntimeCarryOnObject": {
         "type": "union",
         "discriminator": "transformerType",
+        "optInDiscriminator": true,
         "definition": [
           {
             "type": "schemaReference",
@@ -57967,6 +57975,7 @@ export const miroirFundamentalJzodSchema = {
       },
       "transformerForBuildPlusRuntimeCarryOnObject": {
         "type": "union",
+        "optInDiscriminator": true,
         "discriminator": [
           "transformerType",
           "interpolation"

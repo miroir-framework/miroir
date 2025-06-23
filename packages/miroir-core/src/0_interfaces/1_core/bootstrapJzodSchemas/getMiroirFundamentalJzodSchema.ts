@@ -630,6 +630,7 @@ export function getMiroirFundamentalJzodSchema(
           type: "union",
           // discriminator: ["transformerType", "interpolation"],
           discriminator: "transformerType",
+          optInDiscriminator: true,
           definition: [
             ...transformerForBuildNames.map((e: any) => ({
               type: "schemaReference",
@@ -707,6 +708,7 @@ export function getMiroirFundamentalJzodSchema(
         // },
         transformerForRuntime: {
           type: "union",
+          optInDiscriminator: true,
           // discriminator: ["transformerType", "interpolation"],
           discriminator: "transformerType",
           definition: [
@@ -800,6 +802,7 @@ export function getMiroirFundamentalJzodSchema(
         transformerForBuildPlusRuntime_unique: miroirTransformersForBuildPlusRuntime.transformer_unique,
         transformerForBuildPlusRuntime: {
           type: "union",
+          optInDiscriminator: true,
           discriminator: ["transformerType", "interpolation"],
           definition: [
             {
@@ -3656,8 +3659,10 @@ export function getMiroirFundamentalJzodSchema(
   );
 
   const {
-    carryOnDomainActionLocalizedInnerResolutionStoreForExtendedSchemas: buildPlusRuntimeDomainActionLocalizedInnerResolutionStoreForExtendedSchemas,
-    domainActionLocalizedInnerResolutionStorePlainReferences: buildPlusRuntimeDomainActionLocalizedInnerResolutionStorePlainReferences,
+    carryOnDomainActionLocalizedInnerResolutionStoreForExtendedSchemas:
+      buildPlusRuntimeDomainActionLocalizedInnerResolutionStoreForExtendedSchemas,
+    domainActionLocalizedInnerResolutionStorePlainReferences:
+      buildPlusRuntimeDomainActionLocalizedInnerResolutionStorePlainReferences,
     carryOnDomainActionSchemaBuilder: buildPlusRuntimeDomainActionSchemaBuilder,
   } = createDomainActionCarryOnSchemaResolver(
     domainAction,
@@ -3672,7 +3677,7 @@ export function getMiroirFundamentalJzodSchema(
     "buildPlusRuntimeDomainAction_",
     false, // alwaysPropagate
     absoluteMiroirFundamentalJzodSchema,
-    extendedSchemas,
+    extendedSchemas
   );
 
 

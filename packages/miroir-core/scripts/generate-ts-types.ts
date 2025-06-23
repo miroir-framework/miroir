@@ -117,13 +117,119 @@ async function generateTsTypeFileFromJzod(
         )
       : [];
   // console.log("generateTsTypeFileFromJzodSchemaInParallel generateTypeAnotationsForSchema:", generateTypeAnotationsForSchema);
+
+  const headerForZodImports = `import { ZodType, ZodTypeAny, z } from "zod";
+export type TransformerForBuild =
+    | string
+    | number
+    | boolean
+    | TransformerForBuild[]
+    | (
+      {
+        [P in string]: TransformerForBuild;
+      }
+       & {
+        [P in "transformerType" | "interpolation"]?: never;
+      }
+    )
+  | TransformerForBuild_menu_addItem
+  | TransformerForBuild_constant
+  | TransformerForBuild_constantArray
+  | TransformerForBuild_constantBoolean
+  | TransformerForBuild_constantNumber
+  | TransformerForBuild_constantObject
+  | TransformerForBuild_constantString
+  | TransformerForBuild_constantUuid
+  | TransformerForBuild_constantAsExtractor
+  | TransformerForBuild_count
+  | TransformerForBuild_dataflowObject
+  | TransformerForBuild_freeObjectTemplate
+  | TransformerForBuild_listPickElement
+  | TransformerForBuild_listReducerToIndexObject
+  | TransformerForBuild_listReducerToSpreadObject
+  | TransformerForBuild_mapperListToList
+  | TransformerForBuild_mustacheStringTemplate
+  | TransformerForBuild_newUuid
+  | TransformerForBuild_objectAlter
+  | TransformerForBuild_objectDynamicAccess
+  | TransformerForBuild_objectEntries
+  | TransformerForBuild_objectValues
+  | TransformerForBuild_object_fullTemplate
+  | TransformerForBuild_parameterReference
+  | TransformerForBuild_unique
+  | TransformerForBuild_constantBigint
+  | TransformerForBuild_InnerReference
+  | TransformerForBuild_dataflowSequence
+;
+
+export const transformerForBuild: z.ZodType<TransformerForBuild> = z.lazy(() => {
+  // Define the record schema without transformerType
+  const recordWithoutTransformerType = z.record(
+    z.string(),
+    transformerForBuild
+  ).refine(
+    // obj => !('transformerType' in obj || 'interpolation' in obj),
+    obj => !('transformerType' in obj),
+    {
+      message: "Object must not contain 'transformerType' key",
+      path: ['transformerType']
+    }
+  );
+  
+  // Define the transformer types with specific transformerType values
+  
+  // Combine all possible types
+  return z.union([
+    z.string(),
+    z.number(),
+    z.boolean(),
+    z.array(transformerForBuild),
+    recordWithoutTransformerType,
+    transformerForBuild_menu_addItem,
+    transformerForBuild_constant,
+    transformerForBuild_constantArray,
+    transformerForBuild_constantBoolean,
+    transformerForBuild_constantNumber,
+    transformerForBuild_constantObject,
+    transformerForBuild_constantString,
+    transformerForBuild_constantUuid,
+    transformerForBuild_constantAsExtractor,
+    transformerForBuild_count,
+    transformerForBuild_dataflowObject,
+    transformerForBuild_freeObjectTemplate,
+    transformerForBuild_listPickElement,
+    transformerForBuild_listReducerToIndexObject,
+    transformerForBuild_listReducerToSpreadObject,
+    transformerForBuild_mapperListToList,
+    transformerForBuild_mustacheStringTemplate,
+    transformerForBuild_newUuid,
+    transformerForBuild_objectAlter,
+    transformerForBuild_objectDynamicAccess,
+    transformerForBuild_objectEntries,
+    transformerForBuild_objectValues,
+    transformerForBuild_object_fullTemplate,
+    transformerForBuild_parameterReference,
+    transformerForBuild_unique,
+    transformerForBuild_constantBigint,
+    transformerForBuild_InnerReference,
+    transformerForBuild_dataflowSequence,
+  ]);
+});
+
+export type TransformerForRuntime = TransformerForRuntime_menu_addItem | TransformerForRuntime_constant | TransformerForRuntime_constantArray | TransformerForRuntime_constantBoolean | TransformerForRuntime_constantNumber | TransformerForRuntime_constantObject | TransformerForRuntime_constantString | TransformerForRuntime_constantUuid | TransformerForRuntime_constantAsExtractor | TransformerForRuntime_contextReference | TransformerForRuntime_count | TransformerForRuntime_dataflowObject | TransformerForRuntime_freeObjectTemplate | TransformerForRuntime_listPickElement | TransformerForRuntime_listReducerToIndexObject | TransformerForRuntime_listReducerToSpreadObject | TransformerForRuntime_mapperListToList | TransformerForRuntime_mustacheStringTemplate | TransformerForRuntime_newUuid | TransformerForRuntime_objectAlter | TransformerForRuntime_objectDynamicAccess | TransformerForRuntime_objectEntries | TransformerForRuntime_objectValues | TransformerForRuntime_object_fullTemplate | TransformerForRuntime_unique | TransformerForRuntime_constantBigint | TransformerForRuntime_InnerReference | TransformerForRuntime_dataflowSequence;
+export type TransformerForBuildPlusRuntime = TransformerForBuild | TransformerForBuildPlusRuntime_menu_addItem | TransformerForBuildPlusRuntime_constant | TransformerForBuildPlusRuntime_constantArray | TransformerForBuildPlusRuntime_constantBoolean | TransformerForBuildPlusRuntime_constantNumber | TransformerForBuildPlusRuntime_constantObject | TransformerForBuildPlusRuntime_constantString | TransformerForBuildPlusRuntime_constantUuid | TransformerForBuildPlusRuntime_constantAsExtractor | TransformerForBuildPlusRuntime_contextReference | TransformerForBuildPlusRuntime_count | TransformerForBuildPlusRuntime_dataflowObject | TransformerForBuildPlusRuntime_freeObjectTemplate | TransformerForBuildPlusRuntime_listPickElement | TransformerForBuildPlusRuntime_listReducerToIndexObject | TransformerForBuildPlusRuntime_listReducerToSpreadObject | TransformerForBuildPlusRuntime_mapperListToList | TransformerForBuildPlusRuntime_mustacheStringTemplate | TransformerForBuildPlusRuntime_newUuid | TransformerForBuildPlusRuntime_objectAlter | TransformerForBuildPlusRuntime_objectDynamicAccess | TransformerForBuildPlusRuntime_objectEntries | TransformerForBuildPlusRuntime_objectValues | TransformerForBuildPlusRuntime_object_fullTemplate | TransformerForBuildPlusRuntime_unique | TransformerForBuildPlusRuntime_constantBigint | TransformerForBuildPlusRuntime_InnerReference | TransformerForBuildPlusRuntime_dataflowSequence;
+
+export const transformerForRuntime: z.ZodType<TransformerForRuntime> = z.union([z.lazy(() =>transformerForRuntime_menu_addItem), z.lazy(() =>transformerForRuntime_constant), z.lazy(() =>transformerForRuntime_constantArray), z.lazy(() =>transformerForRuntime_constantBoolean), z.lazy(() =>transformerForRuntime_constantNumber), z.lazy(() =>transformerForRuntime_constantObject), z.lazy(() =>transformerForRuntime_constantString), z.lazy(() =>transformerForRuntime_constantUuid), z.lazy(() =>transformerForRuntime_constantAsExtractor), z.lazy(() =>transformerForRuntime_contextReference), z.lazy(() =>transformerForRuntime_count), z.lazy(() =>transformerForRuntime_dataflowObject), z.lazy(() =>transformerForRuntime_freeObjectTemplate), z.lazy(() =>transformerForRuntime_listPickElement), z.lazy(() =>transformerForRuntime_listReducerToIndexObject), z.lazy(() =>transformerForRuntime_listReducerToSpreadObject), z.lazy(() =>transformerForRuntime_mapperListToList), z.lazy(() =>transformerForRuntime_mustacheStringTemplate), z.lazy(() =>transformerForRuntime_newUuid), z.lazy(() =>transformerForRuntime_objectAlter), z.lazy(() =>transformerForRuntime_objectDynamicAccess), z.lazy(() =>transformerForRuntime_objectEntries), z.lazy(() =>transformerForRuntime_objectValues), z.lazy(() =>transformerForRuntime_object_fullTemplate), z.lazy(() =>transformerForRuntime_unique), z.lazy(() =>transformerForRuntime_constantBigint), z.lazy(() =>transformerForRuntime_InnerReference), z.lazy(() =>transformerForRuntime_dataflowSequence)]);
+export const transformerForBuildPlusRuntime: z.ZodType<TransformerForBuildPlusRuntime> = z.union([z.lazy(() =>transformerForBuild), z.lazy(() =>transformerForBuildPlusRuntime_menu_addItem), z.lazy(() =>transformerForBuildPlusRuntime_constant), z.lazy(() =>transformerForBuildPlusRuntime_constantArray), z.lazy(() =>transformerForBuildPlusRuntime_constantBoolean), z.lazy(() =>transformerForBuildPlusRuntime_constantNumber), z.lazy(() =>transformerForBuildPlusRuntime_constantObject), z.lazy(() =>transformerForBuildPlusRuntime_constantString), z.lazy(() =>transformerForBuildPlusRuntime_constantUuid), z.lazy(() =>transformerForBuildPlusRuntime_constantAsExtractor), z.lazy(() =>transformerForBuildPlusRuntime_contextReference), z.lazy(() =>transformerForBuildPlusRuntime_count), z.lazy(() =>transformerForBuildPlusRuntime_dataflowObject), z.lazy(() =>transformerForBuildPlusRuntime_freeObjectTemplate), z.lazy(() =>transformerForBuildPlusRuntime_listPickElement), z.lazy(() =>transformerForBuildPlusRuntime_listReducerToIndexObject), z.lazy(() =>transformerForBuildPlusRuntime_listReducerToSpreadObject), z.lazy(() =>transformerForBuildPlusRuntime_mapperListToList), z.lazy(() =>transformerForBuildPlusRuntime_mustacheStringTemplate), z.lazy(() =>transformerForBuildPlusRuntime_newUuid), z.lazy(() =>transformerForBuildPlusRuntime_objectAlter), z.lazy(() =>transformerForBuildPlusRuntime_objectDynamicAccess), z.lazy(() =>transformerForBuildPlusRuntime_objectEntries), z.lazy(() =>transformerForBuildPlusRuntime_objectValues), z.lazy(() =>transformerForBuildPlusRuntime_object_fullTemplate), z.lazy(() =>transformerForBuildPlusRuntime_unique), z.lazy(() =>transformerForBuildPlusRuntime_constantBigint), z.lazy(() =>transformerForBuildPlusRuntime_InnerReference), z.lazy(() =>transformerForBuildPlusRuntime_dataflowSequence)]);
+
+`
   const generateTypesStart = Date.now();
   const newFileContentsNotFormated = jzodToTsCode(
     jzodSchemaVariableName,
     jzodElement,
     context,
     true, // exportPrefix
-    true, // headerForZodImports
+    headerForZodImports,// true, // headerForZodImports
     generateTypeAnotationsForSchema,
     extendedTsTypesText,
   );
@@ -186,6 +292,20 @@ async function generateSchemas(generateFundamentalJzodSchema = true) {
         Date.now() - generateSchemasStartTime,
         "ms"
       );
+      const filteredMiroirFundamentalJzodSchemaContext = Object.fromEntries(
+        Object.entries(miroirFundamentalJzodSchema.definition.context).filter(
+          ([key, value]) =>
+            ![
+              "transformerForBuild",
+              "transformerForRuntime",
+              "transformerForBuildPlusRuntime",
+            ].includes(key)
+        )
+      ) as JzodElement;
+      console.log(
+        "miroir-core generateSchemas filteredMiroirFundamentalJzodSchemaContext:",
+        JSON.stringify(Object.keys(filteredMiroirFundamentalJzodSchemaContext), null, 2)
+      );
       const writeFundamentalJzodSchemaStartTime = Date.now();
       const miroirFundamentalJzodSchemaJson =
         "export const miroirFundamentalJzodSchema = " +
@@ -236,7 +356,8 @@ async function generateSchemas(generateFundamentalJzodSchema = true) {
       const extendedSchemas = preExtendedSchemas.concat(carryOnExtendedSchemas);
 
       const extendedJzodSchemaContext: [string, JzodElement][] = Object.entries(
-        miroirFundamentalJzodSchema.definition.context
+        // miroirFundamentalJzodSchema.definition.context
+        filteredMiroirFundamentalJzodSchemaContext
       ).filter((e) => extendedSchemas.includes(e[0])) as any;
       // const exendedJzodSchemaContext = Object.fromEntries(Object.entries(miroirFundamentalJzodSchema.definition.context));
       // console.log("miroir-core generateSchemas exendedJzodSchemaContext:", exendedJzodSchemaContext);
@@ -248,8 +369,12 @@ async function generateSchemas(generateFundamentalJzodSchema = true) {
         },
       };
       console.log(
-        "miroir-core generateSchemas extendedZodSchema:",
-        Object.keys(extendedZodSchema)
+        "miroir-core generateSchemas filteredMiroirFundamentalJzodSchema:",
+        JSON.stringify(Object.keys(filteredMiroirFundamentalJzodSchemaContext), null, 2)
+      );
+      console.log(
+        "miroir-core generateSchemas extendedZodSchema 1:",
+        JSON.stringify(Object.keys(extendedZodSchema.context), null, 2)
       );
       // console.log("miroir-core generateSchemas extendedZodSchema:", JSON.stringify(extendedZodSchema, null, 2));
 
@@ -262,6 +387,10 @@ async function generateSchemas(generateFundamentalJzodSchema = true) {
         );
       });
 
+      console.log(
+        "miroir-core generateSchemas extendedZodTextAndZodSchemaRecord:",
+        JSON.stringify(Object.keys(extendedZodTextAndZodSchemaRecord), null, 2)
+      );
 
       const extendedZodTextAndZodSchemaRecordForTsGenerationContext: ZodTextAndZodSchemaRecord = {};
       extendedJzodSchemaContext.forEach((e) => {
@@ -285,7 +414,12 @@ async function generateSchemas(generateFundamentalJzodSchema = true) {
           ].includes(e)
       );
       // console.log("generateSchemas generateTypeAnotationsForSchema:", generateTypeAnotationsForSchema);
-      
+      console.log(
+        "miroir-core generateSchemas extendedZodSchema 2:",
+        JSON.stringify(Object.keys(extendedZodSchema.context), null, 2)
+      );
+
+      console.log("miroir-core calling jzodToTsCode.");
       const extendedJzodSchemasTsTypes = jzodToTsCode(
         extendedSchemaVariableName,
         extendedZodSchema,
@@ -297,7 +431,8 @@ async function generateSchemas(generateFundamentalJzodSchema = true) {
 
       console.log("miroir-core generateSchemas extendedTypes generated.");
       const nonExtendedJzodSchemaContext: ZodTextAndZodSchemaRecord = Object.fromEntries(
-        Object.entries(miroirFundamentalJzodSchema.definition.context).filter(
+        // Object.entries(miroirFundamentalJzodSchema.definition.context).filter(
+        Object.entries(filteredMiroirFundamentalJzodSchemaContext).filter(
           (e) => !extendedSchemas.includes(e[0])
         )
       ) as any;
