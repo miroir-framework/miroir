@@ -6,16 +6,16 @@ import type {
   JzodSchema,
   JzodUnion,
   MetaModel,
-} from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+} from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 // } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 // import { unionChoices } from "./JzodUnfoldSchemaForValue";
-import currentModel from "./currentModel.json";
-import currentMiroirModel from "./currentMiroirModel.json";
+import currentModel from "../currentModel.json";
+import currentMiroirModel from "../currentMiroirModel.json";
 import {
   unionObjectChoices,
-} from "../../src/1_core/jzod/jzodTypeCheck";
-import { miroirFundamentalJzodSchema } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
-import { resolveJzodSchemaReferenceInContext } from '../../src/1_core/jzod/jzodResolveSchemaReferenceInContext';
+} from "../../../src/1_core/jzod/jzodTypeCheck";
+import { miroirFundamentalJzodSchema } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
+import { resolveJzodSchemaReferenceInContext } from '../../../src/1_core/jzod/jzodResolveSchemaReferenceInContext';
 
 // Minimal mocks for MetaModel and JzodSchema
 const mockMetaModel: MetaModel = {} as MetaModel;

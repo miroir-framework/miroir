@@ -1,7 +1,7 @@
 // import { describe, it, expect } from 'vitest';
 import type { JzodElement, JzodObject, JzodReference } from '@miroir-framework/jzod-ts';
-import { JzodSchemaReferencesSet } from '../../src/1_core/jzod/JzodSchemaReferences';
-import {  } from '../../src';
+import { JzodSchemaReferencesSet } from '../../../src/1_core/jzod/JzodSchemaReferences';
+import {  } from '../../../src';
 import { JzodReferenceResolutionFunction } from '@miroir-framework/jzod';
 
 describe('JzodSchemaReferencesSet.unit', () => {

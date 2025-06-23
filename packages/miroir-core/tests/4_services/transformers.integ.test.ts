@@ -11,8 +11,7 @@ import {
   EntityDefinition,
   EntityInstance,
   ExtractorOrCombinerRecord,
-  StoreUnitConfiguration,
-  TransformerForRuntime
+  StoreUnitConfiguration
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 import entityPublisher from "../../src/assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a027c379-8468-43a5-ba4d-bf618be25cab.json";
@@ -36,66 +35,22 @@ import book5 from "../../src/assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d30
 import book1 from "../../src/assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/caef8a59-39eb-48b5-ad59-a7642d3a1e8f.json";
 import book2 from "../../src/assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/e20e276b-619d-4e16-8816-b7ec37b53439.json";
 
-// import {
-//   Action2Error,
-//   Action2Success,
-//   author1,
-//   author2,
-//   author3,
-//   book1,
-//   book2,
-//   book4,
-//   book5,
-//   book6,
-//   defaultMiroirMetaModel,
-//   entityAuthor,
-//   entityBook,
-//   entityDefinitionAuthor,
-//   entityDefinitionBook,
-//   entityDefinitionPublisher,
-//   entityPublisher,
-//   getBasicApplicationConfiguration,
-//   getBasicStoreUnitConfiguration,
-//   ignorePostgresExtraAttributes,
-//   InitApplicationParameters,
-//   MetaEntity,
-//   PersistenceStoreController,
-//   publisher1,
-//   publisher2,
-//   publisher3,
-//   TestSuiteContext,
-//   displayTestSuiteResults,
-//   Uuid,
-// } from "miroir-core";
 import { MetaEntity, Uuid } from '../../src/0_interfaces/1_core/EntityDefinition.js';
-import {
-  Action2ReturnType,
-  Action2Success,
-  Domain2ElementFailed,
-  Domain2QueryReturnType
-} from "../../src/0_interfaces/2_domain/DomainElement.js";
 import {
   InitApplicationParameters,
   PersistenceStoreAdminSectionInterface,
 } from "../../src/0_interfaces/4-services/PersistenceStoreControllerInterface.js";
 import { defaultMiroirMetaModel } from '../../src/1_core/Model.js';
 import { getBasicApplicationConfiguration, getBasicStoreUnitConfiguration } from '../../src/2_domain/Deployment.js';
-import { transformer_extended_apply_wrapper } from '../../src/2_domain/TransformersForRuntime.js';
-import { ignorePostgresExtraAttributes } from '../../src/4_services/otherTools.js';
 import { PersistenceStoreController } from '../../src/4_services/PersistenceStoreController.js';
-import { TestSuiteContext } from '../../src/4_services/TestSuiteContext.js';
+import {
+  runTransformerIntegrationTest,
+  runTransformerTestSuite,
+  transformerTestsDisplayResults
+} from "../../src/4_services/TestTools";
 import {
   currentTestSuite,
-  // runTransformerTestSuite,
-  // TransformerTest,
-  // transformerTestsDisplayResults
 } from "../2_domain/transformersTests_miroir.data";
-import {
-  transformerTestsDisplayResults,
-  TransformerTest,
-  runTransformerTestSuite,
-  runTransformerIntegrationTest,
-} from "../../src/4_services/TestTools";
 // const env:any = (import.meta as any).env
 // console.log("@@@@@@@@@@@@@@@@@@ env", env);
 const RUN_TEST= process.env.RUN_TEST

@@ -5,7 +5,7 @@ import {
   JzodReference
 } from "@miroir-framework/jzod-ts";
 
-import { applyLimitedCarryOnSchema } from "../../src/1_core/jzod/JzodToJzod";
+import { applyLimitedCarryOnSchema } from "../../../src/1_core/jzod/JzodToJzod";
 import { JzodReferenceResolutionFunction } from "@miroir-framework/jzod";
 
 

@@ -1,19 +1,19 @@
 import { describe, expect, it } from "vitest";
-import { miroirFundamentalJzodSchema } from '../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema';
+import { miroirFundamentalJzodSchema } from '../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema';
 import {
   JzodElement,
   JzodSchema,
   JzodUnion,
   MetaModel
-} from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+} from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
   jzodUnion_recursivelyUnfold,
   JzodUnion_RecursivelyUnfold_ReturnTypeError,
   JzodUnion_RecursivelyUnfold_ReturnTypeOK,
-} from "../../src/1_core/jzod/jzodUnion_RecursivelyUnfold";
-import currentMiroirModel from "./currentMiroirModel.json";
-import currentModel from "./currentModel.json";
-import { unfoldJzodSchemaOnce } from "../../src/1_core/jzod/JzodUnfoldSchemaOnce";
+} from "../../../src/1_core/jzod/jzodUnion_RecursivelyUnfold";
+import currentMiroirModel from "../currentMiroirModel.json";
+import currentModel from "../currentModel.json";
+import { unfoldJzodSchemaOnce } from "../../../src/1_core/jzod/JzodUnfoldSchemaOnce";
 
 function local_jzodUnion_recursivelyUnfold(
   schema: JzodUnion,

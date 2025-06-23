@@ -1,6 +1,6 @@
 // import { describe, it, expect } from 'vitest';
 import type { JzodElement, JzodObject } from '@miroir-framework/jzod-ts';
-import { JzodSchemaReferencesList } from '../../src/1_core/jzod/JzodSchemaReferences';
+import { JzodSchemaReferencesList } from '../../../src/1_core/jzod/JzodSchemaReferences';
 
 describe('JzodSchemaReferencesList.unit', () => {
   it('returns empty array for a literal element', () => {

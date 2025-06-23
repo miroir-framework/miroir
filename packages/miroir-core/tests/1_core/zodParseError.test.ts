@@ -374,7 +374,9 @@ describe("zodParseError", () => {
     describe("real world zodParseErrorExample", () => {
       it("should clenan-up error on parsing TransformerForBuild", () => {
         const zodSchema = transformerForBuild;
-        const transformer = "model"; //conceptLevel as a string, not a full-blown object
+        const transformer = {
+          transformerType: "not_existing"
+        }; //conceptLevel as a string, not a full-blown object
         // test_createEntityAndReportFromSpreadsheetAndUpdateMenu.definition.testCompositeActions[
         //     "create new Entity and reports from spreadsheet"
         //   ].compositeAction.templates.newEntityListReport.definition.conceptLevel
@@ -393,14 +395,12 @@ describe("zodParseError", () => {
         const issueLeaves = zodErrorDeepestIssueLeaves(zodParseError);
         console.error("Zod parse error :", JSON.stringify(zodErrorDeepestIssueLeaves(zodParseError), null, 2));
         expect(issueLeaves).toEqual({
-          depth: 0,
+          depth: 1,
           issues: [
             {
-              code: "invalid_type",
-              expected: "object",
-              received: "string",
-              path: [],
-              message: "Expected object, received string",
+              code: "custom",
+              message: "Object must not contain 'transformerType' key",
+              path: ["transformerType"],
             },
           ],
         });

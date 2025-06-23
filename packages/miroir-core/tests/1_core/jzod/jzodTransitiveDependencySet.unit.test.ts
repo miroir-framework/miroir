@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import type { JzodElement, JzodObject, JzodReference } from '@miroir-framework/jzod-ts';
-import { JzodSchemaReferencesList, JzodSchemaReferencesSet, jzodTransitiveDependencySet } from '../../src/1_core/jzod/JzodSchemaReferences';
+import { JzodSchemaReferencesList, JzodSchemaReferencesSet, jzodTransitiveDependencySet } from '../../../src/1_core/jzod/JzodSchemaReferences';
 
 describe('jzodTransitiveDependencySet.unit', () => {
   // describe('JzodSchemaReferencesList', () => {
