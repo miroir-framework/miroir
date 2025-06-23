@@ -1,4 +1,3 @@
-// strict mode
 "use strict";
 
 import { describe, expect } from 'vitest';
@@ -15,6 +14,9 @@ import {
   transformerForBuild,
   transformerForBuild_constantUuid,
   transformerForBuild_InnerReference,
+  TransformerForBuildPlusRuntime,
+  transformerForBuildPlusRuntime,
+  transformerForRuntime,
   ZodParseError,
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
@@ -47,7 +49,7 @@ import { zodErrorDeepestIssueLeaves } from "../../src/1_core/zodParseErrorHandle
 // ################################################################################################
 // TS VALIDATION TESTS ############################################################################
 // ################################################################################################
-const test1: TransformerForBuild = {
+const transformerForBuildTest1: TransformerForBuild = {
   extractorOrCombinerType: "extractorByEntityReturningObjectList",
   parentName: {
     transformerType: "parameterReference",
@@ -61,7 +63,7 @@ const test1: TransformerForBuild = {
   },
 };
 
-const test2: TransformerForBuild = {
+const transformerForBuildTest2: TransformerForBuild = {
   transformerType: "freeObjectTemplate",
   interpolation: "build",
   definition: {
@@ -81,7 +83,7 @@ const test2: TransformerForBuild = {
   },
 };
 
-const test3: TransformerForBuild = {
+const transformerForBuildTest3: TransformerForBuild = {
   extractors: {
     transformerType: "freeObjectTemplate",
     interpolation: "build",
@@ -103,7 +105,7 @@ const test3: TransformerForBuild = {
   },
 };
 
-const test4: TransformerForBuild = {
+const transformerForBuildTest4: TransformerForBuild = {
   transformerType: "freeObjectTemplate",
   interpolation: "build",
   definition: {
@@ -132,7 +134,7 @@ const test4: TransformerForBuild = {
   },
 };
 
-const test5: TransformerForBuild = {
+const transformerForBuildTest5: TransformerForBuild = {
   transformerType: "freeObjectTemplate",
   interpolation: "build",
   definition: {
@@ -186,6 +188,46 @@ const test5: TransformerForBuild = {
   },
 };
 
+const transformerForBuildPlusRuntimeTest1: TransformerForBuildPlusRuntime = {
+  transformerType: "constant",
+  interpolation: "runtime",
+  value: "test",
+}
+
+const transformerForBuildPlusRuntimeTest2: TransformerForBuildPlusRuntime = {
+  transformerType: "freeObjectTemplate",
+  interpolation: "runtime",
+  definition: {
+    instanceList: {
+      extractorOrCombinerType: "extractorByEntityReturningObjectList",
+      parentName: {
+        transformerType: "parameterReference",
+        interpolation: "build",
+        referenceName: "newEntityName",
+      },
+      parentUuid: {
+        transformerType: "mustacheStringTemplate",
+        interpolation: "build",
+        definition: "{{createEntity_newEntity.uuid}}",
+      },
+    },
+  },
+};
+
+const transformerForBuildPlusRuntimeTest3: TransformerForBuildPlusRuntime = {
+  transformerType: "mapperListToList",
+  label: "countryListMapperToObjectList",
+  interpolation: "runtime",
+  applyTo: [{ a: "a" }, { b: "b" }],
+  referenceToOuterObject: "country",
+  elementTransformer: {
+    transformerType: "freeObjectTemplate",
+    interpolation: "runtime",
+    definition: {
+      test: "1",
+    },
+  },
+};
 // ################################################################################################
 // ZOD VALIDATION TESTS ###########################################################################
 // ################################################################################################
@@ -196,19 +238,19 @@ type ZodParseTest = {
 
 const createEntityZodParseTests: Record<string, ZodParseTest> = {
   // simple tests
-  "string is parsable by transformerForBuild": {
+  "transformerForBuild: string is parsable": {
     zodSchema: transformerForBuild,
     transformer: "test",
   },
-  "number is parsable by transformerForBuild": {
+  "transformerForBuild: number is parsable": {
     zodSchema: transformerForBuild,
     transformer: 1,
   },
-  "object is parsable by transformerForBuild": {
+  "transformerForBuild: object is parsable": {
     zodSchema: transformerForBuild,
     transformer: { a: 1, b: "test" },
   },
-  "object with sub transformerForBuid is parsable by transformerForBuild": {
+  "transformerForBuild: object with sub transformerForBuid is parsable": {
     zodSchema: transformerForBuild,
     transformer: {
       a: 1,
@@ -219,95 +261,158 @@ const createEntityZodParseTests: Record<string, ZodParseTest> = {
       },
     },
   },
-  "test1 is parsable by transformerForBuild": {
+  "transformerForBuild: test1 is parsable": {
     zodSchema: transformerForBuild,
-    transformer: test1,
+    transformer: transformerForBuildTest1,
   },
-  "test2 is parsable by transformerForBuild": {
+  "transformerForBuild: test2 is parsable": {
     zodSchema: transformerForBuild,
-    transformer: test2,
+    transformer: transformerForBuildTest2,
   },
-  "test3 is parsable by transformerForBuild": {
+  "transformerForBuild: test3 is parsable": {
     zodSchema: transformerForBuild,
-    transformer: test3,
+    transformer: transformerForBuildTest3,
   },
-  "test4 is parsable by transformerForBuild": {
+  "transformerForBuild: test4 is parsable": {
     zodSchema: transformerForBuild,
-    transformer: test4,
+    transformer: transformerForBuildTest4,
   },
-  "test5 is parsable by transformerForBuild": {
+  "transformerForBuild: test5 is parsable": {
     zodSchema: transformerForBuild,
-    transformer: test5,
+    transformer: transformerForBuildTest5,
   },
   // // templates.createEntity_newEntity
-  // "test_createEntityAndReportFromSpreadsheetAndUpdateMenu templates createEntity_newEntity.definition.uuid is parsable by transformerForBuild_InnerReference": {
-  //   zodSchema: transformerForBuild,
-  //   transformer: test_createEntityAndReportFromSpreadsheetAndUpdateMenu.definition.testCompositeActions[
-  //       "create new Entity and reports from spreadsheet"
-  //     ].compositeAction.templates.createEntity_newEntity.definition.uuid
-  // },
-  // "test_createEntityAndReportFromSpreadsheetAndUpdateMenu templates createEntity_newEntity.definition is parsable by transformerForBuild_InnerReference": {
-  //   zodSchema: z.record(transformerForBuild),
-  //   transformer: test_createEntityAndReportFromSpreadsheetAndUpdateMenu.definition.testCompositeActions[
-  //       "create new Entity and reports from spreadsheet"
-  //     ].compositeAction.templates.createEntity_newEntity.definition
-  // },
-  // "test_createEntityAndReportFromSpreadsheetAndUpdateMenu templates createEntity_newEntity is parsable by transformerForBuild": {
-  //   zodSchema: transformerForBuild,
-  //   transformer: test_createEntityAndReportFromSpreadsheetAndUpdateMenu.definition.testCompositeActions[
-  //       "create new Entity and reports from spreadsheet"
-  //     ].compositeAction.templates.createEntity_newEntity
-  // },
-  // // templates.createEntity_newEntityDefinition
-  // "test_createEntityAndReportFromSpreadsheetAndUpdateMenu templates createEntity_newEntityDefinition is parsable by transformerForBuild": {
-  //   zodSchema: transformerForBuild,
-  //   transformer: test_createEntityAndReportFromSpreadsheetAndUpdateMenu.definition.testCompositeActions[
-  //       "create new Entity and reports from spreadsheet"
-  //     ].compositeAction.templates.createEntity_newEntityDefinition
-  // },
+  "transformerForBuild: test_createEntityAndReportFromSpreadsheetAndUpdateMenu templates createEntity_newEntity.definition.uuid is parsable": {
+    zodSchema: transformerForBuild,
+    transformer: test_createEntityAndReportFromSpreadsheetAndUpdateMenu.definition.testCompositeActions[
+        "create new Entity and reports from spreadsheet"
+      ].compositeAction.templates.createEntity_newEntity.definition.uuid
+  },
+  "transformerForBuild: test_createEntityAndReportFromSpreadsheetAndUpdateMenu templates createEntity_newEntity.definition is parsable": {
+    zodSchema: z.record(transformerForBuild),
+    transformer: test_createEntityAndReportFromSpreadsheetAndUpdateMenu.definition.testCompositeActions[
+        "create new Entity and reports from spreadsheet"
+      ].compositeAction.templates.createEntity_newEntity.definition
+  },
+  "transformerForBuild: test_createEntityAndReportFromSpreadsheetAndUpdateMenu templates createEntity_newEntity is parsable": {
+    zodSchema: transformerForBuild,
+    transformer: test_createEntityAndReportFromSpreadsheetAndUpdateMenu.definition.testCompositeActions[
+        "create new Entity and reports from spreadsheet"
+      ].compositeAction.templates.createEntity_newEntity
+  },
+  // templates.createEntity_newEntityDefinition
+  "transformerForBuild: test_createEntityAndReportFromSpreadsheetAndUpdateMenu templates createEntity_newEntityDefinition is parsable": {
+    zodSchema: transformerForBuild,
+    transformer: test_createEntityAndReportFromSpreadsheetAndUpdateMenu.definition.testCompositeActions[
+        "create new Entity and reports from spreadsheet"
+      ].compositeAction.templates.createEntity_newEntityDefinition
+  },
   // templates.newEntityListReport
-  "test_createEntityAndReportFromSpreadsheetAndUpdateMenu templates newEntityListReport.definition.uuid is parsable by transformerForBuild": {
+  "transformerForBuild: test_createEntityAndReportFromSpreadsheetAndUpdateMenu templates newEntityListReport.definition.uuid is parsable": {
     zodSchema: transformerForBuild,
     transformer: test_createEntityAndReportFromSpreadsheetAndUpdateMenu.definition.testCompositeActions[
         "create new Entity and reports from spreadsheet"
       ].compositeAction.templates.newEntityListReport.definition.uuid
   },
-  "test_createEntityAndReportFromSpreadsheetAndUpdateMenu templates newEntityListReport.definition.conceptLevel is parsable by transformerForBuild": {
+  "transformerForBuild: test_createEntityAndReportFromSpreadsheetAndUpdateMenu templates newEntityListReport.definition.conceptLevel is parsable": {
     zodSchema: transformerForBuild,
     transformer: test_createEntityAndReportFromSpreadsheetAndUpdateMenu.definition.testCompositeActions[
         "create new Entity and reports from spreadsheet"
       ].compositeAction.templates.newEntityListReport.definition.conceptLevel
   },
-  "test_createEntityAndReportFromSpreadsheetAndUpdateMenu templates newEntityListReport.definition.type is parsable by transformerForBuild": {
+  "transformerForBuild: test_createEntityAndReportFromSpreadsheetAndUpdateMenu templates newEntityListReport.definition.type is parsable": {
     zodSchema: transformerForBuild,
     transformer: test_createEntityAndReportFromSpreadsheetAndUpdateMenu.definition.testCompositeActions[
         "create new Entity and reports from spreadsheet"
       ].compositeAction.templates.newEntityListReport.definition.type
   },
-  "test_createEntityAndReportFromSpreadsheetAndUpdateMenu templates newEntityListReport.definition.definition is parsable by transformerForBuild": {
+  "transformerForBuild: test_createEntityAndReportFromSpreadsheetAndUpdateMenu templates newEntityListReport.definition.definition is parsable": {
     zodSchema: transformerForBuild,
     transformer: test_createEntityAndReportFromSpreadsheetAndUpdateMenu.definition.testCompositeActions[
         "create new Entity and reports from spreadsheet"
       ].compositeAction.templates.newEntityListReport.definition.definition
   },
-  "test_createEntityAndReportFromSpreadsheetAndUpdateMenu templates newEntityListReport.definition is parsable by transformerForBuild": {
+  "transformerForBuild: test_createEntityAndReportFromSpreadsheetAndUpdateMenu templates newEntityListReport.definition is parsable": {
     // zodSchema: z.record(z.string(), transformerForBuild),
     zodSchema: transformerForBuild,
     transformer: test_createEntityAndReportFromSpreadsheetAndUpdateMenu.definition.testCompositeActions[
         "create new Entity and reports from spreadsheet"
       ].compositeAction.templates.newEntityListReport.definition
   },
-  "test_createEntityAndReportFromSpreadsheetAndUpdateMenu templates newEntityListReport is parsable by transformerForBuild": {
+  "transformerForBuild: transformerForBuild: test_createEntityAndReportFromSpreadsheetAndUpdateMenu templates newEntityListReport": {
     zodSchema: transformerForBuild,
     transformer: test_createEntityAndReportFromSpreadsheetAndUpdateMenu.definition.testCompositeActions[
         "create new Entity and reports from spreadsheet"
       ].compositeAction.templates.newEntityListReport
   },
-  "test_createEntityAndReportFromSpreadsheetAndUpdateMenu templates are parsable by transformerForBuild": {
+  "transformerForBuild: test_createEntityAndReportFromSpreadsheetAndUpdateMenu templates are parsable": {
     zodSchema: transformerForBuild,
     transformer: test_createEntityAndReportFromSpreadsheetAndUpdateMenu.definition.testCompositeActions[
         "create new Entity and reports from spreadsheet"
       ].compositeAction.templates
+  },
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  // transformerForRuntime
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+    // simple tests
+  "transformerForBuildPlusRuntime: string is parsable": {
+    zodSchema: transformerForBuildPlusRuntime,
+    transformer: "test",
+  },
+  "transformerForBuildPlusRuntime: number is parsable": {
+    zodSchema: transformerForBuildPlusRuntime,
+    transformer: 1,
+  },
+  "transformerForBuildPlusRuntime: object is parsable": {
+    zodSchema: transformerForBuildPlusRuntime,
+    transformer: { a: 1, b: "test" },
+  },
+  "transformerForBuildPlusRuntime: object with sub transformerForBuid is parsable": {
+    zodSchema: transformerForBuildPlusRuntime,
+    transformer: {
+      a: 1,
+      b: {
+        transformerType: "constant",
+        interpolation: "runtime",
+        value: "Report",
+      },
+    },
+  },
+  "transformerForBuildPlusRuntime: transformerForBuildTest1 is parsable": {
+    zodSchema: transformerForBuildPlusRuntime,
+    transformer: transformerForBuildTest1,
+  },
+  "transformerForBuildPlusRuntime: transformerForBuildTest2 is parsable": {
+    zodSchema: transformerForBuildPlusRuntime,
+    transformer: transformerForBuildTest2,
+  },
+  "transformerForBuildPlusRuntime: transformerForBuildTest3 is parsable": {
+    zodSchema: transformerForBuildPlusRuntime,
+    transformer: transformerForBuildTest3,
+  },
+  "transformerForBuildPlusRuntime: transformerForBuildTest4 is parsable": {
+    zodSchema: transformerForBuildPlusRuntime,
+    transformer: transformerForBuildTest4,
+  },
+  "transformerForBuildPlusRuntime: transformerForBuildTest5 is parsable": {
+    zodSchema: transformerForBuildPlusRuntime,
+    transformer: transformerForBuildTest5,
+  },
+  "transformerForBuildPlusRuntime: transformerForBuildPlusRuntimeTest1 is parsable": {
+    zodSchema: transformerForBuildPlusRuntime,
+    transformer: transformerForBuildPlusRuntimeTest1,
+  },
+  "transformerForBuildPlusRuntime: transformerForBuildPlusRuntimeTest2 is parsable": {
+    zodSchema: transformerForBuildPlusRuntime,
+    transformer: transformerForBuildPlusRuntimeTest2,
+  },
+  "transformerForBuildPlusRuntime: transformerForBuildPlusRuntimeTest3 is parsable": {
+    zodSchema: transformerForBuildPlusRuntime,
+    transformer: transformerForBuildPlusRuntimeTest3,
   },
 };
 
@@ -334,27 +439,6 @@ describe("test_createEntityAndReportFromSpreadsheetAndUpdateMenu", () => {
   });
 });
 
-  // it("test_createEntityAndReportFromSpreadsheetAndUpdateMenu templates createEntity_newEntity.definition.uuid is parsable by transformerForBuild_InnerReference", () => {
-  //   // const zodSchema = z.union([z.string(), z.lazy(() => transformerForBuild_InnerReference)])
-  //   const zodSchema = transformerForBuild;
-  //   const transformer =
-  //     test_createEntityAndReportFromSpreadsheetAndUpdateMenu.definition.testCompositeActions[
-  //       "create new Entity and reports from spreadsheet"
-  //     ].compositeAction.templates.createEntity_newEntity.definition.uuid;
-  //   console.log(expect.getState().currentTestName, "transformer to test=", JSON.stringify(transformer, null, 2));
-  //   expect(() => zodSchema.parse(transformer)).not.toThrow();
-  // });
-
-  // it("test_createEntityAndReportFromSpreadsheetAndUpdateMenu templates createEntity_newEntity.definition is parsable by transformerForBuild_InnerReference", () => {
-  //   // const zodSchema = z.union([z.string(), z.lazy(() => transformerForBuild_InnerReference)])
-  //   const zodSchema = z.record(transformerForBuild);
-  //   const transformer =
-  //     test_createEntityAndReportFromSpreadsheetAndUpdateMenu.definition.testCompositeActions[
-  //       "create new Entity and reports from spreadsheet"
-  //     ].compositeAction.templates.createEntity_newEntity.definition;
-  //   console.log(expect.getState().currentTestName, "transformer to test=", JSON.stringify(transformer, null, 2));
-  //   expect(() => zodSchema.parse(transformer)).not.toThrow();
-  // });
 
   // it("reportCountryList.definition.extractorTemplates.countries is parsable by extractorOrCombinerTemplate", () => {
   //   const zodSchema = extractorOrCombinerTemplate

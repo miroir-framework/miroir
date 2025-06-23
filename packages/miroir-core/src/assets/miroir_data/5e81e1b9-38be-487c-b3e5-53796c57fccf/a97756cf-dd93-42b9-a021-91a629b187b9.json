@@ -218,21 +218,10 @@
         }
       },
       "transformer_inner_elementTransformer_transformerForBuild": {
-        "type": "union",
-        "definition": [
-          {
-            "type": "schemaReference",
-            "definition": {
-              "relativePath": "transformerForRuntime"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "relativePath": "transformerForBuild"
-            }
-          }
-        ]
+        "type": "schemaReference",
+        "definition": {
+          "relativePath": "transformerForBuildPlusRuntime"
+        }
       },
       "transformer_inner_elementTransformer_transformerForRuntime": {
         "type": "schemaReference",

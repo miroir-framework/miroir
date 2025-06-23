@@ -1,4 +1,4 @@
-import { EntityInstance, JzodElement, TransformerForBuild, TransformerForBuildOrRuntime, TransformerForRuntime } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { EntityInstance, JzodElement } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 import entityDefinitionCountry from "../../src/assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/56628e31-3db5-4c5c-9328-4ff7ce54c36a.json" with { type: "json" };
 

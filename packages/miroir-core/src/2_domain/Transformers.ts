@@ -118,15 +118,15 @@ const runtimeReferenceMap: Record<string, string> = {
 const buildReferenceMap: Record<string, string> = {
   transformer: "transformerForBuild",
   transformer_InnerReference: "transformerForBuild_InnerReference",
-  transformer_freeObjectTemplate: "transformerForBuild_freeObjectTemplate",
-  transformer_contextReference: "transformerForRuntime_contextReference",
-  transformer_objectDynamicAccess: "transformerForBuild_objectDynamicAccess",
+  transformer_freeObjectTemplate: "transformerForBuildPlusRuntime_freeObjectTemplate",
+  transformer_contextReference: "transformerForBuildPlusRuntime_contextReference",
+  transformer_objectDynamicAccess: "transformerForBuildPlusRuntime_objectDynamicAccess",
   transformer_mustacheStringTemplate: "transformerForBuild_mustacheStringTemplate", // TODO: rename to transformer_mustacheStringTemplate
 };
 
 const buildPlusRuntimeReferenceMap: Record<string, string> = {
   transformer: "transformerForBuildPlusRuntime",
-  transformer_InnerReference: "transformerForBuildPlusRuntime_InnerReference",
+  transformer_InnerReference: "transformerForBuildPlusRuntime_InnerReference", // TODO: ensure that all transfrormer definitions use a reference for inner references: mapperListToList, transformer_objectAlter
   transformer_freeObjectTemplate: "transformerForBuildPlusRuntime_freeObjectTemplate",
   transformer_contextReference: "transformerForBuildPlusRuntime_contextReference",
   transformer_objectDynamicAccess: "transformerForBuildPlusRuntime_objectDynamicAccess",
@@ -168,3 +168,6 @@ export const miroirTransformersForBuild: Record<string, JzodElement> = Object.fr
     ),
   ])
 );
+
+
+
