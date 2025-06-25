@@ -747,9 +747,10 @@ export const ConceptPage: React.FC<any> = (
                         rawJzodSchema={rawSchema}
                         resolvedElementJzodSchema={resolvedJzodSchema}
                         foreignKeyObjects={emptyObject}
-                        handleChange={formik.handleChange as any}
-                        formik={formik}
-                        setFormState={setFormState}
+                        indentLevel={ 0 }
+                        // handleChange={formik.handleChange as any}
+                        // formik={formik}
+                        // setFormState={setFormState}
                         // formState={formState}
                       />
                       <button type="submit" name={pageLabel} form={"form." + pageLabel}>submit form.{pageLabel}</button>

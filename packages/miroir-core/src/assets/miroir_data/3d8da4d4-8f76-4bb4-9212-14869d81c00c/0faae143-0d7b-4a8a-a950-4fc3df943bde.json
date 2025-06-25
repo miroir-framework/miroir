@@ -26,7 +26,10 @@
             },
             "deploymentUuid": {
               "type": "uuid",
-              "tag": { "value": { "id": 1, "defaultLabel": "Uuid", "editable": false } }
+              "tag": {
+                "canBeTemplate": true,
+                "value": { "id": 1, "defaultLabel": "Uuid", "editable": false }
+              }
             },
             "query": {
               "type": "union",
@@ -74,7 +77,10 @@
             },
             "deploymentUuid": {
               "type": "uuid",
-              "tag": { "value": { "id": 1, "defaultLabel": "Uuid", "editable": false } }
+              "tag": {
+                "canBeTemplate": true,
+                "value": { "id": 1, "defaultLabel": "Uuid", "editable": false }
+              }
             },
             "queryExecutionStrategy": {
               "type": "enum",
@@ -128,7 +134,10 @@
             },
             "deploymentUuid": {
               "type": "uuid",
-              "tag": { "value": { "id": 1, "defaultLabel": "Uuid", "editable": false } }
+              "tag": {
+                "canBeTemplate": true,
+                "value": { "id": 1, "defaultLabel": "Uuid", "editable": false }
+              }
             },
             "query": {
               "type": "schemaReference",
@@ -162,7 +171,10 @@
             },
             "deploymentUuid": {
               "type": "uuid",
-              "tag": { "value": { "id": 1, "defaultLabel": "Uuid", "editable": false } }
+              "tag": {
+                "canBeTemplate": true,
+                "value": { "id": 1, "defaultLabel": "Uuid", "editable": false }
+              }
             },
             "query": {
               "type": "schemaReference",
@@ -197,7 +209,10 @@
             },
             "deploymentUuid": {
               "type": "uuid",
-              "tag": { "value": { "id": 1, "defaultLabel": "Uuid", "editable": false } }
+              "tag": {
+                "canBeTemplate": true,
+                "value": { "id": 1, "defaultLabel": "Uuid", "editable": false }
+              }
             },
             "queryExecutionStrategy": {
               "type": "enum",
@@ -237,7 +252,10 @@
             },
             "deploymentUuid": {
               "type": "uuid",
-              "tag": { "value": { "id": 1, "defaultLabel": "Uuid", "editable": false } }
+              "tag": {
+                "canBeTemplate": true,
+                "value": { "id": 1, "defaultLabel": "Uuid", "editable": false }
+              }
             },
             "query": {
               "type": "schemaReference",

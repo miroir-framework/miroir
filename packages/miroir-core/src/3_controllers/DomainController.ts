@@ -1626,8 +1626,10 @@ export class DomainController implements DomainControllerInterface {
   }
 
   // ##############################################################################################
-  async handleRuntimeCompositeAction(
-    runtimeCompositeAction: RuntimeCompositeAction,
+  async handleRuntimeCompositeActionDO_NOT_USE(
+    // runtimeCompositeAction: RuntimeCompositeAction,
+    runtimeCompositeAction: BuildPlusRuntimeCompositeAction,
+    // runtimeCompositeAction: BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction,
     actionParamValues: Record<string, any>,
     currentModel: MetaModel
   ): Promise<Action2VoidReturnType> {
@@ -1690,8 +1692,9 @@ export class DomainController implements DomainControllerInterface {
               "handleRuntimeCompositeAction compositeAction action to handle",
               JSON.stringify(currentAction, null, 2)
             );
-            actionResult = await this.handleRuntimeCompositeAction(
+            actionResult = await this.handleRuntimeCompositeActionDO_NOT_USE(
               currentAction,
+              // currentAction as BuildPlusRuntimeCompositeAction,
               actionParamValues,
               currentModel
             );
@@ -1796,8 +1799,22 @@ export class DomainController implements DomainControllerInterface {
             //       },
             //     },
             //   }: resolvedAction;
+            const resolvedActionWithProtectedRuntimeTranformers: {
+              actionType: "compositeRunBoxedQueryAction";
+              actionLabel?: string | undefined;
+              nameGivenToResult: string;
+              queryTemplate: RunBoxedQueryAction;
+            } = transformer_extended_apply(
+              "build",
+              currentAction.actionLabel,
+              currentAction as any as TransformerForRuntime,
+              "value",
+              actionParamValues, // queryParams
+              localContext // contextResults
+            );
             actionResult = await this.handleCompositeRunBoxedQueryAction(
-              currentAction,
+              // currentAction as any,
+              resolvedActionWithProtectedRuntimeTranformers,
               // resolvedActionWithProtectedRuntimeTranformers, //currentAction,
               actionResult,
               localContext
@@ -1817,8 +1834,22 @@ export class DomainController implements DomainControllerInterface {
             //       },
             //     },
             //   }: resolvedAction;
+            const resolvedActionWithProtectedRuntimeTranformers: {
+              actionType: "compositeRunBoxedExtractorOrQueryAction";
+              actionLabel?: string | undefined;
+              nameGivenToResult: string;
+              query: RunBoxedExtractorOrQueryAction;
+            } = transformer_extended_apply(
+              "build",
+              currentAction.actionLabel,
+              currentAction as any as TransformerForRuntime,
+              "value",
+              actionParamValues, // queryParams
+              localContext // contextResults
+            );
             actionResult = await this.handleCompositeRunBoxedExtractorOrQueryAction(
-              currentAction,
+              // currentAction as any,
+              resolvedActionWithProtectedRuntimeTranformers,
               // resolvedActionWithProtectedRuntimeTranformers, //currentAction,
               actionParamValues,
               actionResult,
@@ -2024,7 +2055,7 @@ export class DomainController implements DomainControllerInterface {
       templates: resolvedCompositeActionTemplates,
     };
 
-    return this.handleRuntimeCompositeAction(
+    return this.handleRuntimeCompositeActionDO_NOT_USE(
       resolvedAction, //buildPlusRuntimeCompositeAction,
       actionParamValues,
       currentModel
@@ -2665,7 +2696,7 @@ export class DomainController implements DomainControllerInterface {
             ...testAction.testCompositeActionAssertions,
           ],
         };
-        const result = await this.handleRuntimeCompositeAction(
+        const result = await this.handleRuntimeCompositeActionDO_NOT_USE(
           localCompositeAction,
           localActionParams,
           currentModel
@@ -2853,7 +2884,7 @@ export class DomainController implements DomainControllerInterface {
               ],
             };
             TestSuiteContext.setTest(testCompositeAction[1].testLabel);
-            testResult = await this.handleRuntimeCompositeAction(
+            testResult = await this.handleRuntimeCompositeActionDO_NOT_USE(
               localTestCompositeAction,
               localActionParams,
               currentModel

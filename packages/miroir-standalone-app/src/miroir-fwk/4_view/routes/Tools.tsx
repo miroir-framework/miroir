@@ -486,7 +486,8 @@ export const ToolsPage: React.FC<any> = (
           }
         }
 
-        const deleteNewApplicationResult = await domainController.handleCompositeActionTemplate(
+        // const deleteNewApplicationResult = await domainController.handleCompositeActionTemplate(
+        const deleteNewApplicationResult = await domainController.handleCompositeAction(
           testOnLibrary_deleteLibraryDeployment({
           miroirConfigType: "client",
           client: {

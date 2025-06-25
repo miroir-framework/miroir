@@ -780,6 +780,7 @@ export {
   applicationTransformerDefinitions,
   resolveApplyTo_legacy,
   transformer_extended_apply,
+  transformer_extended_apply_wrapper,
   transformer_InnerReference_resolve,
   transformer_mustacheStringTemplate_apply,
   transformer_resolveReference,

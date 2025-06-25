@@ -2707,7 +2707,7 @@ export type ExtractorTemplateForObjectListByEntity = {
     } | undefined;
     filter?: {
         attributeName: string;
-        value: TransformerForRuntime_constantString;
+        value: TransformerForBuildPlusRuntime;
     } | undefined;
 };
 export type ExtractorTemplateByRelationReturningObjectList = {
@@ -3659,36 +3659,7 @@ export type RuntimeCompositeAction = {
         testAssertion: TestAssertion;
     })[];
 };
-export type BuildPlusRuntimeCompositeAction = {
-    actionType: "compositeAction";
-    actionName: "sequence";
-    actionLabel?: string | undefined;
-    deploymentUuid?: string | undefined;
-    templates?: {
-        [x: string]: any;
-    } | undefined;
-    definition: (BuildPlusRuntimeDomainAction | BuildPlusRuntimeCompositeAction | {
-        actionType: "compositeRunBoxedQueryAction";
-        actionLabel?: string | undefined;
-        nameGivenToResult: string;
-        queryTemplate: RunBoxedQueryAction;
-    } | {
-        actionType: "compositeRunBoxedExtractorAction";
-        actionLabel?: string | undefined;
-        nameGivenToResult: string;
-        queryTemplate: RunBoxedExtractorAction;
-    } | {
-        actionType: "compositeRunBoxedExtractorOrQueryAction";
-        actionLabel?: string | undefined;
-        nameGivenToResult: string;
-        query: RunBoxedExtractorOrQueryAction;
-    } | {
-        actionType: "compositeRunTestAssertion";
-        actionLabel?: string | undefined;
-        nameGivenToResult: string;
-        testAssertion: TestAssertion;
-    })[];
-};
+export type BuildPlusRuntimeCompositeAction = BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction;
 export type CompositeRunTestAssertion = {
     actionType: "compositeRunTestAssertion";
     actionLabel?: string | undefined;
@@ -5739,7 +5710,7 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateForObj
     }) | undefined;
     filter?: (TransformerForBuildCarryOnObject | {
         attributeName: string | TransformerForBuildCarryOnObject;
-        value: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_constantString | TransformerForBuildCarryOnObject;
+        value: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime | TransformerForBuildCarryOnObject;
     }) | undefined;
 };
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_contextOrParameterReferenceTO_REMOVE = CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_contextReference | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_parameterReference | TransformerForBuildCarryOnObject;
@@ -6303,7 +6274,7 @@ export type RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction
     actionType: "initModel";
     actionLabel?: string | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForRuntime;
     params: {
         metaModel: RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_metaModel;
         dataStoreType: RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_dataStoreType;
@@ -6315,33 +6286,33 @@ export type RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction
     actionType: "commit";
     actionLabel?: string | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForRuntime;
 } | {
     actionType: "rollback";
     actionLabel?: string | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForRuntime;
 } | {
     actionType: "remoteLocalCacheRollback";
     actionLabel?: string | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForRuntime;
 } | {
     actionType: "resetModel";
     actionLabel?: string | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForRuntime;
 } | {
     actionType: "resetData";
     actionLabel?: string | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForRuntime;
 } | {
     actionType: "alterEntityAttribute";
     actionLabel?: string | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
     transactional?: boolean | undefined;
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForRuntime;
     entityName: string;
     entityUuid: string;
     entityDefinitionUuid: string;
@@ -6356,7 +6327,7 @@ export type RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction
     actionLabel?: string | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
     transactional?: boolean | undefined;
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForRuntime;
     entityName?: string | undefined;
     entityUuid: string;
     entityDefinitionUuid: string;
@@ -6366,7 +6337,7 @@ export type RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction
     actionLabel?: string | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
     transactional?: boolean | undefined;
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForRuntime;
     entities: {
         entity: RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity | TransformerForRuntime;
         entityDefinition: RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition | TransformerForRuntime;
@@ -6375,7 +6346,7 @@ export type RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction
     actionType: "dropEntity";
     actionLabel?: string | undefined;
     transactional?: boolean | undefined;
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForRuntime;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
     entityUuid: string;
     entityDefinitionUuid: string;
@@ -6384,13 +6355,13 @@ export type RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAct
     actionType: "createInstance";
     actionLabel?: string | undefined;
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89";
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForRuntime;
     applicationSection: RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection;
     objects: RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection[];
 } | {
     actionType: "deleteInstance";
     actionLabel?: string | undefined;
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForRuntime;
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89";
     applicationSection: RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection;
     includeInTransaction?: boolean | undefined;
@@ -6398,7 +6369,7 @@ export type RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAct
 } | {
     actionType: "deleteInstanceWithCascade";
     actionLabel?: string | undefined;
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForRuntime;
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89";
     applicationSection: RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection;
     includeInTransaction?: boolean | undefined;
@@ -6407,7 +6378,7 @@ export type RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAct
     actionType: "updateInstance";
     actionLabel?: string | undefined;
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89";
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForRuntime;
     applicationSection: RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection;
     includeInTransaction?: boolean | undefined;
     objects: (RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection | TransformerForRuntime)[];
@@ -6415,13 +6386,13 @@ export type RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAct
     actionType: "loadNewInstancesInLocalCache";
     actionLabel?: string | undefined;
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89";
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForRuntime;
     objects: RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection[];
 } | {
     actionType: "getInstance";
     actionLabel?: string | undefined;
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89";
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForRuntime;
     applicationSection: RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection;
     parentUuid: string;
     uuid: string;
@@ -6429,7 +6400,7 @@ export type RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAct
     actionType: "getInstances";
     actionLabel?: string | undefined;
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89";
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForRuntime;
     applicationSection: RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection;
     parentUuid: string;
 };
@@ -6437,13 +6408,13 @@ export type RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUD
     actionType: "createInstance";
     actionLabel?: string | undefined;
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89";
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForRuntime;
     applicationSection: RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection;
     objects: RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection[];
 } | {
     actionType: "deleteInstance";
     actionLabel?: string | undefined;
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForRuntime;
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89";
     applicationSection: RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection;
     includeInTransaction?: boolean | undefined;
@@ -6452,7 +6423,7 @@ export type RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUD
     actionType: "updateInstance";
     actionLabel?: string | undefined;
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89";
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForRuntime;
     applicationSection: RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection;
     includeInTransaction?: boolean | undefined;
     objects: (RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection | TransformerForRuntime)[];
@@ -6487,9 +6458,35 @@ export type RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAc
         testAssertion: RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion;
     })[];
 };
-export type RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryAction = RunBoxedQueryAction;
-export type RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorAction = RunBoxedExtractorAction;
-export type RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction = RunBoxedExtractorOrQueryAction;
+export type RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryAction = {
+    actionType: "runBoxedQueryAction";
+    actionName: "runQuery";
+    actionLabel?: string | undefined;
+    endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e";
+    applicationSection?: RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | undefined;
+    deploymentUuid: string | TransformerForRuntime;
+    queryExecutionStrategy?: ("localCacheOrFail" | "localCacheOrFetch" | "ServerCache" | "storage") | undefined;
+    query: RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedQueryWithExtractorCombinerTransformer;
+};
+export type RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorAction = {
+    actionType: "runBoxedExtractorAction";
+    actionName: "runQuery";
+    actionLabel?: string | undefined;
+    endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e";
+    applicationSection?: RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | undefined;
+    deploymentUuid: string | TransformerForRuntime;
+    query: RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedExtractorOrCombinerReturningObjectOrObjectList;
+};
+export type RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction = {
+    actionType: "runBoxedExtractorOrQueryAction";
+    actionName: "runQuery";
+    actionLabel?: string | undefined;
+    endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e";
+    applicationSection?: RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | undefined;
+    deploymentUuid: string | TransformerForRuntime;
+    queryExecutionStrategy?: ("localCacheOrFail" | "localCacheOrFetch" | "ServerCache" | "storage") | undefined;
+    query: RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedExtractorOrCombinerReturningObjectOrObjectList | RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedQueryWithExtractorCombinerTransformer;
+};
 export type RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion = TestAssertion;
 export type RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeManagementAction = StoreManagementAction;
 export type RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_bundleAction = BundleAction;
@@ -7248,7 +7245,7 @@ export type BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction =
     actionType: "initModel";
     actionLabel?: string | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForBuildCarryOnObject;
     params: {
         metaModel: BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_metaModel;
         dataStoreType: BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_dataStoreType;
@@ -7260,33 +7257,33 @@ export type BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction =
     actionType: "commit";
     actionLabel?: string | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForBuildCarryOnObject;
 } | {
     actionType: "rollback";
     actionLabel?: string | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForBuildCarryOnObject;
 } | {
     actionType: "remoteLocalCacheRollback";
     actionLabel?: string | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForBuildCarryOnObject;
 } | {
     actionType: "resetModel";
     actionLabel?: string | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForBuildCarryOnObject;
 } | {
     actionType: "resetData";
     actionLabel?: string | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForBuildCarryOnObject;
 } | {
     actionType: "alterEntityAttribute";
     actionLabel?: string | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
     transactional?: boolean | undefined;
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForBuildCarryOnObject;
     entityName: string;
     entityUuid: string;
     entityDefinitionUuid: string;
@@ -7301,7 +7298,7 @@ export type BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction =
     actionLabel?: string | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
     transactional?: boolean | undefined;
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForBuildCarryOnObject;
     entityName?: string | undefined;
     entityUuid: string;
     entityDefinitionUuid: string;
@@ -7311,7 +7308,7 @@ export type BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction =
     actionLabel?: string | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
     transactional?: boolean | undefined;
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForBuildCarryOnObject;
     entities: {
         entity: BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity | TransformerForBuildCarryOnObject;
         entityDefinition: BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition | TransformerForBuildCarryOnObject;
@@ -7320,7 +7317,7 @@ export type BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction =
     actionType: "dropEntity";
     actionLabel?: string | undefined;
     transactional?: boolean | undefined;
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForBuildCarryOnObject;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
     entityUuid: string;
     entityDefinitionUuid: string;
@@ -7329,13 +7326,13 @@ export type BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceActio
     actionType: "createInstance";
     actionLabel?: string | undefined;
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89";
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForBuildCarryOnObject;
     applicationSection: BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection;
     objects: BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection[];
 } | {
     actionType: "deleteInstance";
     actionLabel?: string | undefined;
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForBuildCarryOnObject;
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89";
     applicationSection: BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection;
     includeInTransaction?: boolean | undefined;
@@ -7343,7 +7340,7 @@ export type BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceActio
 } | {
     actionType: "deleteInstanceWithCascade";
     actionLabel?: string | undefined;
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForBuildCarryOnObject;
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89";
     applicationSection: BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection;
     includeInTransaction?: boolean | undefined;
@@ -7352,7 +7349,7 @@ export type BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceActio
     actionType: "updateInstance";
     actionLabel?: string | undefined;
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89";
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForBuildCarryOnObject;
     applicationSection: BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection;
     includeInTransaction?: boolean | undefined;
     objects: (BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection | TransformerForBuildCarryOnObject)[];
@@ -7360,13 +7357,13 @@ export type BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceActio
     actionType: "loadNewInstancesInLocalCache";
     actionLabel?: string | undefined;
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89";
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForBuildCarryOnObject;
     objects: BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection[];
 } | {
     actionType: "getInstance";
     actionLabel?: string | undefined;
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89";
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForBuildCarryOnObject;
     applicationSection: BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection;
     parentUuid: string;
     uuid: string;
@@ -7374,7 +7371,7 @@ export type BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceActio
     actionType: "getInstances";
     actionLabel?: string | undefined;
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89";
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForBuildCarryOnObject;
     applicationSection: BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection;
     parentUuid: string;
 };
@@ -7382,13 +7379,13 @@ export type BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAc
     actionType: "createInstance";
     actionLabel?: string | undefined;
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89";
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForBuildCarryOnObject;
     applicationSection: BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection;
     objects: BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection[];
 } | {
     actionType: "deleteInstance";
     actionLabel?: string | undefined;
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForBuildCarryOnObject;
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89";
     applicationSection: BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection;
     includeInTransaction?: boolean | undefined;
@@ -7397,7 +7394,7 @@ export type BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAc
     actionType: "updateInstance";
     actionLabel?: string | undefined;
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89";
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForBuildCarryOnObject;
     applicationSection: BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection;
     includeInTransaction?: boolean | undefined;
     objects: (BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection | TransformerForBuildCarryOnObject)[];
@@ -7432,9 +7429,35 @@ export type BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeActi
         testAssertion: BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion;
     })[];
 };
-export type BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryAction = RunBoxedQueryAction;
-export type BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorAction = RunBoxedExtractorAction;
-export type BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction = RunBoxedExtractorOrQueryAction;
+export type BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryAction = {
+    actionType: "runBoxedQueryAction";
+    actionName: "runQuery";
+    actionLabel?: string | undefined;
+    endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e";
+    applicationSection?: BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | undefined;
+    deploymentUuid: string | TransformerForBuildCarryOnObject;
+    queryExecutionStrategy?: ("localCacheOrFail" | "localCacheOrFetch" | "ServerCache" | "storage") | undefined;
+    query: BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedQueryWithExtractorCombinerTransformer;
+};
+export type BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorAction = {
+    actionType: "runBoxedExtractorAction";
+    actionName: "runQuery";
+    actionLabel?: string | undefined;
+    endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e";
+    applicationSection?: BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | undefined;
+    deploymentUuid: string | TransformerForBuildCarryOnObject;
+    query: BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedExtractorOrCombinerReturningObjectOrObjectList;
+};
+export type BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction = {
+    actionType: "runBoxedExtractorOrQueryAction";
+    actionName: "runQuery";
+    actionLabel?: string | undefined;
+    endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e";
+    applicationSection?: BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | undefined;
+    deploymentUuid: string | TransformerForBuildCarryOnObject;
+    queryExecutionStrategy?: ("localCacheOrFail" | "localCacheOrFetch" | "ServerCache" | "storage") | undefined;
+    query: BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedExtractorOrCombinerReturningObjectOrObjectList | BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedQueryWithExtractorCombinerTransformer;
+};
 export type BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion = TestAssertion;
 export type BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeManagementAction = StoreManagementAction;
 export type BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_bundleAction = BundleAction;
@@ -8193,7 +8216,7 @@ export type BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_mo
     actionType: "initModel";
     actionLabel?: string | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForBuildPlusRuntimeCarryOnObject;
     params: {
         metaModel: BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_metaModel;
         dataStoreType: BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_dataStoreType;
@@ -8205,33 +8228,33 @@ export type BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_mo
     actionType: "commit";
     actionLabel?: string | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForBuildPlusRuntimeCarryOnObject;
 } | {
     actionType: "rollback";
     actionLabel?: string | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForBuildPlusRuntimeCarryOnObject;
 } | {
     actionType: "remoteLocalCacheRollback";
     actionLabel?: string | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForBuildPlusRuntimeCarryOnObject;
 } | {
     actionType: "resetModel";
     actionLabel?: string | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForBuildPlusRuntimeCarryOnObject;
 } | {
     actionType: "resetData";
     actionLabel?: string | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForBuildPlusRuntimeCarryOnObject;
 } | {
     actionType: "alterEntityAttribute";
     actionLabel?: string | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
     transactional?: boolean | undefined;
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForBuildPlusRuntimeCarryOnObject;
     entityName: string;
     entityUuid: string;
     entityDefinitionUuid: string;
@@ -8246,7 +8269,7 @@ export type BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_mo
     actionLabel?: string | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
     transactional?: boolean | undefined;
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForBuildPlusRuntimeCarryOnObject;
     entityName?: string | undefined;
     entityUuid: string;
     entityDefinitionUuid: string;
@@ -8256,7 +8279,7 @@ export type BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_mo
     actionLabel?: string | undefined;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
     transactional?: boolean | undefined;
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForBuildPlusRuntimeCarryOnObject;
     entities: {
         entity: BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity | TransformerForBuildPlusRuntimeCarryOnObject;
         entityDefinition: BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition | TransformerForBuildPlusRuntimeCarryOnObject;
@@ -8265,7 +8288,7 @@ export type BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_mo
     actionType: "dropEntity";
     actionLabel?: string | undefined;
     transactional?: boolean | undefined;
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForBuildPlusRuntimeCarryOnObject;
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
     entityUuid: string;
     entityDefinitionUuid: string;
@@ -8274,13 +8297,13 @@ export type BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_in
     actionType: "createInstance";
     actionLabel?: string | undefined;
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89";
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForBuildPlusRuntimeCarryOnObject;
     applicationSection: BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection;
     objects: BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection[];
 } | {
     actionType: "deleteInstance";
     actionLabel?: string | undefined;
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForBuildPlusRuntimeCarryOnObject;
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89";
     applicationSection: BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection;
     includeInTransaction?: boolean | undefined;
@@ -8288,7 +8311,7 @@ export type BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_in
 } | {
     actionType: "deleteInstanceWithCascade";
     actionLabel?: string | undefined;
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForBuildPlusRuntimeCarryOnObject;
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89";
     applicationSection: BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection;
     includeInTransaction?: boolean | undefined;
@@ -8297,7 +8320,7 @@ export type BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_in
     actionType: "updateInstance";
     actionLabel?: string | undefined;
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89";
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForBuildPlusRuntimeCarryOnObject;
     applicationSection: BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection;
     includeInTransaction?: boolean | undefined;
     objects: (BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection | TransformerForBuildPlusRuntimeCarryOnObject)[];
@@ -8305,13 +8328,13 @@ export type BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_in
     actionType: "loadNewInstancesInLocalCache";
     actionLabel?: string | undefined;
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89";
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForBuildPlusRuntimeCarryOnObject;
     objects: BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection[];
 } | {
     actionType: "getInstance";
     actionLabel?: string | undefined;
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89";
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForBuildPlusRuntimeCarryOnObject;
     applicationSection: BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection;
     parentUuid: string;
     uuid: string;
@@ -8319,7 +8342,7 @@ export type BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_in
     actionType: "getInstances";
     actionLabel?: string | undefined;
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89";
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForBuildPlusRuntimeCarryOnObject;
     applicationSection: BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection;
     parentUuid: string;
 };
@@ -8327,13 +8350,13 @@ export type BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_in
     actionType: "createInstance";
     actionLabel?: string | undefined;
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89";
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForBuildPlusRuntimeCarryOnObject;
     applicationSection: BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection;
     objects: BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection[];
 } | {
     actionType: "deleteInstance";
     actionLabel?: string | undefined;
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForBuildPlusRuntimeCarryOnObject;
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89";
     applicationSection: BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection;
     includeInTransaction?: boolean | undefined;
@@ -8342,7 +8365,7 @@ export type BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_in
     actionType: "updateInstance";
     actionLabel?: string | undefined;
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89";
-    deploymentUuid: string;
+    deploymentUuid: string | TransformerForBuildPlusRuntimeCarryOnObject;
     applicationSection: BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection;
     includeInTransaction?: boolean | undefined;
     objects: (BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection | TransformerForBuildPlusRuntimeCarryOnObject)[];
@@ -8377,9 +8400,35 @@ export type BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_co
         testAssertion: BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion;
     })[];
 };
-export type BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryAction = RunBoxedQueryAction;
-export type BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorAction = RunBoxedExtractorAction;
-export type BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction = RunBoxedExtractorOrQueryAction;
+export type BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryAction = {
+    actionType: "runBoxedQueryAction";
+    actionName: "runQuery";
+    actionLabel?: string | undefined;
+    endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e";
+    applicationSection?: BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | undefined;
+    deploymentUuid: string | TransformerForBuildPlusRuntimeCarryOnObject;
+    queryExecutionStrategy?: ("localCacheOrFail" | "localCacheOrFetch" | "ServerCache" | "storage") | undefined;
+    query: BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedQueryWithExtractorCombinerTransformer;
+};
+export type BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorAction = {
+    actionType: "runBoxedExtractorAction";
+    actionName: "runQuery";
+    actionLabel?: string | undefined;
+    endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e";
+    applicationSection?: BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | undefined;
+    deploymentUuid: string | TransformerForBuildPlusRuntimeCarryOnObject;
+    query: BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedExtractorOrCombinerReturningObjectOrObjectList;
+};
+export type BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction = {
+    actionType: "runBoxedExtractorOrQueryAction";
+    actionName: "runQuery";
+    actionLabel?: string | undefined;
+    endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e";
+    applicationSection?: BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | undefined;
+    deploymentUuid: string | TransformerForBuildPlusRuntimeCarryOnObject;
+    queryExecutionStrategy?: ("localCacheOrFail" | "localCacheOrFetch" | "ServerCache" | "storage") | undefined;
+    query: BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedExtractorOrCombinerReturningObjectOrObjectList | BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedQueryWithExtractorCombinerTransformer;
+};
 export type BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion = TestAssertion;
 export type BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeManagementAction = StoreManagementAction;
 export type BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_bundleAction = BundleAction;
@@ -8878,7 +8927,7 @@ export const queryFailed: z.ZodType<QueryFailed> = z.object({queryFailure:z.enum
 export const extractorTemplateCombinerForObjectByRelation: z.ZodType<ExtractorTemplateCombinerForObjectByRelation> = z.object({label:z.string().optional(), applicationSection:z.lazy(() =>applicationSection).optional(), parentName:z.string().optional(), parentUuid:z.union([z.string(), z.lazy(() =>transformerForBuild_InnerReference)]), extractorTemplateType:z.literal("combinerForObjectByRelation"), objectReference:z.lazy(() =>transformerForRuntime_InnerReference), AttributeOfObjectToCompareToReferenceUuid:z.string()}).strict();
 export const extractorTemplateExtractorForObjectByDirectReference: z.ZodType<ExtractorTemplateExtractorForObjectByDirectReference> = z.object({label:z.string().optional(), applicationSection:z.lazy(() =>applicationSection).optional(), parentName:z.string().optional(), parentUuid:z.union([z.string(), z.lazy(() =>transformerForBuild_InnerReference)]), extractorTemplateType:z.literal("extractorForObjectByDirectReference"), instanceUuid:z.lazy(() =>transformerForBuild_InnerReference)}).strict();
 export const extractorTemplateReturningObject: z.ZodType<ExtractorTemplateReturningObject> = z.union([z.lazy(() =>extractorTemplateCombinerForObjectByRelation), z.lazy(() =>extractorTemplateExtractorForObjectByDirectReference)]);
-export const extractorTemplateForObjectListByEntity: z.ZodType<ExtractorTemplateForObjectListByEntity> = z.object({label:z.string().optional(), applicationSection:z.lazy(() =>applicationSection).optional(), parentName:z.string().optional(), parentUuid:z.union([z.string(), z.lazy(() =>transformerForBuild_InnerReference)]), extractorTemplateType:z.literal("extractorTemplateForObjectListByEntity"), orderBy:z.object({attributeName:z.string(), direction:z.enum(["ASC","DESC"]).optional()}).strict().optional(), filter:z.object({attributeName:z.string(), value:z.lazy(() =>transformerForRuntime_constantString)}).strict().optional()}).strict();
+export const extractorTemplateForObjectListByEntity: z.ZodType<ExtractorTemplateForObjectListByEntity> = z.object({label:z.string().optional(), applicationSection:z.lazy(() =>applicationSection).optional(), parentName:z.string().optional(), parentUuid:z.union([z.string(), z.lazy(() =>transformerForBuild_InnerReference)]), extractorTemplateType:z.literal("extractorTemplateForObjectListByEntity"), orderBy:z.object({attributeName:z.string(), direction:z.enum(["ASC","DESC"]).optional()}).strict().optional(), filter:z.object({attributeName:z.string(), value:z.lazy(() =>transformerForBuildPlusRuntime)}).strict().optional()}).strict();
 export const extractorTemplateByRelationReturningObjectList: z.ZodType<ExtractorTemplateByRelationReturningObjectList> = z.object({label:z.string().optional(), applicationSection:z.lazy(() =>applicationSection).optional(), parentName:z.string().optional(), parentUuid:z.union([z.string(), z.lazy(() =>transformerForBuild_InnerReference)]), extractorTemplateType:z.literal("combinerByRelationReturningObjectList"), orderBy:z.object({attributeName:z.string(), direction:z.enum(["ASC","DESC"]).optional()}).strict().optional(), objectReference:z.lazy(() =>transformerForRuntime_InnerReference), objectReferenceAttribute:z.string().optional(), AttributeOfListObjectToCompareToReferenceUuid:z.string()}).strict();
 export const extractorTemplateByManyToManyRelationReturningObjectList: z.ZodType<ExtractorTemplateByManyToManyRelationReturningObjectList> = z.object({label:z.string().optional(), applicationSection:z.lazy(() =>applicationSection).optional(), parentName:z.string().optional(), parentUuid:z.union([z.string(), z.lazy(() =>transformerForBuild_InnerReference)]), extractorTemplateType:z.literal("combinerByManyToManyRelationReturningObjectList"), orderBy:z.object({attributeName:z.string(), direction:z.enum(["ASC","DESC"]).optional()}).strict().optional(), objectListReference:z.lazy(() =>transformerForRuntime_contextReference), objectListReferenceAttribute:z.string().optional(), AttributeOfRootListObjectToCompareToListReferenceUuid:z.string().optional()}).strict();
 export const extractorTemplateReturningObjectList: z.ZodType<ExtractorTemplateReturningObjectList> = z.union([z.lazy(() =>extractorTemplateForObjectListByEntity), z.lazy(() =>extractorTemplateByRelationReturningObjectList), z.lazy(() =>extractorTemplateByManyToManyRelationReturningObjectList)]);
@@ -8985,7 +9034,7 @@ export const compositeActionDefinition: z.ZodType<CompositeActionDefinition> = z
 export const compositeAction: z.ZodType<CompositeAction> = z.object({actionType:z.literal("compositeAction"), actionName:z.literal("sequence"), actionLabel:z.string().optional(), deploymentUuid:z.string().uuid().optional(), templates:z.record(z.string(),z.any()).optional(), definition:z.array(z.union([z.lazy(() =>domainAction), z.lazy(() =>compositeAction), z.object({actionType:z.literal("compositeRunBoxedQueryAction"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), queryTemplate:z.lazy(() =>runBoxedQueryAction)}).strict(), z.object({actionType:z.literal("compositeRunBoxedExtractorAction"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), queryTemplate:z.lazy(() =>runBoxedExtractorAction)}).strict(), z.object({actionType:z.literal("compositeRunBoxedExtractorOrQueryAction"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), query:z.lazy(() =>runBoxedExtractorOrQueryAction)}).strict(), z.object({actionType:z.literal("compositeRunTestAssertion"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), testAssertion:z.lazy(() =>testAssertion)}).strict()]))}).strict();
 export const buildCompositeAction: z.ZodType<BuildCompositeAction> = z.object({actionType:z.literal("compositeAction"), actionName:z.literal("sequence"), actionLabel:z.string().optional(), deploymentUuid:z.string().uuid().optional(), templates:z.record(z.string(),z.any()).optional(), definition:z.array(z.union([z.lazy(() =>buildDomainAction), z.lazy(() =>buildCompositeAction), z.object({actionType:z.literal("compositeRunBoxedQueryAction"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), queryTemplate:z.lazy(() =>runBoxedQueryAction)}).strict(), z.object({actionType:z.literal("compositeRunBoxedExtractorAction"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), queryTemplate:z.lazy(() =>runBoxedExtractorAction)}).strict(), z.object({actionType:z.literal("compositeRunBoxedExtractorOrQueryAction"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), query:z.lazy(() =>runBoxedExtractorOrQueryAction)}).strict(), z.object({actionType:z.literal("compositeRunTestAssertion"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), testAssertion:z.lazy(() =>testAssertion)}).strict()]))}).strict();
 export const runtimeCompositeAction: z.ZodType<RuntimeCompositeAction> = z.object({actionType:z.literal("compositeAction"), actionName:z.literal("sequence"), actionLabel:z.string().optional(), deploymentUuid:z.string().uuid().optional(), templates:z.record(z.string(),z.any()).optional(), definition:z.array(z.union([z.lazy(() =>runtimeDomainAction), z.lazy(() =>runtimeCompositeAction), z.object({actionType:z.literal("compositeRunBoxedQueryAction"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), queryTemplate:z.lazy(() =>runBoxedQueryAction)}).strict(), z.object({actionType:z.literal("compositeRunBoxedExtractorAction"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), queryTemplate:z.lazy(() =>runBoxedExtractorAction)}).strict(), z.object({actionType:z.literal("compositeRunBoxedExtractorOrQueryAction"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), query:z.lazy(() =>runBoxedExtractorOrQueryAction)}).strict(), z.object({actionType:z.literal("compositeRunTestAssertion"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), testAssertion:z.lazy(() =>testAssertion)}).strict()]))}).strict();
-export const buildPlusRuntimeCompositeAction: z.ZodType<BuildPlusRuntimeCompositeAction> = z.object({actionType:z.literal("compositeAction"), actionName:z.literal("sequence"), actionLabel:z.string().optional(), deploymentUuid:z.string().uuid().optional(), templates:z.record(z.string(),z.any()).optional(), definition:z.array(z.union([z.lazy(() =>buildPlusRuntimeDomainAction), z.lazy(() =>buildPlusRuntimeCompositeAction), z.object({actionType:z.literal("compositeRunBoxedQueryAction"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), queryTemplate:z.lazy(() =>runBoxedQueryAction)}).strict(), z.object({actionType:z.literal("compositeRunBoxedExtractorAction"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), queryTemplate:z.lazy(() =>runBoxedExtractorAction)}).strict(), z.object({actionType:z.literal("compositeRunBoxedExtractorOrQueryAction"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), query:z.lazy(() =>runBoxedExtractorOrQueryAction)}).strict(), z.object({actionType:z.literal("compositeRunTestAssertion"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), testAssertion:z.lazy(() =>testAssertion)}).strict()]))}).strict();
+export const buildPlusRuntimeCompositeAction: z.ZodType<BuildPlusRuntimeCompositeAction> = z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction);
 export const compositeRunTestAssertion: z.ZodType<CompositeRunTestAssertion> = z.object({actionType:z.literal("compositeRunTestAssertion"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), testAssertion:z.lazy(() =>testAssertion)}).strict();
 export const domainAction: z.ZodType<DomainAction> = z.union([z.lazy(() =>undoRedoAction), z.lazy(() =>storeOrBundleAction), z.lazy(() =>modelAction), z.lazy(() =>instanceAction), z.object({actionType:z.literal("transactionalInstanceAction"), actionLabel:z.string().optional(), deploymentUuid:z.string().uuid().optional(), instanceAction:z.lazy(() =>instanceCUDAction)}).strict(), z.object({actionType:z.literal("compositeAction"), actionName:z.literal("sequence"), actionLabel:z.string().optional(), deploymentUuid:z.string().uuid().optional(), templates:z.record(z.string(),z.any()).optional(), definition:z.array(z.union([z.lazy(() =>domainAction), z.lazy(() =>compositeAction), z.object({actionType:z.literal("compositeRunBoxedQueryAction"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), queryTemplate:z.lazy(() =>runBoxedQueryAction)}).strict(), z.object({actionType:z.literal("compositeRunBoxedExtractorAction"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), queryTemplate:z.lazy(() =>runBoxedExtractorAction)}).strict(), z.object({actionType:z.literal("compositeRunBoxedExtractorOrQueryAction"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), query:z.lazy(() =>runBoxedExtractorOrQueryAction)}).strict(), z.object({actionType:z.literal("compositeRunTestAssertion"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), testAssertion:z.lazy(() =>testAssertion)}).strict()]))}).strict()]);
 export const modelActionReplayableAction: z.ZodType<ModelActionReplayableAction> = z.union([z.lazy(() =>modelActionAlterEntityAttribute), z.lazy(() =>modelActionCreateEntity), z.lazy(() =>modelActionDropEntity), z.lazy(() =>modelActionRenameEntity)]);
@@ -9200,7 +9249,7 @@ export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateRetur
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateByExtractorWrapperReturningObject: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateByExtractorWrapperReturningObject> = z.union([z.lazy(() =>transformerForBuildCarryOnObject), z.object({extractorTemplateType:z.union([z.literal("extractorTemplateByExtractorWrapperReturningObject"), z.lazy(() =>transformerForBuildCarryOnObject)]), definition:z.union([z.record(z.string(),z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_contextOrParameterReferenceTO_REMOVE), z.lazy(() =>transformerForBuildCarryOnObject)])), z.lazy(() =>transformerForBuildCarryOnObject)])}).strict()]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateByExtractorWrapperReturningList: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateByExtractorWrapperReturningList> = z.union([z.lazy(() =>transformerForBuildCarryOnObject), z.object({extractorTemplateType:z.union([z.literal("extractorTemplateByExtractorWrapperReturningList"), z.lazy(() =>transformerForBuildCarryOnObject)]), definition:z.union([z.array(z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_contextOrParameterReferenceTO_REMOVE), z.lazy(() =>transformerForBuildCarryOnObject)])), z.lazy(() =>transformerForBuildCarryOnObject)])}).strict()]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateRoot: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateRoot> = z.union([z.lazy(() =>transformerForBuildCarryOnObject), z.object({label:z.union([z.string().optional(), z.lazy(() =>transformerForBuildCarryOnObject)]).optional(), applicationSection:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection).optional(), z.lazy(() =>transformerForBuildCarryOnObject)]), parentName:z.union([z.string().optional(), z.lazy(() =>transformerForBuildCarryOnObject)]).optional(), parentUuid:z.union([z.string(), z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_InnerReference), z.lazy(() =>transformerForBuildCarryOnObject)])}).strict()]);
-export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateForObjectListByEntity: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateForObjectListByEntity> = z.union([z.lazy(() =>transformerForBuildCarryOnObject), z.object({label:z.union([z.string().optional(), z.lazy(() =>transformerForBuildCarryOnObject)]).optional(), applicationSection:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection).optional(), z.lazy(() =>transformerForBuildCarryOnObject)]), parentName:z.union([z.string().optional(), z.lazy(() =>transformerForBuildCarryOnObject)]).optional(), parentUuid:z.union([z.string(), z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_InnerReference), z.lazy(() =>transformerForBuildCarryOnObject)]), extractorTemplateType:z.union([z.literal("extractorTemplateForObjectListByEntity"), z.lazy(() =>transformerForBuildCarryOnObject)]), orderBy:z.union([z.lazy(() =>transformerForBuildCarryOnObject), z.object({attributeName:z.union([z.string(), z.lazy(() =>transformerForBuildCarryOnObject)]), direction:z.union([z.enum(["ASC","DESC"]).optional(), z.lazy(() =>transformerForBuildCarryOnObject)]).optional()}).strict()]).optional(), filter:z.union([z.lazy(() =>transformerForBuildCarryOnObject), z.object({attributeName:z.union([z.string(), z.lazy(() =>transformerForBuildCarryOnObject)]), value:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_constantString), z.lazy(() =>transformerForBuildCarryOnObject)])}).strict()]).optional()}).strict()]);
+export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateForObjectListByEntity: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateForObjectListByEntity> = z.union([z.lazy(() =>transformerForBuildCarryOnObject), z.object({label:z.union([z.string().optional(), z.lazy(() =>transformerForBuildCarryOnObject)]).optional(), applicationSection:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection).optional(), z.lazy(() =>transformerForBuildCarryOnObject)]), parentName:z.union([z.string().optional(), z.lazy(() =>transformerForBuildCarryOnObject)]).optional(), parentUuid:z.union([z.string(), z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_InnerReference), z.lazy(() =>transformerForBuildCarryOnObject)]), extractorTemplateType:z.union([z.literal("extractorTemplateForObjectListByEntity"), z.lazy(() =>transformerForBuildCarryOnObject)]), orderBy:z.union([z.lazy(() =>transformerForBuildCarryOnObject), z.object({attributeName:z.union([z.string(), z.lazy(() =>transformerForBuildCarryOnObject)]), direction:z.union([z.enum(["ASC","DESC"]).optional(), z.lazy(() =>transformerForBuildCarryOnObject)]).optional()}).strict()]).optional(), filter:z.union([z.lazy(() =>transformerForBuildCarryOnObject), z.object({attributeName:z.union([z.string(), z.lazy(() =>transformerForBuildCarryOnObject)]), value:z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime), z.lazy(() =>transformerForBuildCarryOnObject)])}).strict()]).optional()}).strict()]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_contextOrParameterReferenceTO_REMOVE: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_contextOrParameterReferenceTO_REMOVE> = z.union([z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_contextReference), z.lazy(() =>carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_parameterReference), z.lazy(() =>transformerForBuildCarryOnObject)]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodEnumAttributeTypes: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodEnumAttributeTypes> = z.union([z.enum(["any","bigint","boolean","date","never","null","number","string","uuid","undefined","unknown","void"]), z.lazy(() =>transformerForBuildCarryOnObject)]);
 export const carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodEnumElementTypes: z.ZodType<CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodEnumElementTypes> = z.union([z.enum(["array","date","enum","function","lazy","literal","intersection","map","number","object","promise","record","schemaReference","set","string","tuple","union"]), z.lazy(() =>transformerForBuildCarryOnObject)]);
@@ -9246,13 +9295,13 @@ export const runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transforme
 export const runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction: z.ZodType<RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction> = z.union([z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction), z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeOrBundleAction), z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction), z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction), z.object({actionType:z.literal("transactionalInstanceAction"), actionLabel:z.string().optional(), deploymentUuid:z.string().uuid().optional(), instanceAction:z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction)}).strict(), z.object({actionType:z.literal("compositeAction"), actionName:z.literal("sequence"), actionLabel:z.string().optional(), deploymentUuid:z.string().uuid().optional(), templates:z.record(z.string(),z.any()).optional(), definition:z.array(z.union([z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction), z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction), z.object({actionType:z.literal("compositeRunBoxedQueryAction"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), queryTemplate:z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryAction)}).strict(), z.object({actionType:z.literal("compositeRunBoxedExtractorAction"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), queryTemplate:z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorAction)}).strict(), z.object({actionType:z.literal("compositeRunBoxedExtractorOrQueryAction"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), query:z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction)}).strict(), z.object({actionType:z.literal("compositeRunTestAssertion"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), testAssertion:z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion)}).strict()]))}).strict()]);
 export const runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction: z.ZodType<RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction> = z.lazy(() =>undoRedoAction);
 export const runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeOrBundleAction: z.ZodType<RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeOrBundleAction> = z.lazy(() =>storeOrBundleAction);
-export const runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction: z.ZodType<RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction> = z.union([z.object({actionType:z.literal("initModel"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.string().uuid(), params:z.object({metaModel:z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_metaModel), dataStoreType:z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_dataStoreType), selfApplication:z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selfApplication), applicationModelBranch:z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance), applicationVersion:z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance)}).strict()}).strict(), z.object({actionType:z.literal("commit"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.string().uuid()}).strict(), z.object({actionType:z.literal("rollback"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.string().uuid()}).strict(), z.object({actionType:z.literal("remoteLocalCacheRollback"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.string().uuid()}).strict(), z.object({actionType:z.literal("resetModel"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.string().uuid()}).strict(), z.object({actionType:z.literal("resetData"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.string().uuid()}).strict(), z.object({actionType:z.literal("alterEntityAttribute"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), transactional:z.boolean().optional(), deploymentUuid:z.string().uuid(), entityName:z.string(), entityUuid:z.string(), entityDefinitionUuid:z.string(), addColumns:z.array(z.object({name:z.string(), definition:z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement)}).strict()).optional(), removeColumns:z.array(z.string()).optional(), update:z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement).optional()}).strict(), z.object({actionType:z.literal("renameEntity"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), transactional:z.boolean().optional(), deploymentUuid:z.string().uuid(), entityName:z.string().optional(), entityUuid:z.string(), entityDefinitionUuid:z.string(), targetValue:z.string()}).strict(), z.object({actionType:z.literal("createEntity"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), transactional:z.boolean().optional(), deploymentUuid:z.string().uuid(), entities:z.array(z.object({entity:z.union([z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity), z.lazy(() =>transformerForRuntime)]), entityDefinition:z.union([z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition), z.lazy(() =>transformerForRuntime)])}).strict())}).strict(), z.object({actionType:z.literal("dropEntity"), actionLabel:z.string().optional(), transactional:z.boolean().optional(), deploymentUuid:z.string().uuid(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), entityUuid:z.string(), entityDefinitionUuid:z.string()}).strict()]);
-export const runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction: z.ZodType<RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction> = z.union([z.object({actionType:z.literal("createInstance"), actionLabel:z.string().optional(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.string().uuid(), applicationSection:z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), objects:z.array(z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection))}).strict(), z.object({actionType:z.literal("deleteInstance"), actionLabel:z.string().optional(), deploymentUuid:z.string().uuid(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), applicationSection:z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), includeInTransaction:z.boolean().optional(), objects:z.array(z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection))}).strict(), z.object({actionType:z.literal("deleteInstanceWithCascade"), actionLabel:z.string().optional(), deploymentUuid:z.string().uuid(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), applicationSection:z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), includeInTransaction:z.boolean().optional(), objects:z.array(z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection))}).strict(), z.object({actionType:z.literal("updateInstance"), actionLabel:z.string().optional(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.string().uuid(), applicationSection:z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), includeInTransaction:z.boolean().optional(), objects:z.array(z.union([z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection), z.lazy(() =>transformerForRuntime)]))}).strict(), z.object({actionType:z.literal("loadNewInstancesInLocalCache"), actionLabel:z.string().optional(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.string().uuid(), objects:z.array(z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection))}).strict(), z.object({actionType:z.literal("getInstance"), actionLabel:z.string().optional(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.string().uuid(), applicationSection:z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), parentUuid:z.string().uuid(), uuid:z.string().uuid()}).strict(), z.object({actionType:z.literal("getInstances"), actionLabel:z.string().optional(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.string().uuid(), applicationSection:z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), parentUuid:z.string().uuid()}).strict()]);
-export const runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction: z.ZodType<RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction> = z.union([z.object({actionType:z.literal("createInstance"), actionLabel:z.string().optional(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.string().uuid(), applicationSection:z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), objects:z.array(z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection))}).strict(), z.object({actionType:z.literal("deleteInstance"), actionLabel:z.string().optional(), deploymentUuid:z.string().uuid(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), applicationSection:z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), includeInTransaction:z.boolean().optional(), objects:z.array(z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection))}).strict(), z.object({actionType:z.literal("updateInstance"), actionLabel:z.string().optional(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.string().uuid(), applicationSection:z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), includeInTransaction:z.boolean().optional(), objects:z.array(z.union([z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection), z.lazy(() =>transformerForRuntime)]))}).strict()]);
+export const runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction: z.ZodType<RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction> = z.union([z.object({actionType:z.literal("initModel"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForRuntime)]), params:z.object({metaModel:z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_metaModel), dataStoreType:z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_dataStoreType), selfApplication:z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selfApplication), applicationModelBranch:z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance), applicationVersion:z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance)}).strict()}).strict(), z.object({actionType:z.literal("commit"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForRuntime)])}).strict(), z.object({actionType:z.literal("rollback"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForRuntime)])}).strict(), z.object({actionType:z.literal("remoteLocalCacheRollback"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForRuntime)])}).strict(), z.object({actionType:z.literal("resetModel"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForRuntime)])}).strict(), z.object({actionType:z.literal("resetData"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForRuntime)])}).strict(), z.object({actionType:z.literal("alterEntityAttribute"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), transactional:z.boolean().optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForRuntime)]), entityName:z.string(), entityUuid:z.string(), entityDefinitionUuid:z.string(), addColumns:z.array(z.object({name:z.string(), definition:z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement)}).strict()).optional(), removeColumns:z.array(z.string()).optional(), update:z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement).optional()}).strict(), z.object({actionType:z.literal("renameEntity"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), transactional:z.boolean().optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForRuntime)]), entityName:z.string().optional(), entityUuid:z.string(), entityDefinitionUuid:z.string(), targetValue:z.string()}).strict(), z.object({actionType:z.literal("createEntity"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), transactional:z.boolean().optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForRuntime)]), entities:z.array(z.object({entity:z.union([z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity), z.lazy(() =>transformerForRuntime)]), entityDefinition:z.union([z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition), z.lazy(() =>transformerForRuntime)])}).strict())}).strict(), z.object({actionType:z.literal("dropEntity"), actionLabel:z.string().optional(), transactional:z.boolean().optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForRuntime)]), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), entityUuid:z.string(), entityDefinitionUuid:z.string()}).strict()]);
+export const runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction: z.ZodType<RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction> = z.union([z.object({actionType:z.literal("createInstance"), actionLabel:z.string().optional(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForRuntime)]), applicationSection:z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), objects:z.array(z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection))}).strict(), z.object({actionType:z.literal("deleteInstance"), actionLabel:z.string().optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForRuntime)]), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), applicationSection:z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), includeInTransaction:z.boolean().optional(), objects:z.array(z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection))}).strict(), z.object({actionType:z.literal("deleteInstanceWithCascade"), actionLabel:z.string().optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForRuntime)]), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), applicationSection:z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), includeInTransaction:z.boolean().optional(), objects:z.array(z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection))}).strict(), z.object({actionType:z.literal("updateInstance"), actionLabel:z.string().optional(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForRuntime)]), applicationSection:z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), includeInTransaction:z.boolean().optional(), objects:z.array(z.union([z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection), z.lazy(() =>transformerForRuntime)]))}).strict(), z.object({actionType:z.literal("loadNewInstancesInLocalCache"), actionLabel:z.string().optional(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForRuntime)]), objects:z.array(z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection))}).strict(), z.object({actionType:z.literal("getInstance"), actionLabel:z.string().optional(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForRuntime)]), applicationSection:z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), parentUuid:z.string().uuid(), uuid:z.string().uuid()}).strict(), z.object({actionType:z.literal("getInstances"), actionLabel:z.string().optional(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForRuntime)]), applicationSection:z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), parentUuid:z.string().uuid()}).strict()]);
+export const runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction: z.ZodType<RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction> = z.union([z.object({actionType:z.literal("createInstance"), actionLabel:z.string().optional(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForRuntime)]), applicationSection:z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), objects:z.array(z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection))}).strict(), z.object({actionType:z.literal("deleteInstance"), actionLabel:z.string().optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForRuntime)]), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), applicationSection:z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), includeInTransaction:z.boolean().optional(), objects:z.array(z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection))}).strict(), z.object({actionType:z.literal("updateInstance"), actionLabel:z.string().optional(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForRuntime)]), applicationSection:z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), includeInTransaction:z.boolean().optional(), objects:z.array(z.union([z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection), z.lazy(() =>transformerForRuntime)]))}).strict()]);
 export const runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction: z.ZodType<RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction> = z.object({actionType:z.literal("compositeAction"), actionName:z.literal("sequence"), actionLabel:z.string().optional(), deploymentUuid:z.string().uuid().optional(), templates:z.record(z.string(),z.any()).optional(), definition:z.array(z.union([z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction), z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction), z.object({actionType:z.literal("compositeRunBoxedQueryAction"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), queryTemplate:z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryAction)}).strict(), z.object({actionType:z.literal("compositeRunBoxedExtractorAction"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), queryTemplate:z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorAction)}).strict(), z.object({actionType:z.literal("compositeRunBoxedExtractorOrQueryAction"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), query:z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction)}).strict(), z.object({actionType:z.literal("compositeRunTestAssertion"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), testAssertion:z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion)}).strict()]))}).strict();
-export const runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryAction: z.ZodType<RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryAction> = z.lazy(() =>runBoxedQueryAction);
-export const runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorAction: z.ZodType<RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorAction> = z.lazy(() =>runBoxedExtractorAction);
-export const runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction: z.ZodType<RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction> = z.lazy(() =>runBoxedExtractorOrQueryAction);
+export const runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryAction: z.ZodType<RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryAction> = z.object({actionType:z.literal("runBoxedQueryAction"), actionName:z.literal("runQuery"), actionLabel:z.string().optional(), endpoint:z.literal("9e404b3c-368c-40cb-be8b-e3c28550c25e"), applicationSection:z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection).optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForRuntime)]), queryExecutionStrategy:z.enum(["localCacheOrFail","localCacheOrFetch","ServerCache","storage"]).optional(), query:z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedQueryWithExtractorCombinerTransformer)}).strict();
+export const runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorAction: z.ZodType<RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorAction> = z.object({actionType:z.literal("runBoxedExtractorAction"), actionName:z.literal("runQuery"), actionLabel:z.string().optional(), endpoint:z.literal("9e404b3c-368c-40cb-be8b-e3c28550c25e"), applicationSection:z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection).optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForRuntime)]), query:z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedExtractorOrCombinerReturningObjectOrObjectList)}).strict();
+export const runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction: z.ZodType<RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction> = z.object({actionType:z.literal("runBoxedExtractorOrQueryAction"), actionName:z.literal("runQuery"), actionLabel:z.string().optional(), endpoint:z.literal("9e404b3c-368c-40cb-be8b-e3c28550c25e"), applicationSection:z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection).optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForRuntime)]), queryExecutionStrategy:z.enum(["localCacheOrFail","localCacheOrFetch","ServerCache","storage"]).optional(), query:z.union([z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedExtractorOrCombinerReturningObjectOrObjectList), z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedQueryWithExtractorCombinerTransformer)])}).strict();
 export const runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion: z.ZodType<RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion> = z.lazy(() =>testAssertion);
 export const runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeManagementAction: z.ZodType<RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeManagementAction> = z.lazy(() =>storeManagementAction);
 export const runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_bundleAction: z.ZodType<RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_bundleAction> = z.lazy(() =>bundleAction);
@@ -9490,13 +9539,13 @@ export const buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_
 export const buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction: z.ZodType<BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction> = z.union([z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction), z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeOrBundleAction), z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction), z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction), z.object({actionType:z.literal("transactionalInstanceAction"), actionLabel:z.string().optional(), deploymentUuid:z.string().uuid().optional(), instanceAction:z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction)}).strict(), z.object({actionType:z.literal("compositeAction"), actionName:z.literal("sequence"), actionLabel:z.string().optional(), deploymentUuid:z.string().uuid().optional(), templates:z.record(z.string(),z.any()).optional(), definition:z.array(z.union([z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction), z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction), z.object({actionType:z.literal("compositeRunBoxedQueryAction"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), queryTemplate:z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryAction)}).strict(), z.object({actionType:z.literal("compositeRunBoxedExtractorAction"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), queryTemplate:z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorAction)}).strict(), z.object({actionType:z.literal("compositeRunBoxedExtractorOrQueryAction"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), query:z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction)}).strict(), z.object({actionType:z.literal("compositeRunTestAssertion"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), testAssertion:z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion)}).strict()]))}).strict()]);
 export const buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction: z.ZodType<BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction> = z.lazy(() =>undoRedoAction);
 export const buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeOrBundleAction: z.ZodType<BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeOrBundleAction> = z.lazy(() =>storeOrBundleAction);
-export const buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction: z.ZodType<BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction> = z.union([z.object({actionType:z.literal("initModel"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.string().uuid(), params:z.object({metaModel:z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_metaModel), dataStoreType:z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_dataStoreType), selfApplication:z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selfApplication), applicationModelBranch:z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance), applicationVersion:z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance)}).strict()}).strict(), z.object({actionType:z.literal("commit"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.string().uuid()}).strict(), z.object({actionType:z.literal("rollback"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.string().uuid()}).strict(), z.object({actionType:z.literal("remoteLocalCacheRollback"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.string().uuid()}).strict(), z.object({actionType:z.literal("resetModel"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.string().uuid()}).strict(), z.object({actionType:z.literal("resetData"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.string().uuid()}).strict(), z.object({actionType:z.literal("alterEntityAttribute"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), transactional:z.boolean().optional(), deploymentUuid:z.string().uuid(), entityName:z.string(), entityUuid:z.string(), entityDefinitionUuid:z.string(), addColumns:z.array(z.object({name:z.string(), definition:z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement)}).strict()).optional(), removeColumns:z.array(z.string()).optional(), update:z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement).optional()}).strict(), z.object({actionType:z.literal("renameEntity"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), transactional:z.boolean().optional(), deploymentUuid:z.string().uuid(), entityName:z.string().optional(), entityUuid:z.string(), entityDefinitionUuid:z.string(), targetValue:z.string()}).strict(), z.object({actionType:z.literal("createEntity"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), transactional:z.boolean().optional(), deploymentUuid:z.string().uuid(), entities:z.array(z.object({entity:z.union([z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity), z.lazy(() =>transformerForBuildCarryOnObject)]), entityDefinition:z.union([z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition), z.lazy(() =>transformerForBuildCarryOnObject)])}).strict())}).strict(), z.object({actionType:z.literal("dropEntity"), actionLabel:z.string().optional(), transactional:z.boolean().optional(), deploymentUuid:z.string().uuid(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), entityUuid:z.string(), entityDefinitionUuid:z.string()}).strict()]);
-export const buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction: z.ZodType<BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction> = z.union([z.object({actionType:z.literal("createInstance"), actionLabel:z.string().optional(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.string().uuid(), applicationSection:z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), objects:z.array(z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection))}).strict(), z.object({actionType:z.literal("deleteInstance"), actionLabel:z.string().optional(), deploymentUuid:z.string().uuid(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), applicationSection:z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), includeInTransaction:z.boolean().optional(), objects:z.array(z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection))}).strict(), z.object({actionType:z.literal("deleteInstanceWithCascade"), actionLabel:z.string().optional(), deploymentUuid:z.string().uuid(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), applicationSection:z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), includeInTransaction:z.boolean().optional(), objects:z.array(z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection))}).strict(), z.object({actionType:z.literal("updateInstance"), actionLabel:z.string().optional(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.string().uuid(), applicationSection:z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), includeInTransaction:z.boolean().optional(), objects:z.array(z.union([z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection), z.lazy(() =>transformerForBuildCarryOnObject)]))}).strict(), z.object({actionType:z.literal("loadNewInstancesInLocalCache"), actionLabel:z.string().optional(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.string().uuid(), objects:z.array(z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection))}).strict(), z.object({actionType:z.literal("getInstance"), actionLabel:z.string().optional(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.string().uuid(), applicationSection:z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), parentUuid:z.string().uuid(), uuid:z.string().uuid()}).strict(), z.object({actionType:z.literal("getInstances"), actionLabel:z.string().optional(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.string().uuid(), applicationSection:z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), parentUuid:z.string().uuid()}).strict()]);
-export const buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction: z.ZodType<BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction> = z.union([z.object({actionType:z.literal("createInstance"), actionLabel:z.string().optional(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.string().uuid(), applicationSection:z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), objects:z.array(z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection))}).strict(), z.object({actionType:z.literal("deleteInstance"), actionLabel:z.string().optional(), deploymentUuid:z.string().uuid(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), applicationSection:z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), includeInTransaction:z.boolean().optional(), objects:z.array(z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection))}).strict(), z.object({actionType:z.literal("updateInstance"), actionLabel:z.string().optional(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.string().uuid(), applicationSection:z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), includeInTransaction:z.boolean().optional(), objects:z.array(z.union([z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection), z.lazy(() =>transformerForBuildCarryOnObject)]))}).strict()]);
+export const buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction: z.ZodType<BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction> = z.union([z.object({actionType:z.literal("initModel"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForBuildCarryOnObject)]), params:z.object({metaModel:z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_metaModel), dataStoreType:z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_dataStoreType), selfApplication:z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selfApplication), applicationModelBranch:z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance), applicationVersion:z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance)}).strict()}).strict(), z.object({actionType:z.literal("commit"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForBuildCarryOnObject)])}).strict(), z.object({actionType:z.literal("rollback"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForBuildCarryOnObject)])}).strict(), z.object({actionType:z.literal("remoteLocalCacheRollback"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForBuildCarryOnObject)])}).strict(), z.object({actionType:z.literal("resetModel"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForBuildCarryOnObject)])}).strict(), z.object({actionType:z.literal("resetData"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForBuildCarryOnObject)])}).strict(), z.object({actionType:z.literal("alterEntityAttribute"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), transactional:z.boolean().optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForBuildCarryOnObject)]), entityName:z.string(), entityUuid:z.string(), entityDefinitionUuid:z.string(), addColumns:z.array(z.object({name:z.string(), definition:z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement)}).strict()).optional(), removeColumns:z.array(z.string()).optional(), update:z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement).optional()}).strict(), z.object({actionType:z.literal("renameEntity"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), transactional:z.boolean().optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForBuildCarryOnObject)]), entityName:z.string().optional(), entityUuid:z.string(), entityDefinitionUuid:z.string(), targetValue:z.string()}).strict(), z.object({actionType:z.literal("createEntity"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), transactional:z.boolean().optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForBuildCarryOnObject)]), entities:z.array(z.object({entity:z.union([z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity), z.lazy(() =>transformerForBuildCarryOnObject)]), entityDefinition:z.union([z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition), z.lazy(() =>transformerForBuildCarryOnObject)])}).strict())}).strict(), z.object({actionType:z.literal("dropEntity"), actionLabel:z.string().optional(), transactional:z.boolean().optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForBuildCarryOnObject)]), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), entityUuid:z.string(), entityDefinitionUuid:z.string()}).strict()]);
+export const buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction: z.ZodType<BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction> = z.union([z.object({actionType:z.literal("createInstance"), actionLabel:z.string().optional(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForBuildCarryOnObject)]), applicationSection:z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), objects:z.array(z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection))}).strict(), z.object({actionType:z.literal("deleteInstance"), actionLabel:z.string().optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForBuildCarryOnObject)]), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), applicationSection:z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), includeInTransaction:z.boolean().optional(), objects:z.array(z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection))}).strict(), z.object({actionType:z.literal("deleteInstanceWithCascade"), actionLabel:z.string().optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForBuildCarryOnObject)]), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), applicationSection:z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), includeInTransaction:z.boolean().optional(), objects:z.array(z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection))}).strict(), z.object({actionType:z.literal("updateInstance"), actionLabel:z.string().optional(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForBuildCarryOnObject)]), applicationSection:z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), includeInTransaction:z.boolean().optional(), objects:z.array(z.union([z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection), z.lazy(() =>transformerForBuildCarryOnObject)]))}).strict(), z.object({actionType:z.literal("loadNewInstancesInLocalCache"), actionLabel:z.string().optional(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForBuildCarryOnObject)]), objects:z.array(z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection))}).strict(), z.object({actionType:z.literal("getInstance"), actionLabel:z.string().optional(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForBuildCarryOnObject)]), applicationSection:z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), parentUuid:z.string().uuid(), uuid:z.string().uuid()}).strict(), z.object({actionType:z.literal("getInstances"), actionLabel:z.string().optional(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForBuildCarryOnObject)]), applicationSection:z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), parentUuid:z.string().uuid()}).strict()]);
+export const buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction: z.ZodType<BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction> = z.union([z.object({actionType:z.literal("createInstance"), actionLabel:z.string().optional(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForBuildCarryOnObject)]), applicationSection:z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), objects:z.array(z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection))}).strict(), z.object({actionType:z.literal("deleteInstance"), actionLabel:z.string().optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForBuildCarryOnObject)]), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), applicationSection:z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), includeInTransaction:z.boolean().optional(), objects:z.array(z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection))}).strict(), z.object({actionType:z.literal("updateInstance"), actionLabel:z.string().optional(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForBuildCarryOnObject)]), applicationSection:z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), includeInTransaction:z.boolean().optional(), objects:z.array(z.union([z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection), z.lazy(() =>transformerForBuildCarryOnObject)]))}).strict()]);
 export const buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction: z.ZodType<BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction> = z.object({actionType:z.literal("compositeAction"), actionName:z.literal("sequence"), actionLabel:z.string().optional(), deploymentUuid:z.string().uuid().optional(), templates:z.record(z.string(),z.any()).optional(), definition:z.array(z.union([z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction), z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction), z.object({actionType:z.literal("compositeRunBoxedQueryAction"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), queryTemplate:z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryAction)}).strict(), z.object({actionType:z.literal("compositeRunBoxedExtractorAction"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), queryTemplate:z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorAction)}).strict(), z.object({actionType:z.literal("compositeRunBoxedExtractorOrQueryAction"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), query:z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction)}).strict(), z.object({actionType:z.literal("compositeRunTestAssertion"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), testAssertion:z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion)}).strict()]))}).strict();
-export const buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryAction: z.ZodType<BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryAction> = z.lazy(() =>runBoxedQueryAction);
-export const buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorAction: z.ZodType<BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorAction> = z.lazy(() =>runBoxedExtractorAction);
-export const buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction: z.ZodType<BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction> = z.lazy(() =>runBoxedExtractorOrQueryAction);
+export const buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryAction: z.ZodType<BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryAction> = z.object({actionType:z.literal("runBoxedQueryAction"), actionName:z.literal("runQuery"), actionLabel:z.string().optional(), endpoint:z.literal("9e404b3c-368c-40cb-be8b-e3c28550c25e"), applicationSection:z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection).optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForBuildCarryOnObject)]), queryExecutionStrategy:z.enum(["localCacheOrFail","localCacheOrFetch","ServerCache","storage"]).optional(), query:z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedQueryWithExtractorCombinerTransformer)}).strict();
+export const buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorAction: z.ZodType<BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorAction> = z.object({actionType:z.literal("runBoxedExtractorAction"), actionName:z.literal("runQuery"), actionLabel:z.string().optional(), endpoint:z.literal("9e404b3c-368c-40cb-be8b-e3c28550c25e"), applicationSection:z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection).optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForBuildCarryOnObject)]), query:z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedExtractorOrCombinerReturningObjectOrObjectList)}).strict();
+export const buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction: z.ZodType<BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction> = z.object({actionType:z.literal("runBoxedExtractorOrQueryAction"), actionName:z.literal("runQuery"), actionLabel:z.string().optional(), endpoint:z.literal("9e404b3c-368c-40cb-be8b-e3c28550c25e"), applicationSection:z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection).optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForBuildCarryOnObject)]), queryExecutionStrategy:z.enum(["localCacheOrFail","localCacheOrFetch","ServerCache","storage"]).optional(), query:z.union([z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedExtractorOrCombinerReturningObjectOrObjectList), z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedQueryWithExtractorCombinerTransformer)])}).strict();
 export const buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion: z.ZodType<BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion> = z.lazy(() =>testAssertion);
 export const buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeManagementAction: z.ZodType<BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeManagementAction> = z.lazy(() =>storeManagementAction);
 export const buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_bundleAction: z.ZodType<BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_bundleAction> = z.lazy(() =>bundleAction);
@@ -9734,13 +9783,13 @@ export const buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_t
 export const buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction: z.ZodType<BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction> = z.union([z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction), z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeOrBundleAction), z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction), z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction), z.object({actionType:z.literal("transactionalInstanceAction"), actionLabel:z.string().optional(), deploymentUuid:z.string().uuid().optional(), instanceAction:z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction)}).strict(), z.object({actionType:z.literal("compositeAction"), actionName:z.literal("sequence"), actionLabel:z.string().optional(), deploymentUuid:z.string().uuid().optional(), templates:z.record(z.string(),z.any()).optional(), definition:z.array(z.union([z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction), z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction), z.object({actionType:z.literal("compositeRunBoxedQueryAction"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), queryTemplate:z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryAction)}).strict(), z.object({actionType:z.literal("compositeRunBoxedExtractorAction"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), queryTemplate:z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorAction)}).strict(), z.object({actionType:z.literal("compositeRunBoxedExtractorOrQueryAction"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), query:z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction)}).strict(), z.object({actionType:z.literal("compositeRunTestAssertion"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), testAssertion:z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion)}).strict()]))}).strict()]);
 export const buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction: z.ZodType<BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction> = z.lazy(() =>undoRedoAction);
 export const buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeOrBundleAction: z.ZodType<BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeOrBundleAction> = z.lazy(() =>storeOrBundleAction);
-export const buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction: z.ZodType<BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction> = z.union([z.object({actionType:z.literal("initModel"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.string().uuid(), params:z.object({metaModel:z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_metaModel), dataStoreType:z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_dataStoreType), selfApplication:z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selfApplication), applicationModelBranch:z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance), applicationVersion:z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance)}).strict()}).strict(), z.object({actionType:z.literal("commit"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.string().uuid()}).strict(), z.object({actionType:z.literal("rollback"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.string().uuid()}).strict(), z.object({actionType:z.literal("remoteLocalCacheRollback"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.string().uuid()}).strict(), z.object({actionType:z.literal("resetModel"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.string().uuid()}).strict(), z.object({actionType:z.literal("resetData"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.string().uuid()}).strict(), z.object({actionType:z.literal("alterEntityAttribute"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), transactional:z.boolean().optional(), deploymentUuid:z.string().uuid(), entityName:z.string(), entityUuid:z.string(), entityDefinitionUuid:z.string(), addColumns:z.array(z.object({name:z.string(), definition:z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement)}).strict()).optional(), removeColumns:z.array(z.string()).optional(), update:z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement).optional()}).strict(), z.object({actionType:z.literal("renameEntity"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), transactional:z.boolean().optional(), deploymentUuid:z.string().uuid(), entityName:z.string().optional(), entityUuid:z.string(), entityDefinitionUuid:z.string(), targetValue:z.string()}).strict(), z.object({actionType:z.literal("createEntity"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), transactional:z.boolean().optional(), deploymentUuid:z.string().uuid(), entities:z.array(z.object({entity:z.union([z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity), z.lazy(() =>transformerForBuildPlusRuntimeCarryOnObject)]), entityDefinition:z.union([z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition), z.lazy(() =>transformerForBuildPlusRuntimeCarryOnObject)])}).strict())}).strict(), z.object({actionType:z.literal("dropEntity"), actionLabel:z.string().optional(), transactional:z.boolean().optional(), deploymentUuid:z.string().uuid(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), entityUuid:z.string(), entityDefinitionUuid:z.string()}).strict()]);
-export const buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction: z.ZodType<BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction> = z.union([z.object({actionType:z.literal("createInstance"), actionLabel:z.string().optional(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.string().uuid(), applicationSection:z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), objects:z.array(z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection))}).strict(), z.object({actionType:z.literal("deleteInstance"), actionLabel:z.string().optional(), deploymentUuid:z.string().uuid(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), applicationSection:z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), includeInTransaction:z.boolean().optional(), objects:z.array(z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection))}).strict(), z.object({actionType:z.literal("deleteInstanceWithCascade"), actionLabel:z.string().optional(), deploymentUuid:z.string().uuid(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), applicationSection:z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), includeInTransaction:z.boolean().optional(), objects:z.array(z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection))}).strict(), z.object({actionType:z.literal("updateInstance"), actionLabel:z.string().optional(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.string().uuid(), applicationSection:z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), includeInTransaction:z.boolean().optional(), objects:z.array(z.union([z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection), z.lazy(() =>transformerForBuildPlusRuntimeCarryOnObject)]))}).strict(), z.object({actionType:z.literal("loadNewInstancesInLocalCache"), actionLabel:z.string().optional(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.string().uuid(), objects:z.array(z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection))}).strict(), z.object({actionType:z.literal("getInstance"), actionLabel:z.string().optional(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.string().uuid(), applicationSection:z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), parentUuid:z.string().uuid(), uuid:z.string().uuid()}).strict(), z.object({actionType:z.literal("getInstances"), actionLabel:z.string().optional(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.string().uuid(), applicationSection:z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), parentUuid:z.string().uuid()}).strict()]);
-export const buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction: z.ZodType<BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction> = z.union([z.object({actionType:z.literal("createInstance"), actionLabel:z.string().optional(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.string().uuid(), applicationSection:z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), objects:z.array(z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection))}).strict(), z.object({actionType:z.literal("deleteInstance"), actionLabel:z.string().optional(), deploymentUuid:z.string().uuid(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), applicationSection:z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), includeInTransaction:z.boolean().optional(), objects:z.array(z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection))}).strict(), z.object({actionType:z.literal("updateInstance"), actionLabel:z.string().optional(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.string().uuid(), applicationSection:z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), includeInTransaction:z.boolean().optional(), objects:z.array(z.union([z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection), z.lazy(() =>transformerForBuildPlusRuntimeCarryOnObject)]))}).strict()]);
+export const buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction: z.ZodType<BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelAction> = z.union([z.object({actionType:z.literal("initModel"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForBuildPlusRuntimeCarryOnObject)]), params:z.object({metaModel:z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_metaModel), dataStoreType:z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_dataStoreType), selfApplication:z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selfApplication), applicationModelBranch:z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance), applicationVersion:z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance)}).strict()}).strict(), z.object({actionType:z.literal("commit"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForBuildPlusRuntimeCarryOnObject)])}).strict(), z.object({actionType:z.literal("rollback"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForBuildPlusRuntimeCarryOnObject)])}).strict(), z.object({actionType:z.literal("remoteLocalCacheRollback"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForBuildPlusRuntimeCarryOnObject)])}).strict(), z.object({actionType:z.literal("resetModel"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForBuildPlusRuntimeCarryOnObject)])}).strict(), z.object({actionType:z.literal("resetData"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForBuildPlusRuntimeCarryOnObject)])}).strict(), z.object({actionType:z.literal("alterEntityAttribute"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), transactional:z.boolean().optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForBuildPlusRuntimeCarryOnObject)]), entityName:z.string(), entityUuid:z.string(), entityDefinitionUuid:z.string(), addColumns:z.array(z.object({name:z.string(), definition:z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement)}).strict()).optional(), removeColumns:z.array(z.string()).optional(), update:z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement).optional()}).strict(), z.object({actionType:z.literal("renameEntity"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), transactional:z.boolean().optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForBuildPlusRuntimeCarryOnObject)]), entityName:z.string().optional(), entityUuid:z.string(), entityDefinitionUuid:z.string(), targetValue:z.string()}).strict(), z.object({actionType:z.literal("createEntity"), actionLabel:z.string().optional(), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), transactional:z.boolean().optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForBuildPlusRuntimeCarryOnObject)]), entities:z.array(z.object({entity:z.union([z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity), z.lazy(() =>transformerForBuildPlusRuntimeCarryOnObject)]), entityDefinition:z.union([z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition), z.lazy(() =>transformerForBuildPlusRuntimeCarryOnObject)])}).strict())}).strict(), z.object({actionType:z.literal("dropEntity"), actionLabel:z.string().optional(), transactional:z.boolean().optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForBuildPlusRuntimeCarryOnObject)]), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), entityUuid:z.string(), entityDefinitionUuid:z.string()}).strict()]);
+export const buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction: z.ZodType<BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction> = z.union([z.object({actionType:z.literal("createInstance"), actionLabel:z.string().optional(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForBuildPlusRuntimeCarryOnObject)]), applicationSection:z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), objects:z.array(z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection))}).strict(), z.object({actionType:z.literal("deleteInstance"), actionLabel:z.string().optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForBuildPlusRuntimeCarryOnObject)]), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), applicationSection:z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), includeInTransaction:z.boolean().optional(), objects:z.array(z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection))}).strict(), z.object({actionType:z.literal("deleteInstanceWithCascade"), actionLabel:z.string().optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForBuildPlusRuntimeCarryOnObject)]), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), applicationSection:z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), includeInTransaction:z.boolean().optional(), objects:z.array(z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection))}).strict(), z.object({actionType:z.literal("updateInstance"), actionLabel:z.string().optional(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForBuildPlusRuntimeCarryOnObject)]), applicationSection:z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), includeInTransaction:z.boolean().optional(), objects:z.array(z.union([z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection), z.lazy(() =>transformerForBuildPlusRuntimeCarryOnObject)]))}).strict(), z.object({actionType:z.literal("loadNewInstancesInLocalCache"), actionLabel:z.string().optional(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForBuildPlusRuntimeCarryOnObject)]), objects:z.array(z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection))}).strict(), z.object({actionType:z.literal("getInstance"), actionLabel:z.string().optional(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForBuildPlusRuntimeCarryOnObject)]), applicationSection:z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), parentUuid:z.string().uuid(), uuid:z.string().uuid()}).strict(), z.object({actionType:z.literal("getInstances"), actionLabel:z.string().optional(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForBuildPlusRuntimeCarryOnObject)]), applicationSection:z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), parentUuid:z.string().uuid()}).strict()]);
+export const buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction: z.ZodType<BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction> = z.union([z.object({actionType:z.literal("createInstance"), actionLabel:z.string().optional(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForBuildPlusRuntimeCarryOnObject)]), applicationSection:z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), objects:z.array(z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection))}).strict(), z.object({actionType:z.literal("deleteInstance"), actionLabel:z.string().optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForBuildPlusRuntimeCarryOnObject)]), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), applicationSection:z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), includeInTransaction:z.boolean().optional(), objects:z.array(z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection))}).strict(), z.object({actionType:z.literal("updateInstance"), actionLabel:z.string().optional(), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForBuildPlusRuntimeCarryOnObject)]), applicationSection:z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection), includeInTransaction:z.boolean().optional(), objects:z.array(z.union([z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection), z.lazy(() =>transformerForBuildPlusRuntimeCarryOnObject)]))}).strict()]);
 export const buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction: z.ZodType<BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction> = z.object({actionType:z.literal("compositeAction"), actionName:z.literal("sequence"), actionLabel:z.string().optional(), deploymentUuid:z.string().uuid().optional(), templates:z.record(z.string(),z.any()).optional(), definition:z.array(z.union([z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction), z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction), z.object({actionType:z.literal("compositeRunBoxedQueryAction"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), queryTemplate:z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryAction)}).strict(), z.object({actionType:z.literal("compositeRunBoxedExtractorAction"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), queryTemplate:z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorAction)}).strict(), z.object({actionType:z.literal("compositeRunBoxedExtractorOrQueryAction"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), query:z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction)}).strict(), z.object({actionType:z.literal("compositeRunTestAssertion"), actionLabel:z.string().optional(), nameGivenToResult:z.string(), testAssertion:z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion)}).strict()]))}).strict();
-export const buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryAction: z.ZodType<BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryAction> = z.lazy(() =>runBoxedQueryAction);
-export const buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorAction: z.ZodType<BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorAction> = z.lazy(() =>runBoxedExtractorAction);
-export const buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction: z.ZodType<BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction> = z.lazy(() =>runBoxedExtractorOrQueryAction);
+export const buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryAction: z.ZodType<BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryAction> = z.object({actionType:z.literal("runBoxedQueryAction"), actionName:z.literal("runQuery"), actionLabel:z.string().optional(), endpoint:z.literal("9e404b3c-368c-40cb-be8b-e3c28550c25e"), applicationSection:z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection).optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForBuildPlusRuntimeCarryOnObject)]), queryExecutionStrategy:z.enum(["localCacheOrFail","localCacheOrFetch","ServerCache","storage"]).optional(), query:z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedQueryWithExtractorCombinerTransformer)}).strict();
+export const buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorAction: z.ZodType<BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorAction> = z.object({actionType:z.literal("runBoxedExtractorAction"), actionName:z.literal("runQuery"), actionLabel:z.string().optional(), endpoint:z.literal("9e404b3c-368c-40cb-be8b-e3c28550c25e"), applicationSection:z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection).optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForBuildPlusRuntimeCarryOnObject)]), query:z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedExtractorOrCombinerReturningObjectOrObjectList)}).strict();
+export const buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction: z.ZodType<BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction> = z.object({actionType:z.literal("runBoxedExtractorOrQueryAction"), actionName:z.literal("runQuery"), actionLabel:z.string().optional(), endpoint:z.literal("9e404b3c-368c-40cb-be8b-e3c28550c25e"), applicationSection:z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection).optional(), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForBuildPlusRuntimeCarryOnObject)]), queryExecutionStrategy:z.enum(["localCacheOrFail","localCacheOrFetch","ServerCache","storage"]).optional(), query:z.union([z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedExtractorOrCombinerReturningObjectOrObjectList), z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedQueryWithExtractorCombinerTransformer)])}).strict();
 export const buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion: z.ZodType<BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion> = z.lazy(() =>testAssertion);
 export const buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeManagementAction: z.ZodType<BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeManagementAction> = z.lazy(() =>storeManagementAction);
 export const buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_bundleAction: z.ZodType<BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_bundleAction> = z.lazy(() =>bundleAction);

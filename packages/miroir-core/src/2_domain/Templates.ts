@@ -18,7 +18,7 @@ import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/LoggerFactory";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
-import { transformer_InnerReference_resolve } from "./TransformersForRuntime";
+import { transformer_extended_apply_wrapper, transformer_InnerReference_resolve } from "./TransformersForRuntime";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -44,6 +44,15 @@ export function resolveExtractorTemplate(
     }
     case "extractorTemplateForObjectListByEntity": {
       if (extractorOrCombinerTemplate.filter) {
+        const filterValue = transformer_extended_apply_wrapper(
+                "build", // TODO: resolve for runtime transformer. Does it make sense?
+                undefined,
+                extractorOrCombinerTemplate.filter.value,
+                queryParams,
+                contextResults ?? {},
+                "value"
+              )
+        // TODO: check for failure!
         return {
           extractorOrCombinerType: "extractorByEntityReturningObjectList",
           ...cleanQueryTemplate,
@@ -59,13 +68,7 @@ export function resolveExtractorTemplate(
                 ), // TODO: check for failure!
           filter: {
             attributeName: extractorOrCombinerTemplate.filter.attributeName,
-            value: transformer_InnerReference_resolve(
-              "build", // TODO: should this be "build" or "runtime"? "value" is not consistent with "build"
-              extractorOrCombinerTemplate.filter.value,
-              "value",
-              queryParams,
-              contextResults
-            ), // TODO: check for failure!
+            value: filterValue, // TODO: check for failure!
           },
         };
       } else {

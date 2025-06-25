@@ -24,6 +24,7 @@
             "deploymentUuid": {
               "type": "uuid",
               "tag": {
+                "canBeTemplate": true,
                 "value": {
                   "id": 1,
                   "defaultLabel": "Deployment",
@@ -90,6 +91,7 @@
             "deploymentUuid": {
               "type": "uuid",
               "tag": {
+                "canBeTemplate": true,
                 "value": {
                   "id": 1,
                   "defaultLabel": "Deployment",
@@ -116,6 +118,7 @@
             "deploymentUuid": {
               "type": "uuid",
               "tag": {
+                "canBeTemplate": true,
                 "value": {
                   "id": 1,
                   "defaultLabel": "Deployment",
@@ -142,6 +145,7 @@
             "deploymentUuid": {
               "type": "uuid",
               "tag": {
+                "canBeTemplate": true,
                 "value": {
                   "id": 1,
                   "defaultLabel": "Deployment",
@@ -168,6 +172,7 @@
             "deploymentUuid": {
               "type": "uuid",
               "tag": {
+                "canBeTemplate": true,
                 "value": {
                   "id": 1,
                   "defaultLabel": "Deployment",
@@ -194,6 +199,7 @@
             "deploymentUuid": {
               "type": "uuid",
               "tag": {
+                "canBeTemplate": true,
                 "value": {
                   "id": 1,
                   "defaultLabel": "Deployment",
@@ -224,6 +230,7 @@
             "deploymentUuid": {
               "type": "uuid",
               "tag": {
+                "canBeTemplate": true,
                 "value": {
                   "id": 1,
                   "defaultLabel": "Deployment",
@@ -307,6 +314,7 @@
             "deploymentUuid": {
               "type": "uuid",
               "tag": {
+                "canBeTemplate": true,
                 "value": {
                   "id": 1,
                   "defaultLabel": "Deployment",
@@ -360,6 +368,7 @@
             "deploymentUuid": {
               "type": "uuid",
               "tag": {
+                "canBeTemplate": true,
                 "value": {
                   "id": 1,
                   "defaultLabel": "Deployment",
@@ -410,6 +419,7 @@
             "deploymentUuid": {
               "type": "uuid",
               "tag": {
+                "canBeTemplate": true,
                 "value": {
                   "id": 1,
                   "defaultLabel": "Deployment",

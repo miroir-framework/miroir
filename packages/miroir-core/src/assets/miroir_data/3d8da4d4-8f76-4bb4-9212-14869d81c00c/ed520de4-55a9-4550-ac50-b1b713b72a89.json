@@ -24,6 +24,7 @@
             "deploymentUuid": {
               "type": "uuid",
               "tag": {
+                "canBeTemplate": true,
                 "value": {
                   "id": 1,
                   "defaultLabel": "Uuid",
@@ -75,6 +76,7 @@
             "deploymentUuid": {
               "type": "uuid",
               "tag": {
+                "canBeTemplate": true,
                 "value": {
                   "id": 1,
                   "defaultLabel": "Uuid",
@@ -134,6 +136,7 @@
             "deploymentUuid": {
               "type": "uuid",
               "tag": {
+                "canBeTemplate": true,
                 "value": {
                   "id": 1,
                   "defaultLabel": "Uuid",
@@ -197,6 +200,7 @@
             "deploymentUuid": {
               "type": "uuid",
               "tag": {
+                "canBeTemplate": true,
                 "value": {
                   "id": 1,
                   "defaultLabel": "Uuid",
@@ -257,6 +261,7 @@
             "deploymentUuid": {
               "type": "uuid",
               "tag": {
+                "canBeTemplate": true,
                 "value": {
                   "id": 1,
                   "defaultLabel": "Uuid",
@@ -305,6 +310,7 @@
             "deploymentUuid": {
               "type": "uuid",
               "tag": {
+                "canBeTemplate": true,
                 "value": {
                   "id": 1,
                   "defaultLabel": "Uuid",
@@ -362,6 +368,7 @@
             "deploymentUuid": {
               "type": "uuid",
               "tag": {
+                "canBeTemplate": true,
                 "value": {
                   "id": 1,
                   "defaultLabel": "Uuid",

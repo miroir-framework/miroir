@@ -222,7 +222,8 @@ describe.sequential(
  
           await waitFor(
             () => {
-              getAllByRole(/step:1/)
+              // getAllByRole(/step:1/)
+              getAllByRole("step:1")
             },
           ).then(
             ()=> {
@@ -288,7 +289,8 @@ describe.sequential(
   
           await waitFor(
             () => {
-              getAllByRole(/step:2/)
+              // getAllByRole(/step:2/)
+              getAllByRole("step:2")
             },
           ).then(
             ()=> {
@@ -322,7 +324,8 @@ describe.sequential(
   
           await waitFor(
             () => {
-              getAllByRole(/step:3/)
+              // getAllByRole(/step:3/)
+              getAllByRole("step:3")
             },
           ).then(
             ()=> {
@@ -360,7 +363,8 @@ describe.sequential(
   
           await waitFor(
             () => {
-              getAllByRole(/step:4/)
+              // getAllByRole(/step:4/)
+              getAllByRole("step:4")
             },
           ).then(
             ()=> {
@@ -403,7 +407,8 @@ describe.sequential(
       
           await waitFor(
             () => {
-              getAllByRole(/step:5/)
+              // getAllByRole(/step:5/)
+              getAllByRole("step:5")
             },
           ).then(
             ()=> {
@@ -463,7 +468,8 @@ describe.sequential(
       
           await waitFor(
             () => {
-              getAllByRole(/step:6/)
+              // getAllByRole(/step:6/)
+              getAllByRole("step:6")
             },
           ).then(
             ()=> {
@@ -528,7 +534,8 @@ describe.sequential(
   
           await waitFor(
             () => {
-              getAllByRole(/step:7/)
+              // getAllByRole(/step:7/)
+              getAllByRole("step:7")
             },
           ).then(
             ()=> {

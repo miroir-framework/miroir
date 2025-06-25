@@ -32,7 +32,10 @@ import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
 import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
 import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
-import { getTestSuitesForBuildPlusRuntimeCompositeAction, testSuiteNameForBuildPlusRuntimeCompositeAction } from '../../src/miroir-fwk/4-tests/applicative.Library.BuildPlusRuntimeCompositeAction.js';
+import {
+  getTestSuitesForBuildPlusRuntimeCompositeAction,
+  testSuiteNameForBuildPlusRuntimeCompositeAction,
+} from "../../src/miroir-fwk/4-tests/applicative.Library.BuildPlusRuntimeCompositeAction.js";
 import {
   createDeploymentCompositeAction,
   deleteAndCloseApplicationDeployments,

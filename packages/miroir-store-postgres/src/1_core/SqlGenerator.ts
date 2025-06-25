@@ -7,6 +7,7 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   ResultAccessPath,
+  transformer_extended_apply_wrapper,
   transformer_resolveReference,
   TransformerForBuild_freeObjectTemplate,
   TransformerForBuild_object_fullTemplate,
@@ -1035,24 +1036,58 @@ function sqlStringForMapperListToListTransformer(
   const referenceToOuterObjectRenamed: string =
     transformerLabel + "_" + actionRuntimeTransformer.referenceToOuterObject;
   
-  const sqlStringForElementTransformer = sqlStringForRuntimeTransformer(
-    actionRuntimeTransformer.elementTransformer,
-    newPreparedStatementParametersCount,
-    indentLevel,
-    queryParams,
-    {
-      ...definedContextEntries,
-      [actionRuntimeTransformer.referenceToOuterObject]: {
-        type: "json",
-        renameTo: referenceToOuterObjectRenamed,
-        attributeResultAccessPath: ["element"],
-      },
-    }, // contextEntries
-    useAccessPathForContextReference,
-    topLevelTransformer,
-    undefined, // withClauseColumnName
-    referenceToOuterObjectRenamed, // iterateOn
-  );
+  
+  const sqlStringForElementTransformer =
+    typeof actionRuntimeTransformer.elementTransformer == "object" &&
+    Object.hasOwn(actionRuntimeTransformer.elementTransformer, "transformerType") &&
+    (actionRuntimeTransformer.elementTransformer as any)["interpolation"] == "runtime"
+      ? sqlStringForRuntimeTransformer(
+          actionRuntimeTransformer.elementTransformer as TransformerForRuntime,
+          newPreparedStatementParametersCount,
+          indentLevel,
+          queryParams,
+          {
+            ...definedContextEntries,
+            [actionRuntimeTransformer.referenceToOuterObject]: {
+              type: "json",
+              renameTo: referenceToOuterObjectRenamed,
+              attributeResultAccessPath: ["element"],
+            },
+          }, // contextEntries
+          useAccessPathForContextReference,
+          topLevelTransformer,
+          undefined, // withClauseColumnName
+          referenceToOuterObjectRenamed // iterateOn
+        )
+      : sqlStringForRuntimeTransformer(
+          {
+            transformerType: "constant",
+            interpolation: "runtime",
+            value: transformer_extended_apply_wrapper(
+              "build", // TODO: resolve for runtime transformer. Does it make sense?
+              undefined,
+              actionRuntimeTransformer.elementTransformer,
+              queryParams,
+              {}, // contextResults, we are evaluating a build transformer here, not a runtime transformer
+              "value"
+            ),
+          },
+          newPreparedStatementParametersCount,
+          indentLevel,
+          queryParams,
+          {
+            ...definedContextEntries,
+            [actionRuntimeTransformer.referenceToOuterObject]: {
+              type: "json",
+              renameTo: referenceToOuterObjectRenamed,
+              attributeResultAccessPath: ["element"],
+            },
+          }, // contextEntries
+          useAccessPathForContextReference,
+          topLevelTransformer,
+          undefined, // withClauseColumnName
+          referenceToOuterObjectRenamed // iterateOn
+        );
 
   log.info(
     "sqlStringForMapperListToListTransformer mapperListToList found elementTransformer",
