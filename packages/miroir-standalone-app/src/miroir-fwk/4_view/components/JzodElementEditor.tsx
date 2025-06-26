@@ -247,7 +247,7 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
       }}
     >
       <span
-        title={JSON.stringify(props.rawJzodSchema, null, 2)}
+        // title={JSON.stringify(props.rawJzodSchema, null, 2)}
         style={{
           display: "inline-flex",
           alignItems: "center",
@@ -455,27 +455,11 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
           <TextField
             // fullWidth
             variant="standard"
-            role="textbox"
+            // role="textbox" // TextField already has role="textbox"
             id={props.rootLesslistKey}
             key={props.rootLesslistKey}
             {...formik.getFieldProps(props.rootLesslistKey)}
           />
-          // <input
-          //   type="text"
-          //   role="textbox"
-          //   id={props.rootLesslistKey}
-          //   key={props.rootLesslistKey}
-          //   {...formik.getFieldProps(props.rootLesslistKey)}
-          //   style={{
-          //     minWidth: "100px",
-          //     width: "fit-content",
-          //     maxWidth: "100%",
-          //     boxSizing: "border-box",
-          //   }}
-          //   />
-          // style={{ width: "100%" }}
-          // style={{ minWidth: "100px", maxWidth:"100%", boxSizing: "border-box" }}
-          // </span>
         );
       }
       case "uuid": {

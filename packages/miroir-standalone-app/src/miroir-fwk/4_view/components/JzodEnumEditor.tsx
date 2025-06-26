@@ -33,12 +33,12 @@ export const JzodEnumEditor = React.memo(
     const formik = useFormikContext<Record<string, any>>();
 
     // Log only when component renders to track performance
-    log.info(
-      `JzodEnumEditor: render for ${name}, rootLesslistKey=${rootLesslistKey}, rawJzodSchema=${JSON.stringify(
-        rawJzodSchema
-      )}`,
-      `unionInformation=${JSON.stringify(unionInformation)}`
-    );
+    // log.info(
+    //   `JzodEnumEditor: render for ${name}, rootLesslistKey=${rootLesslistKey}, rawJzodSchema=${JSON.stringify(
+    //     rawJzodSchema
+    //   )}`,
+    //   `unionInformation=${JSON.stringify(unionInformation)}`
+    // );
 
     // Memoize the discrimination case check
     const isDiscriminator = useMemo(

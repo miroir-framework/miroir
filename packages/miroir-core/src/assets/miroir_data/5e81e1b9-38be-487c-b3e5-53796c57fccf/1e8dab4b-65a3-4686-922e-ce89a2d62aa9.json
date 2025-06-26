@@ -92,6 +92,55 @@
           "nullable": {
             "type": "boolean",
             "optional": true
+          },
+          "tag": {
+            "type": "object",
+            "optional": true,
+            "definition": {
+              "value": {
+                "type": "object",
+                "optional": true,
+                "definition": {
+                  "id": {
+                    "type": "number",
+                    "optional": true
+                  },
+                  "defaultLabel": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "description": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "initializeTo": {
+                    "type": "any",
+                    "optional": true
+                  },
+                  "targetEntity": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "targetEntityOrderInstancesBy": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "targetEntityApplicationSection": {
+                    "type": "enum",
+                    "optional": true,
+                    "definition": ["model", "data", "metaModel"]
+                  },
+                  "editable": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "canBeTemplate": {
+                    "type": "boolean",
+                    "optional": true
+                  }
+                }
+              }
+            }
           }
         }
       },
