@@ -41,7 +41,7 @@ import { adminConfigurationDeploymentParis, applicationParis, packageName } from
 import { getTestSuitesForBuildPlusRuntimeCompositeAction } from "../../4-tests/applicative.Library.BuildPlusRuntimeCompositeAction.js";
 import { expect } from "../../4-tests/test-expect.js";
 import { testOnLibrary_deleteLibraryDeployment } from "../../4-tests/tests-utils-testOnLibrary.js";
-import { TestActionParams, runTestOrTestSuite } from "../../4-tests/tests-utils.js";
+import { TestCompositeActionParams, runTestOrTestSuite } from "../../4-tests/tests-utils.js";
 import { JzodEnumSchemaToJzodElementResolver, getCurrentEnumJzodSchemaResolver } from "../../JzodTools.js";
 import {
   useDomainControllerService,
@@ -466,7 +466,7 @@ export const ToolsPage: React.FC<any> = (
         }: Record<string, any> = getTestSuitesForBuildPlusRuntimeCompositeAction(testMiroirConfig);
 
         for (const [currentTestSuiteName, testSuite] of Object.entries(
-          testSuitesForBuildPlusRuntimeCompositeAction as Record<string, TestActionParams>
+          testSuitesForBuildPlusRuntimeCompositeAction as Record<string, TestCompositeActionParams>
         )) {
           const testSuiteResults = await runTestOrTestSuite(
             // localCache,

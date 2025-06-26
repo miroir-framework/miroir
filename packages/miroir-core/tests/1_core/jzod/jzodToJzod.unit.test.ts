@@ -1,13 +1,19 @@
 
+// import {
+//   JzodElement,
+//   JzodObject,
+//   JzodReference
+// } from "@miroir-framework/jzod-ts";
 import {
   JzodElement,
   JzodObject,
-  JzodReference
-} from "@miroir-framework/jzod-ts";
+  JzodReference,
+} from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
+// import { JzodReferenceResolutionFunction } from "@miroir-framework/jzod";
 import { applyLimitedCarryOnSchema } from "../../../src/1_core/jzod/JzodToJzod";
-import { JzodReferenceResolutionFunction } from "@miroir-framework/jzod";
 
+type JzodReferenceResolutionFunction = (schema: JzodReference) => JzodElement | undefined;
 
 interface TestCase {
   name: string,
@@ -79,7 +85,7 @@ describe(
             name: "test001",
             testJzodSchema: {
               type: "string",
-              tag: { canBeTemplate: true } as any,
+              tag: { value: {canBeTemplate: true} } as any,
             },
             carryOnJzodSchema: {
               type: "object",
@@ -90,11 +96,11 @@ describe(
             expectedResult: {
               schema: {
                 type: "union",
-                tag: { canBeTemplate: true } as any,
+                tag: { value: {canBeTemplate: true} } as any,
                 definition: [
                   {
                     type: "string",
-                    tag: { canBeTemplate: true } as any,
+                    tag: { value: {canBeTemplate: true} } as any,
                   },
                   {
                     type: "object",
@@ -116,14 +122,14 @@ describe(
             testJzodSchema: {
               type: "object",
               definition: {
-                a: { type: "string", tag: { canBeTemplate: true } as any },
+                a: { type: "string", tag: { value: {canBeTemplate: true} } as any },
                 b: {
                   type: "object",
                   definition: {
                     b1: { type: "boolean", optional: true },
                     b2: {
                       type: "array",
-                      definition: { type: "boolean", tag: { canBeTemplate: true } as any },
+                      definition: { type: "boolean", tag: { value: {canBeTemplate: true} } as any },
                     },
                   },
                 },
@@ -141,11 +147,11 @@ describe(
                 definition: {
                   a: {
                     type: "union",
-                    tag: { canBeTemplate: true } as any,
+                    tag: { value: {canBeTemplate: true} } as any,
                     definition: [
                       {
                         type: "string",
-                        tag: { canBeTemplate: true } as any,
+                        tag: { value: {canBeTemplate: true} } as any,
                       },
                       {
                         type: "object",
@@ -168,11 +174,11 @@ describe(
                         type: "array",
                         definition: {
                           type: "union",
-                          tag: { canBeTemplate: true } as any,
+                          tag: { value: {canBeTemplate: true} } as any,
                           definition: [
                             {
                               type: "boolean",
-                              tag: { canBeTemplate: true } as any,
+                              tag: { value: {canBeTemplate: true} } as any,
                             },
                             {
                               type: "object",
@@ -193,765 +199,1160 @@ describe(
             },
             expectedReferences: {},
           },
-          // // test020: absolutePath schemaReference with complex carryOn type
-          // {
-          //   name: "test020",
-          //   testJzodSchema: {
-          //     type: "schemaReference",
-          //     definition: {
-          //       absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-          //       relativePath: "myObject",
-          //     },
-          //   },
-          //   carryOnJzodSchema: {
-          //     type: "object",
-          //     definition: {
-          //       d: { type: "string" },
-          //     },
-          //   },
-          //   expectedResult: {
-          //     type: "schemaReference",
-          //     definition: {
-          //       absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-          //       relativePath: "carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myObject",
-          //     },
-          //   },
-          //   expectedReferences: {
-          //     carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myObject: {
-          //       type: "union",
-          //       definition: [
-          //         {
-          //           type: "object",
-          //           definition: {
-          //             d: {
-          //               type: "string",
-          //             },
-          //           },
-          //         },
-          //         {
-          //           type: "object",
-          //           definition: {
-          //             a: {
-          //               type: "union",
-          //               definition: [
-          //                 {
-          //                   type: "string",
-          //                 },
-          //                 {
-          //                   type: "object",
-          //                   definition: {
-          //                     d: {
-          //                       type: "string",
-          //                     },
-          //                   },
-          //                 },
-          //               ],
-          //             },
-          //             b: {
-          //               type: "schemaReference",
-          //               definition: {
-          //                 relativePath: "carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myObject",
-          //               },
-          //             },
-          //             c: {
-          //               type: "union",
-          //               definition: [
-          //                 {
-          //                   type: "array",
-          //                   definition: {
-          //                     type: "schemaReference",
-          //                     definition: {
-          //                       relativePath: "carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myObject",
-          //                     },
-          //                   },
-          //                 },
-          //                 {
-          //                   type: "object",
-          //                   definition: {
-          //                     d: {
-          //                       type: "string",
-          //                     },
-          //                   },
-          //                 },
-          //               ],
-          //             },
-          //           },
-          //         },
-          //       ],
-          //     },
-          //   },
-          //   resolveJzodReference: (ref: JzodReference): JzodElement | undefined => {
-          //     const store: Record<string, JzodReference> = {
-          //       "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
-          //         type: "schemaReference",
-          //         context: {
-          //           myObject: {
-          //             type: "object",
-          //             definition: {
-          //               a: { type: "string" },
-          //               b: { type: "schemaReference", definition: { relativePath: "myObject" } },
-          //               c: {
-          //                 type: "array",
-          //                 definition: { type: "schemaReference", definition: { relativePath: "myObject" } },
-          //               },
-          //             },
-          //           },
-          //           myString: { type: "string" },
-          //         },
-          //         definition: { relativePath: "myObject" },
-          //       },
-          //     };
-          //     const resolvedAbsolutePath = store[ref.definition?.absolutePath ?? ""];
-          //     return resolvedAbsolutePath && resolvedAbsolutePath.context
-          //       ? resolvedAbsolutePath.context[ref.definition?.relativePath ?? ""]
-          //       : undefined;
-          //   },
-          // },
-          // // test030: simple base type with absolute schemaReference and simple carryOn type
-          // {
-          //   name: "test30",
-          //   testJzodSchema: {
-          //     type: "schemaReference",
-          //     definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "myString" },
-          //   },
-          //   carryOnJzodSchema: {
-          //     type: "object",
-          //     definition: {
-          //       c: { type: "number" },
-          //     },
-          //   },
-          //   resolveJzodReference: (ref: JzodReference): JzodElement | undefined => {
-          //     const store: Record<string, JzodReference> = {
-          //       "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
-          //         type: "schemaReference",
-          //         context: {
-          //           myString: { type: "string" },
-          //         },
-          //         definition: { relativePath: "myString" },
-          //       },
-          //     };
-          //     const resolvedAbsolutePath = store[ref.definition?.absolutePath ?? ""];
-          //     return resolvedAbsolutePath && resolvedAbsolutePath.context
-          //       ? resolvedAbsolutePath.context[ref.definition?.relativePath ?? ""]
-          //       : undefined;
-          //   },
-          //   expectedResult: {
-          //     type: "schemaReference",
-          //     definition: {
-          //       absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-          //       relativePath: "carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString",
-          //     },
-          //   },
-          //   expectedReferences: {
-          //     carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString: {
-          //       type: "union",
-          //       definition: [
-          //         {
-          //           type: "string",
-          //         },
-          //         {
-          //           type: "object",
-          //           definition: {
-          //             c: {
-          //               type: "number",
-          //             },
-          //           },
-          //         },
-          //       ],
-          //     },
-          //   },
-          // },
-          // // test040: simple base type with absolute schemaReference within object and simple carryOn type
-          // {
-          //   name: "test040",
-          //   testJzodSchema: {
-          //     type: "object",
-          //     definition: {
-          //       a: {
-          //         type: "schemaReference",
-          //         definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "myString" },
-          //       },
-          //     },
-          //   },
-          //   carryOnJzodSchema: {
-          //     type: "object",
-          //     definition: {
-          //       c: { type: "number" },
-          //     },
-          //   },
-          //   resolveJzodReference: (ref: JzodReference): JzodElement | undefined => {
-          //     const store: Record<string, JzodReference> = {
-          //       "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
-          //         type: "schemaReference",
-          //         context: {
-          //           myString: { type: "string" },
-          //         },
-          //         definition: { relativePath: "myString" },
-          //       },
-          //     };
-          //     const resolvedAbsolutePath = store[ref.definition?.absolutePath ?? ""];
-          //     return resolvedAbsolutePath && resolvedAbsolutePath.context
-          //       ? resolvedAbsolutePath.context[ref.definition?.relativePath ?? ""]
-          //       : undefined;
-          //   },
-          //   expectedResult: {
-          //     type: "union",
-          //     extra: undefined,
-          //     optional: undefined,
-          //     nullable: undefined,
-          //     definition: [
-          //       {
-          //         type: "object",
-          //         definition: {
-          //           c: {
-          //             type: "number",
-          //           },
-          //         },
-          //       },
-          //       {
-          //         type: "object",
-          //         definition: {
-          //           a: {
-          //             type: "schemaReference",
-          //             definition: {
-          //               absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-          //               relativePath: "carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString",
-          //             },
-          //           },
-          //         },
-          //       },
-          //     ],
-          //   },
-          //   expectedReferences: {
-          //     carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString: {
-          //       type: "union",
-          //       definition: [
-          //         {
-          //           type: "string",
-          //         },
-          //         {
-          //           type: "object",
-          //           definition: {
-          //             c: {
-          //               type: "number",
-          //             },
-          //           },
-          //         },
-          //       ],
-          //     },
-          //   },
-          // },
-          // // test050: simple base type with absolute schemaReference within object and union and simple carryOn type
-          // {
-          //   name: "test050",
-          //   testJzodSchema: {
-          //     type: "object",
-          //     definition: {
-          //       a: {
-          //         type: "union",
-          //         definition: [
-          //           {
-          //             type: "schemaReference",
-          //             definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "myString" },
-          //           },
-          //           {
-          //             type: "number",
-          //           },
-          //         ],
-          //       },
-          //     },
-          //   },
-          //   carryOnJzodSchema: {
-          //     type: "object",
-          //     definition: {
-          //       c: { type: "number" },
-          //     },
-          //   },
-          //   resolveJzodReference: (ref: JzodReference): JzodElement | undefined => {
-          //     const store: Record<string, JzodReference> = {
-          //       "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
-          //         type: "schemaReference",
-          //         context: {
-          //           myString: { type: "string" },
-          //         },
-          //         definition: { relativePath: "myString" },
-          //       },
-          //     };
-          //     const resolvedAbsolutePath = store[ref.definition?.absolutePath ?? ""];
-          //     return resolvedAbsolutePath && resolvedAbsolutePath.context
-          //       ? resolvedAbsolutePath.context[ref.definition?.relativePath ?? ""]
-          //       : undefined;
-          //   },
-          //   expectedResult: {
-          //     type: "union",
-          //     definition: [
-          //       {
-          //         type: "object",
-          //         definition: {
-          //           c: {
-          //             type: "number",
-          //           },
-          //         },
-          //       },
-          //       {
-          //         type: "object",
-          //         definition: {
-          //           a: {
-          //             type: "union",
-          //             definition: [
-          //               {
-          //                 type: "schemaReference",
-          //                 definition: {
-          //                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-          //                   relativePath: "carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString",
-          //                 },
-          //               },
-          //               {
-          //                 type: "number",
-          //               },
-          //               {
-          //                 type: "object",
-          //                 definition: {
-          //                   c: {
-          //                     type: "number",
-          //                   },
-          //                 },
-          //               },
-          //             ],
-          //           },
-          //         },
-          //       },
-          //     ],
-          //   },
-          //   expectedReferences: {
-          //     carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString: {
-          //       type: "union",
-          //       definition: [
-          //         {
-          //           type: "string",
-          //         },
-          //         {
-          //           type: "object",
-          //           definition: {
-          //             c: {
-          //               type: "number",
-          //             },
-          //           },
-          //         },
-          //       ],
-          //     },
-          //   },
-          // },
-          // // test060: complex base type with one inner relative schemaReference and one inner absolute schemaReference, on a simple carryOn type
-          // {
-          //   name: "test060",
-          //   testJzodSchema: {
-          //     type: "object",
-          //     definition: {
-          //       a: {
-          //         type: "schemaReference",
-          //         context: {
-          //           innerString: { type: "string" },
-          //         },
-          //         definition: { relativePath: "innerString" },
-          //       },
-          //       b: {
-          //         type: "schemaReference",
-          //         definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "myString" },
-          //       },
-          //       d: {
-          //         type: "schemaReference",
-          //         definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "myString" },
-          //       },
-          //     },
-          //   },
-          //   carryOnJzodSchema: {
-          //     type: "object",
-          //     definition: {
-          //       c: { type: "number" },
-          //     },
-          //   },
-          //   resolveJzodReference: (ref: JzodReference): JzodElement | undefined => {
-          //     const store: Record<string, JzodReference> = {
-          //       "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
-          //         type: "schemaReference",
-          //         context: {
-          //           myString: { type: "string" },
-          //         },
-          //         definition: { relativePath: "myString" },
-          //       },
-          //     };
-          //     const resolvedAbsolutePath = store[ref.definition?.absolutePath ?? ""];
-          //     return resolvedAbsolutePath && resolvedAbsolutePath.context
-          //       ? resolvedAbsolutePath.context[ref.definition?.relativePath ?? ""]
-          //       : undefined;
-          //   },
-          //   expectedResult: {
-          //     type: "union",
-          //     definition: [
-          //       {
-          //         type: "object",
-          //         definition: {
-          //           c: {
-          //             type: "number",
-          //           },
-          //         },
-          //       },
-          //       {
-          //         type: "object",
-          //         definition: {
-          //           a: {
-          //             type: "schemaReference",
-          //             context: {
-          //               innerString: {
-          //                 type: "union",
-          //                 definition: [
-          //                   {
-          //                     type: "string",
-          //                   },
-          //                   {
-          //                     type: "object",
-          //                     definition: {
-          //                       c: {
-          //                         type: "number",
-          //                       },
-          //                     },
-          //                   },
-          //                 ],
-          //               },
-          //             },
-          //             definition: {
-          //               relativePath: "innerString",
-          //             },
-          //           },
-          //           b: {
-          //             type: "schemaReference",
-          //             definition: {
-          //               absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-          //               relativePath: "carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString",
-          //             },
-          //           },
-          //           d: {
-          //             type: "schemaReference",
-          //             definition: {
-          //               absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-          //               relativePath: "carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString",
-          //             },
-          //           },
-          //         },
-          //       },
-          //     ],
-          //   },
-          //   expectedReferences: {
-          //     carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString: {
-          //       type: "union",
-          //       definition: [
-          //         {
-          //           type: "string",
-          //         },
-          //         {
-          //           type: "object",
-          //           definition: {
-          //             c: {
-          //               type: "number",
-          //             },
-          //           },
-          //         },
-          //       ],
-          //     },
-          //   },
-          // },
-          // // test070: object with extend clause using schemaReference based on absolutePath
-          // {
-          //   name: "test070",
-          //   testJzodSchema: {
-          //     type: "object",
-          //     extend: {
-          //       type: "schemaReference",
-          //       definition: {
-          //         eager: true,
-          //         absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-          //         relativePath: "extendedObject",
-          //       },
-          //     },
-          //     definition: {
-          //       a: { type: "string" },
-          //     },
-          //   },
-          //   carryOnJzodSchema: {
-          //     type: "object",
-          //     definition: {
-          //       c: { type: "number" },
-          //     },
-          //   },
-          //   resolveJzodReference: (ref: JzodReference): JzodElement | undefined => {
-          //     const store: Record<string, JzodReference> = {
-          //       "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
-          //         type: "schemaReference",
-          //         context: {
-          //           extendedObject: { type: "object", definition: { b: { type: "number" } } },
-          //         },
-          //         definition: { relativePath: "extendedObject" },
-          //       },
-          //     };
-          //     const resolvedAbsolutePath = store[ref.definition?.absolutePath ?? ""];
-          //     return resolvedAbsolutePath && resolvedAbsolutePath.context
-          //       ? resolvedAbsolutePath.context[ref.definition?.relativePath ?? ""]
-          //       : undefined;
-          //   },
-          //   expectedResult: {
-          //     type: "union",
-          //     definition: [
-          //       {
-          //         type: "object",
-          //         definition: {
-          //           c: {
-          //             type: "number",
-          //           },
-          //         },
-          //       },
-          //       {
-          //         type: "object",
-          //         extend: [
-          //           {
-          //             type: "schemaReference",
-          //             definition: {
-          //               eager: true,
-          //               absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-          //               relativePath: "carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_extendedObject_extend",
-          //             },
-          //           },
-          //         ],
-          //         definition: {
-          //           a: {
-          //             type: "union",
-          //             definition: [
-          //               {
-          //                 type: "string",
-          //               },
-          //               {
-          //                 type: "object",
-          //                 definition: {
-          //                   c: {
-          //                     type: "number",
-          //                   },
-          //                 },
-          //               },
-          //             ],
-          //           },
-          //         },
-          //       },
-          //     ],
-          //   },
-          //   expectedReferences: {
-          //     carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_extendedObject_extend: {
-          //       type: "union",
-          //       definition: [
-          //         {
-          //           type: "object",
-          //           definition: {
-          //             c: {
-          //               type: "number",
-          //             },
-          //           },
-          //         },
-          //         {
-          //           type: "object",
-          //           definition: {
-          //             b: {
-          //               type: "union",
-          //               definition: [
-          //                 {
-          //                   type: "number",
-          //                 },
-          //                 {
-          //                   type: "object",
-          //                   definition: {
-          //                     c: {
-          //                       type: "number",
-          //                     },
-          //                   },
-          //                 },
-          //               ],
-          //             },
-          //           },
-          //         },
-          //       ],
-          //     },
-          //   },
-          // },
-          // // test080: object with array extend clause using schemaReference based on absolutePath
-          // {
-          //   name: "test080",
-          //   testJzodSchema: {
-          //     type: "object",
-          //     extend: [
-          //       {
-          //         type: "schemaReference",
-          //         definition: {
-          //           eager: true,
-          //           absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-          //           relativePath: "extendedObject1",
-          //         },
-          //       },
-          //       {
-          //         type: "schemaReference",
-          //         definition: {
-          //           eager: true,
-          //           absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-          //           relativePath: "extendedObject2",
-          //         },
-          //       },
-          //     ],
-          //     definition: {
-          //       a: { type: "string" },
-          //     },
-          //   },
-          //   carryOnJzodSchema: {
-          //     type: "object",
-          //     definition: {
-          //       c: { type: "number" },
-          //     },
-          //   },
-          //   resolveJzodReference: (ref: JzodReference): JzodElement | undefined => {
-          //     const store: Record<string, JzodReference> = {
-          //       "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
-          //         type: "schemaReference",
-          //         context: {
-          //           extendedObject1: { type: "object", definition: { b: { type: "number" } } },
-          //           extendedObject2: { type: "object", definition: { d: { type: "string" } } },
-          //         },
-          //         definition: { relativePath: "extendedObject1" },
-          //       },
-          //     };
-          //     const resolvedAbsolutePath = store[ref.definition?.absolutePath ?? ""];
-          //     return resolvedAbsolutePath && resolvedAbsolutePath.context
-          //       ? resolvedAbsolutePath.context[ref.definition?.relativePath ?? ""]
-          //       : undefined;
-          //   },
-          //   expectedResult: {
-          //     type: "union",
-          //     definition: [
-          //       {
-          //         type: "object",
-          //         definition: {
-          //           c: {
-          //             type: "number",
-          //           },
-          //         },
-          //       },
-          //       {
-          //         type: "object",
-          //         extend: [
-          //           {
-          //             type: "schemaReference",
-          //             definition: {
-          //               absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-          //               eager: true,
-          //               relativePath: "carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_extendedObject1_extend",
-          //             },
-          //           },
-          //           {
-          //             type: "schemaReference",
-          //             definition: {
-          //               absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-          //               eager: true,
-          //               relativePath: "carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_extendedObject2_extend",
-          //             },
-          //           },
-          //         ],
-          //         definition: {
-          //           a: {
-          //             type: "union",
-          //             definition: [
-          //               {
-          //                 type: "string",
-          //               },
-          //               {
-          //                 type: "object",
-          //                 definition: {
-          //                   c: {
-          //                     type: "number",
-          //                   },
-          //                 },
-          //               },
-          //             ],
-          //           },
-          //         },
-          //       },
-          //     ],
-          //   },
-          //   expectedReferences: {
-          //     carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_extendedObject1_extend: {
-          //       type: "union",
-          //       definition: [
-          //         {
-          //           type: "object",
-          //           definition: {
-          //             c: {
-          //               type: "number",
-          //             },
-          //           },
-          //         },
-          //         {
-          //           type: "object",
-          //           definition: {
-          //             b: {
-          //               type: "union",
-          //               definition: [
-          //                 {
-          //                   type: "number",
-          //                 },
-          //                 {
-          //                   type: "object",
-          //                   definition: {
-          //                     c: {
-          //                       type: "number",
-          //                     },
-          //                   },
-          //                 },
-          //               ],
-          //             },
-          //           },
-          //         },
-          //       ],
-          //     },
-          //     carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_extendedObject2_extend: {
-          //       type: "union",
-          //       definition: [
-          //         {
-          //           type: "object",
-          //           definition: {
-          //             c: {
-          //               type: "number",
-          //             },
-          //           },
-          //         },
-          //         {
-          //           type: "object",
-          //           definition: {
-          //             d: {
-          //               type: "union",
-          //               definition: [
-          //                 {
-          //                   type: "string",
-          //                 },
-          //                 {
-          //                   type: "object",
-          //                   definition: {
-          //                     c: {
-          //                       type: "number",
-          //                     },
-          //                   },
-          //                 },
-          //               ],
-          //             },
-          //           },
-          //         },
-          //       ],
-          //     },
-          //   },
-          // },
+          // test015: simple object schema with extend clause wich canBeTemplate, no references
+          {
+            name: "test015",
+            testJzodSchema: {
+              type: "object",
+              extend: {
+                type: "object",
+                definition: {
+                  a: { type: "string", tag: { value: {canBeTemplate: true} } as any },
+                },
+              },
+              definition: {
+                b: {
+                  type: "object",
+                  definition: {
+                    b1: { type: "boolean", optional: true },
+                    b2: {
+                      type: "array",
+                      definition: { type: "boolean", tag: { value:{canBeTemplate: true} } as any },
+                    },
+                  },
+                },
+              },
+            },
+            carryOnJzodSchema: {
+              type: "object",
+              definition: {
+                c: { type: "string" },
+              },
+            },
+            expectedResult: {
+              schema: {
+                type: "object",
+                extend: [
+                  {
+                    type: "object",
+                    definition: {
+                      a: {
+                        type: "union",
+                        tag: {
+                          value: {canBeTemplate: true},
+                        },
+                        definition: [
+                          {
+                            type: "string",
+                            tag: {
+                              value: {canBeTemplate: true},
+                            },
+                          },
+                          {
+                            type: "object",
+                            definition: {
+                              c: {
+                                type: "string",
+                              },
+                            },
+                          },
+                        ],
+                      },
+                    },
+                  },
+                ],
+                definition: {
+                  b: {
+                    type: "object",
+                    definition: {
+                      b1: {
+                        type: "boolean",
+                        optional: true,
+                      },
+                      b2: {
+                        type: "array",
+                        definition: {
+                          type: "union",
+                          tag: {
+                            value: {canBeTemplate: true},
+                          },
+                          definition: [
+                            {
+                              type: "boolean",
+                              tag: {
+                                value: {canBeTemplate: true},
+                              },
+                            },
+                            {
+                              type: "object",
+                              definition: {
+                                c: {
+                                  type: "string",
+                                },
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              hasBeenApplied: true,
+            },
+            expectedReferences: {},
+          },
+          // test016: simple object schema with extend clause wich canBeTemplate accessed as a reference
+          {
+            name: "test015",
+            testJzodSchema: {
+              type: "object",
+              extend: {
+                type: "object",
+                definition: {
+                  a: { type: "string", tag: { value: {canBeTemplate: true} } as any },
+                },
+              },
+              definition: {
+                b: {
+                  type: "object",
+                  definition: {
+                    b1: { type: "boolean", optional: true },
+                    b2: {
+                      type: "array",
+                      definition: { type: "boolean", tag: { value:{canBeTemplate: true} } as any },
+                    },
+                  },
+                },
+              },
+            },
+            carryOnJzodSchema: {
+              type: "object",
+              definition: {
+                c: { type: "string" },
+              },
+            },
+            expectedResult: {
+              schema: {
+                type: "object",
+                extend: [
+                  {
+                    type: "object",
+                    definition: {
+                      a: {
+                        type: "union",
+                        tag: {
+                          value: {canBeTemplate: true},
+                        },
+                        definition: [
+                          {
+                            type: "string",
+                            tag: {
+                              value: {canBeTemplate: true},
+                            },
+                          },
+                          {
+                            type: "object",
+                            definition: {
+                              c: {
+                                type: "string",
+                              },
+                            },
+                          },
+                        ],
+                      },
+                    },
+                  },
+                ],
+                definition: {
+                  b: {
+                    type: "object",
+                    definition: {
+                      b1: {
+                        type: "boolean",
+                        optional: true,
+                      },
+                      b2: {
+                        type: "array",
+                        definition: {
+                          type: "union",
+                          tag: {
+                            value: {canBeTemplate: true},
+                          },
+                          definition: [
+                            {
+                              type: "boolean",
+                              tag: {
+                                value: {canBeTemplate: true},
+                              },
+                            },
+                            {
+                              type: "object",
+                              definition: {
+                                c: {
+                                  type: "string",
+                                },
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              hasBeenApplied: true,
+            },
+            expectedReferences: {},
+          },
+          // test020: absolutePath schemaReference with complex carryOn type, NO canBeTemplate!
+          {
+            name: "test020",
+            testJzodSchema: {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                relativePath: "myObject",
+              },
+            },
+            carryOnJzodSchema: {
+              type: "object",
+              definition: {
+                d: { type: "string" },
+              },
+            },
+            resolveJzodReference: (ref: JzodReference): JzodElement | undefined => {
+              const store: Record<string, JzodReference> = {
+                "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
+                  type: "schemaReference",
+                  context: {
+                    myObject: {
+                      type: "object",
+                      definition: {
+                        a: { type: "string" },
+                        b: { type: "schemaReference", definition: { relativePath: "myObject" } },
+                        c: {
+                          type: "array",
+                          definition: {
+                            type: "schemaReference",
+                            definition: { relativePath: "myObject" },
+                          },
+                        },
+                      },
+                    },
+                    myString: { type: "string" },
+                  },
+                  definition: { relativePath: "myObject" },
+                },
+              };
+              const resolvedAbsolutePath = store[ref.definition?.absolutePath ?? ""];
+              return resolvedAbsolutePath && resolvedAbsolutePath.context
+                ? resolvedAbsolutePath.context[ref.definition?.relativePath ?? ""]
+                : undefined;
+            },
+            expectedResult: {
+              schema: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                  relativePath: "carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myObject",
+                },
+              },
+              hasBeenApplied: false,
+            },
+            expectedReferences: {
+              carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myObject: {
+                type: "object",
+                definition: {
+                  a: {
+                    type: "string",
+                  },
+                  b: {
+                    type: "schemaReference",
+                    definition: {
+                      relativePath: "carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myObject",
+                    },
+                  },
+                  c: {
+                    type: "array",
+                    definition: {
+                      type: "schemaReference",
+                      definition: {
+                        relativePath: "carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myObject",
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          // test030: simple base type with absolute schemaReference and simple carryOn type
+          {
+            name: "test30",
+            testJzodSchema: {
+              type: "schemaReference",
+              definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "myString" },
+            },
+            carryOnJzodSchema: {
+              type: "object",
+              definition: {
+                c: { type: "number" },
+              },
+            },
+            resolveJzodReference: (ref: JzodReference): JzodElement | undefined => {
+              const store: Record<string, JzodReference> = {
+                "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
+                  type: "schemaReference",
+                  context: {
+                    myString: { type: "string", tag: { value: { canBeTemplate: true } } },
+                  },
+                  definition: { relativePath: "myString" },
+                },
+              };
+              const resolvedAbsolutePath = store[ref.definition?.absolutePath ?? ""];
+              return resolvedAbsolutePath && resolvedAbsolutePath.context
+                ? resolvedAbsolutePath.context[ref.definition?.relativePath ?? ""]
+                : undefined;
+            },
+            expectedResult: {
+              schema: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                  relativePath: "carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString",
+                },
+              },
+              hasBeenApplied: true,
+            },
+            expectedReferences: {
+              carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString: {
+                type: "union",
+                tag: { value: { canBeTemplate: true } },
+                definition: [
+                  {
+                    type: "string", tag: { value: { canBeTemplate: true } }
+                  },
+                  {
+                    type: "object",
+                    definition: {
+                      c: {
+                        type: "number",
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+          },
+          // test040: simple base type with absolute schemaReference within object and simple carryOn type
+          {
+            name: "test040",
+            testJzodSchema: {
+              type: "object",
+              tag: { value: { canBeTemplate: true } },
+              definition: {
+                a: {
+                  type: "schemaReference",
+                  definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "myString" },
+                },
+              },
+            },
+            carryOnJzodSchema: {
+              type: "object",
+              definition: {
+                c: { type: "number" },
+              },
+            },
+            resolveJzodReference: (ref: JzodReference): JzodElement | undefined => {
+              const store: Record<string, JzodReference> = {
+                "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
+                  type: "schemaReference",
+                  context: {
+                    myString: { type: "string", tag: { value: { canBeTemplate: true } } },
+                  },
+                  definition: { relativePath: "myString" },
+                },
+              };
+              const resolvedAbsolutePath = store[ref.definition?.absolutePath ?? ""];
+              return resolvedAbsolutePath && resolvedAbsolutePath.context
+                ? resolvedAbsolutePath.context[ref.definition?.relativePath ?? ""]
+                : undefined;
+            },
+            expectedResult: {
+              schema: {
+                type: "union",
+                tag: { value: { canBeTemplate: true } },
+                optional: undefined,
+                nullable: undefined,
+                definition: [
+                  {
+                    type: "object",
+                    definition: {
+                      c: {
+                        type: "number",
+                      },
+                    },
+                  },
+                  {
+                    type: "object",
+                    extend: undefined,
+                    tag: { value: { canBeTemplate: true } },
+                    definition: {
+                      a: {
+                        type: "schemaReference",
+                        context: undefined,
+                        tag: undefined,
+                        definition: {
+                          absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                          relativePath: "carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString",
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
+              hasBeenApplied: true,
+            },
+            expectedReferences: {
+              carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString: {
+                type: "union",
+                tag: { value: { canBeTemplate: true } },
+                definition: [
+                  {
+                    type: "string", tag: { value: { canBeTemplate: true } }
+                  },
+                  {
+                    type: "object",
+                    definition: {
+                      c: {
+                        type: "number",
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+          },
+          // test050: simple base type with absolute schemaReference within object and union and simple carryOn type
+          {
+            name: "test050",
+            testJzodSchema: {
+              type: "object",
+              tag: { value: { canBeTemplate: true } },
+              definition: {
+                a: {
+                  type: "union",
+                  tag: { value: { canBeTemplate: true } },
+                  definition: [
+                    {
+                      type: "schemaReference",
+                      // tag: { value: { canBeTemplate: true } },
+                      definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "myString" },
+                    },
+                    {
+                      type: "number",
+                    },
+                  ],
+                },
+              },
+            },
+            carryOnJzodSchema: {
+              type: "object",
+              definition: {
+                c: { type: "number" },
+              },
+            },
+            resolveJzodReference: (ref: JzodReference): JzodElement | undefined => {
+              const store: Record<string, JzodReference> = {
+                "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
+                  type: "schemaReference",
+                  context: {
+                    myString: { type: "string", tag: { value: { canBeTemplate: true } } },
+                  },
+                  definition: { relativePath: "myString" },
+                },
+              };
+              const resolvedAbsolutePath = store[ref.definition?.absolutePath ?? ""];
+              return resolvedAbsolutePath && resolvedAbsolutePath.context
+                ? resolvedAbsolutePath.context[ref.definition?.relativePath ?? ""]
+                : undefined;
+            },
+            expectedResult: {
+              schema: {
+                type: "union",
+                tag: { value: { canBeTemplate: true } },
+                definition: [
+                  {
+                    type: "object",
+                    definition: {
+                      c: {
+                        type: "number",
+                      },
+                    },
+                  },
+                  {
+                    type: "object",
+                    tag: { value: { canBeTemplate: true } },
+                    extend: undefined,
+                    // nullable: undefined,
+                    // optional: undefined,
+                    definition: {
+                      a: {
+                        type: "union",
+                        tag: { value: { canBeTemplate: true } },
+                        definition: [
+                          {
+                            type: "schemaReference",
+                            context: undefined,
+                            tag: undefined,
+                            definition: {
+                              absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                              relativePath: "carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString",
+                            },
+                          },
+                          {
+                            type: "number",
+                          },
+                          {
+                            type: "object",
+                            definition: {
+                              c: {
+                                type: "number",
+                              },
+                            },
+                          },
+                        ],
+                      },
+                    },
+                  },
+                ],
+              },
+              hasBeenApplied: true,
+            },
+            expectedReferences: {
+              carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString: {
+                type: "union",
+                tag: { value: { canBeTemplate: true } },
+                definition: [
+                  {
+                    type: "string",
+                    tag: { value: { canBeTemplate: true } }
+                  },
+                  {
+                    type: "object",
+                    definition: {
+                      c: {
+                        type: "number",
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+          },
+          // test060: complex base type with one inner relative schemaReference and one inner absolute schemaReference, on a simple carryOn type
+          {
+            name: "test060",
+            testJzodSchema: {
+              type: "object",
+              tag: { value: { canBeTemplate: true } },
+              definition: {
+                a: {
+                  type: "schemaReference",
+                  context: {
+                    innerString: { type: "string", tag: { value: { canBeTemplate: true } } },
+                  },
+                  definition: { relativePath: "innerString" },
+                },
+                b: {
+                  type: "schemaReference",
+                  definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "myString" },
+                },
+                d: {
+                  type: "schemaReference",
+                  definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "myString" },
+                },
+              },
+            },
+            carryOnJzodSchema: {
+              type: "object",
+              definition: {
+                c: { type: "number" },
+              },
+            },
+            resolveJzodReference: (ref: JzodReference): JzodElement | undefined => {
+              const store: Record<string, JzodReference> = {
+                "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
+                  type: "schemaReference",
+                  context: {
+                    myString: { type: "string", tag: { value: { canBeTemplate: true } } },
+                  },
+                  definition: { relativePath: "myString" },
+                },
+              };
+              const resolvedAbsolutePath = store[ref.definition?.absolutePath ?? ""];
+              return resolvedAbsolutePath && resolvedAbsolutePath.context
+                ? resolvedAbsolutePath.context[ref.definition?.relativePath ?? ""]
+                : undefined;
+            },
+            expectedResult: {
+              schema: {
+                type: "union",
+                tag: { value: { canBeTemplate: true } },
+                definition: [
+                  {
+                    type: "object",
+                    definition: {
+                      c: {
+                        type: "number",
+                      },
+                    },
+                  },
+                  {
+                    type: "object",
+                    tag: { value: { canBeTemplate: true } },
+                    definition: {
+                      a: {
+                        type: "schemaReference",
+                        context: {
+                          innerString: {
+                            type: "union",
+                            tag: { value: { canBeTemplate: true } },
+                            definition: [
+                              {
+                                type: "string",
+                                tag: { value: { canBeTemplate: true } },
+                              },
+                              {
+                                type: "object",
+                                definition: {
+                                  c: {
+                                    type: "number",
+                                  },
+                                },
+                              },
+                            ],
+                          },
+                        },
+                        definition: {
+                          relativePath: "innerString",
+                        },
+                      },
+                      b: {
+                        type: "schemaReference",
+                        definition: {
+                          absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                          relativePath: "carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString",
+                        },
+                      },
+                      d: {
+                        type: "schemaReference",
+                        definition: {
+                          absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                          relativePath: "carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString",
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
+              hasBeenApplied: true,
+            },
+            expectedReferences: {
+              carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString: {
+                type: "union",
+                tag: { value: { canBeTemplate: true } },
+                definition: [
+                  {
+                    type: "string",
+                    tag: { value: { canBeTemplate: true } },
+                  },
+                  {
+                    type: "object",
+                    definition: {
+                      c: {
+                        type: "number",
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+          },
+          // test070: object with extend clause using schemaReference based on absolutePath
+          {
+            name: "test070",
+            testJzodSchema: {
+              type: "object",
+              tag: { value: { canBeTemplate: true } },
+              extend: {
+                type: "schemaReference",
+                definition: {
+                  eager: true,
+                  absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                  relativePath: "extendedObject",
+                },
+              },
+              definition: {
+                a: { type: "string", tag: { value: { canBeTemplate: true } } },
+              },
+            },
+            carryOnJzodSchema: {
+              type: "object",
+              definition: {
+                c: { type: "number" },
+              },
+            },
+            resolveJzodReference: (ref: JzodReference): JzodElement | undefined => {
+              const store: Record<string, JzodReference> = {
+                "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
+                  type: "schemaReference",
+                  tag: { value: { canBeTemplate: true } },
+                  context: {
+                    extendedObject: {
+                      type: "object",
+                      tag: { value: { canBeTemplate: true } },
+                      definition: {
+                        b: { type: "number", tag: { value: { canBeTemplate: true } } },
+                      },
+                    },
+                  },
+                  definition: { relativePath: "extendedObject" },
+                },
+              };
+              const resolvedAbsolutePath = store[ref.definition?.absolutePath ?? ""];
+              return resolvedAbsolutePath && resolvedAbsolutePath.context
+                ? resolvedAbsolutePath.context[ref.definition?.relativePath ?? ""]
+                : undefined;
+            },
+            expectedResult: {
+              schema: {
+                type: "union",
+                tag: { value: { canBeTemplate: true } },
+                definition: [
+                  {
+                    type: "object",
+                    definition: {
+                      c: {
+                        type: "number",
+                      },
+                    },
+                  },
+                  {
+                    type: "object",
+                    tag: { value: { canBeTemplate: true } },
+                    extend: [
+                      {
+                        type: "schemaReference",
+                        tag: undefined,
+                        context: undefined,
+                        definition: {
+                          eager: true,
+                          absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                          relativePath: "carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_extendedObject_extend",
+                        },
+                      },
+                    ],
+                    definition: {
+                      a: {
+                        type: "union",
+                        tag: { value: { canBeTemplate: true } },
+                        definition: [
+                          {
+                            type: "string",
+                            tag: { value: { canBeTemplate: true } },
+                          },
+                          {
+                            type: "object",
+                            definition: {
+                              c: {
+                                type: "number",
+                              },
+                            },
+                          },
+                        ],
+                      },
+                    },
+                  },
+                ],
+              },
+              hasBeenApplied: true,
+            },
+            expectedReferences: {
+              carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_extendedObject_extend: {
+                type: "union",
+                tag: { value: { canBeTemplate: true } },
+                definition: [
+                  {
+                    type: "object",
+                    definition: {
+                      c: {
+                        type: "number",
+                      },
+                    },
+                  },
+                  {
+                    type: "object",
+                    tag: { value: { canBeTemplate: true } },
+                    definition: {
+                      b: {
+                        type: "union",
+                        tag: { value: { canBeTemplate: true } },
+                        definition: [
+                          {
+                            type: "number",
+                            tag: { value: { canBeTemplate: true } },
+                          },
+                          {
+                            type: "object",
+                            definition: {
+                              c: {
+                                type: "number",
+                              },
+                            },
+                          },
+                        ],
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+          },
+          // test080: object with array extend clause using schemaReference based on absolutePath
+          {
+            name: "test080",
+            testJzodSchema: {
+              type: "object",
+              tag: { value: { canBeTemplate: true } },
+              extend: [
+                {
+                  type: "schemaReference",
+                  definition: {
+                    eager: true,
+                    absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                    relativePath: "extendedObject1",
+                  },
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    eager: true,
+                    absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                    relativePath: "extendedObject2",
+                  },
+                },
+              ],
+              definition: {
+                a: { type: "string", tag: { value: { canBeTemplate: true } } },
+              },
+            },
+            carryOnJzodSchema: {
+              type: "object",
+              definition: {
+                c: { type: "number" },
+              },
+            },
+            resolveJzodReference: (ref: JzodReference): JzodElement | undefined => {
+              const store: Record<string, JzodReference> = {
+                "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
+                  type: "schemaReference",
+                  context: {
+                    extendedObject1: {
+                      type: "object",
+                      tag: { value: { canBeTemplate: true } },
+                      definition: {
+                        b: { type: "number", tag: { value: { canBeTemplate: true } } },
+                      },
+                    },
+                    extendedObject2: {
+                      type: "object",
+                      tag: { value: { canBeTemplate: true } },
+                      definition: {
+                        d: { type: "string", tag: { value: { canBeTemplate: true } } },
+                      },
+                    },
+                  },
+                  definition: { relativePath: "extendedObject1" },
+                },
+              };
+              const resolvedAbsolutePath = store[ref.definition?.absolutePath ?? ""];
+              return resolvedAbsolutePath && resolvedAbsolutePath.context
+                ? resolvedAbsolutePath.context[ref.definition?.relativePath ?? ""]
+                : undefined;
+            },
+            expectedResult: {
+              schema: {
+                type: "union",
+                tag: { value: { canBeTemplate: true } },
+                definition: [
+                  {
+                    type: "object",
+                    definition: {
+                      c: {
+                        type: "number",
+                      },
+                    },
+                  },
+                  {
+                    type: "object",
+                    tag: { value: { canBeTemplate: true } },
+                    extend: [
+                      {
+                        type: "schemaReference",
+                        definition: {
+                          absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                          eager: true,
+                          relativePath: "carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_extendedObject1_extend",
+                        },
+                      },
+                      {
+                        type: "schemaReference",
+                        definition: {
+                          absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                          eager: true,
+                          relativePath: "carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_extendedObject2_extend",
+                        },
+                      },
+                    ],
+                    definition: {
+                      a: {
+                        type: "union",
+                        tag: { value: { canBeTemplate: true } },
+                        definition: [
+                          {
+                            type: "string",
+                            tag: { value: { canBeTemplate: true } },
+                          },
+                          {
+                            type: "object",
+                            definition: {
+                              c: {
+                                type: "number",
+                              },
+                            },
+                          },
+                        ],
+                      },
+                    },
+                  },
+                ],
+              },
+              hasBeenApplied: true,
+            },
+            expectedReferences: {
+              carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_extendedObject1_extend: {
+                type: "union",
+                tag: { value: { canBeTemplate: true } },
+                definition: [
+                  {
+                    type: "object",
+                    definition: {
+                      c: {
+                        type: "number",
+                      },
+                    },
+                  },
+                  {
+                    type: "object",
+                    tag: { value: { canBeTemplate: true } },
+                    definition: {
+                      b: {
+                        type: "union",
+                        tag: { value: { canBeTemplate: true } },
+                        definition: [
+                          {
+                            type: "number",
+                            tag: { value: { canBeTemplate: true } },
+                          },
+                          {
+                            type: "object",
+                            definition: {
+                              c: {
+                                type: "number",
+                              },
+                            },
+                          },
+                        ],
+                      },
+                    },
+                  },
+                ],
+              },
+              carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_extendedObject2_extend: {
+                type: "union",
+                tag: { value: { canBeTemplate: true } },
+                definition: [
+                  {
+                    type: "object",
+                    definition: {
+                      c: {
+                        type: "number",
+                      },
+                    },
+                  },
+                  {
+                    type: "object",
+                    tag: { value: { canBeTemplate: true } },
+                    definition: {
+                      d: {
+                        type: "union",
+                        tag: { value: { canBeTemplate: true } },
+                        definition: [
+                          {
+                            type: "string",
+                            tag: { value: { canBeTemplate: true } },
+                          },
+                          {
+                            type: "object",
+                            definition: {
+                              c: {
+                                type: "number",
+                              },
+                            },
+                          },
+                        ],
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+          },
+          // test090: non-altered object with extend clause using schemaReference with carryOn type
+          {
+            name: "test090",
+            testJzodSchema: {
+              type: "object",
+              // tag: { value: { canBeTemplate: true } },
+              extend: {
+                type: "schemaReference",
+                definition: {
+                  eager: true,
+                  absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                  relativePath: "extendedObject",
+                },
+              },
+              definition: {
+                a: { type: "string" },
+              },
+            },
+            carryOnJzodSchema: {
+              type: "object",
+              definition: {
+                c: { type: "number" },
+              },
+            },
+            resolveJzodReference: (ref: JzodReference): JzodElement | undefined => {
+              const store: Record<string, JzodReference> = {
+                "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
+                  type: "schemaReference",
+                  context: {
+                    extendedObject: {
+                      type: "object",
+                      definition: {
+                        b: { type: "number", tag: { value: { canBeTemplate: true } } },
+                      },
+                    },
+                  },
+                  definition: { relativePath: "extendedObject" },
+                },
+              };
+              const resolvedAbsolutePath = store[ref.definition?.absolutePath ?? ""];
+              return resolvedAbsolutePath && resolvedAbsolutePath.context
+                ? resolvedAbsolutePath.context[ref.definition?.relativePath ?? ""]
+                : undefined;
+            },
+            expectedResult: {
+              schema: {
+                type: "object",
+                extend: [
+                  {
+                    type: "schemaReference",
+                    definition: {
+                      absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                      eager: true,
+                      relativePath:
+                        "carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_extendedObject_extend",
+                    },
+                  },
+                ],
+                definition: {
+                  a: {
+                    type: "string",
+                  },
+                },
+              },
+              hasBeenApplied: true,
+            },
+            expectedReferences: {
+              carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_extendedObject_extend: {
+                type: "object",
+                definition: {
+                  b: {
+                    type: "union",
+                    tag: { value: { canBeTemplate: true } },
+                    definition: [
+                      {
+                        type: "number",
+                        tag: { value: { canBeTemplate: true } },
+                      },
+                      {
+                        type: "object",
+                        definition: {
+                          c: {
+                            type: "number",
+                          },
+                        },
+                      },
+                    ],
+                  },
+                },
+              },
+            },
+          },
+          // test100: non-altered record which element subtype has canBeTemplate
+          {
+            name: "test100",
+            testJzodSchema: {
+              type: "record",
+              definition: {
+                type: "string", tag: { value: { canBeTemplate: true } } 
+              },
+            },
+            carryOnJzodSchema: {
+              type: "object",
+              definition: {
+                c: { type: "number" },
+              },
+            },
+            resolveJzodReference: (ref: JzodReference): JzodElement | undefined => undefined,
+            expectedResult: {
+              schema: {
+                type: "record",
+                definition: {
+                  type: "union",
+                  tag: { value: { canBeTemplate: true } },
+                  definition: [
+                    {
+                      type: "string",
+                      tag: { value: { canBeTemplate: true } },
+                    },
+                    {
+                      type: "object",
+                      definition: {
+                        c: {
+                          type: "number",
+                        },
+                      },
+                    }
+                  ],
+                },
+              },
+              hasBeenApplied: true,
+            },
+            expectedReferences: {},
+          }
         ];
         for (const t of tests) {
           runTest(t)

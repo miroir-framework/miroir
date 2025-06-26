@@ -13,10 +13,12 @@
         "parentName": "User",
         "parentUuid": {
           "transformerType": "constantUuid",
+          "interpolation": "build",
           "value": "ca794e28-b2dc-45b3-8137-00151557eea8"
         },
         "instanceUuid": {
           "transformerType": "parameterReference",
+          "interpolation": "build",
           "referenceName": "instanceUuid"
         }
       }

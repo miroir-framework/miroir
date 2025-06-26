@@ -13,10 +13,12 @@
         "parentName": "Country",
         "parentUuid": {
           "transformerType": "constantUuid",
+          "interpolation": "build",
           "value": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4"
         },
         "instanceUuid": {
           "transformerType": "parameterReference",
+          "interpolation": "build",
           "referenceName": "instanceUuid"
         }
       }
@@ -27,10 +29,12 @@
         "parentName": "Publisher",
         "parentUuid": {
           "transformerType": "constantUuid",
+          "interpolation": "build",
           "value": "a027c379-8468-43a5-ba4d-bf618be25cab"
         },
         "objectReference": {
           "transformerType": "contextReference",
+          "interpolation": "build",
           "referenceName": "country"
         },
         "AttributeOfListObjectToCompareToReferenceUuid": "country"

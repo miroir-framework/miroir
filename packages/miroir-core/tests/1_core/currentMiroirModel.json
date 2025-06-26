@@ -1398,6 +1398,7 @@
                     "tag": {
                       "value": {
                         "id": 3,
+                        "canBeTemplate": true,
                         "defaultLabel": "Parent Name",
                         "editable": false
                       }
@@ -1408,6 +1409,7 @@
                     "tag": {
                       "value": {
                         "id": 4,
+                        "canBeTemplate":true,
                         "defaultLabel": "Parent Uuid",
                         "editable": false
                       }

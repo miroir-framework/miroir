@@ -14,6 +14,7 @@
         "parentName": "Report",
         "parentUuid": {
           "transformerType": "constantUuid",
+          "interpolation": "build",
           "value": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916"
         }
       }

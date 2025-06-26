@@ -63,8 +63,10 @@ import { MiroirContextReactProvider } from '../4_view/MiroirContextReactProvider
 import { cleanLevel } from '../4_view/constants';
 import { ApplicationEntitiesAndInstances } from "./tests-utils-testOnLibrary";
 import {
+  JzodElement,
   TestBuildPlusRuntimeCompositeAction,
   TestBuildPlusRuntimeCompositeActionSuite,
+  TestCompositeActionParams,
   TestRuntimeCompositeAction,
   TestRuntimeCompositeActionSuite,
 } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
@@ -75,61 +77,58 @@ MiroirLoggerFactory.registerLoggerToStart(
 ).then((logger: LoggerInterface) => {log = logger});
 
 
-
-
-
 // ################################################################################################
-export type TestActionParams =
-  | {
-      testActionType: "testCompositeActionSuite";
-      testActionLabel: string;
-      deploymentUuid: Uuid;
-      testCompositeAction: TestCompositeActionSuite;
-    }
-  | {
-      testActionType: "testCompositeAction";
-      testActionLabel: string;
-      deploymentUuid: Uuid;
-      testCompositeAction: TestCompositeAction;
-    }
-  | {
-      testActionType: "testRuntimeCompositeActionSuite";
-      testActionLabel: string;
-      deploymentUuid: Uuid;
-      testCompositeAction: TestRuntimeCompositeActionSuite;
-    }
-  | {
-      testActionType: "testRuntimeCompositeAction";
-      testActionLabel: string;
-      deploymentUuid: Uuid;
-      testCompositeAction: TestRuntimeCompositeAction;
-    }
-  | {
-      testActionType: "testBuildPlusRuntimeCompositeActionSuite";
-      testActionLabel: string;
-      deploymentUuid: Uuid;
-      testParams?: Record<string, any>;
-      testCompositeAction: TestBuildPlusRuntimeCompositeActionSuite;
-    }
-  | {
-      testActionType: "testBuildPlusRuntimeCompositeAction";
-      testActionLabel: string;
-      deploymentUuid: Uuid;
-      testParams?: Record<string, any>;
-      testCompositeAction: TestBuildPlusRuntimeCompositeAction;
-    }
-  | {
-      testActionType: "testCompositeActionTemplate";
-      testActionLabel: string;
-      deploymentUuid: Uuid;
-      compositeTestActionTemplate: TestCompositeActionTemplate;
-    }
-  | {
-      testActionType: "testCompositeActionTemplateSuite";
-      testActionLabel: string;
-      deploymentUuid: Uuid;
-      testCompositeActionSuite: TestCompositeActionTemplateSuite;
-    }; 
+// export type TestCompositeActionParams =
+//   | {
+//       testActionType: "testCompositeActionSuite";
+//       testActionLabel: string;
+//       deploymentUuid: Uuid;
+//       testCompositeAction: TestCompositeActionSuite;
+//     }
+//   | {
+//       testActionType: "testCompositeAction";
+//       testActionLabel: string;
+//       deploymentUuid: Uuid;
+//       testCompositeAction: TestCompositeAction;
+//     }
+//   | {
+//       testActionType: "testRuntimeCompositeActionSuite";
+//       testActionLabel: string;
+//       deploymentUuid: Uuid;
+//       testCompositeAction: TestRuntimeCompositeActionSuite;
+//     }
+//   | {
+//       testActionType: "testRuntimeCompositeAction";
+//       testActionLabel: string;
+//       deploymentUuid: Uuid;
+//       testCompositeAction: TestRuntimeCompositeAction;
+//     }
+//   | {
+//       testActionType: "testBuildPlusRuntimeCompositeActionSuite";
+//       testActionLabel: string;
+//       deploymentUuid: Uuid;
+//       testParams?: Record<string, any>;
+//       testCompositeAction: TestBuildPlusRuntimeCompositeActionSuite;
+//     }
+//   | {
+//       testActionType: "testBuildPlusRuntimeCompositeAction";
+//       testActionLabel: string;
+//       deploymentUuid: Uuid;
+//       testParams?: Record<string, any>;
+//       testCompositeAction: TestBuildPlusRuntimeCompositeAction;
+//     }
+//   | {
+//       testActionType: "testCompositeActionTemplate";
+//       testActionLabel: string;
+//       deploymentUuid: Uuid;
+//       compositeTestActionTemplate: TestCompositeActionTemplate;
+//     }
+//   | {
+//       testActionType: "testCompositeActionTemplateSuite";
+//       testActionLabel: string;
+//       deploymentUuid: Uuid;
+//       testCompositeActionSuite: TestCompositeActionTemplateSuite;
+//     }; 
 
 
 
@@ -708,7 +707,7 @@ export async function deleteAndCloseApplicationDeployments(
 export async function runTestOrTestSuite(
   // localCache: LocalCacheInterface,
   domainController: DomainControllerInterface,
-  testAction: TestActionParams,
+  testAction: TestCompositeActionParams,
   testActionParamValues?: {[k:string]: any},
 ) {
   const fullTestName = testAction.testActionLabel??testAction.testActionType;
@@ -770,6 +769,7 @@ export async function runTestOrTestSuite(
         log.info("testCompositeActionTemplateSuite", fullTestName, "running for testActionParamValues", testActionParamValues);
         const queryResult: Action2ReturnType = await domainController.handleTestCompositeActionTemplateSuite(
           testAction.testCompositeActionSuite,
+          // testAction.TestCompositeActionSuite,
           testActionParamValues??{},
           domainController.currentModel(testAction.deploymentUuid)
         );

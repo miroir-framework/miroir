@@ -6,6 +6,7 @@ import {
   JzodObject,
   MiroirConfigClient,
   StoreUnitConfiguration,
+  TestCompositeActionParams,
   Uuid,
   adminConfigurationDeploymentLibrary,
   entityEntity,
@@ -23,7 +24,6 @@ import {
 } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { adminConfigurationDeploymentParis } from "../../constants";
 import {
-  TestActionParams,
   createDeploymentCompositeAction,
   resetAndinitializeDeploymentCompositeAction,
 } from "./tests-utils";
@@ -161,10 +161,12 @@ const testDeploymentConfiguration: MiroirConfigClient = {
     },
   },
 };
-export function getTestSuitesForBuildPlusRuntimeCompositeAction(
-  miroirConfig: any,
-) {
-  const testSuitesForBuildPlusRuntimeCompositeAction: Record<string, TestActionParams> = {
+export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: any): {
+  testSuitesForBuildPlusRuntimeCompositeAction: Record<string, TestCompositeActionParams>;
+  testDeploymentStorageConfiguration: any;
+  testDeploymentUuid: Uuid;
+} {
+  const testSuitesForBuildPlusRuntimeCompositeAction: Record<string, TestCompositeActionParams> = {
     [testSuiteNameForBuildPlusRuntimeCompositeAction]: {
       testActionType: "testBuildPlusRuntimeCompositeActionSuite",
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
@@ -1094,5 +1096,9 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(
       // } as TestActionParams,
     },
   };
-  return {testSuitesForBuildPlusRuntimeCompositeAction, testDeploymentStorageConfiguration, testDeploymentUuid};
+  return {
+    testSuitesForBuildPlusRuntimeCompositeAction,
+    testDeploymentStorageConfiguration,
+    testDeploymentUuid,
+  };
 }

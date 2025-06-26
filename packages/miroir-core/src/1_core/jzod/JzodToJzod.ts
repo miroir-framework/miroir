@@ -1,5 +1,10 @@
 import equal from "fast-deep-equal";
-import { JzodElement, JzodObject, JzodReference } from "@miroir-framework/jzod-ts";
+import {
+  JzodElement,
+  JzodObject,
+  JzodReference,
+  JzodUnion,
+} from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 export type JzodReferenceResolutionFunction = (schema: JzodReference) => JzodElement | undefined;
 
@@ -46,7 +51,11 @@ export function applyLimitedCarryOnSchema(
 }
 
 // ################################################################################################
-export interface ApplyCarryOnSchemaOnLevelReturnType { resultSchema: JzodElement; resolvedReferences?: Record<string, JzodElement> }
+export interface ApplyCarryOnSchemaOnLevelReturnType {
+  resultSchema: JzodElement;
+  hasBeenApplied: boolean;
+  resolvedReferences?: Record<string, JzodElement>;
+}
 
 // ################################################################################################
 /**
@@ -81,33 +90,38 @@ export function applyLimitedCarryOnSchemaOnLevel(
   localReferencePrefix?: string | undefined,
   suffixForReferences?: string | undefined,
   resolveJzodReference?: JzodReferenceResolutionFunction, // non-converted reference lookup
-  convertedReferences?: Record<string, JzodElement>, // converted reference lookup
-): { resultSchema: JzodElement; hasBeenApplied: boolean; resolvedReferences?: Record<string, JzodElement> } {
+  convertedReferences?: Record<string, JzodElement> // converted reference lookup
+): ApplyCarryOnSchemaOnLevelReturnType
+// {
+//   resultSchema: JzodElement;
+//   hasBeenApplied: boolean;
+//   resolvedReferences?: Record<string, JzodElement>;
+// }
+{
   /**
-   * jzodBaseObject.extra is {type: "any"} by default but can be subtyped to any concrete type
+   * jzodBaseObject.tag is {type: "any"} by default but can be subtyped to any concrete type
    * and shall then be applied the carryOn type
-   * jzodBaseObject.extra is only indirectly taken into account during the translation to Zod,
+   * jzodBaseObject.tag is only indirectly taken into account during the translation to Zod,
    * through inheritance of jzodBaseObject. It is then viewed as any JzodObject attribute.
-   * 
-   * But jzodBaseObject.extra presents a specific problem when applying a carryOn schema.
-   * jzodBaseObject.extra gives the concrete type for the extra attribute of a JzodElement
-   * there is no attribute giving the metatype of the jzodBaseObject.extra attribute, which is JzodElement
-   * this metaExtra attribute shall be interpreted and replaced by the concrete extra attribute during
+   *
+   * But jzodBaseObject.tag presents a specific problem when applying a carryOn schema.
+   * jzodBaseObject.tag gives the concrete type for the tag attribute of a JzodElement
+   * there is no attribute giving the metatype of the jzodBaseObject.tag attribute, which is JzodElement
+   * this metaTag attribute shall be interpreted and replaced by the concrete extra attribute during
    * the translation to Zod / TS. (???)
-   * 
-   * 
+   *
+   *
    */
   // console.log("############# applyLimitedCarryOnSchemaOnLevel", "suffixForReferences", suffixForReferences);
   // const convertedExtra: JzodElement | undefined = baseSchema.extra
   //   ? applyCarryOnSchema(
-  //       baseSchema.extra, // hard-coded type for jzodBaseSchema.extra is "any", it is replaced in any "concrete" jzodSchema definition 
+  //       baseSchema.extra, // hard-coded type for jzodBaseSchema.extra is "any", it is replaced in any "concrete" jzodSchema definition
   //       carryOnSchema,
   //       localReferencePrefix,
   //       resolveJzodReference,
   //       convertedReferences
   //     ).resultSchema // TODO: what about resolvedReferences for extra? They are ignored, is it about right?
   //   : undefined;
-
 
   // const convertedTag = baseSchema.tag;
   const castTag = (baseSchema as any).tag as any;
@@ -119,25 +133,26 @@ export function applyLimitedCarryOnSchemaOnLevel(
   //     resolvedReferences: convertedReferences,
   //   }
   // }
-  const convertedTag = castTag && castTag.schema && castTag.schema.valueSchema
-    ? {
-      ...castTag,
-      schema: {
-        ...castTag.schema,
-        valueSchema: applyLimitedCarryOnSchemaOnLevel(
-          castTag.schema.valueSchema, // hard-coded type for jzodBaseSchema.extra is "any", it is replaced in any "concrete" jzodSchema definition 
-          carryOnSchema,
-          alwaysPropagate,
-          false, // applyOnFirstLevel
-          carryOnPrefix,
-          localReferencePrefix,
-          suffixForReferences,
-          resolveJzodReference,
-          convertedReferences
-        ).resultSchema
-      }
-    } // TODO: what about resolvedReferences for extra? They are ignored, is it about right?
-    : castTag;
+  const convertedTag =
+    castTag && castTag.schema && castTag.schema.valueSchema
+      ? {
+          ...castTag,
+          schema: {
+            ...castTag.schema,
+            valueSchema: applyLimitedCarryOnSchemaOnLevel(
+              castTag.schema.valueSchema, // hard-coded type for jzodBaseSchema.extra is "any", it is replaced in any "concrete" jzodSchema definition
+              carryOnSchema,
+              alwaysPropagate,
+              false, // applyOnFirstLevel
+              carryOnPrefix,
+              localReferencePrefix,
+              suffixForReferences,
+              resolveJzodReference,
+              convertedReferences
+            ).resultSchema,
+          },
+        } // TODO: what about resolvedReferences for extra? They are ignored, is it about right?
+      : castTag;
 
   // if (baseSchema.tag && baseSchema.tag.schema && baseSchema.tag.schema.valueSchema) {
   //   console.log("############# applyCarryOnSchema", "convertedTag", convertedTag)
@@ -162,23 +177,22 @@ export function applyLimitedCarryOnSchemaOnLevel(
     case "undefined": {
       let resultSchema: any = undefined;
       if (
-        applyOnFirstLevel && (
-        alwaysPropagate || (
-          castTag &&
-          Object.hasOwn(castTag, "canBeTemplate") &&
-          castTag.canBeTemplate
-        )
-      )
+        applyOnFirstLevel &&
+        (alwaysPropagate ||
+          (castTag &&
+            castTag.value &&
+            Object.hasOwn(castTag.value, "canBeTemplate") &&
+            castTag.value.canBeTemplate))
       ) {
         resultSchema = {
-         resultSchema:{
-               ...baseSchema,
-               tag: convertedTag,
-               type: "union",
-               definition: [baseSchema, carryOnSchema],
-             },
+          resultSchema: {
+            ...baseSchema,
+            tag: convertedTag,
+            type: "union",
+            definition: [baseSchema, carryOnSchema],
+          },
           hasBeenApplied: true,
-       };
+        };
       } else {
         resultSchema = {
           resultSchema: baseSchema,
@@ -209,17 +223,20 @@ export function applyLimitedCarryOnSchemaOnLevel(
       for (const c of Object.entries(convertedSubSchema.resolvedReferences ?? {})) {
         convertedSubSchemasReferences[c[0]] = c[1];
       }
-        // !applyOnFirstLevel || (
-        //   !alwaysPropagate && (
-        //     !castTag ||
-        //     !Object.hasOwn(castTag, "canBeTemplate") ||
-        //     !castTag.canBeTemplate
-        //   )
-        // )
+      // !applyOnFirstLevel || (
+      //   !alwaysPropagate && (
+      //     !castTag ||
+      //     !Object.hasOwn(castTag, "canBeTemplate") ||
+      //     !castTag.canBeTemplate
+      //   )
+      // )
       if (
         applyOnFirstLevel &&
         (alwaysPropagate ||
-          (castTag && Object.hasOwn(castTag, "canBeTemplate") && castTag.canBeTemplate))
+          (castTag &&
+            castTag.value &&
+            Object.hasOwn(castTag.value, "canBeTemplate") &&
+            castTag.value.canBeTemplate))
       ) {
         return {
           resultSchema: {
@@ -247,7 +264,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
             type: "record",
             definition: convertedSubSchema.resultSchema,
           } as any,
-          hasBeenApplied: false,
+          hasBeenApplied: convertedSubSchema.hasBeenApplied,
           resolvedReferences: convertedSubSchemasReferences,
         };
       }
@@ -272,16 +289,12 @@ export function applyLimitedCarryOnSchemaOnLevel(
       }
       // let result;
       if (
-        // !applyOnFirstLevel ||
-        // (!alwaysPropagate &&
-        //   (!castTag || !Object.hasOwn(castTag, "canBeTemplate") || !castTag.canBeTemplate))
-        applyOnFirstLevel && (
-          alwaysPropagate || (
-            castTag &&
-            Object.hasOwn(castTag, "canBeTemplate") &&
-            castTag.canBeTemplate
-          )
-        )
+        applyOnFirstLevel &&
+        (alwaysPropagate ||
+          (castTag &&
+            castTag.value &&
+            Object.hasOwn(castTag.value, "canBeTemplate") &&
+            castTag.value.canBeTemplate))
       ) {
         return {
           resultSchema: {
@@ -333,13 +346,8 @@ export function applyLimitedCarryOnSchemaOnLevel(
         convertedSubSchemasReferences[c[0]] = c[1];
       }
       if (
-        applyOnFirstLevel && (
-          alwaysPropagate || (
-            castTag &&
-            Object.hasOwn(castTag, "canBeTemplate") &&
-            castTag.canBeTemplate
-          )
-        )
+        applyOnFirstLevel &&
+        (alwaysPropagate || (castTag && castTag.value && castTag.value.canBeTemplate))
       ) {
         return {
           resultSchema: {
@@ -399,16 +407,8 @@ export function applyLimitedCarryOnSchemaOnLevel(
         }
       }
       if (
-        // !applyOnFirstLevel ||
-        // (!alwaysPropagate &&
-        //   (!castTag || !Object.hasOwn(castTag, "canBeTemplate") || !castTag.canBeTemplate))
-        applyOnFirstLevel && (
-          alwaysPropagate || (
-            castTag &&
-            Object.hasOwn(castTag, "canBeTemplate") &&
-            castTag.canBeTemplate
-          )
-        )
+        applyOnFirstLevel &&
+        (alwaysPropagate || (castTag && castTag.value && castTag.value.canBeTemplate))
       ) {
         return {
           resultSchema: {
@@ -458,41 +458,36 @@ export function applyLimitedCarryOnSchemaOnLevel(
       );
       const newResolvedReferences = subConvertedSchemas.filter((e) => e.resolvedReferences);
       const references = newResolvedReferences
-        ? Object.fromEntries(newResolvedReferences.flatMap((e) => Object.entries(e.resolvedReferences ?? {})))
-        : undefined
-      ;
-
-      if (
-        applyOnFirstLevel && (
-            alwaysPropagate || (
-              castTag &&
-              Object.hasOwn(castTag, "canBeTemplate") &&
-              castTag.canBeTemplate
-            )
+        ? Object.fromEntries(
+            newResolvedReferences.flatMap((e) => Object.entries(e.resolvedReferences ?? {}))
           )
-        ) {
-          return {
-            resultSchema: {
-              ...baseSchema,
-              tag: convertedTag,
-              type: "union",
-              definition: [...subConvertedSchemas.map((e) => e.resultSchema), carryOnSchema],
-            } as any,
-            hasBeenApplied: true,
-            resolvedReferences: references,
-          };
-        } else {
-          return {
-            resultSchema: {
-              ...baseSchema,
-              tag: convertedTag,
-              type: "union",
-              definition: [...subConvertedSchemas.map((e) => e.resultSchema)], // do not include carryOnSchema as !applyOnFirstLevel and canBeTemplate is false or undefined
-            } as any,
-            hasBeenApplied: subConvertedSchemas.some((e) => e.hasBeenApplied),
-            resolvedReferences: references,
-          };
-        }
+        : undefined;
+      if (
+        applyOnFirstLevel &&
+        (alwaysPropagate || (castTag && castTag.value && castTag.value.canBeTemplate))
+      ) {
+        return {
+          resultSchema: {
+            ...baseSchema,
+            tag: convertedTag,
+            type: "union",
+            definition: [...subConvertedSchemas.map((e) => e.resultSchema), carryOnSchema],
+          } as any,
+          hasBeenApplied: true,
+          resolvedReferences: references,
+        };
+      } else {
+        return {
+          resultSchema: {
+            ...baseSchema,
+            tag: convertedTag,
+            type: "union",
+            definition: [...subConvertedSchemas.map((e) => e.resultSchema)], // do not include carryOnSchema as !applyOnFirstLevel and canBeTemplate is false or undefined
+          } as any,
+          hasBeenApplied: subConvertedSchemas.some((e) => e.hasBeenApplied),
+          resolvedReferences: references,
+        };
+      }
       break;
     }
     case "object": {
@@ -559,20 +554,19 @@ export function applyLimitedCarryOnSchemaOnLevel(
           )
         : undefined;
       if (
-        applyOnFirstLevel && (
-          alwaysPropagate || (
-            castTag &&
-            Object.hasOwn(castTag, "canBeTemplate") &&
-            castTag.canBeTemplate
-          )
-        )
-    ) {
+        applyOnFirstLevel &&
+        (alwaysPropagate ||
+          (castTag &&
+            castTag.value &&
+            Object.hasOwn(castTag.value, "canBeTemplate") &&
+            castTag.value.canBeTemplate))
+      ) {
         return {
           resultSchema: {
             // ...baseSchema,
             optional: baseSchema.optional,
             nullable: baseSchema.nullable,
-            extra: baseSchema.extra,
+            // extra: baseSchema.extra,
             tag: convertedTag,
             type: "union",
             definition: [
@@ -586,7 +580,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
                       | JzodObject
                     )[])
                   : undefined,
-                extra: baseSchema.extra,
+                // extra: baseSchema.extra,
                 tag: convertedTag,
                 definition: convertedSubSchemas,
               },
@@ -604,7 +598,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
             ...baseSchema,
             optional: baseSchema.optional,
             nullable: baseSchema.nullable,
-            extra: baseSchema.extra,
+            // extra: baseSchema.extra,
             tag: convertedTag,
             extend: convertedExtendResults
               ? (convertedExtendResults.map((e) => e.resultSchema) as (
@@ -614,7 +608,11 @@ export function applyLimitedCarryOnSchemaOnLevel(
               : undefined,
             definition: convertedSubSchemas,
           } as any,
-          hasBeenApplied: convertedSubSchemasHasBeenApplied.some((e) => e),
+          hasBeenApplied:
+            convertedSubSchemasHasBeenApplied.some((e) => e) ||
+            (convertedExtendResults && Array.isArray(convertedExtendResults)
+              ? convertedExtendResults.some((e) => e.hasBeenApplied)
+              : false),
           resolvedReferences: {
             ...convertedSubSchemasReferences,
             ...convertedExtendReferences,
@@ -645,7 +643,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
           baseSchema.definition.absolutePath,
           baseSchema.definition.relativePath,
           suffixForReferences,
-          carryOnPrefix,
+          carryOnPrefix
         );
 
         if (!convertedReferences || !convertedReferences[localReferenceName]) {
@@ -691,7 +689,8 @@ export function applyLimitedCarryOnSchemaOnLevel(
             relativePath: localReferenceName,
           };
         }
-      } else { // if (baseSchema.definition.absolutePath)
+      } else {
+        // if (baseSchema.definition.absolutePath)
         // we only need to replace it with a renamed local reference in case we have a prefix
         resultReferenceDefinition = {
           ...baseSchema.definition,
@@ -738,13 +737,12 @@ export function applyLimitedCarryOnSchemaOnLevel(
       }
 
       if (
-        applyOnFirstLevel && (
-          alwaysPropagate || (
-            castTag &&
-            Object.hasOwn(castTag, "canBeTemplate") &&
-            castTag.canBeTemplate
-          )
-        )
+        applyOnFirstLevel &&
+        (alwaysPropagate ||
+          (castTag &&
+            castTag.value &&
+            Object.hasOwn(castTag.value, "canBeTemplate") &&
+            castTag.value.canBeTemplate))
       ) {
         return {
           resultSchema: {
@@ -799,7 +797,10 @@ export function applyLimitedCarryOnSchemaOnLevel(
     case "lazy": // TODO: alter the lazy's returned value to "carryOn" it? (becoming z.lazy(()=>carryOn(baseSchema)))
     case "function":
     default: {
-      throw new Error("applyLimitedCarryOnSchemaOnLevel could not handle baseSchema: " + JSON.stringify(baseSchema, null, 2));
+      throw new Error(
+        "applyLimitedCarryOnSchemaOnLevel could not handle baseSchema: " +
+          JSON.stringify(baseSchema, null, 2)
+      );
       break;
     }
   }

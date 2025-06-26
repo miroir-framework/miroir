@@ -68,7 +68,7 @@ import {
   resetAndinitializeDeploymentCompositeAction,
   runTestOrTestSuite,
   setupMiroirTest,
-  TestActionParams
+  TestCompositeActionParams
 } from "../../src/miroir-fwk/4-tests/tests-utils.js";
 import { cleanLevel, packageName } from './constants.js';
 import { testOnLibrary_deleteLibraryDeployment, testOnLibrary_resetLibraryDeployment } from '../../src/miroir-fwk/4-tests/tests-utils-testOnLibrary.js';
@@ -1127,7 +1127,7 @@ const createReportsCompositeActionTemplateAssertions = [
 // ###############################################################################################
 // ###############################################################################################
 // ###############################################################################################
-const testTemplateSuites: Record<string, TestActionParams> = {
+const testTemplateSuites: Record<string, TestCompositeActionParams> = {
   [testSuiteName]: {
     testActionType: "testCompositeActionTemplateSuite",
     deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
@@ -1550,7 +1550,7 @@ const testTemplateSuites: Record<string, TestActionParams> = {
         // },
       },
     },
-  } as TestActionParams,
+  } as TestCompositeActionParams,
 };
 
 

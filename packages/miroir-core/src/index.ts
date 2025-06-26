@@ -423,6 +423,8 @@ export {
   // TransformerForRuntime_orderedTransformer,
   // transformerForRuntime_orderedTransformer,
   TransformerForRuntime_unique,
+  TestCompositeActionParams,
+  testCompositeActionParams,
   UndoRedoAction,
   undoRedoAction,
   ZodParseError,

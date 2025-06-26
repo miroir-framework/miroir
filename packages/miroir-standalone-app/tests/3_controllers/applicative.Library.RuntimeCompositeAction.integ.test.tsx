@@ -72,7 +72,7 @@ import {
   resetAndinitializeDeploymentCompositeAction,
   runTestOrTestSuite,
   setupMiroirTest,
-  TestActionParams
+  TestCompositeActionParams
 } from "../../src/miroir-fwk/4-tests/tests-utils.js";
 import { cleanLevel, packageName } from './constants.js';
 import { adminConfigurationDeploymentParis } from '../../src/constants.js';
@@ -1030,7 +1030,7 @@ const createReportsCompositeActionAssertions: CompositeRunTestAssertion[] = [
 // ###############################################################################################
 // ###############################################################################################
 // ###############################################################################################
-const testSuites: Record<string, TestActionParams> = {
+const testSuites: Record<string, TestCompositeActionParams> = {
   [testSuiteName]: {
     testActionType: "testRuntimeCompositeActionSuite",
     deploymentUuid: adminConfigurationDeploymentLibrary.uuid,

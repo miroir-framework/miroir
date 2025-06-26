@@ -24,9 +24,9 @@
             "deploymentUuid": {
               "type": "uuid",
               "tag": {
-                "canBeTemplate": true,
                 "value": {
                   "id": 1,
+                  "canBeTemplate": true,
                   "defaultLabel": "Uuid",
                   "editable": false
                 }
@@ -76,9 +76,9 @@
             "deploymentUuid": {
               "type": "uuid",
               "tag": {
-                "canBeTemplate": true,
                 "value": {
                   "id": 1,
+                  "canBeTemplate": true,
                   "defaultLabel": "Uuid",
                   "editable": false
                 }
@@ -136,9 +136,9 @@
             "deploymentUuid": {
               "type": "uuid",
               "tag": {
-                "canBeTemplate": true,
                 "value": {
                   "id": 1,
+                  "canBeTemplate": true,
                   "defaultLabel": "Uuid",
                   "editable": false
                 }
@@ -200,9 +200,9 @@
             "deploymentUuid": {
               "type": "uuid",
               "tag": {
-                "canBeTemplate": true,
                 "value": {
                   "id": 1,
+                  "canBeTemplate": true,
                   "defaultLabel": "Uuid",
                   "editable": false
                 }
@@ -231,7 +231,7 @@
               "definition": {
                 "type": "schemaReference",
                 "optional": false,
-                "tag": { "canBeTemplate": true },
+                "tag": { "value": { "canBeTemplate": true } },
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "entityInstanceCollection"
@@ -261,9 +261,9 @@
             "deploymentUuid": {
               "type": "uuid",
               "tag": {
-                "canBeTemplate": true,
                 "value": {
                   "id": 1,
+                  "canBeTemplate": true,
                   "defaultLabel": "Uuid",
                   "editable": false
                 }
@@ -310,9 +310,9 @@
             "deploymentUuid": {
               "type": "uuid",
               "tag": {
-                "canBeTemplate": true,
                 "value": {
                   "id": 1,
+                  "canBeTemplate": true,
                   "defaultLabel": "Uuid",
                   "editable": false
                 }
@@ -368,9 +368,9 @@
             "deploymentUuid": {
               "type": "uuid",
               "tag": {
-                "canBeTemplate": true,
                 "value": {
                   "id": 1,
+                  "canBeTemplate": true,
                   "defaultLabel": "Uuid",
                   "editable": false
                 }

@@ -13,6 +13,7 @@
         "parentName": "StoreBasedConfiguration",
         "parentUuid": {
           "transformerType": "constantUuid",
+          "interpolation": "build",
           "value": "7990c0c9-86c3-40a1-a121-036c91b55ed7"
         }
       }

@@ -40,7 +40,7 @@ import {
   resetAndinitializeDeploymentCompositeAction,
   runTestOrTestSuite,
   setupMiroirTest,
-  TestActionParams
+  TestCompositeActionParams
 } from "../../src/miroir-fwk/4-tests/tests-utils.js";
 
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
@@ -194,7 +194,7 @@ afterAll(async () => {
   displayTestSuiteResults(expect,Object.keys(testActions)[0]);
 });
 
-const testActions: Record<string, TestActionParams> = {
+const testActions: Record<string, TestCompositeActionParams> = {
   "DomainController.integ.Model.CRUD": {
     testActionType: "testCompositeActionSuite",
     testActionLabel: "DomainController.integ.Model.CRUD",
@@ -1206,7 +1206,7 @@ describe.sequential(
   () => {
     it.each(Object.entries(testActions))(
       "test %s",
-      async (currentTestSuiteName, testAction: TestActionParams) => {
+      async (currentTestSuiteName, testAction: TestCompositeActionParams) => {
         const testSuiteResults = await runTestOrTestSuite(domainController, testAction);
         if (!testSuiteResults || testSuiteResults.status !== "ok") {
           expect(testSuiteResults?.status, `${currentTestSuiteName} failed!`).toBe("ok");

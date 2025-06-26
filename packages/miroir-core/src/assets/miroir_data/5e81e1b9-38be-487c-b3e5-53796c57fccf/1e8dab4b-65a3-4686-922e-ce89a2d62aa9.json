@@ -51,6 +51,10 @@
                   "type": "string",
                   "optional": true
                 },
+                "description": {
+                  "type": "string",
+                  "optional": true
+                },
                 "initializeTo": {
                   "type": "any",
                   "optional": true
@@ -59,7 +63,16 @@
                   "type": "string",
                   "optional": true
                 },
+                "targetEntityApplicationSection": {
+                  "type": "enum",
+                  "optional": true,
+                  "definition": ["model", "data", "metaModel"]
+                },
                 "editable": {
+                  "type": "boolean",
+                  "optional": true
+                },
+                "canBeTemplate": {
                   "type": "boolean",
                   "optional": true
                 }
@@ -96,11 +109,24 @@
                     "type": "any",
                     "optional": true
                   },
+                  "targetEntityApplicationSection": {
+                    "type": "enum",
+                    "optional": true,
+                    "definition": [
+                      "model",
+                      "data",
+                      "metaModel"
+                    ]
+                  },
                   "targetEntity": {
                     "type": "string",
                     "optional": true
                   },
                   "editable": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "canBeTemplate": {
                     "type": "boolean",
                     "optional": true
                   }
