@@ -8,6 +8,13 @@ import {
   Uuid
 } from "miroir-core";
 
+export interface UnionInformation {
+  jzodSchema: JzodUnion;
+  objectBranches: JzodElement[];
+  discriminator: string;
+  discriminatorValues: string[];
+}
+
 export interface JzodEditorPropsRoot {
   label?: string;
   name: string;
@@ -19,13 +26,7 @@ export interface JzodEditorPropsRoot {
   initialFormState?: any;
   rawJzodSchema: JzodElement | undefined;
   resolvedElementJzodSchema: JzodElement | undefined;
-  unionInformation?:
-    | {
-        jzodSchema: JzodUnion;
-        discriminator: string;
-        discriminatorValues: string[];
-      }
-    | undefined;
+  unionInformation?: UnionInformation | undefined;
   foreignKeyObjects: Record<string, EntityInstancesUuidIndex>; // prop drilling
   returnsEmptyElement?: boolean; // used to force the editor to return an empty element
   insideAny?: boolean;

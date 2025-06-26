@@ -275,6 +275,7 @@ export function getJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
                   ),
                   parentName: "",
                   parentUuid: unfoldedRawSchema.tag?.value?.targetEntity,
+                  orderBy: { attributeName: unfoldedRawSchema.tag?.value?.targetEntityOrderInstancesBy??"name" },
                 },
               },
             }

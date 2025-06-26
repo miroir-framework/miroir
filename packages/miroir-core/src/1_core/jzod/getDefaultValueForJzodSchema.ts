@@ -225,7 +225,9 @@ export function getDefaultValueForJzodSchemaWithResolution(
     case "null": {
       return undefined;
     }
-    case "uuid":
+    case "uuid": {
+      return "00000000-0000-0000-0000-000000000000"; // default UUID value
+    }
     case "unknown":
     case "never":
     case "void": {

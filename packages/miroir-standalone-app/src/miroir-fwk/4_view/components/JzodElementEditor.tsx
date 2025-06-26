@@ -155,6 +155,7 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
   // Handle switch for structured element display
   const handleDisplayAsStructuredElementSwitchChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
+      log.info("handleDisplayAsStructuredElementSwitchChange Switching display mode to:", event.target.checked);
       if (event.target.checked) {
         try {
           const parsedCodeMirrorValue = JSON.parse(codeMirrorValue);

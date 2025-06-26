@@ -15,68 +15,9 @@ MiroirLoggerFactory.registerLoggerToStart(
 export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams<TableComponentRow>) => {
   // const context = useMiroirContextService();
   
-  // const deploymentUuid = context.deploymentUuid;
   const entityUuid = props.colDef?.cellRendererParams.entityUuid;
   const isFK = props.colDef?.cellRendererParams.isFK
-  // const currentMiroirEntityDefinition = props.colDef?.cellRendererParams.entityDefinition
-  // log.info(
-  //   "EntityInstanceCellRenderer called for field",
-  //   props.colDef?.field,
-  //   "with deploymentUuid",
-  //   context.deploymentUuid,
-  //   "entityUuid",
-  //   entityUuid,
-  //   "props:",
-  //   props,
-  //   "value",
-  //   props.value
-  // );
   
-  // const currentModelSelectorParams:LocalCacheExtractor = useMemo(
-  //   () => ({
-  //     queryType: "localCacheEntityInstancesExtractor",
-  //     definition: {
-  //       deploymentUuid: context.deploymentUuid,
-  //     }
-  //   } as LocalCacheExtractor),
-  //   [context]
-  // );
-
-  // const localSelectModelForDeployment = useMemo(selectModelForDeploymentFromReduxState,[]);
-  // const currentModel = useSelector((state: ReduxStateWithUndoRedo) =>
-  //   localSelectModelForDeployment(state, currentModelSelectorParams)
-  // ) as MetaModel
-
-  // TODO: costly!!!!
-  // const currentModel: MetaModel = useCurrentModel(context.deploymentUuid)
-  // const currentMiroirEntityDefinition: EntityDefinition | undefined =
-  //   props.colDef?.cellRendererParams.entityDefinition ??
-  //   currentModel.entityDefinitions?.find((e) => e?.entityUuid == entityUuid)
-  // ;
-  
-  // log.info("EntityInstanceCellRenderer currentMiroirEntityDefinition", currentMiroirEntityDefinition)
-  // const selectorParams:LocalCacheExtractor = useMemo(
-  //   () => ({
-  //     queryType: "localCacheEntityInstancesExtractor",
-  //     definition: {
-  //       deploymentUuid,
-  //       applicationSection: context.applicationSection,
-  //       entityUuid: entityUuid,
-  //     }
-  //   } as LocalCacheExtractor),
-  //   [deploymentUuid, entityUuid]
-  // );
-  // const instancesToDisplay: EntityInstanceWithName[] = useSelector((state: ReduxStateWithUndoRedo) =>
-  //   selectInstanceArrayForDeploymentSectionEntity(state, selectorParams)
-  // ) as EntityInstanceWithName[];
-  // log.info("EntityInstanceCellRenderer instancesToDisplay",instancesToDisplay);
-
-  // const instanceToDisplay: EntityInstanceWithName = (
-  //   props.colDef?.cellRendererParams.entityDefinition
-  //     ? props.data?.rawValue
-  //     : instancesToDisplay.find((i) => i.uuid == (props.data?.rawValue as any)[props.colDef?.field ?? ""])
-  // ) as EntityInstanceWithName;
-
   const attributeName: string = props.colDef?.field??"unknown attribute name";
   if (isFK && !props.data?.foreignKeyObjects) {
     throw new Error("EntityInstanceCellRenderer no foreign key objects found for attribute '" + attributeName + "'"); 

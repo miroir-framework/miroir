@@ -87,14 +87,15 @@ export const JzodLiteralEditor = React.memo<JzodLiteralEditorProps>(function Jzo
       "name",
       name,
       "unionInformation",
-      JSON.stringify(unionInformation, null, 2),
+      unionInformation,
+      // JSON.stringify(unionInformation, null, 2),
       "formik.values",
       formik.values
     );
 
     const newJzodSchema: JzodElement | undefined = // attribute is either discriminator or sub-discriminator
-      (unionInformation.jzodSchema.definition as JzodObject[]).find(
-        (a: JzodObject) =>
+      unionInformation.objectBranches.find(
+        (a: JzodElement) =>
           a.type == "object" &&
           a.definition[(unionInformation as any).jzodSchema.discriminator].type == "literal" &&
           (a.definition[(unionInformation as any).jzodSchema.discriminator] as JzodLiteral)
@@ -159,7 +160,7 @@ export const JzodLiteralEditor = React.memo<JzodLiteralEditorProps>(function Jzo
   // Memoize discriminator values for better rendering performance
   const discriminatorMenuItems = useMemo(() => {
     if (isDiscriminator && unionInformation?.discriminatorValues) {
-      return unionInformation.discriminatorValues.map((v) => (
+      return unionInformation.discriminatorValues.sort().map((v) => (
         <MenuItem key={v} value={v}>
           {v}
         </MenuItem>

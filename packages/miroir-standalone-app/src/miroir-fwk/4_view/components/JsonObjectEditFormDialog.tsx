@@ -1,10 +1,8 @@
 import _ from "lodash";
 
-import { javascript } from '@codemirror/lang-javascript';
-import { Dialog, DialogTitle, Paper} from "@mui/material";
+import { Dialog, DialogTitle, Paper } from "@mui/material";
 import { styled } from "@mui/material/styles"; // For MUI v5
-import CodeMirror from '@uiw/react-codemirror';
-import { ChangeEvent, useCallback, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 
 import { Formik, FormikProps } from "formik";
 
@@ -24,8 +22,7 @@ import { packageName } from "../../../constants.js";
 import { cleanLevel } from "../constants.js";
 import {
   useMiroirContextInnerFormOutput,
-  useMiroirContextService,
-  useMiroirContextformHelperState,
+  useMiroirContextService
 } from "../MiroirContextReactProvider.js";
 import { JzodElementEditor } from "./JzodElementEditor.js";
 
@@ -271,16 +268,6 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
             id={"form." + label}
             onSubmit={formik.handleSubmit}
           >
-            {/* {formInitialValues ? (
-              <CodeMirror
-                value={JSON.stringify(formInitialValues, null, 2)}
-                height="200px"
-                extensions={[javascript({ jsx: true })]}
-                onChange={onCodeEditorChange}
-              />
-            ) : (
-              <></>
-            )} */}
             <span style={{paddingTop: 0, paddingBottom: 0}}>
               <JzodElementEditor
                 name={"ROOT"}
@@ -293,9 +280,7 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
                 rawJzodSchema={entityDefinitionJzodSchema}
                 resolvedElementJzodSchema={resolvedJzodSchema?.status == "ok" ? resolvedJzodSchema.element : undefined}
                 foreignKeyObjects={foreignKeyObjects}
-                // setFormState={setdialogOuterFormObject}
-                // handleChange={formik.handleChange as any}
-                // formik={formik}
+                indentLevel={0}
               />
               <button type="submit" name={label} form={"form." + label}>
                 submit form.{label}
