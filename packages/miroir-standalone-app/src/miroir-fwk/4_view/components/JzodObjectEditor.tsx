@@ -635,7 +635,27 @@ export const JzodObjectEditor = React.memo(function JzodObjectEditorComponent(pr
   return (
     <div id={props.rootLesslistKey} key={props.rootLesslistKey}>
       <span>
-        <label>{label}</label>
+        {unfoldedRawSchema.type == "record" ? (
+          <>
+          <SmallIconButton
+            id={props.rootLesslistKey + ".removeRecordAttribute"}
+            aria-label={props.rootLesslistKey + ".removeRecordAttribute"}
+            onClick={() => {
+              log.info("removeRecordAttribute clicked!", props.rootLesslistKey);
+              const newFormState: any = deleteObjectAtPath(
+                formik.values,
+                props.rootLesslistKeyArray
+              );
+              formik.setValues(newFormState);
+            }}
+          >
+            <Clear />
+          </SmallIconButton>
+          <label>{label}</label>
+          </>
+        ) : (
+          <label>{label}</label>
+        )}
         <span id={props.rootLesslistKey + "head"} key={props.rootLesslistKey + "head"}>
           <ExpandOrFoldObjectAttributes
             hiddenFormItems={hiddenFormItems}
