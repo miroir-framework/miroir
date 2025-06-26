@@ -229,6 +229,42 @@ export const JzodObjectEditor = React.memo(function JzodObjectEditorComponent(pr
     [formik.values, props.rootLesslistKeyArray]
   );
 
+  // Handle attribute name changes for Record objects
+  const handleAttributeNameChange = useCallback((event: React.ChangeEvent<HTMLInputElement>, attributeRootLessListKeyArray: string[]) => {
+    const localAttributeRootLessListKeyArray: string[] = attributeRootLessListKeyArray.slice();
+    const newAttributeName = event.target.value;
+    const oldAttributeName = localAttributeRootLessListKeyArray[localAttributeRootLessListKeyArray.length - 1];
+    
+    log.info(
+      "handleAttributeNameChange renaming attribute",
+      oldAttributeName,
+      "into",
+      newAttributeName,
+      "current Value",
+      formik.values,
+      "attributeRootLessListKeyArray",
+      attributeRootLessListKeyArray
+    );
+
+    // Get the value at the old attribute path
+    const subObject = resolvePathOnObject(formik.values, localAttributeRootLessListKeyArray);
+    
+    // Delete the old attribute path
+    const newFormState1: any = deleteObjectAtPath(formik.values, localAttributeRootLessListKeyArray);
+    
+    // Create new path with the new attribute name
+    const newPath = localAttributeRootLessListKeyArray.slice(0, localAttributeRootLessListKeyArray.length - 1);
+    newPath.push(newAttributeName);
+    
+    // Set the value at the new attribute path
+    const newFormState2: any = alterObjectAtPath(newFormState1, newPath, subObject);
+    
+    log.info("handleAttributeNameChange newFormState2", newFormState2);
+    
+    // Update formik values
+    formik.setValues(newFormState2);
+  }, [formik.values, formik.setValues]);
+
   // ##############################################################################################
   const addExtraRecordEntry = useCallback(async () => {
     if (localResolvedElementJzodSchemaBasedOnValue.type != "object") {
@@ -546,6 +582,34 @@ export const JzodObjectEditor = React.memo(function JzodObjectEditorComponent(pr
           }
         }
         
+        // Determine if this is a record type where attribute names should be editable
+        const isRecordType = unfoldedRawSchema?.type === "record";
+        const editableLabel = isRecordType ? (
+          <input
+            type="text"
+            value={attribute[0]}
+            onChange={(event) => handleAttributeNameChange(event, attributeRootLessListKeyArray)}
+            onBlur={(event) => {
+              // Validate the attribute name is not empty
+              if (!event.target.value.trim()) {
+                // Reset to original value if empty
+                event.target.value = attribute[0];
+              }
+            }}
+            style={{
+              border: '1px solid #ccc',
+              borderRadius: '4px',
+              padding: '2px 4px',
+              fontSize: 'inherit',
+              fontFamily: 'inherit',
+              minWidth: '60px',
+              width: `${Math.max(60, attribute[0].length * 8 + 16)}px`
+            }}
+          />
+        ) : (
+          currentAttributeDefinition?.tag?.value?.defaultLabel || attribute[0]
+        );
+
         return (
           <div key={attributeListKey}>
             <ErrorBoundary
@@ -597,7 +661,6 @@ export const JzodObjectEditor = React.memo(function JzodObjectEditorComponent(pr
             >
               <JzodElementEditor
                 name={attribute[0]}
-                label={currentAttributeDefinition?.tag?.value?.defaultLabel || attribute[0]}
                 key={attribute[0]}
                 listKey={attributeListKey}
                 rootLesslistKey={attributeRootLessListKey}
@@ -629,7 +692,8 @@ export const JzodObjectEditor = React.memo(function JzodObjectEditorComponent(pr
     miroirMetaModel,
     usedIndentLevel,
     foreignKeyObjects,
-    definedOptionalAttributes
+    definedOptionalAttributes,
+    handleAttributeNameChange
   ]);
   
   return (
