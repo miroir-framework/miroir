@@ -237,12 +237,36 @@ export function getJzodArrayEditorTests(
             ],
           },
           tests: async (expect) => {
+            screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
             const addButton = screen.getByRole("button", { name: "testField.add" });
             await act(() => {
               fireEvent.click(addButton);
             });
-            const values: Record<string, any> = extractValuesFromRenderedElements(expect);
-            expect(values).toEqual({
+            const formValues: Record<string, any> = extractValuesFromRenderedElements(expect, "testField", "after add button click");
+            // console.log("Extracted initial values:", values);
+            const testResult = formValuesToJSON(formValues);
+            expect(testResult).toEqual(
+              [
+                {
+                  a: "value1",
+                  b: { c: 1 },
+                  d: true,
+                  e: "123",
+                },
+                {
+                  a: "value2",
+                  b: { c: 2 },
+                  d: false,
+                  e: "456",
+                },
+                {
+                  b: { c: 0 }, // default value for number
+                  d: false, // default value for boolean
+                  e: "0", // default value for bigint
+                }
+              ]
+            );
+            expect(formValues).toEqual({
               "0.a": "value1",
               "0.b.c": 1,
               "0.d": true,
@@ -299,32 +323,36 @@ export function getJzodEnumEditorTests(
         initialFormState: "value2",
       },
       tests: {
-        // "renders input with label when label prop is provided": {
-        //   tests: async (expect: ExpectStatic) => {
-        //     expect(screen.getByLabelText(/Test Label/)).toBeInTheDocument();
-        //   },
-        // },
-        // "renders input without label when label prop is not provided": {
-        //   props: {
-        //     // label: "Test Label", // no label
-        //     name: "testField",
-        //     listKey: "ROOT.testField",
-        //     rootLesslistKey: "testField",
-        //     rootLesslistKeyArray: ["testField"],
-        //     rawJzodSchema: {
-        //       type: "enum",
-        //       definition: enumValues,
-        //     },
-        //     initialFormState: "value2",
-        //   },
-        //   tests: async (expect) => {
-        //     expect(screen.queryByLabelText(/Test Label/)).not.toBeInTheDocument();
-        //     // expect(screen.getByRole("textbox")).toBeInTheDocument();
-        //   },
-        // },
+        "renders input with label when label prop is provided": {
+          tests: async (expect: ExpectStatic) => {
+            expect(screen.getByLabelText(/Test Label/)).toBeInTheDocument();
+          },
+        },
+        "renders input without label when label prop is not provided": {
+          props: {
+            // label: "Test Label", // no label
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLesslistKey: "testField",
+            rootLesslistKeyArray: ["testField"],
+            rawJzodSchema: {
+              type: "enum",
+              definition: enumValues,
+            },
+            initialFormState: "value2",
+          },
+          tests: async (expect) => {
+            expect(screen.queryByLabelText(/Test Label/)).not.toBeInTheDocument();
+            // expect(screen.getByRole("textbox")).toBeInTheDocument();
+          },
+        },
         "renders select with correct value": {
           tests: async (expect: ExpectStatic) => {
             const values: Record<string, any> = extractValuesFromRenderedElements(expect, "testField", "initial");
+            console.log("########### ENUM VALUES", values);
+            console.log("=== FULL RENDERED DOM ===");
+            screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
+
             expect(values).toEqual({
               "testField": "value2",
             });
@@ -408,11 +436,11 @@ export function getJzodLiteralEditorTests(
             } as JzodElementEditorProps_Test),
           tests: {
             testAsComponent: async (expect) => {
-              expect(screen.getByLabelText(/Test Label/)).toBeInTheDocument();
+              expect(screen.getByText(/Test Label/)).toBeInTheDocument();
               // expect(screen.getByRole("textbox")).toHaveAttribute("name", "testField"); // TODO: this is implementation detail, should be removed
             },
             testAsJzodElementEditor: async (expect) => {
-              expect(screen.getByLabelText(/Test Label/)).toBeInTheDocument();
+              expect(screen.getByText(/Test Label/)).toBeInTheDocument();
             },
           },
         },
@@ -606,8 +634,9 @@ export function getJzodObjectEditorTests(
                 fireEvent.click(addButton);
               });
               // expect(screen.getByLabelText("AAAAAAAAAAAAAAAAAAAA")).toBeInTheDocument();
-              const screenValues: Record<string, any> = extractValuesFromRenderedElements(expect);
-              expect(screenValues).toEqual({
+              const screenValues: Record<string, any> = extractValuesFromRenderedElements(expect, "testField", "after add button click");
+              const testResult = formValuesToJSON(screenValues);
+              expect(testResult).toEqual({
                 a: "",
                 b: 42,
               });
@@ -635,7 +664,7 @@ export function getJzodObjectEditorTests(
           },
           tests: async (expect: ExpectStatic) => {
             // expect(screen.getByText(/Test LabelAAAAAAAAAAAAAAAAAAAAAAAAAAAA/)).toBeInTheDocument();
-            const values: Record<string, any> = extractValuesFromRenderedElements(expect);
+            const values: Record<string, any> = extractValuesFromRenderedElements(expect, "testField", "initial");
             expect(values).toEqual({
               // "firstRecordName": "firstRecord",
               "firstRecord.a": "test string",
@@ -668,16 +697,67 @@ export function getJzodObjectEditorTests(
             await act(() => {
               fireEvent.click(addButton);
             });
-            const values = extractValuesFromRenderedElements(expect);
-            expect(values).toEqual({
-              // New record attribute with default values
-              // "newRecordEntryName": "newRecordEntry",
-              "newRecordEntry.a": "",
-              "newRecordEntry.b": 0,
-              // Existing record entry
-              // "firstRecordName": "firstRecord",
-              "firstRecord.a": "test string",
-              "firstRecord.b": 42,
+            const values = extractValuesFromRenderedElements(expect, "testField", "after add button click");
+            const testResult = formValuesToJSON(values);
+            expect(testResult).toEqual({
+              firstRecord: {
+                a: "test string",
+                b: 42,
+              },
+              newRecordEntry: {
+                a: "",
+                b: 0, // default value for number
+              },
+            });
+            // expect(values).toEqual({
+            //   "newRecordEntry.a": "",
+            //   "newRecordEntry.b": 0,
+            //   "firstRecord.a": "test string",
+            //   "firstRecord.b": 42,
+            // });
+          },
+        },
+        "record can rename a record attribute keeping the existing value when clicking on the attribute input field": {
+          props: {
+            label: "Test Label",
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLesslistKey: "testField",
+            rootLesslistKeyArray: ["testField"],
+            rawJzodSchema: {
+              type: "record",
+              definition: {
+                type: "object",
+                definition: { a:{ type: "string" }, b:{ type: "number" } }},
+            },
+            initialFormState: {
+              firstRecord: {
+                a: "test string",
+                b: 42,
+              },
+            },
+          },
+          tests: async (expect) => {
+            // expect(screen.getByText(/Test LabelAAAAAAAAAAAAAAAAAAAAAAAAAAAA/)).toBeInTheDocument();
+            // console.log("=== FULL RENDERED DOM ===");
+            // screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
+            const input = screen.getByRole("textbox", { name: "meta-testField.firstRecord-NAME" }) as HTMLInputElement;
+            expect(input).toBeInTheDocument();
+            expect(input).toHaveValue("firstRecord");
+            await act(() => {
+              fireEvent.change(input, { target: { value: "renamedRecord" } });
+            });
+            await act(() => {
+              fireEvent.blur(input); // Simulate blur to trigger validation and state update
+            });
+            expect(input).toHaveValue("renamedRecord");
+            const values = extractValuesFromRenderedElements(expect, "testField", "after rename");
+            const testResult = formValuesToJSON(values);
+            expect(testResult).toEqual({
+              renamedRecord: {
+                a: "test string",
+                b: 42,
+              },
             });
           },
         },

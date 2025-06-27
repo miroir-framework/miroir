@@ -429,68 +429,18 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
     }, [rawJzodSchema, initialFormState, context]);
     // }, [rawJzodSchema, currentValue, context]);
 
-    // console.log(
-    //   "JzodElementEditor useMemo",
-    //   "formState",
-    //   JSON.stringify(formState, null, 2),
-    //   "props.rawJzodSchema",
-    //   JSON.stringify(props.rawJzodSchema, null, 2),
-    //   "resolvedJzodSchema",
-    //   JSON.stringify(resolvedJzodSchema, null, 2)
-    // );
-    // const resolvedJzodSchema: ResolvedJzodSchemaReturnType = {
-    //   status: "ok",
-    //   valuePath: [],
-    //   typePath: [],
-    //   element: rawSchema,
-    // }
-
-    // const handleChange=(e: ChangeEvent<Record<string, any>>) => {
-    // // const handleChange=(e: Dispatch<SetStateAction<{ [k: string]: any; }>>) => {
-    //   console.log(
-    //     "onChange formik values ###########################################",
-    //     e.target.value
-    //     // e.
-    //   );
-    //   const newFormState: any = alterObjectAtPath(
-    //     formState,
-    //     rootLesslistKeyArray,
-    //     e.target.value
-    //   );
-    //   // console.log(
-    //   //   "handleChange newFormState ###########################################",
-    //   //   JSON.stringify(newFormState, null, 2)
-    //   // );
-    //   setFormState(newFormState);
-    //   // setFormState(e.target.value);
-    // }
-
+    const labelElement = useMemo(() => {
+      // return label ? <label htmlFor={rootLesslistKey}>{label}</label> : undefined;
+      return label ? <span id={rootLesslistKey}>{label}</span> : undefined;
+    }, [label]);
     return (
       <div>
         <Formik
           enableReinitialize={true}
-          // initialValues={formState}
           initialValues={{ [name]: initialFormState }}
           onSubmit={onSubmit}
           validateOnChange={false}
           validateOnBlur={false}
-          // handleChange={(e: ChangeEvent<any>) => {
-          //   console.log(
-          //     "onChange formik values ###########################################",
-          //     e.target.value
-          //   );
-          //   const newFormState: any = alterObjectAtPath(
-          //     formState,
-          //     rootLesslistKeyArray,
-          //     e.target.value
-          //   );
-          //   // console.log(
-          //   //   "handleChange newFormState ###########################################",
-          //   //   JSON.stringify(newFormState, null, 2)
-          //   // );
-          //   setFormState(newFormState);
-          //   // setFormState(e.target.value);
-          // }}
         >
           {(formik: FormikProps<any>) => (
             <>
@@ -502,7 +452,7 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
                       listKey={listKey}
                       rootLesslistKey={rootLesslistKey}
                       rootLesslistKeyArray={rootLesslistKeyArray}
-                      label={label}
+                      label={labelElement}
                       currentDeploymentUuid={context.deploymentUuid}
                       currentApplicationSection={"data"}
                       rawJzodSchema={rawJzodSchema}
@@ -854,13 +804,13 @@ export function getJzodEditorTestSuites<
 // ################################################################################################
 export function extractValuesFromRenderedElements(
   expect: ExpectStatic,
-  label: string = "testField",
+  label: string = "",
   step?: string,
 ): Record<string, any> {
   console.log("########### extractValuesFromRenderedElements for label", label, "step", step);
   let textBoxes: HTMLElement[] = [];
   try {
-    textBoxes = screen.getAllByRole("textbox");
+    textBoxes = screen.getAllByRole("textbox").filter((i: any) => i.name.startsWith(label));
   } catch (e) {
     // No textbox found, leave inputs as empty array
   }
@@ -894,7 +844,7 @@ export function extractValuesFromRenderedElements(
   // #############################################################
   let comboboxes: HTMLElement[] = [];
   try {
-    comboboxes = screen.getAllByRole("combobox");
+    comboboxes = screen.getAllByRole("combobox").filter((c: any) => c.id.startsWith(label));
   } catch (e) {
     // No combobox found, leave comboboxes as empty array
   }

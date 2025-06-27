@@ -113,6 +113,10 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
 
   const pageLabel: string = props.applicationSection + "." + currentReportTargetEntity?.name;
 
+  const labelElement = useMemo(() => {
+    return pageLabel ? <span id={"label." + pageLabel}>{pageLabel}</span> : undefined;
+  }, [pageLabel]);
+
   const currentMiroirModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
 
   const currentEnumJzodSchemaResolver: JzodEnumSchemaToJzodElementResolver | undefined = useMemo(
@@ -377,7 +381,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                               listKey={"ROOT"}
                               rootLesslistKey=""
                               rootLesslistKeyArray={[]}
-                              label={pageLabel}
+                              label={labelElement}
                               indentLevel={0}
                               currentDeploymentUuid={props.deploymentUuid}
                               currentApplicationSection={props.applicationSection}

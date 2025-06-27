@@ -85,7 +85,7 @@ export const JzodEnumEditor = React.memo(
         ) : (
           <>
             <StyledSelect
-              id={listKey}
+              id={rootLesslistKey}
               // aria-label={rootLesslistKey}
               labelId="demo-simple-select-label"
               variant="standard"

@@ -175,7 +175,6 @@ export const JzodLiteralEditor = React.memo<JzodLiteralEditorProps>(function Jzo
         <>
           <StyledSelect
             id={rootLesslistKey}
-            // aria-label={label}
             label={name}
             variant="standard"
             labelId="demo-simple-select-label"
@@ -188,10 +187,8 @@ export const JzodLiteralEditor = React.memo<JzodLiteralEditorProps>(function Jzo
         </>
       ) : (
         <>
-          {label && <label htmlFor={rootLesslistKey}>{label}: </label>}
           <input
             type="text"
-            // aria-label={label}
             id={rootLesslistKey}
             name={rootLesslistKey}
             form={"form." + name}

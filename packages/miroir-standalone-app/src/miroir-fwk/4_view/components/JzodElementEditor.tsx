@@ -198,7 +198,8 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
       { objectOrArrayOrAny ? (
         <Switch
           checked={displayAsStructuredElement}
-          id="displayAsStructuredElementSwitch"
+          id={`displayAsStructuredElementSwitch-${props.rootLesslistKey}`}
+          name={`displayAsStructuredElementSwitch-${props.rootLesslistKey}`}
           onChange={handleDisplayAsStructuredElementSwitchChange}
           inputProps={{ "aria-label": `Display as structured element` }}
           disabled={!codeMirrorIsValidJson}
@@ -345,6 +346,7 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
       return (
         <JzodAnyEditor
           name={props.name}
+          label={props.label}
           listKey={props.listKey}
           rootLesslistKey={props.rootLesslistKey}
           rootLesslistKeyArray={props.rootLesslistKeyArray}
@@ -353,7 +355,6 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
           currentApplicationSection={props.currentApplicationSection}
           unionInformation={unionInformation}
           resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
-          label={props.label}
           foreignKeyObjects={props.foreignKeyObjects}
         />
       );
@@ -452,14 +453,16 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
           //   contentEditable
           //   style={{ minWidth: "100px", width: "auto", maxWidth: "100%", boxSizing: "border-box" }}
           // >
-          <TextField
-            // fullWidth
-            variant="standard"
-            // role="textbox" // TextField already has role="textbox"
-            id={props.rootLesslistKey}
-            key={props.rootLesslistKey}
-            {...formik.getFieldProps(props.rootLesslistKey)}
-          />
+          <span>
+            <TextField
+              // fullWidth
+              variant="standard"
+              // role="textbox" // TextField already has role="textbox"
+              id={props.rootLesslistKey}
+              key={props.rootLesslistKey}
+              {...formik.getFieldProps(props.rootLesslistKey)}
+            />
+          </span>
         );
       }
       case "uuid": {
@@ -625,6 +628,7 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
           {JzodSchemaTooltip}
           <div>
             {props.submitButton}
+          </div>
             <span
               style={{
                 display: !hideSubJzodEditor ? "none" : "inline-block",
@@ -632,7 +636,6 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
             >
               {objectOrArraySwitches}
             </span>
-          </div>
           <span
             style={{
               display:
@@ -665,17 +668,7 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
           }}
         >
           {clearButton}
-          <label
-            style={{
-              minWidth: "120px",
-              flexShrink: 0,
-              textAlign: "left",
-              justifyContent: "flex-start",
-              display: "flex",
-            }}
-          >
-            {props.label}:
-          </label>
+          {props.label}
           <span
             style={{
               display: !hideSubJzodEditor ? "none" : "inline-block",

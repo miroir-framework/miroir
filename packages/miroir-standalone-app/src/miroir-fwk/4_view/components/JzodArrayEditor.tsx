@@ -212,7 +212,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     // <div style={{ marginLeft: `calc(${indentShift})` }}>
     <div id={rootLesslistKey} key={rootLesslistKey}>
       <div>
-        {label}:
+        {label}
         {rawJzodSchema?.type == "array" ? (
           <div>
             <SizedButton
@@ -327,7 +327,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
                       name={"" + index}
                       listKey={listKey + "." + index}
                       indentLevel={usedIndentLevel + 1}
-                      label={resolvedElementJzodSchema?.tag?.value?.defaultLabel}
+                      label={<span>{resolvedElementJzodSchema?.tag?.value?.defaultLabel}</span>}
                       // paramMiroirFundamentalJzodSchema={paramMiroirFundamentalJzodSchema}
                       currentDeploymentUuid={currentDeploymentUuid}
                       currentApplicationSection={currentApplicationSection}

@@ -1,5 +1,5 @@
 import { ErrorBoundary } from "react-error-boundary";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import Clear from "@mui/icons-material/Clear";
 
 import {
@@ -34,6 +34,70 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 
 let count: number = 0;
+
+// Editable attribute name component with local state management
+const EditableAttributeName = React.memo(({ 
+  initialValue, 
+  onCommit,
+  rootLesslistKey
+}: { 
+  initialValue: string;
+  onCommit: (newValue: string) => void;
+  rootLesslistKey: string;
+}) => {
+  const [localValue, setLocalValue] = useState(initialValue);
+  const [isEditing, setIsEditing] = useState(false);
+
+  const handleCommit = useCallback(() => {
+    if (localValue.trim() && localValue !== initialValue) {
+      onCommit(localValue.trim());
+    } else if (!localValue.trim()) {
+      // Reset to original if empty
+      setLocalValue(initialValue);
+    }
+    setIsEditing(false);
+  }, [localValue, initialValue, onCommit]);
+
+  const handleKeyDown = useCallback((event: React.KeyboardEvent) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      handleCommit();
+    } else if (event.key === 'Escape') {
+      setLocalValue(initialValue);
+      setIsEditing(false);
+    }
+  }, [handleCommit, initialValue]);
+
+  // Update local value if the initial value changes (external update)
+  React.useEffect(() => {
+    if (!isEditing) {
+      setLocalValue(initialValue);
+    }
+  }, [initialValue, isEditing]);
+
+  return (
+    <input
+      type="text"
+      value={localValue}
+      name={"meta-"+ rootLesslistKey + "-NAME"}
+      aria-label={"meta-"+ rootLesslistKey + "-NAME"}
+      onChange={(e) => setLocalValue(e.target.value)}
+      onFocus={() => setIsEditing(true)}
+      onBlur={handleCommit}
+      onKeyDown={handleKeyDown}
+      style={{
+        border: '1px solid #ccc',
+        borderRadius: '4px',
+        padding: '2px 4px',
+        fontSize: 'inherit',
+        fontFamily: 'inherit',
+        minWidth: '60px',
+        width: `${Math.max(60, localValue.length * 8 + 16)}px`
+      }}
+    />
+  );
+});
+
   // #######################
   // #######################
   // #######################
@@ -230,9 +294,8 @@ export const JzodObjectEditor = React.memo(function JzodObjectEditorComponent(pr
   );
 
   // Handle attribute name changes for Record objects
-  const handleAttributeNameChange = useCallback((event: React.ChangeEvent<HTMLInputElement>, attributeRootLessListKeyArray: string[]) => {
+  const handleAttributeNameChange = useCallback((newAttributeName: string, attributeRootLessListKeyArray: string[]) => {
     const localAttributeRootLessListKeyArray: string[] = attributeRootLessListKeyArray.slice();
-    const newAttributeName = event.target.value;
     const oldAttributeName = localAttributeRootLessListKeyArray[localAttributeRootLessListKeyArray.length - 1];
     
     log.info(
@@ -585,29 +648,28 @@ export const JzodObjectEditor = React.memo(function JzodObjectEditorComponent(pr
         // Determine if this is a record type where attribute names should be editable
         const isRecordType = unfoldedRawSchema?.type === "record";
         const editableLabel = isRecordType ? (
-          <input
-            type="text"
-            value={attribute[0]}
-            onChange={(event) => handleAttributeNameChange(event, attributeRootLessListKeyArray)}
-            onBlur={(event) => {
-              // Validate the attribute name is not empty
-              if (!event.target.value.trim()) {
-                // Reset to original value if empty
-                event.target.value = attribute[0];
-              }
-            }}
-            style={{
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-              padding: '2px 4px',
-              fontSize: 'inherit',
-              fontFamily: 'inherit',
-              minWidth: '60px',
-              width: `${Math.max(60, attribute[0].length * 8 + 16)}px`
-            }}
+          <EditableAttributeName
+            initialValue={attribute[0]}
+            rootLesslistKey={attributeRootLessListKey}
+            onCommit={(newValue) =>
+              handleAttributeNameChange(newValue, attributeRootLessListKeyArray)
+            }
           />
         ) : (
-          currentAttributeDefinition?.tag?.value?.defaultLabel || attribute[0]
+          <span
+            id={attributeRootLessListKey + ".label"}
+            key={attributeRootLessListKey + ".label"}
+            style={{
+              minWidth: "120px",
+              flexShrink: 0,
+              textAlign: "left",
+              justifyContent: "flex-start",
+              display: "flex",
+              paddingRight: "1ex",
+            }}
+          >
+            {currentAttributeDefinition?.tag?.value?.defaultLabel || attribute[0]} 
+          </span>
         );
 
         return (
@@ -661,6 +723,7 @@ export const JzodObjectEditor = React.memo(function JzodObjectEditorComponent(pr
             >
               <JzodElementEditor
                 name={attribute[0]}
+                label={editableLabel}
                 key={attribute[0]}
                 listKey={attributeListKey}
                 rootLesslistKey={attributeRootLessListKey}
@@ -698,78 +761,94 @@ export const JzodObjectEditor = React.memo(function JzodObjectEditorComponent(pr
   
   return (
     <div id={props.rootLesslistKey} key={props.rootLesslistKey}>
-      <span>
-        {unfoldedRawSchema.type == "record" ? (
-          <>
-          <SmallIconButton
-            id={props.rootLesslistKey + ".removeRecordAttribute"}
-            aria-label={props.rootLesslistKey + ".removeRecordAttribute"}
-            onClick={() => {
-              log.info("removeRecordAttribute clicked!", props.rootLesslistKey);
-              const newFormState: any = deleteObjectAtPath(
-                formik.values,
-                props.rootLesslistKeyArray
-              );
-              formik.setValues(newFormState);
-            }}
-          >
-            <Clear />
-          </SmallIconButton>
-          <label>{label}</label>
-          </>
-        ) : (
-          <label>{label}</label>
-        )}
-        <span id={props.rootLesslistKey + "head"} key={props.rootLesslistKey + "head"}>
-          <ExpandOrFoldObjectAttributes
-            hiddenFormItems={hiddenFormItems}
-            setHiddenFormItems={setHiddenFormItems}
-            listKey={props.listKey}
-          ></ExpandOrFoldObjectAttributes>
-          {props.switches ?? <></>}
-          ({unfoldedRawSchema.type} / {localResolvedElementJzodSchemaBasedOnValue.type})
-        </span>
-        <div
-          id={props.listKey + ".inner"}
+      <div>
+        <span
           style={{
-            marginLeft: `calc(${indentShift})`,
-            display: hiddenFormItems[props.listKey] ? "none" : "block",
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "start",
           }}
-          key={`${props.rootLesslistKey}|body`}
         >
-          {unfoldedRawSchema.type == "record" || unfoldedRawSchema.type == "any" ? (
-            <div>
-              <SizedButton
-                id={props.rootLesslistKey + ".addRecordAttribute"}
-                variant="text"
-                aria-label={props.rootLesslistKey + ".addRecordAttribute"}
-                onClick={addExtraRecordEntry}
+          <span>
+            {unfoldedRawSchema.type == "record" ? (
+              <span
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignContent: "start",
+                  alignItems: "center",
+                }}
               >
-                <SizedAddBox />
-              </SizedButton>
-            </div>
-          ) : (
-            <></>
-          )}
-          
-          {attributeElements}
-          
-          {unfoldedRawSchema.type != "record" && undefinedOptionalAttributes.length > 0 ? (
-            <div>
-              <SizedButton
-                variant="text"
-                aria-label={props.rootLesslistKey + ".addObjectOptionalAttribute"}
-                onClick={addObjectOptionalAttribute}
-              >
-                <SizedAddBox />
-              </SizedButton>{" "}
-              {JSON.stringify(undefinedOptionalAttributes)}
-            </div>
-          ) : (
-            <></>
-          )}
-        </div>
-      </span>
+                <SmallIconButton
+                  id={props.rootLesslistKey + ".removeRecordAttribute"}
+                  aria-label={props.rootLesslistKey + ".removeRecordAttribute"}
+                  onClick={() => {
+                    log.info("removeRecordAttribute clicked!", props.rootLesslistKey);
+                    const newFormState: any = deleteObjectAtPath(
+                      formik.values,
+                      props.rootLesslistKeyArray
+                    );
+                    formik.setValues(newFormState);
+                  }}
+                >
+                  <Clear />
+                </SmallIconButton>
+                {label}
+              </span>
+            ) : (
+              <span>{label??""}</span>
+            )}
+          </span>
+          <span id={props.rootLesslistKey + "head"} key={props.rootLesslistKey + "head"}>
+            <ExpandOrFoldObjectAttributes
+              hiddenFormItems={hiddenFormItems}
+              setHiddenFormItems={setHiddenFormItems}
+              listKey={props.listKey}
+            ></ExpandOrFoldObjectAttributes>
+            {props.switches ?? <></>}({unfoldedRawSchema.type} /{" "}
+            {localResolvedElementJzodSchemaBasedOnValue.type})
+          </span>
+          <span
+            id={props.listKey + ".inner"}
+            style={{
+              marginLeft: `calc(${indentShift})`,
+              display: hiddenFormItems[props.listKey] ? "none" : "block",
+            }}
+            key={`${props.rootLesslistKey}|body`}
+          >
+            {unfoldedRawSchema.type == "record" || unfoldedRawSchema.type == "any" ? (
+              <span>
+                <SizedButton
+                  id={props.rootLesslistKey + ".addRecordAttribute"}
+                  variant="text"
+                  aria-label={props.rootLesslistKey + ".addRecordAttribute"}
+                  onClick={addExtraRecordEntry}
+                >
+                  <SizedAddBox />
+                </SizedButton>
+              </span>
+            ) : (
+              <></>
+            )}
+          </span>
+        </span>
+        <div>{attributeElements}</div>
+
+        {unfoldedRawSchema.type != "record" && undefinedOptionalAttributes.length > 0 ? (
+          <div>
+            <SizedButton
+              variant="text"
+              aria-label={props.rootLesslistKey + ".addObjectOptionalAttribute"}
+              onClick={addObjectOptionalAttribute}
+            >
+              <SizedAddBox />
+            </SizedButton>{" "}
+            {JSON.stringify(undefinedOptionalAttributes)}
+          </div>
+        ) : (
+          <></>
+        )}
+      </div>
     </div>
   );
 }, (prevProps, nextProps) => {

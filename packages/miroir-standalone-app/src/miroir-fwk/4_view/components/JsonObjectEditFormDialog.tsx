@@ -233,6 +233,9 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
     log.info('edit code done');
   }, [setdialogOuterFormObject]);
 
+  const labelElement = useMemo(() => {
+    return label ? <span id={"label." + label}>{label}</span> : undefined;
+  }, [label]);
   return (
     <Formik
       enableReinitialize={true}
@@ -274,7 +277,7 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
                 listKey={"ROOT"}
                 rootLesslistKey=""
                 rootLesslistKeyArray={[]}
-                label={label}
+                label={labelElement}
                 currentDeploymentUuid={currentDeploymentUuid}
                 currentApplicationSection={currentApplicationSection}
                 rawJzodSchema={entityDefinitionJzodSchema}

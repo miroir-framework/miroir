@@ -16,7 +16,8 @@ export interface UnionInformation {
 }
 
 export interface JzodEditorPropsRoot {
-  label?: string;
+  // label?: string;
+  label?: JSX.Element; // used to display a label in the editor
   name: string;
   listKey: string;
   rootLesslistKey: string;

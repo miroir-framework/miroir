@@ -40,7 +40,8 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
     unionInformation,
     resolvedElementJzodSchema, // handleSelectLiteralChange,
     label,
-    insideAny
+    insideAny,
+    // indentLevel,
     // visible = true, // added visibility prop
   } = props;
     const { formik, currentModel, miroirMetaModel,  } = getJzodElementEditorHooks(props, JzodAnyEditorRenderCount, "JzodAnyEditor");
@@ -82,6 +83,7 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
           label={label}
           foreignKeyObjects={foreignKeyObjects}
           insideAny={true}
+          indentLevel={0}
           returnsEmptyElement={resolvedElementJzodSchema?.type === "undefined" ? true : false}
         />
       </div>
