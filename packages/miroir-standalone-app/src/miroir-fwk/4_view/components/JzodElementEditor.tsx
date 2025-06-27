@@ -249,6 +249,7 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
     >
       <span
         // title={JSON.stringify(props.rawJzodSchema, null, 2)}
+        title={JSON.stringify(props.rawJzodSchema, null, 2)}
         style={{
           display: "inline-flex",
           alignItems: "center",

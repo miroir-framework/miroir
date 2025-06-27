@@ -767,10 +767,11 @@ export const JzodObjectEditor = React.memo(function JzodObjectEditorComponent(pr
             display: "flex",
             flexDirection: "row",
             justifyContent: "start",
+            alignItems: "center",
           }}
         >
           <span>
-            {unfoldedRawSchema.type == "record" ? (
+            {unfoldedRawSchema.type == "record" && rawJzodSchema?.optional? (
               <span
                 style={{
                   display: "flex",
@@ -780,10 +781,10 @@ export const JzodObjectEditor = React.memo(function JzodObjectEditorComponent(pr
                 }}
               >
                 <SmallIconButton
-                  id={props.rootLesslistKey + ".removeRecordAttribute"}
-                  aria-label={props.rootLesslistKey + ".removeRecordAttribute"}
+                  id={props.rootLesslistKey + ".removeOptionalRecord"}
+                  aria-label={props.rootLesslistKey + ".removeOptionalRecord"}
                   onClick={() => {
-                    log.info("removeRecordAttribute clicked!", props.rootLesslistKey);
+                    log.info("removeOptionalRecord clicked!", props.rootLesslistKey);
                     const newFormState: any = deleteObjectAtPath(
                       formik.values,
                       props.rootLesslistKeyArray
