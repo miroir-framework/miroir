@@ -64,7 +64,7 @@ export interface JzodElementEditorHooks {
   >;
 }
 
-export function getJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
+export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
   // props: JzodElementEditorProps
   props: P,
   count: number, // used for debugging

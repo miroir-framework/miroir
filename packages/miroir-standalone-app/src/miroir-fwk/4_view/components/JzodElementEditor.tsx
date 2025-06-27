@@ -1,10 +1,11 @@
-import { withErrorBoundary } from "react-error-boundary";
 import React, { useCallback, useMemo } from "react";
+import { withErrorBoundary } from "react-error-boundary";
 
+import Clear from "@mui/icons-material/Clear";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import InfoOutlined from "@mui/icons-material/InfoOutlined";
-import Clear from "@mui/icons-material/Clear";
+import { Card, CardContent, MenuItem, Switch } from "@mui/material";
 import Checkbox from "@mui/material/Checkbox";
 import TextField from '@mui/material/TextField';
 
@@ -15,16 +16,14 @@ import {
   JzodLiteral,
   LoggerInterface,
   MiroirLoggerFactory,
-  mStringify,
-  resolvePathOnObject
+  mStringify
 } from "miroir-core";
 
-import { Card, MenuItem, Switch } from "@mui/material";
 import { packageName } from "../../../constants.js";
 import { cleanLevel } from "../constants.js";
 import { JzodAnyEditor } from "./JzodAnyEditor.js";
 import { JzodArrayEditor } from "./JzodArrayEditor.js";
-import { getJzodElementEditorHooks } from "./JzodElementEditorHooks.js";
+import { useJzodElementEditorHooks } from "./JzodElementEditorHooks.js";
 import { JzodElementEditorProps } from "./JzodElementEditorInterface.js";
 import { JzodElementEditorReactCodeMirror } from "./JzodElementEditorReactCodeMirror.js";
 import { JzodEnumEditor } from "./JzodEnumEditor.js";
@@ -123,9 +122,10 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
     setDisplayAsStructuredElement,
     // displayEditor,
     // setDisplayEditor,
-    // current value and schema
+    // current value and schema ##########################
     currentValue,
     localResolvedElementJzodSchemaBasedOnValue,
+    unfoldedRawSchema,
     // miroirMetaModel,
     recursivelyUnfoldedRawSchema,
     // unfoldedRawSchema,
@@ -140,7 +140,7 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
     stringSelectList,
     // object
     definedOptionalAttributes,
-  } = getJzodElementEditorHooks(props, count, "JzodElementEditor");
+  } = useJzodElementEditorHooks(props, count, "JzodElementEditor");
   
   // Function to remove an optional attribute
   const removeOptionalAttribute = useCallback(() => {
@@ -155,10 +155,19 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
   // Handle switch for structured element display
   const handleDisplayAsStructuredElementSwitchChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
-      log.info("handleDisplayAsStructuredElementSwitchChange Switching display mode to:", event.target.checked);
+      log.info(
+        "handleDisplayAsStructuredElementSwitchChange",
+        props.rootLesslistKey,
+        "Switching display mode to:",
+        event.target.checked
+      );
       if (event.target.checked) {
         try {
           const parsedCodeMirrorValue = JSON.parse(codeMirrorValue);
+          log.info(
+            "handleDisplayAsStructuredElementSwitchChange Parsed CodeMirror value for structured element display:",
+            mStringify(parsedCodeMirrorValue, null, 2)
+          );
           if (props.rootLesslistKey && props.rootLesslistKey.length > 0) {
             formik.setFieldValue(props.rootLesslistKey, parsedCodeMirrorValue);
           } else {
@@ -193,48 +202,37 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
   );
   
   // Switches for display mode
-  const objectOrArraySwitches: JSX.Element = useMemo(() => (
-    <>
-      { objectOrArrayOrAny ? (
-        <Switch
-          checked={displayAsStructuredElement}
-          id={`displayAsStructuredElementSwitch-${props.rootLesslistKey}`}
-          name={`displayAsStructuredElementSwitch-${props.rootLesslistKey}`}
-          onChange={handleDisplayAsStructuredElementSwitchChange}
-          inputProps={{ "aria-label": `Display as structured element` }}
-          disabled={!codeMirrorIsValidJson}
-        />
-      ): <></>
-      }
-    </>
-  ), [objectOrArrayOrAny, displayAsStructuredElement, handleDisplayAsStructuredElementSwitchChange, codeMirrorIsValidJson]);
+  const displayAsStructuredElementSwitch: JSX.Element = useMemo(
+    () => (
+      <>
+        {objectOrArrayOrAny ? (
+          <Switch
+            checked={displayAsStructuredElement}
+            id={`displayAsStructuredElementSwitch-${props.rootLesslistKey}`}
+            name={`displayAsStructuredElementSwitch-${props.rootLesslistKey}`}
+            onChange={handleDisplayAsStructuredElementSwitchChange}
+            inputProps={{ "aria-label": `Display as structured element` }}
+            disabled={!codeMirrorIsValidJson}
+          />
+        ) : (
+          <></>
+        )}
+      </>
+    ),
+    [
+      objectOrArrayOrAny,
+      displayAsStructuredElement,
+      handleDisplayAsStructuredElementSwitchChange,
+      codeMirrorIsValidJson,
+    ]
+  );
 
   const hideSubJzodEditor = useMemo(() => 
     props.hidden || props.insideAny || !displayAsStructuredElement, 
     [props.hidden, props.insideAny, displayAsStructuredElement]
   );
 
-  // Code editor element
-  const codeEditor: JSX.Element = useMemo(() => !isUnderTest ? (
-    <JzodElementEditorReactCodeMirror
-      codeMirrorValue={codeMirrorValue}
-      setCodeMirrorValue={setCodeMirrorValue}
-      codeMirrorIsValidJson={codeMirrorIsValidJson}
-      setCodeMirrorIsValidJson={setCodeMirrorIsValidJson}
-      rootLesslistKey={props.rootLesslistKey}
-      rootLesslistKeyArray={props.rootLesslistKeyArray}
-      hidden={props.hidden || displayAsStructuredElement}
-      insideAny={props.insideAny}
-      initialValue={currentValue}
-      isUnderTest={isUnderTest}
-    />
-  ) : (
-    <></>
-  ), [isUnderTest, codeMirrorValue, setCodeMirrorValue, codeMirrorIsValidJson, setCodeMirrorIsValidJson,
-      props.rootLesslistKey, props.rootLesslistKeyArray, props.hidden, displayAsStructuredElement, 
-      props.insideAny, currentValue]);
-
-  // JzodSchemaTooltip
+    // JzodSchemaTooltip
   const JzodSchemaTooltip: JSX.Element = useMemo(() => (
     <span
       style={{
@@ -271,6 +269,44 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
     </span>
   ), [props.rawJzodSchema]);
 
+
+  // Code editor element
+  const codeEditor: JSX.Element = useMemo(
+    () =>
+      !isUnderTest ? (
+        <JzodElementEditorReactCodeMirror
+          initialValue={JSON.stringify(currentValue, null, 2)}
+          codeMirrorValue={codeMirrorValue}
+          setCodeMirrorValue={setCodeMirrorValue}
+          codeMirrorIsValidJson={codeMirrorIsValidJson}
+          setCodeMirrorIsValidJson={setCodeMirrorIsValidJson}
+          rootLesslistKey={props.rootLesslistKey}
+          rootLesslistKeyArray={props.rootLesslistKeyArray}
+          hidden={props.hidden || displayAsStructuredElement}
+          insideAny={props.insideAny}
+          isUnderTest={isUnderTest}
+          displayAsStructuredElementSwitch={displayAsStructuredElementSwitch}
+          jzodSchemaTooltip={JzodSchemaTooltip}
+        />
+      ) : (
+        <></>
+      ),
+    [
+      isUnderTest,
+      JzodSchemaTooltip,
+      codeMirrorValue,
+      setCodeMirrorValue,
+      codeMirrorIsValidJson,
+      setCodeMirrorIsValidJson,
+      props.rootLesslistKey,
+      props.rootLesslistKeyArray,
+      props.hidden,
+      displayAsStructuredElement,
+      props.insideAny,
+      currentValue,
+    ]
+  );
+
   // Define Prettier-like colors for nested structures
   const prettierColors = useMemo(() => [
     "#f8f8f8", // Light gray
@@ -285,7 +321,7 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
   );
 
   // Clear button for optional attributes
-  const clearButton = useMemo(() => (
+  const clearSimpleElementButton = useMemo(() => (
     <SmallIconButton
       onClick={removeOptionalAttribute}
       style={{ padding: 0, visibility: props.optional ? "visible" : "hidden" }}
@@ -295,6 +331,11 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
   ), [removeOptionalAttribute, props.optional]);
 
   // Create the main element based on the schema type
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
   const mainElement = useMemo(() => {
     if (props.returnsEmptyElement || props.hidden) {
       return null;
@@ -379,7 +420,8 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
             resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
             foreignKeyObjects={foreignKeyObjects}
             hidden={hideSubJzodEditor}
-            switches={objectOrArraySwitches}
+            displayAsStructuredElementSwitch={displayAsStructuredElementSwitch}
+            jzodSchemaTooltip={JzodSchemaTooltip}
           />
         );
       }
@@ -391,7 +433,8 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
             key={props.rootLesslistKey}
             rootLesslistKeyArray={props.rootLesslistKeyArray}
             rootLesslistKey={props.rootLesslistKey}
-            rawJzodSchema={props.rawJzodSchema as any}
+            rawJzodSchema={props.rawJzodSchema}
+            unfoldedRawSchema={unfoldedRawSchema as any}
             indentLevel={props.indentLevel + 1}
             itemsOrder={itemsOrder}
             hiddenFormItems={hiddenFormItems}
@@ -402,7 +445,7 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
             unionInformation={props.unionInformation}
             insideAny={props.insideAny}
             hidden={hideSubJzodEditor}
-            switches={objectOrArraySwitches}
+            displayAsStructuredElementSwitch={displayAsStructuredElementSwitch}
           />
         );
       }
@@ -599,12 +642,18 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
     unionInformation,
     foreignKeyObjects,
     hideSubJzodEditor,
-    objectOrArraySwitches,
+    displayAsStructuredElementSwitch,
     hiddenFormItems,
     setHiddenFormItems,
     itemsOrder,
     stringSelectList
   ]);
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
 
   if (props.returnsEmptyElement || props.hidden) {
     return <></>;
@@ -612,6 +661,7 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
 
   return (
     <span>
+      {/* <div>{count}</div> */}
       {objectOrArrayOrAny ? (
         <Card
           id={props.rootLesslistKey}
@@ -623,42 +673,54 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
             position: "relative",
             backgroundColor: bgColor,
             border: "1px solid #ddd",
+            justifyContent: "space-between",
             boxShadow: "none",
           }}
         >
-          {JzodSchemaTooltip}
-          <div>
-            {props.submitButton}
-          </div>
-            <span
-              style={{
-                display: !hideSubJzodEditor ? "none" : "inline-block",
-              }}
-            >
-              {objectOrArraySwitches}
-            </span>
-          <span
-            style={{
-              display:
-                !hideSubJzodEditor ||
-                (props.rawJzodSchema?.type == "any" &&
-                  ["undefined", "any"].includes(localResolvedElementJzodSchemaBasedOnValue.type))
-                  ? "none"
-                  : "inline-block",
-            }}
-          >
-            {codeEditor}
-          </span>
-          <span
-            style={{
-              display: hideSubJzodEditor ? "none" : "block",
-              margin: "2px 5px 5px 5px",
-              width: "calc(100% - 15px)",
-              flexGrow: 1,
-            }}
-          >
-            {mainElement}
-          </span>
+          <CardContent>
+            <div>
+              <span
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <span>
+                  {props.submitButton}
+                  {/* {clearSimpleElementButton} */}
+                </span>
+              </span>
+              <span>
+                <span style={{ display: "flex" }}>
+                  <span
+                    style={{
+                      display:
+                        !hideSubJzodEditor ||
+                        (props.rawJzodSchema?.type == "any" &&
+                          ["undefined", "any"].includes(
+                            localResolvedElementJzodSchemaBasedOnValue.type
+                          ))
+                          ? "none"
+                          : "inline-block",
+                    }}
+                  >
+                    {codeEditor}
+                  </span>
+                </span>
+                <span
+                  style={{
+                    display: hideSubJzodEditor ? "none" : "block",
+                    margin: "2px 5px 5px 5px",
+                    width: "calc(100% - 15px)",
+                    flexGrow: 1,
+                  }}
+                >
+                  {mainElement}
+                </span>
+              </span>
+            </div>
+          </CardContent>
         </Card>
       ) : (
         <span
@@ -668,7 +730,7 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
             width: "100%",
           }}
         >
-          {clearButton}
+          {clearSimpleElementButton}
           {props.label}
           <span
             style={{

@@ -11,7 +11,7 @@ import {
 import { packageName } from "../../../constants";
 import { cleanLevel } from "../constants";
 import { JzodElementEditor } from "./JzodElementEditor";
-import { getJzodElementEditorHooks } from "./JzodElementEditorHooks";
+import { useJzodElementEditorHooks } from "./JzodElementEditorHooks";
 import { JzodAnyEditorProps } from "./JzodElementEditorInterface";
 import { ChangeValueTypeSelect } from "./ChangeValueTypeSelect";
 import { JzodElement, JzodSchema } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
@@ -44,7 +44,11 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
     // indentLevel,
     // visible = true, // added visibility prop
   } = props;
-    const { formik, currentModel, miroirMetaModel,  } = getJzodElementEditorHooks(props, JzodAnyEditorRenderCount, "JzodAnyEditor");
+    const { formik, currentModel, miroirMetaModel } = useJzodElementEditorHooks(
+      props,
+      JzodAnyEditorRenderCount,
+      "JzodAnyEditor"
+    );
   
   const currentValue = resolvePathOnObject(formik.values, rootLesslistKeyArray);
 

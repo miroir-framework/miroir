@@ -19,7 +19,7 @@ import {
 
 import { indentShift } from "./JzodArrayEditor";
 import { ExpandOrFoldObjectAttributes, JzodElementEditor } from "./JzodElementEditor";
-import { getJzodElementEditorHooks } from "./JzodElementEditorHooks";
+import { useJzodElementEditorHooks } from "./JzodElementEditorHooks";
 import { JzodObjectEditorProps } from "./JzodElementEditorInterface";
 import { SizedButton, SizedAddBox, SmallIconButton, getItemsOrder } from "./Style";
 import { packageName } from "../../../constants";
@@ -249,6 +249,7 @@ export const JzodObjectEditor = React.memo(function JzodObjectEditorComponent(pr
     indentLevel,
     resolvedElementJzodSchema,
     insideAny,
+    jzodSchemaTooltip,
   } = props;
 
   count++;
@@ -274,7 +275,7 @@ export const JzodObjectEditor = React.memo(function JzodObjectEditorComponent(pr
     definedOptionalAttributes,
     stringSelectList,
     undefinedOptionalAttributes,
-  } = getJzodElementEditorHooks(props, count, "JzodElementEditor");
+  } = useJzodElementEditorHooks(props, count, "JzodElementEditor");
 
   const currentMiroirFundamentalJzodSchema = context.miroirFundamentalJzodSchema;
   const usedIndentLevel: number = props.indentLevel ? props.indentLevel : 0;
@@ -689,7 +690,7 @@ export const JzodObjectEditor = React.memo(function JzodObjectEditorComponent(pr
                     <div style={{ color: "red" }}>
                       <p>Something went wrong:</p>
                       <div key="1">object {props.rootLesslistKey}</div>
-                      <div key="2">attribute {attributeRootLessListKeyArray}</div>
+                      <div key="2">attribute {attributeRootLessListKeyArray.join('.')}</div>
                       <div>
                         calc attribute value{" "}
                         {JSON.stringify(
@@ -792,12 +793,12 @@ export const JzodObjectEditor = React.memo(function JzodObjectEditorComponent(pr
                     formik.setValues(newFormState);
                   }}
                 >
-                  <Clear />
+                  <Clear />Rec
                 </SmallIconButton>
-                {label}
+                {label}AAAA
               </span>
             ) : (
-              <span>{label??""}</span>
+              <span>{label??""}BBBB</span>
             )}
           </span>
           <span id={props.rootLesslistKey + "head"} key={props.rootLesslistKey + "head"}>
@@ -806,7 +807,7 @@ export const JzodObjectEditor = React.memo(function JzodObjectEditorComponent(pr
               setHiddenFormItems={setHiddenFormItems}
               listKey={props.listKey}
             ></ExpandOrFoldObjectAttributes>
-            {props.switches ?? <></>}({unfoldedRawSchema.type} /{" "}
+            {props.displayAsStructuredElementSwitch ?? <></>}({unfoldedRawSchema.type} /{" XXXX"}
             {localResolvedElementJzodSchemaBasedOnValue.type})
           </span>
           <span
@@ -832,6 +833,7 @@ export const JzodObjectEditor = React.memo(function JzodObjectEditorComponent(pr
               <></>
             )}
           </span>
+          {jzodSchemaTooltip ?? <></>}
         </span>
         <div>{attributeElements}</div>
 

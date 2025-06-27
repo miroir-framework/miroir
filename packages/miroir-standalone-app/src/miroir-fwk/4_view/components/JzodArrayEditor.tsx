@@ -101,6 +101,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     rootLesslistKey,
     rootLesslistKeyArray,
     rawJzodSchema,
+    unfoldedRawSchema,
     resolvedElementJzodSchema,
     // paramMiroirFundamentalJzodSchema,
     currentDeploymentUuid,
@@ -111,6 +112,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     setHiddenFormItems,
     itemsOrder,
     insideAny,
+    displayAsStructuredElementSwitch,
     // setItemsOrder,
   }
 ) => {
@@ -151,7 +153,8 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
         );
       }
 
-      const newItem = getDefaultValueForJzodSchema(rawJzodSchema.definition)
+      // const newItem = getDefaultValueForJzodSchema(rawJzodSchema.definition)
+      const newItem = getDefaultValueForJzodSchema(unfoldedRawSchema.definition)
       log.info(
         "JzodArrayEditor addNewArrayItem",
         "rootLesslistKey",
@@ -211,10 +214,18 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     // <div style={{ marginLeft: `calc(${usedIndentLevel}*(${indentShift}))` }}>
     // <div style={{ marginLeft: `calc(${indentShift})` }}>
     <div id={rootLesslistKey} key={rootLesslistKey}>
-      <div>
+      <span>
         {label}
-        {rawJzodSchema?.type == "array" ? (
-          <div>
+        {/* {rawJzodSchema?.type == "array" ? ( */}
+          <span>
+            {/* add new item: */}
+            {" ["}
+            <ExpandOrFoldObjectAttributes
+              hiddenFormItems={hiddenFormItems}
+              setHiddenFormItems={setHiddenFormItems}
+              listKey={listKey}
+            ></ExpandOrFoldObjectAttributes>
+            {displayAsStructuredElementSwitch}
             <SizedButton
               variant="text"
               aria-label={rootLesslistKey + ".add"}
@@ -222,19 +233,12 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
             >
               <SizedAddBox />
             </SizedButton>
-            add new item:
-          </div>
-        ) : (
+          </span>
+        {/* ) : (
           <div>JzodArrayEditor not an array! {JSON.stringify(rawJzodSchema)}</div>
-        )}
-      </div>
+        )} */}
+      </span>
       <span>
-        {" ["}
-        <ExpandOrFoldObjectAttributes
-          hiddenFormItems={hiddenFormItems}
-          setHiddenFormItems={setHiddenFormItems}
-          listKey={listKey}
-        ></ExpandOrFoldObjectAttributes>
         <div
           id={listKey + ".inner"}
           key={listKey + ".inner"}
@@ -351,7 +355,8 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
               );
             })}
         </div>
-        <div style={{ marginLeft: `calc(${indentShift})` }}>{"]"}</div>
+        {/* <div style={{ marginLeft: `calc(${indentShift})` }}>{"]"}</div> */}
+        <div>{"]"}</div>
       </span>
     </div>
   );

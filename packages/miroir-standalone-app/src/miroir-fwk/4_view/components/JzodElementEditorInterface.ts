@@ -7,6 +7,7 @@ import {
   JzodUnion,
   Uuid
 } from "miroir-core";
+import { JzodArray } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 export interface UnionInformation {
   jzodSchema: JzodUnion;
@@ -27,8 +28,8 @@ export interface JzodEditorPropsRoot {
   initialFormState?: any;
   rawJzodSchema: JzodElement | undefined;
   resolvedElementJzodSchema: JzodElement | undefined;
-  unionInformation?: UnionInformation | undefined;
-  foreignKeyObjects: Record<string, EntityInstancesUuidIndex>; // prop drilling
+  unionInformation?: UnionInformation | undefined; // prop drilling: for unions only
+  foreignKeyObjects: Record<string, EntityInstancesUuidIndex>; // prop drilling: for uuid / objects only
   returnsEmptyElement?: boolean; // used to force the editor to return an empty element
   insideAny?: boolean;
   hidden?: boolean; // used to control visibility of the editor
@@ -43,18 +44,14 @@ export interface JzodElementEditorProps extends JzodEditorPropsRoot {
   unresolvedJzodSchema?: JzodElement | undefined;
   indentLevel: number;
   submitButton?: JSX.Element; // used to display a submit button in the editor
-  // paramMiroirFundamentalJzodSchema?: JzodSchema; //used only for testing, trouble with using MiroirContextReactProvider
-  // currentDeploymentUuid?: Uuid;
-  // currentApplicationSection?: ApplicationSection;
 }
 
 // ################################################################################################
 export interface JzodArrayEditorProps extends JzodEditorPropsRoot {
   currentDeploymentUuid?: Uuid,
   currentApplicationSection?: ApplicationSection;
-  // rawJzodSchema: JzodArray | JzodTuple;
   resolvedElementJzodSchema: JzodElement | undefined;
-  // paramMiroirFundamentalJzodSchema?: JzodSchema; //used only for testing, trouble with using MiroirContextReactProvider
+  unfoldedRawSchema: JzodArray;
   indentLevel?: number;
   hiddenFormItems: { [k: string]: boolean };  
   setHiddenFormItems: React.Dispatch<
@@ -64,13 +61,11 @@ export interface JzodArrayEditorProps extends JzodEditorPropsRoot {
   >;
   // setItemsOrder: React.Dispatch<React.SetStateAction<any[]>>
   itemsOrder: any[];
-  switches?: JSX.Element; // used to display switches in the editor
+  displayAsStructuredElementSwitch?: JSX.Element; // used to display switches in the editor
 }
 
 // #################################################################################################
 export interface JzodEnumEditorProps extends JzodEditorPropsRoot {
-  // rawJzodSchema: JzodEnum | undefined;
-  // 
   enumValues: string[];
   forceTestingMode?: boolean;
 }
@@ -86,10 +81,29 @@ export interface JzodAnyEditorProps extends JzodEditorPropsRoot {
 
 // #################################################################################################
 export interface JzodObjectEditorProps extends JzodEditorPropsRoot {
-  // visible?: boolean;
   indentLevel?: number;
-  switches?: JSX.Element; // used to display switches in the editor
+  displayAsStructuredElementSwitch?: JSX.Element; // used to display switches in the editor
+  jzodSchemaTooltip?: JSX.Element; // used to display the actual raw jzod schema as a tooltip
 }
+
+// #####################################################################################################
+export type JzodElementEditorReactCodeMirrorProps = {
+  initialValue: any;
+  // rawJzodSchema: JzodElement;
+  // formik: any; // Formik instance
+  codeMirrorValue: string;
+  setCodeMirrorValue: React.Dispatch<React.SetStateAction<string>>;
+  codeMirrorIsValidJson: boolean;
+  setCodeMirrorIsValidJson: React.Dispatch<React.SetStateAction<boolean>>;
+  rootLesslistKey: string;
+  rootLesslistKeyArray: string[];
+  isUnderTest?: boolean; // codemirror issue with vitest https://github.com/miroir-framework/miroir/issues/56
+  hidden?: boolean; // used to control visibility of the editor 
+  insideAny?: boolean; // used to control visibility of the editor
+  displayAsStructuredElementSwitch?: JSX.Element;
+  jzodSchemaTooltip?: JSX.Element; // used to display the actual raw jzod schema as a tooltip
+  // displayAsCode?: boolean; // used to display the editor as a structured element, not as code editor  
+};
 
 // ################################################################################################
 // ################################################################################################
