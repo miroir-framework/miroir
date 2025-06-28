@@ -27,12 +27,10 @@ export function alterObjectAtPath(
  * @param value 
  * @returns 
  * 
- * NOT FUNCTIONAL!!!
  */
 export function deleteObjectAtPath(
   object: any,
-  path: string[],
-  // value: any,
+  path: (string | number)[],
 ):any { // terminal recursion
   if (path.length == 0) {
     return object;
@@ -42,7 +40,6 @@ export function deleteObjectAtPath(
       Object.entries(object).filter(a => a[0] != path[0])
     )
   }
-  // const head: string = path.slice(1) as string;
   return {
     ...object,
     [path[0]]:deleteObjectAtPath(object[path[0]], path.slice(1))

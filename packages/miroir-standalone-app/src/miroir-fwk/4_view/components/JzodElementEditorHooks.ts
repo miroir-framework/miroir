@@ -2,7 +2,7 @@ import { FormikProps, useFormikContext } from "formik";
 import { useCallback, useMemo, useRef, useState } from "react";
 
 
-import { SyncBoxedExtractorOrQueryRunnerMap, DeploymentEntityState, MetaModel, JzodElement, JzodUnion_RecursivelyUnfold_ReturnType, JzodUnion, adminConfigurationDeploymentMiroir, resolvePathOnObject, ResolvedJzodSchemaReturnType, jzodTypeCheck, unfoldJzodSchemaOnce, jzodUnion_recursivelyUnfold, LoggerInterface, MiroirLoggerFactory, Domain2QueryReturnType, DomainElementSuccess, EntityInstancesUuidIndex, SyncQueryRunner, SyncQueryRunnerParams, dummyDomainManyQueryWithDeploymentUuid, getApplicationSection, getQueryRunnerParamsForDeploymentEntityState, EntityInstance } from "miroir-core";
+import { SyncBoxedExtractorOrQueryRunnerMap, DeploymentEntityState, MetaModel, JzodElement, JzodUnion_RecursivelyUnfold_ReturnType, JzodUnion, adminConfigurationDeploymentMiroir, resolvePathOnObject, ResolvedJzodSchemaReturnType, jzodTypeCheck, unfoldJzodSchemaOnce, jzodUnion_recursivelyUnfold, LoggerInterface, MiroirLoggerFactory, Domain2QueryReturnType, DomainElementSuccess, EntityInstancesUuidIndex, SyncQueryRunner, SyncQueryRunnerParams, dummyDomainManyQueryWithDeploymentUuid, getApplicationSection, getQueryRunnerParamsForDeploymentEntityState, EntityInstance, jzodUnionResolvedTypeForObject } from "miroir-core";
 import { getMemoizedDeploymentEntityStateSelectorMap } from "miroir-localcache-redux";
 import { getUnionInformation } from "../1-core/getUnionInformation";
 import { MiroirReactContext, useMiroirContextService } from "../MiroirContextReactProvider";
@@ -11,6 +11,7 @@ import { JzodEditorPropsRoot, noValue } from "./JzodElementEditorInterface";
 import { getItemsOrder } from "./Style";
 import { packageName } from "../../../constants";
 import { cleanLevel } from "../constants";
+import { JzodObject } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -183,14 +184,6 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
     // );
   }
   if (!unfoldedRawSchemaReturnType || unfoldedRawSchemaReturnType.status == "error") {
-    // return (
-    //   <div>
-    //     <span style={{ color: "red" }}>
-    //       JzodElementEditor could not unfold raw schema {JSON.stringify(props.rawJzodSchema, null, 2)}{" "}
-    //       count {count} result {JSON.stringify(unfoldedRawSchemaReturnType, null, 2)}{" "}
-    //       miroirFundamentalJzodSchema {context.miroirFundamentalJzodSchema}
-    //     </span>
-    // )
     throw new Error(
       "JzodElementEditor could not unfold raw schema " +
        "error " +
@@ -227,6 +220,17 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
       }
     }, [unfoldedRawSchema, context.miroirFundamentalJzodSchema, currentModel, miroirMetaModel]);
 
+  if (recursivelyUnfoldedRawSchema && recursivelyUnfoldedRawSchema.status == "error") {
+    throw new Error(
+      "JzodElementEditor could not recursively unfold raw schema " +
+        "error " +
+        JSON.stringify(recursivelyUnfoldedRawSchema, null, 2) +
+        " unfoldedRawSchema " +
+        JSON.stringify(unfoldedRawSchema, null, 2) +
+        " count " +
+        count
+    );
+  }
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
@@ -294,11 +298,40 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
       foreignKeyObjectsFetchQueryParams
     );
 
+  const discriminatedSchemaForObject: JzodObject | undefined =
+    props.rawJzodSchema?.type == "union" &&
+    props.rawJzodSchema.discriminator &&
+    context.miroirFundamentalJzodSchema
+      ? jzodUnionResolvedTypeForObject(
+          recursivelyUnfoldedRawSchema?.result ?? [],
+          props.rawJzodSchema.discriminator,
+          currentValue,
+          [], // currentValuePath
+          [], // currentTypePath
+          context.miroirFundamentalJzodSchema,
+          currentModel,
+          miroirMetaModel,
+          {} // relativeReferenceJzodContext
+        )
+      : undefined;
+
   // ################################# objects ###################################
   const undefinedOptionalAttributes: string[] = useMemo(() => {
-    if (props.resolvedElementJzodSchema?.type == "object" && unfoldedRawSchema.type == "object") {
+    // if (props.resolvedElementJzodSchema?.type == "object" && unfoldedRawSchema.type == "object") {
+    // if (props.resolvedElementJzodSchema?.type == "object") {
+    // if (localResolvedElementJzodSchemaBasedOnValue.type == "object") {
+    if (unfoldedRawSchema.type == "object") {
       const currentObjectAttributes = Object.keys(currentValue);
+      // return Object.entries(unfoldedRawSchema.definition)
       return Object.entries(unfoldedRawSchema.definition)
+      // return Object.entries(localResolvedElementJzodSchemaBasedOnValue.definition)
+        .filter((a) => a[1].optional)
+        .filter((a) => !currentObjectAttributes.includes(a[0]))
+        .map((a) => a[0]);
+    }
+    if (unfoldedRawSchema.type == "union") {
+      const currentObjectAttributes = Object.keys(currentValue);
+      return Object.entries(discriminatedSchemaForObject?.definition??[])
         .filter((a) => a[1].optional)
         .filter((a) => !currentObjectAttributes.includes(a[0]))
         .map((a) => a[0]);
@@ -307,16 +340,37 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
   }, [unfoldedRawSchema, currentValue]);
 
   const definedOptionalAttributes: Set<string> = useMemo(() => {
-    if (props.resolvedElementJzodSchema?.type == "object" && unfoldedRawSchema.type == "object") {
+    // if (props.resolvedElementJzodSchema?.type == "object" && unfoldedRawSchema.type == "object") {
+    // if (props.resolvedElementJzodSchema?.type == "object") {
+    if (unfoldedRawSchema?.type == "object") {
+    // if (localResolvedElementJzodSchemaBasedOnValue?.type == "object") {
+    // if (
+    //   props.resolvedElementJzodSchema?.type == "object" &&
+    //   recursivelyUnfoldedRawSchema &&
+    //   recursivelyUnfoldedRawSchema.status == "ok" &&
+    //   recursivelyUnfoldedRawSchema.result == "object"
+    // ) {
       const currentObjectAttributes = Object.keys(currentValue);
       return new Set(
         Object.entries(unfoldedRawSchema.definition)
+        // Object.entries(props.resolvedElementJzodSchema.definition)
+        // Object.entries(localResolvedElementJzodSchemaBasedOnValue.definition)
+          .filter((a) => a[1].optional)
+          .filter((a) => currentObjectAttributes.includes(a[0]))
+          .map((a) => a[0])
+      );
+    }
+    if (unfoldedRawSchema.type == "union") {
+      const currentObjectAttributes = Object.keys(currentValue);
+      return new Set(
+        Object.entries(discriminatedSchemaForObject?.definition ?? [])
           .filter((a) => a[1].optional)
           .filter((a) => currentObjectAttributes.includes(a[0]))
           .map((a) => a[0])
       );
     }
     return new Set();
+  // }, [recursivelyUnfoldedRawSchema, currentValue]);
   }, [unfoldedRawSchema, currentValue]);
 
   const stringSelectList = useMemo(() => {

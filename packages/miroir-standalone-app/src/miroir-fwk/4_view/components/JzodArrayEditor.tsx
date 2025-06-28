@@ -349,6 +349,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
                       } // TODO: wrong type seen for props.resolvedJzodSchema! (cannot be undefined, really)
                       foreignKeyObjects={foreignKeyObjects}
                       insideAny={insideAny}
+                      parentType={unfoldedRawSchema.type} // used to control the parent type of the element, used for array items
                     />
                   </div>
                 </div>

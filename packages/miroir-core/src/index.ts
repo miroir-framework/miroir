@@ -632,6 +632,9 @@ export {
   ResolvedJzodSchemaReturnTypeOK,
   // getReportSectionTargetEntityUuid,
   jzodTypeCheck,
+  jzodUnionResolvedTypeForObject,
+  unionObjectChoices,
+  selectUnionBranchFromDiscriminator,
 } from "./1_core/jzod/jzodTypeCheck.js";
 export {
   JzodUnion_RecursivelyUnfold_ReturnTypeError,

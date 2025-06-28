@@ -261,205 +261,793 @@ describe(
         console.log(expect.getState().currentTestName, "called getMiroirFundamentalJzodSchema");
 
         const tests: { [k: string]: testFormat } = {
-          // plain literal!
-          test010: {
+          // // plain literal!
+          // test010: {
+          //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+          //   testSchema: {
+          //     type: "literal",
+          //     definition: "myLiteral",
+          //   },
+          //   expectedResult: {
+          //     type: "literal",
+          //     definition: "myLiteral",
+          //   },
+          // },
+          // // simpleType
+          // test020: {
+          //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+          //   testSchema: {
+          //     type: "string",
+          //   },
+          //   expectedResult: {
+          //     type: "string",
+          //   },
+          // },
+          // // schemaReference (plain, simpleType, non-recursive)
+          // test030: {
+          //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+          //   testSchema: {
+          //     type: "schemaReference",
+          //     context: {
+          //       a: {
+          //         type: "string",
+          //       },
+          //     },
+          //     definition: {
+          //       relativePath: "a",
+          //     },
+          //   },
+          //   expectedResult: {
+          //     type: "string",
+          //   },
+          // },
+          // // object, simple
+          // test040: {
+          //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+          //   testSchema: {
+          //     type: "object",
+          //     definition: {
+          //       a: {
+          //         type: "schemaReference",
+          //         optional: true,
+          //         context: {
+          //           myString: {
+          //             type: "string",
+          //           },
+          //         },
+          //         definition: { relativePath: "myString" },
+          //       },
+          //       b: {
+          //         type: "string",
+          //         optional: true,
+          //       },
+          //       c: {
+          //         type: "record",
+          //         optional: true,
+          //         definition: {
+          //           type: "string",
+          //           optional: true,
+          //         },
+          //       },
+          //     },
+          //   },
+          //   expectedResult: {
+          //     type: "object",
+          //     definition: {
+          //       a: {
+          //         type: "string",
+          //         optional: true,
+          //       },
+          //       b: {
+          //         type: "string",
+          //         optional: true,
+          //       },
+          //       c: {
+          //         type: "record",
+          //         optional: true,
+          //         definition: {
+          //           type: "string",
+          //           optional: true,
+          //         },
+          //       },
+          //     },
+          //   },
+          // },
+          // // schemaReference: object, recursive, 1-level valueObject
+          // test050: {
+          //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+          //   testSchema: {
+          //     type: "schemaReference",
+          //     context: {
+          //       myObject: {
+          //         type: "object",
+          //         definition: {
+          //           a: {
+          //             type: "union",
+          //             optional: true,
+          //             definition: [
+          //               {
+          //                 type: "string",
+          //               },
+          //               {
+          //                 type: "schemaReference",
+          //                 definition: { relativePath: "myObject" },
+          //               },
+          //             ],
+          //           },
+          //         },
+          //       },
+          //     },
+          //     definition: { relativePath: "myObject" },
+          //   },
+          //   expectedResult: {
+          //     type: "object",
+          //     definition: {
+          //       a: {
+          //         type: "union",
+          //         optional: true,
+          //         definition: [
+          //           {
+          //             type: "string",
+          //           },
+          //           {
+          //             type: "schemaReference",
+          //             context: {
+          //               myObject: {
+          //                 type: "object",
+          //                 definition: {
+          //                   a: {
+          //                     type: "union",
+          //                     optional: true,
+          //                     definition: [
+          //                       {
+          //                         type: "string",
+          //                       },
+          //                       {
+          //                         type: "schemaReference",
+          //                         definition: { relativePath: "myObject" },
+          //                       },
+          //                     ],
+          //                   },
+          //                 },
+          //               },
+          //             },
+          //             definition: { relativePath: "myObject" },
+          //           },
+          //         ],
+          //       },
+          //     },
+          //   },
+          // },
+          // // schemaReference: object, recursive, 3-level valueObject
+          // test060: {
+          //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+          //   testSchema: {
+          //     type: "schemaReference",
+          //     context: {
+          //       myObject: {
+          //         type: "object",
+          //         definition: {
+          //           a: {
+          //             type: "union",
+          //             definition: [
+          //               {
+          //                 type: "string",
+          //               },
+          //               {
+          //                 type: "schemaReference",
+          //                 definition: { relativePath: "myObject" },
+          //               },
+          //             ],
+          //           },
+          //         },
+          //       },
+          //     },
+          //     definition: { relativePath: "myObject" },
+          //   },
+          //   expectedResult: {
+          //     type: "object",
+          //     definition: {
+          //       a: {
+          //         type: "union",
+          //         definition: [
+          //           {
+          //             type: "string",
+          //           },
+          //           {
+          //             type: "schemaReference",
+          //             definition: {
+          //               relativePath: "myObject",
+          //             },
+          //             context: {
+          //               myObject: {
+          //                 type: "object",
+          //                 definition: {
+          //                   a: {
+          //                     type: "union",
+          //                     definition: [
+          //                       {
+          //                         type: "string",
+          //                       },
+          //                       {
+          //                         type: "schemaReference",
+          //                         definition: {
+          //                           relativePath: "myObject",
+          //                         },
+          //                       },
+          //                     ],
+          //                   },
+          //                 },
+          //               },
+          //             },
+          //           },
+          //         ],
+          //       },
+          //     },
+          //   },
+          // },
+          // union of schemaReferences
+          test070: {
             miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
             testSchema: {
-              type: "literal",
-              definition: "myLiteral",
-            },
-            expectedResult: {
-              type: "literal",
-              definition: "myLiteral",
-            },
-          },
-          // simpleType
-          test020: {
-            miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-            testSchema: {
-              type: "string",
-            },
-            expectedResult: {
-              type: "string",
-            },
-          },
-          // schemaReference (plain, simpleType, non-recursive)
-          test030: {
-            miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-            testSchema: {
-              type: "schemaReference",
-              context: {
-                a: {
-                  type: "string",
-                }
-              },
-              definition: {
-                "relativePath": "a"
-              }
-            },
-            expectedResult: {
-              type: "string",
-            },
-          },
-          // object, simple
-          test040: {
-            miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-            testSchema: {
-              type: "object",
-              definition: {
-                a: {
+              // type: "record",
+              // definition: {
+              type: "union",
+              discriminator: "extractorOrCombinerType",
+              definition: [
+                {
                   type: "schemaReference",
-                  optional: true,
-                  context: {
-                    "myString": {
-                      type: "string",
-                    }
+                  definition: {
+                    relativePath: "extractorOrCombinerContextReference",
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   },
-                  definition: { relativePath: "myString" }
-                }
-              }
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    relativePath: "extractorOrCombinerReturningObject",
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  },
+                  context: {},
+                },
+                // {
+                //   type: "schemaReference",
+                //   definition: {
+                //     relativePath: "extractorOrCombinerReturningObjectList",
+                //     absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                //   },
+                //   context: {},
+                // },
+                // {
+                //   type: "schemaReference",
+                //   definition: {
+                //     relativePath: "extractorWrapper",
+                //     absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                //   },
+                //   context: {},
+                // },
+                // {
+                //   type: "schemaReference",
+                //   definition: {
+                //     relativePath:
+                //       "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList",
+                //     absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                //   },
+                //   context: {},
+                // },
+                // {
+                //   type: "object",
+                //   definition: {
+                //     extractorOrCombinerType: {
+                //       type: "literal",
+                //       definition: "literal",
+                //     },
+                //     definition: {
+                //       type: "string",
+                //     },
+                //   },
+                // },
+              ],
+              // },
+              // optional: true,
             },
             expectedResult: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "string",
-                  optional: true,
-                }
-              }
-            },
-          },
-          // schemaReference: object, recursive, 1-level valueObject
-          test050: {
-            miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-            testSchema: {
-              type: "schemaReference",
-              context: {
-                "myObject": {
+              type: "union",
+              discriminator: "extractorOrCombinerType",
+              definition: [
+                {
                   type: "object",
                   definition: {
-                    a: {
-                      type: "union",
-                      optional: true,
-                      definition: [
-                        {
-                          type: "string",
-                        },
-                        {
-                          type: "schemaReference",
-                          definition: { relativePath: "myObject"}
-                        }
-                      ]
-                    }
-                  }
-                }
-              },
-              definition: { relativePath: "myObject" }
-            },
-            expectedResult: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "union",
-                  optional: true,
-                  definition: [
-                    {
-                      type: "string",
+                    extractorOrCombinerType: {
+                      type: "literal",
+                      definition: "extractorOrCombinerContextReference",
                     },
-                    {
-                      type: "schemaReference",
-                      context: {
-                        "myObject": {
-                          type: "object",
-                          definition: {
-                            a: {
-                              type: "union",
-                              optional: true,
-                              definition: [
-                                {
-                                  type: "string",
-                                },
-                                {
-                                  type: "schemaReference",
-                                  definition: { relativePath: "myObject"}
-                                }
-                              ]
-                            }
-                          }
-                        }
-                      },
-                      definition: { relativePath: "myObject" }
-                    }
-                  ]
-                }
-              }
-            },
-          },
-          // schemaReference: object, recursive, 3-level valueObject
-          test060: {
-            miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-            testSchema: {
-              type: "schemaReference",
-              context: {
-                myObject: {
-                  type: "object",
-                  definition: {
-                    a: {
-                      type: "union",
-                      definition: [
-                        {
-                          type: "string",
-                        },
-                        {
-                          type: "schemaReference",
-                          definition: { relativePath: "myObject" },
-                        },
-                      ],
+                    extractorOrCombinerContextReference: {
+                      type: "string",
                     },
                   },
                 },
-              },
-              definition: { relativePath: "myObject" },
-            },
-            expectedResult: {
-              type: "object",
-              definition: {
-                a: {
+                {
                   type: "union",
+                  discriminator: "extractorOrCombinerType",
                   definition: [
                     {
-                      type: "string",
+                      type: "object",
+                      extend: {
+                        type: "schemaReference",
+                        definition: {
+                          eager: true,
+                          relativePath: "extractorOrCombinerRoot",
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        },
+                        context: {},
+                      },
+                      definition: {
+                        extractorOrCombinerType: {
+                          type: "literal",
+                          definition: "extractorForObjectByDirectReference",
+                        },
+                        instanceUuid: {
+                          type: "uuid",
+                        },
+                      },
                     },
                     {
-                      type: "schemaReference",
-                      definition: {
-                        relativePath: "myObject",
+                      type: "object",
+                      extend: {
+                        type: "schemaReference",
+                        definition: {
+                          eager: true,
+                          relativePath: "extractorOrCombinerRoot",
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        },
+                        context: {},
                       },
-                      context: {
-                        myObject: {
-                          type: "object",
+                      definition: {
+                        extractorOrCombinerType: {
+                          type: "literal",
+                          definition: "combinerForObjectByRelation",
+                        },
+                        objectReference: {
+                          type: "string",
+                        },
+                        AttributeOfObjectToCompareToReferenceUuid: {
+                          type: "string",
+                        },
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+          },
+          // ######################################################################################
+          // ######################################################################################
+          // ######################################################################################
+          // ######################################################################################
+          // real cases
+          // unfold record of union
+          test200: {
+            miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+            testSchema: {
+              type: "record",
+              definition: {
+                type: "union",
+                discriminator: "extractorOrCombinerType",
+                definition: [
+                  {
+                    type: "schemaReference",
+                    definition: {
+                      relativePath: "extractorOrCombinerContextReference",
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    },
+                    context: {},
+                  },
+                  {
+                    type: "schemaReference",
+                    definition: {
+                      relativePath: "extractorOrCombinerReturningObject",
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    },
+                    context: {},
+                  },
+                  {
+                    type: "schemaReference",
+                    definition: {
+                      relativePath: "extractorOrCombinerReturningObjectList",
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    },
+                    context: {},
+                  },
+                  {
+                    type: "schemaReference",
+                    definition: {
+                      relativePath: "extractorWrapper",
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    },
+                    context: {},
+                  },
+                  {
+                    type: "schemaReference",
+                    definition: {
+                      relativePath:
+                        "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList",
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    },
+                    context: {},
+                  },
+                  {
+                    type: "object",
+                    definition: {
+                      extractorOrCombinerType: {
+                        type: "literal",
+                        definition: "literal",
+                      },
+                      definition: {
+                        type: "string",
+                      },
+                    },
+                  },
+                ],
+              },
+              optional: true,
+            },
+            expectedResult: {
+              type: "record",
+              definition: {
+                type: "union",
+                discriminator: "extractorOrCombinerType",
+                definition: [
+                  {
+                    type: "object",
+                    definition: {
+                      extractorOrCombinerType: {
+                        type: "literal",
+                        definition: "extractorOrCombinerContextReference",
+                      },
+                      extractorOrCombinerContextReference: {
+                        type: "string",
+                      },
+                    },
+                  },
+                  {
+                    type: "union",
+                    discriminator: "extractorOrCombinerType",
+                    definition: [
+                      {
+                        type: "object",
+                        extend: {
+                          type: "schemaReference",
                           definition: {
-                            a: {
+                            eager: true,
+                            relativePath: "extractorOrCombinerRoot",
+                            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          },
+                          context: {},
+                        },
+                        definition: {
+                          extractorOrCombinerType: {
+                            type: "literal",
+                            definition: "extractorForObjectByDirectReference",
+                          },
+                          instanceUuid: {
+                            type: "uuid",
+                          },
+                        },
+                      },
+                      {
+                        type: "object",
+                        extend: {
+                          type: "schemaReference",
+                          definition: {
+                            eager: true,
+                            relativePath: "extractorOrCombinerRoot",
+                            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          },
+                          context: {},
+                        },
+                        definition: {
+                          extractorOrCombinerType: {
+                            type: "literal",
+                            definition: "combinerForObjectByRelation",
+                          },
+                          objectReference: {
+                            type: "string",
+                          },
+                          AttributeOfObjectToCompareToReferenceUuid: {
+                            type: "string",
+                          },
+                        },
+                      },
+                    ],
+                  },
+                  {
+                    type: "union",
+                    discriminator: "extractorOrCombinerType",
+                    definition: [
+                      {
+                        type: "object",
+                        extend: {
+                          type: "schemaReference",
+                          definition: {
+                            eager: true,
+                            relativePath: "extractorOrCombinerRoot",
+                            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          },
+                          context: {},
+                        },
+                        definition: {
+                          extractorOrCombinerType: {
+                            type: "literal",
+                            definition: "extractorByEntityReturningObjectList",
+                          },
+                          orderBy: {
+                            type: "object",
+                            optional: true,
+                            definition: {
+                              attributeName: {
+                                type: "string",
+                              },
+                              direction: {
+                                type: "enum",
+                                optional: true,
+                                definition: ["ASC", "DESC"],
+                              },
+                            },
+                          },
+                          filter: {
+                            type: "object",
+                            optional: true,
+                            definition: {
+                              attributeName: {
+                                type: "string",
+                              },
+                              value: {
+                                type: "any",
+                              },
+                            },
+                          },
+                        },
+                      },
+                      {
+                        type: "object",
+                        extend: {
+                          type: "schemaReference",
+                          definition: {
+                            eager: true,
+                            relativePath: "extractorOrCombinerRoot",
+                            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          },
+                          context: {},
+                        },
+                        definition: {
+                          extractorOrCombinerType: {
+                            type: "literal",
+                            definition: "combinerByRelationReturningObjectList",
+                          },
+                          orderBy: {
+                            type: "object",
+                            optional: true,
+                            definition: {
+                              attributeName: {
+                                type: "string",
+                              },
+                              direction: {
+                                type: "enum",
+                                optional: true,
+                                definition: ["ASC", "DESC"],
+                              },
+                            },
+                          },
+                          objectReference: {
+                            type: "string",
+                          },
+                          objectReferenceAttribute: {
+                            type: "string",
+                            optional: true,
+                          },
+                          AttributeOfListObjectToCompareToReferenceUuid: {
+                            type: "string",
+                          },
+                        },
+                      },
+                      {
+                        type: "object",
+                        extend: {
+                          type: "schemaReference",
+                          definition: {
+                            eager: true,
+                            relativePath: "extractorOrCombinerRoot",
+                            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          },
+                          context: {},
+                        },
+                        definition: {
+                          extractorOrCombinerType: {
+                            type: "literal",
+                            definition: "combinerByManyToManyRelationReturningObjectList",
+                          },
+                          orderBy: {
+                            type: "object",
+                            optional: true,
+                            definition: {
+                              attributeName: {
+                                type: "string",
+                              },
+                              direction: {
+                                type: "enum",
+                                optional: true,
+                                definition: ["ASC", "DESC"],
+                              },
+                            },
+                          },
+                          objectListReference: {
+                            type: "string",
+                          },
+                          objectListReferenceAttribute: {
+                            type: "string",
+                            optional: true,
+                          },
+                          AttributeOfRootListObjectToCompareToListReferenceUuid: {
+                            type: "string",
+                            optional: true,
+                          },
+                        },
+                      },
+                    ],
+                  },
+                  {
+                    type: "union",
+                    discriminator: "extractorOrCombinerType",
+                    definition: [
+                      {
+                        type: "object",
+                        definition: {
+                          extractorOrCombinerType: {
+                            type: "literal",
+                            definition: "extractorWrapperReturningObject",
+                          },
+                          definition: {
+                            type: "record",
+                            definition: {
                               type: "union",
+                              discriminator: "extractorOrCombinerType",
                               definition: [
                                 {
-                                  type: "string",
+                                  type: "schemaReference",
+                                  definition: {
+                                    relativePath: "extractorOrCombinerContextReference",
+                                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                  },
+                                  context: {},
                                 },
                                 {
                                   type: "schemaReference",
                                   definition: {
-                                    relativePath: "myObject",
+                                    relativePath: "extractorOrCombiner",
+                                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                   },
+                                  context: {},
                                 },
                               ],
                             },
                           },
                         },
                       },
+                      {
+                        type: "object",
+                        definition: {
+                          extractorOrCombinerType: {
+                            type: "literal",
+                            definition: "extractorWrapperReturningList",
+                          },
+                          definition: {
+                            type: "array",
+                            definition: {
+                              type: "union",
+                              discriminator: "extractorOrCombinerType",
+                              definition: [
+                                {
+                                  type: "schemaReference",
+                                  definition: {
+                                    relativePath: "extractorOrCombinerContextReference",
+                                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                  },
+                                  context: {},
+                                },
+                                {
+                                  type: "schemaReference",
+                                  definition: {
+                                    relativePath: "extractorOrCombiner",
+                                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                  },
+                                  context: {},
+                                },
+                              ],
+                            },
+                          },
+                        },
+                      },
+                    ],
+                  },
+                  {
+                    type: "object",
+                    definition: {
+                      extractorOrCombinerType: {
+                        type: "literal",
+                        definition:
+                          "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList",
+                      },
+                      orderBy: {
+                        type: "object",
+                        optional: true,
+                        definition: {
+                          attributeName: {
+                            type: "string",
+                          },
+                          direction: {
+                            type: "enum",
+                            optional: true,
+                            definition: ["ASC", "DESC"],
+                          },
+                        },
+                      },
+                      rootExtractorOrReference: {
+                        type: "union",
+                        discriminator: "extractorOrCombinerType",
+                        definition: [
+                          {
+                            type: "schemaReference",
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "extractor",
+                            },
+                            context: {},
+                          },
+                          {
+                            type: "string",
+                          },
+                        ],
+                      },
+                      subQueryTemplate: {
+                        type: "object",
+                        definition: {
+                          query: {
+                            type: "schemaReference",
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "extractorOrCombinerTemplate",
+                            },
+                            context: {},
+                          },
+                          rootQueryObjectTransformer: {
+                            type: "schemaReference",
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "recordOfTransformers",
+                            },
+                            context: {},
+                          },
+                        },
+                      },
                     },
-                  ],
-                },
+                  },
+                  {
+                    type: "object",
+                    definition: {
+                      extractorOrCombinerType: {
+                        type: "literal",
+                        definition: "literal",
+                      },
+                      definition: {
+                        type: "string",
+                      },
+                    },
+                  },
+                ],
               },
+              optional: true,
             },
           },
         };

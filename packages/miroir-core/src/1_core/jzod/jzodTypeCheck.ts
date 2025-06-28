@@ -364,6 +364,58 @@ export function selectUnionBranchFromDiscriminator(
   };
 }
 
+// ################################################################################################
+export function jzodUnionResolvedTypeForObject(
+  concreteUnrolledJzodSchemas: JzodElement[],
+  discriminator: string | string[] | undefined,
+  valueObject: any,
+  currentValuePath: (string | number)[],
+  currentTypePath: (string | number)[],
+  miroirFundamentalJzodSchema: JzodSchema,
+  currentModel: MetaModel,
+  miroirMetaModel: MetaModel,
+  relativeReferenceJzodContext: { [k: string]: JzodElement }
+): JzodObject {
+  const objectUnionChoices = unionObjectChoices(
+    concreteUnrolledJzodSchemas,
+    miroirFundamentalJzodSchema,
+    currentModel,
+    miroirMetaModel,
+    relativeReferenceJzodContext
+  );
+  if (objectUnionChoices.length == 1) {
+    return objectUnionChoices[0];
+  }
+  if (!objectUnionChoices || objectUnionChoices.length == 0) {
+    // TODO: return error value, do not throw
+    throw new Error(
+      "jzodTypeCheck could not find object type for given object value in resolved union " +
+        JSON.stringify(concreteUnrolledJzodSchemas, null, 2)
+    );
+  }
+  const {
+    currentDiscriminatedObjectJzodSchema,
+    flattenedUnionChoices,
+    chosenDiscriminator,
+  }: {
+    currentDiscriminatedObjectJzodSchema: JzodObject;
+    flattenedUnionChoices: JzodObject[];
+    chosenDiscriminator: { discriminator: string; value: any }[];
+  } = selectUnionBranchFromDiscriminator(
+    objectUnionChoices,
+    discriminator,
+    valueObject,
+    currentValuePath,
+    currentTypePath, // typePath
+    // to resolve the extend clause of the object schema:
+    miroirFundamentalJzodSchema,
+    currentModel,
+    miroirMetaModel,
+    relativeReferenceJzodContext
+  );
+  return currentDiscriminatedObjectJzodSchema;
+} // end of jzodUnionResolvedTypeForObject
+
 // #####################################################################################################
 // #####################################################################################################
 // #####################################################################################################
@@ -439,12 +491,14 @@ export function jzodTypeCheck(
         )
         if (extension.type == "object") {
           extendedJzodSchema = {
-            type: "object",
+            // type: "object",
+            ...jzodSchema,
             definition: {
               ...extension.definition,
               ...jzodSchema.definition
             }
           }
+          delete extendedJzodSchema.extend; // remove the extend clause, since it is already resolved
         } else {
           throw new Error(
             "jzodTypeCheck object extend clause schema " +
@@ -635,51 +689,20 @@ export function jzodTypeCheck(
           break;
         }
         case "object": {
-          // value is an object, type is a union, if many options are possible we shall use a discriminator
-          // const discriminator = jzodSchema.discriminator??"_undefined_"
-          const discriminator = jzodSchema.discriminator
-
-          /**
-           * resolve type for object, either:
-           * - only 1 object type is possible, or
-           * - there is a discriminator and there is only 1 possible union branch for the valueObject[discriminator]
-           * - there are several discriminators for the union (and / or subunions, 1 level) and exactly 1 possible union branch match of valueObject[discriminators[index]] for any index.
-           * - subUnions are supported, but only 1 level deep, and schemaReferences must refer to an object type.
-           */
-          const objectUnionChoices = unionObjectChoices(
+          const discriminatedSchemaForObject: JzodObject = jzodUnionResolvedTypeForObject(
             concreteUnrolledJzodSchemas,
+            jzodSchema.discriminator,
+            valueObject,
+            currentValuePath,
+            currentTypePath,
             miroirFundamentalJzodSchema,
             currentModel,
             miroirMetaModel,
             relativeReferenceJzodContext
           );
 
-          log.info(
-            "jzodTypeCheck called for union-type value object found",
-            objectUnionChoices.length,
-            "discriminator=",
-            discriminator,
-            // "concreteUnrolledJzodSchemas",
-            // concreteUnrolledJzodSchemas,
-            "found object branches in the union",
-            // JSON.stringify(objectUnionChoices, null, 2),
-            objectUnionChoices,
-            // "valueObject",
-            // JSON.stringify(valueObject, null, 2),
-            // "possible object branches=",
-            // // JSON.stringify(objectUnionChoices.map(e => (e as any).definition[discriminator].definition), null, 2)
-          );
-
-          // if there is only one object candidate, use this one
-          if (objectUnionChoices.length == 1) {
-            // only possible object choice, no need for a discriminator
-            // log.info(
-            //   "jzodTypeCheck object at path=valueObject." + 
-            //   currentValuePath.join("."),
-            //   "only 1 object choice found, no discriminator needed",
-            // );
-            const subElementSchema = jzodTypeCheck(
-              objectUnionChoices[0],
+            return jzodTypeCheck(
+              discriminatedSchemaForObject,
               valueObject,
               currentValuePath,
               [...currentTypePath, "union choice"],
@@ -688,127 +711,190 @@ export function jzodTypeCheck(
               miroirMetaModel,
               relativeReferenceJzodContext
             );
-            return subElementSchema;
-          }
 
-          if (!objectUnionChoices || objectUnionChoices.length == 0) {
-            return {
-              status: "error",
-              valuePath: currentValuePath,
-              typePath: currentTypePath,
-              error:
-                "jzodTypeCheck could not find object type for given object value in resolved union " +
-                JSON.stringify(concreteUnrolledJzodSchemas, null, 2),
-            };
-          }
-          const {
-            currentDiscriminatedObjectJzodSchema,
-            flattenedUnionChoices,
-            chosenDiscriminator
-          }: {
-            currentDiscriminatedObjectJzodSchema: JzodObject;
-            flattenedUnionChoices: JzodObject[];
-            chosenDiscriminator: {discriminator: string, value: any}[];
-          } = selectUnionBranchFromDiscriminator(
-            objectUnionChoices,
-            discriminator,
-            valueObject,
-            currentValuePath,
-            currentTypePath, // typePath
-            // to resolve the extend clause of the object schema:
-            miroirFundamentalJzodSchema,
-            currentModel,
-            miroirMetaModel,
-            relativeReferenceJzodContext
-          );
-          // TODO: test for selectUnionBranchFromDiscriminator result instead of using a try-catch block
+          // // value is an object, type is a union, if many options are possible we shall use a discriminator
+          // // const discriminator = jzodSchema.discriminator??"_undefined_"
+          // const discriminator = jzodSchema.discriminator
 
-          // log.info(
-          //   "jzodTypeCheck object at path=valueObject." + 
-          //   currentValuePath.join("."),
-          //   "typePath=",
-          //   currentTypePath.join("."),
-          //   "found",
-          //   flattenedUnionChoices.length,
-          //   "object choices in union, chosenDiscriminator=",
-          //   JSON.stringify(chosenDiscriminator, null, 2),
-          //   "flattenedUnionChoices=",
-          //   flattenedUnionChoices
+          // /**
+          //  * resolve type for object, either:
+          //  * - only 1 object type is possible, or
+          //  * - there is a discriminator and there is only 1 possible union branch for the valueObject[discriminator]
+          //  * - there are several discriminators for the union (and / or subunions, 1 level) and exactly 1 possible union branch match of valueObject[discriminators[index]] for any index.
+          //  * - subUnions are supported, but only 1 level deep, and schemaReferences must refer to an object type.
+          //  */
+          // const objectUnionChoices = unionObjectChoices(
+          //   concreteUnrolledJzodSchemas,
+          //   miroirFundamentalJzodSchema,
+          //   currentModel,
+          //   miroirMetaModel,
+          //   relativeReferenceJzodContext
           // );
 
-          const objectJzodSchemaDefintion = Object.fromEntries(
-            Object.entries(valueObject).map((a: [string, any]) => {
-              const foundAttributeJzodSchema = (currentDiscriminatedObjectJzodSchema?.definition ?? ({} as any))[a[0]];
-              // log.info(
-              //   "jzodTypeCheck for resolved union type calling on object attribute\n"+
-              //   "valuePath=" + currentValuePath.join(".") + "." + a[0] + "\n" +
-              //   "typePath=" + [...currentTypePath, JSON.stringify(chosenDiscriminator), a[0]].join(".") +
-              //   "\n found schema:" + JSON.stringify(foundAttributeJzodSchema, null, 2) +
-              //   "\n valueObject=" + JSON.stringify(valueObject, null, 2)
-              // );
-              if (foundAttributeJzodSchema) {
-                const subSchema = jzodTypeCheck(
-                  foundAttributeJzodSchema,
-                  a[1],
-                  [...currentValuePath, a[0]],
-                  [...currentTypePath, JSON.stringify(chosenDiscriminator), a[0]],
-                  miroirFundamentalJzodSchema,
-                  currentModel,
-                  miroirMetaModel,
-                  relativeReferenceJzodContext
-                );
-                if (subSchema.status == "ok") {
-                  // log.info(
-                  //   "jzodTypeCheck returning for union object attribute '" +
-                  //   a[0] +
-                  //   "' schema:", JSON.stringify(subSchema, null, 2)
-                  // );
-                  return [a[0], subSchema.element];
-                } else {
-                  log.warn(
-                    "jzodTypeCheck union object could not resovle type for attribute '" +
-                    currentValuePath.join(".") + a[0] +
-                    "' error:", JSON.stringify(subSchema, null, 2)
-                  );
-                  return [a[0], { type: "never" } as JzodElement];
-                }
-              } else {
-                log.warn(
-                  "jzodTypeCheck union object could not find schema for attribute '" +
-                  currentValuePath.join(".") + a[0] +
-                  "' object Schema:", JSON.stringify(currentDiscriminatedObjectJzodSchema, null, 2)
-                );
-                return [a[0], { type: "never" } as JzodElement];
-              }
-            })
-          );
+          // log.info(
+          //   "jzodTypeCheck called for union-type value object found",
+          //   objectUnionChoices.length,
+          //   "discriminator=",
+          //   discriminator,
+          //   // "concreteUnrolledJzodSchemas",
+          //   // concreteUnrolledJzodSchemas,
+          //   "found object branches in the union",
+          //   // JSON.stringify(objectUnionChoices, null, 2),
+          //   objectUnionChoices,
+          //   // "valueObject",
+          //   // JSON.stringify(valueObject, null, 2),
+          //   // "possible object branches=",
+          //   // // JSON.stringify(objectUnionChoices.map(e => (e as any).definition[discriminator].definition), null, 2)
+          // );
 
-          if (flattenedUnionChoices) {
-            // log.info(
-            //   "jzodTypeCheck object at path=valueObject." +
-            //   currentValuePath.join("."),
-            //   ", type:",
-            //   JSON.stringify({ type: "object", definition: objectJzodSchemaDefintion }, null, 2),
-            //   "validates",
-            //   JSON.stringify(valueObject, null, 2)
-            // );
+          // // if there is only one object candidate, use this one
+          // if (objectUnionChoices.length == 1) {
+          //   // only possible object choice, no need for a discriminator
+          //   // log.info(
+          //   //   "jzodTypeCheck object at path=valueObject." + 
+          //   //   currentValuePath.join("."),
+          //   //   "only 1 object choice found, no discriminator needed",
+          //   // );
+          //   const subElementSchema = jzodTypeCheck(
+          //     objectUnionChoices[0],
+          //     valueObject,
+          //     currentValuePath,
+          //     [...currentTypePath, "union choice"],
+          //     miroirFundamentalJzodSchema,
+          //     currentModel,
+          //     miroirMetaModel,
+          //     relativeReferenceJzodContext
+          //   );
+          //   return subElementSchema;
+          // }
 
-            return {
-              status: "ok",
-              valuePath: currentValuePath,
-              typePath: currentTypePath,
-              element: { type: "object", definition: objectJzodSchemaDefintion },
-            };
-          } else {
-            return {
-              status: "error",
-              valuePath: currentValuePath,
-              typePath: currentTypePath,
-              error:
-                "jzodTypeCheck could not find string type in resolved union " +
-                JSON.stringify(concreteUnrolledJzodSchemas, null, 2),
-            };
-          }
+          // if (!objectUnionChoices || objectUnionChoices.length == 0) {
+          //   return {
+          //     status: "error",
+          //     valuePath: currentValuePath,
+          //     typePath: currentTypePath,
+          //     error:
+          //       "jzodTypeCheck could not find object type for given object value in resolved union " +
+          //       JSON.stringify(concreteUnrolledJzodSchemas, null, 2),
+          //   };
+          // }
+          // const {
+          //   currentDiscriminatedObjectJzodSchema,
+          //   flattenedUnionChoices,
+          //   chosenDiscriminator
+          // }: {
+          //   currentDiscriminatedObjectJzodSchema: JzodObject;
+          //   flattenedUnionChoices: JzodObject[];
+          //   chosenDiscriminator: {discriminator: string, value: any}[];
+          // } = selectUnionBranchFromDiscriminator(
+          //   objectUnionChoices,
+          //   discriminator,
+          //   valueObject,
+          //   currentValuePath,
+          //   currentTypePath, // typePath
+          //   // to resolve the extend clause of the object schema:
+          //   miroirFundamentalJzodSchema,
+          //   currentModel,
+          //   miroirMetaModel,
+          //   relativeReferenceJzodContext
+          // );
+          // // TODO: test for selectUnionBranchFromDiscriminator result instead of using a try-catch block
+
+          // // log.info(
+          // //   "jzodTypeCheck object at path=valueObject." + 
+          // //   currentValuePath.join("."),
+          // //   "typePath=",
+          // //   currentTypePath.join("."),
+          // //   "found",
+          // //   flattenedUnionChoices.length,
+          // //   "object choices in union, chosenDiscriminator=",
+          // //   JSON.stringify(chosenDiscriminator, null, 2),
+          // //   "flattenedUnionChoices=",
+          // //   flattenedUnionChoices
+          // // );
+
+          // const objectJzodSchemaDefintion = Object.fromEntries(
+          //   Object.entries(valueObject).map((a: [string, any]) => {
+          //     const foundAttributeJzodSchema = (currentDiscriminatedObjectJzodSchema?.definition ??
+          //       ({} as any))[a[0]];
+          //     // log.info(
+          //     //   "jzodTypeCheck for resolved union type calling on object attribute\n"+
+          //     //   "valuePath=" + currentValuePath.join(".") + "." + a[0] + "\n" +
+          //     //   "typePath=" + [...currentTypePath, JSON.stringify(chosenDiscriminator), a[0]].join(".") +
+          //     //   "\n found schema:" + JSON.stringify(foundAttributeJzodSchema, null, 2) +
+          //     //   "\n valueObject=" + JSON.stringify(valueObject, null, 2)
+          //     // );
+          //     if (foundAttributeJzodSchema) {
+          //       const subSchema = jzodTypeCheck(
+          //         foundAttributeJzodSchema,
+          //         a[1],
+          //         [...currentValuePath, a[0]],
+          //         [...currentTypePath, JSON.stringify(chosenDiscriminator), a[0]],
+          //         miroirFundamentalJzodSchema,
+          //         currentModel,
+          //         miroirMetaModel,
+          //         relativeReferenceJzodContext
+          //       );
+          //       if (subSchema.status == "ok") {
+          //         // log.info(
+          //         //   "jzodTypeCheck returning for union object attribute '" +
+          //         //   a[0] +
+          //         //   "' schema:", JSON.stringify(subSchema, null, 2)
+          //         // );
+          //         return [a[0], subSchema.element];
+          //       } else {
+          //         log.warn(
+          //           "jzodTypeCheck union object could not resovle type for attribute '" +
+          //             currentValuePath.join(".") +
+          //             a[0] +
+          //             "' error:",
+          //           JSON.stringify(subSchema, null, 2)
+          //         );
+          //         return [a[0], { type: "never" } as JzodElement];
+          //       }
+          //     } else {
+          //       log.warn(
+          //         "jzodTypeCheck union object could not find schema for attribute '" +
+          //           currentValuePath.join(".") +
+          //           a[0] +
+          //           "' object Schema:",
+          //         JSON.stringify(currentDiscriminatedObjectJzodSchema, null, 2)
+          //       );
+          //       return [a[0], { type: "never" } as JzodElement];
+          //     }
+          //   })
+          // );
+
+          // if (flattenedUnionChoices) {
+          //   // log.info(
+          //   //   "jzodTypeCheck object at path=valueObject." +
+          //   //   currentValuePath.join("."),
+          //   //   ", type:",
+          //   //   JSON.stringify({ type: "object", definition: objectJzodSchemaDefintion }, null, 2),
+          //   //   "validates",
+          //   //   JSON.stringify(valueObject, null, 2)
+          //   // );
+          //   const resultJzodSchema: JzodObject = {
+          //     ...currentDiscriminatedObjectJzodSchema, definition: objectJzodSchemaDefintion
+          //   };
+          //   delete resultJzodSchema.extend; // remove the extend clause, since it is already resolved
+          //   return {
+          //     status: "ok",
+          //     valuePath: currentValuePath,
+          //     typePath: currentTypePath,
+          //     // element: { type: "object", definition: objectJzodSchemaDefintion },
+          //     element: resultJzodSchema,
+          //   };
+          // } else {
+          //   return {
+          //     status: "error",
+          //     valuePath: currentValuePath,
+          //     typePath: currentTypePath,
+          //     error:
+          //       "jzodTypeCheck could not find string type in resolved union " +
+          //       JSON.stringify(concreteUnrolledJzodSchemas, null, 2),
+          //   };
+          // }
         }
         case "function":
         case "symbol": // TODO: what does this correspond to?
@@ -871,7 +957,8 @@ export function jzodTypeCheck(
         status: "ok",
         valuePath: currentValuePath,
         typePath: currentTypePath,
-        element: { type: "object", definition },
+        // element: { ...jzodSchema, definition },
+        element: { ...jzodSchema, type: "object", definition }, // no extend clause for records
       };
     }
     case "literal": {
@@ -969,7 +1056,7 @@ export function jzodTypeCheck(
           status: "ok",
           valuePath: currentValuePath,
           typePath: currentTypePath,
-          element: { type: "tuple", definition: resolvedInnerSchemas },
+          element: { ...jzodSchema, type: "tuple", definition: resolvedInnerSchemas },
         }
       break;
     }
@@ -1011,7 +1098,7 @@ export function jzodTypeCheck(
           status: "ok",
           valuePath: currentValuePath,
           typePath: currentTypePath,
-          element: { type: "array", definition: innerSchema },
+          element: { ...jzodSchema, type: "array", definition: innerSchema },
         };
       }
 
@@ -1053,7 +1140,7 @@ export function jzodTypeCheck(
         status: "ok",
         valuePath: currentValuePath,
         typePath: currentTypePath,
-        element: { type: "tuple", definition: result },
+        element: { ...jzodSchema, type: "tuple", definition: result },
       };
       break;
     }

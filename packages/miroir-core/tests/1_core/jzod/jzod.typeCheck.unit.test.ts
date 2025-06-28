@@ -224,627 +224,644 @@ describe("jzod.typeCheck", () => {
     console.log(expect.getState().currentTestName, "called getMiroirFundamentalJzodSchema");
     const castMiroirFundamentalJzodSchema = miroirFundamentalJzodSchema as JzodSchema;
     const tests: { [k: string]: testFormat } = {
-      // // // plain literal!
-      // // test010: {
-      // //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-      // //   testSchema: {
-      // //     type: "literal",
-      // //     definition: "myLiteral",
-      // //   },
-      // //   expectedResult: {
-      // //     type: "literal",
-      // //     definition: "myLiteral",
-      // //   },
-      // //   testValueObject: "myLiteral",
-      // // },
-      // // simpleType: string
-      // test020: {
-      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-      //   testSchema: {
-      //     type: "string",
-      //   },
-      //   expectedResult: {
-      //     type: "string",
-      //   },
-      //   testValueObject: "myString",
-      // },
-      // // simpleType: boolean TRUE
-      // test022: {
-      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-      //   testSchema: {
-      //     type: "boolean",
-      //   },
-      //   expectedResult: {
-      //     type: "boolean",
-      //   },
-      //   testValueObject: true,
-      // },
-      // // simpleType: boolean TRUE
-      // test024: {
-      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-      //   testSchema: {
-      //     type: "boolean",
-      //   },
-      //   expectedResult: {
-      //     type: "boolean",
-      //   },
-      //   testValueObject: false,
-      // },
-      // // schemaReference (plain, simpleType, non-recursive)
-      // test030: {
-      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-      //   testSchema: {
-      //     type: "schemaReference",
-      //     context: {
-      //       a: {
-      //         type: "string",
-      //       },
-      //     },
-      //     definition: {
-      //       relativePath: "a",
-      //     },
-      //   },
-      //   expectedResult: {
-      //     type: "string",
-      //   },
-      //   testValueObject: "myString",
-      // },
-      // // schemaReference: object, recursive, 1-level valueObject
-      // test040: {
-      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-      //   testSchema: {
-      //     type: "schemaReference",
-      //     context: {
-      //       myObject: {
-      //         type: "object",
-      //         definition: {
-      //           a: {
-      //             type: "union",
-      //             definition: [
-      //               {
-      //                 type: "string",
-      //               },
-      //               {
-      //                 type: "schemaReference",
-      //                 definition: { relativePath: "myObject" },
-      //               },
-      //             ],
-      //           },
-      //         },
-      //       },
-      //     },
-      //     definition: { relativePath: "myObject" },
-      //   },
-      //   expectedResult: {
-      //     type: "object",
-      //     definition: {
-      //       a: {
-      //         type: "string",
-      //       },
-      //     },
-      //   },
-      //   testValueObject: { a: "myString" },
-      // },
-      // // schemaReference: object, recursive, 2-level valueObject
-      // test050: {
-      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-      //   testSchema: {
-      //     type: "schemaReference",
-      //     context: {
-      //       myObject: {
-      //         type: "object",
-      //         definition: {
-      //           a: {
-      //             type: "union",
-      //             discriminator: "type",
-      //             definition: [
-      //               {
-      //                 type: "string",
-      //               },
-      //               {
-      //                 type: "schemaReference",
-      //                 definition: { relativePath: "myObject" },
-      //               },
-      //             ],
-      //           },
-      //         },
-      //       },
-      //     },
-      //     definition: { relativePath: "myObject" },
-      //   },
-      //   expectedResult: {
-      //     type: "object",
-      //     definition: {
-      //       a: {
-      //         type: "object",
-      //         definition: {
-      //           a: {
-      //             type: "string",
-      //           },
-      //         },
-      //       },
-      //     },
-      //   },
-      //   testValueObject: { a: { a: "myString" } },
-      // },
-      // // schemaReference: object, recursive, 3-level valueObject
-      // test060: {
-      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-      //   testSchema: {
-      //     type: "schemaReference",
-      //     context: {
-      //       myObject: {
-      //         type: "object",
-      //         definition: {
-      //           a: {
-      //             type: "union",
-      //             definition: [
-      //               {
-      //                 type: "string",
-      //               },
-      //               {
-      //                 type: "schemaReference",
-      //                 definition: { relativePath: "myObject" },
-      //               },
-      //             ],
-      //           },
-      //         },
-      //       },
-      //     },
-      //     definition: { relativePath: "myObject" },
-      //   },
-      //   expectedResult: {
-      //     type: "object",
-      //     definition: {
-      //       a: {
-      //         type: "object",
-      //         definition: {
-      //           a: {
-      //             type: "object",
-      //             definition: {
-      //               a: {
-      //                 type: "string",
-      //               },
-      //             },
-      //           },
-      //         },
-      //       },
-      //     },
-      //   },
-      //   testValueObject: { a: { a: { a: "myString" } } },
-      // },
-      // // schemaReference: record of recursive object, with 2-level valueObject
-      // test070: {
-      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-      //   testSchema: {
-      //     type: "schemaReference",
-      //     context: {
-      //       myObject: {
-      //         type: "object",
-      //         definition: {
-      //           a: {
-      //             type: "union",
-      //             definition: [
-      //               {
-      //                 type: "string",
-      //               },
-      //               {
-      //                 type: "schemaReference",
-      //                 definition: { relativePath: "myObject" },
-      //               },
-      //             ],
-      //           },
-      //         },
-      //       },
-      //       myRecord: {
-      //         type: "record",
-      //         definition: {
-      //           type: "schemaReference",
-      //           definition: { relativePath: "myObject" },
-      //         },
-      //       },
-      //     },
-      //     definition: { relativePath: "myRecord" },
-      //   },
-      //   expectedResult: {
-      //     type: "object",
-      //     definition: {
-      //       r1: {
-      //         type: "object",
-      //         definition: {
-      //           a: {
-      //             type: "object",
-      //             definition: {
-      //               a: {
-      //                 type: "string",
-      //               },
-      //             },
-      //           },
-      //         },
-      //       },
-      //       r2: {
-      //         type: "object",
-      //         definition: {
-      //           a: {
-      //             type: "string",
-      //           },
-      //         },
-      //       },
-      //     },
-      //   },
-      //   testValueObject: { r1: { a: { a: "myString" } }, r2: { a: "myString" } },
-      // },
-      // // result must be identical to test70, but this time the schemaReference is places inside the record, not the other way around
-      // test080: {
-      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-      //   testSchema: {
-      //     type: "record",
-      //     definition: {
-      //       type: "schemaReference",
-      //       context: {
-      //         myObject: {
-      //           type: "object",
-      //           definition: {
-      //             a: {
-      //               type: "union",
-      //               definition: [
-      //                 {
-      //                   type: "string",
-      //                 },
-      //                 {
-      //                   type: "schemaReference",
-      //                   definition: { relativePath: "myObject" },
-      //                 },
-      //               ],
-      //             },
-      //           },
-      //         },
-      //       },
-      //       definition: { relativePath: "myObject" },
-      //     },
-      //   },
-      //   expectedResult: {
-      //     type: "object",
-      //     definition: {
-      //       r1: {
-      //         type: "object",
-      //         definition: {
-      //           a: {
-      //             type: "object",
-      //             definition: {
-      //               a: {
-      //                 type: "string",
-      //               },
-      //             },
-      //           },
-      //         },
-      //       },
-      //       r2: {
-      //         type: "object",
-      //         definition: {
-      //           a: {
-      //             type: "string",
-      //           },
-      //         },
-      //       },
-      //     },
-      //   },
-      //   testValueObject: { r1: { a: { a: "myString" } }, r2: { a: "myString" } },
-      // },
-      // // array of simpleType
-      // test090: {
-      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-      //   testSchema: {
-      //     type: "array",
-      //     definition: {
-      //       type: "string",
-      //     },
-      //   },
-      //   expectedResult: {
-      //     type: "array",
-      //     definition: {
-      //       type: "string",
-      //     },
-      //   },
-      //   testValueObject: ["1", "2", "3"],
-      // },
-      // // array of schemaReference / object
-      // test100: {
-      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-      //   testSchema: {
-      //     type: "array",
-      //     definition: {
-      //       type: "schemaReference",
-      //       context: {
-      //         myObject: {
-      //           type: "object",
-      //           definition: {
-      //             a: {
-      //               type: "union",
-      //               definition: [
-      //                 {
-      //                   type: "string",
-      //                 },
-      //                 {
-      //                   type: "schemaReference",
-      //                   definition: { relativePath: "myObject" },
-      //                 },
-      //               ],
-      //             },
-      //           },
-      //         },
-      //       },
-      //       definition: { relativePath: "myObject" },
-      //     },
-      //   },
-      //   expectedResult: {
-      //     type: "array",
-      //     definition: {
-      //       type: "object",
-      //       definition: {
-      //         a: {
-      //           type: "union",
-      //           definition: [
-      //             {
-      //               type: "string",
-      //             },
-      //             {
-      //               type: "schemaReference",
-      //               definition: {
-      //                 relativePath: "myObject",
-      //               },
-      //             },
-      //           ],
-      //         },
-      //       },
-      //     },
-      //     // "type": "array",
-      //     // "definition": {
-      //     //   "type": "object",
-      //     //   "definition": {
-      //     //     "a": {
-      //     //       "type": "string"
-      //     //     }
-      //     //   }
-      //     // }
-      //   },
-      //   testValueObject: [
-      //     { a: "myString" },
-      //     // { a: { a: "myString" } }
-      //   ],
-      // },
-      // // array of schemaReference / object
-      // test110: {
-      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-      //   testSchema: {
-      //     type: "schemaReference",
-      //     context: {
-      //       myObjectRoot: {
-      //         type: "object",
-      //         definition: {
-      //           a: {
-      //             type: "string",
-      //           },
-      //         },
-      //       },
-      //       myObject: {
-      //         type: "object",
-      //         extend: {
-      //           type: "schemaReference",
-      //           definition: {
-      //             relativePath: "myObjectRoot",
-      //           },
-      //         },
-      //         definition: {
-      //           b: {
-      //             type: "string",
-      //           },
-      //         },
-      //       },
-      //     },
-      //     definition: { relativePath: "myObject" },
-      //   },
-      //   expectedResult: {
-      //     type: "object",
-      //     definition: {
-      //       a: {
-      //         type: "string",
-      //       },
-      //       b: {
-      //         type: "string",
-      //       },
-      //     },
-      //   },
-      //   testValueObject: { a: "myString", b: "anotherString" },
-      // },
-      // // simple union Type
-      // test120: {
-      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-      //   testSchema: {
-      //     type: "union",
-      //     definition: [
-      //       {
-      //         type: "string",
-      //       },
-      //       {
-      //         type: "number",
-      //       },
-      //       // {
-      //       //   type: "schemaReference",
-      //       //   context: {
-      //       //     myObjectRoot: {
-      //       //       type: "object",
-      //       //       definition: {
-      //       //         a: {
-      //       //           type: "string",
-      //       //         },
-      //       //       },
-      //       //     },
-      //       //     myObject: {
-      //       //       type: "object",
-      //       //       extend: {
-      //       //         type: "schemaReference",
-      //       //         definition: { relativePath: "myObjectRoot" },
-      //       //       },
-      //       //       definition: {
-      //       //         b: {
-      //       //           type: "string",
-      //       //         },
-      //       //       },
-      //       //     },
-      //       //   },
-      //       //   definition: { relativePath: "myObject" },
-      //       // },
-      //     ],
-      //   },
-      //   expectedResult: {
-      //     type: "number",
-      //   },
-      //   testValueObject: 1, // this is the object
-      // },
-      // // union between simpleType and object, object value
-      // test130: {
-      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-      //   testSchema: {
-      //     type: "union",
-      //     definition: [
-      //       {
-      //         type: "string",
-      //       },
-      //       {
-      //         type: "object",
-      //         definition: {
-      //           a: {
-      //             type: "string",
-      //           },
-      //         },
-      //       },
-      //     ],
-      //   },
-      //   testValueObject: { a: "myString" }, // this is the object
-      //   expectedResult: {
-      //     type: "object",
-      //     definition: {
-      //       a: {
-      //         type: "string",
-      //       },
-      //     },
-      //   },
-      // },
-      // // union between simpleType and object, simpleType value
-      // test140: {
-      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-      //   testSchema: {
-      //     type: "union",
-      //     definition: [
-      //       {
-      //         type: "string",
-      //       },
-      //       {
-      //         type: "bigint",
-      //       },
-      //       {
-      //         type: "object",
-      //         definition: {
-      //           a: {
-      //             type: "string",
-      //           },
-      //         },
-      //       },
-      //     ],
-      //   },
-      //   testValueObject: 42n, // this is the bigint
-      //   expectedResult: {
-      //     type: "bigint",
-      //   },
-      // },
-      // // union between simpleType and object, object value
-      // test150: {
-      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-      //   testSchema: {
-      //     type: "union",
-      //     definition: [
-      //       {
-      //         type: "string",
-      //       },
-      //       {
-      //         type: "bigint",
-      //       },
-      //       {
-      //         type: "object",
-      //         definition: {
-      //           a: {
-      //             type: "string",
-      //           },
-      //         },
-      //       },
-      //     ],
-      //   },
-      //   testValueObject: { a: "test"}, // this is the bigint
-      //   expectedResult: {
-      //     type: "object",
-      //     definition: {
-      //       a: {
-      //         type: "string",
-      //       },
-      //     },
-      //   },
-      // },
-      // // union between simpleType and shemaReference pointing to a simple object, object value
-      // test160: {
-      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-      //   testSchema: {
-      //     type: "union",
-      //     definition: [
-      //       {
-      //         type: "string",
-      //       },
-      //       {
-      //         type: "bigint",
-      //       },
-      //       {
-      //         type: "schemaReference",
-      //         context: {
-      //           // myObjectRoot: {
-      //           //   type: "object",
-      //           //   definition: {
-      //           //     a: {
-      //           //       type: "string",
-      //           //     },
-      //           //   },
-      //           // },
-      //           myObject: {
-      //             type: "object",
-      //             // extend: {
-      //             //   type: "schemaReference",
-      //             //   definition: { relativePath: "myObjectRoot" },
-      //             // },
-      //             definition: {
-      //               b: {
-      //                 type: "string",
-      //                 optional: true,
-      //               },
-      //             },
-      //           },
-      //         },
-      //         definition: { relativePath: "myObject" },
-      //       },
-      //     ],
-      //   },
-      //   testValueObject: { b: "test"}, // this is the object
-      //   expectedResult: {
-      //     type: "object",
-      //     definition: {
-      //       // a: {
-      //       //   type: "string",
-      //       // },
-      //       b: {
-      //         type: "string",
-      //         optional: true,
-      //       },
-      //     },
-      //   },
-      // },
+      // plain literal!
+      test010: {
+        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+        testSchema: {
+          type: "literal",
+          definition: "myLiteral",
+        },
+        expectedResult: {
+          type: "literal",
+          definition: "myLiteral",
+        },
+        testValueObject: "myLiteral",
+      },
+      // simpleType: string
+      test020: {
+        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+        testSchema: {
+          type: "string",
+        },
+        expectedResult: {
+          type: "string",
+        },
+        testValueObject: "myString",
+      },
+      // simpleType: boolean TRUE
+      test022: {
+        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+        testSchema: {
+          type: "boolean",
+        },
+        expectedResult: {
+          type: "boolean",
+        },
+        testValueObject: true,
+      },
+      // simpleType: boolean TRUE
+      test024: {
+        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+        testSchema: {
+          type: "boolean",
+        },
+        expectedResult: {
+          type: "boolean",
+        },
+        testValueObject: false,
+      },
+      // schemaReference (plain, simpleType, non-recursive)
+      test030: {
+        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+        testSchema: {
+          type: "schemaReference",
+          context: {
+            a: {
+              type: "string",
+            },
+          },
+          definition: {
+            relativePath: "a",
+          },
+        },
+        expectedResult: {
+          type: "string",
+        },
+        testValueObject: "myString",
+      },
+      // schemaReference: object, recursive, 1-level valueObject
+      test040: {
+        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+        testSchema: {
+          type: "schemaReference",
+          context: {
+            myObject: {
+              type: "object",
+              definition: {
+                a: {
+                  type: "union",
+                  // optional: true,
+                  definition: [
+                    {
+                      type: "string",
+                      optional: true,
+                    },
+                    {
+                      type: "schemaReference",
+                      definition: { relativePath: "myObject" },
+                    },
+                  ],
+                },
+                b: {
+                  type: "string",
+                  optional: true,
+                },
+                c: {
+                  type: "number",
+                  optional: true,
+                }
+              },
+            },
+          },
+          definition: { relativePath: "myObject" },
+        },
+        expectedResult: {
+          type: "object",
+          definition: {
+            a: {
+              type: "string",
+              optional: true,
+            },
+            c: {
+              type: "number",
+              optional: true,
+            },
+          },
+        },
+        testValueObject: { a: "myString", c: 42 },
+      },
+      // schemaReference: object, recursive, 2-level valueObject
+      test050: {
+        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+        testSchema: {
+          type: "schemaReference",
+          context: {
+            myObject: {
+              type: "object",
+              definition: {
+                a: {
+                  type: "union",
+                  discriminator: "type",
+                  definition: [
+                    {
+                      type: "string",
+                    },
+                    {
+                      type: "schemaReference",
+                      definition: { relativePath: "myObject" },
+                    },
+                  ],
+                },
+              },
+            },
+          },
+          definition: { relativePath: "myObject" },
+        },
+        expectedResult: {
+          type: "object",
+          definition: {
+            a: {
+              type: "object",
+              definition: {
+                a: {
+                  type: "string",
+                },
+              },
+            },
+          },
+        },
+        testValueObject: { a: { a: "myString" } },
+      },
+      // schemaReference: object, recursive, 3-level valueObject
+      test060: {
+        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+        testSchema: {
+          type: "schemaReference",
+          context: {
+            myObject: {
+              type: "object",
+              definition: {
+                a: {
+                  type: "union",
+                  definition: [
+                    {
+                      type: "string",
+                    },
+                    {
+                      type: "schemaReference",
+                      definition: { relativePath: "myObject" },
+                    },
+                  ],
+                },
+              },
+            },
+          },
+          definition: { relativePath: "myObject" },
+        },
+        expectedResult: {
+          type: "object",
+          definition: {
+            a: {
+              type: "object",
+              definition: {
+                a: {
+                  type: "object",
+                  definition: {
+                    a: {
+                      type: "string",
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        testValueObject: { a: { a: { a: "myString" } } },
+      },
+      // schemaReference: record of recursive object, with 2-level valueObject
+      test070: {
+        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+        testSchema: {
+          type: "schemaReference",
+          context: {
+            myObject: {
+              type: "object",
+              definition: {
+                a: {
+                  type: "union",
+                  definition: [
+                    {
+                      type: "string",
+                    },
+                    {
+                      type: "schemaReference",
+                      definition: { relativePath: "myObject" },
+                    },
+                  ],
+                },
+              },
+            },
+            myRecord: {
+              type: "record",
+              definition: {
+                type: "schemaReference",
+                definition: { relativePath: "myObject" },
+              },
+            },
+          },
+          definition: { relativePath: "myRecord" },
+        },
+        expectedResult: {
+          type: "object",
+          definition: {
+            r1: {
+              type: "object",
+              definition: {
+                a: {
+                  type: "object",
+                  definition: {
+                    a: {
+                      type: "string",
+                    },
+                  },
+                },
+              },
+            },
+            r2: {
+              type: "object",
+              definition: {
+                a: {
+                  type: "string",
+                },
+              },
+            },
+          },
+        },
+        testValueObject: { r1: { a: { a: "myString" } }, r2: { a: "myString" } },
+      },
+      // result must be identical to test70, but this time the schemaReference is places inside the record, not the other way around
+      test080: {
+        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+        testSchema: {
+          type: "record",
+          definition: {
+            type: "schemaReference",
+            context: {
+              myObject: {
+                type: "object",
+                definition: {
+                  a: {
+                    type: "union",
+                    definition: [
+                      {
+                        type: "string",
+                      },
+                      {
+                        type: "schemaReference",
+                        definition: { relativePath: "myObject" },
+                      },
+                    ],
+                  },
+                },
+              },
+            },
+            definition: { relativePath: "myObject" },
+          },
+        },
+        expectedResult: {
+          type: "object",
+          definition: {
+            r1: {
+              type: "object",
+              definition: {
+                a: {
+                  type: "object",
+                  definition: {
+                    a: {
+                      type: "string",
+                    },
+                  },
+                },
+              },
+            },
+            r2: {
+              type: "object",
+              definition: {
+                a: {
+                  type: "string",
+                },
+              },
+            },
+          },
+        },
+        testValueObject: { r1: { a: { a: "myString" } }, r2: { a: "myString" } },
+      },
+      // array of simpleType
+      test090: {
+        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+        testSchema: {
+          type: "array",
+          definition: {
+            type: "string",
+          },
+        },
+        expectedResult: {
+          type: "array",
+          definition: {
+            type: "string",
+          },
+        },
+        testValueObject: ["1", "2", "3"],
+      },
+      // array of schemaReference / object
+      test100: {
+        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+        testSchema: {
+          type: "array",
+          definition: {
+            type: "schemaReference",
+            context: {
+              myObject: {
+                type: "object",
+                definition: {
+                  a: {
+                    type: "union",
+                    definition: [
+                      {
+                        type: "string",
+                      },
+                      {
+                        type: "schemaReference",
+                        definition: { relativePath: "myObject" },
+                      },
+                    ],
+                  },
+                },
+              },
+            },
+            definition: { relativePath: "myObject" },
+          },
+        },
+        expectedResult: {
+          type: "array",
+          definition: {
+            type: "object",
+            definition: {
+              a: {
+                type: "union",
+                definition: [
+                  {
+                    type: "string",
+                  },
+                  {
+                    type: "schemaReference",
+                    definition: {
+                      relativePath: "myObject",
+                    },
+                  },
+                ],
+              },
+            },
+          },
+          // "type": "array",
+          // "definition": {
+          //   "type": "object",
+          //   "definition": {
+          //     "a": {
+          //       "type": "string"
+          //     }
+          //   }
+          // }
+        },
+        testValueObject: [
+          { a: "myString" },
+          // { a: { a: "myString" } }
+        ],
+      },
+      // array of schemaReference / object
+      test110: {
+        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+        testSchema: {
+          type: "schemaReference",
+          context: {
+            myObjectRoot: {
+              type: "object",
+              definition: {
+                a: {
+                  type: "string",
+                },
+              },
+            },
+            myObject: {
+              type: "object",
+              extend: {
+                type: "schemaReference",
+                definition: {
+                  relativePath: "myObjectRoot",
+                },
+              },
+              definition: {
+                b: {
+                  type: "string",
+                  optional: true,
+                },
+              },
+            },
+          },
+          definition: { relativePath: "myObject" },
+        },
+        expectedResult: {
+          type: "object",
+          definition: {
+            a: {
+              type: "string",
+            },
+            b: {
+              type: "string",
+              optional: true,
+            },
+          },
+        },
+        testValueObject: { a: "myString", b: "anotherString" },
+      },
+      // simple union Type
+      test120: {
+        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+        testSchema: {
+          type: "union",
+          definition: [
+            {
+              type: "string",
+            },
+            {
+              type: "number",
+            },
+            // {
+            //   type: "schemaReference",
+            //   context: {
+            //     myObjectRoot: {
+            //       type: "object",
+            //       definition: {
+            //         a: {
+            //           type: "string",
+            //         },
+            //       },
+            //     },
+            //     myObject: {
+            //       type: "object",
+            //       extend: {
+            //         type: "schemaReference",
+            //         definition: { relativePath: "myObjectRoot" },
+            //       },
+            //       definition: {
+            //         b: {
+            //           type: "string",
+            //         },
+            //       },
+            //     },
+            //   },
+            //   definition: { relativePath: "myObject" },
+            // },
+          ],
+        },
+        expectedResult: {
+          type: "number",
+        },
+        testValueObject: 1, // this is the object
+      },
+      // union between simpleType and object, object value
+      test130: {
+        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+        testSchema: {
+          type: "union",
+          definition: [
+            {
+              type: "string",
+            },
+            {
+              type: "object",
+              definition: {
+                a: {
+                  type: "string",
+                },
+              },
+            },
+          ],
+        },
+        testValueObject: { a: "myString" }, // this is the object
+        expectedResult: {
+          type: "object",
+          definition: {
+            a: {
+              type: "string",
+            },
+          },
+        },
+      },
+      // union between simpleType and object, simpleType value
+      test140: {
+        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+        testSchema: {
+          type: "union",
+          definition: [
+            {
+              type: "string",
+            },
+            {
+              type: "bigint",
+            },
+            {
+              type: "object",
+              definition: {
+                a: {
+                  type: "string",
+                },
+              },
+            },
+          ],
+        },
+        testValueObject: 42n, // this is the bigint
+        expectedResult: {
+          type: "bigint",
+        },
+      },
+      // union between simpleType and object, object value
+      test150: {
+        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+        testSchema: {
+          type: "union",
+          definition: [
+            {
+              type: "string",
+            },
+            {
+              type: "bigint",
+            },
+            {
+              type: "object",
+              definition: {
+                a: {
+                  type: "string",
+                },
+              },
+            },
+          ],
+        },
+        testValueObject: { a: "test"}, // this is the bigint
+        expectedResult: {
+          type: "object",
+          definition: {
+            a: {
+              type: "string",
+            },
+          },
+        },
+      },
+      // union between simpleType and shemaReference pointing to a simple object, object value
+      test160: {
+        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+        testSchema: {
+          type: "union",
+          definition: [
+            {
+              type: "string",
+            },
+            {
+              type: "bigint",
+            },
+            {
+              type: "schemaReference",
+              context: {
+                // myObjectRoot: {
+                //   type: "object",
+                //   definition: {
+                //     a: {
+                //       type: "string",
+                //     },
+                //   },
+                // },
+                myObject: {
+                  type: "object",
+                  // extend: {
+                  //   type: "schemaReference",
+                  //   definition: { relativePath: "myObjectRoot" },
+                  // },
+                  definition: {
+                    b: {
+                      type: "string",
+                      optional: true,
+                    },
+                  },
+                },
+              },
+              definition: { relativePath: "myObject" },
+            },
+          ],
+        },
+        testValueObject: { b: "test"}, // this is the object
+        expectedResult: {
+          type: "object",
+          definition: {
+            // a: {
+            //   type: "string",
+            // },
+            b: {
+              type: "string",
+              optional: true,
+            },
+          },
+        },
+      },
       // // // TODO: union between simpleTypes and array with simpleType value
       // // // TODO: union between simpleTypes and array with array value
       // // // TODO: union between simpleTypes and array and object with array value
@@ -1016,177 +1033,201 @@ describe("jzod.typeCheck", () => {
       // // ##########################################################################################
       // // ################################# JZOD SCHEMAS ###########################################
       // // ##########################################################################################
-      // // JzodSchema: literal
-      // test300: {
-      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-      //   testSchema: {
-      //     type: "schemaReference",
-      //     definition: {
-      //       absolutePath: miroirFundamentalJzodSchemaUuid,
-      //       relativePath: "jzodElement",
-      //     },
-      //   },
-      //   expectedResult: {
-      //     type: "object",
-      //     definition: {
-      //       type: {
-      //         type: "literal",
-      //         definition: "literal",
-      //       },
-      //       definition: {
-      //         type: "string",
-      //       },
-      //     },
-      //   },
-      //   testValueObject: { type: "literal", definition: "myLiteral" },
-      // },
-      // // JzodSchema: string
-      // test310: {
-      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-      //   testSchema: {
-      //     type: "schemaReference",
-      //     definition: {
-      //       absolutePath: miroirFundamentalJzodSchemaUuid,
-      //       relativePath: "jzodElement",
-      //     },
-      //   },
-      //   expectedResult: {
-      //     type: "object",
-      //     definition: {
-      //       type: {
-      //         type: "literal",
-      //         definition: "string",
-      //       },
-      //     },
-      //   },
-      //   testValueObject: { type: "string" },
-      // },
-      // // JzodSchema: object, simpleType attributes
-      // test320: {
-      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-      //   testSchema: {
-      //     type: "schemaReference",
-      //     definition: {
-      //       absolutePath: miroirFundamentalJzodSchemaUuid,
-      //       relativePath: "jzodElement",
-      //     },
-      //   },
-      //   expectedResult: {
-      //     type: "object",
-      //     definition: {
-      //       type: {
-      //         type: "literal",
-      //         definition: "object",
-      //       },
-      //       definition: {
-      //         type: "object",
-      //         definition: {
-      //           a: {
-      //             type: "object",
-      //             definition: {
-      //               type: {
-      //                 type: "literal",
-      //                 definition: "string",
-      //               },
-      //             },
-      //           },
-      //         },
-      //       },
-      //     },
-      //   },
-      //   testValueObject: { type: "object", definition: { a: { type: "string" } } },
-      // },
-      // // JzodSchema: schema reference with simple attribute
-      // test330: {
-      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-      //   testSchema: {
-      //     type: "schemaReference",
-      //     definition: {
-      //       absolutePath: miroirFundamentalJzodSchemaUuid,
-      //       relativePath: "jzodElement",
-      //     },
-      //   },
-      //   testValueObject: {
-      //     type: "schemaReference",
-      //     definition: { absolutePath: miroirFundamentalJzodSchemaUuid, relativePath: "jzodElement" },
-      //   },
-      //   expectedResult: {
-      //     type: "object",
-      //     definition: {
-      //       type: {
-      //         type: "literal",
-      //         definition: "schemaReference",
-      //       },
-      //       definition: {
-      //         type: "object",
-      //         definition: {
-      //           absolutePath: {
-      //             type: "string",
-      //             optional: true,
-      //           },
-      //           relativePath: {
-      //             type: "string",
-      //             optional: true,
-      //           },
-      //         },
-      //       },
-      //     },
-      //   },
-      // },
-      // // JzodSchema: schema reference for object with extend clause
-      // test340: {
-      //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-      //   testSchema: {
-      //     type: "schemaReference",
-      //     definition: {
-      //       absolutePath: miroirFundamentalJzodSchemaUuid,
-      //       relativePath: "jzodElement",
-      //     },
-      //   },
-      //   expectedResult: {
-      //     type: "object",
-      //     definition: {
-      //       type: {
-      //         type: "literal",
-      //         definition: "schemaReference",
-      //       },
-      //       context: {
-      //         type: "object",
-      //         definition: {
-      //           a: {
-      //             type: "object",
-      //             definition: {
-      //               type: {
-      //                 type: "literal",
-      //                 definition: "string",
-      //               },
-      //             },
-      //           },
-      //         },
-      //       },
-      //       definition: {
-      //         type: "object",
-      //         definition: {
-      //           relativePath: {
-      //             type: "string",
-      //             optional: true,
-      //           },
-      //         },
-      //       },
-      //     },
-      //   },
-      //   testValueObject: {
-      //     type: "schemaReference",
-      //     context: {
-      //       a: {
-      //         type: "string",
-      //       },
-      //     },
-      //     definition: {
-      //       relativePath: "a",
-      //     },
-      //   },
-      // },
+      // JzodSchema: literal
+      test300: {
+        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+        testSchema: {
+          type: "schemaReference",
+          definition: {
+            absolutePath: miroirFundamentalJzodSchemaUuid,
+            relativePath: "jzodElement",
+          },
+        },
+        expectedResult: {
+          type: "object",
+          definition: {
+            type: {
+              type: "literal",
+              definition: "literal",
+            },
+            definition: {
+              type: "string",
+            },
+          },
+        },
+        testValueObject: { type: "literal", definition: "myLiteral" },
+      },
+      // JzodSchema: string
+      test310: {
+        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+        testSchema: {
+          type: "schemaReference",
+          definition: {
+            absolutePath: miroirFundamentalJzodSchemaUuid,
+            relativePath: "jzodElement",
+          },
+        },
+        expectedResult: {
+          type: "object",
+          definition: {
+            type: {
+              type: "literal",
+              definition: "string",
+            },
+          },
+        },
+        testValueObject: { type: "string" },
+      },
+      // JzodSchema: object, simpleType attributes
+      test320: {
+        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+        testSchema: {
+          type: "schemaReference",
+          definition: {
+            absolutePath: miroirFundamentalJzodSchemaUuid,
+            relativePath: "jzodElement",
+          },
+        },
+        expectedResult: {
+          type: "object",
+          definition: {
+            type: {
+              type: "literal",
+              definition: "object",
+            },
+            definition: {
+              type: "object",
+              definition: {
+                a: {
+                  type: "object",
+                  definition: {
+                    type: {
+                      type: "literal",
+                      definition: "string",
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        testValueObject: { type: "object", definition: { a: { type: "string" } } },
+      },
+      // JzodSchema: schema reference with simple attribute
+      test330: {
+        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+        testSchema: {
+          type: "schemaReference",
+          definition: {
+            absolutePath: miroirFundamentalJzodSchemaUuid,
+            relativePath: "jzodElement",
+          },
+        },
+        testValueObject: {
+          type: "schemaReference",
+          definition: { absolutePath: miroirFundamentalJzodSchemaUuid, relativePath: "jzodElement" },
+        },
+        expectedResult: {
+          type: "object",
+          definition: {
+            type: {
+              type: "literal",
+              definition: "schemaReference",
+            },
+            definition: {
+              type: "object",
+              definition: {
+                absolutePath: {
+                  type: "string",
+                  optional: true,
+                },
+                relativePath: {
+                  type: "string",
+                  optional: true,
+                },
+              },
+            },
+          },
+        },
+      },
+      // JzodSchema: schema reference for object with extend clause
+      test340: {
+        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+        testSchema: {
+          type: "schemaReference",
+          definition: {
+            absolutePath: miroirFundamentalJzodSchemaUuid,
+            relativePath: "jzodElement",
+          },
+        },
+        testValueObject: {
+          type: "schemaReference",
+          context: {
+            a: {
+              type: "string",
+            },
+          },
+          definition: {
+            relativePath: "a",
+          },
+        },
+        expectedResult: {
+          type: "object",
+          definition: {
+            type: {
+              type: "literal",
+              definition: "schemaReference",
+            },
+            context: {
+              type: "object",
+              optional: true,
+              definition: {
+                a: {
+                  type: "object",
+                  definition: {
+                    type: {
+                      type: "literal",
+                      definition: "string",
+                    },
+                  },
+                },
+              },
+            },
+            definition: {
+              type: "object",
+              definition: {
+                relativePath: {
+                  type: "string",
+                  optional: true,
+                },
+              },
+            },
+          },
+        },
+      },
+      // real case, simple
+      test350: {
+        miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+        testSchema: {
+          type: "object",
+          definition: {
+            a: { type: "string", optional: true },
+            b: { type: "number" },
+            c: { type: "boolean", optional: true },
+          },
+        },
+        testValueObject: {
+          b: 42,
+        },
+        expectedResult: {
+          type: "object",
+          definition: {
+            // a: { type: "string", optional: true },
+            b: { type: "number" },
+            // c: { type: "boolean", optional: true },
+          },
+        },
+      },
       // ##########################################################################################
       // ####################################### ANY #############################################
       // ##########################################################################################

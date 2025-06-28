@@ -228,7 +228,8 @@ export function unfoldJzodSchemaOnce(
         )
         if (extension.type == "object") {
           extendedJzodSchema = {
-            type: "object",
+            // type: "object",
+            ...jzodSchema,
             definition: {
               ...extension.definition,
               ...jzodSchema.definition
@@ -315,15 +316,41 @@ export function unfoldJzodSchemaOnce(
           status: "error",
           error:
             "unfoldJzodSchemaOnce failed for union " +
-            JSON.stringify(failedIndex, null, 2),
+            JSON.stringify(failedIndex, null, 2)
         };
       }
       // log.info("unfoldJzodSchemaOnce for union ",jzodSchema, "unfoldedJzodSchemaReturnType", unfoldedJzodSchemaReturnType);
-      const unfoldedJzodSchemas: JzodElement[] = (
+      const firstLevelUnfoldedJzodSchemas: JzodElement[] = (
         unfoldedJzodSchemaReturnType as ResolvedJzodSchemaReturnTypeOK[]
       ).map((a: ResolvedJzodSchemaReturnTypeOK) => a.element);
       // log.info("unfoldJzodSchemaOnce union unfoldedJzodSchemas", unfoldedJzodSchemas);
-      const resultElement = { ...jzodSchema, definition: unfoldedJzodSchemas}
+      const secondLevelUnfoldedTmpResults: (JzodElement | UnfoldJzodSchemaOnceReturnType)[] = firstLevelUnfoldedJzodSchemas.map(
+        (s:JzodElement)=> {
+          if (s.type != "union") {
+            return s
+          }
+          return unfoldJzodSchemaOnce(miroirFundamentalJzodSchema, s, currentModel, miroirMetaModel, relativeReferenceJzodContext)
+        }
+      )
+      const secondLineFailedIndex = secondLevelUnfoldedTmpResults.find((a:any) => Object.hasOwn(a,"status") && a.status!="ok")
+      if (secondLineFailedIndex) {
+        return {
+          status: "error",
+          error:
+            "unfoldJzodSchemaOnce failed for sub-union " +
+            JSON.stringify(secondLineFailedIndex, null, 2),
+        };
+      }
+      const secondLevelUnfoldedResults: JzodElement[] = (secondLevelUnfoldedTmpResults as (JzodElement | UnfoldJzodSchemaOnceReturnTypeOK)[]).map(
+        (s: JzodElement | UnfoldJzodSchemaOnceReturnTypeOK) => {
+          if (!Object.hasOwn(s, "status")) {
+            return s
+          }
+          return (s as any).element
+        }
+      )
+      // const resultElement = { ...jzodSchema, definition: firstLevelUnfoldedJzodSchemas}
+      const resultElement = { ...jzodSchema, definition: secondLevelUnfoldedResults}
       // log.info("unfoldJzodSchemaOnce union resultElement", resultElement);
       return { status: "ok", element: resultElement}
       break;
@@ -337,7 +364,10 @@ export function unfoldJzodSchemaOnce(
         relativeReferenceJzodContext
       )
       if (resultSchemaTmp.status == "ok") {
-        const result: UnfoldJzodSchemaOnceReturnType = { status: "ok", element: {type: "record", definition: resultSchemaTmp.element}}
+        const result: UnfoldJzodSchemaOnceReturnType = {
+          status: "ok",
+          element: { ...jzodSchema, definition: resultSchemaTmp.element },
+        };
         // log.info("unfoldJzodSchemaOnce record, result", JSON.stringify(result, null, 2))
         return result
       } else {

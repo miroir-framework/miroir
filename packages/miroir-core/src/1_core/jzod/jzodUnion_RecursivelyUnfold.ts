@@ -51,13 +51,17 @@ export const jzodUnion_recursivelyUnfold = (
       )
     );
 
-    for (const r of resolvedReferences.filter((a: JzodElement) => a.type != "union") as JzodElement[]) {
+    for (const r of resolvedReferences.filter(
+      (a: JzodElement) => a.type != "union"
+    ) as JzodElement[]) {
       result.push(r);
     }
 
     
     // treating unions
-    const newExpandedReferences = new Set([...referencesToBeExplored.map((a: JzodReference) => a.definition.relativePath as string)]);
+    const newExpandedReferences = new Set([
+      ...referencesToBeExplored.map((a: JzodReference) => a.definition.relativePath as string),
+    ]);
     const unionsToBeExplored: JzodUnion[] = [
       ...jzodUnion.definition.filter((a: JzodElement) => a.type == "union") as JzodUnion[],
       ...resolvedReferences.filter((a: JzodElement) => a.type == "union") as JzodUnion[]];
@@ -87,7 +91,11 @@ export const jzodUnion_recursivelyUnfold = (
       }
       
       // the discriminators are stringified to compare them, since they can be arrays or strings
-      if (jzodUnion.discriminator && subResult.discriminator && JSON.stringify(jzodUnion.discriminator) !== JSON.stringify(subResult.discriminator)) {
+      if (
+        jzodUnion.discriminator &&
+        subResult.discriminator &&
+        JSON.stringify(jzodUnion.discriminator) !== JSON.stringify(subResult.discriminator)
+      ) {
         return {
           status: "error",
           error: `Discriminator mismatch: parent union discriminator (${jzodUnion.discriminator}) does not match sub-union discriminator (${subResult.discriminator})`,

@@ -1,7 +1,6 @@
 import React, { useCallback, useMemo } from "react";
 import { withErrorBoundary } from "react-error-boundary";
 
-import Clear from "@mui/icons-material/Clear";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import InfoOutlined from "@mui/icons-material/InfoOutlined";
@@ -31,7 +30,6 @@ import { JzodLiteralEditor } from "./JzodLiteralEditor.js";
 import { JzodObjectEditor } from "./JzodObjectEditor.js";
 import {
   LineIconButton,
-  SmallIconButton,
   StyledSelect
 } from "./Style.js";
 
@@ -142,15 +140,6 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
     definedOptionalAttributes,
   } = useJzodElementEditorHooks(props, count, "JzodElementEditor");
   
-  // Function to remove an optional attribute
-  const removeOptionalAttribute = useCallback(() => {
-    if (props.rootLesslistKey) {
-      const newFormState = { ...formik.values };
-      delete newFormState[props.rootLesslistKey];
-      formik.setValues(newFormState);
-      log.info("Removed optional attribute:", props.rootLesslistKey);
-    }
-  }, [formik, props.rootLesslistKey]);
 
   // Handle switch for structured element display
   const handleDisplayAsStructuredElementSwitchChange = useCallback(
@@ -320,15 +309,6 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
     [prettierColors, props.indentLevel]
   );
 
-  // Clear button for optional attributes
-  const clearSimpleElementButton = useMemo(() => (
-    <SmallIconButton
-      onClick={removeOptionalAttribute}
-      style={{ padding: 0, visibility: props.optional ? "visible" : "hidden" }}
-    >
-      <Clear />
-    </SmallIconButton>
-  ), [removeOptionalAttribute, props.optional]);
 
   // Create the main element based on the schema type
   // ##############################################################################################
@@ -422,6 +402,8 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
             hidden={hideSubJzodEditor}
             displayAsStructuredElementSwitch={displayAsStructuredElementSwitch}
             jzodSchemaTooltip={JzodSchemaTooltip}
+            parentType={props.parentType} // used to control the parent type of the element, used for record elements
+            deleteButton={props.deleteButton}
           />
         );
       }
@@ -446,6 +428,8 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
             insideAny={props.insideAny}
             hidden={hideSubJzodEditor}
             displayAsStructuredElementSwitch={displayAsStructuredElementSwitch}
+            parentType={props.parentType} // used to control the parent type of the element, used for record elements
+            deleteButton={props.deleteButton}
           />
         );
       }
@@ -615,6 +599,7 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
             rawJzodSchema={props.rawJzodSchema as JzodLiteral}
             resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
             unionInformation={props.unionInformation}
+            parentType={props.parentType}
           />
         );
       }
@@ -722,7 +707,7 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
             </div>
           </CardContent>
         </Card>
-      ) : (
+      ) : ( // simple type value / attribute
         <span
           style={{
             display: "flex",
@@ -730,7 +715,9 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
             width: "100%",
           }}
         >
-          {clearSimpleElementButton}
+          <span>
+            {props.deleteButton??<></>}
+          </span>
           {props.label}
           <span
             style={{
