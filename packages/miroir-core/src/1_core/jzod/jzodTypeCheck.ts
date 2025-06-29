@@ -541,9 +541,9 @@ export function jzodTypeCheck(
             } else {
               // return resultSchemaTmp;
               log.warn(
-                "jzodTypeCheck error on resolving object attribute " +
+                "jzodTypeCheck error on resolving object attribute '" +
                   currentValuePath.join(".") + e[0] +
-                  " not present in definition of (extend resolved) type " +
+                  "' not present in definition of (extend resolved) type " +
                   JSON.stringify(extendedJzodSchema) +
                   " valueObject " +
                   JSON.stringify(valueObject) +

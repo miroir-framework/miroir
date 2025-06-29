@@ -137,6 +137,7 @@ export const JzodObjectEditor = React.memo(function JzodObjectEditorComponent(pr
     miroirMetaModel,
     recursivelyUnfoldedRawSchema,
     unfoldedRawSchema,
+    discriminatedSchemaForObject,
     // uuid
     foreignKeyObjects,
     // union
@@ -275,13 +276,17 @@ export const JzodObjectEditor = React.memo(function JzodObjectEditorComponent(pr
       Object.keys(localResolvedElementJzodSchemaBasedOnValue.definition),
       "formik",
       formik.values,
-      "rawJzodSchema",
-      JSON.stringify(rawJzodSchema, null, 2),
+      // "unfoldedrawSchema",
+      // JSON.stringify(unfoldedRawSchema, null, 2),
+      // "discriminatedSchemaForObject",
+      // JSON.stringify(discriminatedSchemaForObject, null, 2),
       "undefinedOptionalAttributes",
       undefinedOptionalAttributes
     );
     const currentObjectValue = resolvePathOnObject(formik.values, rootLesslistKeyArray);
-    const newAttributeType: JzodElement = resolvePathOnObject(rawJzodSchema, [
+    // const newAttributeType: JzodElement = resolvePathOnObject(rawJzodSchema, [
+    // const newAttributeType: JzodElement = resolvePathOnObject(unfoldedRawSchema, [
+    const newAttributeType: JzodElement = resolvePathOnObject(discriminatedSchemaForObject??unfoldedRawSchema, [
       "definition",
       undefinedOptionalAttributes[0],
     ]);
@@ -299,23 +304,27 @@ export const JzodObjectEditor = React.memo(function JzodObjectEditorComponent(pr
       ...currentObjectValue,
       [undefinedOptionalAttributes[0]]: newAttributeValue,
     };
-    const newItemsOrder = getItemsOrder(newObjectValue, rawJzodSchema);
-
-    formik.setFieldValue(rootLesslistKey, newObjectValue, false);
+    const newItemsOrder = getItemsOrder(newObjectValue, discriminatedSchemaForObject??unfoldedRawSchema);
 
     log.info(
       "addObjectOptionalAttribute clicked2!",
       listKey,
       itemsOrder,
       Object.keys(localResolvedElementJzodSchemaBasedOnValue.definition),
+      "newAttributeType",
+      newAttributeType,
       "newObjectValue",
       newObjectValue,
       "newItemsOrder",
       newItemsOrder,
-      "localResolvedElementJzodSchemaBasedOnValue",
-      JSON.stringify(localResolvedElementJzodSchemaBasedOnValue, null, 2),
-      "rawJzodSchema",
-      JSON.stringify(rawJzodSchema, null, 2)
+    );
+    if (rootLesslistKey) {
+      formik.setFieldValue(rootLesslistKey, newObjectValue, false);
+    } else {
+      formik.setValues(newObjectValue, false);
+    }
+    log.info(
+      "addObjectOptionalAttribute clicked3 DONE!",
     );
   }, [ 
     props,

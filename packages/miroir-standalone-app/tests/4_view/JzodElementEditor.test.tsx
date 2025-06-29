@@ -1676,14 +1676,14 @@ const jzodElementEditorTests: Record<
     // modes: ['jzodElementEditor', 'component'],
     modes: 'jzodElementEditor',
   },
-  // ################# INSTANCES
-  JzodBookEditor: { 
-    editor: JzodElementEditor, 
-    getJzodEditorTests: getJzodBookEditorTests,
-    // modes: '*',
-    // modes: ['jzodElementEditor', 'component'],
-    modes: 'jzodElementEditor',
-  },
+  // // ################# INSTANCES
+  // JzodBookEditor: { 
+  //   editor: JzodElementEditor, 
+  //   getJzodEditorTests: getJzodBookEditorTests,
+  //   // modes: '*',
+  //   // modes: ['jzodElementEditor', 'component'],
+  //   modes: 'jzodElementEditor',
+  // },
   // // ################# MODEL
   // JzodEntityDefinitionEditor: { 
   //   editor: JzodElementEditor, 

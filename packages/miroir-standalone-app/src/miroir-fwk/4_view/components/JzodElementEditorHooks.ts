@@ -42,6 +42,7 @@ export interface JzodElementEditorHooks {
   recursivelyUnfoldedRawSchema: JzodUnion_RecursivelyUnfold_ReturnType | undefined;
   unfoldedRawSchema: JzodElement;
   // union
+  discriminatedSchemaForObject: JzodObject | undefined
   unionInformation:
     | {
         jzodSchema: JzodUnion;
@@ -406,6 +407,7 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
     recursivelyUnfoldedRawSchema,
     unfoldedRawSchema,
     foreignKeyObjects,
+    discriminatedSchemaForObject,
     unionInformation,
     // Array / Object fold / unfold state
     hiddenFormItems,

@@ -603,6 +603,47 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
           />
         );
       }
+      case "date": {
+        return (
+          <input
+            type="date"
+            id={props.rootLesslistKey}
+            key={props.rootLesslistKey}
+            role="textbox"
+            style={{ width: "100%" }}
+            {...formik.getFieldProps(props.rootLesslistKey)}
+            value={
+              currentValue instanceof Date
+                ? currentValue.toISOString().split("T")[0]
+                : ""
+            }
+            onChange={(e) => {
+              const value = e.target.value;
+              formik.setFieldValue(
+                props.rootLesslistKey,
+                value ? new Date(value) : null
+              );
+            }}
+          />
+        );
+      }
+      case "record":
+      case "union": {
+        throw new Error(
+          `JzodElementEditorComponent: Unsupported type ${localResolvedElementJzodSchemaBasedOnValue.type} for listKey ${props.listKey}. This is a bug. Records must be resolved to Objects and Unions must be unfolded.`
+        );
+      }
+      case "function":
+      case "never":
+      case "null":
+      case "unknown":
+      case "void":
+      case "lazy":
+      case "intersection":
+      case "map":
+      case "promise":
+      case "schemaReference":
+      case "set":
       default: {
         return (
           <span>
