@@ -81,6 +81,19 @@ export default defineConfig({
     //   },
     // ]),
   ],
+  server: {
+    // cors: {
+    //   origin: ['http://localhost:3080'],
+    //   credentials: true
+    // }
+    proxy: {
+      // Proxy API requests to the server
+      '/queryTemplate': 'http://localhost:3080',
+      '/query': 'http://localhost:3080',
+      '/action': 'http://localhost:3080',
+      '/CRUD': 'http://localhost:3080'
+    }
+  },
   test: {
     root: "tests",
     globals: true,

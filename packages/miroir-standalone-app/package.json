@@ -7,11 +7,10 @@
   "bugs": "https://github.com/miroir-framework/miroir/issues",
   "license": "MIT",
   "main": "index.js",
-  "proxy": "http://localhost:3080",
   "private": true,
   "type": "module",
   "scripts": {
-    "startDev": "vite --host --cors",
+    "startDev": "vite --host",
     "build": "vite build --emptyOutDir",
     "build5": "npm run build",
     "test": "cross-env VITE_TEST_MODE='true' vitest run --poolOptions.threads.singleThread --passWithNoTests -t",
