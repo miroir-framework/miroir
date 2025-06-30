@@ -440,13 +440,14 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
           editor: (
             <TextField
               variant="standard"
-              label="miroirInput"
+              data-testid="miroirInput"
               id={props.rootLesslistKey}
               key={props.rootLesslistKey}
               type="number"
               role="textbox"
               style={{ width: "100%" }}
               {...formik.getFieldProps(props.rootLesslistKey)}
+              name={props.rootLesslistKey}
             />
           ),
         });
@@ -457,7 +458,7 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
           editor: (
             <TextField
               variant="standard"
-              label="miroirInput"
+              data-testid="miroirInput"
               id={props.rootLesslistKey}
               key={props.rootLesslistKey}
               type="text"
@@ -469,6 +470,7 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
                 const value = e.target.value;
                 formik.setFieldValue(props.rootLesslistKey, value ? BigInt(value) : BigInt(0));
               }}
+              name={props.rootLesslistKey}
             />
           )
         });
@@ -480,10 +482,11 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
             editor={
               <TextField
                 variant="standard"
-                label="miroirInput"
+                data-testid="miroirInput"
                 id={props.rootLesslistKey}
                 key={props.rootLesslistKey}
                 {...formik.getFieldProps(props.rootLesslistKey)}
+                name={props.rootLesslistKey}
               />
             }
           />
@@ -497,10 +500,15 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
               <StyledSelect
                 id={props.rootLesslistKey}
                 key={props.rootLesslistKey}
+                data-testid="miroirInput"
                 aria-label={props.rootLesslistKey}
                 labelId="demo-simple-select-label"
                 variant="standard"
-                style={{ width: "100%" }}
+                style={{ 
+                  width: "auto",
+                  minWidth: "200px",
+                  maxWidth: "400px"
+                }}
                 role="textbox"
                 {...formik.getFieldProps(props.rootLesslistKey)}
                 name={props.rootLesslistKey}
@@ -518,24 +526,29 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
             ),
           });
         } else {
-          return LabeledEditor({
-            labelElement: props.labelElement ?? <></>,
-            editor: (
-              <TextField
-                variant="standard"
-                label="miroirInput"
-                id={props.rootLesslistKey}
-                key={props.rootLesslistKey}
-                type="text"
-                role="textbox"
-                style={{
-                  minWidth: "100px",
-                  boxSizing: "border-box",
-                }}
-                {...formik.getFieldProps(props.rootLesslistKey)}
-              />
-            ),
-          });
+            const currentUuidValue = formik.values[props.rootLesslistKey] || "";
+            const estimatedWidth = Math.max(200, Math.min(400, currentUuidValue.length * 8 + 40));
+            
+            return LabeledEditor({
+              labelElement: props.labelElement ?? <></>,
+              editor: (
+                <TextField
+                  variant="standard"
+                  data-testid="miroirInput"
+                  id={props.rootLesslistKey}
+                  key={props.rootLesslistKey}
+                  type="text"
+                  style={{
+                    width: `${estimatedWidth}px`,
+                    minWidth: "200px",
+                    maxWidth: "400px",
+                    boxSizing: "border-box",
+                  }}
+                  {...formik.getFieldProps(props.rootLesslistKey)}
+                  name={props.rootLesslistKey}
+                />
+              ),
+            });
         }
       }
       case "literal": {

@@ -347,20 +347,8 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
     const context = useMiroirContextService();
 
     context.setDeploymentUuid
-    // ###############################################################################################
-    // useEffect(() => context.setMiroirFundamentalJzodSchema(miroirFundamentalJzodSchema as any), [context]);
-    // setting context.miroirFundamentalJzodSchema in-line during the test for immediate access, with gatekeeper test to avoid infinite refresh loop
-    // if (!context.miroirFundamentalJzodSchema) {
-    //   context.setMiroirFundamentalJzodSchema(miroirFundamentalJzodSchema as any);
-    // }
-    // ###############################################################################################
-
 
     const currentModel: MetaModel = useCurrentModel(selfApplicationDeploymentLibrary.uuid);
-      // context.applicationSection == "data"
-        // ? context.deploymentUuid
-        // : adminConfigurationDeploymentMiroir.uuid
-    // );
 
     const currentMiroirModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
     // console.log("currentMiroirModel", currentMiroirModel);
@@ -392,8 +380,6 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
       []
     );
 
-    // const [formState, setFormState] = useState<any>({ [name]: initialFormState });
-    // const currentValue = resolvePathOnObject(formState, rootLesslistKeyArray);
     const resolvedJzodSchema: ResolvedJzodSchemaReturnType | undefined = useMemo(() => {
       let result: ResolvedJzodSchemaReturnType | undefined = undefined;
       try {
@@ -433,7 +419,6 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
       }
       return result;
     }, [rawJzodSchema, initialFormState, context]);
-    // }, [rawJzodSchema, currentValue, context]);
 
     const labelElement = useMemo(() => {
       // return label ? <label htmlFor={rootLesslistKey}>{label}</label> : undefined;
@@ -818,17 +803,16 @@ export function extractValuesFromRenderedElements(
   console.log("########### extractValuesFromRenderedElements for label", label, "step", step);
   let textBoxes: HTMLElement[] = [];
   try {
-    // textBoxes = screen.getAllByRole("textbox").filter((i: any) => i.name.startsWith(label));
-    // const testBoxes = container?.querySelectorAll("input[name^='testField.']") as NodeListOf<HTMLInputElement>;
-    textBoxes = screen.getAllByLabelText("miroirInput").filter((i: any) => i.name.startsWith(label));
+    textBoxes = screen
+      .getAllByTestId("miroirInput")
+      .map((i: HTMLElement) => i.querySelector("input") as HTMLInputElement);
 
   } catch (e) {
     // No textbox found, leave inputs as empty array
   }
   const textBoxesInfo = textBoxes.map((i) => {
     return {
-      // name: (i as HTMLInputElement).name.replace(new RegExp(`^${label}\\.`), ""),
-      name: (i as HTMLInputElement).name.replace(new RegExp(`^${label}\\.`), ""),
+      name: (i as HTMLInputElement).id.replace(new RegExp(`^${label}\\.`), ""),
       value: (i as HTMLInputElement).value,
       defaultValue: (i as HTMLInputElement).defaultValue,
       type: (i as HTMLInputElement).type,

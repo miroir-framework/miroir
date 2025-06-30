@@ -584,7 +584,9 @@ export function getJzodObjectEditorTests(
             },
           },
           tests: async (expect: ExpectStatic, container: Container) => {
-            const inputs = screen.getAllByLabelText("miroirInput");
+            const inputs = screen.getAllByTestId("miroirInput").map(
+              (input: HTMLElement) => input.querySelector("input") as HTMLInputElement
+            );
             const inputA = inputs.find(
               (input: HTMLElement) => (input as HTMLInputElement).name === "testField.a"
             ) as HTMLInputElement;
@@ -598,9 +600,17 @@ export function getJzodObjectEditorTests(
               fireEvent.change(inputA, { target: { value: "new string value" } });
               fireEvent.change(inputB, { target: { value: 100 } });
             });
-
-            expect(inputA).toHaveValue("new string value");
-            expect(inputB).toHaveValue(100);
+            const values: Record<string, any> = extractValuesFromRenderedElements(
+              expect,
+              container,
+              "testField",
+              "after change"
+            );
+            const testResult = formValuesToJSON(values);
+            expect(testResult).toEqual({
+              a: "new string value",
+              b: 100,
+            });
           },
         },
         "object with optional attributes can receive a value for an optional attribute by clicking on the add button for the attribute":
@@ -1350,6 +1360,7 @@ export function getJzodUnionEditorTests(
           tests: async (expect: ExpectStatic, container: Container) => {
             // const input = screen.getByRole("textbox");
             // expect(input).toBeInTheDocument();
+            screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
             const values: Record<string, any> = extractValuesFromRenderedElements(
               expect,
               container,

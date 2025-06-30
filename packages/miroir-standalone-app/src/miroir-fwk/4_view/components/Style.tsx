@@ -76,7 +76,8 @@ export const LabeledEditor: React.FC<{
         display: "flex",
         flexFlow: "row",
         justifyContent: "flex-start",
-        alignItems: "center",
+        alignItems: "baseline",
+        flexGrow: 1,
       }}
     >
       {props.labelElement}
