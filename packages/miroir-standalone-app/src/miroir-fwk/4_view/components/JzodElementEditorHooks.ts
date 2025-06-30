@@ -109,7 +109,8 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
     | ResolvedJzodSchemaReturnType
     | undefined = useMemo(() => {
     const newRecordResolvedElementJzodSchema =
-      props.rawJzodSchema && context.miroirFundamentalJzodSchema
+      props.rawJzodSchema &&
+      context.miroirFundamentalJzodSchema
         ? jzodTypeCheck(
             props.rawJzodSchema,
             currentValue,
@@ -302,7 +303,8 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
   const discriminatedSchemaForObject: JzodObject | undefined =
     props.rawJzodSchema?.type == "union" &&
     props.rawJzodSchema.discriminator &&
-    context.miroirFundamentalJzodSchema
+    typeof currentValue == "object" &&
+    context.miroirFundamentalJzodSchema 
       ? jzodUnionResolvedTypeForObject(
           recursivelyUnfoldedRawSchema?.result ?? [],
           props.rawJzodSchema.discriminator,

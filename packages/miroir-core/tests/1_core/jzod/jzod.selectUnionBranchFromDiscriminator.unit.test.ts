@@ -136,151 +136,175 @@ function makeObjectWithEnumDiscriminator(discriminator: string, values: string[]
 
 // ################################################################################################
 describe("selectUnionBranchFromDiscriminator", () => {
-  // ##############################################################################################
-  it("throws if discriminator is not found in the value object and at least 2 options are possible", () => {
-    const discriminator = "type";
-    const objA = makeObjectWithLiteralDiscriminators([[discriminator, "A"]]);
-    const objB = makeObjectWithLiteralDiscriminators([[discriminator, "B"]]);
-    const valueObject = { foo: "bar" }; // No 'type' field
-
-    expect(() =>
-      selectUnionBranchFromDiscriminator(
-        [objA, objB],
-        discriminator,
-        valueObject,
-        [], // valueObjectPath
-        [], // typePath 
-        castMiroirFundamentalJzodSchema,
-        defaultMiroirMetaModel,
-        defaultMiroirMetaModel,
-        {}
-      )
-    ).toThrow(/found no match/);
-  });
-
-  // ###############################################################################################
-  it("throws if no branch matches the discriminator value, and at least 2 options are possible", () => {
-    console.log("Testing", expect.getState().currentTestName);
-    const discriminator = "type";
-    const objA = makeObjectWithLiteralDiscriminators([[discriminator, "A"]]);
-    const objB = makeObjectWithLiteralDiscriminators([[discriminator, "B"]]);
-    const valueObject = { type: "C", foo: "bar" };
-
-    expect(() =>
-      selectUnionBranchFromDiscriminator(
-        [objA, objB],
-        discriminator,
-        valueObject,
-        [], // valueObjectPath
-        [], // typePath 
-        castMiroirFundamentalJzodSchema,
-        defaultMiroirMetaModel,
-        defaultMiroirMetaModel,
-        {}
-      )
-    ).toThrow(/found no match/);
-  });
-
-  // ##############################################################################################
-  it("throws if multiple branches match the discriminator value", () => {
-    const discriminator = "type";
-    const objA1 = makeObjectWithLiteralDiscriminators([[discriminator, "A"]]);
-    const objA2 = makeObjectWithLiteralDiscriminators([[discriminator, "A"]]);
-    const valueObject = { type: "A", foo: "bar" };
-
-    expect(() =>
-      selectUnionBranchFromDiscriminator(
-        [objA1, objA2],
-        discriminator,
-        valueObject,
-        [], // valueObjectPath
-        [], // typePath 
-        castMiroirFundamentalJzodSchema,
-        defaultMiroirMetaModel,
-        defaultMiroirMetaModel,
-        {}
-      )
-    ).toThrow(/found many matches/);
-  });
-
-    // ##############################################################################################
-  it("throws if first entry a discriminator array matches many options and second entry is not found in valueObject (thus matches 0)", () => {
-    const discriminator = ["type", "kind"];
-    const objA = makeObjectWithLiteralDiscriminators([[discriminator[0], "A"], [discriminator[1], "A"]]);
-    const objB = makeObjectWithLiteralDiscriminators([[discriminator[0], "A"], [discriminator[1], "B"]]);
-    const valueObject = { type: "A", foo: "bar" }; // No 'kind' field
-
-    expect(() =>
-      selectUnionBranchFromDiscriminator(
-        [objA, objB],
-        discriminator,
-        valueObject,
-        [], // valueObjectPath
-        [], // typePath 
-        castMiroirFundamentalJzodSchema,
-        defaultMiroirMetaModel,
-        defaultMiroirMetaModel,
-        {}
-      )
-    ).toThrow(/found no match/);
-  });
-
-  // ##############################################################################################
-  it("throws if first entry a discriminator array matches many options and second entry matches no option", () => {
-    const discriminator = ["type", "kind"];
-    const objA = makeObjectWithLiteralDiscriminators([[discriminator[0], "A"], [discriminator[1], "A"]]);
-    const objB = makeObjectWithLiteralDiscriminators([[discriminator[0], "A"], [discriminator[1], "B"]]);
-    const valueObject = { type: "A", kind: "C", foo: "bar" }; // No 'kind' field
-
-    expect(() =>
-      selectUnionBranchFromDiscriminator(
-        [objA, objB],
-        discriminator,
-        valueObject,
-        [], // valueObjectPath
-        [], // typePath 
-        castMiroirFundamentalJzodSchema,
-        defaultMiroirMetaModel,
-        defaultMiroirMetaModel,
-        {}
-      )
-    ).toThrow(/found no match/);
-  });
-
-  // ##############################################################################################
-  // ##############################################################################################
-  // ##############################################################################################
-  // ##############################################################################################
-  // ##############################################################################################
-  // ##############################################################################################
-  // ##############################################################################################
-  // TODO: in a union, there must be at least 2 branches to select from, so this case should not happen
-  it("returns the given type if only 1 is provided, even if it does not match the given discriminator", () => {
-    const discriminator = "type";
-    const objA = makeObjectWithLiteralDiscriminators([[discriminator, "C"]]);
-    const valueObject = { type: "A", foo: "bar" };
-    const { currentDiscriminatedObjectJzodSchema, flattenedUnionChoices } =
-      selectUnionBranchFromDiscriminator(
-        [objA],
-        discriminator,
-        valueObject,
-        [], // valueObjectPath
-        [], // typePath 
-        castMiroirFundamentalJzodSchema,
-        defaultMiroirMetaModel,
-        defaultMiroirMetaModel,
-        {}
-      );
-    expect(flattenedUnionChoices.length).toBe(1);
-    expect(currentDiscriminatedObjectJzodSchema).toEqual(objA);
-  });
-
   // // ##############################################################################################
-  // it("returns the string type if the possible branches are a string and an object types", () => {
+  // it("throws if discriminator is not found in the value object and at least 2 options are possible", () => {
   //   const discriminator = "type";
   //   const objA = makeObjectWithLiteralDiscriminators([[discriminator, "A"]]);
-  //   const objB = { type: "string" }; // A simple string type
+  //   const objB = makeObjectWithLiteralDiscriminators([[discriminator, "B"]]);
+  //   const valueObject = { foo: "bar" }; // No 'type' field
+
+  //   expect(() =>
+  //     selectUnionBranchFromDiscriminator(
+  //       [objA, objB],
+  //       discriminator,
+  //       valueObject,
+  //       [], // valueObjectPath
+  //       [], // typePath 
+  //       castMiroirFundamentalJzodSchema,
+  //       defaultMiroirMetaModel,
+  //       defaultMiroirMetaModel,
+  //       {}
+  //     )
+  //   ).toThrow(/found no match/);
+  // });
+
+  // // ###############################################################################################
+  // it("throws if no branch matches the discriminator value, and at least 2 options are possible", () => {
+  //   console.log("Testing", expect.getState().currentTestName);
+  //   const discriminator = "type";
+  //   const objA = makeObjectWithLiteralDiscriminators([[discriminator, "A"]]);
+  //   const objB = makeObjectWithLiteralDiscriminators([[discriminator, "B"]]);
+  //   const valueObject = { type: "C", foo: "bar" };
+
+  //   expect(() =>
+  //     selectUnionBranchFromDiscriminator(
+  //       [objA, objB],
+  //       discriminator,
+  //       valueObject,
+  //       [], // valueObjectPath
+  //       [], // typePath 
+  //       castMiroirFundamentalJzodSchema,
+  //       defaultMiroirMetaModel,
+  //       defaultMiroirMetaModel,
+  //       {}
+  //     )
+  //   ).toThrow(/found no match/);
+  // });
+
+  // // ##############################################################################################
+  // it("throws if multiple branches match the discriminator value", () => {
+  //   const discriminator = "type";
+  //   const objA1 = makeObjectWithLiteralDiscriminators([[discriminator, "A"]]);
+  //   const objA2 = makeObjectWithLiteralDiscriminators([[discriminator, "A"]]);
   //   const valueObject = { type: "A", foo: "bar" };
+
+  //   expect(() =>
+  //     selectUnionBranchFromDiscriminator(
+  //       [objA1, objA2],
+  //       discriminator,
+  //       valueObject,
+  //       [], // valueObjectPath
+  //       [], // typePath 
+  //       castMiroirFundamentalJzodSchema,
+  //       defaultMiroirMetaModel,
+  //       defaultMiroirMetaModel,
+  //       {}
+  //     )
+  //   ).toThrow(/found many matches/);
+  // });
+
+  //   // ##############################################################################################
+  // it("throws if first entry a discriminator array matches many options and second entry is not found in valueObject (thus matches 0)", () => {
+  //   const discriminator = ["type", "kind"];
+  //   const objA = makeObjectWithLiteralDiscriminators([[discriminator[0], "A"], [discriminator[1], "A"]]);
+  //   const objB = makeObjectWithLiteralDiscriminators([[discriminator[0], "A"], [discriminator[1], "B"]]);
+  //   const valueObject = { type: "A", foo: "bar" }; // No 'kind' field
+
+  //   expect(() =>
+  //     selectUnionBranchFromDiscriminator(
+  //       [objA, objB],
+  //       discriminator,
+  //       valueObject,
+  //       [], // valueObjectPath
+  //       [], // typePath 
+  //       castMiroirFundamentalJzodSchema,
+  //       defaultMiroirMetaModel,
+  //       defaultMiroirMetaModel,
+  //       {}
+  //     )
+  //   ).toThrow(/found no match/);
+  // });
+
+  // // ##############################################################################################
+  // it("throws if first entry a discriminator array matches many options and second entry matches no option", () => {
+  //   const discriminator = ["type", "kind"];
+  //   const objA = makeObjectWithLiteralDiscriminators([[discriminator[0], "A"], [discriminator[1], "A"]]);
+  //   const objB = makeObjectWithLiteralDiscriminators([[discriminator[0], "A"], [discriminator[1], "B"]]);
+  //   const valueObject = { type: "A", kind: "C", foo: "bar" }; // No 'kind' field
+
+  //   expect(() =>
+  //     selectUnionBranchFromDiscriminator(
+  //       [objA, objB],
+  //       discriminator,
+  //       valueObject,
+  //       [], // valueObjectPath
+  //       [], // typePath 
+  //       castMiroirFundamentalJzodSchema,
+  //       defaultMiroirMetaModel,
+  //       defaultMiroirMetaModel,
+  //       {}
+  //     )
+  //   ).toThrow(/found no match/);
+  // });
+
+  // // ##############################################################################################
+  // // ##############################################################################################
+  // // ##############################################################################################
+  // // ##############################################################################################
+  // // ##############################################################################################
+  // // ##############################################################################################
+  // // ##############################################################################################
+  // // TODO: in a union, there must be at least 2 branches to select from, so this case should not happen
+  // it("returns the given type if only 1 is provided, even if it does not match the given discriminator", () => {
+  //   const discriminator = "type";
+  //   const objA = makeObjectWithLiteralDiscriminators([[discriminator, "C"]]);
+  //   const valueObject = { type: "A", foo: "bar" };
+  //   const { currentDiscriminatedObjectJzodSchema, flattenedUnionChoices } =
+  //     selectUnionBranchFromDiscriminator(
+  //       [objA],
+  //       discriminator,
+  //       valueObject,
+  //       [], // valueObjectPath
+  //       [], // typePath 
+  //       castMiroirFundamentalJzodSchema,
+  //       defaultMiroirMetaModel,
+  //       defaultMiroirMetaModel,
+  //       {}
+  //     );
+  //   expect(flattenedUnionChoices.length).toBe(1);
+  //   expect(currentDiscriminatedObjectJzodSchema).toEqual(objA);
+  // });
+
+  // // // ##############################################################################################
+  // // it("returns the string type if the possible branches are a string and an object types", () => {
+  // //   const discriminator = "type";
+  // //   const objA = makeObjectWithLiteralDiscriminators([[discriminator, "A"]]);
+  // //   const objB = { type: "string" }; // A simple string type
+  // //   const valueObject = { type: "A", foo: "bar" };
+
+  // //   const { currentDiscriminatedObjectJzodSchema, flattenedUnionChoices } =
+  // //     selectUnionBranchFromDiscriminator(
+  // //       [objA, objB],
+  // //       discriminator,
+  // //       valueObject,
+  // //       [], // valueObjectPath
+  // //       [], // typePath 
+  // //       castMiroirFundamentalJzodSchema,
+  // //       defaultMiroirMetaModel,
+  // //       defaultMiroirMetaModel,
+  // //       {}
+  // //     );
+
+  // //   expect(flattenedUnionChoices.length).toBe(1);
+  // //   expect(currentDiscriminatedObjectJzodSchema).toEqual(objA);
+  // // });
+
+  // // ##############################################################################################
+  // it("selects the correct branch for a literal discriminator", () => {
+  //   const discriminator = "type";
+  //   const objA = makeObjectWithLiteralDiscriminators([[discriminator, "A"]]);
+  //   const objB = makeObjectWithLiteralDiscriminators([[discriminator, "B"]]);
+  //   const valueObject = { type: "B", foo: "bar" };
 
   //   const { currentDiscriminatedObjectJzodSchema, flattenedUnionChoices } =
   //     selectUnionBranchFromDiscriminator(
@@ -296,1131 +320,685 @@ describe("selectUnionBranchFromDiscriminator", () => {
   //     );
 
   //   expect(flattenedUnionChoices.length).toBe(1);
-  //   expect(currentDiscriminatedObjectJzodSchema).toEqual(objA);
+  //   expect(currentDiscriminatedObjectJzodSchema).toEqual(objB);
   // });
 
-  // ##############################################################################################
-  it("selects the correct branch for a literal discriminator", () => {
-    const discriminator = "type";
-    const objA = makeObjectWithLiteralDiscriminators([[discriminator, "A"]]);
-    const objB = makeObjectWithLiteralDiscriminators([[discriminator, "B"]]);
-    const valueObject = { type: "B", foo: "bar" };
+  // // ##############################################################################################
+  // it("selects the correct branch for an enum discriminator", () => {
+  //   const discriminator = "kind";
+  //   const objEnum = makeObjectWithEnumDiscriminator(discriminator, ["X", "Y"]);
+  //   const objOther = makeObjectWithLiteralDiscriminators([[discriminator, "Z"]]);
+  //   const valueObject = { kind: "Y", foo: "baz" };
 
-    const { currentDiscriminatedObjectJzodSchema, flattenedUnionChoices } =
-      selectUnionBranchFromDiscriminator(
-        [objA, objB],
-        discriminator,
-        valueObject,
-        [], // valueObjectPath
-        [], // typePath 
-        castMiroirFundamentalJzodSchema,
-        defaultMiroirMetaModel,
-        defaultMiroirMetaModel,
-        {}
-      );
+  //   const { currentDiscriminatedObjectJzodSchema, flattenedUnionChoices } =
+  //     selectUnionBranchFromDiscriminator(
+  //       [objEnum, objOther],
+  //       discriminator,
+  //       valueObject,
+  //       [], // valueObjectPath
+  //       [], // typePath 
+  //       castMiroirFundamentalJzodSchema,
+  //       defaultMiroirMetaModel,
+  //       defaultMiroirMetaModel,
+  //       {}
+  //     );
 
-    expect(flattenedUnionChoices.length).toBe(1);
-    expect(currentDiscriminatedObjectJzodSchema).toEqual(objB);
-  });
+  //   expect(flattenedUnionChoices.length).toBe(1);
+  //   expect(currentDiscriminatedObjectJzodSchema).toEqual(objEnum);
+  // });
 
-  // ##############################################################################################
-  it("selects the correct branch for an enum discriminator", () => {
-    const discriminator = "kind";
-    const objEnum = makeObjectWithEnumDiscriminator(discriminator, ["X", "Y"]);
-    const objOther = makeObjectWithLiteralDiscriminators([[discriminator, "Z"]]);
-    const valueObject = { kind: "Y", foo: "baz" };
+  // // ##############################################################################################
+  // it("selects the correct branch for an enum with multiple values", () => {
+  //   const discriminator = "kind";
+  //   const objEnum = makeObjectWithEnumDiscriminator(discriminator, ["X", "Y", "Z"]);
+  //   const valueObject = { kind: "Z", foo: "baz" };
 
-    const { currentDiscriminatedObjectJzodSchema, flattenedUnionChoices } =
-      selectUnionBranchFromDiscriminator(
-        [objEnum, objOther],
-        discriminator,
-        valueObject,
-        [], // valueObjectPath
-        [], // typePath 
-        castMiroirFundamentalJzodSchema,
-        defaultMiroirMetaModel,
-        defaultMiroirMetaModel,
-        {}
-      );
+  //   const { currentDiscriminatedObjectJzodSchema, flattenedUnionChoices } =
+  //     selectUnionBranchFromDiscriminator(
+  //       [objEnum],
+  //       discriminator,
+  //       valueObject,
+  //       [], // valueObjectPath
+  //       [], // typePath 
+  //       castMiroirFundamentalJzodSchema,
+  //       defaultMiroirMetaModel,
+  //       defaultMiroirMetaModel,
+  //       {}
+  //     );
 
-    expect(flattenedUnionChoices.length).toBe(1);
-    expect(currentDiscriminatedObjectJzodSchema).toEqual(objEnum);
-  });
+  //   expect(flattenedUnionChoices.length).toBe(1);
+  //   expect(currentDiscriminatedObjectJzodSchema).toEqual(objEnum);
+  // });
 
-  // ##############################################################################################
-  it("selects the correct branch for an enum with multiple values", () => {
-    const discriminator = "kind";
-    const objEnum = makeObjectWithEnumDiscriminator(discriminator, ["X", "Y", "Z"]);
-    const valueObject = { kind: "Z", foo: "baz" };
+  // // ##############################################################################################
+  // it("returns found branch based on the first entry in a discriminator array if only 1 option matches, even if the discriminator features many items", () => {
+  //   const discriminator = ["type", "kind"];
+  //   const objA = makeObjectWithLiteralDiscriminators([[discriminator[0], "A"]]);
+  //   const objB = makeObjectWithLiteralDiscriminators([[discriminator[0], "B"]]);
+  //   const valueObject = { type: "B", foo: "bar" };
 
-    const { currentDiscriminatedObjectJzodSchema, flattenedUnionChoices } =
-      selectUnionBranchFromDiscriminator(
-        [objEnum],
-        discriminator,
-        valueObject,
-        [], // valueObjectPath
-        [], // typePath 
-        castMiroirFundamentalJzodSchema,
-        defaultMiroirMetaModel,
-        defaultMiroirMetaModel,
-        {}
-      );
+  //   const { currentDiscriminatedObjectJzodSchema, flattenedUnionChoices } =
+  //     selectUnionBranchFromDiscriminator(
+  //       [objA, objB],
+  //       discriminator,
+  //       valueObject,
+  //       [], // valueObjectPath
+  //       [], // typePath 
+  //       castMiroirFundamentalJzodSchema,
+  //       defaultMiroirMetaModel,
+  //       defaultMiroirMetaModel,
+  //       {}
+  //     );
 
-    expect(flattenedUnionChoices.length).toBe(1);
-    expect(currentDiscriminatedObjectJzodSchema).toEqual(objEnum);
-  });
+  //   expect(flattenedUnionChoices.length).toBe(1);
+  //   expect(currentDiscriminatedObjectJzodSchema).toEqual(objB);
+  // });
 
-  // ##############################################################################################
-  it("returns found branch based on the first entry in a discriminator array if only 1 option matches, even if the discriminator features many items", () => {
-    const discriminator = ["type", "kind"];
-    const objA = makeObjectWithLiteralDiscriminators([[discriminator[0], "A"]]);
-    const objB = makeObjectWithLiteralDiscriminators([[discriminator[0], "B"]]);
-    const valueObject = { type: "B", foo: "bar" };
+  // // ##############################################################################################
+  // it("returns found branch based on the second entry in a discriminator array if only 1 option matches", () => {
+  //   const discriminator = ["type", "kind"];
+  //   const objA = makeObjectWithLiteralDiscriminators([[discriminator[0], "A"], [discriminator[1], "A"]]);
+  //   const objB = makeObjectWithLiteralDiscriminators([[discriminator[0], "A"], [discriminator[1], "B"]]);
+  //   const valueObject = { type: "A", kind: "B", foo: "bar" };
+  //   const { currentDiscriminatedObjectJzodSchema, flattenedUnionChoices } =
+  //     selectUnionBranchFromDiscriminator(
+  //       [objA, objB],
+  //       discriminator,
+  //       valueObject,
+  //       [], // valueObjectPath
+  //       [], // typePath 
+  //       castMiroirFundamentalJzodSchema,
+  //       defaultMiroirMetaModel,
+  //       defaultMiroirMetaModel,
+  //       {}
+  //     );
+  //   expect(flattenedUnionChoices.length).toBe(1);
+  //   expect(currentDiscriminatedObjectJzodSchema).toEqual(objB);
+  // });
 
-    const { currentDiscriminatedObjectJzodSchema, flattenedUnionChoices } =
-      selectUnionBranchFromDiscriminator(
-        [objA, objB],
-        discriminator,
-        valueObject,
-        [], // valueObjectPath
-        [], // typePath 
-        castMiroirFundamentalJzodSchema,
-        defaultMiroirMetaModel,
-        defaultMiroirMetaModel,
-        {}
-      );
-
-    expect(flattenedUnionChoices.length).toBe(1);
-    expect(currentDiscriminatedObjectJzodSchema).toEqual(objB);
-  });
-
-  // ##############################################################################################
-  it("returns found branch based on the second entry in a discriminator array if only 1 option matches", () => {
-    const discriminator = ["type", "kind"];
-    const objA = makeObjectWithLiteralDiscriminators([[discriminator[0], "A"], [discriminator[1], "A"]]);
-    const objB = makeObjectWithLiteralDiscriminators([[discriminator[0], "A"], [discriminator[1], "B"]]);
-    const valueObject = { type: "A", kind: "B", foo: "bar" };
-    const { currentDiscriminatedObjectJzodSchema, flattenedUnionChoices } =
-      selectUnionBranchFromDiscriminator(
-        [objA, objB],
-        discriminator,
-        valueObject,
-        [], // valueObjectPath
-        [], // typePath 
-        castMiroirFundamentalJzodSchema,
-        defaultMiroirMetaModel,
-        defaultMiroirMetaModel,
-        {}
-      );
-    expect(flattenedUnionChoices.length).toBe(1);
-    expect(currentDiscriminatedObjectJzodSchema).toEqual(objB);
-  });
+  // // #################################################################################################
+  // it("returns found branch based on the first entry in a discriminator array if one of the entries has the discrimitator in an 'extend' clause", () => {
+  //   const discriminator = ["type", "kind"];
+  //   const objA: JzodObject = {
+  //     type: "object",
+  //     extend: [
+  //       {
+  //         type: "schemaReference",
+  //         definition: {
+  //           eager: true,
+  //           relativePath: "abstractObject",
+  //         },
+  //         context: {},
+  //       },
+  //     ],
+  //     definition: {
+  //       [discriminator[1]]: { type: "literal", definition: "A" },
+  //       foo: { type: "string" },
+  //     },
+  //   };
+  //   const objB = makeObjectWithLiteralDiscriminators([[discriminator[0], "B"], [discriminator[1], "B"]]);
+  //   const valueObject = { type: "A", kind: "A", foo: "bar" };
+  //   const { currentDiscriminatedObjectJzodSchema, flattenedUnionChoices } =
+  //     selectUnionBranchFromDiscriminator(
+  //       [objA, objB],
+  //       discriminator,
+  //       valueObject,
+  //       [], // valueObjectPath
+  //       [], // typePath 
+  //       castMiroirFundamentalJzodSchema,
+  //       defaultMiroirMetaModel,
+  //       defaultMiroirMetaModel,
+  //       {
+  //         abstractObject: {
+  //           type: "object",
+  //           definition: {
+  //             [discriminator[0]]: { type: "literal", definition: "A" },
+  //           },
+  //         },
+  //       }
+  //     );
+  //   // console.log("currentDiscriminatedObjectJzodSchema", JSON.stringify(currentDiscriminatedObjectJzodSchema, null, 2));
+  //   expect(flattenedUnionChoices.length).toBe(1);
+  //   expect(currentDiscriminatedObjectJzodSchema).toEqual({
+  //     type: "object",
+  //     definition: {
+  //       type: {
+  //         type: "literal",
+  //         definition: "A",
+  //       },
+  //       kind: {
+  //         type: "literal",
+  //         definition: "A",
+  //       },
+  //       foo: {
+  //         type: "string",
+  //       },
+  //     },
+  //   });
+  // });
 
   // #################################################################################################
-  it("returns found branch based on the first entry in a discriminator array if one of the entries has the discrimitator in an 'extend' clause", () => {
-    const discriminator = ["type", "kind"];
-    const objA: JzodObject = {
-      type: "object",
-      extend: [
-        {
+  it("returns the correct branch for combinerByRelationReturningObjectList in combinerTemplate", () => {
+    const unionObjectChoices: JzodObject[] = [
+      // extractorForObjectByDirectReference
+      {
+        type: "object",
+        extend: {
           type: "schemaReference",
           definition: {
             eager: true,
-            relativePath: "abstractObject",
+            relativePath: "extractorTemplateRoot",
+            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
           },
           context: {},
         },
-      ],
-      definition: {
-        [discriminator[1]]: { type: "literal", definition: "A" },
-        foo: { type: "string" },
+        definition: {
+          extractorTemplateType: {
+            type: "literal",
+            definition: "extractorForObjectByDirectReference",
+          },
+          instanceUuid: {
+            type: "schemaReference",
+            definition: {
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              relativePath: "transformerForBuild_InnerReference",
+            },
+            context: {},
+          },
+        },
       },
-    };
-    const objB = makeObjectWithLiteralDiscriminators([[discriminator[0], "B"], [discriminator[1], "B"]]);
-    const valueObject = { type: "A", kind: "A", foo: "bar" };
-    const { currentDiscriminatedObjectJzodSchema, flattenedUnionChoices } =
-      selectUnionBranchFromDiscriminator(
-        [objA, objB],
-        discriminator,
-        valueObject,
-        [], // valueObjectPath
-        [], // typePath 
-        castMiroirFundamentalJzodSchema,
-        defaultMiroirMetaModel,
-        defaultMiroirMetaModel,
-        {
-          abstractObject: {
+      // combinerForObjectByRelation
+      {
+        type: "object",
+        extend: {
+          type: "schemaReference",
+          definition: {
+            eager: true,
+            relativePath: "extractorTemplateRoot",
+            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          },
+          context: {},
+        },
+        definition: {
+          extractorTemplateType: { type: "literal", definition: "combinerForObjectByRelation" },
+          objectReference: {
+            type: "schemaReference",
+            definition: {
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              relativePath: "transformerForRuntime_InnerReference",
+            },
+            context: {},
+          },
+          AttributeOfObjectToCompareToReferenceUuid: { type: "string" },
+        },
+      },
+      // combinerByRelationReturningObjectList
+      {
+        type: "object",
+        extend: {
+          type: "schemaReference",
+          definition: {
+            eager: true,
+            relativePath: "extractorTemplateRoot",
+            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          },
+          context: {},
+        },
+        definition: {
+          extractorTemplateType: {
+            type: "literal",
+            definition: "combinerByRelationReturningObjectList",
+          },
+          orderBy: {
             type: "object",
-            definition: {
-              [discriminator[0]]: { type: "literal", definition: "A" },
-            },
-          },
-        }
-      );
-    // console.log("currentDiscriminatedObjectJzodSchema", JSON.stringify(currentDiscriminatedObjectJzodSchema, null, 2));
-    expect(flattenedUnionChoices.length).toBe(1);
-    expect(currentDiscriminatedObjectJzodSchema).toEqual({
-      type: "object",
-      definition: {
-        type: {
-          type: "literal",
-          definition: "A",
-        },
-        kind: {
-          type: "literal",
-          definition: "A",
-        },
-        foo: {
-          type: "string",
-        },
-      },
-    });
-  });
-
-  it("returns correct branch for build transformer in a build or runtime transformer union", () => {
-    const discriminator = ["transformerType", "interpolation"];
-    const valueObject = {
-      transformerType: "listPickElement",
-      interpolation: "runtime",
-      applyTo: {
-        referenceType: "referencedTransformer",
-        reference: {
-          transformerType: "contextReference",
-          interpolation: "runtime",
-          referenceName: "menuList",
-        },
-      },
-      index: 0,
-    };
-    const unionBranches = [
-      {
-        type: "object",
-        extend: [
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformerForBuild_Abstract",
-            },
-            context: {},
-          },
-        ],
-        definition: {
-          transformerType: {
-            type: "literal",
-            definition: "transformer_menu_addItem",
-          },
-          menuReference: {
-            type: "union",
-            definition: [
-              {
-                type: "string",
-              },
-              {
-                type: "schemaReference",
-                definition: {
-                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  relativePath: "transformerForBuild_InnerReference",
-                },
-              },
-            ],
-          },
-          menuItemReference: {
-            type: "union",
-            definition: [
-              {
-                type: "string",
-              },
-              {
-                type: "schemaReference",
-                definition: {
-                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  relativePath: "transformerForBuild_InnerReference",
-                },
-              },
-            ],
-          },
-          menuSectionInsertionIndex: {
-            type: "number",
             optional: true,
+            definition: {
+              attributeName: { type: "string" },
+              direction: { type: "enum", optional: true, definition: ["ASC", "DESC"] },
+            },
           },
-          menuSectionItemInsertionIndex: {
-            type: "number",
+          objectReference: {
+            type: "schemaReference",
+            definition: {
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              relativePath: "transformerForRuntime_InnerReference",
+            },
+            context: {},
+          },
+          objectReferenceAttribute: { type: "string", optional: true },
+          AttributeOfListObjectToCompareToReferenceUuid: { type: "string" },
+        },
+      },
+      // combinerByManyToManyRelationReturningObjectList
+      {
+        type: "object",
+        extend: {
+          type: "schemaReference",
+          definition: {
+            eager: true,
+            relativePath: "extractorTemplateRoot",
+            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          },
+          context: {},
+        },
+        definition: {
+          extractorTemplateType: {
+            type: "literal",
+            definition: "combinerByManyToManyRelationReturningObjectList",
+          },
+          orderBy: {
+            type: "object",
             optional: true,
+            definition: {
+              attributeName: { type: "string" },
+              direction: { type: "enum", optional: true, definition: ["ASC", "DESC"] },
+            },
           },
-        },
-      },
-      {
-        type: "object",
-        extend: [
-          {
+          objectListReference: {
             type: "schemaReference",
             definition: {
-              eager: true,
               absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformerForBuild_Abstract",
+              relativePath: "transformerForRuntime_contextReference",
             },
             context: {},
           },
-        ],
-        definition: {
-          transformerType: {
-            type: "literal",
-            definition: "constant",
-          },
-          value: {
-            type: "any",
-          },
-        },
-      },
-      {
-        type: "object",
-        extend: [
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformerForBuild_Abstract",
-            },
-            context: {},
-          },
-        ],
-        definition: {
-          transformerType: {
-            type: "literal",
-            definition: "constantArray",
-          },
-          value: {
-            type: "array",
-            definition: {
-              type: "any",
-            },
-          },
-        },
-      },
-      {
-        type: "object",
-        extend: [
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformerForBuild_Abstract",
-            },
-            context: {},
-          },
-        ],
-        definition: {
-          transformerType: {
-            type: "literal",
-            definition: "constantBoolean",
-          },
-          value: {
-            type: "boolean",
-          },
-        },
-      },
-      {
-        type: "object",
-        extend: [
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformerForBuild_Abstract",
-            },
-            context: {},
-          },
-        ],
-        definition: {
-          transformerType: {
-            type: "literal",
-            definition: "constantNumber",
-          },
-          value: {
-            type: "number",
-          },
-        },
-      },
-      {
-        type: "object",
-        extend: [
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformerForBuild_Abstract",
-            },
-            context: {},
-          },
-        ],
-        definition: {
-          transformerType: {
-            type: "literal",
-            definition: "constantObject",
-          },
-          value: {
-            type: "record",
-            definition: {
-              type: "any",
-            },
-          },
-        },
-      },
-      {
-        type: "object",
-        extend: [
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformerForBuild_Abstract",
-            },
-            context: {},
-          },
-        ],
-        definition: {
-          transformerType: {
-            type: "literal",
-            definition: "constantString",
-          },
-          value: {
+          objectListReferenceAttribute: { type: "string", optional: true },
+          AttributeOfRootListObjectToCompareToListReferenceUuid: {
             type: "string",
-          },
-        },
-      },
-      {
-        type: "object",
-        extend: [
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformerForBuild_Abstract",
-            },
-            context: {},
-          },
-        ],
-        definition: {
-          transformerType: {
-            type: "literal",
-            definition: "constantUuid",
-          },
-          value: {
-            type: "string",
-          },
-        },
-      },
-      {
-        type: "object",
-        extend: [
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformerForBuild_Abstract",
-            },
-            context: {},
-          },
-        ],
-        definition: {
-          transformerType: {
-            type: "literal",
-            definition: "constantAsExtractor",
-          },
-          valueType: {
-            type: "enum",
             optional: true,
-            definition: ["string", "number", "boolean", "bigint", "object", "array"],
-          },
-          valueJzodSchema: {
-            type: "schemaReference",
-            definition: {
-              absolutePath: "5e81e1b9-38be-487c-b3e5-53796c57fccf",
-              relativePath: "jzodElement",
-            },
-          },
-          value: {
-            type: "any",
           },
         },
       },
+      // extractorCombinerByHeteronomousManyToManyReturningListOfObjectList
       {
         type: "object",
-        extend: [
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformerForBuild_Abstract",
-            },
-            context: {},
-          },
-        ],
         definition: {
-          transformerType: {
+          extractorTemplateType: {
             type: "literal",
-            definition: "count",
+            definition: "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList",
           },
-          applyTo: {
+          rootExtractorOrReference: {
             type: "union",
-            discriminator: "referenceType",
+            discriminator: "extractorOrCombinerType",
             definition: [
-              {
-                type: "array",
-                definition: {
-                  type: "any",
-                },
-              },
               {
                 type: "schemaReference",
                 definition: {
-                  relativePath: "transformer_inner_referenced_transformerForBuild",
                   absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  relativePath: "extractorOrCombinerTemplate",
                 },
                 context: {},
               },
+              { type: "string" },
             ],
           },
-          attribute: {
-            type: "string",
-            optional: true,
-          },
-          groupBy: {
-            type: "string",
-            optional: true,
+          subQueryTemplate: {
+            type: "object",
+            definition: {
+              query: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  relativePath: "extractorOrCombinerTemplate",
+                },
+                context: {},
+              },
+              rootQueryObjectTransformer: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  relativePath: "recordOfTransformers",
+                },
+                context: {},
+              },
+            },
           },
         },
       },
+      // literal
       {
         type: "object",
-        extend: [
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformerForBuild_Abstract",
-            },
-            context: {},
-          },
-        ],
         definition: {
-          transformerType: {
+          extractorTemplateType: { type: "literal", definition: "literal" },
+          definition: { type: "string" },
+        },
+      },
+      // extractorTemplateByExtractorWrapperReturningObject
+      {
+        type: "object",
+        definition: {
+          extractorTemplateType: {
             type: "literal",
-            definition: "dataflowObject",
-          },
-          target: {
-            type: "string",
+            definition: "extractorTemplateByExtractorWrapperReturningObject",
           },
           definition: {
             type: "record",
             definition: {
               type: "schemaReference",
               definition: {
+                relativePath: "transformer_contextOrParameterReferenceTO_REMOVE",
                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "transformerForBuild",
               },
+              context: {},
             },
           },
         },
       },
+      // extractorTemplateByExtractorWrapperReturningList
       {
         type: "object",
-        extend: [
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformerForBuild_Abstract",
-            },
-            context: {},
-          },
-        ],
         definition: {
-          transformerType: {
+          extractorTemplateType: {
             type: "literal",
-            definition: "freeObjectTemplate",
-          },
-          definition: {
-            type: "record",
-            definition: {
-              type: "union",
-              discriminator: "transformerType",
-              definition: [
-                {
-                  type: "schemaReference",
-                  definition: {
-                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    relativePath: "transformerForBuild",
-                  },
-                },
-                {
-                  type: "record",
-                  definition: {
-                    type: "schemaReference",
-                    definition: {
-                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      relativePath: "transformerForBuild",
-                    },
-                  },
-                },
-                {
-                  type: "string",
-                },
-                {
-                  type: "number",
-                },
-                {
-                  type: "boolean",
-                },
-                {
-                  type: "bigint",
-                },
-              ],
-            },
-          },
-        },
-      },
-      {
-        type: "object",
-        extend: [
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformer_orderBy",
-            },
-          },
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformerForBuild_Abstract",
-            },
-            context: {},
-          },
-        ],
-        definition: {
-          transformerType: {
-            type: "literal",
-            definition: "listPickElement",
-          },
-          applyTo: {
-            type: "union",
-            discriminator: "referenceType",
-            definition: [
-              {
-                type: "array",
-                definition: {
-                  type: "any",
-                },
-              },
-              {
-                type: "schemaReference",
-                definition: {
-                  relativePath: "transformer_inner_referenced_transformerForBuild",
-                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                },
-                context: {},
-              },
-            ],
-          },
-          index: {
-            type: "number",
-          },
-        },
-      },
-      {
-        type: "object",
-        extend: [
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformer_orderBy",
-            },
-          },
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformerForBuild_Abstract",
-            },
-            context: {},
-          },
-        ],
-        definition: {
-          transformerType: {
-            type: "literal",
-            definition: "listReducerToIndexObject",
-          },
-          applyTo: {
-            type: "union",
-            discriminator: "referenceType",
-            definition: [
-              {
-                type: "array",
-                definition: {
-                  type: "record",
-                  definition: {
-                    type: "any",
-                  },
-                },
-              },
-              {
-                type: "schemaReference",
-                definition: {
-                  relativePath: "transformer_inner_referenced_transformerForBuild",
-                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                },
-                context: {},
-              },
-            ],
-          },
-          indexAttribute: {
-            type: "string",
-          },
-        },
-      },
-      {
-        type: "object",
-        extend: [
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformerForBuild_Abstract",
-            },
-            context: {},
-          },
-        ],
-        definition: {
-          transformerType: {
-            type: "literal",
-            definition: "listReducerToSpreadObject",
-          },
-          applyTo: {
-            type: "union",
-            discriminator: "referenceType",
-            definition: [
-              {
-                type: "array",
-                definition: {
-                  type: "record",
-                  definition: {
-                    type: "any",
-                  },
-                },
-              },
-              {
-                type: "schemaReference",
-                definition: {
-                  relativePath: "transformer_inner_referenced_transformerForBuild",
-                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                },
-                context: {},
-              },
-            ],
-          },
-        },
-      },
-      {
-        type: "object",
-        extend: [
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformer_orderBy",
-            },
-          },
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformerForBuild_Abstract",
-            },
-            context: {},
-          },
-        ],
-        definition: {
-          transformerType: {
-            type: "literal",
-            definition: "mapperListToList",
-          },
-          applyTo: {
-            type: "union",
-            discriminator: "referenceType",
-            definition: [
-              {
-                type: "array",
-                definition: {
-                  type: "any",
-                },
-              },
-              {
-                type: "schemaReference",
-                definition: {
-                  relativePath: "transformer_inner_referenced_transformerForBuild",
-                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                },
-                context: {},
-              },
-            ],
-          },
-          referenceToOuterObject: {
-            type: "string",
-          },
-          elementTransformer: {
-            type: "schemaReference",
-            definition: {
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformer_inner_elementTransformer_transformerForRuntime",
-            },
-          },
-        },
-      },
-      {
-        type: "object",
-        extend: [
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformerForBuild_Abstract",
-            },
-            context: {},
-          },
-        ],
-        definition: {
-          transformerType: {
-            type: "literal",
-            definition: "mustacheStringTemplate",
-          },
-          definition: {
-            type: "string",
-          },
-        },
-      },
-      {
-        type: "object",
-        extend: [
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformerForBuild_Abstract",
-            },
-            context: {},
-          },
-        ],
-        definition: {
-          transformerType: {
-            type: "literal",
-            definition: "newUuid",
-          },
-        },
-      },
-      {
-        type: "object",
-        extend: [
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformerForBuild_Abstract",
-            },
-            context: {},
-          },
-        ],
-        definition: {
-          transformerType: {
-            type: "literal",
-            definition: "objectAlter",
-          },
-          applyTo: {
-            type: "union",
-            discriminator: "referenceType",
-            definition: [
-              {
-                type: "record",
-                definition: {
-                  type: "any",
-                },
-              },
-              {
-                type: "schemaReference",
-                definition: {
-                  relativePath: "transformer_inner_referenced_transformerForBuild",
-                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                },
-                context: {},
-              },
-            ],
-          },
-          referenceToOuterObject: {
-            type: "string",
-          },
-          definition: {
-            type: "schemaReference",
-            definition: {
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformerForBuild_freeObjectTemplate",
-            },
-          },
-        },
-      },
-      {
-        type: "object",
-        extend: [
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformerForBuild_Abstract",
-            },
-            context: {},
-          },
-        ],
-        definition: {
-          transformerType: {
-            type: "literal",
-            definition: "objectDynamicAccess",
-          },
-          objectAccessPath: {
-            type: "array",
-            definition: {
-              type: "union",
-              definition: [
-                {
-                  type: "schemaReference",
-                  definition: {
-                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    relativePath: "transformerForRuntime_contextReference",
-                  },
-                },
-                {
-                  type: "schemaReference",
-                  definition: {
-                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    relativePath: "transformerForBuild_objectDynamicAccess",
-                  },
-                },
-                {
-                  type: "schemaReference",
-                  definition: {
-                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    relativePath: "transformerForBuild_mustacheStringTemplate",
-                  },
-                },
-                {
-                  type: "string",
-                },
-              ],
-            },
-          },
-        },
-      },
-      {
-        type: "object",
-        extend: [
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformer_orderBy",
-            },
-          },
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformerForBuild_Abstract",
-            },
-            context: {},
-          },
-        ],
-        definition: {
-          transformerType: {
-            type: "literal",
-            definition: "objectEntries",
-          },
-          applyTo: {
-            type: "union",
-            discriminator: "referenceType",
-            definition: [
-              {
-                type: "record",
-                definition: {
-                  type: "any",
-                },
-              },
-              {
-                type: "schemaReference",
-                definition: {
-                  relativePath: "transformer_inner_referenced_transformerForBuild",
-                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                },
-                context: {},
-              },
-            ],
-          },
-        },
-      },
-      {
-        type: "object",
-        extend: [
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformer_orderBy",
-            },
-          },
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformerForBuild_Abstract",
-            },
-            context: {},
-          },
-        ],
-        definition: {
-          transformerType: {
-            type: "literal",
-            definition: "objectValues",
-          },
-          applyTo: {
-            type: "union",
-            discriminator: "referenceType",
-            definition: [
-              {
-                type: "record",
-                definition: {
-                  type: "any",
-                },
-              },
-              {
-                type: "schemaReference",
-                definition: {
-                  relativePath: "transformer_inner_referenced_transformerForBuild",
-                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                },
-                context: {},
-              },
-            ],
-          },
-        },
-      },
-      {
-        type: "object",
-        extend: [
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformer_orderBy",
-            },
-          },
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformerForBuild_Abstract",
-            },
-            context: {},
-          },
-        ],
-        definition: {
-          transformerType: {
-            type: "literal",
-            definition: "object_fullTemplate",
-          },
-          applyTo: {
-            type: "union",
-            discriminator: "referenceType",
-            definition: [
-              {
-                type: "record",
-                definition: {
-                  type: "any",
-                },
-              },
-              {
-                type: "schemaReference",
-                definition: {
-                  relativePath: "transformer_inner_referenced_transformerForBuild",
-                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                },
-                context: {},
-              },
-            ],
-          },
-          referenceToOuterObject: {
-            type: "string",
+            definition: "extractorTemplateByExtractorWrapperReturningList",
           },
           definition: {
             type: "array",
             definition: {
-              type: "object",
+              type: "schemaReference",
               definition: {
-                attributeKey: {
-                  type: "union",
-                  discriminator: "transformerType",
-                  definition: [
-                    {
-                      type: "string",
-                    },
-                    {
-                      type: "schemaReference",
-                      definition: {
-                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        relativePath: "transformerForBuild_InnerReference",
-                      },
-                    },
-                  ],
+                relativePath: "transformer_contextOrParameterReferenceTO_REMOVE",
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              },
+              context: {},
+            },
+          },
+        },
+      },
+      // extractorTemplateForObjectListByEntity
+      {
+        type: "object",
+        extend: {
+          type: "schemaReference",
+          definition: {
+            eager: true,
+            relativePath: "extractorTemplateRoot",
+            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          },
+          context: {},
+        },
+        definition: {
+          extractorTemplateType: {
+            type: "literal",
+            definition: "extractorTemplateForObjectListByEntity",
+          },
+          orderBy: {
+            type: "object",
+            optional: true,
+            definition: {
+              attributeName: { type: "string" },
+              direction: { type: "enum", optional: true, definition: ["ASC", "DESC"] },
+            },
+          },
+          filter: {
+            type: "object",
+            optional: true,
+            definition: {
+              attributeName: { type: "string" },
+              value: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  relativePath: "transformerForBuildPlusRuntime",
                 },
-                attributeValue: {
-                  type: "schemaReference",
-                  definition: {
-                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    relativePath: "transformerForBuild",
-                  },
-                },
+                context: {},
               },
             },
           },
         },
       },
+      // // combinerByRelationReturningObjectList !!!!!!!!!!!!!!!!!!!!!!!!!!
+      // {
+      //   type: "object",
+      //   extend: {
+      //     type: "schemaReference",
+      //     definition: {
+      //       eager: true,
+      //       relativePath: "extractorTemplateRoot",
+      //       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+      //     },
+      //     context: {},
+      //   },
+      //   definition: {
+      //     extractorTemplateType: {
+      //       type: "literal",
+      //       definition: "combinerByRelationReturningObjectList",
+      //     },
+      //     orderBy: {
+      //       type: "object",
+      //       optional: true,
+      //       definition: {
+      //         attributeName: { type: "string" },
+      //         direction: { type: "enum", optional: true, definition: ["ASC", "DESC"] },
+      //       },
+      //     },
+      //     objectReference: {
+      //       type: "schemaReference",
+      //       definition: {
+      //         absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+      //         relativePath: "transformerForRuntime_InnerReference",
+      //       },
+      //       context: {},
+      //     },
+      //     objectReferenceAttribute: { type: "string", optional: true },
+      //     AttributeOfListObjectToCompareToReferenceUuid: { type: "string" },
+      //   },
+      // },
+      // // combinerByManyToManyRelationReturningObjectList !!!!!!!!!!!!!!!!!!!!!!!!!!
+      // {
+      //   type: "object",
+      //   extend: {
+      //     type: "schemaReference",
+      //     definition: {
+      //       eager: true,
+      //       relativePath: "extractorTemplateRoot",
+      //       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+      //     },
+      //     context: {},
+      //   },
+      //   definition: {
+      //     extractorTemplateType: {
+      //       type: "literal",
+      //       definition: "combinerByManyToManyRelationReturningObjectList",
+      //     },
+      //     orderBy: {
+      //       type: "object",
+      //       optional: true,
+      //       definition: {
+      //         attributeName: { type: "string" },
+      //         direction: { type: "enum", optional: true, definition: ["ASC", "DESC"] },
+      //       },
+      //     },
+      //     objectListReference: {
+      //       type: "schemaReference",
+      //       definition: {
+      //         absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+      //         relativePath: "transformerForRuntime_contextReference",
+      //       },
+      //       context: {},
+      //     },
+      //     objectListReferenceAttribute: { type: "string", optional: true },
+      //     AttributeOfRootListObjectToCompareToListReferenceUuid: {
+      //       type: "string",
+      //       optional: true,
+      //     },
+      //   },
+      // },
+    ];
+
+    const valueObject = {
+      extractorTemplateType: "combinerByRelationReturningObjectList",
+      parentName: "Book",
+      parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      objectReference: {
+        transformerType: "contextReference",
+        interpolation: "runtime",
+        referenceName: "author",
+      },
+      AttributeOfListObjectToCompareToReferenceUuid: "author",
+    };
+
+    const { currentDiscriminatedObjectJzodSchema, flattenedUnionChoices } =
+      selectUnionBranchFromDiscriminator(
+        unionObjectChoices,
+        ["extractorTemplateType"],
+        valueObject,
+        [], // valueObjectPath
+        [], // typePath
+        castMiroirFundamentalJzodSchema,
+        defaultMiroirMetaModel,
+        defaultMiroirMetaModel,
+        {
+        }
+      );
+    console.log("currentDiscriminatedObjectJzodSchema", JSON.stringify(currentDiscriminatedObjectJzodSchema, null, 2));
+    expect(flattenedUnionChoices.length).toBe(1);
+    expect(currentDiscriminatedObjectJzodSchema).toEqual({
+      type: "object",
+      definition: {
+        label: {
+          type: "string",
+          optional: true,
+          tag: {
+            value: {
+              id: 1,
+              defaultLabel: "Label",
+              editable: false,
+            },
+          },
+        },
+        applicationSection: {
+          type: "schemaReference",
+          optional: true,
+          tag: {
+            value: {
+              id: 2,
+              defaultLabel: "SelfApplication Section",
+              editable: false,
+            },
+          },
+          definition: {
+            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            relativePath: "applicationSection",
+          },
+          context: {},
+        },
+        parentName: {
+          type: "string",
+          optional: true,
+          tag: {
+            value: {
+              id: 3,
+              defaultLabel: "Parent Name",
+              editable: false,
+            },
+          },
+        },
+        parentUuid: {
+          type: "union",
+          discriminator: "transformerType",
+          tag: {
+            value: {
+              id: 4,
+              defaultLabel: "Parent Uuid",
+              editable: false,
+            },
+          },
+          definition: [
+            {
+              type: "string",
+            },
+            {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "transformerForBuild_InnerReference",
+              },
+              context: {},
+            },
+          ],
+        },
+        extractorTemplateType: {
+          type: "literal",
+          definition: "combinerByRelationReturningObjectList",
+        },
+        orderBy: {
+          type: "object",
+          optional: true,
+          definition: {
+            attributeName: {
+              type: "string",
+            },
+            direction: {
+              type: "enum",
+              optional: true,
+              definition: ["ASC", "DESC"],
+            },
+          },
+        },
+        objectReference: {
+          type: "schemaReference",
+          definition: {
+            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            relativePath: "transformerForRuntime_InnerReference",
+          },
+          context: {},
+        },
+        objectReferenceAttribute: {
+          type: "string",
+          optional: true,
+        },
+        AttributeOfListObjectToCompareToReferenceUuid: {
+          type: "string",
+        },
+      },
+    });
+  });
+
+  // #################################################################################################
+  it("returns the correct branch for a string that could be a transformer or a runtime transformer", () => {
+    const unionObjectChoices: JzodObject[] = [
+      // mustacheStringTemplate
+      {
+        type: "object",
+        extend: [
+          {
+            type: "schemaReference",
+            definition: {
+              eager: true,
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              relativePath: "transformerForBuild_Abstract",
+            },
+            context: {},
+          },
+        ],
+        definition: {
+          interpolation: { type: "literal", definition: "build" },
+          transformerType: { type: "literal", definition: "mustacheStringTemplate" },
+          definition: { type: "string" },
+        },
+      },
+      // constant
+      {
+        type: "object",
+        extend: [
+          {
+            type: "schemaReference",
+            definition: {
+              eager: true,
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              relativePath: "transformerForBuild_Abstract",
+            },
+            context: {},
+          },
+        ],
+        definition: {
+          interpolation: { type: "literal", definition: "build" },
+          transformerType: { type: "literal", definition: "constant" },
+          value: { type: "any" },
+        },
+      },
+      // parameterReference
       {
         type: "object",
         extend: [
@@ -1435,74 +1013,13 @@ describe("selectUnionBranchFromDiscriminator", () => {
           },
         ],
         definition: {
-          transformerType: {
-            type: "literal",
-            definition: "parameterReference",
-          },
-          referenceName: {
-            optional: true,
-            type: "string",
-          },
-          referencePath: {
-            optional: true,
-            type: "array",
-            definition: {
-              type: "string",
-            },
-          },
+          interpolation: { type: "literal", optional: true, definition: "build" },
+          transformerType: { type: "literal", definition: "parameterReference" },
+          referenceName: { optional: true, type: "string" },
+          referencePath: { optional: true, type: "array", definition: { type: "string" } },
         },
       },
-      {
-        type: "object",
-        extend: [
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformer_orderBy",
-            },
-          },
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformerForBuild_Abstract",
-            },
-            context: {},
-          },
-        ],
-        definition: {
-          transformerType: {
-            type: "literal",
-            definition: "unique",
-          },
-          applyTo: {
-            type: "union",
-            discriminator: "referenceType",
-            definition: [
-              {
-                type: "array",
-                definition: {
-                  type: "any",
-                },
-              },
-              {
-                type: "schemaReference",
-                definition: {
-                  relativePath: "transformer_inner_referenced_transformerForBuild",
-                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                },
-                context: {},
-              },
-            ],
-          },
-          attribute: {
-            type: "string",
-          },
-        },
-      },
+      // constantUuid
       {
         type: "object",
         extend: [
@@ -1517,15 +1034,12 @@ describe("selectUnionBranchFromDiscriminator", () => {
           },
         ],
         definition: {
-          transformerType: {
-            type: "literal",
-            definition: "constantBigint",
-          },
-          value: {
-            type: "bigint",
-          },
+          interpolation: { type: "literal", definition: "build" },
+          transformerType: { type: "literal", definition: "constantUuid" },
+          value: { type: "string" },
         },
       },
+      // constantObject
       {
         type: "object",
         extend: [
@@ -1540,1101 +1054,2428 @@ describe("selectUnionBranchFromDiscriminator", () => {
           },
         ],
         definition: {
-          transformerType: {
-            type: "literal",
-            definition: "dataflowSequence",
+          interpolation: { type: "literal", definition: "build" },
+          transformerType: { type: "literal", definition: "constantObject" },
+          value: { type: "record", definition: { type: "any" } },
+        },
+      },
+      // constantString
+      {
+        type: "object",
+        extend: [
+          {
+            type: "schemaReference",
+            definition: {
+              eager: true,
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              relativePath: "transformerForBuild_Abstract",
+            },
+            context: {},
           },
-          definition: {
+        ],
+        definition: {
+          interpolation: { type: "literal", definition: "build" },
+          transformerType: { type: "literal", definition: "constantString" },
+          value: { type: "string" },
+        },
+      },
+      // newUuid
+      {
+        type: "object",
+        extend: [
+          {
+            type: "schemaReference",
+            definition: {
+              eager: true,
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              relativePath: "transformerForBuild_Abstract",
+            },
+            context: {},
+          },
+        ],
+        definition: {
+          interpolation: { type: "literal", definition: "build" },
+          transformerType: { type: "literal", definition: "newUuid" },
+        },
+      },
+      // newUuid  !!!!!!!!!!!!!
+      {
+        type: "object",
+        extend: [
+          {
+            type: "schemaReference",
+            definition: {
+              eager: true,
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              relativePath: "transformerForBuild_Abstract",
+            },
+            context: {},
+          },
+        ],
+        definition: {
+          interpolation: { type: "literal", definition: "build" },
+          transformerType: { type: "literal", definition: "newUuid" },
+        },
+      },
+      // objectDynamicAccess
+      {
+        type: "object",
+        extend: [
+          {
+            type: "schemaReference",
+            definition: {
+              eager: true,
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              relativePath: "transformerForBuild_Abstract",
+            },
+            context: {},
+          },
+        ],
+        definition: {
+          interpolation: { type: "literal", definition: "build" },
+          transformerType: { type: "literal", definition: "objectDynamicAccess" },
+          objectAccessPath: {
             type: "array",
-            definition: {
-              type: "schemaReference",
-              definition: {
-                relativePath: "transformerForBuild",
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              },
-              context: {},
-            },
-          },
-        },
-      },
-      {
-        type: "object",
-        extend: [
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformerForRuntime_Abstract",
-            },
-            context: {},
-          },
-        ],
-        definition: {
-          transformerType: {
-            type: "literal",
-            definition: "transformer_menu_addItem",
-          },
-          menuReference: {
-            type: "union",
-            definition: [
-              {
-                type: "string",
-              },
-              {
-                type: "schemaReference",
-                definition: {
-                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  relativePath: "transformerForRuntime_InnerReference",
-                },
-              },
-            ],
-          },
-          menuItemReference: {
-            type: "union",
-            definition: [
-              {
-                type: "string",
-              },
-              {
-                type: "schemaReference",
-                definition: {
-                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  relativePath: "transformerForRuntime_InnerReference",
-                },
-              },
-            ],
-          },
-          menuSectionInsertionIndex: {
-            type: "number",
-            optional: true,
-          },
-          menuSectionItemInsertionIndex: {
-            type: "number",
-            optional: true,
-          },
-        },
-      },
-      {
-        type: "object",
-        extend: [
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformerForRuntime_Abstract",
-            },
-            context: {},
-          },
-        ],
-        definition: {
-          transformerType: {
-            type: "literal",
-            definition: "constant",
-          },
-          value: {
-            type: "any",
-          },
-        },
-      },
-      {
-        type: "object",
-        extend: [
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformerForRuntime_Abstract",
-            },
-            context: {},
-          },
-        ],
-        definition: {
-          transformerType: {
-            type: "literal",
-            definition: "constantArray",
-          },
-          value: {
-            type: "array",
-            definition: {
-              type: "any",
-            },
-          },
-        },
-      },
-      {
-        type: "object",
-        extend: [
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformerForRuntime_Abstract",
-            },
-            context: {},
-          },
-        ],
-        definition: {
-          transformerType: {
-            type: "literal",
-            definition: "constantBoolean",
-          },
-          value: {
-            type: "boolean",
-          },
-        },
-      },
-      {
-        type: "object",
-        extend: [
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformerForRuntime_Abstract",
-            },
-            context: {},
-          },
-        ],
-        definition: {
-          transformerType: {
-            type: "literal",
-            definition: "constantNumber",
-          },
-          value: {
-            type: "number",
-          },
-        },
-      },
-      {
-        type: "object",
-        extend: [
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformerForRuntime_Abstract",
-            },
-            context: {},
-          },
-        ],
-        definition: {
-          transformerType: {
-            type: "literal",
-            definition: "constantObject",
-          },
-          value: {
-            type: "record",
-            definition: {
-              type: "any",
-            },
-          },
-        },
-      },
-      {
-        type: "object",
-        extend: [
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformerForRuntime_Abstract",
-            },
-            context: {},
-          },
-        ],
-        definition: {
-          transformerType: {
-            type: "literal",
-            definition: "constantString",
-          },
-          value: {
-            type: "string",
-          },
-        },
-      },
-      {
-        type: "object",
-        extend: [
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformerForRuntime_Abstract",
-            },
-            context: {},
-          },
-        ],
-        definition: {
-          transformerType: {
-            type: "literal",
-            definition: "constantUuid",
-          },
-          value: {
-            type: "string",
-          },
-        },
-      },
-      {
-        type: "object",
-        extend: [
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformerForRuntime_Abstract",
-            },
-            context: {},
-          },
-        ],
-        definition: {
-          transformerType: {
-            type: "literal",
-            definition: "constantAsExtractor",
-          },
-          valueType: {
-            type: "enum",
-            optional: true,
-            definition: ["string", "number", "boolean", "bigint", "object", "array"],
-          },
-          valueJzodSchema: {
-            type: "schemaReference",
-            definition: {
-              absolutePath: "5e81e1b9-38be-487c-b3e5-53796c57fccf",
-              relativePath: "jzodElement",
-            },
-          },
-          value: {
-            type: "any",
-          },
-        },
-      },
-      {
-        type: "object",
-        extend: [
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformerForRuntime_optional_Abstract",
-            },
-            context: {},
-          },
-        ],
-        definition: {
-          transformerType: {
-            type: "literal",
-            definition: "contextReference",
-          },
-          referenceName: {
-            optional: true,
-            type: "string",
-          },
-          referencePath: {
-            optional: true,
-            type: "array",
-            definition: {
-              type: "string",
-            },
-          },
-        },
-      },
-      {
-        type: "object",
-        extend: [
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformerForRuntime_Abstract",
-            },
-            context: {},
-          },
-        ],
-        definition: {
-          transformerType: {
-            type: "literal",
-            definition: "count",
-          },
-          applyTo: {
-            type: "union",
-            discriminator: "referenceType",
-            definition: [
-              {
-                type: "array",
-                definition: {
-                  type: "any",
-                },
-              },
-              {
-                type: "schemaReference",
-                definition: {
-                  relativePath: "transformer_inner_referenced_transformerForRuntime",
-                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                },
-                context: {},
-              },
-            ],
-          },
-          attribute: {
-            type: "string",
-            optional: true,
-          },
-          groupBy: {
-            type: "string",
-            optional: true,
-          },
-        },
-      },
-      {
-        type: "object",
-        extend: [
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformerForRuntime_Abstract",
-            },
-            context: {},
-          },
-        ],
-        definition: {
-          transformerType: {
-            type: "literal",
-            definition: "dataflowObject",
-          },
-          target: {
-            type: "string",
-          },
-          definition: {
-            type: "record",
-            definition: {
-              type: "schemaReference",
-              definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "transformerForRuntime",
-              },
-            },
-          },
-        },
-      },
-      {
-        type: "object",
-        extend: [
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformerForRuntime_Abstract",
-            },
-            context: {},
-          },
-        ],
-        definition: {
-          transformerType: {
-            type: "literal",
-            definition: "freeObjectTemplate",
-          },
-          definition: {
-            type: "record",
             definition: {
               type: "union",
               discriminator: "transformerType",
               definition: [
                 {
-                  type: "schemaReference",
-                  definition: {
-                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    relativePath: "transformerForRuntime",
-                  },
-                },
-                {
-                  type: "record",
-                  definition: {
-                    type: "schemaReference",
-                    definition: {
-                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      relativePath: "transformerForRuntime",
-                    },
-                  },
-                },
-                {
-                  type: "string",
-                },
-                {
-                  type: "number",
-                },
-                {
-                  type: "boolean",
-                },
-                {
-                  type: "bigint",
-                },
-              ],
-            },
-          },
-        },
-      },
-      {
-        type: "object",
-        extend: [
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformer_orderBy",
-            },
-          },
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformerForRuntime_Abstract",
-            },
-            context: {},
-          },
-        ],
-        definition: {
-          transformerType: {
-            type: "literal",
-            definition: "listPickElement",
-          },
-          applyTo: {
-            type: "union",
-            discriminator: "referenceType",
-            definition: [
-              {
-                type: "array",
-                definition: {
-                  type: "any",
-                },
-              },
-              {
-                type: "schemaReference",
-                definition: {
-                  relativePath: "transformer_inner_referenced_transformerForRuntime",
-                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                },
-                context: {},
-              },
-            ],
-          },
-          index: {
-            type: "number",
-          },
-        },
-      },
-      {
-        type: "object",
-        extend: [
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformer_orderBy",
-            },
-          },
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformerForRuntime_Abstract",
-            },
-            context: {},
-          },
-        ],
-        definition: {
-          transformerType: {
-            type: "literal",
-            definition: "listReducerToIndexObject",
-          },
-          applyTo: {
-            type: "union",
-            discriminator: "referenceType",
-            definition: [
-              {
-                type: "array",
-                definition: {
-                  type: "record",
-                  definition: {
-                    type: "any",
-                  },
-                },
-              },
-              {
-                type: "schemaReference",
-                definition: {
-                  relativePath: "transformer_inner_referenced_transformerForRuntime",
-                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                },
-                context: {},
-              },
-            ],
-          },
-          indexAttribute: {
-            type: "string",
-          },
-        },
-      },
-      {
-        type: "object",
-        extend: [
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformerForRuntime_Abstract",
-            },
-            context: {},
-          },
-        ],
-        definition: {
-          transformerType: {
-            type: "literal",
-            definition: "listReducerToSpreadObject",
-          },
-          applyTo: {
-            type: "union",
-            discriminator: "referenceType",
-            definition: [
-              {
-                type: "array",
-                definition: {
-                  type: "record",
-                  definition: {
-                    type: "any",
-                  },
-                },
-              },
-              {
-                type: "schemaReference",
-                definition: {
-                  relativePath: "transformer_inner_referenced_transformerForRuntime",
-                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                },
-                context: {},
-              },
-            ],
-          },
-        },
-      },
-      {
-        type: "object",
-        extend: [
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformer_orderBy",
-            },
-          },
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformerForRuntime_Abstract",
-            },
-            context: {},
-          },
-        ],
-        definition: {
-          transformerType: {
-            type: "literal",
-            definition: "mapperListToList",
-          },
-          applyTo: {
-            type: "union",
-            discriminator: "referenceType",
-            definition: [
-              {
-                type: "array",
-                definition: {
-                  type: "any",
-                },
-              },
-              {
-                type: "schemaReference",
-                definition: {
-                  relativePath: "transformer_inner_referenced_transformerForRuntime",
-                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                },
-                context: {},
-              },
-            ],
-          },
-          referenceToOuterObject: {
-            type: "string",
-          },
-          elementTransformer: {
-            type: "schemaReference",
-            definition: {
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformer_inner_elementTransformer_transformerForRuntime",
-            },
-          },
-        },
-      },
-      {
-        type: "object",
-        extend: [
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformerForRuntime_Abstract",
-            },
-            context: {},
-          },
-        ],
-        definition: {
-          transformerType: {
-            type: "literal",
-            definition: "mustacheStringTemplate",
-          },
-          definition: {
-            type: "string",
-          },
-        },
-      },
-      {
-        type: "object",
-        extend: [
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformerForRuntime_Abstract",
-            },
-            context: {},
-          },
-        ],
-        definition: {
-          transformerType: {
-            type: "literal",
-            definition: "newUuid",
-          },
-        },
-      },
-      {
-        type: "object",
-        extend: [
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformerForRuntime_Abstract",
-            },
-            context: {},
-          },
-        ],
-        definition: {
-          transformerType: {
-            type: "literal",
-            definition: "objectAlter",
-          },
-          applyTo: {
-            type: "union",
-            discriminator: "referenceType",
-            definition: [
-              {
-                type: "record",
-                definition: {
-                  type: "any",
-                },
-              },
-              {
-                type: "schemaReference",
-                definition: {
-                  relativePath: "transformer_inner_referenced_transformerForRuntime",
-                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                },
-                context: {},
-              },
-            ],
-          },
-          referenceToOuterObject: {
-            type: "string",
-          },
-          definition: {
-            type: "schemaReference",
-            definition: {
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformerForRuntime_freeObjectTemplate",
-            },
-          },
-        },
-      },
-      {
-        type: "object",
-        extend: [
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformerForRuntime_Abstract",
-            },
-            context: {},
-          },
-        ],
-        definition: {
-          transformerType: {
-            type: "literal",
-            definition: "objectDynamicAccess",
-          },
-          objectAccessPath: {
-            type: "array",
-            definition: {
-              type: "union",
-              definition: [
-                {
-                  type: "schemaReference",
-                  definition: {
-                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    relativePath: "transformerForRuntime_contextReference",
-                  },
-                },
-                {
-                  type: "schemaReference",
-                  definition: {
-                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    relativePath: "transformerForRuntime_objectDynamicAccess",
-                  },
-                },
-                {
-                  type: "schemaReference",
-                  definition: {
-                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    relativePath: "transformerForBuild_mustacheStringTemplate",
-                  },
-                },
-                {
-                  type: "string",
-                },
-              ],
-            },
-          },
-        },
-      },
-      {
-        type: "object",
-        extend: [
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformer_orderBy",
-            },
-          },
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformerForRuntime_Abstract",
-            },
-            context: {},
-          },
-        ],
-        definition: {
-          transformerType: {
-            type: "literal",
-            definition: "objectEntries",
-          },
-          applyTo: {
-            type: "union",
-            discriminator: "referenceType",
-            definition: [
-              {
-                type: "record",
-                definition: {
-                  type: "any",
-                },
-              },
-              {
-                type: "schemaReference",
-                definition: {
-                  relativePath: "transformer_inner_referenced_transformerForRuntime",
-                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                },
-                context: {},
-              },
-            ],
-          },
-        },
-      },
-      {
-        type: "object",
-        extend: [
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformer_orderBy",
-            },
-          },
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformerForRuntime_Abstract",
-            },
-            context: {},
-          },
-        ],
-        definition: {
-          transformerType: {
-            type: "literal",
-            definition: "objectValues",
-          },
-          applyTo: {
-            type: "union",
-            discriminator: "referenceType",
-            definition: [
-              {
-                type: "record",
-                definition: {
-                  type: "any",
-                },
-              },
-              {
-                type: "schemaReference",
-                definition: {
-                  relativePath: "transformer_inner_referenced_transformerForRuntime",
-                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                },
-                context: {},
-              },
-            ],
-          },
-        },
-      },
-      {
-        type: "object",
-        extend: [
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformer_orderBy",
-            },
-          },
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformerForRuntime_Abstract",
-            },
-            context: {},
-          },
-        ],
-        definition: {
-          transformerType: {
-            type: "literal",
-            definition: "object_fullTemplate",
-          },
-          applyTo: {
-            type: "union",
-            discriminator: "referenceType",
-            definition: [
-              {
-                type: "record",
-                definition: {
-                  type: "any",
-                },
-              },
-              {
-                type: "schemaReference",
-                definition: {
-                  relativePath: "transformer_inner_referenced_transformerForRuntime",
-                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                },
-                context: {},
-              },
-            ],
-          },
-          referenceToOuterObject: {
-            type: "string",
-          },
-          definition: {
-            type: "array",
-            definition: {
-              type: "object",
-              definition: {
-                attributeKey: {
-                  type: "union",
-                  discriminator: "transformerType",
-                  definition: [
-                    {
-                      type: "string",
-                    },
+                  type: "object",
+                  extend: [
                     {
                       type: "schemaReference",
                       definition: {
+                        eager: true,
                         absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        relativePath: "transformerForRuntime_InnerReference",
+                        relativePath: "transformerForRuntime_optional_Abstract",
                       },
+                      context: {},
                     },
                   ],
-                },
-                attributeValue: {
-                  type: "schemaReference",
                   definition: {
-                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    relativePath: "transformerForRuntime",
+                    interpolation: { type: "literal", optional: true, definition: "runtime" },
+                    transformerType: { type: "literal", definition: "contextReference" },
+                    referenceName: { optional: true, type: "string" },
+                    referencePath: {
+                      optional: true,
+                      type: "array",
+                      definition: { type: "string" },
+                    },
                   },
                 },
-              },
-            },
-          },
-        },
-      },
-      {
-        type: "object",
-        extend: [
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformer_orderBy",
-            },
-          },
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformerForRuntime_Abstract",
-            },
-            context: {},
-          },
-        ],
-        definition: {
-          transformerType: {
-            type: "literal",
-            definition: "unique",
-          },
-          applyTo: {
-            type: "union",
-            discriminator: "referenceType",
-            definition: [
-              {
-                type: "array",
-                definition: {
-                  type: "any",
+                {
+                  type: "object",
+                  extend: [
+                    {
+                      type: "schemaReference",
+                      definition: {
+                        eager: true,
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath: "transformerForRuntime_Abstract",
+                      },
+                      context: {},
+                    },
+                  ],
+                  definition: {
+                    interpolation: { type: "literal", definition: "runtime" },
+                    transformerType: { type: "literal", definition: "objectDynamicAccess" },
+                    objectAccessPath: {
+                      type: "array",
+                      definition: {
+                        type: "union",
+                        discriminator: "transformerType",
+                        definition: [
+                          {
+                            type: "object",
+                            extend: [
+                              {
+                                type: "schemaReference",
+                                definition: {
+                                  eager: true,
+                                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                  relativePath: "transformerForRuntime_optional_Abstract",
+                                },
+                                context: {},
+                              },
+                            ],
+                            definition: {
+                              transformerType: { type: "literal", definition: "contextReference" },
+                              referenceName: { optional: true, type: "string" },
+                              referencePath: {
+                                optional: true,
+                                type: "array",
+                                definition: { type: "string" },
+                              },
+                            },
+                          },
+                          {
+                            type: "object",
+                            extend: [
+                              {
+                                type: "schemaReference",
+                                definition: {
+                                  eager: true,
+                                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                  relativePath: "transformerForRuntime_Abstract",
+                                },
+                                context: {},
+                              },
+                            ],
+                            definition: {
+                              transformerType: {
+                                type: "literal",
+                                definition: "objectDynamicAccess",
+                              },
+                              objectAccessPath: {
+                                type: "array",
+                                definition: {
+                                  type: "union",
+                                  discriminator: "transformerType",
+                                  definition: [
+                                    {
+                                      type: "schemaReference",
+                                      definition: {
+                                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                        relativePath:
+                                          "transformerForBuildPlusRuntime_contextReference",
+                                      },
+                                    },
+                                    {
+                                      type: "schemaReference",
+                                      definition: {
+                                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                        relativePath:
+                                          "transformerForBuildPlusRuntime_objectDynamicAccess",
+                                      },
+                                    },
+                                    {
+                                      type: "schemaReference",
+                                      definition: {
+                                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                        relativePath:
+                                          "transformerForBuildPlusRuntime_mustacheStringTemplate",
+                                      },
+                                    },
+                                    { type: "string" },
+                                  ],
+                                },
+                              },
+                            },
+                          },
+                          {
+                            type: "object",
+                            extend: [
+                              {
+                                type: "schemaReference",
+                                definition: {
+                                  eager: true,
+                                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                  relativePath: "transformerForRuntime_Abstract",
+                                },
+                                context: {},
+                              },
+                            ],
+                            definition: {
+                              transformerType: {
+                                type: "literal",
+                                definition: "mustacheStringTemplate",
+                              },
+                              definition: { type: "string" },
+                            },
+                          },
+                          { type: "string" },
+                        ],
+                      },
+                    },
+                  },
                 },
-              },
-              {
-                type: "schemaReference",
-                definition: {
-                  relativePath: "transformer_inner_referenced_transformerForRuntime",
-                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                {
+                  type: "object",
+                  extend: [
+                    {
+                      type: "schemaReference",
+                      definition: {
+                        eager: true,
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath: "transformerForBuild_Abstract",
+                      },
+                      context: {},
+                    },
+                  ],
+                  definition: {
+                    interpolation: { type: "literal", definition: "build" },
+                    transformerType: { type: "literal", definition: "mustacheStringTemplate" },
+                    definition: { type: "string" },
+                  },
                 },
-                context: {},
-              },
-            ],
-          },
-          attribute: {
-            type: "string",
-          },
-        },
-      },
-      {
-        type: "object",
-        extend: [
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformerForRuntime_Abstract",
-            },
-            context: {},
-          },
-        ],
-        definition: {
-          transformerType: {
-            type: "literal",
-            definition: "constantBigint",
-          },
-          value: {
-            type: "bigint",
-          },
-        },
-      },
-      {
-        type: "object",
-        extend: [
-          {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              relativePath: "transformerForRuntime_Abstract",
-              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            },
-            context: {},
-          },
-        ],
-        definition: {
-          transformerType: {
-            type: "literal",
-            definition: "dataflowSequence",
-          },
-          definition: {
-            type: "array",
-            definition: {
-              type: "schemaReference",
-              definition: {
-                relativePath: "transformerForRuntime",
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              },
-              context: {},
+                { type: "string" },
+              ],
             },
           },
         },
       },
     ];
-    const { currentDiscriminatedObjectJzodSchema, flattenedUnionChoices } =
-      selectUnionBranchFromDiscriminator(
-        unionBranches as any,
-        discriminator,
-        valueObject,
-        [], // valueObjectPath
-        [], // typePath 
-        castMiroirFundamentalJzodSchema,
-        defaultMiroirMetaModel,
-        defaultMiroirMetaModel,
-        {},
-      );
+    });
 
-  });
+  // it("returns correct branch for build transformer in a build or runtime transformer union", () => {
+  //   const discriminator = ["transformerType", "interpolation"];
+  //   const valueObject = {
+  //     transformerType: "listPickElement",
+  //     interpolation: "runtime",
+  //     applyTo: {
+  //       referenceType: "referencedTransformer",
+  //       reference: {
+  //         transformerType: "contextReference",
+  //         interpolation: "runtime",
+  //         referenceName: "menuList",
+  //       },
+  //     },
+  //     index: 0,
+  //   };
+  //   const unionBranches = [
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForBuild_Abstract",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "transformer_menu_addItem",
+  //         },
+  //         menuReference: {
+  //           type: "union",
+  //           definition: [
+  //             {
+  //               type: "string",
+  //             },
+  //             {
+  //               type: "schemaReference",
+  //               definition: {
+  //                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //                 relativePath: "transformerForBuild_InnerReference",
+  //               },
+  //             },
+  //           ],
+  //         },
+  //         menuItemReference: {
+  //           type: "union",
+  //           definition: [
+  //             {
+  //               type: "string",
+  //             },
+  //             {
+  //               type: "schemaReference",
+  //               definition: {
+  //                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //                 relativePath: "transformerForBuild_InnerReference",
+  //               },
+  //             },
+  //           ],
+  //         },
+  //         menuSectionInsertionIndex: {
+  //           type: "number",
+  //           optional: true,
+  //         },
+  //         menuSectionItemInsertionIndex: {
+  //           type: "number",
+  //           optional: true,
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForBuild_Abstract",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "constant",
+  //         },
+  //         value: {
+  //           type: "any",
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForBuild_Abstract",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "constantArray",
+  //         },
+  //         value: {
+  //           type: "array",
+  //           definition: {
+  //             type: "any",
+  //           },
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForBuild_Abstract",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "constantBoolean",
+  //         },
+  //         value: {
+  //           type: "boolean",
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForBuild_Abstract",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "constantNumber",
+  //         },
+  //         value: {
+  //           type: "number",
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForBuild_Abstract",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "constantObject",
+  //         },
+  //         value: {
+  //           type: "record",
+  //           definition: {
+  //             type: "any",
+  //           },
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForBuild_Abstract",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "constantString",
+  //         },
+  //         value: {
+  //           type: "string",
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForBuild_Abstract",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "constantUuid",
+  //         },
+  //         value: {
+  //           type: "string",
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForBuild_Abstract",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "constantAsExtractor",
+  //         },
+  //         valueType: {
+  //           type: "enum",
+  //           optional: true,
+  //           definition: ["string", "number", "boolean", "bigint", "object", "array"],
+  //         },
+  //         valueJzodSchema: {
+  //           type: "schemaReference",
+  //           definition: {
+  //             absolutePath: "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+  //             relativePath: "jzodElement",
+  //           },
+  //         },
+  //         value: {
+  //           type: "any",
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForBuild_Abstract",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "count",
+  //         },
+  //         applyTo: {
+  //           type: "union",
+  //           discriminator: "referenceType",
+  //           definition: [
+  //             {
+  //               type: "array",
+  //               definition: {
+  //                 type: "any",
+  //               },
+  //             },
+  //             {
+  //               type: "schemaReference",
+  //               definition: {
+  //                 relativePath: "transformer_inner_referenced_transformerForBuild",
+  //                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //               },
+  //               context: {},
+  //             },
+  //           ],
+  //         },
+  //         attribute: {
+  //           type: "string",
+  //           optional: true,
+  //         },
+  //         groupBy: {
+  //           type: "string",
+  //           optional: true,
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForBuild_Abstract",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "dataflowObject",
+  //         },
+  //         target: {
+  //           type: "string",
+  //         },
+  //         definition: {
+  //           type: "record",
+  //           definition: {
+  //             type: "schemaReference",
+  //             definition: {
+  //               absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //               relativePath: "transformerForBuild",
+  //             },
+  //           },
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForBuild_Abstract",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "freeObjectTemplate",
+  //         },
+  //         definition: {
+  //           type: "record",
+  //           definition: {
+  //             type: "union",
+  //             discriminator: "transformerType",
+  //             definition: [
+  //               {
+  //                 type: "schemaReference",
+  //                 definition: {
+  //                   absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //                   relativePath: "transformerForBuild",
+  //                 },
+  //               },
+  //               {
+  //                 type: "record",
+  //                 definition: {
+  //                   type: "schemaReference",
+  //                   definition: {
+  //                     absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //                     relativePath: "transformerForBuild",
+  //                   },
+  //                 },
+  //               },
+  //               {
+  //                 type: "string",
+  //               },
+  //               {
+  //                 type: "number",
+  //               },
+  //               {
+  //                 type: "boolean",
+  //               },
+  //               {
+  //                 type: "bigint",
+  //               },
+  //             ],
+  //           },
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformer_orderBy",
+  //           },
+  //         },
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForBuild_Abstract",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "listPickElement",
+  //         },
+  //         applyTo: {
+  //           type: "union",
+  //           discriminator: "referenceType",
+  //           definition: [
+  //             {
+  //               type: "array",
+  //               definition: {
+  //                 type: "any",
+  //               },
+  //             },
+  //             {
+  //               type: "schemaReference",
+  //               definition: {
+  //                 relativePath: "transformer_inner_referenced_transformerForBuild",
+  //                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //               },
+  //               context: {},
+  //             },
+  //           ],
+  //         },
+  //         index: {
+  //           type: "number",
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformer_orderBy",
+  //           },
+  //         },
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForBuild_Abstract",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "listReducerToIndexObject",
+  //         },
+  //         applyTo: {
+  //           type: "union",
+  //           discriminator: "referenceType",
+  //           definition: [
+  //             {
+  //               type: "array",
+  //               definition: {
+  //                 type: "record",
+  //                 definition: {
+  //                   type: "any",
+  //                 },
+  //               },
+  //             },
+  //             {
+  //               type: "schemaReference",
+  //               definition: {
+  //                 relativePath: "transformer_inner_referenced_transformerForBuild",
+  //                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //               },
+  //               context: {},
+  //             },
+  //           ],
+  //         },
+  //         indexAttribute: {
+  //           type: "string",
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForBuild_Abstract",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "listReducerToSpreadObject",
+  //         },
+  //         applyTo: {
+  //           type: "union",
+  //           discriminator: "referenceType",
+  //           definition: [
+  //             {
+  //               type: "array",
+  //               definition: {
+  //                 type: "record",
+  //                 definition: {
+  //                   type: "any",
+  //                 },
+  //               },
+  //             },
+  //             {
+  //               type: "schemaReference",
+  //               definition: {
+  //                 relativePath: "transformer_inner_referenced_transformerForBuild",
+  //                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //               },
+  //               context: {},
+  //             },
+  //           ],
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformer_orderBy",
+  //           },
+  //         },
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForBuild_Abstract",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "mapperListToList",
+  //         },
+  //         applyTo: {
+  //           type: "union",
+  //           discriminator: "referenceType",
+  //           definition: [
+  //             {
+  //               type: "array",
+  //               definition: {
+  //                 type: "any",
+  //               },
+  //             },
+  //             {
+  //               type: "schemaReference",
+  //               definition: {
+  //                 relativePath: "transformer_inner_referenced_transformerForBuild",
+  //                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //               },
+  //               context: {},
+  //             },
+  //           ],
+  //         },
+  //         referenceToOuterObject: {
+  //           type: "string",
+  //         },
+  //         elementTransformer: {
+  //           type: "schemaReference",
+  //           definition: {
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformer_inner_elementTransformer_transformerForRuntime",
+  //           },
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForBuild_Abstract",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "mustacheStringTemplate",
+  //         },
+  //         definition: {
+  //           type: "string",
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForBuild_Abstract",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "newUuid",
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForBuild_Abstract",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "objectAlter",
+  //         },
+  //         applyTo: {
+  //           type: "union",
+  //           discriminator: "referenceType",
+  //           definition: [
+  //             {
+  //               type: "record",
+  //               definition: {
+  //                 type: "any",
+  //               },
+  //             },
+  //             {
+  //               type: "schemaReference",
+  //               definition: {
+  //                 relativePath: "transformer_inner_referenced_transformerForBuild",
+  //                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //               },
+  //               context: {},
+  //             },
+  //           ],
+  //         },
+  //         referenceToOuterObject: {
+  //           type: "string",
+  //         },
+  //         definition: {
+  //           type: "schemaReference",
+  //           definition: {
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForBuild_freeObjectTemplate",
+  //           },
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForBuild_Abstract",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "objectDynamicAccess",
+  //         },
+  //         objectAccessPath: {
+  //           type: "array",
+  //           definition: {
+  //             type: "union",
+  //             definition: [
+  //               {
+  //                 type: "schemaReference",
+  //                 definition: {
+  //                   absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //                   relativePath: "transformerForRuntime_contextReference",
+  //                 },
+  //               },
+  //               {
+  //                 type: "schemaReference",
+  //                 definition: {
+  //                   absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //                   relativePath: "transformerForBuild_objectDynamicAccess",
+  //                 },
+  //               },
+  //               {
+  //                 type: "schemaReference",
+  //                 definition: {
+  //                   absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //                   relativePath: "transformerForBuild_mustacheStringTemplate",
+  //                 },
+  //               },
+  //               {
+  //                 type: "string",
+  //               },
+  //             ],
+  //           },
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformer_orderBy",
+  //           },
+  //         },
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForBuild_Abstract",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "objectEntries",
+  //         },
+  //         applyTo: {
+  //           type: "union",
+  //           discriminator: "referenceType",
+  //           definition: [
+  //             {
+  //               type: "record",
+  //               definition: {
+  //                 type: "any",
+  //               },
+  //             },
+  //             {
+  //               type: "schemaReference",
+  //               definition: {
+  //                 relativePath: "transformer_inner_referenced_transformerForBuild",
+  //                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //               },
+  //               context: {},
+  //             },
+  //           ],
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformer_orderBy",
+  //           },
+  //         },
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForBuild_Abstract",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "objectValues",
+  //         },
+  //         applyTo: {
+  //           type: "union",
+  //           discriminator: "referenceType",
+  //           definition: [
+  //             {
+  //               type: "record",
+  //               definition: {
+  //                 type: "any",
+  //               },
+  //             },
+  //             {
+  //               type: "schemaReference",
+  //               definition: {
+  //                 relativePath: "transformer_inner_referenced_transformerForBuild",
+  //                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //               },
+  //               context: {},
+  //             },
+  //           ],
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformer_orderBy",
+  //           },
+  //         },
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForBuild_Abstract",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "object_fullTemplate",
+  //         },
+  //         applyTo: {
+  //           type: "union",
+  //           discriminator: "referenceType",
+  //           definition: [
+  //             {
+  //               type: "record",
+  //               definition: {
+  //                 type: "any",
+  //               },
+  //             },
+  //             {
+  //               type: "schemaReference",
+  //               definition: {
+  //                 relativePath: "transformer_inner_referenced_transformerForBuild",
+  //                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //               },
+  //               context: {},
+  //             },
+  //           ],
+  //         },
+  //         referenceToOuterObject: {
+  //           type: "string",
+  //         },
+  //         definition: {
+  //           type: "array",
+  //           definition: {
+  //             type: "object",
+  //             definition: {
+  //               attributeKey: {
+  //                 type: "union",
+  //                 discriminator: "transformerType",
+  //                 definition: [
+  //                   {
+  //                     type: "string",
+  //                   },
+  //                   {
+  //                     type: "schemaReference",
+  //                     definition: {
+  //                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //                       relativePath: "transformerForBuild_InnerReference",
+  //                     },
+  //                   },
+  //                 ],
+  //               },
+  //               attributeValue: {
+  //                 type: "schemaReference",
+  //                 definition: {
+  //                   absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //                   relativePath: "transformerForBuild",
+  //                 },
+  //               },
+  //             },
+  //           },
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForBuild_optional_Abstract",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "parameterReference",
+  //         },
+  //         referenceName: {
+  //           optional: true,
+  //           type: "string",
+  //         },
+  //         referencePath: {
+  //           optional: true,
+  //           type: "array",
+  //           definition: {
+  //             type: "string",
+  //           },
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformer_orderBy",
+  //           },
+  //         },
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForBuild_Abstract",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "unique",
+  //         },
+  //         applyTo: {
+  //           type: "union",
+  //           discriminator: "referenceType",
+  //           definition: [
+  //             {
+  //               type: "array",
+  //               definition: {
+  //                 type: "any",
+  //               },
+  //             },
+  //             {
+  //               type: "schemaReference",
+  //               definition: {
+  //                 relativePath: "transformer_inner_referenced_transformerForBuild",
+  //                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //               },
+  //               context: {},
+  //             },
+  //           ],
+  //         },
+  //         attribute: {
+  //           type: "string",
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForBuild_Abstract",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "constantBigint",
+  //         },
+  //         value: {
+  //           type: "bigint",
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForBuild_Abstract",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "dataflowSequence",
+  //         },
+  //         definition: {
+  //           type: "array",
+  //           definition: {
+  //             type: "schemaReference",
+  //             definition: {
+  //               relativePath: "transformerForBuild",
+  //               absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             },
+  //             context: {},
+  //           },
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForRuntime_Abstract",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "transformer_menu_addItem",
+  //         },
+  //         menuReference: {
+  //           type: "union",
+  //           definition: [
+  //             {
+  //               type: "string",
+  //             },
+  //             {
+  //               type: "schemaReference",
+  //               definition: {
+  //                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //                 relativePath: "transformerForRuntime_InnerReference",
+  //               },
+  //             },
+  //           ],
+  //         },
+  //         menuItemReference: {
+  //           type: "union",
+  //           definition: [
+  //             {
+  //               type: "string",
+  //             },
+  //             {
+  //               type: "schemaReference",
+  //               definition: {
+  //                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //                 relativePath: "transformerForRuntime_InnerReference",
+  //               },
+  //             },
+  //           ],
+  //         },
+  //         menuSectionInsertionIndex: {
+  //           type: "number",
+  //           optional: true,
+  //         },
+  //         menuSectionItemInsertionIndex: {
+  //           type: "number",
+  //           optional: true,
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForRuntime_Abstract",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "constant",
+  //         },
+  //         value: {
+  //           type: "any",
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForRuntime_Abstract",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "constantArray",
+  //         },
+  //         value: {
+  //           type: "array",
+  //           definition: {
+  //             type: "any",
+  //           },
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForRuntime_Abstract",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "constantBoolean",
+  //         },
+  //         value: {
+  //           type: "boolean",
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForRuntime_Abstract",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "constantNumber",
+  //         },
+  //         value: {
+  //           type: "number",
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForRuntime_Abstract",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "constantObject",
+  //         },
+  //         value: {
+  //           type: "record",
+  //           definition: {
+  //             type: "any",
+  //           },
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForRuntime_Abstract",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "constantString",
+  //         },
+  //         value: {
+  //           type: "string",
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForRuntime_Abstract",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "constantUuid",
+  //         },
+  //         value: {
+  //           type: "string",
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForRuntime_Abstract",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "constantAsExtractor",
+  //         },
+  //         valueType: {
+  //           type: "enum",
+  //           optional: true,
+  //           definition: ["string", "number", "boolean", "bigint", "object", "array"],
+  //         },
+  //         valueJzodSchema: {
+  //           type: "schemaReference",
+  //           definition: {
+  //             absolutePath: "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+  //             relativePath: "jzodElement",
+  //           },
+  //         },
+  //         value: {
+  //           type: "any",
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForRuntime_optional_Abstract",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "contextReference",
+  //         },
+  //         referenceName: {
+  //           optional: true,
+  //           type: "string",
+  //         },
+  //         referencePath: {
+  //           optional: true,
+  //           type: "array",
+  //           definition: {
+  //             type: "string",
+  //           },
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForRuntime_Abstract",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "count",
+  //         },
+  //         applyTo: {
+  //           type: "union",
+  //           discriminator: "referenceType",
+  //           definition: [
+  //             {
+  //               type: "array",
+  //               definition: {
+  //                 type: "any",
+  //               },
+  //             },
+  //             {
+  //               type: "schemaReference",
+  //               definition: {
+  //                 relativePath: "transformer_inner_referenced_transformerForRuntime",
+  //                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //               },
+  //               context: {},
+  //             },
+  //           ],
+  //         },
+  //         attribute: {
+  //           type: "string",
+  //           optional: true,
+  //         },
+  //         groupBy: {
+  //           type: "string",
+  //           optional: true,
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForRuntime_Abstract",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "dataflowObject",
+  //         },
+  //         target: {
+  //           type: "string",
+  //         },
+  //         definition: {
+  //           type: "record",
+  //           definition: {
+  //             type: "schemaReference",
+  //             definition: {
+  //               absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //               relativePath: "transformerForRuntime",
+  //             },
+  //           },
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForRuntime_Abstract",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "freeObjectTemplate",
+  //         },
+  //         definition: {
+  //           type: "record",
+  //           definition: {
+  //             type: "union",
+  //             discriminator: "transformerType",
+  //             definition: [
+  //               {
+  //                 type: "schemaReference",
+  //                 definition: {
+  //                   absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //                   relativePath: "transformerForRuntime",
+  //                 },
+  //               },
+  //               {
+  //                 type: "record",
+  //                 definition: {
+  //                   type: "schemaReference",
+  //                   definition: {
+  //                     absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //                     relativePath: "transformerForRuntime",
+  //                   },
+  //                 },
+  //               },
+  //               {
+  //                 type: "string",
+  //               },
+  //               {
+  //                 type: "number",
+  //               },
+  //               {
+  //                 type: "boolean",
+  //               },
+  //               {
+  //                 type: "bigint",
+  //               },
+  //             ],
+  //           },
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformer_orderBy",
+  //           },
+  //         },
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForRuntime_Abstract",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "listPickElement",
+  //         },
+  //         applyTo: {
+  //           type: "union",
+  //           discriminator: "referenceType",
+  //           definition: [
+  //             {
+  //               type: "array",
+  //               definition: {
+  //                 type: "any",
+  //               },
+  //             },
+  //             {
+  //               type: "schemaReference",
+  //               definition: {
+  //                 relativePath: "transformer_inner_referenced_transformerForRuntime",
+  //                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //               },
+  //               context: {},
+  //             },
+  //           ],
+  //         },
+  //         index: {
+  //           type: "number",
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformer_orderBy",
+  //           },
+  //         },
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForRuntime_Abstract",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "listReducerToIndexObject",
+  //         },
+  //         applyTo: {
+  //           type: "union",
+  //           discriminator: "referenceType",
+  //           definition: [
+  //             {
+  //               type: "array",
+  //               definition: {
+  //                 type: "record",
+  //                 definition: {
+  //                   type: "any",
+  //                 },
+  //               },
+  //             },
+  //             {
+  //               type: "schemaReference",
+  //               definition: {
+  //                 relativePath: "transformer_inner_referenced_transformerForRuntime",
+  //                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //               },
+  //               context: {},
+  //             },
+  //           ],
+  //         },
+  //         indexAttribute: {
+  //           type: "string",
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForRuntime_Abstract",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "listReducerToSpreadObject",
+  //         },
+  //         applyTo: {
+  //           type: "union",
+  //           discriminator: "referenceType",
+  //           definition: [
+  //             {
+  //               type: "array",
+  //               definition: {
+  //                 type: "record",
+  //                 definition: {
+  //                   type: "any",
+  //                 },
+  //               },
+  //             },
+  //             {
+  //               type: "schemaReference",
+  //               definition: {
+  //                 relativePath: "transformer_inner_referenced_transformerForRuntime",
+  //                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //               },
+  //               context: {},
+  //             },
+  //           ],
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformer_orderBy",
+  //           },
+  //         },
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForRuntime_Abstract",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "mapperListToList",
+  //         },
+  //         applyTo: {
+  //           type: "union",
+  //           discriminator: "referenceType",
+  //           definition: [
+  //             {
+  //               type: "array",
+  //               definition: {
+  //                 type: "any",
+  //               },
+  //             },
+  //             {
+  //               type: "schemaReference",
+  //               definition: {
+  //                 relativePath: "transformer_inner_referenced_transformerForRuntime",
+  //                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //               },
+  //               context: {},
+  //             },
+  //           ],
+  //         },
+  //         referenceToOuterObject: {
+  //           type: "string",
+  //         },
+  //         elementTransformer: {
+  //           type: "schemaReference",
+  //           definition: {
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformer_inner_elementTransformer_transformerForRuntime",
+  //           },
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForRuntime_Abstract",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "mustacheStringTemplate",
+  //         },
+  //         definition: {
+  //           type: "string",
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForRuntime_Abstract",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "newUuid",
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForRuntime_Abstract",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "objectAlter",
+  //         },
+  //         applyTo: {
+  //           type: "union",
+  //           discriminator: "referenceType",
+  //           definition: [
+  //             {
+  //               type: "record",
+  //               definition: {
+  //                 type: "any",
+  //               },
+  //             },
+  //             {
+  //               type: "schemaReference",
+  //               definition: {
+  //                 relativePath: "transformer_inner_referenced_transformerForRuntime",
+  //                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //               },
+  //               context: {},
+  //             },
+  //           ],
+  //         },
+  //         referenceToOuterObject: {
+  //           type: "string",
+  //         },
+  //         definition: {
+  //           type: "schemaReference",
+  //           definition: {
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForRuntime_freeObjectTemplate",
+  //           },
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForRuntime_Abstract",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "objectDynamicAccess",
+  //         },
+  //         objectAccessPath: {
+  //           type: "array",
+  //           definition: {
+  //             type: "union",
+  //             definition: [
+  //               {
+  //                 type: "schemaReference",
+  //                 definition: {
+  //                   absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //                   relativePath: "transformerForRuntime_contextReference",
+  //                 },
+  //               },
+  //               {
+  //                 type: "schemaReference",
+  //                 definition: {
+  //                   absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //                   relativePath: "transformerForRuntime_objectDynamicAccess",
+  //                 },
+  //               },
+  //               {
+  //                 type: "schemaReference",
+  //                 definition: {
+  //                   absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //                   relativePath: "transformerForBuild_mustacheStringTemplate",
+  //                 },
+  //               },
+  //               {
+  //                 type: "string",
+  //               },
+  //             ],
+  //           },
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformer_orderBy",
+  //           },
+  //         },
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForRuntime_Abstract",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "objectEntries",
+  //         },
+  //         applyTo: {
+  //           type: "union",
+  //           discriminator: "referenceType",
+  //           definition: [
+  //             {
+  //               type: "record",
+  //               definition: {
+  //                 type: "any",
+  //               },
+  //             },
+  //             {
+  //               type: "schemaReference",
+  //               definition: {
+  //                 relativePath: "transformer_inner_referenced_transformerForRuntime",
+  //                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //               },
+  //               context: {},
+  //             },
+  //           ],
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformer_orderBy",
+  //           },
+  //         },
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForRuntime_Abstract",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "objectValues",
+  //         },
+  //         applyTo: {
+  //           type: "union",
+  //           discriminator: "referenceType",
+  //           definition: [
+  //             {
+  //               type: "record",
+  //               definition: {
+  //                 type: "any",
+  //               },
+  //             },
+  //             {
+  //               type: "schemaReference",
+  //               definition: {
+  //                 relativePath: "transformer_inner_referenced_transformerForRuntime",
+  //                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //               },
+  //               context: {},
+  //             },
+  //           ],
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformer_orderBy",
+  //           },
+  //         },
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForRuntime_Abstract",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "object_fullTemplate",
+  //         },
+  //         applyTo: {
+  //           type: "union",
+  //           discriminator: "referenceType",
+  //           definition: [
+  //             {
+  //               type: "record",
+  //               definition: {
+  //                 type: "any",
+  //               },
+  //             },
+  //             {
+  //               type: "schemaReference",
+  //               definition: {
+  //                 relativePath: "transformer_inner_referenced_transformerForRuntime",
+  //                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //               },
+  //               context: {},
+  //             },
+  //           ],
+  //         },
+  //         referenceToOuterObject: {
+  //           type: "string",
+  //         },
+  //         definition: {
+  //           type: "array",
+  //           definition: {
+  //             type: "object",
+  //             definition: {
+  //               attributeKey: {
+  //                 type: "union",
+  //                 discriminator: "transformerType",
+  //                 definition: [
+  //                   {
+  //                     type: "string",
+  //                   },
+  //                   {
+  //                     type: "schemaReference",
+  //                     definition: {
+  //                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //                       relativePath: "transformerForRuntime_InnerReference",
+  //                     },
+  //                   },
+  //                 ],
+  //               },
+  //               attributeValue: {
+  //                 type: "schemaReference",
+  //                 definition: {
+  //                   absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //                   relativePath: "transformerForRuntime",
+  //                 },
+  //               },
+  //             },
+  //           },
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformer_orderBy",
+  //           },
+  //         },
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForRuntime_Abstract",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "unique",
+  //         },
+  //         applyTo: {
+  //           type: "union",
+  //           discriminator: "referenceType",
+  //           definition: [
+  //             {
+  //               type: "array",
+  //               definition: {
+  //                 type: "any",
+  //               },
+  //             },
+  //             {
+  //               type: "schemaReference",
+  //               definition: {
+  //                 relativePath: "transformer_inner_referenced_transformerForRuntime",
+  //                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //               },
+  //               context: {},
+  //             },
+  //           ],
+  //         },
+  //         attribute: {
+  //           type: "string",
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             relativePath: "transformerForRuntime_Abstract",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "constantBigint",
+  //         },
+  //         value: {
+  //           type: "bigint",
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "object",
+  //       extend: [
+  //         {
+  //           type: "schemaReference",
+  //           definition: {
+  //             eager: true,
+  //             relativePath: "transformerForRuntime_Abstract",
+  //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //           },
+  //           context: {},
+  //         },
+  //       ],
+  //       definition: {
+  //         transformerType: {
+  //           type: "literal",
+  //           definition: "dataflowSequence",
+  //         },
+  //         definition: {
+  //           type: "array",
+  //           definition: {
+  //             type: "schemaReference",
+  //             definition: {
+  //               relativePath: "transformerForRuntime",
+  //               absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //             },
+  //             context: {},
+  //           },
+  //         },
+  //       },
+  //     },
+  //   ];
+  //   const { currentDiscriminatedObjectJzodSchema, flattenedUnionChoices } =
+  //     selectUnionBranchFromDiscriminator(
+  //       unionBranches as any,
+  //       discriminator,
+  //       valueObject,
+  //       [], // valueObjectPath
+  //       [], // typePath 
+  //       castMiroirFundamentalJzodSchema,
+  //       defaultMiroirMetaModel,
+  //       defaultMiroirMetaModel,
+  //       {},
+  //     );
+
+  // });
 
 });

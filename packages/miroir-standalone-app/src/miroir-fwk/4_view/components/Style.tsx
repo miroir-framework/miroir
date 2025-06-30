@@ -16,6 +16,7 @@ import { JzodElement } from "miroir-core";
 export const SizedButton = styled(Button)(({ theme }) => ({
   height: "1em",
   width: "auto",
+  minWidth: "1em",
   padding: "0px",
 }));
 export const SizedAddBox = styled(AddBox)(({ theme }) => ({ height: "1em", width: "1em" }));

@@ -23,6 +23,7 @@ import { ExpandOrFoldObjectAttributes, JzodElementEditor } from "./JzodElementEd
 import { useJzodElementEditorHooks } from "./JzodElementEditorHooks";
 import { JzodObjectEditorProps } from "./JzodElementEditorInterface";
 import { SizedButton, SizedAddBox, SmallIconButton, getItemsOrder } from "./Style";
+import { ErrorFallbackComponent } from "./ErrorFallbackComponent";
 import { packageName } from "../../../constants";
 import { cleanLevel } from "../constants";
 
@@ -99,6 +100,10 @@ const EditableAttributeName = React.memo(({
   );
 });
 
+// ##############################################################################################
+// ##############################################################################################
+// ##############################################################################################
+// ##############################################################################################
 // ##############################################################################################
 // ##############################################################################################
 // ##############################################################################################
@@ -265,7 +270,7 @@ export const JzodObjectEditor = React.memo(function JzodObjectEditorComponent(pr
   // #######################
   // #######################
   // #######################
-  const addObjectOptionalAttribute = useCallback(async () => {
+  const addObjectOptionalAttribute = useCallback(async (attributeName: string) => {
     if (localResolvedElementJzodSchemaBasedOnValue.type != "object") {
       throw "addObjectOptionalAttribute called for non-object type: " + unfoldedRawSchema.type;
     }
@@ -281,14 +286,16 @@ export const JzodObjectEditor = React.memo(function JzodObjectEditorComponent(pr
       // "discriminatedSchemaForObject",
       // JSON.stringify(discriminatedSchemaForObject, null, 2),
       "undefinedOptionalAttributes",
-      undefinedOptionalAttributes
+      undefinedOptionalAttributes,
+      "attributeName",
+      attributeName
     );
     const currentObjectValue = resolvePathOnObject(formik.values, rootLesslistKeyArray);
     // const newAttributeType: JzodElement = resolvePathOnObject(rawJzodSchema, [
     // const newAttributeType: JzodElement = resolvePathOnObject(unfoldedRawSchema, [
     const newAttributeType: JzodElement = resolvePathOnObject(discriminatedSchemaForObject??unfoldedRawSchema, [
       "definition",
-      undefinedOptionalAttributes[0],
+      attributeName,
     ]);
     // const newAttributeValue = getDefaultValueForJzodSchema(newAttributeType)
     const newAttributeValue = currentMiroirFundamentalJzodSchema
@@ -302,7 +309,7 @@ export const JzodObjectEditor = React.memo(function JzodObjectEditorComponent(pr
 
     const newObjectValue = {
       ...currentObjectValue,
-      [undefinedOptionalAttributes[0]]: newAttributeValue,
+      [attributeName]: newAttributeValue,
     };
     const newItemsOrder = getItemsOrder(newObjectValue, discriminatedSchemaForObject??unfoldedRawSchema);
 
@@ -336,7 +343,7 @@ export const JzodObjectEditor = React.memo(function JzodObjectEditorComponent(pr
     miroirMetaModel,
     formik.values,
     formik.setFieldValue,
-    undefinedOptionalAttributes[0]
+    undefinedOptionalAttributes
   ]);
 
   const deleteElement = (rootLesslistKeyArray: (string | number)[]) => () => {
@@ -607,50 +614,24 @@ export const JzodObjectEditor = React.memo(function JzodObjectEditorComponent(pr
         return (
           <div key={attributeListKey}>
             <ErrorBoundary
-              FallbackComponent={({ error, resetErrorBoundary }: any) => {
-                log.error(
-                  "Object errorboundary for",
-                  attributeListKey,
-                  "currentValue",
-                  currentValue,
-                  "error",
-                  error
-                );
-                return (
-                  <div role="alert">
-                    <div style={{ color: "red" }}>
-                      <p>Something went wrong:</p>
-                      <div key="1">object {rootLesslistKey}</div>
-                      <div key="2">attribute {attributeRootLessListKeyArray.join(".")}</div>
-                      <div>
-                        calc attribute value{" "}
-                        {JSON.stringify(
-                          resolvePathOnObject(formik.values, attributeRootLessListKeyArray),
-                          null,
-                          2
-                        )}
-                      </div>
-                      <div key="3">attribute name {attribute[0]}</div>
-                      <div>
-                        object value <pre>{JSON.stringify(currentValue, null, 2)}</pre>
-                      </div>
-                      <div>
-                        attribute value{" "}
-                        <pre>{JSON.stringify(currentValue[attribute[0]], null, 2)}</pre>
-                      </div>
-                      <div key="5">
-                        rawJzodSchema: <pre>{JSON.stringify(rawJzodSchema, null, 2)}</pre>
-                      </div>
-                      <div key="6"></div>
-                      resolved type:{" "}
-                      <pre>
-                        {JSON.stringify(localResolvedElementJzodSchemaBasedOnValue, null, 2)}
-                      </pre>
-                      <div>error {error.message}</div>
-                    </div>
-                  </div>
-                );
-              }}
+              FallbackComponent={({ error, resetErrorBoundary }) => (
+                <ErrorFallbackComponent
+                error={error}
+                resetErrorBoundary={resetErrorBoundary}
+                context={{
+                    origin: "JzodObjectEditor",
+                    objectType: "object",
+                    rootLesslistKey,
+                    attributeRootLessListKeyArray,
+                    attributeName: attribute[0],
+                    attributeListKey,
+                    currentValue,
+                    formikValues: formik.values,
+                    rawJzodSchema,
+                    localResolvedElementJzodSchemaBasedOnValue
+                  }}
+                />
+              )}
             >
               {/* <pre>
                 {attributeRootLessListKey}: {JSON.stringify(unfoldedAttributeRawSchema, null, 2)}
@@ -724,17 +705,17 @@ export const JzodObjectEditor = React.memo(function JzodObjectEditorComponent(pr
           </span> */}
           <span>
             {/* {parentType == "record" || (parentType == "object" && rawJzodSchema?.optional) ? ( */}
-              <span
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  alignContent: "start",
-                  alignItems: "center",
-                }}
-              >
-                {deleteButton ?? <></>}
-                {label}
-              </span>
+            <span
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignContent: "start",
+                alignItems: "center",
+              }}
+            >
+              {deleteButton ?? <></>}
+              {label}
+            </span>
             {/* ) : (
               <span>{label ?? ""}</span>
             )} */}
@@ -772,18 +753,44 @@ export const JzodObjectEditor = React.memo(function JzodObjectEditorComponent(pr
             )}
             <span>
               {unfoldedRawSchema.type != "record" && undefinedOptionalAttributes.length > 0 ? (
-                <span>
-                  <SizedButton
-                    variant="text"
-                    aria-label={rootLesslistKey + ".addObjectOptionalAttribute"}
-                    onClick={addObjectOptionalAttribute}
-                  >
-                    <SizedAddBox />
-                  </SizedButton>{" "}
-                  <pre>
-                    {JSON.stringify(undefinedOptionalAttributes, null, 2)}
-                    {/* {undefinedOptionalAttributes.join(", ")} */}
-                  </pre>
+                <span
+                  style={{
+                    display: "flex",
+                    flexFlow: "row wrap",
+                    alignItems: "center",
+                    gap: "1em",
+                  }}
+                >
+                  {undefinedOptionalAttributes.map((attributeName) => (
+                    <span
+                      key={attributeName}
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: "8px",
+                      }}
+                    >
+                      <SizedButton
+                        variant="text"
+                        aria-label={
+                          rootLesslistKey + ".addObjectOptionalAttribute." + attributeName
+                        }
+                        onClick={() => addObjectOptionalAttribute(attributeName)}
+                        title={`Add optional attribute: ${attributeName}`}
+                        style={{ flexShrink: 0 }}
+                      >
+                        <SizedAddBox />
+                      </SizedButton>
+                      <span
+                        style={{
+                          fontSize: "0.8em",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {attributeName}
+                      </span>
+                    </span>
+                  ))}
                 </span>
               ) : (
                 <></>

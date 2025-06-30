@@ -224,7 +224,7 @@ export function selectUnionBranchFromDiscriminator(
           }
         } else {
           throw new Error(
-            "jzodTypeCheck object extend clause schema " +
+            "selectUnionBranchFromDiscriminator object extend clause schema " +
               JSON.stringify(jzodObjectSchema) +
               " is not an object " +
               JSON.stringify(extension)
@@ -318,12 +318,12 @@ export function selectUnionBranchFromDiscriminator(
 
   if (filteredFlattenedUnionChoices.length == 0) {
     throw new Error(
-      "jzodTypeCheck called for union-type value object found no match with discriminator(s)=" +
+      "selectUnionBranchFromDiscriminator called for union-type value object found no match with discriminator(s)=" +
         JSON.stringify(discriminators) +
         " valueObject[discriminator]=" +
         JSON.stringify(discriminators??[].map(d => valueObject[d])) +
-        " valueObject=" + JSON.stringify(valueObject, null, 2) +
-        " schema=" + JSON.stringify(objectUnionChoices)
+        " #################### valueObject=" + JSON.stringify(valueObject, null, 2) +
+        " #################### objectUnionChoices=" + JSON.stringify(objectUnionChoices)
     );
   }
   if (filteredFlattenedUnionChoices.length > 1) {
@@ -334,18 +334,33 @@ export function selectUnionBranchFromDiscriminator(
       filteredFlattenedUnionChoices
     )
     throw new Error(
-      "jzodTypeCheck called for union-type value object found many matches with discriminator(s)=" +
+      "selectUnionBranchFromDiscriminator called for union-type value object found many matches with discriminator(s)=" +
         JSON.stringify(discriminators) +
         " valueObject[discriminator]=" +
         JSON.stringify(discriminators??[].map(d => valueObject[d])) +
+        " ############# objectUnionChoices=" +
+        JSON.stringify(
+          objectUnionChoices,
+          // null,
+          // 2
+        ) +
         " found: " +
         filteredFlattenedUnionChoices.length +
-        "matches, objectUnionChoices=" +
+        " matches, ############### valueObject=" +
+        JSON.stringify(valueObject) +
+        " ################## filteredFlattenedUnionChoices=" +
         JSON.stringify(
-          objectUnionChoices.map((e) => discriminators??[].map(d => (e.definition[d] as any)?.definition)),
-          null,
-          2
+          // filteredFlattenedUnionChoices.map((e) => discriminators??[].map(d => (e.definition[d] as any)?.definition)),
+          filteredFlattenedUnionChoices,
+          // null,
+          // 2
         )
+        // " matches, objectUnionChoices=" +
+        // JSON.stringify(
+        //   objectUnionChoices.map((e) => discriminators??[].map(d => (e.definition[d] as any)?.definition)),
+        //   null,
+        //   2
+        // )
     );
   }
   log.info("selectUnionBranchFromDiscriminator found exactly 1 match for union-type at valuepath=valueObject." +

@@ -607,7 +607,7 @@ export function getJzodObjectEditorTests(
             expect(inputB).toHaveValue(100);
           },
         },
-        "object with optional attributes can receive a value for the first optional attribute (alphabetical order) by clicking on the add button":
+        "object with optional attributes can receive a value for an optional attribute by clicking on the add button for the attribute":
           {
             props: {
               label: "Test Label",
@@ -629,7 +629,7 @@ export function getJzodObjectEditorTests(
             },
             tests: async (expect: ExpectStatic) => {
               const addButton = screen.getByRole("button", {
-                name: "testField.addObjectOptionalAttribute",
+                name: "testField.addObjectOptionalAttribute.a",
               });
               await act(() => {
                 fireEvent.click(addButton);

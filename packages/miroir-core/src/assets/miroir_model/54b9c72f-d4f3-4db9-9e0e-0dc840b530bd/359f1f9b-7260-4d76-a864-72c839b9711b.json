@@ -601,18 +601,6 @@
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "extractorTemplateByRelationReturningObjectList"
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "extractorTemplateByManyToManyRelationReturningObjectList"
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
                   "relativePath": "extractorTemplateByExtractorCombiner"
                 }
               },

@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from "react";
-import { withErrorBoundary } from "react-error-boundary";
+import { ErrorBoundary, withErrorBoundary } from "react-error-boundary";
 
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
@@ -32,6 +32,7 @@ import {
   LineIconButton,
   StyledSelect
 } from "./Style.js";
+import { ErrorFallbackComponent } from "./ErrorFallbackComponent.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -381,7 +382,16 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
         />
       );
     }
-
+    log.info(
+      "JzodElementEditorComponent",
+      count,
+      "Rendering main element for listKey",
+      props.listKey,
+      "with value",
+      currentValue,
+      "and schema",
+      localResolvedElementJzodSchemaBasedOnValue
+    );
     // Generate element based on schema type
     switch (localResolvedElementJzodSchemaBasedOnValue.type) {
       case "object": {
@@ -604,6 +614,23 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
         );
       }
       case "date": {
+        log.info(
+          "JzodElementEditorComponent: Rendering date input for listKey",
+          props.listKey,
+          "with value",
+          currentValue
+        );
+        
+        // Convert string to Date if needed or use existing Date
+        const dateValue = typeof currentValue === 'string' 
+          ? new Date(currentValue) 
+          : (currentValue instanceof Date ? currentValue : null);
+        
+        // Format the date as YYYY-MM-DD for the input
+        const formattedDate = dateValue && !isNaN(dateValue.getTime())
+          ? dateValue.toISOString().split("T")[0]
+          : "";
+        
         return (
           <input
             type="date"
@@ -612,17 +639,10 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
             role="textbox"
             style={{ width: "100%" }}
             {...formik.getFieldProps(props.rootLesslistKey)}
-            value={
-              currentValue instanceof Date
-                ? currentValue.toISOString().split("T")[0]
-                : ""
-            }
+            value={formattedDate}
             onChange={(e) => {
               const value = e.target.value;
-              formik.setFieldValue(
-                props.rootLesslistKey,
-                value ? new Date(value) : null
-              );
+              formik.setFieldValue(props.rootLesslistKey, value ? new Date(value) : null);
             }}
           />
         );
@@ -687,98 +707,118 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
 
   return (
     <span>
-      {/* <div>{count}</div> */}
-      {objectOrArrayOrAny ? (
-        <Card
-          id={props.rootLesslistKey}
-          key={props.rootLesslistKey}
-          style={{
-            padding: "1px",
-            width: "calc(100% - 10px)",
-            margin: "5px 10px 5px 0",
-            position: "relative",
-            backgroundColor: bgColor,
-            border: "1px solid #ddd",
-            justifyContent: "space-between",
-            boxShadow: "none",
-          }}
-        >
-          <CardContent>
-            <div>
-              <span
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <span>
-                  {props.submitButton}
-                  {/* {clearSimpleElementButton} */}
-                </span>
-              </span>
-              <span>
-                <span style={{ display: "flex" }}>
-                  <span
-                    style={{
-                      display:
-                        !hideSubJzodEditor ||
-                        (props.rawJzodSchema?.type == "any" &&
-                          ["undefined", "any"].includes(
-                            localResolvedElementJzodSchemaBasedOnValue.type
-                          ))
-                          ? "none"
-                          : "inline-block",
-                    }}
-                  >
-                    {codeEditor}
-                  </span>
-                </span>
+      <ErrorBoundary
+        FallbackComponent={({ error, resetErrorBoundary }) => (
+          <ErrorFallbackComponent
+          error={error}
+          resetErrorBoundary={resetErrorBoundary}
+          context={{
+              origin: "JzodElementEditor",
+              objectType: "object",
+              rootLesslistKey: props.rootLesslistKey,
+              // attributeRootLessListKeyArray: p,
+              // attributeName: attribute[0],
+              // attributeListKey,
+              currentValue,
+              formikValues: formik.values,
+              rawJzodSchema: props.rawJzodSchema,
+              localResolvedElementJzodSchemaBasedOnValue,
+            }}
+          />
+        )}
+      >
+        {objectOrArrayOrAny ? (
+          <Card
+            id={props.rootLesslistKey}
+            key={props.rootLesslistKey}
+            style={{
+              padding: "1px",
+              width: "calc(100% - 10px)",
+              margin: "5px 10px 5px 0",
+              position: "relative",
+              backgroundColor: bgColor,
+              border: "1px solid #ddd",
+              justifyContent: "space-between",
+              boxShadow: "none",
+            }}
+          >
+            <CardContent>
+              <div>
                 <span
                   style={{
-                    display: hideSubJzodEditor ? "none" : "block",
-                    margin: "2px 5px 5px 5px",
-                    width: "calc(100% - 15px)",
-                    flexGrow: 1,
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
                   }}
                 >
-                  {mainElement}
+                  <span>
+                    {props.submitButton}
+                    {/* {clearSimpleElementButton} */}
+                  </span>
                 </span>
-              </span>
-            </div>
-          </CardContent>
-        </Card>
-      ) : ( // simple type value / attribute
-        <span
-          style={{
-            display: "flex",
-            alignItems: "center",
-            width: "100%",
-          }}
-        >
-          <span>
-            {props.deleteButton??<></>}
-          </span>
-          {props.label}
+                <span>
+                  <span style={{ display: "flex" }}>
+                    <span
+                      style={{
+                        display:
+                          !hideSubJzodEditor ||
+                          (props.rawJzodSchema?.type == "any" &&
+                            ["undefined", "any"].includes(
+                              localResolvedElementJzodSchemaBasedOnValue.type
+                            ))
+                            ? "none"
+                            : "inline-block",
+                      }}
+                    >
+                      {codeEditor}
+                    </span>
+                  </span>
+                  <span
+                    style={{
+                      display: hideSubJzodEditor ? "none" : "block",
+                      margin: "2px 5px 5px 5px",
+                      width: "calc(100% - 15px)",
+                      flexGrow: 1,
+                    }}
+                  >
+                    {mainElement}
+                  </span>
+                </span>
+              </div>
+            </CardContent>
+          </Card>
+        ) : (
+          // simple type value / attribute
           <span
             style={{
-              display: !hideSubJzodEditor ? "none" : "inline-block",
-              flexGrow: 1,
+              display: "flex",
+              alignItems: "center",
+              width: "100%",
             }}
           >
-            {codeEditor}
+            <span>{props.deleteButton ?? <></>}</span>
+            {props.label}
+            <span
+              style={{
+                display: !hideSubJzodEditor ? "none" : "inline-block",
+                flexGrow: 1,
+              }}
+            >
+              {codeEditor}
+            </span>
+            <span
+              style={{
+                display: hideSubJzodEditor ? "none" : "inline-block",
+                margin: "2px 0 2px 0",
+                flexGrow: 1,
+              }}
+            >
+              {mainElement}
+            </span>
           </span>
-          <span
-            style={{
-              display: hideSubJzodEditor ? "none" : "inline-block",
-              margin: "2px 0 2px 0",
-              flexGrow: 1,
-            }}
-          >
-            {mainElement}
-          </span>
-        </span>
-      )}
+        )}
+      </ErrorBoundary>
+      {/* <div>{count}</div> */}
     </span>
   );
 }
