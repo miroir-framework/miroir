@@ -1,6 +1,6 @@
 import { describe, it } from "vitest";
 
-import { act, fireEvent, screen } from "@testing-library/react";
+import { act, fireEvent, RenderResult, screen } from "@testing-library/react";
 import { ExpectStatic } from "vitest";
 
 import '@testing-library/jest-dom';
@@ -42,6 +42,7 @@ import {
   JzodTuple,
   JzodUnion
 } from "miroir-core";
+import { Container } from "react-dom";
 
 // ################################################################################################
 const pageLabel = "JzodElementEditor.test";
@@ -95,12 +96,12 @@ export function getJzodArrayEditorTests(
       },
       tests: {
         "renders input with label when label prop is provided": {
-          tests: async (expect: ExpectStatic) => {
+          tests: async (expect: ExpectStatic, container: Container) => {
             expect(screen.getByText(/Test Label/)).toBeInTheDocument();
           },
         },
         "renders all array values, in the right order": {
-          tests: async (expect: ExpectStatic) => {
+          tests: async (expect: ExpectStatic, container: Container) => {
             const cells = screen
               .getAllByRole("textbox")
               .filter((input: HTMLElement) =>
@@ -111,7 +112,7 @@ export function getJzodArrayEditorTests(
           },
         },
         "form state is changed when selection changes": {
-          tests: async (expect: ExpectStatic) => {
+          tests: async (expect: ExpectStatic, container: Container) => {
             const cell = screen.getAllByRole("textbox").filter((input: HTMLElement) =>
               (input as HTMLInputElement).name.startsWith("testField.")
             )[1] as HTMLInputElement;
@@ -122,7 +123,7 @@ export function getJzodArrayEditorTests(
           },
         },
         "changing order of array items when button ROOT.testField.2.up is clicked": {
-          tests: async (expect) => {
+          tests: async (expect, container) => {
             const upButtons = screen.getAllByRole("ROOT.testField.button.up");
             await act(() => {
               fireEvent.click(upButtons[2]); // Click the up button for the third item
@@ -146,20 +147,17 @@ export function getJzodArrayEditorTests(
             rawJzodSchema: {
               type: "tuple", definition: [{ type: "string" }, { type: "number" }],
             },
-            // initialFormState: [["value1", 1], ["value2", 2], ["value3", 3]],
             initialFormState: ["value1", 2],
           },
-          tests: async (expect) => {
-            const cells = screen
-              .getAllByRole("textbox")
-              .filter((input: HTMLElement) =>
-                (input as HTMLInputElement).name.startsWith("testField.")
-              );
-
-            const values = cells.map((cell) => (cell as HTMLInputElement).value);
-            expect(cells.length).toBe(2);
-            expect(values.length).toBe(2);
-            expect(values).toEqual(["value1", "2"]);
+          tests: async (expect, container) => {
+            const formValues: Record<string, any> = extractValuesFromRenderedElements(
+              expect,
+              container,
+              "testField",
+              "initial"
+            );
+            const testResult = formValuesToJSON(formValues);
+            expect(testResult).toEqual(["value1", 2]);
           },
         },
         "renders all array values of a tuple inside an array, in the right order": {
@@ -175,31 +173,31 @@ export function getJzodArrayEditorTests(
             },
             initialFormState: [["value1", 1], ["value2", 2], ["value3", 3]],
           },
-          tests: async (expect) => {
-            const cells = screen
-              .getAllByRole("textbox")
-              .filter((input: HTMLElement) =>
-                (input as HTMLInputElement).name.startsWith("testField.")
-              );
-            const values = cells.map((cell) => (cell as HTMLInputElement).value);
-            const expectedValues = [["value1", "1"], ["value2", "2"], ["value3", "3"]]; // value of textbox is a string, even when type=number
-            expect(values).toEqual(expectedValues.flat()); // Flatten the expected values for comparison
+          tests: async (expect, container) => {
+            const formValues: Record<string, any> = extractValuesFromRenderedElements(
+              expect,
+              container,
+              "testField",
+              "initial"
+            );
+            const testResult = formValuesToJSON(formValues);
+            expect(testResult).toEqual([["value1", 1], ["value2", 2], ["value3", 3]]);
           },
         },
         "add an element to a string array when button ROOT.testField.add is clicked": {
-          tests: async (expect: ExpectStatic) => {
+          tests: async (expect: ExpectStatic, container: Container) => {
             const addButton = screen.getByRole("button", { name: "testField.add" });
             await act(() => {
               fireEvent.click(addButton);
             });
-            const cells = screen
-              .getAllByRole("textbox")
-              .filter((input: HTMLElement) =>
-                (input as HTMLInputElement).name.startsWith("testField.")
-              );
-            const values = cells.map((cell) => (cell as HTMLInputElement).value);
-            // expect(screen.getByLabelText(/Test LabelAAAAAAAAAAAAAAAAAAAAA/)).toBeInTheDocument();
-            expect(values).toEqual([...arrayValues, ""]); // New empty string added
+            const formValues: Record<string, any> = extractValuesFromRenderedElements(
+              expect,
+              container,
+              "testField",
+              "after add button click"
+            );
+            const testResult = formValuesToJSON(formValues);
+            expect(testResult).toEqual([...arrayValues, ""]);
           },
         },
         "add an element to an object array when button ROOT.testField.add is clicked": {
@@ -236,13 +234,18 @@ export function getJzodArrayEditorTests(
               },
             ],
           },
-          tests: async (expect) => {
+          tests: async (expect, container) => {
             // screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
             const addButton = screen.getByRole("button", { name: "testField.add" });
             await act(() => {
               fireEvent.click(addButton);
             });
-            const formValues: Record<string, any> = extractValuesFromRenderedElements(expect, "testField", "after add button click");
+            const formValues: Record<string, any> = extractValuesFromRenderedElements(
+              expect,
+              container,
+              "testField",
+              "after add button click"
+            );
             // console.log("Extracted initial values:", values);
             const testResult = formValuesToJSON(formValues);
             expect(testResult).toEqual(
@@ -266,21 +269,6 @@ export function getJzodArrayEditorTests(
                 }
               ]
             );
-            expect(formValues).toEqual({
-              "0.a": "value1",
-              "0.b.c": 1,
-              "0.d": true,
-              "0.e": "123",
-              // 
-              "1.a": "value2",
-              "1.b.c": 2,
-              "1.d": false,
-              "1.e": "456",
-              // 
-              "2.b.c": 0,
-              "2.d": false,
-              "2.e": "0",
-            });
           },
         },
       },
@@ -324,7 +312,7 @@ export function getJzodEnumEditorTests(
       },
       tests: {
         "renders input with label when label prop is provided": {
-          tests: async (expect: ExpectStatic) => {
+          tests: async (expect: ExpectStatic, container: Container) => {
             expect(screen.getByLabelText(/Test Label/)).toBeInTheDocument();
           },
         },
@@ -341,14 +329,14 @@ export function getJzodEnumEditorTests(
             },
             initialFormState: "value2",
           },
-          tests: async (expect) => {
+          tests: async (expect, container) => {
             expect(screen.queryByLabelText(/Test Label/)).not.toBeInTheDocument();
             // expect(screen.getByRole("textbox")).toBeInTheDocument();
           },
         },
         "renders select with correct value": {
-          tests: async (expect: ExpectStatic) => {
-            const values: Record<string, any> = extractValuesFromRenderedElements(expect, "testField", "initial");
+          tests: async (expect: ExpectStatic, container: Container) => {
+            const values: Record<string, any> = extractValuesFromRenderedElements(expect, container, "testField", "initial");
             console.log("########### ENUM VALUES", values);
             // console.log("=== FULL RENDERED DOM ===");
             // screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
@@ -359,23 +347,23 @@ export function getJzodEnumEditorTests(
           },
         },
         "renders all enum options": {
-          tests: async (expect: ExpectStatic) => {
+          tests: async (expect: ExpectStatic, container: Container) => {
             const combobox = screen.getByRole("combobox");
-            const valuesInitial: Record<string, any> = extractValuesFromRenderedElements(expect, "testField", "initial");
+            const valuesInitial: Record<string, any> = extractValuesFromRenderedElements(expect, container, "testField", "initial");
             expect(valuesInitial).toEqual({
               "testField": "value2",
             });
             await act(() => {
               fireEvent.mouseDown(combobox);
             });
-            const valuesListDisplayed: Record<string, any> = extractValuesFromRenderedElements(expect, "testField", "after mouseDown");
+            const valuesListDisplayed: Record<string, any> = extractValuesFromRenderedElements(expect, container, "testField", "after mouseDown");
             expect(valuesListDisplayed).toEqual({
               "testField": ["value1", "value2", "value3"],
             });
           },
         },
         "form state is changed when selection changes": {
-          tests: async (expect: ExpectStatic) => {
+          tests: async (expect: ExpectStatic, container: Container) => {
             const combobox = screen.getByRole("combobox");
             await act(() => {
               fireEvent.mouseDown(combobox);
@@ -385,6 +373,7 @@ export function getJzodEnumEditorTests(
             });
             const valuesInitial: Record<string, any> = extractValuesFromRenderedElements(
               expect,
+              container,
               "testField",
               "after selection change"
             );
@@ -461,7 +450,7 @@ export function getJzodLiteralEditorTests(
                 definition: "test-value",
               },
             } as JzodElementEditorProps_Test),
-          tests: async (expect) => {
+          tests: async (expect, container) => {
             expect(screen.queryByLabelText(/Test Label/)).not.toBeInTheDocument();
             expect(screen.getByRole("textbox")).toBeInTheDocument();
           },
@@ -475,7 +464,7 @@ export function getJzodLiteralEditorTests(
                 definition: "test-value",
               },
             } as JzodElementEditorProps_Test),
-            tests: async (expect) => {
+            tests: async (expect, container) => {
               expect(screen.getByDisplayValue("test-value")).toBeInTheDocument();
               const input = screen.getByDisplayValue("test-value");
               await act(() => {
@@ -527,15 +516,27 @@ export function getJzodObjectEditorTests(
               b: 42,
             },
           },
-          tests: async (expect: ExpectStatic) => {
-            const inputs = screen.getAllByRole("textbox");
-            const values: Record<string, any> = {};
-            inputs.forEach((input: HTMLElement) => {
-              const name = (input as HTMLInputElement).name.replace(/^testField\./, "");
-              values[name] =
-                (input as HTMLInputElement).value || Number((input as HTMLInputElement).value);
-            });
-            expect(values).toEqual({ a: "test string", b: "42" });
+          tests: async (expect: ExpectStatic, container: Container) => {
+            screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
+            // screen.logTestingPlaygroundURL();
+            // const inputs = Array.from(container.querySelector("input")).filter((input: HTMLElement) =>
+            //   (input as HTMLInputElement).name.startsWith("testField.")
+            // );
+            // const inputs = container.querySelectorAll("input[name^='testField.']") as NodeListOf<HTMLInputElement>;
+            // const values: Record<string, any> = {};
+            // inputs.forEach((input: HTMLElement) => {
+            //   const name = (input as HTMLInputElement).name.replace(/^testField\./, "");
+            //   values[name] =
+            //     (input as HTMLInputElement).value || Number((input as HTMLInputElement).value);
+            // });
+            const values = extractValuesFromRenderedElements(
+              expect,
+              container,
+              "testField",
+              "after delete button click"
+            );
+            const testResult = formValuesToJSON(values);
+            expect(testResult).toEqual({ a: "test string", b: 42 });
           },
         },
         "object with bigint attribute renders as json-like input fields with proper value": {
@@ -555,20 +556,15 @@ export function getJzodObjectEditorTests(
               // e: "123",
             },
           },
-          tests: async (expect: ExpectStatic) => {
-            let inputs: HTMLElement[] = [];
-            try {
-              inputs = screen.getAllByRole("textbox");
-            } catch (e) {
-              // No textbox found, leave inputs as empty array
-            }
-            const values: Record<string, any> = {};
-            inputs.forEach((input: HTMLElement) => {
-              const name = (input as HTMLInputElement).name.replace(/^testField\./, "");
-              values[name] =
-                (input as HTMLInputElement).value || BigInt((input as HTMLInputElement).value);
-            });
-            expect(values).toEqual({ e: "123" });
+          tests: async (expect: ExpectStatic, container: Container) => {
+            const values = extractValuesFromRenderedElements(
+              expect,
+              container,
+              "testField",
+              "initial"
+            );
+            const testResult = formValuesToJSON(values);
+            expect(testResult).toEqual({ e: "123" });
           },
         },
         "object can be updated through displayed input fields": {
@@ -587,8 +583,8 @@ export function getJzodObjectEditorTests(
               b: 42,
             },
           },
-          tests: async (expect: ExpectStatic) => {
-            const inputs = screen.getAllByRole("textbox");
+          tests: async (expect: ExpectStatic, container: Container) => {
+            const inputs = screen.getAllByLabelText("miroirInput");
             const inputA = inputs.find(
               (input: HTMLElement) => (input as HTMLInputElement).name === "testField.a"
             ) as HTMLInputElement;
@@ -627,7 +623,7 @@ export function getJzodObjectEditorTests(
                 b: 42,
               },
             },
-            tests: async (expect: ExpectStatic) => {
+            tests: async (expect: ExpectStatic, container: Container) => {
               const addButton = screen.getByRole("button", {
                 name: "testField.addObjectOptionalAttribute.a",
               });
@@ -637,6 +633,7 @@ export function getJzodObjectEditorTests(
               // expect(screen.getByLabelText("AAAAAAAAAAAAAAAAAAAA")).toBeInTheDocument();
               const screenValues: Record<string, any> = extractValuesFromRenderedElements(
                 expect,
+                container,
                 "testField",
                 "after add button click"
               );
@@ -666,7 +663,7 @@ export function getJzodObjectEditorTests(
                 a: "test string",
               },
             },
-            tests: async (expect) => {
+            tests: async (expect, container) => {
               const deleteButton = screen.getByRole("button", {
                 name: "testField.a-removeOptionalAttributeOrRecordEntry",
               });
@@ -675,6 +672,7 @@ export function getJzodObjectEditorTests(
               });
               const screenValues = extractValuesFromRenderedElements(
                 expect,
+                container,
                 "testField",
                 "after delete button click"
               );
@@ -704,7 +702,7 @@ export function getJzodObjectEditorTests(
                 c: true,
               },
             },
-            tests: async (expect) => {
+            tests: async (expect, container) => {
               const deleteButton = screen.getByRole("button", {
                 name: "testField.b-removeOptionalAttributeOrRecordEntry",
               });
@@ -713,6 +711,7 @@ export function getJzodObjectEditorTests(
               });
               const screenValues = extractValuesFromRenderedElements(
                 expect,
+                container,
                 "testField",
                 "after delete button click"
               );
@@ -744,10 +743,11 @@ export function getJzodObjectEditorTests(
               },
             },
           },
-          tests: async (expect: ExpectStatic) => {
+          tests: async (expect: ExpectStatic, container: Container) => {
             // expect(screen.getByText(/Test LabelAAAAAAAAAAAAAAAAAAAAAAAAAAAA/)).toBeInTheDocument();
             const values: Record<string, any> = extractValuesFromRenderedElements(
               expect,
+              container,
               "testField",
               "initial"
             );
@@ -780,7 +780,7 @@ export function getJzodObjectEditorTests(
                 },
               },
             },
-            tests: async (expect) => {
+            tests: async (expect, container) => {
               const addButton = screen.getByRole("button", {
                 name: "testField.addRecordAttribute",
               });
@@ -789,6 +789,7 @@ export function getJzodObjectEditorTests(
               });
               const values = extractValuesFromRenderedElements(
                 expect,
+                container,
                 "testField",
                 "after add button click"
               );
@@ -833,7 +834,7 @@ export function getJzodObjectEditorTests(
                 },
               },
             },
-            tests: async (expect) => {
+            tests: async (expect, container) => {
               // expect(screen.getByText(/Test LabelAAAAAAAAAAAAAAAAAAAAAAAAAAAA/)).toBeInTheDocument();
               // console.log("=== FULL RENDERED DOM ===");
               // screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
@@ -849,7 +850,7 @@ export function getJzodObjectEditorTests(
                 fireEvent.blur(input); // Simulate blur to trigger validation and state update
               });
               expect(input).toHaveValue("renamedRecord");
-              const values = extractValuesFromRenderedElements(expect, "testField", "after rename");
+              const values = extractValuesFromRenderedElements(expect, container, "testField", "after rename");
               const testResult = formValuesToJSON(values);
               expect(testResult).toEqual({
                 renamedRecord: {
@@ -880,7 +881,7 @@ export function getJzodObjectEditorTests(
               },
             },
           },
-          tests: async (expect) => {
+          tests: async (expect, container) => {
             const deleteButton = screen.getByRole("button", {
               name: "testField.firstRecord-removeOptionalAttributeOrRecordEntry",
             });
@@ -890,6 +891,7 @@ export function getJzodObjectEditorTests(
             });
             const values = extractValuesFromRenderedElements(
               expect,
+              container,
               "testField",
               "after delete button click"
             );
@@ -927,7 +929,7 @@ export function getJzodObjectEditorTests(
                 },
               },
             },
-            tests: async (expect) => {
+            tests: async (expect, container) => {
               // expect(screen.getByText(/Test LabelAAAAAAAAAAAAAAAAAAAAAAAAAAAA/)).toBeInTheDocument();
               // screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
               const deleteButton = screen.getByRole("button", {
@@ -939,6 +941,7 @@ export function getJzodObjectEditorTests(
               });
               const values = extractValuesFromRenderedElements(
                 expect,
+                container,
                 "testField",
                 "after delete button click"
               );
@@ -1002,10 +1005,12 @@ export function getJzodSimpleTypeEditorTests(
             initialFormState: "placeholder text",
           },
 
-          tests: async (expect: ExpectStatic) => {
-            // const input = screen.getByRole("textbox");
-            // expect(input).toBeInTheDocument();
-            // expect(input).toHaveValue("placeholder text");
+          tests: async (expect: ExpectStatic, container: Container) => {
+            const input = screen.getAllByRole("textbox").filter(
+              (el: HTMLElement) => (el as HTMLInputElement).name === "testField"
+            )[0] as HTMLInputElement;
+            expect(input).toBeInTheDocument();
+            expect(input).toHaveValue("placeholder text");
           },
         },
         "string allows to modify input value with consistent update": {
@@ -1020,8 +1025,10 @@ export function getJzodSimpleTypeEditorTests(
             },
             initialFormState: "placeholder text",
           },
-          tests: async (expect: ExpectStatic) => {
-            const input = screen.getByRole("textbox");
+          tests: async (expect: ExpectStatic, container: Container) => {
+            const input = screen.getAllByRole("textbox").filter(
+              (el: HTMLElement) => (el as HTMLInputElement).name === "testField"
+            )[0] as HTMLInputElement;
             expect(input).toBeInTheDocument();
             expect(input).toHaveValue("placeholder text");
             await act(() => {
@@ -1042,8 +1049,10 @@ export function getJzodSimpleTypeEditorTests(
             },
             initialFormState: "placeholder text",
           },
-          tests: async (expect: ExpectStatic) => {
-            const input = screen.getByRole("textbox");
+          tests: async (expect: ExpectStatic, container: Container) => {
+            const input = screen.getAllByRole("textbox").filter(
+              (el: HTMLElement) => (el as HTMLInputElement).name === "testField"
+            )[0] as HTMLInputElement;
             expect(input).toBeInTheDocument();
             expect(input).toHaveValue("placeholder text");
             await act(() => {
@@ -1069,9 +1078,12 @@ export function getJzodSimpleTypeEditorTests(
             },
             initialFormState: 42,
           },
-          tests: async (expect: ExpectStatic) => {
+          tests: async (expect: ExpectStatic, container: Container) => {
             // expect(screen.getByText(/Test LabelAAAAAAAAAAAA/)).toBeInTheDocument();
-            const input = screen.getByRole("textbox");
+            screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
+            const input = screen.getAllByDisplayValue(42).filter(
+              (el: HTMLElement) => (el as HTMLInputElement).id === "testField"
+            )[0] as HTMLInputElement;
             expect(input).toBeInTheDocument();
             expect(input).toHaveValue(42);
           },
@@ -1088,8 +1100,10 @@ export function getJzodSimpleTypeEditorTests(
             },
             initialFormState: 42,
           },
-          tests: async (expect: ExpectStatic) => {
-            const input = screen.getByRole("textbox");
+          tests: async (expect: ExpectStatic, container: Container) => {
+            const input = screen.getAllByDisplayValue(42).filter(
+              (el: HTMLElement) => (el as HTMLInputElement).id === "testField"
+            )[0] as HTMLInputElement;
             expect(input).toBeInTheDocument();
             expect(input).toHaveValue(42);
             await act(() => {
@@ -1110,8 +1124,10 @@ export function getJzodSimpleTypeEditorTests(
             },
             initialFormState: "123e4567-e89b-12d3-a456-426614174000",
           },
-          tests: async (expect: ExpectStatic) => {
-            const input = screen.getByRole("textbox");
+          tests: async (expect: ExpectStatic, container: Container) => {
+            const input = screen.getAllByRole("textbox").filter(
+              (el: HTMLElement) => (el as HTMLInputElement).name === "testField"
+            )[0] as HTMLInputElement;
             expect(input).toBeInTheDocument();
             expect(input).toHaveValue("123e4567-e89b-12d3-a456-426614174000");
           },
@@ -1128,8 +1144,10 @@ export function getJzodSimpleTypeEditorTests(
             },
             initialFormState: "123e4567-e89b-12d3-a456-426614174000",
           },
-          tests: async (expect: ExpectStatic) => {
-            const input = screen.getByRole("textbox");
+          tests: async (expect: ExpectStatic, container: Container) => {
+            const input = screen.getAllByRole("textbox").filter(
+              (el: HTMLElement) => (el as HTMLInputElement).name === "testField"
+            )[0] as HTMLInputElement;
             expect(input).toBeInTheDocument();
             expect(input).toHaveValue("123e4567-e89b-12d3-a456-426614174000");
             await act(() => {
@@ -1150,7 +1168,7 @@ export function getJzodSimpleTypeEditorTests(
             },
             initialFormState: true,
           },
-          tests: async (expect: ExpectStatic) => {
+          tests: async (expect: ExpectStatic, container: Container) => {
             const values: Record<string, any> = extractValuesFromRenderedElements(expect);
             expect(values).toEqual({
               "testField": true,
@@ -1169,7 +1187,7 @@ export function getJzodSimpleTypeEditorTests(
             },
             initialFormState: false,
           },
-          tests: async (expect: ExpectStatic) => {
+          tests: async (expect: ExpectStatic, container: Container) => {
             const values: Record<string, any> = extractValuesFromRenderedElements(expect);
             expect(values).toEqual({
               "testField": false,
@@ -1189,8 +1207,10 @@ export function getJzodSimpleTypeEditorTests(
             },
             initialFormState: true,
           },
-          tests: async (expect: ExpectStatic) => {
-            const checkbox = screen.getByRole("checkbox");
+          tests: async (expect: ExpectStatic, container: Container) => {
+            const checkbox = screen.getAllByRole("checkbox").filter(
+              (el: HTMLElement) => (el as HTMLInputElement).name === "testField"
+            )[0] as HTMLInputElement;
             expect(checkbox).toBeInTheDocument();
             expect(checkbox).toBeChecked();
             await act(() => {
@@ -1214,8 +1234,10 @@ export function getJzodSimpleTypeEditorTests(
             },
             initialFormState: BigInt("12345678901234567890"),
           },
-          tests: async (expect: ExpectStatic) => {
-            const input = screen.getByRole("textbox");
+          tests: async (expect: ExpectStatic, container: Container) => {
+            const input = screen.getAllByRole("textbox").filter(
+              (el: HTMLElement) => (el as HTMLInputElement).name === "testField"
+            )[0] as HTMLInputElement;
             expect(input).toBeInTheDocument();
             expect(input).toHaveValue("12345678901234567890");
           },
@@ -1232,8 +1254,10 @@ export function getJzodSimpleTypeEditorTests(
             },
             initialFormState: "12345678901234567890", // string representation of bigint
           },
-          tests: async (expect: ExpectStatic) => {
-            const input = screen.getByRole("textbox");
+          tests: async (expect: ExpectStatic, container: Container) => {
+            const input = screen.getAllByRole("textbox").filter(
+              (el: HTMLElement) => (el as HTMLInputElement).name === "testField"
+            )[0] as HTMLInputElement;
             expect(input).toBeInTheDocument();
             expect(input).toHaveValue("12345678901234567890");
           },
@@ -1250,8 +1274,10 @@ export function getJzodSimpleTypeEditorTests(
             },
             initialFormState: 1234, // string representation of bigint
           },
-          tests: async (expect: ExpectStatic) => {
-            const input = screen.getByRole("textbox");
+          tests: async (expect: ExpectStatic, container: Container) => {
+            const input = screen.getAllByRole("textbox").filter(
+              (el: HTMLElement) => (el as HTMLInputElement).name === "testField"
+            )[0] as HTMLInputElement;
             expect(input).toBeInTheDocument();
             expect(input).toHaveValue("1234");
           },
@@ -1268,8 +1294,10 @@ export function getJzodSimpleTypeEditorTests(
             },
             initialFormState: 12345678901234567890n,
           },
-          tests: async (expect: ExpectStatic) => {
-            const input = screen.getByRole("textbox");
+          tests: async (expect: ExpectStatic, container: Container) => {
+            const input = screen.getAllByRole("textbox").filter(
+              (el: HTMLElement) => (el as HTMLInputElement).name === "testField"
+            )[0] as HTMLInputElement;
             expect(input).toBeInTheDocument();
             expect(input).toHaveValue("12345678901234567890");
             await act(() => {
@@ -1319,10 +1347,17 @@ export function getJzodUnionEditorTests(
             initialFormState: 42,
           },
 
-          tests: async (expect: ExpectStatic) => {
-            const input = screen.getByRole("textbox");
-            expect(input).toBeInTheDocument();
-            expect(input).toHaveValue(42);
+          tests: async (expect: ExpectStatic, container: Container) => {
+            // const input = screen.getByRole("textbox");
+            // expect(input).toBeInTheDocument();
+            const values: Record<string, any> = extractValuesFromRenderedElements(
+              expect,
+              container,
+              "testField",
+              "initial form state"
+            );
+            const testResult = formValuesToJSON(values);
+            expect(testResult).toEqual({"testField": 42});
           },
         },
         "union between simple type and object for value of simple type renders input with proper value": {
@@ -1343,10 +1378,17 @@ export function getJzodUnionEditorTests(
             initialFormState: 42,
           },
 
-          tests: async (expect: ExpectStatic) => {
-            const input = screen.getByRole("textbox");
-            expect(input).toBeInTheDocument();
-            expect(input).toHaveValue(42);
+          tests: async (expect: ExpectStatic, container: Container) => {
+            // const input = screen.getByRole("textbox");
+            // expect(input).toBeInTheDocument();
+            const values: Record<string, any> = extractValuesFromRenderedElements(
+              expect,
+              container,
+              "testField",
+              "initial form state"
+            );
+            const testResult = formValuesToJSON(values);
+            expect(testResult).toEqual({testField: 42});
           },
         },
         "union between simple type and object for value object renders input with proper value": {
@@ -1370,14 +1412,21 @@ export function getJzodUnionEditorTests(
             },
           },
 
-          tests: async (expect: ExpectStatic) => {
-            const inputs = screen.getAllByRole("textbox");
-            const values: Record<string, any> = {};
-            inputs.forEach((input: HTMLElement) => {
-              const name = (input as HTMLInputElement).name.replace(/^testField\./, "");
-              values[name] = (input as HTMLInputElement).value || Number((input as HTMLInputElement).value);
-            });
-            expect(values).toEqual({ a: "test string", b: "42" });
+          tests: async (expect: ExpectStatic, container: Container) => {
+            // const inputs = screen.getAllByRole("textbox");
+            // const values: Record<string, any> = {};
+            // inputs.forEach((input: HTMLElement) => {
+            //   const name = (input as HTMLInputElement).name.replace(/^testField\./, "");
+            //   values[name] = (input as HTMLInputElement).value || Number((input as HTMLInputElement).value);
+            // });
+            const values: Record<string, any> = extractValuesFromRenderedElements(
+              expect,
+              container,
+              "testField",
+              "initial form state"
+            );
+            const testResult = formValuesToJSON(values);
+            expect(testResult).toEqual({ a: "test string", b: 42 });
           },
         },
         "union between 2 object types with a discriminator for value object renders input following the proper value type": {
@@ -1400,8 +1449,13 @@ export function getJzodUnionEditorTests(
               a: "test string",
             },
           },
-          tests: async (expect: ExpectStatic) => {
-            const values: Record<string, any> = extractValuesFromRenderedElements(expect, "testField", "initial form state");
+          tests: async (expect: ExpectStatic, container: Container) => {
+            const values: Record<string, any> = extractValuesFromRenderedElements(
+              expect,
+              container,
+              "testField",
+              "initial form state"
+            );
             console.log("Extracted initial values:", values);
             expect(values).toEqual({ a: "test string", "testObjectType": "type1" });
             const input = screen.getByDisplayValue("type1");
@@ -1410,7 +1464,17 @@ export function getJzodUnionEditorTests(
             await act(() => {
               fireEvent.change(input, { target: { value: "type2" } });
             });
-            // expect(screen.getByLabelText(/NOOOOOOOOOO/)).toBeInTheDocument();
+            const valuesAfterChange: Record<string, any> = extractValuesFromRenderedElements(
+              expect,
+              container,
+              "testField",
+              "after change to type2"
+            );
+            const testResultAfterChange = formValuesToJSON(valuesAfterChange);
+            expect(testResultAfterChange).toEqual({
+              "testObjectType": "type2",
+              "b": 0, // default value for number
+            });
           },
         },
       },
@@ -1464,13 +1528,13 @@ export function getJzodBookEditorTests(
             //   b: 42,
             // },
           },
-          tests: async (expect: ExpectStatic) => {
+          tests: async (expect: ExpectStatic, container: Container) => {
             // Pretty-print the entire rendered DOM
             // console.log("=== FULL RENDERED DOM ===");
             // screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
   
             // expect(screen.getByText(/Test LabelAAAAAAAAAAAAAAAAAAAAAAAAAA/)).toBeInTheDocument();
-            const values: Record<string, any> = extractValuesFromRenderedElements(expect, "testField", "initial form state");
+            const values: Record<string, any> = extractValuesFromRenderedElements(expect, container, "testField", "initial form state");
             console.log("Extracted initial values:", values);
 
             // const inputs = Array.from(document.querySelectorAll('input'));
@@ -1502,7 +1566,7 @@ export function getJzodBookEditorTests(
         //       b: 42,
         //     },
         //   },
-        //   tests: async (expect: ExpectStatic) => {
+        //   tests: async (expect: ExpectStatic, container: Container) => {
         //     const inputs = screen.getAllByRole("textbox");
         //     const inputA = inputs.find(
         //       (input: HTMLElement) => (input as HTMLInputElement).name === "testField.a"
@@ -1558,8 +1622,8 @@ export function getJzodEntityDefinitionEditorTests(
             rawJzodSchema: (entityDefinitionEntityDefinition as EntityDefinition).jzodSchema,
             initialFormState: entityDefinitionBook
           },
-          tests: async (expect: ExpectStatic) => {
-            const formValues: Record<string, any> = extractValuesFromRenderedElements(expect, "testField", "initial form state");
+          tests: async (expect: ExpectStatic, container: Container) => {
+            const formValues: Record<string, any> = extractValuesFromRenderedElements(expect, container, "testField", "initial form state");
             // console.log("Extracted initial values:", values);
             const testResult = formValuesToJSON(formValues);
             expect(testResult).toEqual(entityDefinitionBook);
@@ -1581,7 +1645,7 @@ export function getJzodEntityDefinitionEditorTests(
         //       b: 42,
         //     },
         //   },
-        //   tests: async (expect: ExpectStatic) => {
+        //   tests: async (expect: ExpectStatic, container: Container) => {
         //     const inputs = screen.getAllByRole("textbox");
         //     const inputA = inputs.find(
         //       (input: HTMLElement) => (input as HTMLInputElement).name === "testField.a"

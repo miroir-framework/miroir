@@ -117,7 +117,7 @@ export const JzodObjectEditor = React.memo(function JzodObjectEditorComponent(pr
   const {
     name,
     listKey,
-    labelElement: label,
+    labelElement,
     rootLesslistKey,
     rootLesslistKeyArray,
     rawJzodSchema,
@@ -746,7 +746,7 @@ ${JSON.stringify(props.rawJzodSchema, null, 2)}`}
                 alignItems: "center",
               }}
             >
-              {label}
+              {labelElement}
             </span>
           </span>
           <span id={rootLesslistKey + "head"} key={rootLesslistKey + "head"}>

@@ -39,7 +39,7 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
     foreignKeyObjects,
     unionInformation,
     resolvedElementJzodSchema, // handleSelectLiteralChange,
-    labelElement: label,
+    labelElement,
     insideAny,
     // indentLevel,
     // visible = true, // added visibility prop
@@ -71,7 +71,8 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
           }}
           // currentType={resolvedElementJzodSchema?.type || "undefined"}
         />
-        <label>{label || "Any Value"}</label>
+        {/* <label>{label || "Any Value"}</label> */}
+        {labelElement ?? <></>}
       </div>
       <div>
         <JzodElementEditor
@@ -84,7 +85,7 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
           currentApplicationSection={currentApplicationSection}
           unionInformation={unionInformation}
           resolvedElementJzodSchema={resolvedElementJzodSchema}
-          labelElement={label}
+          labelElement={<></>}
           foreignKeyObjects={foreignKeyObjects}
           insideAny={true}
           indentLevel={0}

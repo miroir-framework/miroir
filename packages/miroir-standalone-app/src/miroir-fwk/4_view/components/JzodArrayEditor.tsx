@@ -22,6 +22,7 @@ import { useCurrentModel } from "../ReduxHooks";
 import { ExpandOrFoldObjectAttributes, JzodElementEditor } from "./JzodElementEditor";
 import { JzodArrayEditorProps } from "./JzodElementEditorInterface";
 import { SizedAddBox, SizedButton } from "./Style";
+import { J } from "vitest/dist/chunks/environment.LoooBwUu";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -144,6 +145,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
   const usedIndentLevel: number = indentLevel ?? 0;
 
   const arrayValueObject = resolvePathOnObject(formik.values, rootLesslistKeyArray);
+  // ##############################################################################################
   const addNewArrayItem = useCallback(
     async () => {
       if (!rawJzodSchema || rawJzodSchema.type !== "array") {
@@ -210,150 +212,143 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
       resolvedElementJzodSchema,
     ]
   );
-  return (
-    <div id={rootLesslistKey} key={rootLesslistKey}>
-      <span>
-        {label}
-        {/* {rawJzodSchema?.type == "array" ? ( */}
-          <span>
-            {/* add new item: */}
-            {" ["}
-            <ExpandOrFoldObjectAttributes
-              hiddenFormItems={hiddenFormItems}
-              setHiddenFormItems={setHiddenFormItems}
-              listKey={listKey}
-            ></ExpandOrFoldObjectAttributes>
-            {displayAsStructuredElementSwitch}
-            <SizedButton
-              variant="text"
-              aria-label={rootLesslistKey + ".add"}
-              onClick={addNewArrayItem}
-            >
-              <SizedAddBox />
-            </SizedButton>
-          </span>
-        {/* ) : (
-          <div>JzodArrayEditor not an array! {JSON.stringify(rawJzodSchema)}</div>
-        )} */}
-      </span>
-      <span>
-        <div
-          id={listKey + ".inner"}
-          key={listKey + ".inner"}
-          style={{ display: hiddenFormItems[listKey] ? "none" : "block" }}
-        >
-          {(itemsOrder as number[])
-            .map((i: number): [number, JzodElement] => [i, arrayValueObject[i]])
-            .map((attributeParam: [number, JzodElement]) => {
-              const index: number = attributeParam[0];
-              // HACK HACK HACK
-              // TODO: allow individualized schmema resolution for items of an array, in case the definition of the array schema is a union type
-              // resulting type of an array type would be a tuple type.
+  // ##############################################################################################
+  const arrayItems: JSX.Element = (
+    <div
+      id={listKey + ".inner"}
+      key={listKey + ".inner"}
+      style={{ display: hiddenFormItems[listKey] ? "none" : "block" }}
+    >
+      {(itemsOrder as number[])
+        .map((i: number): [number, JzodElement] => [i, arrayValueObject[i]])
+        .map((attributeParam: [number, JzodElement]) => {
+          const index: number = attributeParam[0];
+          // HACK HACK HACK
+          // TODO: allow individualized schmema resolution for items of an array, in case the definition of the array schema is a union type
+          // resulting type of an array type would be a tuple type.
 
-              // log.info(
-              //   "JzodArrayEditor array attribute",
-              //   index,
-              //   "attribute",
-              //   attribute,
-              // );
-              const currentArrayElementRawDefinition: UnfoldJzodSchemaOnceReturnType | undefined =
-                context.miroirFundamentalJzodSchema
-                  ? // const currentArrayElementRawDefinition= context.miroirFundamentalJzodSchema
-                    rawJzodSchema?.type == "array"
-                    ? unfoldJzodSchemaOnce(
-                        context.miroirFundamentalJzodSchema,
-                        rawJzodSchema.definition,
-                        currentModel,
-                        miroirMetaModel
-                      )
-                    : rawJzodSchema?.type == "tuple"
-                    ? unfoldJzodSchemaOnce(
-                        context.miroirFundamentalJzodSchema as any, // OK: dereferencing prevents correct type-checking.
-                        rawJzodSchema.definition[index],
-                        currentModel,
-                        miroirMetaModel
-                      )
-                    : undefined
-                  : undefined;
-              const resolutionError =
-                currentArrayElementRawDefinition && currentArrayElementRawDefinition.status != "ok";
-              if (!currentArrayElementRawDefinition || resolutionError) {
-                throw new Error(
-                  "JzodArrayEditor could not unfold jzod schema: " +
-                    JSON.stringify(currentArrayElementRawDefinition, null, 2) +
-                    " at " +
-                    JSON.stringify(resolutionError, null, 2)
-                );
-              }
+          // log.info(
+          //   "JzodArrayEditor array attribute",
+          //   index,
+          //   "attribute",
+          //   attribute,
+          // );
+          const currentArrayElementRawDefinition: UnfoldJzodSchemaOnceReturnType | undefined =
+            context.miroirFundamentalJzodSchema
+              ? // const currentArrayElementRawDefinition= context.miroirFundamentalJzodSchema
+                rawJzodSchema?.type == "array"
+                ? unfoldJzodSchemaOnce(
+                    context.miroirFundamentalJzodSchema,
+                    rawJzodSchema.definition,
+                    currentModel,
+                    miroirMetaModel
+                  )
+                : rawJzodSchema?.type == "tuple"
+                ? unfoldJzodSchemaOnce(
+                    context.miroirFundamentalJzodSchema as any, // OK: dereferencing prevents correct type-checking.
+                    rawJzodSchema.definition[index],
+                    currentModel,
+                    miroirMetaModel
+                  )
+                : undefined
+              : undefined;
+          const resolutionError =
+            currentArrayElementRawDefinition && currentArrayElementRawDefinition.status != "ok";
+          if (!currentArrayElementRawDefinition || resolutionError) {
+            throw new Error(
+              "JzodArrayEditor could not unfold jzod schema: " +
+                JSON.stringify(currentArrayElementRawDefinition, null, 2) +
+                " at " +
+                JSON.stringify(resolutionError, null, 2)
+            );
+          }
 
-              // log.info(
-              //   "array [",
-              //   index,
-              //   "]",
-              //   "found schema",
-              //   JSON.stringify(currentArrayElementRawDefinition, null, 2),
-              //   "for value",
-              //   JSON.stringify(attributeParam[1], null, 2)
-              // );
-              return (
-                <div key={rootLesslistKey + "." + index}>
-                  {/* <div>
+          // log.info(
+          //   "array [",
+          //   index,
+          //   "]",
+          //   "found schema",
+          //   JSON.stringify(currentArrayElementRawDefinition, null, 2),
+          //   "for value",
+          //   JSON.stringify(attributeParam[1], null, 2)
+          // );
+          return (
+            <div key={rootLesslistKey + "." + index}>
+              {/* <div>
                     <pre>
                       JzodArray: {JSON.stringify(resolvedElementJzodSchema, null, 2)}
                     </pre>
                   </div> */}
-                  <div
-                    key={listKey + "." + index}
-                    style={{ marginLeft: `calc(${indentShift})` }}
-                  >
-                    <JzodArrayEditorMoveButton
-                      direction="down"
-                      index={index}
-                      itemsOrder={itemsOrder as number[]}
-                      listKey={listKey}
-                      rootLessListKey={rootLesslistKey}
-                      formik={formik}
-                      currentValue={currentValue}
-                    />
-                    <JzodArrayEditorMoveButton
-                      direction="up"
-                      index={index}
-                      itemsOrder={itemsOrder as number[]}
-                      listKey={listKey}
-                      rootLessListKey={rootLesslistKey}
-                      formik={formik}
-                      currentValue={currentValue}
-                    />
-                    <JzodElementEditor
-                      name={"" + index}
-                      listKey={listKey + "." + index}
-                      indentLevel={usedIndentLevel + 1}
-                      labelElement={<span>{resolvedElementJzodSchema?.tag?.value?.defaultLabel}</span>}
-                      // paramMiroirFundamentalJzodSchema={paramMiroirFundamentalJzodSchema}
-                      currentDeploymentUuid={currentDeploymentUuid}
-                      currentApplicationSection={currentApplicationSection}
-                      rootLesslistKey={
-                        rootLesslistKey.length > 0 ? rootLesslistKey + "." + index : "" + index
-                      }
-                      rootLesslistKeyArray={[...rootLesslistKeyArray, "" + index]}
-                      rawJzodSchema={currentArrayElementRawDefinition.element}
-                      resolvedElementJzodSchema={
-                        resolvedElementJzodSchema?.type == "array"
-                          ? ((resolvedElementJzodSchema as JzodArray)?.definition as any)
-                          : ((resolvedElementJzodSchema as JzodTuple).definition[
-                              index
-                            ] as JzodElement)
-                      } // TODO: wrong type seen for props.resolvedJzodSchema! (cannot be undefined, really)
-                      foreignKeyObjects={foreignKeyObjects}
-                      insideAny={insideAny}
-                      parentType={unfoldedRawSchema.type} // used to control the parent type of the element, used for array items
-                    />
-                  </div>
-                </div>
-              );
-            })}
-        </div>
-        {/* <div style={{ marginLeft: `calc(${indentShift})` }}>{"]"}</div> */}
+              <div key={listKey + "." + index} style={{ marginLeft: `calc(${indentShift})` }}>
+                <JzodArrayEditorMoveButton
+                  direction="down"
+                  index={index}
+                  itemsOrder={itemsOrder as number[]}
+                  listKey={listKey}
+                  rootLessListKey={rootLesslistKey}
+                  formik={formik}
+                  currentValue={currentValue}
+                />
+                <JzodArrayEditorMoveButton
+                  direction="up"
+                  index={index}
+                  itemsOrder={itemsOrder as number[]}
+                  listKey={listKey}
+                  rootLessListKey={rootLesslistKey}
+                  formik={formik}
+                  currentValue={currentValue}
+                />
+                <JzodElementEditor
+                  name={"" + index}
+                  listKey={listKey + "." + index}
+                  indentLevel={usedIndentLevel + 1}
+                  labelElement={<span>{resolvedElementJzodSchema?.tag?.value?.defaultLabel}</span>}
+                  // paramMiroirFundamentalJzodSchema={paramMiroirFundamentalJzodSchema}
+                  currentDeploymentUuid={currentDeploymentUuid}
+                  currentApplicationSection={currentApplicationSection}
+                  rootLesslistKey={
+                    rootLesslistKey.length > 0 ? rootLesslistKey + "." + index : "" + index
+                  }
+                  rootLesslistKeyArray={[...rootLesslistKeyArray, "" + index]}
+                  rawJzodSchema={currentArrayElementRawDefinition.element}
+                  resolvedElementJzodSchema={
+                    resolvedElementJzodSchema?.type == "array"
+                      ? ((resolvedElementJzodSchema as JzodArray)?.definition as any)
+                      : ((resolvedElementJzodSchema as JzodTuple).definition[index] as JzodElement)
+                  } // TODO: wrong type seen for props.resolvedJzodSchema! (cannot be undefined, really)
+                  foreignKeyObjects={foreignKeyObjects}
+                  insideAny={insideAny}
+                  parentType={unfoldedRawSchema.type} // used to control the parent type of the element, used for array items
+                />
+              </div>
+            </div>
+          );
+        })}
+    </div>
+  );
+  // ##############################################################################################
+  return (
+    <div id={rootLesslistKey} key={rootLesslistKey}>
+      <span>
+        {label}
+        <span>
+          {/* add new item: */}
+          {" ["}
+          <ExpandOrFoldObjectAttributes
+            hiddenFormItems={hiddenFormItems}
+            setHiddenFormItems={setHiddenFormItems}
+            listKey={listKey}
+          ></ExpandOrFoldObjectAttributes>
+          {displayAsStructuredElementSwitch}
+          <SizedButton
+            variant="text"
+            aria-label={rootLesslistKey + ".add"}
+            onClick={addNewArrayItem}
+          >
+            <SizedAddBox />
+          </SizedButton>
+        </span>
+        {arrayItems}
         <div>{"]"}</div>
       </span>
     </div>

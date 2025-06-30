@@ -28,10 +28,12 @@ import { JzodEnumEditor } from "./JzodEnumEditor.js";
 import { JzodLiteralEditor } from "./JzodLiteralEditor.js";
 import { JzodObjectEditor } from "./JzodObjectEditor.js";
 import {
+  LabeledEditor,
   LineIconButton,
   StyledSelect
 } from "./Style.js";
 import { ErrorFallbackComponent } from "./ErrorFallbackComponent.js";
+import { L } from "vitest/dist/chunks/reporters.D7Jzd9GS.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -99,6 +101,11 @@ export const ExpandOrFoldObjectAttributes = React.memo((props: {
 });
 ExpandOrFoldObjectAttributes.displayName = "ExpandOrFoldObjectAttributes";
 
+// #####################################################################################################
+// #####################################################################################################
+// #####################################################################################################
+// #####################################################################################################
+// #####################################################################################################
 // #####################################################################################################
 // #####################################################################################################
 let count = 0;
@@ -409,107 +416,130 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
       case "boolean": {
         const fieldProps = formik.getFieldProps(props.rootLesslistKey);
         return (
-          <Checkbox
-            id={props.rootLesslistKey}
-            key={props.rootLesslistKey}
-            aria-label={props.rootLesslistKey}
-            {...fieldProps}
-            name={props.rootLesslistKey}
-            checked={fieldProps.value}
-          />
+          LabeledEditor({
+            labelElement: props.labelElement ?? <></>,
+            editor: (
+              <Switch
+                id={props.rootLesslistKey}
+                key={props.rootLesslistKey}
+                aria-label={props.rootLesslistKey}
+                {...fieldProps}
+                name={props.rootLesslistKey}
+                checked={fieldProps.value}
+                onChange={(e) => {
+                  formik.setFieldValue(props.rootLesslistKey, e.target.checked);
+                }}
+              />
+            ),
+          })
         );
       }
       case "number": {
-        return (
-          <input
-            type="number"
-            id={props.rootLesslistKey}
-            key={props.rootLesslistKey}
-            role="textbox"
-            style={{ width: "100%" }}
-            {...formik.getFieldProps(props.rootLesslistKey)}
-          />
-        );
+        return LabeledEditor({
+          labelElement: props.labelElement ?? <></>,
+          editor: (
+            <TextField
+              variant="standard"
+              label="miroirInput"
+              id={props.rootLesslistKey}
+              key={props.rootLesslistKey}
+              type="number"
+              role="textbox"
+              style={{ width: "100%" }}
+              {...formik.getFieldProps(props.rootLesslistKey)}
+            />
+          ),
+        });
       }
       case "bigint": {
-        return (
-          <input
-            type="text"
-            id={props.rootLesslistKey}
-            key={props.rootLesslistKey}
-            role="textbox"
-            style={{ width: "100%" }}
-            {...formik.getFieldProps(props.rootLesslistKey)}
-            value={currentValue.toString()}
-            onChange={(e) => {
-              const value = e.target.value;
-              formik.setFieldValue(props.rootLesslistKey, value ? BigInt(value) : BigInt(0));
-            }}
-          />
-        );
+        return LabeledEditor({
+          labelElement: props.labelElement ?? <></>,
+          editor: (
+            <TextField
+              variant="standard"
+              label="miroirInput"
+              id={props.rootLesslistKey}
+              key={props.rootLesslistKey}
+              type="text"
+              role="textbox"
+              style={{ width: "100%" }}
+              {...formik.getFieldProps(props.rootLesslistKey)}
+              value={currentValue.toString()}
+              onChange={(e) => {
+                const value = e.target.value;
+                formik.setFieldValue(props.rootLesslistKey, value ? BigInt(value) : BigInt(0));
+              }}
+            />
+          )
+        });
       }
       case "string": {
         return (
-          // <span
-          //   contentEditable
-          //   style={{ minWidth: "100px", width: "auto", maxWidth: "100%", boxSizing: "border-box" }}
-          // >
-          <span>
-            <TextField
-              // fullWidth
-              variant="standard"
-              // role="textbox" // TextField already has role="textbox"
-              id={props.rootLesslistKey}
-              key={props.rootLesslistKey}
-              {...formik.getFieldProps(props.rootLesslistKey)}
-            />
-          </span>
+          <LabeledEditor
+            labelElement={props.labelElement ?? <></>}
+            editor={
+              <TextField
+                variant="standard"
+                label="miroirInput"
+                id={props.rootLesslistKey}
+                key={props.rootLesslistKey}
+                {...formik.getFieldProps(props.rootLesslistKey)}
+              />
+            }
+          />
         );
       }
       case "uuid": {
         if (localResolvedElementJzodSchemaBasedOnValue.tag?.value?.targetEntity) {
-          return (
-            <StyledSelect
-              id={props.rootLesslistKey}
-              key={props.rootLesslistKey}
-              aria-label={props.rootLesslistKey}
-              labelId="demo-simple-select-label"
-              variant="standard"
-              style={{ width: "100%" }}
-              {...formik.getFieldProps(props.rootLesslistKey)}
-              name={props.rootLesslistKey}
-            >
-              {stringSelectList.map((e: [string, EntityInstance], index: number) => (
-                <MenuItem
-                  id={props.rootLesslistKey + "." + index}
-                  key={e[1].uuid}
-                  value={e[1].uuid}
-                >
-                  {(e[1] as EntityInstanceWithName).name}
-                </MenuItem>
-              ))}
-            </StyledSelect>
-          );
-        } else {
-            return (
-              <input
-                type="text"
+          return LabeledEditor({
+            labelElement: props.labelElement ?? <></>,
+            editor: (
+              <StyledSelect
                 id={props.rootLesslistKey}
                 key={props.rootLesslistKey}
+                aria-label={props.rootLesslistKey}
+                labelId="demo-simple-select-label"
+                variant="standard"
+                style={{ width: "100%" }}
+                role="textbox"
+                {...formik.getFieldProps(props.rootLesslistKey)}
+                name={props.rootLesslistKey}
+              >
+                {stringSelectList.map((e: [string, EntityInstance], index: number) => (
+                  <MenuItem
+                    id={props.rootLesslistKey + "." + index}
+                    key={e[1].uuid}
+                    value={e[1].uuid}
+                  >
+                    {(e[1] as EntityInstanceWithName).name}
+                  </MenuItem>
+                ))}
+              </StyledSelect>
+            ),
+          });
+        } else {
+          return LabeledEditor({
+            labelElement: props.labelElement ?? <></>,
+            editor: (
+              <TextField
+                variant="standard"
+                label="miroirInput"
+                id={props.rootLesslistKey}
+                key={props.rootLesslistKey}
+                type="text"
                 role="textbox"
                 style={{
-                  // width: "100%",
                   minWidth: "100px",
                   boxSizing: "border-box",
                 }}
                 {...formik.getFieldProps(props.rootLesslistKey)}
               />
-            );
+            ),
+          });
         }
       }
       case "literal": {
         return (
-          <div style={{ width: "100%", display: "block" }}>
             <JzodLiteralEditor
               name={props.name}
               key={props.rootLesslistKey}
@@ -525,7 +555,7 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
               unionInformation={props.unionInformation}
               insideAny={props.insideAny}
             />
-          </div>
+          // </div>
         );
       }
       case "enum": {
@@ -535,7 +565,7 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
           (props.rawJzodSchema && ((props.rawJzodSchema as any).definition ?? [])) ||
           [];
         return (
-          <div style={{ width: "100%" }}>
+          // <div style={{ width: "100%" }}>
             <JzodEnumEditor
               name={props.name}
               labelElement={props.labelElement}
@@ -553,7 +583,7 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
               forceTestingMode={props.forceTestingMode}
               insideAny={props.insideAny}
             />
-          </div>
+          // </div>
         );
       }
       case "undefined":
@@ -593,22 +623,42 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
         const formattedDate = dateValue && !isNaN(dateValue.getTime())
           ? dateValue.toISOString().split("T")[0]
           : "";
-        
-        return (
-          <input
-            type="date"
-            id={props.rootLesslistKey}
-            key={props.rootLesslistKey}
-            role="textbox"
-            style={{ width: "100%" }}
-            {...formik.getFieldProps(props.rootLesslistKey)}
-            value={formattedDate}
-            onChange={(e) => {
-              const value = e.target.value;
-              formik.setFieldValue(props.rootLesslistKey, value ? new Date(value) : null);
-            }}
-          />
-        );
+        return LabeledEditor({
+          labelElement: props.labelElement ?? <></>,
+          editor: (
+            <input
+              type="date"
+              id={props.rootLesslistKey}
+              key={props.rootLesslistKey}
+              role="textbox"
+              style={{ width: "100%" }}
+              {...formik.getFieldProps(props.rootLesslistKey)}
+              value={formattedDate}
+              onChange={(e) => {
+                const value = e.target.value;
+                formik.setFieldValue(props.rootLesslistKey, value ? new Date(value) : null);
+              }}
+            />
+          ),
+        });
+        // return (
+        //   <span>
+        //     {props.labelElement}
+        //     <input
+        //       type="date"
+        //       id={props.rootLesslistKey}
+        //       key={props.rootLesslistKey}
+        //       role="textbox"
+        //       style={{ width: "100%" }}
+        //       {...formik.getFieldProps(props.rootLesslistKey)}
+        //       value={formattedDate}
+        //       onChange={(e) => {
+        //         const value = e.target.value;
+        //         formik.setFieldValue(props.rootLesslistKey, value ? new Date(value) : null);
+        //       }}
+        //     />
+        //   </span>
+        // );
       }
       case "record":
       case "union": {
@@ -690,6 +740,9 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
           />
         )}
       >
+        {/* <span>
+          {props.rootLesslistKey}: {localResolvedElementJzodSchemaBasedOnValue.type}
+        </span> */}
         {objectOrArrayOrAny ? (
           <Card
             id={props.rootLesslistKey}
@@ -759,13 +812,14 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
             }}
           >
             <span>{props.deleteButtonElement ?? <></>}</span>
-            {props.labelElement}
+            {/* {props.labelElement} */}
             <span
               style={{
                 display: !hideSubJzodEditor ? "none" : "inline-block",
                 flexGrow: 1,
               }}
             >
+              {/* {props.labelElement} */}
               {codeEditor}
             </span>
             <span

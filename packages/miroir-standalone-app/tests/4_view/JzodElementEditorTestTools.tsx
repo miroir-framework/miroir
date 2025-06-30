@@ -2,7 +2,7 @@ import { expect, ExpectStatic, vi } from "vitest";
 import { ThemeProvider } from "@emotion/react";
 import { createTheme, StyledEngineProvider } from "@mui/material";
 import { blue } from "@mui/material/colors";
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, RenderResult, screen } from "@testing-library/react";
 import { Formik, FormikProps } from "formik";
 import { useCallback, useMemo } from "react";
 import { Provider } from "react-redux";
@@ -70,6 +70,7 @@ import { useCurrentModel } from "../../src/miroir-fwk/4_view/ReduxHooks";
 import { emptyObject } from "../../src/miroir-fwk/4_view/routes/Tools";
 import { libraryApplicationInstances } from "../../src/miroir-fwk/4_view/uploadBooksAndReports";
 import { TestMode } from "./JzodElementEditor.test";
+import { Container } from "react-dom";
 
 export const testThemeParams = {
   palette: {
@@ -198,13 +199,18 @@ export type JzodEditorTestCaseRenderer<LocalComponentProps> = {
 };
 
 export interface JzodEditorTestCase<PropType extends Record<string, any>> {
-  props?:PropType | ((props:PropType) => PropType),
-  componentProps?:PropType | ((props:PropType) => PropType),
-  jzodElementEditorProps?:JzodElementEditorProps_Test | ((props:PropType) => JzodElementEditorProps_Test),
+  props?: PropType | ((props: PropType) => PropType);
+  componentProps?: PropType | ((props: PropType) => PropType);
+  jzodElementEditorProps?:
+    | JzodElementEditorProps_Test
+    | ((props: PropType) => JzodElementEditorProps_Test);
   renderComponent?: JzodEditorTestCaseRenderer<PropType>;
   tests:
-    | ((expect: ExpectStatic) => Promise<void>)
-    | { testAsComponent?: (expect: any) => Promise<void>; testAsJzodElementEditor?: (expect: any) => Promise<void> };
+    | ((expect: ExpectStatic, container: Container) => Promise<void>)
+    | {
+        testAsComponent?: (expect: any, container: Container) => Promise<void>;
+        testAsJzodElementEditor?: (expect: any, container: Container) => Promise<void>;
+      };
 }
 
 export type JzodEditorTest<PropType extends Record<string, any>> = Record<string, JzodEditorTestCase<PropType>>;
@@ -452,7 +458,7 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
                       listKey={listKey}
                       rootLesslistKey={rootLesslistKey}
                       rootLesslistKeyArray={rootLesslistKeyArray}
-                      label={labelElement}
+                      labelElement={labelElement}
                       currentDeploymentUuid={context.deploymentUuid}
                       currentApplicationSection={"data"}
                       rawJzodSchema={rawJzodSchema}
@@ -755,14 +761,15 @@ export async function runJzodEditorTest(
   // );
 
   if (props) {
-    render(<ComponentToRender {...props} />);
+    // const container: Container<any, HTMLElement, HTMLElement> = render(<ComponentToRender {...props} />);
+    const {container} = render(<ComponentToRender {...props} />);
     const tests =
       typeof testCase.tests === "function"
         ? testCase.tests
         : (renderAs == "jzodElementEditor"
             ? testCase.tests.testAsJzodElementEditor
             : testCase.tests.testAsComponent) ?? ((expect: ExpectStatic) => {});
-    return tests(expect);
+    return tests(expect, container);
   } else {
     console.warn(`Test case ${testName} does not have props defined, skipping test: ${testName}`);
   }
@@ -804,18 +811,23 @@ export function getJzodEditorTestSuites<
 // ################################################################################################
 export function extractValuesFromRenderedElements(
   expect: ExpectStatic,
+  container?: Container,
   label: string = "",
   step?: string,
 ): Record<string, any> {
   console.log("########### extractValuesFromRenderedElements for label", label, "step", step);
   let textBoxes: HTMLElement[] = [];
   try {
-    textBoxes = screen.getAllByRole("textbox").filter((i: any) => i.name.startsWith(label));
+    // textBoxes = screen.getAllByRole("textbox").filter((i: any) => i.name.startsWith(label));
+    // const testBoxes = container?.querySelectorAll("input[name^='testField.']") as NodeListOf<HTMLInputElement>;
+    textBoxes = screen.getAllByLabelText("miroirInput").filter((i: any) => i.name.startsWith(label));
+
   } catch (e) {
     // No textbox found, leave inputs as empty array
   }
   const textBoxesInfo = textBoxes.map((i) => {
     return {
+      // name: (i as HTMLInputElement).name.replace(new RegExp(`^${label}\\.`), ""),
       name: (i as HTMLInputElement).name.replace(new RegExp(`^${label}\\.`), ""),
       value: (i as HTMLInputElement).value,
       defaultValue: (i as HTMLInputElement).defaultValue,

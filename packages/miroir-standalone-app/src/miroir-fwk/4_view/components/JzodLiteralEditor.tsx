@@ -19,7 +19,7 @@ import { cleanLevel } from "../constants";
 import { useMiroirContextService } from "../MiroirContextReactProvider";
 import { useCurrentModel } from "../ReduxHooks";
 import { JzodLiteralEditorProps } from "./JzodElementEditorInterface";
-import { StyledSelect } from "./Style";
+import { LabeledEditor, StyledSelect } from "./Style";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -33,7 +33,7 @@ export const JzodLiteralEditor = React.memo<JzodLiteralEditorProps>(function Jzo
   // props: JzodLiteralEditorProps
   {
     name,
-    labelElement: label,
+    labelElement,
     listKey,
     rootLesslistKey,
     rootLesslistKeyArray,
@@ -168,38 +168,68 @@ export const JzodLiteralEditor = React.memo<JzodLiteralEditorProps>(function Jzo
     }
     return null;
   }, [isDiscriminator, unionInformation]);
-
-  return (
-    <>
-      {isDiscriminator ? (
-        <>
-          <StyledSelect
-            id={rootLesslistKey}
-            label={name}
-            variant="standard"
-            labelId="demo-simple-select-label"
-            {...formik.getFieldProps(rootLesslistKey)}
-            onChange={handleSelectLiteralChange}
-          >
-            {discriminatorMenuItems}
-          </StyledSelect>
-          (literal discriminator)
-        </>
-      ) : (
-        <>
-          <input
-            type="text"
-            id={rootLesslistKey}
-            name={rootLesslistKey}
-            form={"form." + name}
-            value={formik.getFieldProps(rootLesslistKey).value}
-            readOnly
-            disabled
-          />
-        </>
-      )}
-    </>
-  );
+  return LabeledEditor({
+    labelElement: labelElement ?? <></>,
+    editor: isDiscriminator ? (
+      <>
+        <StyledSelect
+          id={rootLesslistKey}
+          label={name}
+          variant="standard"
+          labelId="demo-simple-select-label"
+          {...formik.getFieldProps(rootLesslistKey)}
+          onChange={handleSelectLiteralChange}
+        >
+          {discriminatorMenuItems}
+        </StyledSelect>
+        (literal discriminator)
+      </>
+    ) : (
+      <>
+        <input
+          type="text"
+          id={rootLesslistKey}
+          name={rootLesslistKey}
+          form={"form." + name}
+          value={formik.getFieldProps(rootLesslistKey).value}
+          readOnly
+          disabled
+        />
+      </>
+    ),
+  });
+  // return (
+  //   <>
+  //     {labelElement ?? <></>}
+  //     {isDiscriminator ? (
+  //       <>
+  //         <StyledSelect
+  //           id={rootLesslistKey}
+  //           label={name}
+  //           variant="standard"
+  //           labelId="demo-simple-select-label"
+  //           {...formik.getFieldProps(rootLesslistKey)}
+  //           onChange={handleSelectLiteralChange}
+  //         >
+  //           {discriminatorMenuItems}
+  //         </StyledSelect>
+  //         (literal discriminator)
+  //       </>
+  //     ) : (
+  //       <>
+  //         <input
+  //           type="text"
+  //           id={rootLesslistKey}
+  //           name={rootLesslistKey}
+  //           form={"form." + name}
+  //           value={formik.getFieldProps(rootLesslistKey).value}
+  //           readOnly
+  //           disabled
+  //         />
+  //       </>
+  //     )}
+  //   </>
+  // );
 }, (prevProps, nextProps) => {
   // Custom comparison for React.memo
   return (

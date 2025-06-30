@@ -63,3 +63,24 @@ export function getItemsOrder(currentValue: any, jzodSchema: JzodElement | undef
     : [];
 }
 
+// #####################################################################################################
+// EDITOR
+// #####################################################################################################
+export const LabeledEditor: React.FC<{
+  labelElement: JSX.Element;
+  editor: JSX.Element;
+}> = (props) => {
+  return (
+    <span
+      style={{
+        display: "flex",
+        flexFlow: "row",
+        justifyContent: "flex-start",
+        alignItems: "center",
+      }}
+    >
+      {props.labelElement}
+      {props.editor}
+    </span>
+  );
+};
