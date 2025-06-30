@@ -33,7 +33,7 @@ export const JzodLiteralEditor = React.memo<JzodLiteralEditorProps>(function Jzo
   // props: JzodLiteralEditorProps
   {
     name,
-    label,
+    labelElement: label,
     listKey,
     rootLesslistKey,
     rootLesslistKeyArray,

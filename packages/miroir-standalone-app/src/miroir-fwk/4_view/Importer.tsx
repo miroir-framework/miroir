@@ -2396,7 +2396,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                         listKey={'ROOT'}
                         rootLesslistKey={emptyString}
                         rootLesslistKeyArray={emptyList}
-                        label={pageLabel}
+                        labelElement={pageLabel}
                         currentDeploymentUuid={emptyString}
                         currentApplicationSection={dataSection}
                         // resolvedJzodSchema={actionsJzodSchema}

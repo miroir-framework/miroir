@@ -1,6 +1,7 @@
 import { ErrorBoundary } from "react-error-boundary";
 import React, { useCallback, useMemo, useState } from "react";
 import Clear from "@mui/icons-material/Clear";
+import InfoOutlined from "@mui/icons-material/InfoOutlined";
 
 import {
   JzodElement,
@@ -116,7 +117,7 @@ export const JzodObjectEditor = React.memo(function JzodObjectEditorComponent(pr
   const {
     name,
     listKey,
-    label,
+    labelElement: label,
     rootLesslistKey,
     rootLesslistKeyArray,
     rawJzodSchema,
@@ -125,9 +126,8 @@ export const JzodObjectEditor = React.memo(function JzodObjectEditorComponent(pr
     indentLevel,
     resolvedElementJzodSchema,
     insideAny,
-    jzodSchemaTooltip,
     displayAsStructuredElementSwitch,
-    deleteButton,
+    deleteButtonElement,
     parentType, // used to control the parent type of the element, used for record elements
   } = props;
 
@@ -174,6 +174,39 @@ export const JzodObjectEditor = React.memo(function JzodObjectEditorComponent(pr
     [formik.values, rootLesslistKeyArray]
   );
 
+  // ##############################################################################################
+    // JzodSchemaTooltip
+  const jzodSchemaTooltip: JSX.Element = useMemo(
+    () => (
+      <span
+        title={`
+${parentType} / ${unfoldedRawSchema.type} / ${localResolvedElementJzodSchemaBasedOnValue.type}
+
+${JSON.stringify(props.rawJzodSchema, null, 2)}`}
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          color: "#888",
+          background: "#fff",
+          borderRadius: "50%",
+          padding: "2px",
+          border: "1px solid #ddd",
+          fontSize: "18px",
+          width: "24px",
+          height: "24px",
+          justifyContent: "center",
+        }}
+      >
+        <span style={{ display: "flex", alignItems: "center" }}>
+          <InfoOutlined fontSize="small" sx={{ color: "#888" }} />
+        </span>
+      </span>
+      // </span>
+    ),
+    [props.rawJzodSchema]
+  );
+
+  // ##############################################################################################
   // Handle attribute name changes for Record objects
   const handleAttributeNameChange = useCallback((newAttributeName: string, attributeRootLessListKeyArray: string[]) => {
     const localAttributeRootLessListKeyArray: string[] = attributeRootLessListKeyArray.slice();
@@ -267,9 +300,7 @@ export const JzodObjectEditor = React.memo(function JzodObjectEditorComponent(pr
     formik.values,
   ]);
 
-  // #######################
-  // #######################
-  // #######################
+  // ##############################################################################################
   const addObjectOptionalAttribute = useCallback(async (attributeName: string) => {
     if (localResolvedElementJzodSchemaBasedOnValue.type != "object") {
       throw "addObjectOptionalAttribute called for non-object type: " + unfoldedRawSchema.type;
@@ -346,6 +377,7 @@ export const JzodObjectEditor = React.memo(function JzodObjectEditorComponent(pr
     undefinedOptionalAttributes
   ]);
 
+  // ##############################################################################################
   const deleteElement = (rootLesslistKeyArray: (string | number)[]) => () => {
     if (rootLesslistKeyArray.length > 0) {
       const newFormState: any = deleteObjectAtPath(formik.values, rootLesslistKeyArray);
@@ -354,6 +386,7 @@ export const JzodObjectEditor = React.memo(function JzodObjectEditorComponent(pr
     }
   };
   
+  // ##############################################################################################
   // Render error state if we can't properly render an object
   if (!canRenderObject) {
     return (
@@ -366,6 +399,7 @@ export const JzodObjectEditor = React.memo(function JzodObjectEditorComponent(pr
     );
   }
   
+  // ##############################################################################################
   // Memoize the array of rendered attributes to prevent unnecessary re-renders
   const attributeElements = useMemo(() => {
     return itemsOrder
@@ -638,7 +672,7 @@ export const JzodObjectEditor = React.memo(function JzodObjectEditorComponent(pr
               </pre> */}
               <JzodElementEditor
                 name={attribute[0]}
-                label={editableLabel}
+                labelElement={editableLabel}
                 key={attribute[0]}
                 listKey={attributeListKey}
                 rootLesslistKey={attributeRootLessListKey}
@@ -653,7 +687,7 @@ export const JzodObjectEditor = React.memo(function JzodObjectEditorComponent(pr
                 insideAny={insideAny}
                 optional={definedOptionalAttributes.has(attribute[0])}
                 parentType={unfoldedRawSchema?.type}
-                deleteButton={
+                deleteButtonElement={
                   <>
                   {/* {attributeRootLessListKey}#{unfoldedAttributeRawSchema.type}.{unfoldedAttributeRawSchema.optional? "optional" : "required"} */}
                   <SmallIconButton
@@ -663,7 +697,6 @@ export const JzodObjectEditor = React.memo(function JzodObjectEditorComponent(pr
                     style={{ padding: 0, visibility: isRecordType || definedOptionalAttributes.has(attribute[0])? "visible" : "hidden" }}
                   >
                     <Clear />
-                    {/* <Clear /> */}
                   </SmallIconButton>
                   </>
                 }
@@ -713,12 +746,8 @@ export const JzodObjectEditor = React.memo(function JzodObjectEditorComponent(pr
                 alignItems: "center",
               }}
             >
-              {deleteButton ?? <></>}
               {label}
             </span>
-            {/* ) : (
-              <span>{label ?? ""}</span>
-            )} */}
           </span>
           <span id={rootLesslistKey + "head"} key={rootLesslistKey + "head"}>
             <ExpandOrFoldObjectAttributes
@@ -726,8 +755,6 @@ export const JzodObjectEditor = React.memo(function JzodObjectEditorComponent(pr
               setHiddenFormItems={setHiddenFormItems}
               listKey={listKey}
             ></ExpandOrFoldObjectAttributes>
-            {displayAsStructuredElementSwitch ?? <></>}({parentType} / {unfoldedRawSchema.type} /{" "}
-            {localResolvedElementJzodSchemaBasedOnValue.type})
           </span>
           <span
             id={listKey + ".inner"}
@@ -752,6 +779,7 @@ export const JzodObjectEditor = React.memo(function JzodObjectEditorComponent(pr
               <></>
             )}
             <span>
+              {/* add optional attributes buttons */}
               {unfoldedRawSchema.type != "record" && undefinedOptionalAttributes.length > 0 ? (
                 <span
                   style={{
@@ -797,7 +825,21 @@ export const JzodObjectEditor = React.memo(function JzodObjectEditorComponent(pr
               )}
             </span>
           </span>
-          {jzodSchemaTooltip ?? <></>}
+          <span
+            style={{
+              position: "absolute",
+              top: 4,
+              right: 4,
+              zIndex: 2,
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            {deleteButtonElement ?? <></>}
+            {displayAsStructuredElementSwitch ?? <></>}
+            {jzodSchemaTooltip ?? <></>}
+          </span>
         </span>
         {/* <div>ICIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII</div> */}
         {/* <div>definedOptionalAttributes: {Array.from(definedOptionalAttributes).join(", ")}</div> */}

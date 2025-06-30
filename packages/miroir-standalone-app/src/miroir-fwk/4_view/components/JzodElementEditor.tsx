@@ -3,7 +3,6 @@ import { ErrorBoundary, withErrorBoundary } from "react-error-boundary";
 
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
-import InfoOutlined from "@mui/icons-material/InfoOutlined";
 import { Card, CardContent, MenuItem, Switch } from "@mui/material";
 import Checkbox from "@mui/material/Checkbox";
 import TextField from '@mui/material/TextField';
@@ -222,42 +221,6 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
     [props.hidden, props.insideAny, displayAsStructuredElement]
   );
 
-    // JzodSchemaTooltip
-  const JzodSchemaTooltip: JSX.Element = useMemo(() => (
-    <span
-      style={{
-        position: "absolute",
-        top: 4,
-        right: 4,
-        zIndex: 2,
-        cursor: "pointer",
-        display: "flex",
-        alignItems: "center",
-      }}
-    >
-      <span
-        // title={JSON.stringify(props.rawJzodSchema, null, 2)}
-        title={JSON.stringify(props.rawJzodSchema, null, 2)}
-        style={{
-          display: "inline-flex",
-          alignItems: "center",
-          color: "#888",
-          background: "#fff",
-          borderRadius: "50%",
-          padding: "2px",
-          border: "1px solid #ddd",
-          fontSize: "18px",
-          width: "24px",
-          height: "24px",
-          justifyContent: "center",
-        }}
-      >
-        <span style={{ display: "flex", alignItems: "center" }}>
-          <InfoOutlined fontSize="small" sx={{ color: "#888" }} />
-        </span>
-      </span>
-    </span>
-  ), [props.rawJzodSchema]);
 
 
   // Code editor element
@@ -276,14 +239,14 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
           insideAny={props.insideAny}
           isUnderTest={isUnderTest}
           displayAsStructuredElementSwitch={displayAsStructuredElementSwitch}
-          jzodSchemaTooltip={JzodSchemaTooltip}
+          // jzodSchemaTooltip={JzodSchemaTooltip}
         />
       ) : (
         <></>
       ),
     [
       isUnderTest,
-      JzodSchemaTooltip,
+      // JzodSchemaTooltip,
       codeMirrorValue,
       setCodeMirrorValue,
       codeMirrorIsValidJson,
@@ -369,7 +332,7 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
       return (
         <JzodAnyEditor
           name={props.name}
-          label={props.label}
+          labelElement={props.labelElement}
           listKey={props.listKey}
           rootLesslistKey={props.rootLesslistKey}
           rootLesslistKeyArray={props.rootLesslistKeyArray}
@@ -398,7 +361,7 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
         return (
           <JzodObjectEditor
             name={props.name}
-            label={props.label}
+            labelElement={props.labelElement}
             listKey={props.listKey}
             indentLevel={props.indentLevel + 1}
             rootLesslistKey={props.rootLesslistKey}
@@ -411,9 +374,9 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
             foreignKeyObjects={foreignKeyObjects}
             hidden={hideSubJzodEditor}
             displayAsStructuredElementSwitch={displayAsStructuredElementSwitch}
-            jzodSchemaTooltip={JzodSchemaTooltip}
+            // jzodSchemaTooltip={JzodSchemaTooltip}
             parentType={props.parentType} // used to control the parent type of the element, used for record elements
-            deleteButton={props.deleteButton}
+            deleteButtonElement={props.deleteButtonElement}
           />
         );
       }
@@ -439,7 +402,7 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
             hidden={hideSubJzodEditor}
             displayAsStructuredElementSwitch={displayAsStructuredElementSwitch}
             parentType={props.parentType} // used to control the parent type of the element, used for record elements
-            deleteButton={props.deleteButton}
+            deleteButtonElement={props.deleteButtonElement}
           />
         );
       }
@@ -550,7 +513,7 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
             <JzodLiteralEditor
               name={props.name}
               key={props.rootLesslistKey}
-              label={props.label}
+              labelElement={props.labelElement}
               currentApplicationSection={props.currentApplicationSection}
               currentDeploymentUuid={props.currentDeploymentUuid}
               listKey={props.listKey}
@@ -575,7 +538,7 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
           <div style={{ width: "100%" }}>
             <JzodEnumEditor
               name={props.name}
-              label={props.label}
+              labelElement={props.labelElement}
               key={props.rootLesslistKey}
               listKey={props.listKey}
               rootLesslistKey={props.rootLesslistKey}
@@ -598,7 +561,7 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
         return (
           <JzodAnyEditor
             name={props.name}
-            label={props.label}
+            labelElement={props.labelElement}
             key={props.rootLesslistKey}
             listKey={props.listKey}
             rootLesslistKey={props.rootLesslistKey}
@@ -753,7 +716,6 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
                 >
                   <span>
                     {props.submitButton}
-                    {/* {clearSimpleElementButton} */}
                   </span>
                 </span>
                 <span>
@@ -796,8 +758,8 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
               width: "100%",
             }}
           >
-            <span>{props.deleteButton ?? <></>}</span>
-            {props.label}
+            <span>{props.deleteButtonElement ?? <></>}</span>
+            {props.labelElement}
             <span
               style={{
                 display: !hideSubJzodEditor ? "none" : "inline-block",

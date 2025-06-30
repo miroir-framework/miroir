@@ -21,7 +21,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 export const JzodEnumEditor = React.memo(
   function JzodEnumEditorComponent({
     name,
-    label,
+    labelElement: label,
     rawJzodSchema,
     listKey,
     rootLesslistKey,

@@ -96,7 +96,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
   // props: JzodArrayEditorProps
   {
     name,
-    label,
+    labelElement: label,
     listKey,
     rootLesslistKey,
     rootLesslistKeyArray,
@@ -211,8 +211,6 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     ]
   );
   return (
-    // <div style={{ marginLeft: `calc(${usedIndentLevel}*(${indentShift}))` }}>
-    // <div style={{ marginLeft: `calc(${indentShift})` }}>
     <div id={rootLesslistKey} key={rootLesslistKey}>
       <span>
         {label}
@@ -306,7 +304,6 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
                   </div> */}
                   <div
                     key={listKey + "." + index}
-                    // style={{ marginLeft: `calc((${usedIndentLevel})*(${indentShift}))` }}
                     style={{ marginLeft: `calc(${indentShift})` }}
                   >
                     <JzodArrayEditorMoveButton
@@ -331,7 +328,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
                       name={"" + index}
                       listKey={listKey + "." + index}
                       indentLevel={usedIndentLevel + 1}
-                      label={<span>{resolvedElementJzodSchema?.tag?.value?.defaultLabel}</span>}
+                      labelElement={<span>{resolvedElementJzodSchema?.tag?.value?.defaultLabel}</span>}
                       // paramMiroirFundamentalJzodSchema={paramMiroirFundamentalJzodSchema}
                       currentDeploymentUuid={currentDeploymentUuid}
                       currentApplicationSection={currentApplicationSection}

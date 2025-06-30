@@ -18,7 +18,7 @@ export interface UnionInformation {
 
 export interface JzodEditorPropsRoot {
   // label?: string;
-  label?: JSX.Element; // used to display a label in the editor
+  labelElement?: JSX.Element; // used to display a label in the editor
   name: string;
   listKey: string;
   rootLesslistKey: string;
@@ -36,7 +36,7 @@ export interface JzodEditorPropsRoot {
   optional?: boolean; // used to control if the displayed element can be removed or not
   // elementBelongsToRecord?: boolean; // used to control if the element belongs to a record or not
   parentType?: string; // used to control the parent type of the element, used for record elements. TODO: accept real type enum
-  deleteButton?: JSX.Element; // used to display a delete button in the editor
+  deleteButtonElement?: JSX.Element; // used to display a delete button in the editor
   // displayAsCode?: boolean; // used to display the editor as a structured element, not as code editor
   // handleSelectLiteralChange?: (event: any) => void;
 }
@@ -86,7 +86,7 @@ export interface JzodAnyEditorProps extends JzodEditorPropsRoot {
 // #################################################################################################
 export interface JzodObjectEditorProps extends JzodEditorPropsRoot {
   indentLevel?: number;
-  deleteButton?: JSX.Element; // used to display a delete button in the editor
+  deleteButtonElement?: JSX.Element; // used to display a delete button in the editor
   displayAsStructuredElementSwitch?: JSX.Element; // used to display switches in the editor
   jzodSchemaTooltip?: JSX.Element; // used to display the actual raw jzod schema as a tooltip
 }
