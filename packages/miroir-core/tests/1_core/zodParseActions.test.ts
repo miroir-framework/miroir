@@ -40,7 +40,7 @@ import adminConfigurationDeploymentMiroir from "../../src/assets/admin_data/7959
 
 
 import { zodErrorDeepestIssueLeaves } from "../../src/1_core/zodParseErrorHandler";
-import { defaultMiroirMetaModel } from './defaultMiroirMetaModel';
+import { defaultMiroirMetaModel } from '../test_assets/defaultMiroirMetaModel';
 
 import { Uuid } from '../../src/0_interfaces/1_core/EntityDefinition.js';
 import { getBasicApplicationConfiguration } from '../../src/2_domain/Deployment.js';

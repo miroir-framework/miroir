@@ -21,13 +21,14 @@ export interface JzodEditorPropsRoot {
   labelElement?: JSX.Element; // used to display a label in the editor
   name: string;
   listKey: string;
-  rootLesslistKey: string;
-  rootLesslistKeyArray: string[];
+  rootLessListKey: string;
+  rootLessListKeyArray: string[];
   currentDeploymentUuid?: Uuid,
   currentApplicationSection?: ApplicationSection;
   initialFormState?: any;
   rawJzodSchema: JzodElement | undefined;
   resolvedElementJzodSchema: JzodElement | undefined;
+  localRootLessListKeyMap: Record<string, { resolvedElementJzodSchema: JzodElement }> | undefined;
   unionInformation?: UnionInformation | undefined; // prop drilling: for unions only
   foreignKeyObjects: Record<string, EntityInstancesUuidIndex>; // prop drilling: for uuid / objects only
   returnsEmptyElement?: boolean; // used to force the editor to return an empty element
@@ -100,8 +101,8 @@ export type JzodElementEditorReactCodeMirrorProps = {
   setCodeMirrorValue: React.Dispatch<React.SetStateAction<string>>;
   codeMirrorIsValidJson: boolean;
   setCodeMirrorIsValidJson: React.Dispatch<React.SetStateAction<boolean>>;
-  rootLesslistKey: string;
-  rootLesslistKeyArray: string[];
+  rootLessListKey: string;
+  rootLessListKeyArray: string[];
   isUnderTest?: boolean; // codemirror issue with vitest https://github.com/miroir-framework/miroir/issues/56
   hidden?: boolean; // used to control visibility of the editor 
   insideAny?: boolean; // used to control visibility of the editor

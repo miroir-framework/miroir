@@ -2394,8 +2394,8 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                       <JzodElementEditor
                         name={'ROOT'}
                         listKey={'ROOT'}
-                        rootLesslistKey={emptyString}
-                        rootLesslistKeyArray={emptyList}
+                        rootLessListKey={emptyString}
+                        rootLessListKeyArray={emptyList}
                         labelElement={pageLabel}
                         currentDeploymentUuid={emptyString}
                         currentApplicationSection={dataSection}

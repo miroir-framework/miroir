@@ -275,8 +275,8 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
               <JzodElementEditor
                 name={"ROOT"}
                 listKey={"ROOT"}
-                rootLesslistKey=""
-                rootLesslistKeyArray={[]}
+                rootLessListKey=""
+                rootLessListKeyArray={[]}
                 labelElement={labelElement}
                 currentDeploymentUuid={currentDeploymentUuid}
                 currentApplicationSection={currentApplicationSection}

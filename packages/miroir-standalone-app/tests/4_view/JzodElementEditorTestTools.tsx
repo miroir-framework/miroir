@@ -71,6 +71,7 @@ import { emptyObject } from "../../src/miroir-fwk/4_view/routes/Tools";
 import { libraryApplicationInstances } from "../../src/miroir-fwk/4_view/uploadBooksAndReports";
 import { TestMode } from "./JzodElementEditor.test";
 import { Container } from "react-dom";
+import { rootLessListKeyMap } from "miroir-core";
 
 export const testThemeParams = {
   palette: {
@@ -186,8 +187,8 @@ export interface JzodElementEditorProps_Test {
   name: string;
   label?: string;
   listKey: string;
-  rootLesslistKey: string;
-  rootLesslistKeyArray: string[];
+  rootLessListKey: string;
+  rootLessListKeyArray: string[];
   initialFormState: any;
   rawJzodSchema: JzodElement | undefined;
 }
@@ -237,8 +238,8 @@ export interface LocalEditorPropsRoot {
   label?: string;
   name: string;
   listKey: string;
-  rootLesslistKey: string;
-  rootLesslistKeyArray: string[];
+  rootLessListKey: string;
+  rootLessListKeyArray: string[];
   initialFormState: any;
 }
 
@@ -260,7 +261,7 @@ export function getLocalEditor<
     //     );
     //     const newFormState: any = alterObjectAtPath(
     //       formState,
-    //       props.rootLesslistKeyArray,
+    //       props.rootLessListKeyArray,
     //       e.target.value
     //     );
     //     // console.log(
@@ -279,7 +280,7 @@ export function getLocalEditor<
 
     const onSubmit = (values: any) => {
       console.log("JzodElementEditorTestTools onSubmit formik values ###########################################", values);
-      // const newFormState: any = alterObjectAtPath(formState, props.rootLesslistKeyArray, values);
+      // const newFormState: any = alterObjectAtPath(formState, props.rootLessListKeyArray, values);
       // setFormState(newFormState);
       // setFormState(values);
       // handleChange({target: { value: values}});
@@ -303,10 +304,10 @@ export function getLocalEditor<
                   formik,
                   // formik: {
                   //   ...formik,
-                  //   getFieldProps: (rootLesslistKey: string[]) => ({
+                  //   getFieldProps: (rootLessListKey: string[]) => ({
                   //     name: "testField",
                   //     value: formState,
-                  //     rootLesslistKey,
+                  //     rootLessListKey,
                   //     onChange: formik.handleChange,
                   //   }),
                   // },
@@ -336,8 +337,8 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
     name,
     label,
     listKey,
-    rootLesslistKey,
-    rootLesslistKeyArray,
+    rootLessListKey,
+    rootLessListKeyArray,
     // indentLevel?: number;
     initialFormState,
     rawJzodSchema,
@@ -420,9 +421,43 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
       return result;
     }, [rawJzodSchema, initialFormState, context]);
 
+    const localRootLessListKeyMap:
+      | Record<string, { resolvedElementJzodSchema: JzodElement }>
+      | undefined = useMemo(() => {
+      const result =
+        context.miroirFundamentalJzodSchema != undefined &&
+        rawJzodSchema &&
+        initialFormState &&
+        currentModel
+          ? rootLessListKeyMap(
+              rootLessListKey,
+              rawJzodSchema,
+              currentModel,
+              currentMiroirModel,
+              context.miroirFundamentalJzodSchema,
+              initialFormState
+            )
+          : undefined;
+      console.log(
+        "getJzodElementEditorForTest",
+        "rootLessListKeyMap",
+        result
+        // props.rootLessListKey,
+        // props.rawJzodSchema?.type
+      );
+      return result;
+    }, [
+      rawJzodSchema,
+      initialFormState,
+      currentModel,
+      currentMiroirModel,
+      context.miroirFundamentalJzodSchema,
+    ]);
+    console.log("getJzodElementEditorForTest", "rootLessListKeyMap", localRootLessListKeyMap);
+
     const labelElement = useMemo(() => {
-      // return label ? <label htmlFor={rootLesslistKey}>{label}</label> : undefined;
-      return label ? <span id={rootLesslistKey}>{label}</span> : undefined;
+      // return label ? <label htmlFor={rootLessListKey}>{label}</label> : undefined;
+      return label ? <span id={rootLessListKey}>{label}</span> : undefined;
     }, [label]);
     return (
       <div>
@@ -441,13 +476,14 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
                     <JzodElementEditor
                       name={name}
                       listKey={listKey}
-                      rootLesslistKey={rootLesslistKey}
-                      rootLesslistKeyArray={rootLesslistKeyArray}
+                      rootLessListKey={rootLessListKey}
+                      rootLessListKeyArray={rootLessListKeyArray}
                       labelElement={labelElement}
                       currentDeploymentUuid={context.deploymentUuid}
                       currentApplicationSection={"data"}
                       rawJzodSchema={rawJzodSchema}
                       resolvedElementJzodSchema={resolvedJzodSchema.element}
+                      localRootLessListKeyMap={localRootLessListKeyMap}
                       foreignKeyObjects={emptyObject}
                       indentLevel={0}
                       // displayAsCode={false}

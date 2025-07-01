@@ -738,8 +738,8 @@ export const ConceptPage: React.FC<any> = (
                       <JzodElementEditor
                         name={'ROOT'}
                         listKey={'ROOT'}
-                        rootLesslistKey={emptyString}
-                        rootLesslistKeyArray={emptyList}
+                        rootLessListKey={emptyString}
+                        rootLessListKeyArray={emptyList}
                         labelElement={pageLabel}
                         currentDeploymentUuid={emptyString}
                         currentApplicationSection={dataSection}

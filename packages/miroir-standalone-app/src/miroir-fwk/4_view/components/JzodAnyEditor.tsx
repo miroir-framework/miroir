@@ -31,14 +31,15 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
   const {
     name,
     listKey,
-    rootLesslistKey,
-    rootLesslistKeyArray,
+    rootLessListKey,
+    rootLessListKeyArray,
     rawJzodSchema,
     currentDeploymentUuid,
     currentApplicationSection,
     foreignKeyObjects,
     unionInformation,
     resolvedElementJzodSchema, // handleSelectLiteralChange,
+    localRootLessListKeyMap,
     labelElement,
     insideAny,
     // indentLevel,
@@ -50,16 +51,16 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
       "JzodAnyEditor"
     );
   
-  const currentValue = resolvePathOnObject(formik.values, rootLesslistKeyArray);
+  const currentValue = resolvePathOnObject(formik.values, rootLessListKeyArray);
 
 
   return (
-    <div key={rootLesslistKey}>
+    <div key={rootLessListKey}>
       <div>
         <ChangeValueTypeSelect
           onChange={(type: JzodElement) => {
             log.info(
-              `JzodAnyEditor: Change value type to ${type} for ${rootLesslistKey}`
+              `JzodAnyEditor: Change value type to ${type} for ${rootLessListKey}`
             );
             const defaultValue = getDefaultValueForJzodSchemaWithResolution(
               type,
@@ -67,7 +68,7 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
               currentModel,
               miroirMetaModel
             )
-            formik.setFieldValue(rootLesslistKey, defaultValue, false);
+            formik.setFieldValue(rootLessListKey, defaultValue, false);
           }}
           // currentType={resolvedElementJzodSchema?.type || "undefined"}
         />
@@ -78,13 +79,14 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
         <JzodElementEditor
           name={name}
           listKey={listKey}
-          rootLesslistKey={rootLesslistKey}
-          rootLesslistKeyArray={rootLesslistKeyArray}
+          rootLessListKey={rootLessListKey}
+          rootLessListKeyArray={rootLessListKeyArray}
           rawJzodSchema={rawJzodSchema}
           currentDeploymentUuid={currentDeploymentUuid}
           currentApplicationSection={currentApplicationSection}
           unionInformation={unionInformation}
           resolvedElementJzodSchema={resolvedElementJzodSchema}
+          localRootLessListKeyMap={localRootLessListKeyMap}
           labelElement={<></>}
           foreignKeyObjects={foreignKeyObjects}
           insideAny={true}

@@ -99,11 +99,12 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     name,
     labelElement: label,
     listKey,
-    rootLesslistKey,
-    rootLesslistKeyArray,
+    rootLessListKey,
+    rootLessListKeyArray,
     rawJzodSchema,
     unfoldedRawSchema,
     resolvedElementJzodSchema,
+    localRootLessListKeyMap,
     // paramMiroirFundamentalJzodSchema,
     currentDeploymentUuid,
     currentApplicationSection,
@@ -117,26 +118,43 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     // setItemsOrder,
   }
 ) => {
-  // log.info("############################################### JzodArrayEditor array rootLesslistKey", props.rootLesslistKey, "values", props.formik.values);
+  // log.info("############################################### JzodArrayEditor array rootLessListKey", props.rootLessListKey, "values", props.formik.values);
   jzodArrayEditorRenderCount++;
   const context = useMiroirContextService();
 
   const formik = useFormikContext<Record<string, any>>();
   const currentValue = resolvePathOnObject(
     formik.values,
-    rootLesslistKeyArray
+    rootLessListKeyArray
   );
+  // log.info(
+  //   "JzodArrayEditor render",
+  //   jzodArrayEditorRenderCount,
+  //   "name",
+  //   name,
+  //   "rootLessListKey",
+  //   rootLessListKey,
+  //   "itemsOrder",
+  //   itemsOrder,
+  //   "localRootLessListKeyMap",
+  //   JSON.stringify(localRootLessListKeyMap, null, 2),
+  // );
+  // const resolvedElementJzodSchema: JzodElement | undefined = localRootLessListKeyMap
+  //   ? localRootLessListKeyMap[rootLessListKey]?.resolvedElementJzodSchema
+  //   : undefined;
+
   log.info(
     "JzodArrayEditor render",
     jzodArrayEditorRenderCount,
     "name",
     name,
-    "listKey",
-    listKey,
+    "rootLessListKey",
+    rootLessListKey,
     "itemsOrder",
     itemsOrder,
     "resolvedElementJzodSchema",
-    resolvedElementJzodSchema,
+    // resolvedElementJzodSchema,
+    JSON.stringify(resolvedElementJzodSchema, null, 2),
   );
 
   const currentModel: MetaModel = useCurrentModel(currentDeploymentUuid);
@@ -144,7 +162,9 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
   // ??
   const usedIndentLevel: number = indentLevel ?? 0;
 
-  const arrayValueObject = resolvePathOnObject(formik.values, rootLesslistKeyArray);
+  const arrayValueObject = resolvePathOnObject(formik.values, rootLessListKeyArray);
+
+
   // ##############################################################################################
   const addNewArrayItem = useCallback(
     async () => {
@@ -159,8 +179,8 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
       const newItem = getDefaultValueForJzodSchema(unfoldedRawSchema.definition)
       log.info(
         "JzodArrayEditor addNewArrayItem",
-        "rootLesslistKey",
-        rootLesslistKey,
+        "rootLessListKey",
+        rootLessListKey,
         "newItem",
         JSON.stringify(newItem, null, 2),
         "rawJzodSchema",
@@ -180,10 +200,10 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
       //   "JzodArrayEditor addNewArrayItem",
       //   "listKey",
       //   listKey,
-      //   "rootLesslistKey",
-      //   rootLesslistKey,
-      //   "rootLesslistKeyArray",
-      //   rootLesslistKeyArray,
+      //   "rootLessListKey",
+      //   rootLessListKey,
+      //   "rootLessListKeyArray",
+      //   rootLessListKeyArray,
       //   "rawJzodSchema",
       //   rawJzodSchema,
       //   "newArrayValue",
@@ -200,7 +220,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
 
       // Update the specific field in Formik state
       // formik.setFieldValue("testField", newArrayValue, false); // Disable validation
-      formik.setFieldValue(rootLesslistKey, newArrayValue, false); // Disable validation
+      formik.setFieldValue(rootLessListKey, newArrayValue, false); // Disable validation
 
       // // Update the items order
       // setItemsOrder(getItemsOrder(newArrayValue, resolvedElementJzodSchema));
@@ -209,7 +229,8 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
       formik,
       rawJzodSchema,
       arrayValueObject,
-      resolvedElementJzodSchema,
+      // resolvedElementJzodSchema,
+      unfoldedRawSchema,
     ]
   );
   // ##############################################################################################
@@ -273,7 +294,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
           //   JSON.stringify(attributeParam[1], null, 2)
           // );
           return (
-            <div key={rootLesslistKey + "." + index}>
+            <div key={rootLessListKey + "." + index}>
               {/* <div>
                     <pre>
                       JzodArray: {JSON.stringify(resolvedElementJzodSchema, null, 2)}
@@ -285,7 +306,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
                   index={index}
                   itemsOrder={itemsOrder as number[]}
                   listKey={listKey}
-                  rootLessListKey={rootLesslistKey}
+                  rootLessListKey={rootLessListKey}
                   formik={formik}
                   currentValue={currentValue}
                 />
@@ -294,7 +315,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
                   index={index}
                   itemsOrder={itemsOrder as number[]}
                   listKey={listKey}
-                  rootLessListKey={rootLesslistKey}
+                  rootLessListKey={rootLessListKey}
                   formik={formik}
                   currentValue={currentValue}
                 />
@@ -306,16 +327,17 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
                   // paramMiroirFundamentalJzodSchema={paramMiroirFundamentalJzodSchema}
                   currentDeploymentUuid={currentDeploymentUuid}
                   currentApplicationSection={currentApplicationSection}
-                  rootLesslistKey={
-                    rootLesslistKey.length > 0 ? rootLesslistKey + "." + index : "" + index
+                  rootLessListKey={
+                    rootLessListKey.length > 0 ? rootLessListKey + "." + index : "" + index
                   }
-                  rootLesslistKeyArray={[...rootLesslistKeyArray, "" + index]}
+                  rootLessListKeyArray={[...rootLessListKeyArray, "" + index]}
                   rawJzodSchema={currentArrayElementRawDefinition.element}
                   resolvedElementJzodSchema={
                     resolvedElementJzodSchema?.type == "array"
                       ? ((resolvedElementJzodSchema as JzodArray)?.definition as any)
                       : ((resolvedElementJzodSchema as JzodTuple).definition[index] as JzodElement)
                   } // TODO: wrong type seen for props.resolvedJzodSchema! (cannot be undefined, really)
+                  localRootLessListKeyMap={localRootLessListKeyMap}
                   foreignKeyObjects={foreignKeyObjects}
                   insideAny={insideAny}
                   parentType={unfoldedRawSchema.type} // used to control the parent type of the element, used for array items
@@ -328,7 +350,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
   );
   // ##############################################################################################
   return (
-    <div id={rootLesslistKey} key={rootLesslistKey}>
+    <div id={rootLessListKey} key={rootLessListKey}>
       <span>
         {label}
         <span>
@@ -342,7 +364,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
           {displayAsStructuredElementSwitch}
           <SizedButton
             variant="text"
-            aria-label={rootLesslistKey + ".add"}
+            aria-label={rootLessListKey + ".add"}
             onClick={addNewArrayItem}
           >
             <SizedAddBox />

@@ -38,7 +38,8 @@ export interface JzodElementEditorHooks {
   displayAsStructuredElement: boolean;
   setDisplayAsStructuredElement: React.Dispatch<React.SetStateAction<boolean>>;
   // currentValue jzod schema
-  localResolvedElementJzodSchemaBasedOnValue: JzodElement;
+  localResolvedElementJzodSchemaBasedOnValue: JzodElement | undefined;
+  // rootLessListKeyMap: Record<string, { resolvedElementJzodSchema: JzodElement }>
   recursivelyUnfoldedRawSchema: JzodUnion_RecursivelyUnfold_ReturnType | undefined;
   unfoldedRawSchema: JzodElement;
   // union
@@ -84,10 +85,10 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
   const formik = useFormikContext<Record<string, any>>();
   
   const currentValue = useMemo(() => {
-    return props.rootLesslistKeyArray.length > 0
-      ? resolvePathOnObject(formik.values, props.rootLesslistKeyArray)
+    return props.rootLessListKeyArray.length > 0
+      ? resolvePathOnObject(formik.values, props.rootLessListKeyArray)
       : formik.values;
-  }, [formik.values, props.rootLesslistKeyArray]);
+  }, [formik.values, props.rootLessListKeyArray]);
 
   const [codeMirrorValue, setCodeMirrorValue] = useState<string>(""
     // () =>
@@ -105,49 +106,63 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
   // ################################################################################################
   // ################################################################################################
   // value schema
-  const returnedLocalResolvedElementJzodSchemaBasedOnValue:
-    | ResolvedJzodSchemaReturnType
-    | undefined = useMemo(() => {
-    const newRecordResolvedElementJzodSchema =
-      props.rawJzodSchema &&
-      context.miroirFundamentalJzodSchema
-        ? jzodTypeCheck(
-            props.rawJzodSchema,
-            currentValue,
-            [], // currentValuePath
-            [], // currentTypePath
-            context.miroirFundamentalJzodSchema,
-            currentModel,
-            miroirMetaModel,
-            {}
-          )
-        : undefined;
-    return newRecordResolvedElementJzodSchema;
-  }, [currentValue, props.rawJzodSchema, context.miroirFundamentalJzodSchema, currentModel, miroirMetaModel]);
+  // const returnedLocalResolvedElementJzodSchemaBasedOnValue:
+  //   | ResolvedJzodSchemaReturnType
+  //   | undefined = useMemo(() => {
+  //   const newRecordResolvedElementJzodSchema =
+  //     props.rawJzodSchema &&
+  //     context.miroirFundamentalJzodSchema
+  //       ? jzodTypeCheck(
+  //           props.rawJzodSchema,
+  //           currentValue,
+  //           [], // currentValuePath
+  //           [], // currentTypePath
+  //           context.miroirFundamentalJzodSchema,
+  //           currentModel,
+  //           miroirMetaModel,
+  //           {}
+  //         )
+  //       : undefined;
+  //   return newRecordResolvedElementJzodSchema;
+  // }, [currentValue, props.rawJzodSchema, context.miroirFundamentalJzodSchema, currentModel, miroirMetaModel]);
 
-  if (
-    !returnedLocalResolvedElementJzodSchemaBasedOnValue ||
-    returnedLocalResolvedElementJzodSchemaBasedOnValue.status == "error"
-  ) {
-    throw new Error(
-      "getJzodElementEditorHooks " +
-        caller +
-        " render " +
-        count +
-        "path '" + props.rootLesslistKey +
-        "' could not resolve jzod schema for " +
-        " currentValue " +
-        JSON.stringify(currentValue, null, 2) +
-        " rawJzodSchema " +
-        JSON.stringify(props.rawJzodSchema, null, 2) +
-        " returnedLocalResolvedElementJzodSchemaBasedOnValue " +
-        JSON.stringify(returnedLocalResolvedElementJzodSchemaBasedOnValue, null, 2)
-    );
-  }
-  const localResolvedElementJzodSchemaBasedOnValue: JzodElement =
-    returnedLocalResolvedElementJzodSchemaBasedOnValue.element;
+  // if (
+  //   !returnedLocalResolvedElementJzodSchemaBasedOnValue ||
+  //   returnedLocalResolvedElementJzodSchemaBasedOnValue.status == "error"
+  // ) {
+  //   throw new Error(
+  //     "getJzodElementEditorHooks " +
+  //       caller +
+  //       " render " +
+  //       count +
+  //       "path '" + props.rootLessListKey +
+  //       "' could not resolve jzod schema for " +
+  //       " currentValue " +
+  //       JSON.stringify(currentValue, null, 2) +
+  //       " rawJzodSchema " +
+  //       JSON.stringify(props.rawJzodSchema, null, 2) +
+  //       " returnedLocalResolvedElementJzodSchemaBasedOnValue " +
+  //       JSON.stringify(returnedLocalResolvedElementJzodSchemaBasedOnValue, null, 2)
+  //   );
+  // }
+  // const localResolvedElementJzodSchemaBasedOnValue: JzodElement =
+  //   returnedLocalResolvedElementJzodSchemaBasedOnValue.element;
+  const localResolvedElementJzodSchemaBasedOnValue: JzodElement | undefined =
+    props.localRootLessListKeyMap
+      ? props.localRootLessListKeyMap[props.rootLessListKey].resolvedElementJzodSchema
+      : undefined;
 
-  // ??
+  log.info(
+    "getJzodElementEditorHooks",
+    "rootLessListKey",
+    props.rootLessListKey,
+    "localResolvedElementJzodSchemaBasedOnValue",
+    localResolvedElementJzodSchemaBasedOnValue,
+    // JSON.stringify(localResolvedElementJzodSchemaBasedOnValue, null, 2),
+    "props.localRootLessListKeyMap",
+    props.localRootLessListKeyMap
+
+  );
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState> =
     useMemo(() => getMemoizedDeploymentEntityStateSelectorMap(), []);
 
@@ -180,7 +195,7 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
     //   "caught error upon calling unfoldJzodSchemaOnce! count",
     //   count,
     //   "key",
-    //   props.rootLesslistKey,
+    //   props.rootLessListKey,
     //   "error",
     //   e
     // );
@@ -281,7 +296,10 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
                   ),
                   parentName: "",
                   parentUuid: unfoldedRawSchema.tag?.value?.targetEntity,
-                  orderBy: { attributeName: unfoldedRawSchema.tag?.value?.targetEntityOrderInstancesBy??"name" },
+                  orderBy: {
+                    attributeName:
+                      unfoldedRawSchema.tag?.value?.targetEntityOrderInstancesBy ?? "name",
+                  },
                 },
               },
             }

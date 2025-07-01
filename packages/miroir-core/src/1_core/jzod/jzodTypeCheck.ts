@@ -434,6 +434,23 @@ export function jzodUnionResolvedTypeForObject(
 // #####################################################################################################
 // #####################################################################################################
 // #####################################################################################################
+/**
+ * jzodTypeCheck is the main function to check if a valueObject matches a JzodElement schema.
+ * It recursively checks the schema and returns a ResolvedJzodSchemaReturnType.
+ * 
+ * Basically, it removes the unions and references from the JzodElement schema,
+ * getting a node-for-node representation of the schema,
+ * and checks if the valueObject matches the schema.
+ * 
+ * @param jzodSchema - The JzodElement schema to check against.
+ * @param valueObject - The value object to check.
+ * @param currentValuePath - The current path in the value object.
+ * @param currentTypePath - The current path in the type schema.
+ * @param miroirFundamentalJzodSchema - The fundamental Jzod schema for reference resolution.
+ * @param currentModel - The current model being processed.
+ * @param miroirMetaModel - The meta model for the Miroir framework.
+ * @param relativeReferenceJzodContext - Context for resolving relative references in Jzod schemas.
+ */
 export function jzodTypeCheck(
   jzodSchema: JzodElement,
   valueObject: any,

@@ -4,7 +4,6 @@ import { ErrorBoundary, withErrorBoundary } from "react-error-boundary";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import { Card, CardContent, MenuItem, Switch } from "@mui/material";
-import Checkbox from "@mui/material/Checkbox";
 import TextField from '@mui/material/TextField';
 
 import {
@@ -33,7 +32,6 @@ import {
   StyledSelect
 } from "./Style.js";
 import { ErrorFallbackComponent } from "./ErrorFallbackComponent.js";
-import { L } from "vitest/dist/chunks/reporters.D7Jzd9GS.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -112,6 +110,7 @@ let count = 0;
 
 function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element {
   count++;
+
   const {
     // general use
     context,
@@ -130,6 +129,7 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
     // current value and schema ##########################
     currentValue,
     localResolvedElementJzodSchemaBasedOnValue,
+    // rootLessListKeyMap,
     unfoldedRawSchema,
     // miroirMetaModel,
     recursivelyUnfoldedRawSchema,
@@ -153,7 +153,7 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
     (event: React.ChangeEvent<HTMLInputElement>) => {
       log.info(
         "handleDisplayAsStructuredElementSwitchChange",
-        props.rootLesslistKey,
+        props.rootLessListKey,
         "Switching display mode to:",
         event.target.checked
       );
@@ -164,8 +164,8 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
             "handleDisplayAsStructuredElementSwitchChange Parsed CodeMirror value for structured element display:",
             mStringify(parsedCodeMirrorValue, null, 2)
           );
-          if (props.rootLesslistKey && props.rootLesslistKey.length > 0) {
-            formik.setFieldValue(props.rootLesslistKey, parsedCodeMirrorValue);
+          if (props.rootLessListKey && props.rootLessListKey.length > 0) {
+            formik.setFieldValue(props.rootLessListKey, parsedCodeMirrorValue);
           } else {
             formik.setValues(parsedCodeMirrorValue);
           }
@@ -184,12 +184,32 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
       currentValue,
       codeMirrorValue,
       formik,
-      props.rootLesslistKey,
+      props.rootLessListKey,
       setCodeMirrorValue,
       setDisplayAsStructuredElement,
     ]
   );
   
+  // const localResolvedElementJzodSchemaBasedOnValue = rootLessListKeyMap[props.rootLessListKey]?.resolvedElementJzodSchema;
+  if (!localResolvedElementJzodSchemaBasedOnValue) {
+    log.error(
+      "JzodElementEditorComponent",
+      count,
+      "No resolved schema found for rootLessListKey",
+      props.rootLessListKey,
+      "with value",
+      currentValue
+    );
+    return (
+      <div>
+        Could not find resolved schema for item: {props.rootLessListKey}
+        <br />
+        value {JSON.stringify(currentValue, null, 2)}
+        <br />
+        raw Jzod schema: {JSON.stringify(props.rawJzodSchema, null, 2)}
+      </div>
+    );
+  }
   // Determine if the element is an object, array or any type
   const objectOrArrayOrAny = useMemo(() => 
     ["any", "object", "record", "array", "tuple"].includes(
@@ -204,8 +224,8 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
         {objectOrArrayOrAny ? (
           <Switch
             checked={displayAsStructuredElement}
-            id={`displayAsStructuredElementSwitch-${props.rootLesslistKey}`}
-            name={`displayAsStructuredElementSwitch-${props.rootLesslistKey}`}
+            id={`displayAsStructuredElementSwitch-${props.rootLessListKey}`}
+            name={`displayAsStructuredElementSwitch-${props.rootLessListKey}`}
             onChange={handleDisplayAsStructuredElementSwitchChange}
             inputProps={{ "aria-label": `Display as structured element` }}
             disabled={!codeMirrorIsValidJson}
@@ -240,8 +260,8 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
           setCodeMirrorValue={setCodeMirrorValue}
           codeMirrorIsValidJson={codeMirrorIsValidJson}
           setCodeMirrorIsValidJson={setCodeMirrorIsValidJson}
-          rootLesslistKey={props.rootLesslistKey}
-          rootLesslistKeyArray={props.rootLesslistKeyArray}
+          rootLessListKey={props.rootLessListKey}
+          rootLessListKeyArray={props.rootLessListKeyArray}
           hidden={props.hidden || displayAsStructuredElement}
           insideAny={props.insideAny}
           isUnderTest={isUnderTest}
@@ -258,8 +278,8 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
       setCodeMirrorValue,
       codeMirrorIsValidJson,
       setCodeMirrorIsValidJson,
-      props.rootLesslistKey,
-      props.rootLesslistKeyArray,
+      props.rootLessListKey,
+      props.rootLessListKeyArray,
       props.hidden,
       displayAsStructuredElement,
       props.insideAny,
@@ -295,9 +315,9 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
     if (!localResolvedElementJzodSchemaBasedOnValue || !props.rawJzodSchema) {
       return (
         <div>
-          Could not find schema for item: {props.rootLesslistKey}
+          Could not find schema for item: {props.rootLessListKey}
           <br />
-          value {formik.values[props.rootLesslistKey]}
+          value {formik.values[props.rootLessListKey]}
           <br />
           raw Jzod schema: {JSON.stringify(props.rawJzodSchema)}
           <br />
@@ -341,8 +361,9 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
           name={props.name}
           labelElement={props.labelElement}
           listKey={props.listKey}
-          rootLesslistKey={props.rootLesslistKey}
-          rootLesslistKeyArray={props.rootLesslistKeyArray}
+          rootLessListKey={props.rootLessListKey}
+          rootLessListKeyArray={props.rootLessListKeyArray}
+          localRootLessListKeyMap={props.localRootLessListKeyMap}
           rawJzodSchema={props.rawJzodSchema}
           currentDeploymentUuid={props.currentDeploymentUuid}
           currentApplicationSection={props.currentApplicationSection}
@@ -371,13 +392,14 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
             labelElement={props.labelElement}
             listKey={props.listKey}
             indentLevel={props.indentLevel + 1}
-            rootLesslistKey={props.rootLesslistKey}
-            rootLesslistKeyArray={props.rootLesslistKeyArray}
+            rootLessListKey={props.rootLessListKey}
+            rootLessListKeyArray={props.rootLessListKeyArray}
             rawJzodSchema={props.rawJzodSchema}
+            resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
+            localRootLessListKeyMap={props.localRootLessListKeyMap}
             currentDeploymentUuid={props.currentDeploymentUuid}
             currentApplicationSection={props.currentApplicationSection}
             unionInformation={unionInformation}
-            resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
             foreignKeyObjects={foreignKeyObjects}
             hidden={hideSubJzodEditor}
             displayAsStructuredElementSwitch={displayAsStructuredElementSwitch}
@@ -391,11 +413,16 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
       case "array": {
         return (
           <JzodArrayEditor
-            {...props}
-            key={props.rootLesslistKey}
-            rootLesslistKeyArray={props.rootLesslistKeyArray}
-            rootLesslistKey={props.rootLesslistKey}
+            // {...props}
+            listKey={props.listKey}
+            name={props.name}
+            labelElement={props.labelElement}
+            key={props.rootLessListKey}
+            rootLessListKeyArray={props.rootLessListKeyArray}
+            rootLessListKey={props.rootLessListKey}
             rawJzodSchema={props.rawJzodSchema}
+            resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
+            localRootLessListKeyMap={props.localRootLessListKeyMap}
             unfoldedRawSchema={unfoldedRawSchema as any}
             indentLevel={props.indentLevel + 1}
             itemsOrder={itemsOrder}
@@ -414,20 +441,20 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
         );
       }
       case "boolean": {
-        const fieldProps = formik.getFieldProps(props.rootLesslistKey);
+        const fieldProps = formik.getFieldProps(props.rootLessListKey);
         return (
           LabeledEditor({
             labelElement: props.labelElement ?? <></>,
             editor: (
               <Switch
-                id={props.rootLesslistKey}
-                key={props.rootLesslistKey}
-                aria-label={props.rootLesslistKey}
+                id={props.rootLessListKey}
+                key={props.rootLessListKey}
+                aria-label={props.rootLessListKey}
                 {...fieldProps}
-                name={props.rootLesslistKey}
+                name={props.rootLessListKey}
                 checked={fieldProps.value}
                 onChange={(e) => {
-                  formik.setFieldValue(props.rootLesslistKey, e.target.checked);
+                  formik.setFieldValue(props.rootLessListKey, e.target.checked);
                 }}
               />
             ),
@@ -441,13 +468,13 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
             <TextField
               variant="standard"
               data-testid="miroirInput"
-              id={props.rootLesslistKey}
-              key={props.rootLesslistKey}
+              id={props.rootLessListKey}
+              key={props.rootLessListKey}
               type="number"
               role="textbox"
               style={{ width: "100%" }}
-              {...formik.getFieldProps(props.rootLesslistKey)}
-              name={props.rootLesslistKey}
+              {...formik.getFieldProps(props.rootLessListKey)}
+              name={props.rootLessListKey}
             />
           ),
         });
@@ -459,18 +486,18 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
             <TextField
               variant="standard"
               data-testid="miroirInput"
-              id={props.rootLesslistKey}
-              key={props.rootLesslistKey}
+              id={props.rootLessListKey}
+              key={props.rootLessListKey}
               type="text"
               role="textbox"
               style={{ width: "100%" }}
-              {...formik.getFieldProps(props.rootLesslistKey)}
+              {...formik.getFieldProps(props.rootLessListKey)}
               value={currentValue.toString()}
               onChange={(e) => {
                 const value = e.target.value;
-                formik.setFieldValue(props.rootLesslistKey, value ? BigInt(value) : BigInt(0));
+                formik.setFieldValue(props.rootLessListKey, value ? BigInt(value) : BigInt(0));
               }}
-              name={props.rootLesslistKey}
+              name={props.rootLessListKey}
             />
           )
         });
@@ -483,10 +510,10 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
               <TextField
                 variant="standard"
                 data-testid="miroirInput"
-                id={props.rootLesslistKey}
-                key={props.rootLesslistKey}
-                {...formik.getFieldProps(props.rootLesslistKey)}
-                name={props.rootLesslistKey}
+                id={props.rootLessListKey}
+                key={props.rootLessListKey}
+                {...formik.getFieldProps(props.rootLessListKey)}
+                name={props.rootLessListKey}
               />
             }
           />
@@ -498,10 +525,10 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
             labelElement: props.labelElement ?? <></>,
             editor: (
               <StyledSelect
-                id={props.rootLesslistKey}
-                key={props.rootLesslistKey}
+                id={props.rootLessListKey}
+                key={props.rootLessListKey}
                 data-testid="miroirInput"
-                aria-label={props.rootLesslistKey}
+                aria-label={props.rootLessListKey}
                 labelId="demo-simple-select-label"
                 variant="standard"
                 style={{ 
@@ -510,12 +537,12 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
                   maxWidth: "400px"
                 }}
                 role="textbox"
-                {...formik.getFieldProps(props.rootLesslistKey)}
-                name={props.rootLesslistKey}
+                {...formik.getFieldProps(props.rootLessListKey)}
+                name={props.rootLessListKey}
               >
                 {stringSelectList.map((e: [string, EntityInstance], index: number) => (
                   <MenuItem
-                    id={props.rootLesslistKey + "." + index}
+                    id={props.rootLessListKey + "." + index}
                     key={e[1].uuid}
                     value={e[1].uuid}
                   >
@@ -526,7 +553,7 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
             ),
           });
         } else {
-            const currentUuidValue = formik.values[props.rootLesslistKey] || "";
+            const currentUuidValue = formik.values[props.rootLessListKey] || "";
             const estimatedWidth = Math.max(200, Math.min(400, currentUuidValue.length * 8 + 40));
             
             return LabeledEditor({
@@ -535,8 +562,8 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
                 <TextField
                   variant="standard"
                   data-testid="miroirInput"
-                  id={props.rootLesslistKey}
-                  key={props.rootLesslistKey}
+                  id={props.rootLessListKey}
+                  key={props.rootLessListKey}
                   type="text"
                   style={{
                     width: `${estimatedWidth}px`,
@@ -544,8 +571,8 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
                     maxWidth: "400px",
                     boxSizing: "border-box",
                   }}
-                  {...formik.getFieldProps(props.rootLesslistKey)}
-                  name={props.rootLesslistKey}
+                  {...formik.getFieldProps(props.rootLessListKey)}
+                  name={props.rootLessListKey}
                 />
               ),
             });
@@ -555,16 +582,17 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
         return (
             <JzodLiteralEditor
               name={props.name}
-              key={props.rootLesslistKey}
+              key={props.rootLessListKey}
               labelElement={props.labelElement}
               currentApplicationSection={props.currentApplicationSection}
               currentDeploymentUuid={props.currentDeploymentUuid}
               listKey={props.listKey}
-              rootLesslistKey={props.rootLesslistKey}
-              rootLesslistKeyArray={props.rootLesslistKeyArray}
+              rootLessListKey={props.rootLessListKey}
+              rootLessListKeyArray={props.rootLessListKeyArray}
               foreignKeyObjects={props.foreignKeyObjects}
               rawJzodSchema={props.rawJzodSchema as JzodLiteral}
               resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
+              localRootLessListKeyMap={props.localRootLessListKeyMap}
               unionInformation={props.unionInformation}
               insideAny={props.insideAny}
             />
@@ -582,12 +610,13 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
             <JzodEnumEditor
               name={props.name}
               labelElement={props.labelElement}
-              key={props.rootLesslistKey}
+              key={props.rootLessListKey}
               listKey={props.listKey}
-              rootLesslistKey={props.rootLesslistKey}
-              rootLesslistKeyArray={props.rootLesslistKeyArray}
+              rootLessListKey={props.rootLessListKey}
+              rootLessListKeyArray={props.rootLessListKeyArray}
               rawJzodSchema={props.rawJzodSchema as any}
               resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
+              localRootLessListKeyMap={props.localRootLessListKeyMap}
               foreignKeyObjects={props.foreignKeyObjects}
               currentApplicationSection={props.currentApplicationSection}
               currentDeploymentUuid={props.currentDeploymentUuid}
@@ -605,14 +634,15 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
           <JzodAnyEditor
             name={props.name}
             labelElement={props.labelElement}
-            key={props.rootLesslistKey}
+            key={props.rootLessListKey}
             listKey={props.listKey}
-            rootLesslistKey={props.rootLesslistKey}
-            rootLesslistKeyArray={props.rootLesslistKeyArray}
+            rootLessListKey={props.rootLessListKey}
+            rootLessListKeyArray={props.rootLessListKeyArray}
             foreignKeyObjects={props.foreignKeyObjects}
             currentApplicationSection={props.currentApplicationSection}
             currentDeploymentUuid={props.currentDeploymentUuid}
             rawJzodSchema={props.rawJzodSchema as JzodLiteral}
+            localRootLessListKeyMap={props.localRootLessListKeyMap}
             resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
             unionInformation={props.unionInformation}
             parentType={props.parentType}
@@ -641,15 +671,15 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
           editor: (
             <input
               type="date"
-              id={props.rootLesslistKey}
-              key={props.rootLesslistKey}
+              id={props.rootLessListKey}
+              key={props.rootLessListKey}
               role="textbox"
               style={{ width: "100%" }}
-              {...formik.getFieldProps(props.rootLesslistKey)}
+              {...formik.getFieldProps(props.rootLessListKey)}
               value={formattedDate}
               onChange={(e) => {
                 const value = e.target.value;
-                formik.setFieldValue(props.rootLesslistKey, value ? new Date(value) : null);
+                formik.setFieldValue(props.rootLessListKey, value ? new Date(value) : null);
               }}
             />
           ),
@@ -659,15 +689,15 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
         //     {props.labelElement}
         //     <input
         //       type="date"
-        //       id={props.rootLesslistKey}
-        //       key={props.rootLesslistKey}
+        //       id={props.rootLessListKey}
+        //       key={props.rootLessListKey}
         //       role="textbox"
         //       style={{ width: "100%" }}
-        //       {...formik.getFieldProps(props.rootLesslistKey)}
+        //       {...formik.getFieldProps(props.rootLessListKey)}
         //       value={formattedDate}
         //       onChange={(e) => {
         //         const value = e.target.value;
-        //         formik.setFieldValue(props.rootLesslistKey, value ? new Date(value) : null);
+        //         formik.setFieldValue(props.rootLessListKey, value ? new Date(value) : null);
         //       }}
         //     />
         //   </span>
@@ -741,7 +771,7 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
           context={{
               origin: "JzodElementEditor",
               objectType: "object",
-              rootLesslistKey: props.rootLesslistKey,
+              rootLessListKey: props.rootLessListKey,
               // attributeRootLessListKeyArray: p,
               // attributeName: attribute[0],
               // attributeListKey,
@@ -754,12 +784,12 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
         )}
       >
         {/* <span>
-          {props.rootLesslistKey}: {localResolvedElementJzodSchemaBasedOnValue.type}
+          {props.rootLessListKey}: {localResolvedElementJzodSchemaBasedOnValue.type}
         </span> */}
         {objectOrArrayOrAny ? (
           <Card
-            id={props.rootLesslistKey}
-            key={props.rootLesslistKey}
+            id={props.rootLessListKey}
+            key={props.rootLessListKey}
             style={{
               padding: "1px",
               width: "calc(100% - 10px)",

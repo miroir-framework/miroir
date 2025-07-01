@@ -2,12 +2,12 @@
 import { javascript } from "@codemirror/lang-javascript";
 // import CodeMirror from '@uiw/react-codemirror';
 // import {ReactCodeMirror} from '@uiw/react-codemirror';
-import ReactCodeMirror, { useCodeMirror } from '@uiw/react-codemirror';
-import { alterObjectAtPath, JzodElement, LoggerInterface, MiroirLoggerFactory } from "miroir-core";
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { JzodElementEditorReactCodeMirrorProps } from "./JzodElementEditorInterface";
+import ReactCodeMirror from '@uiw/react-codemirror';
+import { LoggerInterface, MiroirLoggerFactory } from "miroir-core";
+import React, { useCallback } from "react";
 import { packageName } from "../../../constants";
 import { cleanLevel } from "../constants";
+import { JzodElementEditorReactCodeMirrorProps } from "./JzodElementEditorInterface";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -28,8 +28,8 @@ const JzodElementEditorReactCodeMirrorComponent: React.FC<JzodElementEditorReact
     setCodeMirrorValue,
     codeMirrorIsValidJson,
     setCodeMirrorIsValidJson,
-    rootLesslistKey,
-    rootLesslistKeyArray,
+    rootLessListKey,
+    rootLessListKeyArray,
     hidden,
     insideAny,
     displayAsStructuredElementSwitch,

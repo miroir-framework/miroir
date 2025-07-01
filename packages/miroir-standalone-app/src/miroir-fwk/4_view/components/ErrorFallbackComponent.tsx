@@ -16,7 +16,7 @@ export interface ErrorFallbackComponentProps {
   context: {
     origin?: string; // used to identify the origin of the error, e.g., "JzodElementEditor"
     objectType: string;
-    rootLesslistKey: string;
+    rootLessListKey: string;
     attributeRootLessListKeyArray?: (string | number)[];
     attributeName?: string;
     attributeListKey?: string;
@@ -35,7 +35,7 @@ export const ErrorFallbackComponent: React.FC<ErrorFallbackComponentProps> = ({
   const {
     origin,
     objectType,
-    rootLesslistKey,
+    rootLessListKey,
     attributeRootLessListKeyArray,
     attributeName,
     attributeListKey,
@@ -47,7 +47,7 @@ export const ErrorFallbackComponent: React.FC<ErrorFallbackComponentProps> = ({
 
   log.error(
     `${objectType} errorboundary for`,
-    attributeListKey || rootLesslistKey,
+    attributeListKey || rootLessListKey,
     "currentValue",
     currentValue,
     "error",
@@ -58,7 +58,7 @@ export const ErrorFallbackComponent: React.FC<ErrorFallbackComponentProps> = ({
     <div role="alert">
       <div style={{ color: "red" }}>
         <p>Something went wrong in {origin??"unspecified"}</p>
-        <div key="1">{objectType} {rootLesslistKey}</div>
+        <div key="1">{objectType} {rootLessListKey}</div>
         {attributeRootLessListKeyArray && (
           <div key="2">attribute {attributeRootLessListKeyArray.join(".")}</div>
         )}
@@ -88,13 +88,13 @@ export const ErrorFallbackComponent: React.FC<ErrorFallbackComponentProps> = ({
         )}
         {rawJzodSchema && (
           <div key="5">
-            {rootLesslistKey} rawJzodSchema: <pre>{JSON.stringify(rawJzodSchema, null, 2)}</pre>
+            {rootLessListKey} rawJzodSchema: <pre>{JSON.stringify(rawJzodSchema, null, 2)}</pre>
           </div>
         )}
         <div key="6"></div>
         {localResolvedElementJzodSchemaBasedOnValue && (
           <>
-            {rootLesslistKey} resolved type:{" "}
+            {rootLessListKey} resolved type:{" "}
             <pre>
               {JSON.stringify(localResolvedElementJzodSchemaBasedOnValue, null, 2)}
             </pre>

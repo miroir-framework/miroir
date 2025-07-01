@@ -24,17 +24,17 @@ export const JzodEnumEditor = React.memo(
     labelElement,
     rawJzodSchema,
     listKey,
-    rootLesslistKey,
-    rootLesslistKeyArray,
+    rootLessListKey,
+    rootLessListKeyArray,
     forceTestingMode,
     unionInformation,
   }: JzodEnumEditorProps) {
-    // const currentValue = resolvePathOnObject(props.formik.values, props.rootLesslistKeyArray);
+    // const currentValue = resolvePathOnObject(props.formik.values, props.rootLessListKeyArray);
     const formik = useFormikContext<Record<string, any>>();
 
     // Log only when component renders to track performance
     // log.info(
-    //   `JzodEnumEditor: render for ${name}, rootLesslistKey=${rootLesslistKey}, rawJzodSchema=${JSON.stringify(
+    //   `JzodEnumEditor: render for ${name}, rootLessListKey=${rootLessListKey}, rawJzodSchema=${JSON.stringify(
     //     rawJzodSchema
     //   )}`,
     //   `unionInformation=${JSON.stringify(unionInformation)}`
@@ -53,30 +53,30 @@ export const JzodEnumEditor = React.memo(
     const menuItems = useMemo(() => {
       if (isDiscriminator) {
         return unionInformation?.discriminatorValues.map((v, index) => (
-          <MenuItem key={v} value={v} aria-label={rootLesslistKey + "." + index}>
+          <MenuItem key={v} value={v} aria-label={rootLessListKey + "." + index}>
             {v}
           </MenuItem>
         ));
       } else {
         return (rawJzodSchema as JzodEnum).definition.map((v, index) => (
-          <MenuItem key={v} value={v} aria-label={rootLesslistKey + "." + index}>
+          <MenuItem key={v} value={v} aria-label={rootLessListKey + "." + index}>
             {v}
           </MenuItem>
         ));
       }
-    }, [isDiscriminator, unionInformation, rawJzodSchema, rootLesslistKey]);
+    }, [isDiscriminator, unionInformation, rawJzodSchema, rootLessListKey]);
 
     return LabeledEditor({
       labelElement: labelElement ?? <></>,
       editor: isDiscriminator ? (
         <>
           <StyledSelect
-            id={rootLesslistKey}
-            // aria-label={rootLesslistKey}
+            id={rootLessListKey}
+            // aria-label={rootLessListKey}
             labelId="demo-simple-select-label"
             variant="standard"
-            {...formik.getFieldProps(rootLesslistKey)}
-            name={rootLesslistKey}
+            {...formik.getFieldProps(rootLessListKey)}
+            name={rootLessListKey}
           >
             {menuItems}
           </StyledSelect>
@@ -85,12 +85,12 @@ export const JzodEnumEditor = React.memo(
       ) : (
         <>
           <StyledSelect
-            id={rootLesslistKey}
-            // aria-label={rootLesslistKey}
+            id={rootLessListKey}
+            // aria-label={rootLessListKey}
             labelId="demo-simple-select-label"
             variant="standard"
-            {...formik.getFieldProps(rootLesslistKey)}
-            name={rootLesslistKey}
+            {...formik.getFieldProps(rootLessListKey)}
+            name={rootLessListKey}
           >
             {menuItems}
           </StyledSelect>
@@ -108,12 +108,12 @@ export const JzodEnumEditor = React.memo(
         {isDiscriminator ? (
           <>
             <StyledSelect
-              id={rootLesslistKey}
-              // aria-label={rootLesslistKey}
+              id={rootLessListKey}
+              // aria-label={rootLessListKey}
               labelId="demo-simple-select-label"
               variant="standard"
-              {...formik.getFieldProps(rootLesslistKey)}
-              name={rootLesslistKey}
+              {...formik.getFieldProps(rootLessListKey)}
+              name={rootLessListKey}
             >
               {menuItems}
             </StyledSelect>
@@ -122,12 +122,12 @@ export const JzodEnumEditor = React.memo(
         ) : (
           <>
             <StyledSelect
-              id={rootLesslistKey}
-              // aria-label={rootLesslistKey}
+              id={rootLessListKey}
+              // aria-label={rootLessListKey}
               labelId="demo-simple-select-label"
               variant="standard"
-              {...formik.getFieldProps(rootLesslistKey)}
-              name={rootLesslistKey}
+              {...formik.getFieldProps(rootLessListKey)}
+              name={rootLessListKey}
             >
               {menuItems}
             </StyledSelect>
@@ -144,7 +144,7 @@ export const JzodEnumEditor = React.memo(
   (prevProps, nextProps) => {
     // Custom comparison for React.memo
     return (
-      prevProps.rootLesslistKey === nextProps.rootLesslistKey &&
+      prevProps.rootLessListKey === nextProps.rootLessListKey &&
       prevProps.name === nextProps.name &&
       JSON.stringify(prevProps.rawJzodSchema) === JSON.stringify(nextProps.rawJzodSchema) &&
       JSON.stringify(prevProps.unionInformation) === JSON.stringify(nextProps.unionInformation)

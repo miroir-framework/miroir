@@ -109,8 +109,8 @@ export interface JsonElementEditorWrapperProps {
   label?: string;
   name: string,
   listKey: string,
-  rootLesslistKey: string,
-  rootLesslistKeyArray: string[],
+  rootLessListKey: string,
+  rootLessListKeyArray: string[],
   indentLevel?:number,
   unresolvedJzodSchema?: JzodElement | undefined,
   unionInformation?: {
@@ -173,8 +173,8 @@ function JzodObjectFormEditorWrapper(props: JsonElementEditorWrapperProps) {
             name={props.name}
             label={props.label}
             listKey={props.listKey}
-            rootLesslistKey={props.rootLesslistKey}
-            rootLesslistKeyArray={props.rootLesslistKeyArray}
+            rootLessListKey={props.rootLessListKey}
+            rootLessListKeyArray={props.rootLessListKeyArray}
             foreignKeyObjects={props.foreignKeyObjects}
             unresolvedJzodSchema={props.unresolvedJzodSchema}
             unionInformation={props.unionInformation}
@@ -221,8 +221,8 @@ export interface RoleQuery {
 //           initialValue={initialValue}
 //           name={attributeName}
 //           listKey={listKey}
-//           rootLesslistKey={attributeName}
-//           rootLesslistKeyArray={[attributeName]}
+//           rootLessListKey={attributeName}
+//           rootLessListKeyArray={[attributeName]}
 //           label={label}
 //           currentDeploymentUuid={adminConfigurationDeploymentLibrary.uuid}
 //           currentApplicationSection={"data"}
@@ -300,8 +300,8 @@ describe(
     //             initialValue={initialValue}
     //             name={attributeName}
     //             listKey={listKey}
-    //             rootLesslistKey={attributeName}
-    //             rootLesslistKeyArray={[attributeName]}
+    //             rootLessListKey={attributeName}
+    //             rootLessListKeyArray={[attributeName]}
     //             label={label}
     //             currentDeploymentUuid={adminConfigurationDeploymentLibrary.uuid}
     //             currentApplicationSection={"data"}
@@ -356,8 +356,8 @@ describe(
     //             initialValue={initialValue}
     //             name={attributeName}
     //             listKey={listKey}
-    //             rootLesslistKey={attributeName}
-    //             rootLesslistKeyArray={[attributeName]}
+    //             rootLessListKey={attributeName}
+    //             rootLessListKeyArray={[attributeName]}
     //             label={label}
     //             currentDeploymentUuid={adminConfigurationDeploymentLibrary.uuid}
     //             currentApplicationSection={"data"}
@@ -470,8 +470,8 @@ describe(
     //             initialValue={formInitialValue}
     //             name={attributeName}
     //             listKey={listKey}
-    //             rootLesslistKey={""}
-    //             rootLesslistKeyArray={[]}
+    //             rootLessListKey={""}
+    //             rootLessListKeyArray={[]}
     //             label={label}
     //             currentDeploymentUuid={adminConfigurationDeploymentLibrary.uuid}
     //             currentApplicationSection={"data"}
@@ -588,8 +588,8 @@ describe(
     //             initialValue={formInitialValue}
     //             name={attributeName}
     //             listKey={listKey}
-    //             rootLesslistKey={""}
-    //             rootLesslistKeyArray={[]}
+    //             rootLessListKey={""}
+    //             rootLessListKeyArray={[]}
     //             label={label}
     //             currentDeploymentUuid={adminConfigurationDeploymentLibrary.uuid}
     //             currentApplicationSection={"data"}
@@ -732,8 +732,8 @@ describe(
                 initialValue={formInitialValue}
                 name={attributeName}
                 listKey={listKey}
-                rootLesslistKey={""}
-                rootLesslistKeyArray={[]}
+                rootLessListKey={""}
+                rootLessListKeyArray={[]}
                 label={label}
                 currentDeploymentUuid={adminConfigurationDeploymentLibrary.uuid}
                 currentApplicationSection={"data"}

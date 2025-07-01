@@ -622,6 +622,7 @@ export { getApplicationSection } from "./1_core/AdminApplication.js";
 export { alterObjectAtPath, deleteObjectAtPath } from "./1_core/alterObjectAtPath.js";
 export { ACTION_OK } from "./1_core/constants.js";
 export { DomainInstanceUuidIndexToArray } from "./1_core/DomainState.js";
+export { rootLessListKeyMap } from "./1_core/jzod/rootLessListKeyMap";
 export {
   getDefaultValueForJzodSchema,
   getDefaultValueForJzodSchemaWithResolution,

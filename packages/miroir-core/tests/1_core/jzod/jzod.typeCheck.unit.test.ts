@@ -677,6 +677,7 @@ describe("jzod.typeCheck", () => {
       // simple union Type
       test120: {
         miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+        testValueObject: 1, // this is the object
         testSchema: {
           type: "union",
           definition: [
@@ -686,42 +687,16 @@ describe("jzod.typeCheck", () => {
             {
               type: "number",
             },
-            // {
-            //   type: "schemaReference",
-            //   context: {
-            //     myObjectRoot: {
-            //       type: "object",
-            //       definition: {
-            //         a: {
-            //           type: "string",
-            //         },
-            //       },
-            //     },
-            //     myObject: {
-            //       type: "object",
-            //       extend: {
-            //         type: "schemaReference",
-            //         definition: { relativePath: "myObjectRoot" },
-            //       },
-            //       definition: {
-            //         b: {
-            //           type: "string",
-            //         },
-            //       },
-            //     },
-            //   },
-            //   definition: { relativePath: "myObject" },
-            // },
           ],
         },
         expectedResult: {
           type: "number",
         },
-        testValueObject: 1, // this is the object
       },
       // union between simpleType and object, object value
       test130: {
         miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+        testValueObject: { a: "myString" }, // this is the object
         testSchema: {
           type: "union",
           definition: [
@@ -738,7 +713,6 @@ describe("jzod.typeCheck", () => {
             },
           ],
         },
-        testValueObject: { a: "myString" }, // this is the object
         expectedResult: {
           type: "object",
           definition: {

@@ -24,7 +24,8 @@ import {
   dummyDomainManyQueryWithDeploymentUuid,
   getApplicationSection,
   getQueryRunnerParamsForDeploymentEntityState,
-  jzodTypeCheck
+  jzodTypeCheck,
+  rootLessListKeyMap
 } from "miroir-core";
 
 import {
@@ -76,6 +77,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
 
   const [displayAsStructuredElement, setDisplayAsStructuredElement] = useState(true);
   const [displayEditor, setDisplayEditor] = useState(true);
+  const [refreshLocalRootLessListKeyMap, setRefreshLocalRootLessListKeyMap] = useState(true);
+
   // const [formState, setFormState] = useState<any>(props.instance);
   // const [codeMirrorValue, setCodeMirrorValue] = useState<string>(() =>
   //   // "\"start!\""
@@ -182,6 +185,40 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     return <>ReportSectionEntityInstance: could not resolve jzod schema: {JSON.stringify(resolvedJzodSchema)}</>;
   }
 
+  const localRootLessListKeyMap:
+    | Record<string, { resolvedElementJzodSchema: JzodElement }>
+    | undefined = useMemo(() => {
+    const result =
+      context.miroirFundamentalJzodSchema != undefined &&
+      currentReportTargetEntityDefinition?.jzodSchema &&
+      instance &&
+      currentModel
+        ? rootLessListKeyMap(
+            "",
+            currentReportTargetEntityDefinition?.jzodSchema,
+            currentModel,
+            currentMiroirModel,
+            context.miroirFundamentalJzodSchema,
+            instance
+          )
+        : undefined;
+    log.info(
+      "getJzodElementEditorHooks",
+      "rootLessListKeyMap",
+      result
+      // props.rootLessListKey,
+      // props.rawJzodSchema?.type
+    );
+    return result;
+  }, [
+    currentReportTargetEntityDefinition?.jzodSchema,
+    currentModel,
+    currentMiroirModel,
+    context.miroirFundamentalJzodSchema,
+    instance,
+  ]);
+  log.info("getJzodElementEditorHooks", "rootLessListKeyMap", localRootLessListKeyMap);
+  
   const foreignKeyObjectsFetchQueryParams: SyncQueryRunnerParams<DeploymentEntityState> = useMemo(
     () =>
       getQueryRunnerParamsForDeploymentEntityState(
@@ -379,8 +416,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                             <JzodElementEditor
                               name={"ROOT"}
                               listKey={"ROOT"}
-                              rootLesslistKey=""
-                              rootLesslistKeyArray={[]}
+                              rootLessListKey=""
+                              rootLessListKeyArray={[]}
                               labelElement={labelElement}
                               indentLevel={0}
                               currentDeploymentUuid={props.deploymentUuid}
@@ -391,6 +428,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                                   ? resolvedJzodSchema.element
                                   : undefined
                               }
+                              localRootLessListKeyMap={localRootLessListKeyMap}
+                              // localRootLessListKeyMap={{}}
                               foreignKeyObjects={foreignKeyObjects}
                               submitButton={
                                 <button

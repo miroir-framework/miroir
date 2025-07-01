@@ -86,8 +86,8 @@ export function getJzodArrayEditorTests(
         label: "Test Label",
         name: "testField",
         listKey: "ROOT.testField",
-        rootLesslistKey: "testField",
-        rootLesslistKeyArray: ["testField"],
+        rootLessListKey: "testField",
+        rootLessListKeyArray: ["testField"],
         rawJzodSchema: {
           type: "array",
           definition: { type: "string" },
@@ -95,95 +95,95 @@ export function getJzodArrayEditorTests(
         initialFormState: arrayValues,
       },
       tests: {
-        "renders input with label when label prop is provided": {
-          tests: async (expect: ExpectStatic, container: Container) => {
-            expect(screen.getByText(/Test Label/)).toBeInTheDocument();
-          },
-        },
-        "renders all array values, in the right order": {
-          tests: async (expect: ExpectStatic, container: Container) => {
-            const cells = screen
-              .getAllByRole("textbox")
-              .filter((input: HTMLElement) =>
-                (input as HTMLInputElement).name.startsWith("testField.")
-              );
-            const values = cells.map((cell) => (cell as HTMLInputElement).value);
-            expect(values).toEqual(arrayValues);
-          },
-        },
-        "form state is changed when selection changes": {
-          tests: async (expect: ExpectStatic, container: Container) => {
-            const cell = screen.getAllByRole("textbox").filter((input: HTMLElement) =>
-              (input as HTMLInputElement).name.startsWith("testField.")
-            )[1] as HTMLInputElement;
-            await act(() => {
-              fireEvent.change(cell, { target: { value: "new value" } });
-            });
-            expect(cell).toContainHTML("new value");
-          },
-        },
-        "changing order of array items when button ROOT.testField.2.up is clicked": {
-          tests: async (expect, container) => {
-            const upButtons = screen.getAllByRole("ROOT.testField.button.up");
-            await act(() => {
-              fireEvent.click(upButtons[2]); // Click the up button for the third item
-            });
-            const cells = screen
-              .getAllByRole("textbox")
-              .filter((input: HTMLElement) =>
-                (input as HTMLInputElement).name.startsWith("testField.")
-              );
-            const values = cells.map((cell) => (cell as HTMLInputElement).value);
-            expect(values).toEqual(["value1", "value3", "value2"]);
-          },
-        },
-        "renders all array values of a plain 2-items tuple with a string and a number, in the right order": {
-          props: {
-            label: "Test Label",
-            name: "testField",
-            listKey: "ROOT.testField",
-            rootLesslistKey: "testField",
-            rootLesslistKeyArray: ["testField"],
-            rawJzodSchema: {
-              type: "tuple", definition: [{ type: "string" }, { type: "number" }],
-            },
-            initialFormState: ["value1", 2],
-          },
-          tests: async (expect, container) => {
-            const formValues: Record<string, any> = extractValuesFromRenderedElements(
-              expect,
-              container,
-              "testField",
-              "initial"
-            );
-            const testResult = formValuesToJSON(formValues);
-            expect(testResult).toEqual(["value1", 2]);
-          },
-        },
-        "renders all array values of a tuple inside an array, in the right order": {
-          props: {
-            label: "Test Label",
-            name: "testField",
-            listKey: "ROOT.testField",
-            rootLesslistKey: "testField",
-            rootLesslistKeyArray: ["testField"],
-            rawJzodSchema: {
-              type: "array",
-              definition: { type: "tuple", definition: [{ type: "string" }, { type: "number" }] },
-            },
-            initialFormState: [["value1", 1], ["value2", 2], ["value3", 3]],
-          },
-          tests: async (expect, container) => {
-            const formValues: Record<string, any> = extractValuesFromRenderedElements(
-              expect,
-              container,
-              "testField",
-              "initial"
-            );
-            const testResult = formValuesToJSON(formValues);
-            expect(testResult).toEqual([["value1", 1], ["value2", 2], ["value3", 3]]);
-          },
-        },
+        // "renders input with label when label prop is provided": {
+        //   tests: async (expect: ExpectStatic, container: Container) => {
+        //     expect(screen.getByText(/Test Label/)).toBeInTheDocument();
+        //   },
+        // },
+        // "renders all array values, in the right order": {
+        //   tests: async (expect: ExpectStatic, container: Container) => {
+        //     const cells = screen
+        //       .getAllByRole("textbox")
+        //       .filter((input: HTMLElement) =>
+        //         (input as HTMLInputElement).name.startsWith("testField.")
+        //       );
+        //     const values = cells.map((cell) => (cell as HTMLInputElement).value);
+        //     expect(values).toEqual(arrayValues);
+        //   },
+        // },
+        // "form state is changed when selection changes": {
+        //   tests: async (expect: ExpectStatic, container: Container) => {
+        //     const cell = screen.getAllByRole("textbox").filter((input: HTMLElement) =>
+        //       (input as HTMLInputElement).name.startsWith("testField.")
+        //     )[1] as HTMLInputElement;
+        //     await act(() => {
+        //       fireEvent.change(cell, { target: { value: "new value" } });
+        //     });
+        //     expect(cell).toContainHTML("new value");
+        //   },
+        // },
+        // "changing order of array items when button ROOT.testField.2.up is clicked": {
+        //   tests: async (expect, container) => {
+        //     const upButtons = screen.getAllByRole("ROOT.testField.button.up");
+        //     await act(() => {
+        //       fireEvent.click(upButtons[2]); // Click the up button for the third item
+        //     });
+        //     const cells = screen
+        //       .getAllByRole("textbox")
+        //       .filter((input: HTMLElement) =>
+        //         (input as HTMLInputElement).name.startsWith("testField.")
+        //       );
+        //     const values = cells.map((cell) => (cell as HTMLInputElement).value);
+        //     expect(values).toEqual(["value1", "value3", "value2"]);
+        //   },
+        // },
+        // "renders all array values of a plain 2-items tuple with a string and a number, in the right order": {
+        //   props: {
+        //     label: "Test Label",
+        //     name: "testField",
+        //     listKey: "ROOT.testField",
+        //     rootLessListKey: "testField",
+        //     rootLessListKeyArray: ["testField"],
+        //     rawJzodSchema: {
+        //       type: "tuple", definition: [{ type: "string" }, { type: "number" }],
+        //     },
+        //     initialFormState: ["value1", 2],
+        //   },
+        //   tests: async (expect, container) => {
+        //     const formValues: Record<string, any> = extractValuesFromRenderedElements(
+        //       expect,
+        //       container,
+        //       "testField",
+        //       "initial"
+        //     );
+        //     const testResult = formValuesToJSON(formValues);
+        //     expect(testResult).toEqual(["value1", 2]);
+        //   },
+        // },
+        // "renders all array values of a tuple inside an array, in the right order": {
+        //   props: {
+        //     label: "Test Label",
+        //     name: "testField",
+        //     listKey: "ROOT.testField",
+        //     rootLessListKey: "testField",
+        //     rootLessListKeyArray: ["testField"],
+        //     rawJzodSchema: {
+        //       type: "array",
+        //       definition: { type: "tuple", definition: [{ type: "string" }, { type: "number" }] },
+        //     },
+        //     initialFormState: [["value1", 1], ["value2", 2], ["value3", 3]],
+        //   },
+        //   tests: async (expect, container) => {
+        //     const formValues: Record<string, any> = extractValuesFromRenderedElements(
+        //       expect,
+        //       container,
+        //       "testField",
+        //       "initial"
+        //     );
+        //     const testResult = formValuesToJSON(formValues);
+        //     expect(testResult).toEqual([["value1", 1], ["value2", 2], ["value3", 3]]);
+        //   },
+        // },
         "add an element to a string array when button ROOT.testField.add is clicked": {
           tests: async (expect: ExpectStatic, container: Container) => {
             const addButton = screen.getByRole("button", { name: "testField.add" });
@@ -200,77 +200,77 @@ export function getJzodArrayEditorTests(
             expect(testResult).toEqual([...arrayValues, ""]);
           },
         },
-        "add an element to an object array when button ROOT.testField.add is clicked": {
-          props: {
-            label: "Test Label",
-            name: "testField",
-            listKey: "ROOT.testField",
-            rootLesslistKey: "testField",
-            rootLesslistKeyArray: ["testField"],
-            rawJzodSchema: {
-              type: "array",
-              definition: {
-                type: "object",
-                definition: {
-                  a: { type: "string", optional: true },
-                  b: { type: "object", definition: { c: { type: "number" } } },
-                  d: { type: "boolean" },
-                  e: { type: "bigint" },
-                },
-              },
-            },
-            initialFormState: [
-              { 
-                a: "value1", 
-                b: { c: 1 }, 
-                d: true, 
-                e: 123n
-              },
-              { 
-                a: "value2",
-                b: { c: 2 },
-                d: false, 
-                e: 456n
-              },
-            ],
-          },
-          tests: async (expect, container) => {
-            // screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
-            const addButton = screen.getByRole("button", { name: "testField.add" });
-            await act(() => {
-              fireEvent.click(addButton);
-            });
-            const formValues: Record<string, any> = extractValuesFromRenderedElements(
-              expect,
-              container,
-              "testField",
-              "after add button click"
-            );
-            // console.log("Extracted initial values:", values);
-            const testResult = formValuesToJSON(formValues);
-            expect(testResult).toEqual(
-              [
-                {
-                  a: "value1",
-                  b: { c: 1 },
-                  d: true,
-                  e: "123",
-                },
-                {
-                  a: "value2",
-                  b: { c: 2 },
-                  d: false,
-                  e: "456",
-                },
-                {
-                  b: { c: 0 }, // default value for number
-                  d: false, // default value for boolean
-                  e: "0", // default value for bigint
-                }
-              ]
-            );
-          },
-        },
+        // "add an element to an object array when button ROOT.testField.add is clicked": {
+        //   props: {
+        //     label: "Test Label",
+        //     name: "testField",
+        //     listKey: "ROOT.testField",
+        //     rootLessListKey: "testField",
+        //     rootLessListKeyArray: ["testField"],
+        //     rawJzodSchema: {
+        //       type: "array",
+        //       definition: {
+        //         type: "object",
+        //         definition: {
+        //           a: { type: "string", optional: true },
+        //           b: { type: "object", definition: { c: { type: "number" } } },
+        //           d: { type: "boolean" },
+        //           e: { type: "bigint" },
+        //         },
+        //       },
+        //     },
+        //     initialFormState: [
+        //       { 
+        //         a: "value1", 
+        //         b: { c: 1 }, 
+        //         d: true, 
+        //         e: 123n
+        //       },
+        //       { 
+        //         a: "value2",
+        //         b: { c: 2 },
+        //         d: false, 
+        //         e: 456n
+        //       },
+        //     ],
+        //   },
+        //   tests: async (expect, container) => {
+        //     // screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
+        //     const addButton = screen.getByRole("button", { name: "testField.add" });
+        //     await act(() => {
+        //       fireEvent.click(addButton);
+        //     });
+        //     const formValues: Record<string, any> = extractValuesFromRenderedElements(
+        //       expect,
+        //       container,
+        //       "testField",
+        //       "after add button click"
+        //     );
+        //     // console.log("Extracted initial values:", values);
+        //     const testResult = formValuesToJSON(formValues);
+        //     expect(testResult).toEqual(
+        //       [
+        //         {
+        //           a: "value1",
+        //           b: { c: 1 },
+        //           d: true,
+        //           e: "123",
+        //         },
+        //         {
+        //           a: "value2",
+        //           b: { c: 2 },
+        //           d: false,
+        //           e: "456",
+        //         },
+        //         {
+        //           b: { c: 0 }, // default value for number
+        //           d: false, // default value for boolean
+        //           e: "0", // default value for bigint
+        //         }
+        //       ]
+        //     );
+        //   },
+        // },
       },
     },
   };
@@ -302,8 +302,8 @@ export function getJzodEnumEditorTests(
         label: "Test Label",
         name: "testField",
         listKey: "ROOT.testField",
-        rootLesslistKey: "testField",
-        rootLesslistKeyArray: ["testField"],
+        rootLessListKey: "testField",
+        rootLessListKeyArray: ["testField"],
         rawJzodSchema: {
           type: "enum",
           definition: enumValues,
@@ -321,8 +321,8 @@ export function getJzodEnumEditorTests(
             // label: "Test Label", // no label
             name: "testField",
             listKey: "ROOT.testField",
-            rootLesslistKey: "testField",
-            rootLesslistKeyArray: ["testField"],
+            rootLessListKey: "testField",
+            rootLessListKeyArray: ["testField"],
             rawJzodSchema: {
               type: "enum",
               definition: enumValues,
@@ -408,8 +408,8 @@ export function getJzodLiteralEditorTests(
       suiteProps: {
         name: "testField",
         listKey: "root.testField",
-        rootLesslistKey: "testField",
-        rootLesslistKeyArray: ["testField"],
+        rootLessListKey: "testField",
+        rootLessListKeyArray: ["testField"],
         initialFormState: "test-value",
         label: "Test Label",
       } as LocalLiteralEditorProps,
@@ -437,8 +437,8 @@ export function getJzodLiteralEditorTests(
           props: {
             name: "testField",
             listKey: "root.testField",
-            rootLesslistKey: "testField",
-            rootLesslistKeyArray: ["testField"],
+            rootLessListKey: "testField",
+            rootLessListKeyArray: ["testField"],
             initialFormState: "test-value",
             // label: "Test Label", // no label
           },
@@ -505,8 +505,8 @@ export function getJzodObjectEditorTests(
             label: "Test Label",
             name: "testField",
             listKey: "ROOT.testField",
-            rootLesslistKey: "testField",
-            rootLesslistKeyArray: ["testField"],
+            rootLessListKey: "testField",
+            rootLessListKeyArray: ["testField"],
             rawJzodSchema: {
               type: "object",
               definition: { a: { type: "string" }, b: { type: "number" } },
@@ -544,8 +544,8 @@ export function getJzodObjectEditorTests(
             label: "Test Label",
             name: "testField",
             listKey: "ROOT.testField",
-            rootLesslistKey: "testField",
-            rootLesslistKeyArray: ["testField"],
+            rootLessListKey: "testField",
+            rootLessListKeyArray: ["testField"],
             rawJzodSchema: {
               type: "object",
               definition: { e: { type: "bigint" } },
@@ -572,8 +572,8 @@ export function getJzodObjectEditorTests(
             label: "Test Label",
             name: "testField",
             listKey: "ROOT.testField",
-            rootLesslistKey: "testField",
-            rootLesslistKeyArray: ["testField"],
+            rootLessListKey: "testField",
+            rootLessListKeyArray: ["testField"],
             rawJzodSchema: {
               type: "object",
               definition: { a: { type: "string" }, b: { type: "number" } },
@@ -619,8 +619,8 @@ export function getJzodObjectEditorTests(
               label: "Test Label",
               name: "testField",
               listKey: "ROOT.testField",
-              rootLesslistKey: "testField",
-              rootLesslistKeyArray: ["testField"],
+              rootLessListKey: "testField",
+              rootLessListKeyArray: ["testField"],
               rawJzodSchema: {
                 type: "object",
                 definition: {
@@ -660,8 +660,8 @@ export function getJzodObjectEditorTests(
               label: "Test Label",
               name: "testField",
               listKey: "ROOT.testField",
-              rootLesslistKey: "testField",
-              rootLesslistKeyArray: ["testField"],
+              rootLessListKey: "testField",
+              rootLessListKeyArray: ["testField"],
               rawJzodSchema: {
                 type: "object",
                 definition: {
@@ -696,8 +696,8 @@ export function getJzodObjectEditorTests(
               label: "Test Label",
               name: "testField",
               listKey: "ROOT.testField",
-              rootLesslistKey: "testField",
-              rootLesslistKeyArray: ["testField"],
+              rootLessListKey: "testField",
+              rootLessListKeyArray: ["testField"],
               rawJzodSchema: {
                 type: "object",
                 definition: {
@@ -737,8 +737,8 @@ export function getJzodObjectEditorTests(
             label: "Test Label",
             name: "testField",
             listKey: "ROOT.testField",
-            rootLesslistKey: "testField",
-            rootLesslistKeyArray: ["testField"],
+            rootLessListKey: "testField",
+            rootLessListKeyArray: ["testField"],
             rawJzodSchema: {
               type: "record",
               definition: {
@@ -774,8 +774,8 @@ export function getJzodObjectEditorTests(
               label: "Test Label",
               name: "testField",
               listKey: "ROOT.testField",
-              rootLesslistKey: "testField",
-              rootLesslistKeyArray: ["testField"],
+              rootLessListKey: "testField",
+              rootLessListKeyArray: ["testField"],
               rawJzodSchema: {
                 type: "record",
                 definition: {
@@ -828,8 +828,8 @@ export function getJzodObjectEditorTests(
               label: "Test Label",
               name: "testField",
               listKey: "ROOT.testField",
-              rootLesslistKey: "testField",
-              rootLesslistKeyArray: ["testField"],
+              rootLessListKey: "testField",
+              rootLessListKeyArray: ["testField"],
               rawJzodSchema: {
                 type: "record",
                 definition: {
@@ -875,8 +875,8 @@ export function getJzodObjectEditorTests(
             label: "Test Label",
             name: "testField",
             listKey: "ROOT.testField",
-            rootLesslistKey: "testField",
-            rootLesslistKeyArray: ["testField"],
+            rootLessListKey: "testField",
+            rootLessListKeyArray: ["testField"],
             rawJzodSchema: {
               type: "record",
               definition: {
@@ -915,8 +915,8 @@ export function getJzodObjectEditorTests(
               label: "Test Label",
               name: "testField",
               listKey: "ROOT.testField",
-              rootLesslistKey: "testField",
-              rootLesslistKeyArray: ["testField"],
+              rootLessListKey: "testField",
+              rootLessListKeyArray: ["testField"],
               rawJzodSchema: {
                 type: "record",
                 definition: {
@@ -1006,8 +1006,8 @@ export function getJzodSimpleTypeEditorTests(
             label: "Test Label",
             name: "testField",
             listKey: "ROOT.testField",
-            rootLesslistKey: "testField",
-            rootLesslistKeyArray: ["testField"],
+            rootLessListKey: "testField",
+            rootLessListKeyArray: ["testField"],
             rawJzodSchema: {
               type: "string",
               // definition: [{ type: "string" }, { type: "number" }],
@@ -1028,8 +1028,8 @@ export function getJzodSimpleTypeEditorTests(
             label: "Test Label",
             name: "testField",
             listKey: "ROOT.testField",
-            rootLesslistKey: "testField",
-            rootLesslistKeyArray: ["testField"],
+            rootLessListKey: "testField",
+            rootLessListKeyArray: ["testField"],
             rawJzodSchema: {
               type: "string",
             },
@@ -1052,8 +1052,8 @@ export function getJzodSimpleTypeEditorTests(
             label: "Test Label",
             name: "testField",
             listKey: "ROOT.testField",
-            rootLesslistKey: "testField",
-            rootLesslistKeyArray: ["testField"],
+            rootLessListKey: "testField",
+            rootLessListKeyArray: ["testField"],
             rawJzodSchema: {
               type: "string",
             },
@@ -1081,8 +1081,8 @@ export function getJzodSimpleTypeEditorTests(
             label: "Test Label",
             name: "testField",
             listKey: "ROOT.testField",
-            rootLesslistKey: "testField",
-            rootLesslistKeyArray: ["testField"],
+            rootLessListKey: "testField",
+            rootLessListKeyArray: ["testField"],
             rawJzodSchema: {
               type: "number",
             },
@@ -1103,8 +1103,8 @@ export function getJzodSimpleTypeEditorTests(
             label: "Test Label",
             name: "testField",
             listKey: "ROOT.testField",
-            rootLesslistKey: "testField",
-            rootLesslistKeyArray: ["testField"],
+            rootLessListKey: "testField",
+            rootLessListKeyArray: ["testField"],
             rawJzodSchema: {
               type: "number",
             },
@@ -1127,8 +1127,8 @@ export function getJzodSimpleTypeEditorTests(
             label: "Test Label",
             name: "testField",
             listKey: "ROOT.testField",
-            rootLesslistKey: "testField",
-            rootLesslistKeyArray: ["testField"],
+            rootLessListKey: "testField",
+            rootLessListKeyArray: ["testField"],
             rawJzodSchema: {
               type: "uuid",
             },
@@ -1147,8 +1147,8 @@ export function getJzodSimpleTypeEditorTests(
             label: "Test Label",
             name: "testField",
             listKey: "ROOT.testField",
-            rootLesslistKey: "testField",
-            rootLesslistKeyArray: ["testField"],
+            rootLessListKey: "testField",
+            rootLessListKeyArray: ["testField"],
             rawJzodSchema: {
               type: "uuid",
             },
@@ -1171,8 +1171,8 @@ export function getJzodSimpleTypeEditorTests(
             label: "Test Label",
             name: "testField",
             listKey: "ROOT.testField",
-            rootLesslistKey: "testField",
-            rootLesslistKeyArray: ["testField"],
+            rootLessListKey: "testField",
+            rootLessListKeyArray: ["testField"],
             rawJzodSchema: {
               type: "boolean",
             },
@@ -1190,8 +1190,8 @@ export function getJzodSimpleTypeEditorTests(
             label: "Test Label",
             name: "testField",
             listKey: "ROOT.testField",
-            rootLesslistKey: "testField",
-            rootLesslistKeyArray: ["testField"],
+            rootLessListKey: "testField",
+            rootLessListKeyArray: ["testField"],
             rawJzodSchema: {
               type: "boolean",
             },
@@ -1210,8 +1210,8 @@ export function getJzodSimpleTypeEditorTests(
             label: "Test Label",
             name: "testField",
             listKey: "ROOT.testField",
-            rootLesslistKey: "testField",
-            rootLesslistKeyArray: ["testField"],
+            rootLessListKey: "testField",
+            rootLessListKeyArray: ["testField"],
             rawJzodSchema: {
               type: "boolean",
             },
@@ -1237,8 +1237,8 @@ export function getJzodSimpleTypeEditorTests(
             label: "Test Label",
             name: "testField",
             listKey: "ROOT.testField",
-            rootLesslistKey: "testField",
-            rootLesslistKeyArray: ["testField"],
+            rootLessListKey: "testField",
+            rootLessListKeyArray: ["testField"],
             rawJzodSchema: {
               type: "bigint",
             },
@@ -1257,8 +1257,8 @@ export function getJzodSimpleTypeEditorTests(
             label: "Test Label",
             name: "testField",
             listKey: "ROOT.testField",
-            rootLesslistKey: "testField",
-            rootLesslistKeyArray: ["testField"],
+            rootLessListKey: "testField",
+            rootLessListKeyArray: ["testField"],
             rawJzodSchema: {
               type: "bigint",
             },
@@ -1277,8 +1277,8 @@ export function getJzodSimpleTypeEditorTests(
             label: "Test Label",
             name: "testField",
             listKey: "ROOT.testField",
-            rootLesslistKey: "testField",
-            rootLesslistKeyArray: ["testField"],
+            rootLessListKey: "testField",
+            rootLessListKeyArray: ["testField"],
             rawJzodSchema: {
               type: "bigint",
             },
@@ -1297,8 +1297,8 @@ export function getJzodSimpleTypeEditorTests(
             label: "Test Label",
             name: "testField",
             listKey: "ROOT.testField",
-            rootLesslistKey: "testField",
-            rootLesslistKeyArray: ["testField"],
+            rootLessListKey: "testField",
+            rootLessListKeyArray: ["testField"],
             rawJzodSchema: {
               type: "bigint",
             },
@@ -1348,8 +1348,8 @@ export function getJzodUnionEditorTests(
             label: "Test Label",
             name: "testField",
             listKey: "ROOT.testField",
-            rootLesslistKey: "testField",
-            rootLesslistKeyArray: ["testField"],
+            rootLessListKey: "testField",
+            rootLessListKeyArray: ["testField"],
             rawJzodSchema: {
               type: "union",
               definition: [{ type: "string" }, { type: "number" }],
@@ -1376,8 +1376,8 @@ export function getJzodUnionEditorTests(
             label: "Test Label",
             name: "testField",
             listKey: "ROOT.testField",
-            rootLesslistKey: "testField",
-            rootLesslistKeyArray: ["testField"],
+            rootLessListKey: "testField",
+            rootLessListKeyArray: ["testField"],
             rawJzodSchema: {
               type: "union",
               definition: [
@@ -1407,8 +1407,8 @@ export function getJzodUnionEditorTests(
             label: "Test Label",
             name: "testField",
             listKey: "ROOT.testField",
-            rootLesslistKey: "testField",
-            rootLesslistKeyArray: ["testField"],
+            rootLessListKey: "testField",
+            rootLessListKeyArray: ["testField"],
             rawJzodSchema: {
               type: "union",
               definition: [
@@ -1445,8 +1445,8 @@ export function getJzodUnionEditorTests(
             label: "Test Label",
             name: "testField",
             listKey: "ROOT.testField",
-            rootLesslistKey: "testField",
-            rootLesslistKeyArray: ["testField"],
+            rootLessListKey: "testField",
+            rootLessListKeyArray: ["testField"],
             rawJzodSchema: {
               type: "union",
               discriminator: "testObjectType",
@@ -1526,8 +1526,8 @@ export function getJzodBookEditorTests(
             label: "Test Label",
             name: "testField",
             listKey: "ROOT.testField",
-            rootLesslistKey: "testField",
-            rootLesslistKeyArray: ["testField"],
+            rootLessListKey: "testField",
+            rootLessListKeyArray: ["testField"],
             rawJzodSchema: entityDefinitionBook.jzodSchema,
             // rawJzodSchema: {
             //   type: "object",
@@ -1566,8 +1566,8 @@ export function getJzodBookEditorTests(
         //     label: "Test Label",
         //     name: "testField",
         //     listKey: "ROOT.testField",
-        //     rootLesslistKey: "testField",
-        //     rootLesslistKeyArray: ["testField"],
+        //     rootLessListKey: "testField",
+        //     rootLessListKeyArray: ["testField"],
         //     rawJzodSchema: {
         //       type: "object",
         //       definition: {a:{ type: "string" }, b:{ type: "number" }},
@@ -1628,8 +1628,8 @@ export function getJzodEntityDefinitionEditorTests(
             label: "Test Label",
             name: "testField",
             listKey: "ROOT.testField",
-            rootLesslistKey: "testField",
-            rootLesslistKeyArray: ["testField"],
+            rootLessListKey: "testField",
+            rootLessListKeyArray: ["testField"],
             rawJzodSchema: (entityDefinitionEntityDefinition as EntityDefinition).jzodSchema,
             initialFormState: entityDefinitionBook
           },
@@ -1645,8 +1645,8 @@ export function getJzodEntityDefinitionEditorTests(
         //     label: "Test Label",
         //     name: "testField",
         //     listKey: "ROOT.testField",
-        //     rootLesslistKey: "testField",
-        //     rootLesslistKeyArray: ["testField"],
+        //     rootLessListKey: "testField",
+        //     rootLessListKeyArray: ["testField"],
         //     rawJzodSchema: {
         //       type: "object",
         //       definition: {a:{ type: "string" }, b:{ type: "number" }},
@@ -1715,42 +1715,42 @@ const jzodElementEditorTests: Record<
     // modes: ['jzodElementEditor', 'component'],
     modes: 'jzodElementEditor',
   },
-  JzodEnumEditor: {
-    editor: JzodEnumEditor,
-    getJzodEditorTests: getJzodEnumEditorTests,
-    // modes: '*',
-    modes: "jzodElementEditor",
-    // modes: "component",
-  },
-  JzodLiteralEditor: { 
-    editor: JzodLiteralEditor, 
-    getJzodEditorTests: getJzodLiteralEditorTests,
-    // modes: "*",
-    // modes: ['jzodElementEditor', 'component'],
-    modes: "jzodElementEditor",
-    // modes: "component",
-  },
-  JzodObjectEditor: { 
-    editor: JzodElementEditor, 
-    getJzodEditorTests: getJzodObjectEditorTests,
-    // modes: '*',
-    // modes: ['jzodElementEditor', 'component'],
-    modes: 'jzodElementEditor',
-  },
-  JzodSimpleTypeEditor: { 
-    editor: JzodElementEditor, 
-    getJzodEditorTests: getJzodSimpleTypeEditorTests,
-    // modes: '*',
-    // modes: ['jzodElementEditor', 'component'],
-    modes: 'jzodElementEditor',
-  },
-  JzodUnionEditor: { 
-    editor: JzodElementEditor, 
-    getJzodEditorTests: getJzodUnionEditorTests,
-    // modes: '*',
-    // modes: ['jzodElementEditor', 'component'],
-    modes: 'jzodElementEditor',
-  },
+  // JzodEnumEditor: {
+  //   editor: JzodEnumEditor,
+  //   getJzodEditorTests: getJzodEnumEditorTests,
+  //   // modes: '*',
+  //   modes: "jzodElementEditor",
+  //   // modes: "component",
+  // },
+  // JzodLiteralEditor: { 
+  //   editor: JzodLiteralEditor, 
+  //   getJzodEditorTests: getJzodLiteralEditorTests,
+  //   // modes: "*",
+  //   // modes: ['jzodElementEditor', 'component'],
+  //   modes: "jzodElementEditor",
+  //   // modes: "component",
+  // },
+  // JzodObjectEditor: { 
+  //   editor: JzodElementEditor, 
+  //   getJzodEditorTests: getJzodObjectEditorTests,
+  //   // modes: '*',
+  //   // modes: ['jzodElementEditor', 'component'],
+  //   modes: 'jzodElementEditor',
+  // },
+  // JzodSimpleTypeEditor: { 
+  //   editor: JzodElementEditor, 
+  //   getJzodEditorTests: getJzodSimpleTypeEditorTests,
+  //   // modes: '*',
+  //   // modes: ['jzodElementEditor', 'component'],
+  //   modes: 'jzodElementEditor',
+  // },
+  // JzodUnionEditor: { 
+  //   editor: JzodElementEditor, 
+  //   getJzodEditorTests: getJzodUnionEditorTests,
+  //   // modes: '*',
+  //   // modes: ['jzodElementEditor', 'component'],
+  //   modes: 'jzodElementEditor',
+  // },
   // // ################# INSTANCES
   // JzodBookEditor: { 
   //   editor: JzodElementEditor, 

@@ -42,11 +42,11 @@ let count: number = 0;
 const EditableAttributeName = React.memo(({ 
   initialValue, 
   onCommit,
-  rootLesslistKey
+  rootLessListKey
 }: { 
   initialValue: string;
   onCommit: (newValue: string) => void;
-  rootLesslistKey: string;
+  rootLessListKey: string;
 }) => {
   const [localValue, setLocalValue] = useState(initialValue);
   const [isEditing, setIsEditing] = useState(false);
@@ -82,8 +82,8 @@ const EditableAttributeName = React.memo(({
     <input
       type="text"
       value={localValue}
-      name={"meta-"+ rootLesslistKey + "-NAME"}
-      aria-label={"meta-"+ rootLesslistKey + "-NAME"}
+      name={"meta-"+ rootLessListKey + "-NAME"}
+      aria-label={"meta-"+ rootLessListKey + "-NAME"}
       onChange={(e) => setLocalValue(e.target.value)}
       onFocus={() => setIsEditing(true)}
       onBlur={handleCommit}
@@ -118,13 +118,14 @@ export const JzodObjectEditor = React.memo(function JzodObjectEditorComponent(pr
     name,
     listKey,
     labelElement,
-    rootLesslistKey,
-    rootLesslistKeyArray,
+    rootLessListKey,
+    rootLessListKeyArray,
     rawJzodSchema,
     currentDeploymentUuid,
     currentApplicationSection,
     indentLevel,
     resolvedElementJzodSchema,
+    localRootLessListKeyMap,
     insideAny,
     displayAsStructuredElementSwitch,
     deleteButtonElement,
@@ -170,17 +171,17 @@ export const JzodObjectEditor = React.memo(function JzodObjectEditorComponent(pr
   }, [localResolvedElementJzodSchemaBasedOnValue]);
 
   const currentValue = useMemo(() => 
-    resolvePathOnObject(formik.values, rootLesslistKeyArray), 
-    [formik.values, rootLesslistKeyArray]
+    resolvePathOnObject(formik.values, rootLessListKeyArray), 
+    [formik.values, rootLessListKeyArray]
   );
 
   // ##############################################################################################
     // JzodSchemaTooltip
   const jzodSchemaTooltip: JSX.Element = useMemo(
-    () => (
+    () => canRenderObject?(
       <span
         title={`
-${parentType} / ${unfoldedRawSchema.type} / ${localResolvedElementJzodSchemaBasedOnValue.type}
+${parentType} / ${unfoldedRawSchema.type} / ${localResolvedElementJzodSchemaBasedOnValue?.type}
 
 ${JSON.stringify(props.rawJzodSchema, null, 2)}`}
         style={{
@@ -202,7 +203,7 @@ ${JSON.stringify(props.rawJzodSchema, null, 2)}`}
         </span>
       </span>
       // </span>
-    ),
+    ):<></>,
     [props.rawJzodSchema]
   );
 
@@ -244,7 +245,7 @@ ${JSON.stringify(props.rawJzodSchema, null, 2)}`}
 
   // ##############################################################################################
   const addExtraRecordEntry = useCallback(async () => {
-    if (localResolvedElementJzodSchemaBasedOnValue.type != "object") {
+    if (localResolvedElementJzodSchemaBasedOnValue?.type != "object") {
       throw (
         "addExtraRecordEntry called for non-object type: " +
         localResolvedElementJzodSchemaBasedOnValue
@@ -252,7 +253,7 @@ ${JSON.stringify(props.rawJzodSchema, null, 2)}`}
     }
     log.info(
       "addExtraRecordEntry clicked!",
-      rootLesslistKey,
+      rootLessListKey,
       itemsOrder,
       Object.keys(localResolvedElementJzodSchemaBasedOnValue.definition),
       "formik",
@@ -273,14 +274,14 @@ ${JSON.stringify(props.rawJzodSchema, null, 2)}`}
         )
       : undefined;
 
-    const currentValue = resolvePathOnObject(formik.values, rootLesslistKeyArray);
+    const currentValue = resolvePathOnObject(formik.values, rootLessListKeyArray);
     const newRecordValue: any = { ["newRecordEntry"]: newAttributeValue, ...currentValue };
     log.info("addExtraRecordEntry", "newValue", newRecordValue);
 
     const newItemsOrder = getItemsOrder(newRecordValue, rawJzodSchema);
     log.info("addExtraRecordEntry", "itemsOrder", itemsOrder, "newItemsOrder", newItemsOrder);
 
-    formik.setFieldValue(rootLesslistKey, newRecordValue);
+    formik.setFieldValue(rootLessListKey, newRecordValue);
     log.info(
       "addExtraRecordEntry clicked2!",
       listKey,
@@ -302,7 +303,7 @@ ${JSON.stringify(props.rawJzodSchema, null, 2)}`}
 
   // ##############################################################################################
   const addObjectOptionalAttribute = useCallback(async (attributeName: string) => {
-    if (localResolvedElementJzodSchemaBasedOnValue.type != "object") {
+    if (localResolvedElementJzodSchemaBasedOnValue?.type != "object") {
       throw "addObjectOptionalAttribute called for non-object type: " + unfoldedRawSchema.type;
     }
     log.info(
@@ -321,7 +322,7 @@ ${JSON.stringify(props.rawJzodSchema, null, 2)}`}
       "attributeName",
       attributeName
     );
-    const currentObjectValue = resolvePathOnObject(formik.values, rootLesslistKeyArray);
+    const currentObjectValue = resolvePathOnObject(formik.values, rootLessListKeyArray);
     // const newAttributeType: JzodElement = resolvePathOnObject(rawJzodSchema, [
     // const newAttributeType: JzodElement = resolvePathOnObject(unfoldedRawSchema, [
     const newAttributeType: JzodElement = resolvePathOnObject(discriminatedSchemaForObject??unfoldedRawSchema, [
@@ -356,8 +357,8 @@ ${JSON.stringify(props.rawJzodSchema, null, 2)}`}
       "newItemsOrder",
       newItemsOrder,
     );
-    if (rootLesslistKey) {
-      formik.setFieldValue(rootLesslistKey, newObjectValue, false);
+    if (rootLessListKey) {
+      formik.setFieldValue(rootLessListKey, newObjectValue, false);
     } else {
       formik.setValues(newObjectValue, false);
     }
@@ -378,11 +379,11 @@ ${JSON.stringify(props.rawJzodSchema, null, 2)}`}
   ]);
 
   // ##############################################################################################
-  const deleteElement = (rootLesslistKeyArray: (string | number)[]) => () => {
-    if (rootLesslistKeyArray.length > 0) {
-      const newFormState: any = deleteObjectAtPath(formik.values, rootLesslistKeyArray);
+  const deleteElement = (rootLessListKeyArray: (string | number)[]) => () => {
+    if (rootLessListKeyArray.length > 0) {
+      const newFormState: any = deleteObjectAtPath(formik.values, rootLessListKeyArray);
       formik.setValues(newFormState);
-      log.info("Removed optional attribute:", rootLesslistKeyArray.join('.'));
+      log.info("Removed optional attribute:", rootLessListKeyArray.join('.'));
     }
   };
   
@@ -406,7 +407,7 @@ ${JSON.stringify(props.rawJzodSchema, null, 2)}`}
       .map((i): [string, JzodElement] => [
         i,
         formik.values[
-          rootLesslistKey.length > 0 ? rootLesslistKey + "." + i[0] : i[0]
+          rootLessListKey.length > 0 ? rootLessListKey + "." + i[0] : i[0]
         ],
       ])
       .map((attribute: [string, JzodElement], attributeNumber: number) => {
@@ -414,12 +415,12 @@ ${JSON.stringify(props.rawJzodSchema, null, 2)}`}
           (localResolvedElementJzodSchemaBasedOnValue as JzodObject).definition[attribute[0]];
         const attributeListKey = listKey + "." + attribute[0];
         const attributeRootLessListKey =
-          rootLesslistKey.length > 0
-            ? rootLesslistKey + "." + attribute[0]
+          rootLessListKey.length > 0
+            ? rootLessListKey + "." + attribute[0]
             : attribute[0];
         const attributeRootLessListKeyArray =
-          rootLesslistKeyArray.length > 0
-            ? [...rootLesslistKeyArray, attribute[0]]
+          rootLessListKeyArray.length > 0
+            ? [...rootLessListKeyArray, attribute[0]]
             : [attribute[0]];
 
         let attributeRawJzodSchema: JzodElement;
@@ -623,7 +624,7 @@ ${JSON.stringify(props.rawJzodSchema, null, 2)}`}
         const editableLabel = isRecordType ? (
           <EditableAttributeName
             initialValue={attribute[0]}
-            rootLesslistKey={attributeRootLessListKey}
+            rootLessListKey={attributeRootLessListKey}
             onCommit={(newValue) =>
               handleAttributeNameChange(newValue, attributeRootLessListKeyArray)
             }
@@ -655,7 +656,7 @@ ${JSON.stringify(props.rawJzodSchema, null, 2)}`}
                 context={{
                     origin: "JzodObjectEditor",
                     objectType: "object",
-                    rootLesslistKey,
+                    rootLessListKey,
                     attributeRootLessListKeyArray,
                     attributeName: attribute[0],
                     attributeListKey,
@@ -675,13 +676,14 @@ ${JSON.stringify(props.rawJzodSchema, null, 2)}`}
                 labelElement={editableLabel}
                 key={attribute[0]}
                 listKey={attributeListKey}
-                rootLesslistKey={attributeRootLessListKey}
-                rootLesslistKeyArray={[...rootLesslistKeyArray, attribute[0]]}
+                rootLessListKey={attributeRootLessListKey}
+                rootLessListKeyArray={[...rootLessListKeyArray, attribute[0]]}
                 indentLevel={usedIndentLevel + 1}
                 currentDeploymentUuid={currentDeploymentUuid}
                 rawJzodSchema={attributeRawJzodSchema}
                 currentApplicationSection={currentApplicationSection}
                 resolvedElementJzodSchema={currentAttributeDefinition}
+                localRootLessListKeyMap={localRootLessListKeyMap}
                 foreignKeyObjects={foreignKeyObjects}
                 unionInformation={unionInformation}
                 insideAny={insideAny}
@@ -723,7 +725,7 @@ ${JSON.stringify(props.rawJzodSchema, null, 2)}`}
   ]);
   
   return (
-    <div id={rootLesslistKey} key={rootLesslistKey}>
+    <div id={rootLessListKey} key={rootLessListKey}>
       <div>
         <span
           style={{
@@ -749,7 +751,7 @@ ${JSON.stringify(props.rawJzodSchema, null, 2)}`}
               {labelElement}
             </span>
           </span>
-          <span id={rootLesslistKey + "head"} key={rootLesslistKey + "head"}>
+          <span id={rootLessListKey + "head"} key={rootLessListKey + "head"}>
             <ExpandOrFoldObjectAttributes
               hiddenFormItems={hiddenFormItems}
               setHiddenFormItems={setHiddenFormItems}
@@ -762,14 +764,14 @@ ${JSON.stringify(props.rawJzodSchema, null, 2)}`}
               marginLeft: `calc(${indentShift})`,
               display: hiddenFormItems[listKey] ? "none" : "block",
             }}
-            key={`${rootLesslistKey}|body`}
+            key={`${rootLessListKey}|body`}
           >
             {unfoldedRawSchema.type == "record" || unfoldedRawSchema.type == "any" ? (
               <span>
                 <SizedButton
-                  id={rootLesslistKey + ".addRecordAttribute"}
+                  id={rootLessListKey + ".addRecordAttribute"}
                   variant="text"
-                  aria-label={rootLesslistKey + ".addRecordAttribute"}
+                  aria-label={rootLessListKey + ".addRecordAttribute"}
                   onClick={addExtraRecordEntry}
                 >
                   <SizedAddBox />
@@ -801,7 +803,7 @@ ${JSON.stringify(props.rawJzodSchema, null, 2)}`}
                       <SizedButton
                         variant="text"
                         aria-label={
-                          rootLesslistKey + ".addObjectOptionalAttribute." + attributeName
+                          rootLessListKey + ".addObjectOptionalAttribute." + attributeName
                         }
                         onClick={() => addObjectOptionalAttribute(attributeName)}
                         title={`Add optional attribute: ${attributeName}`}
@@ -855,9 +857,9 @@ ${JSON.stringify(props.rawJzodSchema, null, 2)}`}
   // Custom prop comparison for React.memo
   return (
     prevProps.listKey === nextProps.listKey &&
-    prevProps.rootLesslistKey === nextProps.rootLesslistKey &&
+    prevProps.rootLessListKey === nextProps.rootLessListKey &&
     prevProps.hidden === nextProps.hidden &&
     prevProps.rawJzodSchema?.type === nextProps.rawJzodSchema?.type &&
-    JSON.stringify(prevProps.rootLesslistKeyArray) === JSON.stringify(nextProps.rootLesslistKeyArray)
+    JSON.stringify(prevProps.rootLessListKeyArray) === JSON.stringify(nextProps.rootLessListKeyArray)
   );
 });

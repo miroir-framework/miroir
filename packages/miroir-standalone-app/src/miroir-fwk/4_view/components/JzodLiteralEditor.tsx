@@ -35,8 +35,8 @@ export const JzodLiteralEditor = React.memo<JzodLiteralEditorProps>(function Jzo
     name,
     labelElement,
     listKey,
-    rootLesslistKey,
-    rootLesslistKeyArray,
+    rootLessListKey,
+    rootLessListKeyArray,
     currentDeploymentUuid,
     currentApplicationSection,
     unionInformation,
@@ -75,13 +75,13 @@ export const JzodLiteralEditor = React.memo<JzodLiteralEditorProps>(function Jzo
       );
     }
 
-    const currentAttributeName = rootLesslistKeyArray[rootLesslistKeyArray.length - 1];
+    const currentAttributeName = rootLessListKeyArray[rootLessListKeyArray.length - 1];
 
     log.info(
       "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ handleSelectLiteralChange event",
       event.target.value,
-      "rootLesslistKey",
-      rootLesslistKey,
+      "rootLessListKey",
+      rootLessListKey,
       "attribute",
       currentAttributeName,
       "name",
@@ -142,14 +142,14 @@ export const JzodLiteralEditor = React.memo<JzodLiteralEditorProps>(function Jzo
     );
     formik.setFieldValue(
       // replacing parent value (the object containing the discriminator Literal)
-      rootLesslistKeyArray.slice(0, rootLesslistKeyArray.length - 1).join("."),
+      rootLessListKeyArray.slice(0, rootLessListKeyArray.length - 1).join("."),
       defaultValue,
       false // do not validate on change
     );
   }, [
     unionInformation,
-    rootLesslistKeyArray,
-    rootLesslistKey,
+    rootLessListKeyArray,
+    rootLessListKey,
     name,
     formik,
     currentMiroirFundamentalJzodSchema,
@@ -173,11 +173,11 @@ export const JzodLiteralEditor = React.memo<JzodLiteralEditorProps>(function Jzo
     editor: isDiscriminator ? (
       <>
         <StyledSelect
-          id={rootLesslistKey}
+          id={rootLessListKey}
           label={name}
           variant="standard"
           labelId="demo-simple-select-label"
-          {...formik.getFieldProps(rootLesslistKey)}
+          {...formik.getFieldProps(rootLessListKey)}
           onChange={handleSelectLiteralChange}
         >
           {discriminatorMenuItems}
@@ -188,10 +188,10 @@ export const JzodLiteralEditor = React.memo<JzodLiteralEditorProps>(function Jzo
       <>
         <input
           type="text"
-          id={rootLesslistKey}
-          name={rootLesslistKey}
+          id={rootLessListKey}
+          name={rootLessListKey}
           form={"form." + name}
-          value={formik.getFieldProps(rootLesslistKey).value}
+          value={formik.getFieldProps(rootLessListKey).value}
           readOnly
           disabled
         />
@@ -204,11 +204,11 @@ export const JzodLiteralEditor = React.memo<JzodLiteralEditorProps>(function Jzo
   //     {isDiscriminator ? (
   //       <>
   //         <StyledSelect
-  //           id={rootLesslistKey}
+  //           id={rootLessListKey}
   //           label={name}
   //           variant="standard"
   //           labelId="demo-simple-select-label"
-  //           {...formik.getFieldProps(rootLesslistKey)}
+  //           {...formik.getFieldProps(rootLessListKey)}
   //           onChange={handleSelectLiteralChange}
   //         >
   //           {discriminatorMenuItems}
@@ -219,10 +219,10 @@ export const JzodLiteralEditor = React.memo<JzodLiteralEditorProps>(function Jzo
   //       <>
   //         <input
   //           type="text"
-  //           id={rootLesslistKey}
-  //           name={rootLesslistKey}
+  //           id={rootLessListKey}
+  //           name={rootLessListKey}
   //           form={"form." + name}
-  //           value={formik.getFieldProps(rootLesslistKey).value}
+  //           value={formik.getFieldProps(rootLessListKey).value}
   //           readOnly
   //           disabled
   //         />
@@ -233,7 +233,7 @@ export const JzodLiteralEditor = React.memo<JzodLiteralEditorProps>(function Jzo
 }, (prevProps, nextProps) => {
   // Custom comparison for React.memo
   return (
-    prevProps.rootLesslistKey === nextProps.rootLesslistKey &&
+    prevProps.rootLessListKey === nextProps.rootLessListKey &&
     prevProps.name === nextProps.name &&
     prevProps.currentDeploymentUuid === nextProps.currentDeploymentUuid &&
     JSON.stringify(prevProps.unionInformation) === JSON.stringify(nextProps.unionInformation)
