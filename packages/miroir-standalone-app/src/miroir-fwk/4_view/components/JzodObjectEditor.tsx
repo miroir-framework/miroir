@@ -112,8 +112,7 @@ const EditableAttributeName = React.memo(({
 // ##############################################################################################
 // ##############################################################################################
 // ##############################################################################################
-// Main component wrapped in React.memo
-export const JzodObjectEditor = React.memo(function JzodObjectEditorComponent(props: JzodObjectEditorProps) {
+export function JzodObjectEditor(props: JzodObjectEditorProps) {
   const {
     name,
     listKey,
@@ -133,6 +132,16 @@ export const JzodObjectEditor = React.memo(function JzodObjectEditorComponent(pr
   } = props;
 
   count++;
+  // log.info(
+  //   "JzodObjectEditor render",
+  //   count,
+  //   "rootLessListKey",
+  //   rootLessListKey,
+  //   "rawJzodSchema",
+  //   JSON.stringify(rawJzodSchema, null, 2),
+  //   "rootLessListKeyMap",
+  //   JSON.stringify(localRootLessListKeyMap, null, 2),
+  // );
   const {
     // general use
     context,
@@ -853,13 +862,4 @@ ${JSON.stringify(props.rawJzodSchema, null, 2)}`}
       </div>
     </div>
   );
-}, (prevProps, nextProps) => {
-  // Custom prop comparison for React.memo
-  return (
-    prevProps.listKey === nextProps.listKey &&
-    prevProps.rootLessListKey === nextProps.rootLessListKey &&
-    prevProps.hidden === nextProps.hidden &&
-    prevProps.rawJzodSchema?.type === nextProps.rawJzodSchema?.type &&
-    JSON.stringify(prevProps.rootLessListKeyArray) === JSON.stringify(nextProps.rootLessListKeyArray)
-  );
-});
+}

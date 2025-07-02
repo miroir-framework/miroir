@@ -76,7 +76,7 @@ export const JzodArrayEditorMoveButton: React.FC<JzodArrayMoveButtonProps> = ({
       JSON.stringify(formik.values, null, 2),
     );
 
-    formik.setFieldValue(rootLessListKey, newList, false); // do not validate
+    formik.setFieldValue(rootLessListKey, newList, true); // validate to trigger re-renders
   };
 
   return (
@@ -127,6 +127,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     formik.values,
     rootLessListKeyArray
   );
+
   // log.info(
   //   "JzodArrayEditor render",
   //   jzodArrayEditorRenderCount,
@@ -136,26 +137,12 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
   //   rootLessListKey,
   //   "itemsOrder",
   //   itemsOrder,
-  //   "localRootLessListKeyMap",
-  //   JSON.stringify(localRootLessListKeyMap, null, 2),
+  //   "resolvedElementJzodSchema",
+  //   // resolvedElementJzodSchema,
+  //   JSON.stringify(resolvedElementJzodSchema, null, 2),
+  //   "rawJzodSchema",
+  //   JSON.stringify(rawJzodSchema, null, 2),
   // );
-  // const resolvedElementJzodSchema: JzodElement | undefined = localRootLessListKeyMap
-  //   ? localRootLessListKeyMap[rootLessListKey]?.resolvedElementJzodSchema
-  //   : undefined;
-
-  log.info(
-    "JzodArrayEditor render",
-    jzodArrayEditorRenderCount,
-    "name",
-    name,
-    "rootLessListKey",
-    rootLessListKey,
-    "itemsOrder",
-    itemsOrder,
-    "resolvedElementJzodSchema",
-    // resolvedElementJzodSchema,
-    JSON.stringify(resolvedElementJzodSchema, null, 2),
-  );
 
   const currentModel: MetaModel = useCurrentModel(currentDeploymentUuid);
   const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
@@ -177,6 +164,13 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
 
       // const newItem = getDefaultValueForJzodSchema(rawJzodSchema.definition)
       const newItem = getDefaultValueForJzodSchema(unfoldedRawSchema.definition)
+      // Create the new array value
+      const newArrayValue = [
+        ...arrayValueObject,
+        newItem,
+        // "value4",
+        // "",
+      ];
       log.info(
         "JzodArrayEditor addNewArrayItem",
         "rootLessListKey",
@@ -187,14 +181,9 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
         JSON.stringify(rawJzodSchema, null, 2),
         "formik.values",
         JSON.stringify(formik.values, null, 2),
+        "newArrayValue",
+        JSON.stringify(newArrayValue, null, 2),
       );
-      // Create the new array value
-      const newArrayValue = [
-        ...arrayValueObject,
-        newItem,
-        // "value4",
-        // "",
-      ];
 
       // log.info(
       //   "JzodArrayEditor addNewArrayItem",
@@ -220,7 +209,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
 
       // Update the specific field in Formik state
       // formik.setFieldValue("testField", newArrayValue, false); // Disable validation
-      formik.setFieldValue(rootLessListKey, newArrayValue, false); // Disable validation
+      formik.setFieldValue(rootLessListKey, newArrayValue, true); // enable validation / refresh of formik component
 
       // // Update the items order
       // setItemsOrder(getItemsOrder(newArrayValue, resolvedElementJzodSchema));

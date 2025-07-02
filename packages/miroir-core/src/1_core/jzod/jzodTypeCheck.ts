@@ -236,19 +236,19 @@ export function selectUnionBranchFromDiscriminator(
       return extendedJzodSchema;
     }
   );
-  log.info(
-    "selectUnionBranchFromDiscriminator called for union-type value object with discriminator(s)=",
-    discriminators,
-    "valueObject[discriminator]=",
-    discriminators??[].map(d => valueObject[d]),
-    "relativeReferenceJzodContext=",
-    // JSON.stringify(relativeReferenceJzodContext, null, 2),
-    relativeReferenceJzodContext,
-    "flattenedUnionChoices=",
-    // JSON.stringify(flattenedUnionChoices, null, 2),
-    flattenedUnionChoices
-    // JSON.stringify(objectUnionChoices.map((e:any) => [e?.definition['transformerType'], e?.definition ]), null, 2),
-  );
+  // log.info(
+  //   "selectUnionBranchFromDiscriminator called for union-type value object with discriminator(s)=",
+  //   discriminators,
+  //   "valueObject[discriminator]=",
+  //   discriminators??[].map(d => valueObject[d]),
+  //   "relativeReferenceJzodContext=",
+  //   // JSON.stringify(relativeReferenceJzodContext, null, 2),
+  //   relativeReferenceJzodContext,
+  //   "flattenedUnionChoices=",
+  //   // JSON.stringify(flattenedUnionChoices, null, 2),
+  //   flattenedUnionChoices
+  //   // JSON.stringify(objectUnionChoices.map((e:any) => [e?.definition['transformerType'], e?.definition ]), null, 2),
+  // );
   let i = 0;
   let chosenDiscriminator = [];
   let filteredFlattenedUnionChoices: JzodObject[] = flattenedUnionChoices;
@@ -264,17 +264,17 @@ export function selectUnionBranchFromDiscriminator(
             objectChoice.definition[valueObjectKey]?.definition == valueObject[valueObjectKey])
       );
     });
-    log.info(
-      "selectUnionBranchFromDiscriminator called for union-type value object with no discriminator, flattenedUnionChoices=",
-      // JSON.stringify(flattenedUnionChoices, null, 2),
-      filteredFlattenedUnionChoices,
-      "valueObject=",
-      JSON.stringify(valueObject, null, 2),
-      // "valueObjectPath=",
-      // valueObjectPath,
-      // "typePath=",
-      // typePath
-    );
+    // log.info(
+    //   "selectUnionBranchFromDiscriminator called for union-type value object with no discriminator, flattenedUnionChoices=",
+    //   // JSON.stringify(flattenedUnionChoices, null, 2),
+    //   filteredFlattenedUnionChoices,
+    //   "valueObject=",
+    //   JSON.stringify(valueObject, null, 2),
+    //   // "valueObjectPath=",
+    //   // valueObjectPath,
+    //   // "typePath=",
+    //   // typePath
+    // );
   } else {
     while (i < discriminators.length && filteredFlattenedUnionChoices.length > 1) {
       const disc = discriminators[i];
@@ -292,27 +292,27 @@ export function selectUnionBranchFromDiscriminator(
           )
       );
       chosenDiscriminator.push({discriminator: disc, value: valueObject[disc]});
-      log.info("selectUnionBranchFromDiscriminator filtering union choices with discriminator=",
-        disc,
-        "iteration=",
-        i,
-        "valueObject",
-        valueObject,
-        "valueObject[discriminator]=",
-        valueObject[disc],
-        "newfilteredFlattenedUnionChoices=",
-        newfilteredFlattenedUnionChoices
-      );
+      // log.info("selectUnionBranchFromDiscriminator filtering union choices with discriminator=",
+      //   disc,
+      //   "iteration=",
+      //   i,
+      //   "valueObject",
+      //   valueObject,
+      //   "valueObject[discriminator]=",
+      //   valueObject[disc],
+      //   "newfilteredFlattenedUnionChoices=",
+      //   newfilteredFlattenedUnionChoices
+      // );
       filteredFlattenedUnionChoices = newfilteredFlattenedUnionChoices;
       i++;
     }
-    log.info(
-      "selectUnionBranchFromDiscriminator called for union-type value object with discriminator(s)=",
-      discriminators,
-      "filteredFlattenedUnionChoices=",
-      filteredFlattenedUnionChoices
-      // JSON.stringify(objectUnionChoices.map((e:any) => [e?.definition['transformerType'], e?.definition ]), null, 2),
-    );
+    // log.info(
+    //   "selectUnionBranchFromDiscriminator called for union-type value object with discriminator(s)=",
+    //   discriminators,
+    //   "filteredFlattenedUnionChoices=",
+    //   filteredFlattenedUnionChoices
+    //   // JSON.stringify(objectUnionChoices.map((e:any) => [e?.definition['transformerType'], e?.definition ]), null, 2),
+    // );
   }
 
 
@@ -327,12 +327,12 @@ export function selectUnionBranchFromDiscriminator(
     );
   }
   if (filteredFlattenedUnionChoices.length > 1) {
-    log.info(
-      "selectUnionBranchFromDiscriminator found many matches with discriminator(s)=",
-      discriminators,
-      "filteredFlattenedUnionChoices=",
-      filteredFlattenedUnionChoices
-    )
+    // log.info(
+    //   "selectUnionBranchFromDiscriminator found many matches with discriminator(s)=",
+    //   discriminators,
+    //   "filteredFlattenedUnionChoices=",
+    //   filteredFlattenedUnionChoices
+    // )
     throw new Error(
       "selectUnionBranchFromDiscriminator called for union-type value object found many matches with discriminator(s)=" +
         JSON.stringify(discriminators) +
@@ -363,13 +363,13 @@ export function selectUnionBranchFromDiscriminator(
         // )
     );
   }
-  log.info("selectUnionBranchFromDiscriminator found exactly 1 match for union-type at valuepath=valueObject." +
-    valueObjectPath.join("."),
-    "typePath=",
-    typePath.join("."),
-    "chosen discriminator=",
-    JSON.stringify(chosenDiscriminator, null, 2),
-  );
+  // log.info("selectUnionBranchFromDiscriminator found exactly 1 match for union-type at valuepath=valueObject." +
+  //   valueObjectPath.join("."),
+  //   "typePath=",
+  //   typePath.join("."),
+  //   "chosen discriminator=",
+  //   JSON.stringify(chosenDiscriminator, null, 2),
+  // );
   const currentDiscriminatedObjectJzodSchema: JzodObject =
     filteredFlattenedUnionChoices[0] as JzodObject;
   return {

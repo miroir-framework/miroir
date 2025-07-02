@@ -354,6 +354,13 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
     const currentMiroirModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
     // console.log("currentMiroirModel", currentMiroirModel);
 
+    const effectiveRawJzodSchema: JzodElement | undefined = useMemo(() => {
+      // console.log("getJzodElementEditorForTest", "rawJzodSchema", rawJzodSchema);
+      return rawJzodSchema != undefined
+        ? { type: "object", definition: { [rootLessListKey]: rawJzodSchema } }
+        : undefined;
+    }, [rawJzodSchema]);
+
     const onSubmit = useCallback(
       async (
         actionCreateSchemaParamValues: any /* actually follows formJzodSchema */,
@@ -381,79 +388,6 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
       []
     );
 
-    const resolvedJzodSchema: ResolvedJzodSchemaReturnType | undefined = useMemo(() => {
-      let result: ResolvedJzodSchemaReturnType | undefined = undefined;
-      try {
-        result =
-          // miroirFundamentalJzodSchema && rawJzodSchema && initialFormState && currentMiroirModel
-          miroirFundamentalJzodSchema && rawJzodSchema && currentMiroirModel
-            ? jzodTypeCheck(
-                rawJzodSchema,
-                // formState,
-                // currentValue,
-                initialFormState,
-                [], // currentValuePath
-                [], // currentTypePath
-                miroirFundamentalJzodSchema as JzodSchema,
-                currentModel,
-                // currentMiroirModel,
-                currentMiroirModel,
-                {}
-              )
-            : undefined;
-      } catch (e) {
-        console.error(
-          "getJzodElementEditorForTest useMemo error",
-          // JSON.stringify(e, Object.getOwnPropertyNames(e)),
-          e,
-          // "props",
-          // props,
-          "context",
-          context
-        );
-        result = {
-          status: "error",
-          valuePath: [],
-          typePath: [],
-          error: JSON.stringify(e, Object.getOwnPropertyNames(e)),
-        };
-      }
-      return result;
-    }, [rawJzodSchema, initialFormState, context]);
-
-    const localRootLessListKeyMap:
-      | Record<string, { resolvedElementJzodSchema: JzodElement }>
-      | undefined = useMemo(() => {
-      const result =
-        context.miroirFundamentalJzodSchema != undefined &&
-        rawJzodSchema &&
-        initialFormState &&
-        currentModel
-          ? rootLessListKeyMap(
-              rootLessListKey,
-              rawJzodSchema,
-              currentModel,
-              currentMiroirModel,
-              context.miroirFundamentalJzodSchema,
-              initialFormState
-            )
-          : undefined;
-      console.log(
-        "getJzodElementEditorForTest",
-        "rootLessListKeyMap",
-        result
-        // props.rootLessListKey,
-        // props.rawJzodSchema?.type
-      );
-      return result;
-    }, [
-      rawJzodSchema,
-      initialFormState,
-      currentModel,
-      currentMiroirModel,
-      context.miroirFundamentalJzodSchema,
-    ]);
-    console.log("getJzodElementEditorForTest", "rootLessListKeyMap", localRootLessListKeyMap);
 
     const labelElement = useMemo(() => {
       // return label ? <label htmlFor={rootLessListKey}>{label}</label> : undefined;
@@ -468,39 +402,90 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
           validateOnChange={false}
           validateOnBlur={false}
         >
-          {(formik: FormikProps<any>) => (
-            <>
-              <form id={"form." + pageLabel} onSubmit={formik.handleSubmit}>
-                {resolvedJzodSchema != undefined && resolvedJzodSchema.status == "ok" ? (
-                  <>
-                    <JzodElementEditor
-                      name={name}
-                      listKey={listKey}
-                      rootLessListKey={rootLessListKey}
-                      rootLessListKeyArray={rootLessListKeyArray}
-                      labelElement={labelElement}
-                      currentDeploymentUuid={context.deploymentUuid}
-                      currentApplicationSection={"data"}
-                      rawJzodSchema={rawJzodSchema}
-                      resolvedElementJzodSchema={resolvedJzodSchema.element}
-                      localRootLessListKeyMap={localRootLessListKeyMap}
-                      foreignKeyObjects={emptyObject}
-                      indentLevel={0}
-                      // displayAsCode={false}
-                    />
-                    <button type="submit" role="form" name={pageLabel} form={"form." + pageLabel}>
-                      submit form.{pageLabel}
-                    </button>
-                  </>
-                ) : (
-                  <div>
-                    could not display editor because schema could not be resolved:{" "}
-                    {JSON.stringify(resolvedJzodSchema)}
-                  </div>
-                )}
-              </form>
-            </>
-          )}
+          {(formik: FormikProps<any>) => {
+            // console.log("getJzodElementEditorForTest render formik, values", formik.values);
+            const localRootLessListKeyMap:
+              | Record<string, { resolvedElementJzodSchema: JzodElement }>
+              | undefined = useMemo(() => {
+              const result =
+                context.miroirFundamentalJzodSchema != undefined &&
+                effectiveRawJzodSchema &&
+                formik.values &&
+                currentModel
+                  ? rootLessListKeyMap(
+                      "",
+                      effectiveRawJzodSchema,
+                      currentModel,
+                      currentMiroirModel,
+                      context.miroirFundamentalJzodSchema,
+                      formik.values
+                    )
+                  : undefined;
+              console.log(
+                "getJzodElementEditorForTest @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ new rootLessListKeyMap value,",
+                "rootLessListKey",
+                rootLessListKey,
+                "for formik value",
+                formik.values,
+                "rootLessListKeyMap",
+                JSON.stringify(result, null, 2),
+                "effectiveRawJzodSchema",
+                JSON.stringify(effectiveRawJzodSchema, null, 2),
+              );
+              return result;
+            }, [
+              effectiveRawJzodSchema,
+              // initialFormState,
+              formik.values,
+              currentModel,
+              currentMiroirModel,
+              context.miroirFundamentalJzodSchema,
+            ]);
+            // console.log(
+            //   "getJzodElementEditorForTest",
+            //   "rootLessListKeyMap",
+            //   localRootLessListKeyMap
+            // );
+            const resolvedJzodSchema: JzodElement | undefined = useMemo(() => {
+              const result: JzodElement | undefined = localRootLessListKeyMap
+                ? // ? localRootLessListKeyMap[rootLessListKey].resolvedElementJzodSchema
+                  localRootLessListKeyMap[""].resolvedElementJzodSchema
+                : undefined;
+              return result;
+            }, [effectiveRawJzodSchema, localRootLessListKeyMap, formik.values, context.miroirFundamentalJzodSchema]);
+            return (
+              <>
+                <form id={"form." + pageLabel} onSubmit={formik.handleSubmit}>
+                  {resolvedJzodSchema != undefined ? (
+                    <>
+                      <JzodElementEditor
+                        name={name}
+                        listKey={"ROOT"}
+                        rootLessListKey={""}
+                        rootLessListKeyArray={[]}
+                        labelElement={labelElement}
+                        currentDeploymentUuid={context.deploymentUuid}
+                        currentApplicationSection={"data"}
+                        rawJzodSchema={effectiveRawJzodSchema}
+                        resolvedElementJzodSchema={resolvedJzodSchema}
+                        localRootLessListKeyMap={localRootLessListKeyMap}
+                        foreignKeyObjects={emptyObject}
+                        indentLevel={0}
+                      />
+                      <button type="submit" role="form" name={pageLabel} form={"form." + pageLabel}>
+                        submit form.{pageLabel}
+                      </button>
+                    </>
+                  ) : (
+                    <div>
+                      could not display editor because schema could not be resolved:{" "}
+                      {JSON.stringify(resolvedJzodSchema)}
+                    </div>
+                  )}
+                </form>
+              </>
+            );
+          }}
         </Formik>
       </div>
     );

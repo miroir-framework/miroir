@@ -179,7 +179,7 @@ export function rootLessListKeyMap(
     returnedLocalResolvedElementJzodSchemaBasedOnValue.status == "error"
   ) {
     throw new Error(
-      "getJzodElementEditorHooks " +
+      "rootLessListKeyMap " +
         "path '" +
         rootLessListKey +
         "' could not resolve jzod schema for " +

@@ -77,7 +77,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
 
   const [displayAsStructuredElement, setDisplayAsStructuredElement] = useState(true);
   const [displayEditor, setDisplayEditor] = useState(true);
-  const [refreshLocalRootLessListKeyMap, setRefreshLocalRootLessListKeyMap] = useState(true);
 
   // const [formState, setFormState] = useState<any>(props.instance);
   // const [codeMirrorValue, setCodeMirrorValue] = useState<string>(() =>
@@ -408,7 +407,33 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                   validateOnChange={false}
                   validateOnBlur={false}
                 >
-                  {(formik: FormikProps<Record<string, any>>) => (
+                  {(formik: FormikProps<Record<string, any>>) => {
+                    // Create a memoized localRootLessListKeyMap that updates when formik values change
+                    const dynamicLocalRootLessListKeyMap = useMemo(() => {
+                      const result =
+                        context.miroirFundamentalJzodSchema != undefined &&
+                        currentReportTargetEntityDefinition?.jzodSchema &&
+                        formik.values &&
+                        currentModel
+                          ? rootLessListKeyMap(
+                              "",
+                              currentReportTargetEntityDefinition?.jzodSchema,
+                              currentModel,
+                              currentMiroirModel,
+                              context.miroirFundamentalJzodSchema,
+                              formik.values
+                            )
+                          : undefined;
+                      return result;
+                    }, [
+                      currentReportTargetEntityDefinition?.jzodSchema,
+                      currentModel,
+                      currentMiroirModel,
+                      context.miroirFundamentalJzodSchema,
+                      formik.values,
+                    ]);
+
+                    return (
                     <>
                       <form id={"form." + pageLabel} onSubmit={formik.handleSubmit}>
                         {resolvedJzodSchema != undefined && resolvedJzodSchema.status == "ok" ? (
@@ -428,7 +453,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                                   ? resolvedJzodSchema.element
                                   : undefined
                               }
-                              localRootLessListKeyMap={localRootLessListKeyMap}
+                              localRootLessListKeyMap={dynamicLocalRootLessListKeyMap}
                               // localRootLessListKeyMap={{}}
                               foreignKeyObjects={foreignKeyObjects}
                               submitButton={
@@ -452,7 +477,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                         )}
                       </form>
                     </>
-                  )}
+                  );
+                  }}
                 </Formik>
               </div>
             ) : (

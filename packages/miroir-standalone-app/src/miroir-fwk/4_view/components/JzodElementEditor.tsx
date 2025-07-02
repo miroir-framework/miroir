@@ -198,7 +198,9 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
       "No resolved schema found for rootLessListKey",
       props.rootLessListKey,
       "with value",
-      currentValue
+      currentValue,
+      "and props.localRootLessListKeyMap",
+      JSON.stringify(props.localRootLessListKeyMap, null, 2),
     );
     return (
       <div>
@@ -335,7 +337,7 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
     ) {
       throw new Error(
         "JzodElementEditor mismatching jzod schemas, resolved schema " +
-          JSON.stringify(props.resolvedElementJzodSchema, null, 2) +
+          JSON.stringify(localResolvedElementJzodSchemaBasedOnValue, null, 2) +
           " raw schema " +
           JSON.stringify(props.rawJzodSchema, null, 2)
       );
@@ -373,16 +375,19 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
         />
       );
     }
-    log.info(
-      "JzodElementEditorComponent",
-      count,
-      "Rendering main element for listKey",
-      props.listKey,
-      "with value",
-      currentValue,
-      "and schema",
-      localResolvedElementJzodSchemaBasedOnValue
-    );
+    // log.info(
+    //   "JzodElementEditorComponent",
+    //   count,
+    //   "Rendering main element for listKey",
+    //   props.listKey,
+    //   "with value",
+    //   currentValue,
+    //   "and resolved schema",
+    //   // localResolvedElementJzodSchemaBasedOnValue,
+    //   JSON.stringify(localResolvedElementJzodSchemaBasedOnValue, null, 2),
+    //   "and props.localRootLessListKeyMap",
+    //   JSON.stringify(props.localRootLessListKeyMap, null, 2)
+    // );
     // Generate element based on schema type
     switch (localResolvedElementJzodSchemaBasedOnValue.type) {
       case "object": {
@@ -439,6 +444,7 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
             deleteButtonElement={props.deleteButtonElement}
           />
         );
+        break;
       }
       case "boolean": {
         const fieldProps = formik.getFieldProps(props.rootLessListKey);
@@ -728,7 +734,7 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
             <pre>{JSON.stringify(currentValue, null, 2)}</pre>
             <br />
             <pre>
-              resolved Jzod schema: {JSON.stringify(props.resolvedElementJzodSchema, null, 2)}
+              resolved Jzod schema: {JSON.stringify(localResolvedElementJzodSchemaBasedOnValue, null, 2)}
             </pre>
             <pre>raw Jzod schema: {JSON.stringify(props.rawJzodSchema, null, 2)}</pre>
           </span>
@@ -736,7 +742,7 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
       }
     }
   }, [
-    props, 
+    props,
     localResolvedElementJzodSchemaBasedOnValue, 
     formik, 
     currentValue, 

@@ -95,95 +95,160 @@ export function getJzodArrayEditorTests(
         initialFormState: arrayValues,
       },
       tests: {
-        // "renders input with label when label prop is provided": {
-        //   tests: async (expect: ExpectStatic, container: Container) => {
-        //     expect(screen.getByText(/Test Label/)).toBeInTheDocument();
-        //   },
-        // },
-        // "renders all array values, in the right order": {
-        //   tests: async (expect: ExpectStatic, container: Container) => {
-        //     const cells = screen
-        //       .getAllByRole("textbox")
-        //       .filter((input: HTMLElement) =>
-        //         (input as HTMLInputElement).name.startsWith("testField.")
-        //       );
-        //     const values = cells.map((cell) => (cell as HTMLInputElement).value);
-        //     expect(values).toEqual(arrayValues);
-        //   },
-        // },
-        // "form state is changed when selection changes": {
-        //   tests: async (expect: ExpectStatic, container: Container) => {
-        //     const cell = screen.getAllByRole("textbox").filter((input: HTMLElement) =>
-        //       (input as HTMLInputElement).name.startsWith("testField.")
-        //     )[1] as HTMLInputElement;
-        //     await act(() => {
-        //       fireEvent.change(cell, { target: { value: "new value" } });
-        //     });
-        //     expect(cell).toContainHTML("new value");
-        //   },
-        // },
-        // "changing order of array items when button ROOT.testField.2.up is clicked": {
-        //   tests: async (expect, container) => {
-        //     const upButtons = screen.getAllByRole("ROOT.testField.button.up");
-        //     await act(() => {
-        //       fireEvent.click(upButtons[2]); // Click the up button for the third item
-        //     });
-        //     const cells = screen
-        //       .getAllByRole("textbox")
-        //       .filter((input: HTMLElement) =>
-        //         (input as HTMLInputElement).name.startsWith("testField.")
-        //       );
-        //     const values = cells.map((cell) => (cell as HTMLInputElement).value);
-        //     expect(values).toEqual(["value1", "value3", "value2"]);
-        //   },
-        // },
-        // "renders all array values of a plain 2-items tuple with a string and a number, in the right order": {
-        //   props: {
-        //     label: "Test Label",
-        //     name: "testField",
-        //     listKey: "ROOT.testField",
-        //     rootLessListKey: "testField",
-        //     rootLessListKeyArray: ["testField"],
-        //     rawJzodSchema: {
-        //       type: "tuple", definition: [{ type: "string" }, { type: "number" }],
-        //     },
-        //     initialFormState: ["value1", 2],
-        //   },
-        //   tests: async (expect, container) => {
-        //     const formValues: Record<string, any> = extractValuesFromRenderedElements(
-        //       expect,
-        //       container,
-        //       "testField",
-        //       "initial"
-        //     );
-        //     const testResult = formValuesToJSON(formValues);
-        //     expect(testResult).toEqual(["value1", 2]);
-        //   },
-        // },
-        // "renders all array values of a tuple inside an array, in the right order": {
-        //   props: {
-        //     label: "Test Label",
-        //     name: "testField",
-        //     listKey: "ROOT.testField",
-        //     rootLessListKey: "testField",
-        //     rootLessListKeyArray: ["testField"],
-        //     rawJzodSchema: {
-        //       type: "array",
-        //       definition: { type: "tuple", definition: [{ type: "string" }, { type: "number" }] },
-        //     },
-        //     initialFormState: [["value1", 1], ["value2", 2], ["value3", 3]],
-        //   },
-        //   tests: async (expect, container) => {
-        //     const formValues: Record<string, any> = extractValuesFromRenderedElements(
-        //       expect,
-        //       container,
-        //       "testField",
-        //       "initial"
-        //     );
-        //     const testResult = formValuesToJSON(formValues);
-        //     expect(testResult).toEqual([["value1", 1], ["value2", 2], ["value3", 3]]);
-        //   },
-        // },
+        "renders input with label when label prop is provided": {
+          tests: async (expect: ExpectStatic, container: Container) => {
+            expect(screen.getByText(/Test Label/)).toBeInTheDocument();
+          },
+        },
+        "renders all array values, in the right order": {
+          tests: async (expect: ExpectStatic, container: Container) => {
+            const cells = screen
+              .getAllByRole("textbox")
+              .filter((input: HTMLElement) =>
+                (input as HTMLInputElement).name.startsWith("testField.")
+              );
+            const values = cells.map((cell) => (cell as HTMLInputElement).value);
+            expect(values).toEqual(arrayValues);
+          },
+        },
+        "form state is changed when selection changes": {
+          tests: async (expect: ExpectStatic, container: Container) => {
+            const cell = screen.getAllByRole("textbox").filter((input: HTMLElement) =>
+              (input as HTMLInputElement).name.startsWith("testField.")
+            )[1] as HTMLInputElement;
+            await act(() => {
+              fireEvent.change(cell, { target: { value: "new value" } });
+            });
+            expect(cell).toContainHTML("new value");
+          },
+        },
+        "changing order of array items when button ROOT.testField.1.up is clicked": {
+          tests: async (expect, container) => {
+            const upButtons = screen.getAllByRole("ROOT.testField.button.up");
+            await act(() => {
+              fireEvent.click(upButtons[1]); // Click the up button for the third item
+            });
+            const cells = screen
+              .getAllByRole("textbox")
+              .filter((input: HTMLElement) =>
+                (input as HTMLInputElement).name.startsWith("testField.")
+              );
+            const values = cells.map((cell) => (cell as HTMLInputElement).value);
+            expect(values).toEqual(["value2", "value1", "value3" ]);
+          },
+        },
+        "changing order of array items when button ROOT.testField.2.up is clicked": {
+          tests: async (expect, container) => {
+            const upButtons = screen.getAllByRole("ROOT.testField.button.up");
+            await act(() => {
+              fireEvent.click(upButtons[2]); // Click the up button for the third item
+            });
+            const cells = screen
+              .getAllByRole("textbox")
+              .filter((input: HTMLElement) =>
+                (input as HTMLInputElement).name.startsWith("testField.")
+              );
+            const values = cells.map((cell) => (cell as HTMLInputElement).value);
+            expect(values).toEqual(["value1", "value3", "value2"]);
+          },
+        },
+        "changing order of array items when button ROOT.testField.0.down is clicked": {
+          tests: async (expect, container) => {
+            const upButtons = screen.getAllByRole("ROOT.testField.button.down");
+            await act(() => {
+              fireEvent.click(upButtons[0]); // Click the up button for the third item
+            });
+            const cells = screen
+              .getAllByRole("textbox")
+              .filter((input: HTMLElement) =>
+                (input as HTMLInputElement).name.startsWith("testField.")
+              );
+            const values = cells.map((cell) => (cell as HTMLInputElement).value);
+            expect(values).toEqual([ "value2", "value1", "value3"]);
+          },
+        },
+        "changing order of heteronomous object array items from union when button ROOT.testField.0.down is clicked": {
+          props: {
+            label: "Test Label",
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLessListKey: "testField",
+            rootLessListKeyArray: ["testField"],
+            rawJzodSchema: {
+              type: "array",
+              definition: {
+                type: "union",
+                discriminator: "objectType",
+                definition: [
+                  { type: "object", definition: { objectType: { type: "literal", definition:"A"}, a: { type: "string" } } },
+                  { type: "object", definition: { objectType: { type: "literal", definition:"B"}, b: { type: "number" } } },
+                ],
+              },
+            },
+            initialFormState: [{ objectType: "A", a: "value1" }, { objectType: "B", b: 2 }, { objectType: "A", a: "value3" }],
+          },
+          tests: async (expect, container) => {
+            const upButtons = screen.getAllByRole("ROOT.testField.button.down");
+            await act(() => {
+              fireEvent.click(upButtons[0]); // Click the down button for the first item
+            });
+            const formValues = extractValuesFromRenderedElements(
+              expect,
+              container,
+              "testField",
+              "after down button click"
+            );
+            const testResult = formValuesToJSON(formValues);
+            expect(testResult).toEqual([{ objectType: "B", b: 2 }, { objectType: "A", a: "value1" }, { objectType: "A", a: "value3" }]);
+          },
+        },
+        "renders all array values of a plain 2-items tuple with a string and a number, in the right order": {
+          props: {
+            label: "Test Label",
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLessListKey: "testField",
+            rootLessListKeyArray: ["testField"],
+            rawJzodSchema: {
+              type: "tuple", definition: [{ type: "string" }, { type: "number" }],
+            },
+            initialFormState: ["value1", 2],
+          },
+          tests: async (expect, container) => {
+            const formValues: Record<string, any> = extractValuesFromRenderedElements(
+              expect,
+              container,
+              "testField",
+              "initial"
+            );
+            const testResult = formValuesToJSON(formValues);
+            expect(testResult).toEqual(["value1", 2]);
+          },
+        },
+        "renders all array values of a tuple inside an array, in the right order": {
+          props: {
+            label: "Test Label",
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLessListKey: "testField",
+            rootLessListKeyArray: ["testField"],
+            rawJzodSchema: {
+              type: "array",
+              definition: { type: "tuple", definition: [{ type: "string" }, { type: "number" }] },
+            },
+            initialFormState: [["value1", 1], ["value2", 2], ["value3", 3]],
+          },
+          tests: async (expect, container) => {
+            const formValues: Record<string, any> = extractValuesFromRenderedElements(
+              expect,
+              container,
+              "testField",
+              "initial"
+            );
+            const testResult = formValuesToJSON(formValues);
+            expect(testResult).toEqual([["value1", 1], ["value2", 2], ["value3", 3]]);
+          },
+        },
         "add an element to a string array when button ROOT.testField.add is clicked": {
           tests: async (expect: ExpectStatic, container: Container) => {
             const addButton = screen.getByRole("button", { name: "testField.add" });
@@ -200,77 +265,92 @@ export function getJzodArrayEditorTests(
             expect(testResult).toEqual([...arrayValues, ""]);
           },
         },
-        // "add an element to an object array when button ROOT.testField.add is clicked": {
-        //   props: {
-        //     label: "Test Label",
-        //     name: "testField",
-        //     listKey: "ROOT.testField",
-        //     rootLessListKey: "testField",
-        //     rootLessListKeyArray: ["testField"],
-        //     rawJzodSchema: {
-        //       type: "array",
-        //       definition: {
-        //         type: "object",
-        //         definition: {
-        //           a: { type: "string", optional: true },
-        //           b: { type: "object", definition: { c: { type: "number" } } },
-        //           d: { type: "boolean" },
-        //           e: { type: "bigint" },
-        //         },
-        //       },
-        //     },
-        //     initialFormState: [
-        //       { 
-        //         a: "value1", 
-        //         b: { c: 1 }, 
-        //         d: true, 
-        //         e: 123n
-        //       },
-        //       { 
-        //         a: "value2",
-        //         b: { c: 2 },
-        //         d: false, 
-        //         e: 456n
-        //       },
-        //     ],
-        //   },
-        //   tests: async (expect, container) => {
-        //     // screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
-        //     const addButton = screen.getByRole("button", { name: "testField.add" });
-        //     await act(() => {
-        //       fireEvent.click(addButton);
-        //     });
-        //     const formValues: Record<string, any> = extractValuesFromRenderedElements(
-        //       expect,
-        //       container,
-        //       "testField",
-        //       "after add button click"
-        //     );
-        //     // console.log("Extracted initial values:", values);
-        //     const testResult = formValuesToJSON(formValues);
-        //     expect(testResult).toEqual(
-        //       [
-        //         {
-        //           a: "value1",
-        //           b: { c: 1 },
-        //           d: true,
-        //           e: "123",
-        //         },
-        //         {
-        //           a: "value2",
-        //           b: { c: 2 },
-        //           d: false,
-        //           e: "456",
-        //         },
-        //         {
-        //           b: { c: 0 }, // default value for number
-        //           d: false, // default value for boolean
-        //           e: "0", // default value for bigint
-        //         }
-        //       ]
-        //     );
-        //   },
-        // },
+        "add an element to an object array when button ROOT.testField.add is clicked": {
+          props: {
+            label: "Test Label",
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLessListKey: "testField",
+            rootLessListKeyArray: ["testField"],
+            rawJzodSchema: {
+              type: "array",
+              definition: {
+                type: "object",
+                definition: {
+                  a: { type: "string", optional: true },
+                  b: { type: "object", definition: { c: { type: "number" } } },
+                  d: { type: "boolean" },
+                  e: { type: "bigint" },
+                },
+              },
+            },
+            // rawJzodSchema: {
+            //   type: "object",
+            //   definition: {
+            //     testField: {
+            //       type: "array",
+            //       definition: {
+            //         type: "object",
+            //         definition: {
+            //           a: { type: "string", optional: true },
+            //           b: { type: "object", definition: { c: { type: "number" } } },
+            //           d: { type: "boolean" },
+            //           e: { type: "bigint" },
+            //         },
+            //       },
+            //     },
+            //   },
+            // } as any,
+            initialFormState: [
+              {
+                a: "value1",
+                b: { c: 1 },
+                d: true,
+                e: 123n,
+              },
+              {
+                a: "value2",
+                b: { c: 2 },
+                d: false,
+                e: 456n,
+              },
+            ],
+          },
+          tests: async (expect, container) => {
+            // screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
+            const addButton = screen.getByRole("button", { name: "testField.add" });
+            await act(() => {
+              fireEvent.click(addButton);
+            });
+            const formValues: Record<string, any> = extractValuesFromRenderedElements(
+              expect,
+              container,
+              "testField",
+              "after add button click"
+            );
+            // console.log("Extracted initial values:", values);
+            const testResult = formValuesToJSON(formValues);
+            expect(testResult).toEqual([
+              {
+                a: "value1",
+                b: { c: 1 },
+                d: true,
+                e: "123",
+              },
+              {
+                a: "value2",
+                b: { c: 2 },
+                d: false,
+                e: "456",
+              },
+              {
+                b: { c: 0 }, // default value for number
+                d: false, // default value for boolean
+                e: "0", // default value for bigint
+              },
+            ]);
+          },
+        },
       },
     },
   };
@@ -1179,8 +1259,10 @@ export function getJzodSimpleTypeEditorTests(
             initialFormState: true,
           },
           tests: async (expect: ExpectStatic, container: Container) => {
-            const values: Record<string, any> = extractValuesFromRenderedElements(expect);
-            expect(values).toEqual({
+            // screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
+            const values: Record<string, any> = extractValuesFromRenderedElements(expect, container, "testField", "initial");
+            const testResult = formValuesToJSON(values);
+            expect(testResult).toEqual({
               "testField": true,
             });
           },
@@ -1198,11 +1280,14 @@ export function getJzodSimpleTypeEditorTests(
             initialFormState: false,
           },
           tests: async (expect: ExpectStatic, container: Container) => {
-            const values: Record<string, any> = extractValuesFromRenderedElements(expect);
+            const values: Record<string, any> = extractValuesFromRenderedElements(expect, container, "testField", "initial");
+            const testResult = formValuesToJSON(values);
+            expect(testResult).toEqual({
+              "testField": false,
+            });
             expect(values).toEqual({
               "testField": false,
             });
-
           },
         },
         "boolean allows to modify checkbox value with consistent update": {
@@ -1226,8 +1311,9 @@ export function getJzodSimpleTypeEditorTests(
             await act(() => {
               fireEvent.click(checkbox);
             });
-            const values: Record<string, any> = extractValuesFromRenderedElements(expect);
-            expect(values).toEqual({
+            const values: Record<string, any> = extractValuesFromRenderedElements(expect, container, "testField", "after change");
+            const testResult = formValuesToJSON(values);
+            expect(testResult).toEqual({  
               "testField": false,
             });
           },
@@ -1715,42 +1801,42 @@ const jzodElementEditorTests: Record<
     // modes: ['jzodElementEditor', 'component'],
     modes: 'jzodElementEditor',
   },
-  // JzodEnumEditor: {
-  //   editor: JzodEnumEditor,
-  //   getJzodEditorTests: getJzodEnumEditorTests,
-  //   // modes: '*',
-  //   modes: "jzodElementEditor",
-  //   // modes: "component",
-  // },
-  // JzodLiteralEditor: { 
-  //   editor: JzodLiteralEditor, 
-  //   getJzodEditorTests: getJzodLiteralEditorTests,
-  //   // modes: "*",
-  //   // modes: ['jzodElementEditor', 'component'],
-  //   modes: "jzodElementEditor",
-  //   // modes: "component",
-  // },
-  // JzodObjectEditor: { 
-  //   editor: JzodElementEditor, 
-  //   getJzodEditorTests: getJzodObjectEditorTests,
-  //   // modes: '*',
-  //   // modes: ['jzodElementEditor', 'component'],
-  //   modes: 'jzodElementEditor',
-  // },
-  // JzodSimpleTypeEditor: { 
-  //   editor: JzodElementEditor, 
-  //   getJzodEditorTests: getJzodSimpleTypeEditorTests,
-  //   // modes: '*',
-  //   // modes: ['jzodElementEditor', 'component'],
-  //   modes: 'jzodElementEditor',
-  // },
-  // JzodUnionEditor: { 
-  //   editor: JzodElementEditor, 
-  //   getJzodEditorTests: getJzodUnionEditorTests,
-  //   // modes: '*',
-  //   // modes: ['jzodElementEditor', 'component'],
-  //   modes: 'jzodElementEditor',
-  // },
+  JzodEnumEditor: {
+    editor: JzodEnumEditor,
+    getJzodEditorTests: getJzodEnumEditorTests,
+    // modes: '*',
+    modes: "jzodElementEditor",
+    // modes: "component",
+  },
+  JzodLiteralEditor: { 
+    editor: JzodLiteralEditor, 
+    getJzodEditorTests: getJzodLiteralEditorTests,
+    // modes: "*",
+    // modes: ['jzodElementEditor', 'component'],
+    modes: "jzodElementEditor",
+    // modes: "component",
+  },
+  JzodObjectEditor: { 
+    editor: JzodElementEditor, 
+    getJzodEditorTests: getJzodObjectEditorTests,
+    // modes: '*',
+    // modes: ['jzodElementEditor', 'component'],
+    modes: 'jzodElementEditor',
+  },
+  JzodSimpleTypeEditor: { 
+    editor: JzodElementEditor, 
+    getJzodEditorTests: getJzodSimpleTypeEditorTests,
+    // modes: '*',
+    // modes: ['jzodElementEditor', 'component'],
+    modes: 'jzodElementEditor',
+  },
+  JzodUnionEditor: { 
+    editor: JzodElementEditor, 
+    getJzodEditorTests: getJzodUnionEditorTests,
+    // modes: '*',
+    // modes: ['jzodElementEditor', 'component'],
+    modes: 'jzodElementEditor',
+  },
   // // ################# INSTANCES
   // JzodBookEditor: { 
   //   editor: JzodElementEditor, 

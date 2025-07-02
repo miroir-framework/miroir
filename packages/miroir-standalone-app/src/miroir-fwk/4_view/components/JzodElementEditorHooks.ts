@@ -106,63 +106,26 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
   // ################################################################################################
   // ################################################################################################
   // value schema
-  // const returnedLocalResolvedElementJzodSchemaBasedOnValue:
-  //   | ResolvedJzodSchemaReturnType
-  //   | undefined = useMemo(() => {
-  //   const newRecordResolvedElementJzodSchema =
-  //     props.rawJzodSchema &&
-  //     context.miroirFundamentalJzodSchema
-  //       ? jzodTypeCheck(
-  //           props.rawJzodSchema,
-  //           currentValue,
-  //           [], // currentValuePath
-  //           [], // currentTypePath
-  //           context.miroirFundamentalJzodSchema,
-  //           currentModel,
-  //           miroirMetaModel,
-  //           {}
-  //         )
-  //       : undefined;
-  //   return newRecordResolvedElementJzodSchema;
-  // }, [currentValue, props.rawJzodSchema, context.miroirFundamentalJzodSchema, currentModel, miroirMetaModel]);
-
-  // if (
-  //   !returnedLocalResolvedElementJzodSchemaBasedOnValue ||
-  //   returnedLocalResolvedElementJzodSchemaBasedOnValue.status == "error"
-  // ) {
-  //   throw new Error(
-  //     "getJzodElementEditorHooks " +
-  //       caller +
-  //       " render " +
-  //       count +
-  //       "path '" + props.rootLessListKey +
-  //       "' could not resolve jzod schema for " +
-  //       " currentValue " +
-  //       JSON.stringify(currentValue, null, 2) +
-  //       " rawJzodSchema " +
-  //       JSON.stringify(props.rawJzodSchema, null, 2) +
-  //       " returnedLocalResolvedElementJzodSchemaBasedOnValue " +
-  //       JSON.stringify(returnedLocalResolvedElementJzodSchemaBasedOnValue, null, 2)
-  //   );
-  // }
-  // const localResolvedElementJzodSchemaBasedOnValue: JzodElement =
-  //   returnedLocalResolvedElementJzodSchemaBasedOnValue.element;
-  const localResolvedElementJzodSchemaBasedOnValue: JzodElement | undefined =
-    props.localRootLessListKeyMap
-      ? props.localRootLessListKeyMap[props.rootLessListKey].resolvedElementJzodSchema
+  const localResolvedElementJzodSchemaBasedOnValue: JzodElement | undefined = useMemo(() => {
+    const result = props.localRootLessListKeyMap
+      ? props.localRootLessListKeyMap[props.rootLessListKey]?.resolvedElementJzodSchema
       : undefined;
-
-  log.info(
-    "getJzodElementEditorHooks",
-    "rootLessListKey",
+      // log.info(
+      //   "getJzodElementEditorHooks new localResolvedElementJzodSchemaBasedOnValue",
+      //   "rootLessListKey",
+      //   `'${props.rootLessListKey}'`,
+      //   "props.localRootLessListKeyMap",
+      //   props.localRootLessListKeyMap,
+      //   "localResolvedElementJzodSchemaBasedOnValue",
+      //   // result,
+      //   JSON.stringify(result, null, 2),
+      // );
+      return result;
+  }, [
+    props.localRootLessListKeyMap,
     props.rootLessListKey,
-    "localResolvedElementJzodSchemaBasedOnValue",
-    localResolvedElementJzodSchemaBasedOnValue,
-    // JSON.stringify(localResolvedElementJzodSchemaBasedOnValue, null, 2),
-    "props.localRootLessListKeyMap",
-    props.localRootLessListKeyMap
+  ]);
 
-  );
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState> =
     useMemo(() => getMemoizedDeploymentEntityStateSelectorMap(), []);
 
