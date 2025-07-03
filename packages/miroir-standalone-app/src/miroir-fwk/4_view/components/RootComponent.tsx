@@ -95,9 +95,12 @@ const StyledMain =
 // React.useEffect(
 styled(
   Main, 
-  // {shouldForwardProp: (prop) => prop !== "open"}
-)(
-  ({ theme, open }) => ({
+  {shouldForwardProp: (prop) => prop !== "open" && prop !== "width"}
+)<{
+  open?: boolean;
+  width?: number;
+}>(
+  ({ theme, open, width = SidebarWidth }) => ({
     // zIndex: theme.zIndex.drawer + 1,
     // display: "flex",
     // flexGrow: 1,
@@ -122,8 +125,8 @@ styled(
     // ),
     ...(
       open && {
-        width: `calc(100% - ${SidebarWidth}px)`,
-        marginLeft: `${SidebarWidth}px`,
+        width: `calc(100% - ${width}px)`,
+        marginLeft: `${width}px`,
         transition: theme.transitions.create(
           ["margin", "width"], {
             easing: theme.transitions.easing.easeOut,
@@ -144,6 +147,7 @@ export const RootComponent = (props: RootComponentProps) => {
   // const params = useParams<any>() as Readonly<Params<ReportUrlParamKeys>>;
   count++;
   const [drawerIsOpen, setDrawerIsOpen] = useState(true);
+  const [sidebarWidth, setSidebarWidth] = useState(SidebarWidth);
   log.info(
     "##################################### rendering root component",
     "count",
@@ -187,6 +191,10 @@ export const RootComponent = (props: RootComponentProps) => {
     // setDisplayedReportUuid("");
   }, [setDisplayedDeploymentUuid, setDisplayedApplicationSection]);
 
+  const handleSidebarWidthChange = useMemo(() => (width: number) => {
+    setSidebarWidth(width);
+  }, [setSidebarWidth]);
+
 
   return (
     <div>
@@ -198,7 +206,12 @@ export const RootComponent = (props: RootComponentProps) => {
         {/* <CssBaseline /> */}
         <Grid container direction="column">
           <Grid item>
-            <AppBar handleDrawerOpen={handleDrawerOpen} open={drawerIsOpen}>
+            <AppBar 
+              handleDrawerOpen={handleDrawerOpen} 
+              open={drawerIsOpen}
+              width={sidebarWidth}
+              onWidthChange={handleSidebarWidthChange}
+            >
               Bar!
             </AppBar>
             <Toolbar />
@@ -206,10 +219,15 @@ export const RootComponent = (props: RootComponentProps) => {
           <Grid item container>
             <Grid item>
               {/* <SidebarSection open={drawerIsOpen} setOpen={setDrawerIsOpen}></SidebarSection> */}
-              <Sidebar open={drawerIsOpen} setOpen={setDrawerIsOpen}></Sidebar>
+              <Sidebar 
+                open={drawerIsOpen} 
+                setOpen={setDrawerIsOpen} 
+                width={sidebarWidth}
+                onWidthChange={handleSidebarWidthChange}
+              ></Sidebar>
             </Grid>
             <Grid item>
-              <StyledMain open={drawerIsOpen}>
+              <StyledMain open={drawerIsOpen} width={sidebarWidth}>
                 <p />
                   <div>uuid: {uuidv4()}</div>
                   <div>transactions: {JSON.stringify(transactions)}</div>

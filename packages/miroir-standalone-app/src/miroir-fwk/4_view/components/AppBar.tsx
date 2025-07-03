@@ -69,6 +69,8 @@ export interface AppBarProps extends MuiAppBarProps {
   handleDrawerOpen?: ()=>void,
   open: boolean,
   children:any,
+  width?: number,
+  onWidthChange?: (width: number) => void,
   // theme: any
 }
 
@@ -76,9 +78,9 @@ const StyledAppBar =
 // React.useEffect(
 styled(
   MuiAppBar as any, //TODO: correct typing error
-  {shouldForwardProp: (prop) => prop !== "open"}
+  {shouldForwardProp: (prop) => prop !== "open" && prop !== "width"}
 )<AppBarProps>(
-  ({ theme, open }) => ({
+  ({ theme, open, width = SidebarWidth }) => ({
     zIndex: theme.zIndex.drawer + 1,
     // display: "flex",
     // flexGrow: 1,
@@ -104,8 +106,8 @@ styled(
     // ),
     ...(
       open && {
-        width: `calc(100% - ${SidebarWidth}px)`,
-        marginLeft: `${SidebarWidth}px`,
+        width: `calc(100% - ${width}px)`,
+        marginLeft: `${width}px`,
         transition: theme.transitions.create(
           ["margin", "width"], {
             easing: theme.transitions.easing.easeOut,
@@ -159,7 +161,7 @@ export function AppBar(props:AppBarProps) {
   }
   
   return (
-    <StyledAppBar  open={props.open}>
+    <StyledAppBar open={props.open} width={props.width}>
       <>
         <MyToolbar disableGutters={false}>
             {/* <Box sx={{display:"flex"}}> */}

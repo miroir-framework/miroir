@@ -17,7 +17,7 @@ import {
   menuDefaultMiroir,
   MiroirLoggerFactory
 } from "miroir-core";
-import { FC, useMemo } from 'react';
+import { FC, useMemo, useState, useRef, useCallback, useEffect } from 'react';
 import { adminConfigurationDeploymentParis, defaultMenuParisUuid, packageName } from '../../../constants.js';
 import { cleanLevel } from '../constants.js';
 import { SidebarSection } from './SidebarSection.js';
@@ -37,8 +37,8 @@ const LocalDivider:any = Divider;
 const LocalChevronLeftIcon:any = ChevronLeftIcon;
 const LocalChevronRightIcon:any = ChevronRightIcon;
 
-const openedMixin = (theme: Theme): CSSObject => ({
-  width: SidebarWidth,
+const openedMixin = (theme: Theme, width: number = SidebarWidth): CSSObject => ({
+  width: width,
   transition: theme.transitions.create('width', {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.enteringScreen,
@@ -72,6 +72,38 @@ const StyledDrawerHeader = styled('div')(({ theme }) => ({
   justifyContent: 'flex-end',
 }));
 
+const ResizeHandle = styled('div')(({ theme }) => ({
+  position: 'absolute',
+  right: 0,
+  top: 0,
+  bottom: 0,
+  width: '6px',
+  backgroundColor: 'rgba(0, 0, 0, 0.1)',
+  cursor: 'col-resize',
+  zIndex: 1000,
+  transition: 'background-color 0.2s',
+  borderLeft: '1px solid rgba(0, 0, 0, 0.05)',
+  '&:hover': {
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    borderLeft: '1px solid rgba(0, 0, 0, 0.1)',
+  },
+  '&:active': {
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    borderLeft: '1px solid rgba(0, 0, 0, 0.2)',
+  },
+  '&::before': {
+    content: '""',
+    position: 'absolute',
+    right: '2px',
+    top: '50%',
+    transform: 'translateY(-50%)',
+    width: '2px',
+    height: '30px',
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    borderRadius: '1px',
+  },
+}));
+
 export interface ResponsiveAppBarProps {
   handleDrawerOpen: ()=>void,
   open: boolean,
@@ -79,15 +111,18 @@ export interface ResponsiveAppBarProps {
 }
 
 // const Sidebar = MuiDrawer;
-const StyledDrawer = styled(LocalMuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
-  ({ theme, open }) => ({
-    width: SidebarWidth,
+const StyledDrawer = styled(LocalMuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' && prop !== 'width' })<{
+  open?: boolean;
+  width?: number;
+}>(
+  ({ theme, open, width = SidebarWidth }) => ({
+    width: width,
     flexShrink: 0,
     whiteSpace: 'nowrap',
     boxSizing: 'border-box',
     ...(open && {
-      ...openedMixin(theme),
-      '& .MuiDrawer-paper': openedMixin(theme),
+      ...openedMixin(theme, width),
+      '& .MuiDrawer-paper': openedMixin(theme, width),
     }),
     ...(!open && {
       ...closedMixin(theme),
@@ -120,9 +155,43 @@ const muiIcons = {
 //    const Icon = icon && MUIcon[icon];
 //    return ({Icon && <Icon />})
 // }
-export const Sidebar:FC<{open:boolean, setOpen: (v:boolean)=>void}> = (props: {open:boolean, setOpen: (v:boolean)=>void}) => {
+export const Sidebar:FC<{open:boolean, setOpen: (v:boolean)=>void, width?: number, onWidthChange?: (width: number) => void}> = (props: {open:boolean, setOpen: (v:boolean)=>void, width?: number, onWidthChange?: (width: number) => void}) => {
   count++;
   const theme = useTheme();
+  const [isResizing, setIsResizing] = useState(false);
+  const resizeRef = useRef<HTMLDivElement>(null);
+
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsResizing(true);
+  }, []);
+
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    if (isResizing && props.onWidthChange) {
+      const newWidth = Math.max(150, Math.min(500, e.clientX)); // Min 150px, Max 500px
+      props.onWidthChange(newWidth);
+    }
+  }, [isResizing, props.onWidthChange]);
+
+  const handleMouseUp = useCallback(() => {
+    setIsResizing(false);
+  }, []);
+
+  // Add global mouse event listeners when resizing
+  useEffect(() => {
+    if (isResizing) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+    } else {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    }
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isResizing, handleMouseMove, handleMouseUp]);
 
   // log.info("deploymentEntityStateDomainElementObject",miroirMenusDomainElementObject)
   // // const defaultMiroirMenu = (domainElementObject?.menus as any)?.definition;
@@ -133,7 +202,7 @@ export const Sidebar:FC<{open:boolean, setOpen: (v:boolean)=>void}> = (props: {o
   //   miroirMenusDomainElementObject,
   //   miroirMenusDomainElementObject?.menus
   // );
-  const drawerSx = useMemo(()=>({flexDirection:'column'}),[])
+  const drawerSx = useMemo(()=>({flexDirection:'column', position: 'relative'}),[])
   const styledDrawerSx = useMemo(()=>({alignItems: "end"}),[])
 
 
@@ -145,6 +214,7 @@ export const Sidebar:FC<{open:boolean, setOpen: (v:boolean)=>void}> = (props: {o
       variant="permanent"
       // variant="persistent"
       open={props.open}
+      width={props.width}
     >
       <StyledDrawerHeader sx={styledDrawerSx}>
         <LocalIconButton onClick={() => props.setOpen(false)}>
@@ -244,6 +314,14 @@ export const Sidebar:FC<{open:boolean, setOpen: (v:boolean)=>void}> = (props: {o
           </List>
         } */}
       <LocalDivider />
+      {/* Resize handle - only show when sidebar is open */}
+      {props.open && (
+        <ResizeHandle 
+          ref={resizeRef}
+          onMouseDown={handleMouseDown}
+          style={{ cursor: isResizing ? 'col-resize' : 'col-resize' }}
+        />
+      )}
     </StyledDrawer>
   );
 }
