@@ -750,8 +750,8 @@ export function getMiroirFundamentalJzodSchema(
         transformerForBuild_unique: miroirTransformersForBuild.transformer_unique,
         transformerForBuild: {
           type: "union",
-          // discriminator: ["transformerType", "interpolation"],
-          discriminator: "transformerType",
+          discriminator: ["transformerType", "interpolation"],
+          // discriminator: "transformerType",
           optInDiscriminator: true,
           definition: [
             ...transformerForBuildNames.map((e: any) => ({

@@ -222,8 +222,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     () =>
       getQueryRunnerParamsForDeploymentEntityState(
         props.deploymentUuid &&
-          resolvedJzodSchema.element.type == "uuid" &&
-          resolvedJzodSchema.element.tag?.value?.targetEntity
+          resolvedJzodSchema.resolvedSchema.type == "uuid" &&
+          resolvedJzodSchema.resolvedSchema.tag?.value?.targetEntity
           ? {
               queryType: "boxedQueryWithExtractorCombinerTransformer",
               deploymentUuid: props.deploymentUuid,
@@ -231,14 +231,14 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
               queryParams: {},
               contextResults: {},
               extractors: {
-                [resolvedJzodSchema.element.tag?.value?.targetEntity]: {
+                [resolvedJzodSchema.resolvedSchema.tag?.value?.targetEntity]: {
                   extractorOrCombinerType: "extractorByEntityReturningObjectList",
                   applicationSection: getApplicationSection(
                     props.deploymentUuid,
-                    resolvedJzodSchema.element.tag?.value?.targetEntity
+                    resolvedJzodSchema.resolvedSchema.tag?.value?.targetEntity
                   ),
                   parentName: "",
-                  parentUuid: resolvedJzodSchema.element.tag?.value?.targetEntity,
+                  parentUuid: resolvedJzodSchema.resolvedSchema.tag?.value?.targetEntity,
                 },
               },
             }
@@ -450,7 +450,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                               rawJzodSchema={currentReportTargetEntityDefinition?.jzodSchema}
                               resolvedElementJzodSchema={
                                 resolvedJzodSchema?.status == "ok"
-                                  ? resolvedJzodSchema.element
+                                  ? resolvedJzodSchema.resolvedSchema
                                   : undefined
                               }
                               localRootLessListKeyMap={dynamicLocalRootLessListKeyMap}
@@ -494,7 +494,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                     element={instance}
                     // rootJzodSchema={currentReportTargetEntityDefinition?.jzodSchema}
                     elementJzodSchema={currentReportTargetEntityDefinition?.jzodSchema}
-                    resolvedElementJzodSchema={(resolvedJzodSchema as any)?.element}
+                    resolvedElementJzodSchema={(resolvedJzodSchema as any)?.resolvedSchema}
                     currentReportDeploymentSectionEntities={currentReportDeploymentSectionEntities}
                     currentEnumJzodSchemaResolver={currentEnumJzodSchemaResolver}
                   ></JzodElementDisplay>

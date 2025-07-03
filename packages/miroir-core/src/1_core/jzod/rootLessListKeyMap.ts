@@ -192,7 +192,7 @@ export function rootLessListKeyMap(
     );
   }
   const localResolvedElementJzodSchemaBasedOnValue: JzodElement =
-    returnedLocalResolvedElementJzodSchemaBasedOnValue.element;
+    returnedLocalResolvedElementJzodSchemaBasedOnValue.resolvedSchema;
 
   const result: Record<string, { resolvedElementJzodSchema: JzodElement }> = {};
   mapResolveJzodSchemaToValueKeys(

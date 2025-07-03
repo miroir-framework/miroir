@@ -1632,7 +1632,9 @@ export function getJzodBookEditorTests(
   
             // expect(screen.getByText(/Test LabelAAAAAAAAAAAAAAAAAAAAAAAAAA/)).toBeInTheDocument();
             const values: Record<string, any> = extractValuesFromRenderedElements(expect, container, "testField", "initial form state");
-            console.log("Extracted initial values:", values);
+            // console.log("Extracted initial values:", values);
+            const testResult = formValuesToJSON(values);
+            expect(testResult).toEqual(book1);
 
             // const inputs = Array.from(document.querySelectorAll('input'));
             // console.log("=== INPUTS ===", inputs.map((input: HTMLElement) => ({
@@ -1768,6 +1770,75 @@ export function getJzodEntityDefinitionEditorTests(
 };
 
 // ################################################################################################
+// PERFORMANCE TESTS
+// ################################################################################################
+// export interface LocalEntityDefinitionEditorProps extends LocalEditorPropsRoot{
+//   // rawJzodSchema: EntityDefinition | undefined;
+//   rawJzodSchema: JzodObject | undefined;
+// }
+
+// export type JzodEntityDefinitionEditorTest = JzodEditorTest<LocalEntityDefinitionEditorProps>;
+// export type JzodEntityDefinitionEditorTestSuites = JzodEditorTestSuites<LocalEntityDefinitionEditorProps>;
+
+export function getJzodEditorPerformanceTests(
+  // LocalEditor: React.FC<LocalEntityDefinitionEditorProps>,
+  LocalEditor: React.FC<LocalSimpleTypeEditorProps>,
+  renderAsJzodElementEditor: React.FC<JzodElementEditorProps_Test>
+): JzodSimpleTypeEditorTestSuites {
+  return {
+    JzodEditorPerformanceTests: {
+      suiteRenderComponent: {
+        renderAsComponent: LocalEditor,
+        renderAsJzodElementEditor,
+      },
+      // performanceTests: true,
+      tests: {
+        "performance string renders input with proper value": {
+          props: {
+            label: "Test Label",
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLessListKey: "testField",
+            rootLessListKeyArray: ["testField"],
+            rawJzodSchema: {
+              type: "string",
+              // definition: [{ type: "string" }, { type: "number" }],
+            },
+            initialFormState: "placeholder text",
+          },
+
+          tests: async (expect: ExpectStatic, container: Container) => {
+            const input = screen.getAllByRole("textbox").filter(
+              (el: HTMLElement) => (el as HTMLInputElement).name === "testField"
+            )[0] as HTMLInputElement;
+            expect(input).toBeInTheDocument();
+            expect(input).toHaveValue("placeholder text");
+          },
+        },
+
+        // "performance: entity definition for Book is displayed as json-like input fields with proper value": {
+        //   props: {
+        //     label: "Test Label",
+        //     name: "testField",
+        //     listKey: "ROOT.testField",
+        //     rootLessListKey: "testField",
+        //     rootLessListKeyArray: ["testField"],
+        //     rawJzodSchema: (entityDefinitionEntityDefinition as EntityDefinition).jzodSchema,
+        //     initialFormState: entityDefinitionBook
+        //   },
+        //   tests: async (expect: ExpectStatic, container: Container) => {
+        //     const formValues: Record<string, any> = extractValuesFromRenderedElements(expect, container, "testField", "initial form state");
+        //     // console.log("Extracted initial values:", values);
+        //     const testResult = formValuesToJSON(formValues);
+        //     expect(testResult).toEqual(entityDefinitionBook);
+        //   },
+        // },
+      },
+    },
+  };
+};
+
+// ################################################################################################
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
@@ -1781,6 +1852,7 @@ const allTestModes: TestMode[] = ['jzodElementEditor', 'component'];
 
 export interface JzodElementEditorTestSuite<LocalEditorProps extends Record<string, any>> {
   editor: React.FC<any>;
+  performanceTests?: boolean;
   getJzodEditorTests: (
     LocalEditor: React.FC<LocalEditorProps>,
     jzodElementEditor: React.FC<JzodElementEditorProps_Test>
@@ -1837,14 +1909,24 @@ const jzodElementEditorTests: Record<
     // modes: ['jzodElementEditor', 'component'],
     modes: 'jzodElementEditor',
   },
-  // // ################# INSTANCES
-  // JzodBookEditor: { 
-  //   editor: JzodElementEditor, 
-  //   getJzodEditorTests: getJzodBookEditorTests,
+  // // ################# PERFORMANCE
+  // JzodEditorPerformanceTests: {
+  //   editor: JzodElementEditor,
+  //   getJzodEditorTests: getJzodEditorPerformanceTests,
+  //   performanceTests: true,
   //   // modes: '*',
   //   // modes: ['jzodElementEditor', 'component'],
   //   modes: 'jzodElementEditor',
   // },
+  // ################# INSTANCES
+  JzodBookEditor: { 
+    editor: JzodElementEditor, 
+    getJzodEditorTests: getJzodBookEditorTests,
+    performanceTests: true,
+    // modes: '*',
+    // modes: ['jzodElementEditor', 'component'],
+    modes: 'jzodElementEditor',
+  },
   // // ################# MODEL
   // JzodEntityDefinitionEditor: { 
   //   editor: JzodElementEditor, 
@@ -1861,7 +1943,8 @@ describe("JzodElementEditor", () => {
     const suites = getJzodEditorTestSuites(
       pageLabel,
       testSuite.editor,
-      testSuite.getJzodEditorTests
+      testSuite.getJzodEditorTests,
+      testSuite.performanceTests
     );
     let modes: TestMode[];
     if (testSuite.modes === undefined) {

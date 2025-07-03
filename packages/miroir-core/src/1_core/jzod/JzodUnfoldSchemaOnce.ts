@@ -301,15 +301,16 @@ export function unfoldJzodSchemaOnce(
     // ############################################################################################
     case "union":{
       // const unfoldedJzodSchemas: JzodElement[] = jzodSchema.definition.map((a: JzodElement) =>
-      const unfoldedJzodSchemaReturnType: UnfoldJzodSchemaOnceReturnType[] = jzodSchema.definition.map((a: JzodElement) =>
-        unfoldJzodSchemaOnce(
-          miroirFundamentalJzodSchema,
-          a,
-          currentModel,
-          miroirMetaModel,
-          relativeReferenceJzodContext
-        )
-      );
+      const unfoldedJzodSchemaReturnType: UnfoldJzodSchemaOnceReturnType[] =
+        jzodSchema.definition.map((a: JzodElement) =>
+          unfoldJzodSchemaOnce(
+            miroirFundamentalJzodSchema,
+            a,
+            currentModel,
+            miroirMetaModel,
+            relativeReferenceJzodContext
+          )
+        );
       const failedIndex = unfoldedJzodSchemaReturnType.find(a => a.status!="ok")
       if (failedIndex) {
         return {
@@ -321,8 +322,8 @@ export function unfoldJzodSchemaOnce(
       }
       // log.info("unfoldJzodSchemaOnce for union ",jzodSchema, "unfoldedJzodSchemaReturnType", unfoldedJzodSchemaReturnType);
       const firstLevelUnfoldedJzodSchemas: JzodElement[] = (
-        unfoldedJzodSchemaReturnType as ResolvedJzodSchemaReturnTypeOK[]
-      ).map((a: ResolvedJzodSchemaReturnTypeOK) => a.element);
+        unfoldedJzodSchemaReturnType as UnfoldJzodSchemaOnceReturnTypeOK[]
+      ).map((a: UnfoldJzodSchemaOnceReturnTypeOK) => a.element);
       // log.info("unfoldJzodSchemaOnce union unfoldedJzodSchemas", unfoldedJzodSchemas);
       const secondLevelUnfoldedTmpResults: (JzodElement | UnfoldJzodSchemaOnceReturnType)[] = firstLevelUnfoldedJzodSchemas.map(
         (s:JzodElement)=> {

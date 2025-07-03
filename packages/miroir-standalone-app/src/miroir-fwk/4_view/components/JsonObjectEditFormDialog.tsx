@@ -281,7 +281,8 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
                 currentDeploymentUuid={currentDeploymentUuid}
                 currentApplicationSection={currentApplicationSection}
                 rawJzodSchema={entityDefinitionJzodSchema}
-                resolvedElementJzodSchema={resolvedJzodSchema?.status == "ok" ? resolvedJzodSchema.element : undefined}
+                localRootLessListKeyMap={{}}
+                resolvedElementJzodSchema={resolvedJzodSchema?.status == "ok" ? resolvedJzodSchema.resolvedSchema : undefined}
                 foreignKeyObjects={foreignKeyObjects}
                 indentLevel={0}
               />
@@ -354,6 +355,24 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
     ): undefined,
     [props, dialogOuterFormObject, context.miroirFundamentalJzodSchema]
   )
+  if (!resolvedJzodSchema || resolvedJzodSchema.status == "error") {
+    log.error(
+      "JsonObjectEditFormDialog jzodTypeCheck failed for valueObject",
+      defaultFormValuesObject,
+      "jzodSchema",
+      entityDefinitionJzodSchema,
+      " resolvedJzodSchema",
+      resolvedJzodSchema
+    );
+    throw new Error(
+      "JsonObjectEditFormDialog jzodTypeCheck failed for valueObject: " +
+        JSON.stringify(defaultFormValuesObject, null, 2) +
+        " jzodSchema: " +
+        JSON.stringify(entityDefinitionJzodSchema, null, 2) +
+        " resolvedJzodSchema: " +
+        JSON.stringify(resolvedJzodSchema, null, 2)
+    );
+  }
   log.info(
     "called jzodTypeCheck for valueObject",
     defaultFormValuesObject,

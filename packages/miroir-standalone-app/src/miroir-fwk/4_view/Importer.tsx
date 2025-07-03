@@ -1819,7 +1819,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         );
 
         // return configuration.status == "ok"? configuration.element : defaultObject;
-        return configuration.status == "ok"? configuration.element : defaultObject;
+        return configuration.status == "ok"? configuration.resolvedSchema : defaultObject;
       }
     },
     [context.miroirFundamentalJzodSchema, rawSchema, formState]
@@ -2396,9 +2396,11 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                         listKey={'ROOT'}
                         rootLessListKey={emptyString}
                         rootLessListKeyArray={emptyList}
-                        labelElement={pageLabel}
+                        labelElement={<div>pageLabel</div>}
                         currentDeploymentUuid={emptyString}
                         currentApplicationSection={dataSection}
+                        indentLevel={0}
+                        localRootLessListKeyMap={{}}
                         // resolvedJzodSchema={actionsJzodSchema}
                         rawJzodSchema={rawSchema}
                         resolvedElementJzodSchema={resolvedJzodSchema}

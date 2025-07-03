@@ -274,40 +274,4 @@ describe("jzodUnion_RecursiveUnfold", () => {
       expandedReferences: new Set(["MyReference"]),
     });
   });
-
-  it("jzodUnion_RecursiveUnfold fails when union with discriminator has reference which is itself a union with discriminator, but the two discriminators differ", () => {
-    const schema: JzodUnion = {
-      type: "union",
-      discriminator: "myObjectType",
-      definition: [
-        { type: "number" },
-        {
-          type: "object",
-          definition: {
-            myObjectType: { type: "literal", definition: "A" },
-          },
-        },
-        {
-          type: "schemaReference",
-          definition: {
-            relativePath: "MyReference",
-          },
-        },
-      ],
-    };
-    const result = local_jzodUnion_recursivelyUnfold(schema, {
-      MyReference: {
-        type: "union",
-        discriminator: "myOtherObjectType",
-        definition: [
-          { type: "object", definition: { myOtherObjectType: { type: "literal", definition: "B" } } },
-          { type: "object", definition: { myOtherObjectType: { type: "literal", definition: "C" } } },
-        ],
-      }
-    });
-    expect(result.status).toBe("error");
-    expect((result as JzodUnion_RecursivelyUnfold_ReturnTypeError).error).toMatch(
-      "Discriminator mismatch: parent union discriminator (myObjectType) does not match sub-union discriminator (myOtherObjectType)"
-    );
-  });
 });

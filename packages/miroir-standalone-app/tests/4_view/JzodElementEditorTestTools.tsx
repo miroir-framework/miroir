@@ -4,7 +4,7 @@ import { createTheme, StyledEngineProvider } from "@mui/material";
 import { blue } from "@mui/material/colors";
 import { act, fireEvent, render, RenderResult, screen } from "@testing-library/react";
 import { Formik, FormikProps } from "formik";
-import { useCallback, useMemo } from "react";
+import { Profiler, useCallback, useMemo } from "react";
 import { Provider } from "react-redux";
 
 import {
@@ -191,6 +191,7 @@ export interface JzodElementEditorProps_Test {
   rootLessListKeyArray: string[];
   initialFormState: any;
   rawJzodSchema: JzodElement | undefined;
+  // isPerformanceTest?: boolean;
 }
 
 
@@ -492,7 +493,9 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
   };
 
   // ################################################################################################
-export function getWrapperForLocalJzodElementEditor(): React.FC<any> {
+export function getWrapperForLocalJzodElementEditor(
+  isPerformanceTest: boolean = false,
+): React.FC<any> {
   // const miroirContext: MiroirContext = new MiroirContext(currentMiroirConfig);
   const miroirContext: MiroirContext = new MiroirContext(undefined as any);
   const theme = createTheme(testThemeParams);
@@ -699,7 +702,42 @@ export function getWrapperForLocalJzodElementEditor(): React.FC<any> {
       // add other methods if needed
     } as any;
 
-    return (
+    const renderCount = { current: 0 };
+    const totalRenderTime = { current: 0 };
+    
+    const onRender = useCallback((
+      id: string,
+      phase: "mount" | "update" | "nested-update",
+      actualDuration: number,
+      baseDuration: number,
+      startTime: number,
+      commitTime: number
+    ) => {
+      renderCount.current++;
+      totalRenderTime.current += actualDuration;
+      console.log(
+      `Render #${renderCount.current} - ${id} [${phase}] took ${actualDuration.toFixed(2)}ms`,
+      `(Total: ${totalRenderTime.current.toFixed(2)}ms)`
+      );
+    }, []);
+
+    return isPerformanceTest?(
+      <Profiler id="App" onRender={onRender}>
+        <ThemeProvider theme={theme}>
+          <StyledEngineProvider injectFirst>
+            <Provider store={localCache.getInnerStore()}>
+              <MiroirContextReactProvider
+                miroirContext={miroirContext}
+                domainController={domainController}
+                testingDeploymentUuid={selfApplicationDeploymentLibrary.uuid}
+              >
+                {props.children}
+              </MiroirContextReactProvider>
+            </Provider>
+          </StyledEngineProvider>
+        </ThemeProvider>
+      </Profiler>
+    ):(
       <ThemeProvider theme={theme}>
         <StyledEngineProvider injectFirst>
           <Provider store={localCache.getInnerStore()}>
@@ -791,9 +829,11 @@ export function getJzodEditorTestSuites<
   getJzodEditorTests: (
     LocalEditor: React.FC<LocalEditorProps>,
     jzodElementEditor: React.FC<JzodElementEditorProps_Test>
-  ) => JzodEditorTestSuites<LocalEditorProps>
+  ) => JzodEditorTestSuites<LocalEditorProps>,
+  performanceTests: boolean = false,
 ): JzodEditorTestSuites<LocalEditorProps> {
-  const WrapperForJzodElementEditor: React.FC<any> = getWrapperForLocalJzodElementEditor();
+  // const WrapperForJzodElementEditorPerformanceTest: React.FC<any> = getWrapperForLocalJzodElementEditor(true);
+  const WrapperForJzodElementEditor: React.FC<any> = getWrapperForLocalJzodElementEditor(performanceTests);
 
   const LocalEditor: React.FC<LocalEditorProps> = getLocalEditor<JzodEditorProps, LocalEditorProps>(
     pageLabel,
@@ -832,8 +872,9 @@ export function extractValuesFromRenderedElements(
     // No textbox found, leave inputs as empty array
   }
   const textBoxesInfo = textBoxes.map((i) => {
+    const name = (i as HTMLInputElement).id.replace(new RegExp(`^${label}\\.`), "") || (i as HTMLInputElement).name.replace(new RegExp(`^${label}\\.`), "");
     return {
-      name: (i as HTMLInputElement).id.replace(new RegExp(`^${label}\\.`), ""),
+      name,
       value: (i as HTMLInputElement).value,
       defaultValue: (i as HTMLInputElement).defaultValue,
       type: (i as HTMLInputElement).type,

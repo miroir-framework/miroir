@@ -2557,7 +2557,10 @@ export const miroirFundamentalJzodSchema = {
             "type": "record",
             "definition": {
               "type": "union",
-              "discriminator": "transformerType",
+              "discriminator": [
+                "transformerType",
+                "interpolation"
+              ],
               "definition": [
                 {
                   "type": "schemaReference",
@@ -3149,7 +3152,10 @@ export const miroirFundamentalJzodSchema = {
       },
       "transformerForBuild": {
         "type": "union",
-        "discriminator": "transformerType",
+        "discriminator": [
+          "transformerType",
+          "interpolation"
+        ],
         "optInDiscriminator": true,
         "definition": [
           {
@@ -3776,7 +3782,10 @@ export const miroirFundamentalJzodSchema = {
             "type": "record",
             "definition": {
               "type": "union",
-              "discriminator": "transformerType",
+              "discriminator": [
+                "transformerType",
+                "interpolation"
+              ],
               "definition": [
                 {
                   "type": "schemaReference",
@@ -5042,7 +5051,10 @@ export const miroirFundamentalJzodSchema = {
             "type": "record",
             "definition": {
               "type": "union",
-              "discriminator": "transformerType",
+              "discriminator": [
+                "transformerType",
+                "interpolation"
+              ],
               "definition": [
                 {
                   "type": "schemaReference",
@@ -32637,7 +32649,10 @@ export const miroirFundamentalJzodSchema = {
       },
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild": {
         "type": "union",
-        "discriminator": "transformerType",
+        "discriminator": [
+          "transformerType",
+          "interpolation"
+        ],
         "optInDiscriminator": true,
         "definition": [
           {
@@ -33800,7 +33815,10 @@ export const miroirFundamentalJzodSchema = {
                     "type": "record",
                     "definition": {
                       "type": "union",
-                      "discriminator": "transformerType",
+                      "discriminator": [
+                        "transformerType",
+                        "interpolation"
+                      ],
                       "definition": [
                         {
                           "type": "schemaReference",
@@ -36112,7 +36130,10 @@ export const miroirFundamentalJzodSchema = {
                     "type": "record",
                     "definition": {
                       "type": "union",
-                      "discriminator": "transformerType",
+                      "discriminator": [
+                        "transformerType",
+                        "interpolation"
+                      ],
                       "definition": [
                         {
                           "type": "schemaReference",
@@ -39729,7 +39750,10 @@ export const miroirFundamentalJzodSchema = {
                     "type": "record",
                     "definition": {
                       "type": "union",
-                      "discriminator": "transformerType",
+                      "discriminator": [
+                        "transformerType",
+                        "interpolation"
+                      ],
                       "definition": [
                         {
                           "type": "schemaReference",
@@ -64390,7 +64414,10 @@ export const miroirFundamentalJzodSchema = {
       },
       "transformerForBuildCarryOnObject": {
         "type": "union",
-        "discriminator": "transformerType",
+        "discriminator": [
+          "transformerType",
+          "interpolation"
+        ],
         "optInDiscriminator": true,
         "definition": [
           {
@@ -64593,7 +64620,10 @@ export const miroirFundamentalJzodSchema = {
       },
       "transformerForRuntimeCarryOnObject": {
         "type": "union",
-        "discriminator": "transformerType",
+        "discriminator": [
+          "transformerType",
+          "interpolation"
+        ],
         "optInDiscriminator": true,
         "definition": [
           {

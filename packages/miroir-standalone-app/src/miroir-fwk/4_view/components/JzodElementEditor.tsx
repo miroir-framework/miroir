@@ -570,6 +570,7 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
                   data-testid="miroirInput"
                   id={props.rootLessListKey}
                   key={props.rootLessListKey}
+                  aria-label={props.rootLessListKey}
                   type="text"
                   style={{
                     width: `${estimatedWidth}px`,
