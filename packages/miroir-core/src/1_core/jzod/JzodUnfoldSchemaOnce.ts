@@ -154,6 +154,7 @@ export function unfoldJzodSchemaOnce(
   currentModel?: MetaModel,
   miroirMetaModel?: MetaModel,
   relativeReferenceJzodContext?: {[k:string]: JzodElement},
+  isUnfoldingSubUnion: boolean = false, // used to avoid infinite recursion in case of union unfolding
 ): UnfoldJzodSchemaOnceReturnType {
   // log.info(
   //   "unfoldJzodSchemaOnce called for schema",
@@ -256,7 +257,8 @@ export function unfoldJzodSchemaOnce(
               e[1],
               currentModel,
               miroirMetaModel,
-              relativeReferenceJzodContext
+              relativeReferenceJzodContext,
+              isUnfoldingSubUnion
             )
             // log.info("unfoldJzodSchemaOnce object attribute",e,"result",resultSchemaTmp)
             if (resultSchemaTmp.status == "ok") {
@@ -308,7 +310,8 @@ export function unfoldJzodSchemaOnce(
             a,
             currentModel,
             miroirMetaModel,
-            relativeReferenceJzodContext
+            relativeReferenceJzodContext,
+            isUnfoldingSubUnion
           )
         );
       const failedIndex = unfoldedJzodSchemaReturnType.find(a => a.status!="ok")
@@ -327,10 +330,17 @@ export function unfoldJzodSchemaOnce(
       // log.info("unfoldJzodSchemaOnce union unfoldedJzodSchemas", unfoldedJzodSchemas);
       const secondLevelUnfoldedTmpResults: (JzodElement | UnfoldJzodSchemaOnceReturnType)[] = firstLevelUnfoldedJzodSchemas.map(
         (s:JzodElement)=> {
-          if (s.type != "union") {
+          if (s.type != "union" || isUnfoldingSubUnion) {
             return s
           }
-          return unfoldJzodSchemaOnce(miroirFundamentalJzodSchema, s, currentModel, miroirMetaModel, relativeReferenceJzodContext)
+          return unfoldJzodSchemaOnce(
+            miroirFundamentalJzodSchema,
+            s,
+            currentModel,
+            miroirMetaModel,
+            relativeReferenceJzodContext,
+            true // isUnfoldingSubUnion = true, to avoid infinite recursion in case of union unfolding
+          );
         }
       )
       const secondLineFailedIndex = secondLevelUnfoldedTmpResults.find((a:any) => Object.hasOwn(a,"status") && a.status!="ok")
@@ -342,14 +352,14 @@ export function unfoldJzodSchemaOnce(
             JSON.stringify(secondLineFailedIndex, null, 2),
         };
       }
-      const secondLevelUnfoldedResults: JzodElement[] = (secondLevelUnfoldedTmpResults as (JzodElement | UnfoldJzodSchemaOnceReturnTypeOK)[]).map(
-        (s: JzodElement | UnfoldJzodSchemaOnceReturnTypeOK) => {
-          if (!Object.hasOwn(s, "status")) {
-            return s
-          }
-          return (s as any).element
+      const secondLevelUnfoldedResults: JzodElement[] = (
+        secondLevelUnfoldedTmpResults as (JzodElement | UnfoldJzodSchemaOnceReturnTypeOK)[]
+      ).map((s: JzodElement | UnfoldJzodSchemaOnceReturnTypeOK) => {
+        if (!Object.hasOwn(s, "status")) {
+          return s;
         }
-      )
+        return (s as any).element;
+      });
       // const resultElement = { ...jzodSchema, definition: firstLevelUnfoldedJzodSchemas}
       const resultElement = { ...jzodSchema, definition: secondLevelUnfoldedResults}
       // log.info("unfoldJzodSchemaOnce union resultElement", resultElement);
@@ -362,7 +372,8 @@ export function unfoldJzodSchemaOnce(
         jzodSchema.definition,
         currentModel,
         miroirMetaModel,
-        relativeReferenceJzodContext
+        relativeReferenceJzodContext,
+        isUnfoldingSubUnion
       )
       if (resultSchemaTmp.status == "ok") {
         const result: UnfoldJzodSchemaOnceReturnType = {
@@ -395,7 +406,8 @@ export function unfoldJzodSchemaOnce(
           e,
           currentModel,
           miroirMetaModel,
-          relativeReferenceJzodContext
+          relativeReferenceJzodContext,
+          isUnfoldingSubUnion
         )
       )
       const foundError = subTypes.find(e=>e.status == "error");
@@ -421,7 +433,8 @@ export function unfoldJzodSchemaOnce(
         jzodSchema.definition,
         currentModel,
         miroirMetaModel,
-        relativeReferenceJzodContext
+        relativeReferenceJzodContext,
+        isUnfoldingSubUnion
       );
 
       if (subType.status == "ok") {

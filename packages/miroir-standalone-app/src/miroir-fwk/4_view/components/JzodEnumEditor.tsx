@@ -80,7 +80,6 @@ export const JzodEnumEditor = React.memo(
           >
             {menuItems}
           </StyledSelect>
-          enum
         </>
       ) : (
         <>
@@ -102,44 +101,6 @@ export const JzodEnumEditor = React.memo(
         </>
       ),
     });
-    return (
-      <span>
-        {labelElement}
-        {isDiscriminator ? (
-          <>
-            <StyledSelect
-              id={rootLessListKey}
-              // aria-label={rootLessListKey}
-              labelId="demo-simple-select-label"
-              variant="standard"
-              {...formik.getFieldProps(rootLessListKey)}
-              name={rootLessListKey}
-            >
-              {menuItems}
-            </StyledSelect>
-            enum
-          </>
-        ) : (
-          <>
-            <StyledSelect
-              id={rootLessListKey}
-              // aria-label={rootLessListKey}
-              labelId="demo-simple-select-label"
-              variant="standard"
-              {...formik.getFieldProps(rootLessListKey)}
-              name={rootLessListKey}
-            >
-              {menuItems}
-            </StyledSelect>
-          </>
-        )}
-        {forceTestingMode ? (
-          <div>enumValues={JSON.stringify((rawJzodSchema as JzodEnum).definition)}</div>
-        ) : (
-          <></>
-        )}
-      </span>
-    );
   },
   (prevProps, nextProps) => {
     // Custom comparison for React.memo

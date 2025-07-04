@@ -17,6 +17,7 @@ import {
   deleteObjectAtPath,
   alterObjectAtPath,
   ResolvedJzodSchemaReturnType,
+  UnfoldJzodSchemaOnceReturnType,
 } from "miroir-core";
 
 import { indentShift } from "./JzodArrayEditor";
@@ -538,14 +539,24 @@ ${JSON.stringify(props.rawJzodSchema, null, 2)}`}
               concreteObjectRawJzodSchema.type == "object" &&
               concreteObjectRawJzodSchema.extend
             ) {
-              const resolvedConcreteObjectJzodSchemaTmp = currentMiroirFundamentalJzodSchema
-                ? unfoldJzodSchemaOnce(
-                    currentMiroirFundamentalJzodSchema,
-                    concreteObjectRawJzodSchema,
-                    currentModel,
-                    miroirMetaModel
-                  )
-                : undefined;
+              const resolvedConcreteObjectJzodSchemaTmp = useMemo(
+                () =>
+                  currentMiroirFundamentalJzodSchema
+                    ? // ? unfoldJzodSchemaOnce(
+                      unfoldJzodSchemaOnce(
+                        currentMiroirFundamentalJzodSchema,
+                        concreteObjectRawJzodSchema,
+                        currentModel,
+                        miroirMetaModel
+                      )
+                    : undefined,
+                [
+                  currentMiroirFundamentalJzodSchema,
+                  concreteObjectRawJzodSchema,
+                  currentModel,
+                  miroirMetaModel,
+                ]
+              );
 
               if (
                 !resolvedConcreteObjectJzodSchemaTmp ||
@@ -587,46 +598,6 @@ ${JSON.stringify(props.rawJzodSchema, null, 2)}`}
             );
           }
         }
-        let unfoldedAttributeRawSchemaReturnType: ResolvedJzodSchemaReturnType | undefined;
-        try {
-          unfoldedAttributeRawSchemaReturnType = {
-            ...(context.miroirFundamentalJzodSchema
-              ? unfoldJzodSchemaOnce(
-                  context.miroirFundamentalJzodSchema, // context.miroirFundamentalJzodSchema,
-                  attributeRawJzodSchema,
-                  currentModel,
-                  miroirMetaModel
-                )
-              : {}),
-            valuePath: [],
-            typePath: [],
-          } as any;
-          undefined;
-        } catch (e) {
-          throw e as Error; // rethrow the error to be caught by the error boundary
-        }
-        if (
-          !unfoldedAttributeRawSchemaReturnType ||
-          unfoldedAttributeRawSchemaReturnType.status == "error"
-        ) {
-          throw new Error(
-            "JzodElementEditor could not unfold raw schema " +
-              "error " +
-              JSON.stringify(unfoldedAttributeRawSchemaReturnType, null, 2) +
-              " props.rawJzodSchema " +
-              JSON.stringify(props.rawJzodSchema, null, 2) +
-              // props.rawJzodSchema +
-              " count " +
-              count +
-              " result " +
-              // JSON.stringify(unfoldedRawSchemaReturnType, null, 2) +
-              unfoldedAttributeRawSchemaReturnType +
-              " miroirFundamentalJzodSchema " +
-              context.miroirFundamentalJzodSchema
-            // JSON.stringify(currentMiroirFundamentalJzodSchema, null, 2)
-          );
-        }
-        const unfoldedAttributeRawSchema: JzodElement = unfoldedAttributeRawSchemaReturnType.element;
 
         // Determine if this is a record type where attribute names should be editable
         const isRecordType = unfoldedRawSchema?.type === "record";

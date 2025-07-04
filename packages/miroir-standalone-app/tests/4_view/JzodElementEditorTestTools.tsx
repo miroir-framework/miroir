@@ -428,10 +428,10 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
                 rootLessListKey,
                 "for formik value",
                 formik.values,
-                "rootLessListKeyMap",
-                JSON.stringify(result, null, 2),
-                "effectiveRawJzodSchema",
-                JSON.stringify(effectiveRawJzodSchema, null, 2),
+                // "rootLessListKeyMap",
+                // JSON.stringify(result, null, 2),
+                // "effectiveRawJzodSchema",
+                // JSON.stringify(effectiveRawJzodSchema, null, 2),
               );
               return result;
             }, [

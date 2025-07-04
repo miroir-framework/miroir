@@ -11,6 +11,7 @@ import {
 } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { MiroirModel } from "../../../src/0_interfaces/1_core/Model";
 
+// import { memoizedUnfoldJzodSchemaOnce, unfoldJzodSchemaOnce} from "../../../src/1_core/jzod/JzodUnfoldSchemaOnce";
 import { unfoldJzodSchemaOnce} from "../../../src/1_core/jzod/JzodUnfoldSchemaOnce";
 
 
@@ -187,13 +188,13 @@ function testResolve(
   expectedResult: JzodElement,
 ){
   console.log("######################################### running test", testId, "...")
+  // const testResult = memoizedUnfoldJzodSchemaOnce(
   const testResult = unfoldJzodSchemaOnce(
     miroirFundamentalJzodSchema,
     testSchema,
     // testValueObject,
     defaultMiroirMetaModel,
     defaultMiroirMetaModel,
-    {}
   )
   console.log("######################################### test", testId, "has result", JSON.stringify(testResult, null, 2))
   if (testResult.status == "ok") {
@@ -204,6 +205,7 @@ function testResolve(
     // console.log("test", testId, "has result", JSON.stringify(testResult, null, 2));
     expect(testResult.status).toEqual("ok");
   }
+  console.log("######################################### test", testId, "done")
 }
 
 interface testFormat {
@@ -261,231 +263,231 @@ describe(
         console.log(expect.getState().currentTestName, "called getMiroirFundamentalJzodSchema");
 
         const tests: { [k: string]: testFormat } = {
-          // // plain literal!
-          // test010: {
-          //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-          //   testSchema: {
-          //     type: "literal",
-          //     definition: "myLiteral",
-          //   },
-          //   expectedResult: {
-          //     type: "literal",
-          //     definition: "myLiteral",
-          //   },
-          // },
-          // // simpleType
-          // test020: {
-          //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-          //   testSchema: {
-          //     type: "string",
-          //   },
-          //   expectedResult: {
-          //     type: "string",
-          //   },
-          // },
-          // // schemaReference (plain, simpleType, non-recursive)
-          // test030: {
-          //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-          //   testSchema: {
-          //     type: "schemaReference",
-          //     context: {
-          //       a: {
-          //         type: "string",
-          //       },
-          //     },
-          //     definition: {
-          //       relativePath: "a",
-          //     },
-          //   },
-          //   expectedResult: {
-          //     type: "string",
-          //   },
-          // },
-          // // object, simple
-          // test040: {
-          //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-          //   testSchema: {
-          //     type: "object",
-          //     definition: {
-          //       a: {
-          //         type: "schemaReference",
-          //         optional: true,
-          //         context: {
-          //           myString: {
-          //             type: "string",
-          //           },
-          //         },
-          //         definition: { relativePath: "myString" },
-          //       },
-          //       b: {
-          //         type: "string",
-          //         optional: true,
-          //       },
-          //       c: {
-          //         type: "record",
-          //         optional: true,
-          //         definition: {
-          //           type: "string",
-          //           optional: true,
-          //         },
-          //       },
-          //     },
-          //   },
-          //   expectedResult: {
-          //     type: "object",
-          //     definition: {
-          //       a: {
-          //         type: "string",
-          //         optional: true,
-          //       },
-          //       b: {
-          //         type: "string",
-          //         optional: true,
-          //       },
-          //       c: {
-          //         type: "record",
-          //         optional: true,
-          //         definition: {
-          //           type: "string",
-          //           optional: true,
-          //         },
-          //       },
-          //     },
-          //   },
-          // },
-          // // schemaReference: object, recursive, 1-level valueObject
-          // test050: {
-          //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-          //   testSchema: {
-          //     type: "schemaReference",
-          //     context: {
-          //       myObject: {
-          //         type: "object",
-          //         definition: {
-          //           a: {
-          //             type: "union",
-          //             optional: true,
-          //             definition: [
-          //               {
-          //                 type: "string",
-          //               },
-          //               {
-          //                 type: "schemaReference",
-          //                 definition: { relativePath: "myObject" },
-          //               },
-          //             ],
-          //           },
-          //         },
-          //       },
-          //     },
-          //     definition: { relativePath: "myObject" },
-          //   },
-          //   expectedResult: {
-          //     type: "object",
-          //     definition: {
-          //       a: {
-          //         type: "union",
-          //         optional: true,
-          //         definition: [
-          //           {
-          //             type: "string",
-          //           },
-          //           {
-          //             type: "schemaReference",
-          //             context: {
-          //               myObject: {
-          //                 type: "object",
-          //                 definition: {
-          //                   a: {
-          //                     type: "union",
-          //                     optional: true,
-          //                     definition: [
-          //                       {
-          //                         type: "string",
-          //                       },
-          //                       {
-          //                         type: "schemaReference",
-          //                         definition: { relativePath: "myObject" },
-          //                       },
-          //                     ],
-          //                   },
-          //                 },
-          //               },
-          //             },
-          //             definition: { relativePath: "myObject" },
-          //           },
-          //         ],
-          //       },
-          //     },
-          //   },
-          // },
-          // // schemaReference: object, recursive, 3-level valueObject
-          // test060: {
-          //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-          //   testSchema: {
-          //     type: "schemaReference",
-          //     context: {
-          //       myObject: {
-          //         type: "object",
-          //         definition: {
-          //           a: {
-          //             type: "union",
-          //             definition: [
-          //               {
-          //                 type: "string",
-          //               },
-          //               {
-          //                 type: "schemaReference",
-          //                 definition: { relativePath: "myObject" },
-          //               },
-          //             ],
-          //           },
-          //         },
-          //       },
-          //     },
-          //     definition: { relativePath: "myObject" },
-          //   },
-          //   expectedResult: {
-          //     type: "object",
-          //     definition: {
-          //       a: {
-          //         type: "union",
-          //         definition: [
-          //           {
-          //             type: "string",
-          //           },
-          //           {
-          //             type: "schemaReference",
-          //             definition: {
-          //               relativePath: "myObject",
-          //             },
-          //             context: {
-          //               myObject: {
-          //                 type: "object",
-          //                 definition: {
-          //                   a: {
-          //                     type: "union",
-          //                     definition: [
-          //                       {
-          //                         type: "string",
-          //                       },
-          //                       {
-          //                         type: "schemaReference",
-          //                         definition: {
-          //                           relativePath: "myObject",
-          //                         },
-          //                       },
-          //                     ],
-          //                   },
-          //                 },
-          //               },
-          //             },
-          //           },
-          //         ],
-          //       },
-          //     },
-          //   },
-          // },
+          // plain literal!
+          test010: {
+            miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+            testSchema: {
+              type: "literal",
+              definition: "myLiteral",
+            },
+            expectedResult: {
+              type: "literal",
+              definition: "myLiteral",
+            },
+          },
+          // simpleType
+          test020: {
+            miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+            testSchema: {
+              type: "string",
+            },
+            expectedResult: {
+              type: "string",
+            },
+          },
+          // schemaReference (plain, simpleType, non-recursive)
+          test030: {
+            miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+            testSchema: {
+              type: "schemaReference",
+              context: {
+                a: {
+                  type: "string",
+                },
+              },
+              definition: {
+                relativePath: "a",
+              },
+            },
+            expectedResult: {
+              type: "string",
+            },
+          },
+          // object, simple
+          test040: {
+            miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+            testSchema: {
+              type: "object",
+              definition: {
+                a: {
+                  type: "schemaReference",
+                  optional: true,
+                  context: {
+                    myString: {
+                      type: "string",
+                    },
+                  },
+                  definition: { relativePath: "myString" },
+                },
+                b: {
+                  type: "string",
+                  optional: true,
+                },
+                c: {
+                  type: "record",
+                  optional: true,
+                  definition: {
+                    type: "string",
+                    optional: true,
+                  },
+                },
+              },
+            },
+            expectedResult: {
+              type: "object",
+              definition: {
+                a: {
+                  type: "string",
+                  optional: true,
+                },
+                b: {
+                  type: "string",
+                  optional: true,
+                },
+                c: {
+                  type: "record",
+                  optional: true,
+                  definition: {
+                    type: "string",
+                    optional: true,
+                  },
+                },
+              },
+            },
+          },
+          // schemaReference: object, recursive, 1-level valueObject
+          test050: {
+            miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+            testSchema: {
+              type: "schemaReference",
+              context: {
+                myObject: {
+                  type: "object",
+                  definition: {
+                    a: {
+                      type: "union",
+                      optional: true,
+                      definition: [
+                        {
+                          type: "string",
+                        },
+                        {
+                          type: "schemaReference",
+                          definition: { relativePath: "myObject" },
+                        },
+                      ],
+                    },
+                  },
+                },
+              },
+              definition: { relativePath: "myObject" },
+            },
+            expectedResult: {
+              type: "object",
+              definition: {
+                a: {
+                  type: "union",
+                  optional: true,
+                  definition: [
+                    {
+                      type: "string",
+                    },
+                    {
+                      type: "schemaReference",
+                      context: {
+                        myObject: {
+                          type: "object",
+                          definition: {
+                            a: {
+                              type: "union",
+                              optional: true,
+                              definition: [
+                                {
+                                  type: "string",
+                                },
+                                {
+                                  type: "schemaReference",
+                                  definition: { relativePath: "myObject" },
+                                },
+                              ],
+                            },
+                          },
+                        },
+                      },
+                      definition: { relativePath: "myObject" },
+                    },
+                  ],
+                },
+              },
+            },
+          },
+          // schemaReference: object, recursive, 3-level valueObject
+          test060: {
+            miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+            testSchema: {
+              type: "schemaReference",
+              context: {
+                myObject: {
+                  type: "object",
+                  definition: {
+                    a: {
+                      type: "union",
+                      definition: [
+                        {
+                          type: "string",
+                        },
+                        {
+                          type: "schemaReference",
+                          definition: { relativePath: "myObject" },
+                        },
+                      ],
+                    },
+                  },
+                },
+              },
+              definition: { relativePath: "myObject" },
+            },
+            expectedResult: {
+              type: "object",
+              definition: {
+                a: {
+                  type: "union",
+                  definition: [
+                    {
+                      type: "string",
+                    },
+                    {
+                      type: "schemaReference",
+                      definition: {
+                        relativePath: "myObject",
+                      },
+                      context: {
+                        myObject: {
+                          type: "object",
+                          definition: {
+                            a: {
+                              type: "union",
+                              definition: [
+                                {
+                                  type: "string",
+                                },
+                                {
+                                  type: "schemaReference",
+                                  definition: {
+                                    relativePath: "myObject",
+                                  },
+                                },
+                              ],
+                            },
+                          },
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          },
           // union of schemaReferences
           test070: {
             miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
@@ -1048,6 +1050,3590 @@ describe(
                 ],
               },
               optional: true,
+            },
+          },
+          // ######################################################################################
+          // ######################################################################################
+          // ######################################################################################
+          // ######################################################################################
+          // ######################################################################################
+          // ######################################################################################
+          // unfold schemaReference to jzodElement
+          test400: {
+            miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+            testSchema: {
+              type: "schemaReference",
+              definition: {
+                relativePath: "jzodElement",
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              },
+              context: {},
+            },
+            expectedResult: {
+              type: "union",
+              discriminator: "type",
+              definition: [
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodArray",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodPlainAttribute",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodAttributePlainDateWithValidations",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodAttributePlainNumberWithValidations",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodAttributePlainStringWithValidations",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodEnum",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodFunction",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodLazy",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodLiteral",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodIntersection",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodMap",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodObject",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodPromise",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodRecord",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodReference",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodSet",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodTuple",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodUnion",
+                  },
+                  context: {},
+                },
+              ],
+            },
+          },
+          // unfold definition of jzodElement
+          test410: {
+            miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+            testSchema: {
+              type: "union",
+              discriminator: "type",
+              definition: [
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodArray",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodPlainAttribute",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodAttributePlainDateWithValidations",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodAttributePlainNumberWithValidations",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodAttributePlainStringWithValidations",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodEnum",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodFunction",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodLazy",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodLiteral",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodIntersection",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodMap",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodObject",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodPromise",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodRecord",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodReference",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodSet",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodTuple",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodUnion",
+                  },
+                  context: {},
+                },
+              ],
+            },
+            expectedResult: {
+              type: "union",
+              discriminator: "type",
+              definition: [
+                {
+                  type: "object",
+                  extend: {
+                    type: "schemaReference",
+                    definition: {
+                      eager: true,
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      relativePath: "jzodBaseObject",
+                    },
+                    context: {},
+                  },
+                  definition: {
+                    type: {
+                      type: "literal",
+                      definition: "array",
+                    },
+                    definition: {
+                      type: "schemaReference",
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath: "jzodElement",
+                      },
+                      context: {},
+                    },
+                  },
+                },
+                {
+                  type: "object",
+                  extend: {
+                    type: "schemaReference",
+                    definition: {
+                      eager: true,
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      relativePath: "jzodBaseObject",
+                    },
+                    context: {},
+                  },
+                  definition: {
+                    type: {
+                      type: "enum",
+                      definition: [
+                        "any",
+                        "bigint",
+                        "boolean",
+                        "never",
+                        "null",
+                        "uuid",
+                        "undefined",
+                        "unknown",
+                        "void",
+                      ],
+                    },
+                    coerce: {
+                      type: "boolean",
+                      optional: true,
+                    },
+                  },
+                },
+                {
+                  type: "object",
+                  extend: {
+                    type: "schemaReference",
+                    definition: {
+                      eager: true,
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      relativePath: "jzodBaseObject",
+                    },
+                    context: {},
+                  },
+                  definition: {
+                    type: {
+                      type: "literal",
+                      definition: "date",
+                    },
+                    coerce: {
+                      type: "boolean",
+                      optional: true,
+                    },
+                    validations: {
+                      type: "array",
+                      optional: true,
+                      definition: {
+                        type: "schemaReference",
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "jzodAttributeDateValidations",
+                        },
+                        context: {},
+                      },
+                    },
+                  },
+                },
+                {
+                  type: "object",
+                  extend: {
+                    type: "schemaReference",
+                    definition: {
+                      eager: true,
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      relativePath: "jzodBaseObject",
+                    },
+                    context: {},
+                  },
+                  definition: {
+                    type: {
+                      type: "literal",
+                      definition: "number",
+                    },
+                    coerce: {
+                      type: "boolean",
+                      optional: true,
+                    },
+                    validations: {
+                      type: "array",
+                      optional: true,
+                      definition: {
+                        type: "schemaReference",
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "jzodAttributeNumberValidations",
+                        },
+                        context: {},
+                      },
+                    },
+                  },
+                },
+                {
+                  type: "object",
+                  extend: {
+                    type: "schemaReference",
+                    definition: {
+                      eager: true,
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      relativePath: "jzodBaseObject",
+                    },
+                    context: {},
+                  },
+                  definition: {
+                    type: {
+                      type: "literal",
+                      definition: "string",
+                    },
+                    coerce: {
+                      type: "boolean",
+                      optional: true,
+                    },
+                    validations: {
+                      type: "array",
+                      optional: true,
+                      definition: {
+                        type: "schemaReference",
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "jzodAttributeStringValidations",
+                        },
+                        context: {},
+                      },
+                    },
+                  },
+                },
+                {
+                  type: "object",
+                  extend: {
+                    type: "schemaReference",
+                    definition: {
+                      eager: true,
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      relativePath: "jzodBaseObject",
+                    },
+                    context: {},
+                  },
+                  definition: {
+                    type: {
+                      type: "literal",
+                      definition: "enum",
+                    },
+                    definition: {
+                      type: "array",
+                      definition: {
+                        type: "string",
+                      },
+                    },
+                  },
+                },
+                {
+                  type: "object",
+                  extend: {
+                    type: "schemaReference",
+                    definition: {
+                      eager: true,
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      relativePath: "jzodBaseObject",
+                    },
+                    context: {},
+                  },
+                  definition: {
+                    type: {
+                      type: "literal",
+                      definition: "function",
+                    },
+                    definition: {
+                      type: "object",
+                      definition: {
+                        args: {
+                          type: "array",
+                          definition: {
+                            type: "schemaReference",
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "jzodElement",
+                            },
+                            context: {},
+                          },
+                        },
+                        returns: {
+                          type: "schemaReference",
+                          definition: {
+                            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            relativePath: "jzodElement",
+                          },
+                          optional: true,
+                          context: {},
+                        },
+                      },
+                    },
+                  },
+                },
+                {
+                  type: "object",
+                  extend: {
+                    type: "schemaReference",
+                    definition: {
+                      eager: true,
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      relativePath: "jzodBaseObject",
+                    },
+                    context: {},
+                  },
+                  definition: {
+                    type: {
+                      type: "literal",
+                      definition: "lazy",
+                    },
+                    definition: {
+                      type: "schemaReference",
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath: "jzodFunction",
+                      },
+                      context: {},
+                    },
+                  },
+                },
+                {
+                  type: "object",
+                  extend: {
+                    type: "schemaReference",
+                    definition: {
+                      eager: true,
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      relativePath: "jzodBaseObject",
+                    },
+                    context: {},
+                  },
+                  definition: {
+                    type: {
+                      type: "literal",
+                      definition: "literal",
+                    },
+                    definition: {
+                      type: "union",
+                      definition: [
+                        {
+                          type: "string",
+                        },
+                        {
+                          type: "number",
+                        },
+                        {
+                          type: "bigint",
+                        },
+                        {
+                          type: "boolean",
+                        },
+                      ],
+                    },
+                  },
+                },
+                {
+                  type: "object",
+                  extend: {
+                    type: "schemaReference",
+                    definition: {
+                      eager: true,
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      relativePath: "jzodBaseObject",
+                    },
+                    context: {},
+                  },
+                  definition: {
+                    type: {
+                      type: "literal",
+                      definition: "intersection",
+                    },
+                    definition: {
+                      type: "object",
+                      definition: {
+                        left: {
+                          type: "schemaReference",
+                          definition: {
+                            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            relativePath: "jzodElement",
+                          },
+                          context: {},
+                        },
+                        right: {
+                          type: "schemaReference",
+                          definition: {
+                            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            relativePath: "jzodElement",
+                          },
+                          context: {},
+                        },
+                      },
+                    },
+                  },
+                },
+                {
+                  type: "object",
+                  extend: {
+                    type: "schemaReference",
+                    definition: {
+                      eager: true,
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      relativePath: "jzodBaseObject",
+                    },
+                    context: {},
+                  },
+                  definition: {
+                    type: {
+                      type: "literal",
+                      definition: "map",
+                    },
+                    definition: {
+                      type: "tuple",
+                      definition: [
+                        {
+                          type: "schemaReference",
+                          definition: {
+                            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            relativePath: "jzodElement",
+                          },
+                          context: {},
+                        },
+                        {
+                          type: "schemaReference",
+                          definition: {
+                            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            relativePath: "jzodElement",
+                          },
+                          context: {},
+                        },
+                      ],
+                    },
+                  },
+                },
+                {
+                  type: "object",
+                  extend: {
+                    type: "schemaReference",
+                    definition: {
+                      eager: true,
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      relativePath: "jzodBaseObject",
+                    },
+                    context: {},
+                  },
+                  definition: {
+                    extend: {
+                      type: "union",
+                      optional: true,
+                      definition: [
+                        {
+                          type: "union",
+                          optional: true,
+                          definition: [
+                            {
+                              type: "schemaReference",
+                              definition: {
+                                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                relativePath: "jzodReference",
+                              },
+                              context: {},
+                            },
+                            {
+                              type: "schemaReference",
+                              definition: {
+                                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                relativePath: "jzodObject",
+                              },
+                              context: {},
+                            },
+                          ],
+                        },
+                        {
+                          type: "array",
+                          definition: {
+                            type: "union",
+                            optional: true,
+                            definition: [
+                              {
+                                type: "schemaReference",
+                                definition: {
+                                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                  relativePath: "jzodReference",
+                                },
+                                context: {},
+                              },
+                              {
+                                type: "schemaReference",
+                                definition: {
+                                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                  relativePath: "jzodObject",
+                                },
+                                context: {},
+                              },
+                            ],
+                          },
+                        },
+                      ],
+                    },
+                    type: {
+                      type: "literal",
+                      definition: "object",
+                    },
+                    nonStrict: {
+                      type: "boolean",
+                      optional: true,
+                    },
+                    partial: {
+                      type: "boolean",
+                      optional: true,
+                    },
+                    carryOn: {
+                      type: "union",
+                      optional: true,
+                      definition: [
+                        {
+                          type: "schemaReference",
+                          definition: {
+                            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            relativePath: "jzodObject",
+                          },
+                          context: {},
+                        },
+                        {
+                          type: "schemaReference",
+                          definition: {
+                            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            relativePath: "jzodUnion",
+                          },
+                          context: {},
+                        },
+                      ],
+                    },
+                    definition: {
+                      type: "record",
+                      definition: {
+                        type: "schemaReference",
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "jzodElement",
+                        },
+                        context: {},
+                      },
+                    },
+                  },
+                },
+                {
+                  type: "object",
+                  extend: {
+                    type: "schemaReference",
+                    definition: {
+                      eager: true,
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      relativePath: "jzodBaseObject",
+                    },
+                    context: {},
+                  },
+                  definition: {
+                    type: {
+                      type: "literal",
+                      definition: "promise",
+                    },
+                    definition: {
+                      type: "schemaReference",
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath: "jzodElement",
+                      },
+                      context: {},
+                    },
+                  },
+                },
+                {
+                  type: "object",
+                  extend: {
+                    type: "schemaReference",
+                    definition: {
+                      eager: true,
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      relativePath: "jzodBaseObject",
+                    },
+                    context: {},
+                  },
+                  definition: {
+                    type: {
+                      type: "literal",
+                      definition: "record",
+                    },
+                    definition: {
+                      type: "schemaReference",
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath: "jzodElement",
+                      },
+                      context: {},
+                    },
+                  },
+                },
+                {
+                  type: "object",
+                  extend: {
+                    type: "schemaReference",
+                    definition: {
+                      eager: true,
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      relativePath: "jzodBaseObject",
+                    },
+                    context: {},
+                  },
+                  definition: {
+                    type: {
+                      type: "literal",
+                      definition: "schemaReference",
+                    },
+                    context: {
+                      type: "record",
+                      optional: true,
+                      definition: {
+                        type: "schemaReference",
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "jzodElement",
+                        },
+                        context: {},
+                      },
+                    },
+                    carryOn: {
+                      type: "union",
+                      optional: true,
+                      definition: [
+                        {
+                          type: "schemaReference",
+                          definition: {
+                            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            relativePath: "jzodObject",
+                          },
+                          context: {},
+                        },
+                        {
+                          type: "schemaReference",
+                          definition: {
+                            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            relativePath: "jzodUnion",
+                          },
+                          context: {},
+                        },
+                      ],
+                    },
+                    definition: {
+                      type: "object",
+                      definition: {
+                        eager: {
+                          type: "boolean",
+                          optional: true,
+                        },
+                        partial: {
+                          type: "boolean",
+                          optional: true,
+                        },
+                        relativePath: {
+                          type: "string",
+                          optional: true,
+                        },
+                        absolutePath: {
+                          type: "string",
+                          optional: true,
+                        },
+                      },
+                    },
+                  },
+                },
+                {
+                  type: "object",
+                  extend: {
+                    type: "schemaReference",
+                    definition: {
+                      eager: true,
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      relativePath: "jzodBaseObject",
+                    },
+                    context: {},
+                  },
+                  definition: {
+                    type: {
+                      type: "literal",
+                      definition: "set",
+                    },
+                    definition: {
+                      type: "schemaReference",
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath: "jzodElement",
+                      },
+                      context: {},
+                    },
+                  },
+                },
+                {
+                  type: "object",
+                  extend: {
+                    type: "schemaReference",
+                    definition: {
+                      eager: true,
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      relativePath: "jzodBaseObject",
+                    },
+                    context: {},
+                  },
+                  definition: {
+                    type: {
+                      type: "literal",
+                      definition: "tuple",
+                    },
+                    definition: {
+                      type: "array",
+                      definition: {
+                        type: "schemaReference",
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "jzodElement",
+                        },
+                        context: {},
+                      },
+                    },
+                  },
+                },
+                {
+                  type: "object",
+                  extend: {
+                    type: "schemaReference",
+                    definition: {
+                      eager: true,
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      relativePath: "jzodBaseObject",
+                    },
+                    context: {},
+                  },
+                  definition: {
+                    type: {
+                      type: "literal",
+                      definition: "union",
+                    },
+                    discriminator: {
+                      type: "union",
+                      optional: true,
+                      definition: [
+                        {
+                          type: "string",
+                        },
+                        {
+                          type: "array",
+                          definition: {
+                            type: "string",
+                          },
+                        },
+                      ],
+                    },
+                    discriminatorNew: {
+                      type: "union",
+                      optional: true,
+                      definition: [
+                        {
+                          type: "object",
+                          definition: {
+                            discriminatorType: {
+                              type: "literal",
+                              definition: "string",
+                            },
+                            value: {
+                              type: "string",
+                            },
+                          },
+                        },
+                        {
+                          type: "object",
+                          definition: {
+                            discriminatorType: {
+                              type: "literal",
+                              definition: "array",
+                            },
+                            value: {
+                              type: "array",
+                              definition: {
+                                type: "string",
+                              },
+                            },
+                          },
+                        },
+                      ],
+                    },
+                    carryOn: {
+                      optional: true,
+                      type: "schemaReference",
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath: "jzodObject",
+                      },
+                      context: {},
+                    },
+                    definition: {
+                      type: "array",
+                      definition: {
+                        type: "schemaReference",
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "jzodElement",
+                        },
+                        context: {},
+                      },
+                    },
+                  },
+                },
+              ],
+            },
+          },
+          // taken from entityDefinitionBook display, that yields (almost?) infinite recursion
+          test420: {
+            miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+            testSchema: {
+              type: "object",
+              definition: {
+                uuid: {
+                  type: "uuid",
+                  tag: {
+                    value: {
+                      id: 1,
+                      defaultLabel: "Uuid",
+                      editable: false,
+                    },
+                  },
+                },
+                parentName: {
+                  type: "string",
+                  tag: {
+                    value: {
+                      id: 2,
+                      defaultLabel: "Entity Name",
+                      editable: false,
+                    },
+                  },
+                },
+                parentUuid: {
+                  type: "uuid",
+                  tag: {
+                    value: {
+                      id: 3,
+                      defaultLabel: "Entity Uuid",
+                      editable: false,
+                    },
+                  },
+                },
+                parentDefinitionVersionUuid: {
+                  type: "uuid",
+                  optional: true,
+                  tag: {
+                    value: {
+                      id: 4,
+                      defaultLabel: "Entity Definition Version Uuid",
+                      editable: false,
+                    },
+                  },
+                },
+                name: {
+                  type: "string",
+                  tag: {
+                    value: {
+                      id: 5,
+                      defaultLabel: "Name",
+                      editable: false,
+                    },
+                  },
+                },
+                entityUuid: {
+                  type: "uuid",
+                  tag: {
+                    value: {
+                      id: 6,
+                      defaultLabel:
+                        "Entity Uuid of the Entity which this definition is the definition",
+                      editable: false,
+                    },
+                  },
+                },
+                conceptLevel: {
+                  type: "enum",
+                  definition: ["MetaModel", "Model", "Data"],
+                  optional: true,
+                  tag: {
+                    value: {
+                      id: 7,
+                      defaultLabel: "Concept Level",
+                      editable: false,
+                    },
+                  },
+                },
+                description: {
+                  type: "string",
+                  optional: true,
+                  tag: {
+                    value: {
+                      id: 8,
+                      defaultLabel: "Description",
+                      editable: true,
+                    },
+                  },
+                },
+                defaultInstanceDetailsReportUuid: {
+                  type: "uuid",
+                  optional: true,
+                  tag: {
+                    value: {
+                      id: 9,
+                      defaultLabel: "Default Report used to display instances of this Entity",
+                      editable: false,
+                    },
+                  },
+                },
+                viewAttributes: {
+                  type: "array",
+                  optional: true,
+                  definition: {
+                    type: "string",
+                  },
+                  tag: {
+                    value: {
+                      id: 10,
+                      defaultLabel: "Attributes to display by default",
+                      editable: true,
+                    },
+                  },
+                },
+                icon: {
+                  type: "string",
+                  optional: true,
+                  tag: {
+                    value: {
+                      id: 11,
+                      defaultLabel: "Icon used to represent instances of this Entity",
+                      editable: true,
+                    },
+                  },
+                },
+                jzodSchema: {
+                  type: "object",
+                  extend: {
+                    type: "schemaReference",
+                    definition: {
+                      eager: true,
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      relativePath: "jzodBaseObject",
+                    },
+                    context: {},
+                  },
+                  definition: {
+                    extend: {
+                      type: "union",
+                      optional: true,
+                      definition: [
+                        {
+                          type: "union",
+                          optional: true,
+                          definition: [
+                            {
+                              type: "schemaReference",
+                              definition: {
+                                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                relativePath: "jzodReference",
+                              },
+                              context: {},
+                            },
+                            {
+                              type: "schemaReference",
+                              definition: {
+                                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                relativePath: "jzodObject",
+                              },
+                              context: {},
+                            },
+                          ],
+                        },
+                        {
+                          type: "array",
+                          definition: {
+                            type: "union",
+                            optional: true,
+                            definition: [
+                              {
+                                type: "schemaReference",
+                                definition: {
+                                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                  relativePath: "jzodReference",
+                                },
+                                context: {},
+                              },
+                              {
+                                type: "schemaReference",
+                                definition: {
+                                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                  relativePath: "jzodObject",
+                                },
+                                context: {},
+                              },
+                            ],
+                          },
+                        },
+                      ],
+                    },
+                    type: {
+                      type: "literal",
+                      definition: "object",
+                    },
+                    nonStrict: {
+                      type: "boolean",
+                      optional: true,
+                    },
+                    partial: {
+                      type: "boolean",
+                      optional: true,
+                    },
+                    carryOn: {
+                      type: "union",
+                      optional: true,
+                      definition: [
+                        {
+                          type: "schemaReference",
+                          definition: {
+                            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            relativePath: "jzodObject",
+                          },
+                          context: {},
+                        },
+                        {
+                          type: "schemaReference",
+                          definition: {
+                            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            relativePath: "jzodUnion",
+                          },
+                          context: {},
+                        },
+                      ],
+                    },
+                    definition: {
+                      type: "record",
+                      definition: {
+                        type: "schemaReference",
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "jzodElement",
+                        },
+                        context: {},
+                      },
+                    },
+                  },
+                  tag: {
+                    value: {
+                      id: 12,
+                      defaultLabel: "Jzod Schema",
+                      editable: true,
+                    },
+                  },
+                },
+              },
+            },
+            expectedResult: {
+              type: "object",
+              definition: {
+                uuid: {
+                  type: "uuid",
+                  tag: {
+                    value: {
+                      id: 1,
+                      defaultLabel: "Uuid",
+                      editable: false,
+                    },
+                  },
+                },
+                parentName: {
+                  type: "string",
+                  tag: {
+                    value: {
+                      id: 2,
+                      defaultLabel: "Entity Name",
+                      editable: false,
+                    },
+                  },
+                },
+                parentUuid: {
+                  type: "uuid",
+                  tag: {
+                    value: {
+                      id: 3,
+                      defaultLabel: "Entity Uuid",
+                      editable: false,
+                    },
+                  },
+                },
+                parentDefinitionVersionUuid: {
+                  type: "uuid",
+                  optional: true,
+                  tag: {
+                    value: {
+                      id: 4,
+                      defaultLabel: "Entity Definition Version Uuid",
+                      editable: false,
+                    },
+                  },
+                },
+                name: {
+                  type: "string",
+                  tag: {
+                    value: {
+                      id: 5,
+                      defaultLabel: "Name",
+                      editable: false,
+                    },
+                  },
+                },
+                entityUuid: {
+                  type: "uuid",
+                  tag: {
+                    value: {
+                      id: 6,
+                      defaultLabel:
+                        "Entity Uuid of the Entity which this definition is the definition",
+                      editable: false,
+                    },
+                  },
+                },
+                conceptLevel: {
+                  type: "enum",
+                  definition: ["MetaModel", "Model", "Data"],
+                  optional: true,
+                  tag: {
+                    value: {
+                      id: 7,
+                      defaultLabel: "Concept Level",
+                      editable: false,
+                    },
+                  },
+                },
+                description: {
+                  type: "string",
+                  optional: true,
+                  tag: {
+                    value: {
+                      id: 8,
+                      defaultLabel: "Description",
+                      editable: true,
+                    },
+                  },
+                },
+                defaultInstanceDetailsReportUuid: {
+                  type: "uuid",
+                  optional: true,
+                  tag: {
+                    value: {
+                      id: 9,
+                      defaultLabel: "Default Report used to display instances of this Entity",
+                      editable: false,
+                    },
+                  },
+                },
+                viewAttributes: {
+                  type: "array",
+                  optional: true,
+                  definition: {
+                    type: "string",
+                  },
+                  tag: {
+                    value: {
+                      id: 10,
+                      defaultLabel: "Attributes to display by default",
+                      editable: true,
+                    },
+                  },
+                },
+                icon: {
+                  type: "string",
+                  optional: true,
+                  tag: {
+                    value: {
+                      id: 11,
+                      defaultLabel: "Icon used to represent instances of this Entity",
+                      editable: true,
+                    },
+                  },
+                },
+                jzodSchema: {
+                  type: "object",
+                  extend: {
+                    type: "schemaReference",
+                    definition: {
+                      eager: true,
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      relativePath: "jzodBaseObject",
+                    },
+                    context: {},
+                  },
+                  definition: {
+                    optional: {
+                      type: "boolean",
+                      optional: true,
+                    },
+                    nullable: {
+                      type: "boolean",
+                      optional: true,
+                    },
+                    tag: {
+                      type: "object",
+                      optional: true,
+                      definition: {
+                        value: {
+                          type: "object",
+                          optional: true,
+                          definition: {
+                            id: {
+                              type: "number",
+                              optional: true,
+                            },
+                            defaultLabel: {
+                              type: "string",
+                              optional: true,
+                            },
+                            description: {
+                              type: "string",
+                              optional: true,
+                            },
+                            initializeTo: {
+                              type: "any",
+                              optional: true,
+                            },
+                            targetEntity: {
+                              type: "string",
+                              optional: true,
+                            },
+                            targetEntityOrderInstancesBy: {
+                              type: "string",
+                              optional: true,
+                            },
+                            targetEntityApplicationSection: {
+                              type: "enum",
+                              optional: true,
+                              definition: ["model", "data", "metaModel"],
+                            },
+                            editable: {
+                              type: "boolean",
+                              optional: true,
+                            },
+                            canBeTemplate: {
+                              type: "boolean",
+                              optional: true,
+                            },
+                          },
+                        },
+                      },
+                    },
+                    extend: {
+                      type: "union",
+                      optional: true,
+                      definition: [
+                        {
+                          type: "union",
+                          optional: true,
+                          definition: [
+                            {
+                              type: "object",
+                              extend: {
+                                type: "schemaReference",
+                                definition: {
+                                  eager: true,
+                                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                  relativePath: "jzodBaseObject",
+                                },
+                                context: {},
+                              },
+                              definition: {
+                                optional: {
+                                  type: "boolean",
+                                  optional: true,
+                                },
+                                nullable: {
+                                  type: "boolean",
+                                  optional: true,
+                                },
+                                tag: {
+                                  type: "object",
+                                  optional: true,
+                                  definition: {
+                                    value: {
+                                      type: "object",
+                                      optional: true,
+                                      definition: {
+                                        id: {
+                                          type: "number",
+                                          optional: true,
+                                        },
+                                        defaultLabel: {
+                                          type: "string",
+                                          optional: true,
+                                        },
+                                        description: {
+                                          type: "string",
+                                          optional: true,
+                                        },
+                                        initializeTo: {
+                                          type: "any",
+                                          optional: true,
+                                        },
+                                        targetEntity: {
+                                          type: "string",
+                                          optional: true,
+                                        },
+                                        targetEntityOrderInstancesBy: {
+                                          type: "string",
+                                          optional: true,
+                                        },
+                                        targetEntityApplicationSection: {
+                                          type: "enum",
+                                          optional: true,
+                                          definition: ["model", "data", "metaModel"],
+                                        },
+                                        editable: {
+                                          type: "boolean",
+                                          optional: true,
+                                        },
+                                        canBeTemplate: {
+                                          type: "boolean",
+                                          optional: true,
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                                type: {
+                                  type: "literal",
+                                  definition: "schemaReference",
+                                },
+                                context: {
+                                  type: "record",
+                                  optional: true,
+                                  definition: {
+                                    type: "union",
+                                    discriminator: "type",
+                                    definition: [
+                                      {
+                                        type: "schemaReference",
+                                        definition: {
+                                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                          relativePath: "jzodArray",
+                                        },
+                                        context: {},
+                                      },
+                                      {
+                                        type: "schemaReference",
+                                        definition: {
+                                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                          relativePath: "jzodPlainAttribute",
+                                        },
+                                        context: {},
+                                      },
+                                      {
+                                        type: "schemaReference",
+                                        definition: {
+                                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                          relativePath: "jzodAttributePlainDateWithValidations",
+                                        },
+                                        context: {},
+                                      },
+                                      {
+                                        type: "schemaReference",
+                                        definition: {
+                                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                          relativePath: "jzodAttributePlainNumberWithValidations",
+                                        },
+                                        context: {},
+                                      },
+                                      {
+                                        type: "schemaReference",
+                                        definition: {
+                                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                          relativePath: "jzodAttributePlainStringWithValidations",
+                                        },
+                                        context: {},
+                                      },
+                                      {
+                                        type: "schemaReference",
+                                        definition: {
+                                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                          relativePath: "jzodEnum",
+                                        },
+                                        context: {},
+                                      },
+                                      {
+                                        type: "schemaReference",
+                                        definition: {
+                                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                          relativePath: "jzodFunction",
+                                        },
+                                        context: {},
+                                      },
+                                      {
+                                        type: "schemaReference",
+                                        definition: {
+                                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                          relativePath: "jzodLazy",
+                                        },
+                                        context: {},
+                                      },
+                                      {
+                                        type: "schemaReference",
+                                        definition: {
+                                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                          relativePath: "jzodLiteral",
+                                        },
+                                        context: {},
+                                      },
+                                      {
+                                        type: "schemaReference",
+                                        definition: {
+                                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                          relativePath: "jzodIntersection",
+                                        },
+                                        context: {},
+                                      },
+                                      {
+                                        type: "schemaReference",
+                                        definition: {
+                                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                          relativePath: "jzodMap",
+                                        },
+                                        context: {},
+                                      },
+                                      {
+                                        type: "schemaReference",
+                                        definition: {
+                                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                          relativePath: "jzodObject",
+                                        },
+                                        context: {},
+                                      },
+                                      {
+                                        type: "schemaReference",
+                                        definition: {
+                                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                          relativePath: "jzodPromise",
+                                        },
+                                        context: {},
+                                      },
+                                      {
+                                        type: "schemaReference",
+                                        definition: {
+                                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                          relativePath: "jzodRecord",
+                                        },
+                                        context: {},
+                                      },
+                                      {
+                                        type: "schemaReference",
+                                        definition: {
+                                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                          relativePath: "jzodReference",
+                                        },
+                                        context: {},
+                                      },
+                                      {
+                                        type: "schemaReference",
+                                        definition: {
+                                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                          relativePath: "jzodSet",
+                                        },
+                                        context: {},
+                                      },
+                                      {
+                                        type: "schemaReference",
+                                        definition: {
+                                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                          relativePath: "jzodTuple",
+                                        },
+                                        context: {},
+                                      },
+                                      {
+                                        type: "schemaReference",
+                                        definition: {
+                                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                          relativePath: "jzodUnion",
+                                        },
+                                        context: {},
+                                      },
+                                    ],
+                                  },
+                                },
+                                carryOn: {
+                                  type: "union",
+                                  optional: true,
+                                  definition: [
+                                    {
+                                      type: "object",
+                                      extend: {
+                                        type: "schemaReference",
+                                        definition: {
+                                          eager: true,
+                                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                          relativePath: "jzodBaseObject",
+                                        },
+                                        context: {},
+                                      },
+                                      definition: {
+                                        extend: {
+                                          type: "union",
+                                          optional: true,
+                                          definition: [
+                                            {
+                                              type: "union",
+                                              optional: true,
+                                              definition: [
+                                                {
+                                                  type: "schemaReference",
+                                                  definition: {
+                                                    absolutePath:
+                                                      "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                    relativePath: "jzodReference",
+                                                  },
+                                                  context: {},
+                                                },
+                                                {
+                                                  type: "schemaReference",
+                                                  definition: {
+                                                    absolutePath:
+                                                      "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                    relativePath: "jzodObject",
+                                                  },
+                                                  context: {},
+                                                },
+                                              ],
+                                            },
+                                            {
+                                              type: "array",
+                                              definition: {
+                                                type: "union",
+                                                optional: true,
+                                                definition: [
+                                                  {
+                                                    type: "schemaReference",
+                                                    definition: {
+                                                      absolutePath:
+                                                        "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      relativePath: "jzodReference",
+                                                    },
+                                                    context: {},
+                                                  },
+                                                  {
+                                                    type: "schemaReference",
+                                                    definition: {
+                                                      absolutePath:
+                                                        "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      relativePath: "jzodObject",
+                                                    },
+                                                    context: {},
+                                                  },
+                                                ],
+                                              },
+                                            },
+                                          ],
+                                        },
+                                        type: {
+                                          type: "literal",
+                                          definition: "object",
+                                        },
+                                        nonStrict: {
+                                          type: "boolean",
+                                          optional: true,
+                                        },
+                                        partial: {
+                                          type: "boolean",
+                                          optional: true,
+                                        },
+                                        carryOn: {
+                                          type: "union",
+                                          optional: true,
+                                          definition: [
+                                            {
+                                              type: "schemaReference",
+                                              definition: {
+                                                absolutePath:
+                                                  "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                relativePath: "jzodObject",
+                                              },
+                                              context: {},
+                                            },
+                                            {
+                                              type: "schemaReference",
+                                              definition: {
+                                                absolutePath:
+                                                  "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                relativePath: "jzodUnion",
+                                              },
+                                              context: {},
+                                            },
+                                          ],
+                                        },
+                                        definition: {
+                                          type: "record",
+                                          definition: {
+                                            type: "schemaReference",
+                                            definition: {
+                                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              relativePath: "jzodElement",
+                                            },
+                                            context: {},
+                                          },
+                                        },
+                                      },
+                                    },
+                                    {
+                                      type: "object",
+                                      extend: {
+                                        type: "schemaReference",
+                                        definition: {
+                                          eager: true,
+                                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                          relativePath: "jzodBaseObject",
+                                        },
+                                        context: {},
+                                      },
+                                      definition: {
+                                        type: {
+                                          type: "literal",
+                                          definition: "union",
+                                        },
+                                        discriminator: {
+                                          type: "union",
+                                          optional: true,
+                                          definition: [
+                                            {
+                                              type: "string",
+                                            },
+                                            {
+                                              type: "array",
+                                              definition: {
+                                                type: "string",
+                                              },
+                                            },
+                                          ],
+                                        },
+                                        discriminatorNew: {
+                                          type: "union",
+                                          optional: true,
+                                          definition: [
+                                            {
+                                              type: "object",
+                                              definition: {
+                                                discriminatorType: {
+                                                  type: "literal",
+                                                  definition: "string",
+                                                },
+                                                value: {
+                                                  type: "string",
+                                                },
+                                              },
+                                            },
+                                            {
+                                              type: "object",
+                                              definition: {
+                                                discriminatorType: {
+                                                  type: "literal",
+                                                  definition: "array",
+                                                },
+                                                value: {
+                                                  type: "array",
+                                                  definition: {
+                                                    type: "string",
+                                                  },
+                                                },
+                                              },
+                                            },
+                                          ],
+                                        },
+                                        carryOn: {
+                                          optional: true,
+                                          type: "schemaReference",
+                                          definition: {
+                                            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                            relativePath: "jzodObject",
+                                          },
+                                          context: {},
+                                        },
+                                        definition: {
+                                          type: "array",
+                                          definition: {
+                                            type: "schemaReference",
+                                            definition: {
+                                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              relativePath: "jzodElement",
+                                            },
+                                            context: {},
+                                          },
+                                        },
+                                      },
+                                    },
+                                  ],
+                                },
+                                definition: {
+                                  type: "object",
+                                  definition: {
+                                    eager: {
+                                      type: "boolean",
+                                      optional: true,
+                                    },
+                                    partial: {
+                                      type: "boolean",
+                                      optional: true,
+                                    },
+                                    relativePath: {
+                                      type: "string",
+                                      optional: true,
+                                    },
+                                    absolutePath: {
+                                      type: "string",
+                                      optional: true,
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                            {
+                              type: "object",
+                              extend: {
+                                type: "schemaReference",
+                                definition: {
+                                  eager: true,
+                                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                  relativePath: "jzodBaseObject",
+                                },
+                                context: {},
+                              },
+                              definition: {
+                                optional: {
+                                  type: "boolean",
+                                  optional: true,
+                                },
+                                nullable: {
+                                  type: "boolean",
+                                  optional: true,
+                                },
+                                tag: {
+                                  type: "object",
+                                  optional: true,
+                                  definition: {
+                                    value: {
+                                      type: "object",
+                                      optional: true,
+                                      definition: {
+                                        id: {
+                                          type: "number",
+                                          optional: true,
+                                        },
+                                        defaultLabel: {
+                                          type: "string",
+                                          optional: true,
+                                        },
+                                        description: {
+                                          type: "string",
+                                          optional: true,
+                                        },
+                                        initializeTo: {
+                                          type: "any",
+                                          optional: true,
+                                        },
+                                        targetEntity: {
+                                          type: "string",
+                                          optional: true,
+                                        },
+                                        targetEntityOrderInstancesBy: {
+                                          type: "string",
+                                          optional: true,
+                                        },
+                                        targetEntityApplicationSection: {
+                                          type: "enum",
+                                          optional: true,
+                                          definition: ["model", "data", "metaModel"],
+                                        },
+                                        editable: {
+                                          type: "boolean",
+                                          optional: true,
+                                        },
+                                        canBeTemplate: {
+                                          type: "boolean",
+                                          optional: true,
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                                extend: {
+                                  type: "union",
+                                  optional: true,
+                                  definition: [
+                                    {
+                                      type: "union",
+                                      optional: true,
+                                      definition: [
+                                        {
+                                          type: "object",
+                                          extend: {
+                                            type: "schemaReference",
+                                            definition: {
+                                              eager: true,
+                                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              relativePath: "jzodBaseObject",
+                                            },
+                                            context: {},
+                                          },
+                                          definition: {
+                                            type: {
+                                              type: "literal",
+                                              definition: "schemaReference",
+                                            },
+                                            context: {
+                                              type: "record",
+                                              optional: true,
+                                              definition: {
+                                                type: "schemaReference",
+                                                definition: {
+                                                  absolutePath:
+                                                    "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                  relativePath: "jzodElement",
+                                                },
+                                                context: {},
+                                              },
+                                            },
+                                            carryOn: {
+                                              type: "union",
+                                              optional: true,
+                                              definition: [
+                                                {
+                                                  type: "schemaReference",
+                                                  definition: {
+                                                    absolutePath:
+                                                      "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                    relativePath: "jzodObject",
+                                                  },
+                                                  context: {},
+                                                },
+                                                {
+                                                  type: "schemaReference",
+                                                  definition: {
+                                                    absolutePath:
+                                                      "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                    relativePath: "jzodUnion",
+                                                  },
+                                                  context: {},
+                                                },
+                                              ],
+                                            },
+                                            definition: {
+                                              type: "object",
+                                              definition: {
+                                                eager: {
+                                                  type: "boolean",
+                                                  optional: true,
+                                                },
+                                                partial: {
+                                                  type: "boolean",
+                                                  optional: true,
+                                                },
+                                                relativePath: {
+                                                  type: "string",
+                                                  optional: true,
+                                                },
+                                                absolutePath: {
+                                                  type: "string",
+                                                  optional: true,
+                                                },
+                                              },
+                                            },
+                                          },
+                                        },
+                                        {
+                                          type: "object",
+                                          extend: {
+                                            type: "schemaReference",
+                                            definition: {
+                                              eager: true,
+                                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              relativePath: "jzodBaseObject",
+                                            },
+                                            context: {},
+                                          },
+                                          definition: {
+                                            extend: {
+                                              type: "union",
+                                              optional: true,
+                                              definition: [
+                                                {
+                                                  type: "union",
+                                                  optional: true,
+                                                  definition: [
+                                                    {
+                                                      type: "schemaReference",
+                                                      definition: {
+                                                        absolutePath:
+                                                          "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                        relativePath: "jzodReference",
+                                                      },
+                                                      context: {},
+                                                    },
+                                                    {
+                                                      type: "schemaReference",
+                                                      definition: {
+                                                        absolutePath:
+                                                          "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                        relativePath: "jzodObject",
+                                                      },
+                                                      context: {},
+                                                    },
+                                                  ],
+                                                },
+                                                {
+                                                  type: "array",
+                                                  definition: {
+                                                    type: "union",
+                                                    optional: true,
+                                                    definition: [
+                                                      {
+                                                        type: "schemaReference",
+                                                        definition: {
+                                                          absolutePath:
+                                                            "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                          relativePath: "jzodReference",
+                                                        },
+                                                        context: {},
+                                                      },
+                                                      {
+                                                        type: "schemaReference",
+                                                        definition: {
+                                                          absolutePath:
+                                                            "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                          relativePath: "jzodObject",
+                                                        },
+                                                        context: {},
+                                                      },
+                                                    ],
+                                                  },
+                                                },
+                                              ],
+                                            },
+                                            type: {
+                                              type: "literal",
+                                              definition: "object",
+                                            },
+                                            nonStrict: {
+                                              type: "boolean",
+                                              optional: true,
+                                            },
+                                            partial: {
+                                              type: "boolean",
+                                              optional: true,
+                                            },
+                                            carryOn: {
+                                              type: "union",
+                                              optional: true,
+                                              definition: [
+                                                {
+                                                  type: "schemaReference",
+                                                  definition: {
+                                                    absolutePath:
+                                                      "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                    relativePath: "jzodObject",
+                                                  },
+                                                  context: {},
+                                                },
+                                                {
+                                                  type: "schemaReference",
+                                                  definition: {
+                                                    absolutePath:
+                                                      "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                    relativePath: "jzodUnion",
+                                                  },
+                                                  context: {},
+                                                },
+                                              ],
+                                            },
+                                            definition: {
+                                              type: "record",
+                                              definition: {
+                                                type: "schemaReference",
+                                                definition: {
+                                                  absolutePath:
+                                                    "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                  relativePath: "jzodElement",
+                                                },
+                                                context: {},
+                                              },
+                                            },
+                                          },
+                                        },
+                                      ],
+                                    },
+                                    {
+                                      type: "array",
+                                      definition: {
+                                        type: "union",
+                                        optional: true,
+                                        definition: [
+                                          {
+                                            type: "object",
+                                            extend: {
+                                              type: "schemaReference",
+                                              definition: {
+                                                eager: true,
+                                                absolutePath:
+                                                  "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                relativePath: "jzodBaseObject",
+                                              },
+                                              context: {},
+                                            },
+                                            definition: {
+                                              type: {
+                                                type: "literal",
+                                                definition: "schemaReference",
+                                              },
+                                              context: {
+                                                type: "record",
+                                                optional: true,
+                                                definition: {
+                                                  type: "schemaReference",
+                                                  definition: {
+                                                    absolutePath:
+                                                      "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                    relativePath: "jzodElement",
+                                                  },
+                                                  context: {},
+                                                },
+                                              },
+                                              carryOn: {
+                                                type: "union",
+                                                optional: true,
+                                                definition: [
+                                                  {
+                                                    type: "schemaReference",
+                                                    definition: {
+                                                      absolutePath:
+                                                        "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      relativePath: "jzodObject",
+                                                    },
+                                                    context: {},
+                                                  },
+                                                  {
+                                                    type: "schemaReference",
+                                                    definition: {
+                                                      absolutePath:
+                                                        "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      relativePath: "jzodUnion",
+                                                    },
+                                                    context: {},
+                                                  },
+                                                ],
+                                              },
+                                              definition: {
+                                                type: "object",
+                                                definition: {
+                                                  eager: {
+                                                    type: "boolean",
+                                                    optional: true,
+                                                  },
+                                                  partial: {
+                                                    type: "boolean",
+                                                    optional: true,
+                                                  },
+                                                  relativePath: {
+                                                    type: "string",
+                                                    optional: true,
+                                                  },
+                                                  absolutePath: {
+                                                    type: "string",
+                                                    optional: true,
+                                                  },
+                                                },
+                                              },
+                                            },
+                                          },
+                                          {
+                                            type: "object",
+                                            extend: {
+                                              type: "schemaReference",
+                                              definition: {
+                                                eager: true,
+                                                absolutePath:
+                                                  "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                relativePath: "jzodBaseObject",
+                                              },
+                                              context: {},
+                                            },
+                                            definition: {
+                                              extend: {
+                                                type: "union",
+                                                optional: true,
+                                                definition: [
+                                                  {
+                                                    type: "union",
+                                                    optional: true,
+                                                    definition: [
+                                                      {
+                                                        type: "schemaReference",
+                                                        definition: {
+                                                          absolutePath:
+                                                            "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                          relativePath: "jzodReference",
+                                                        },
+                                                        context: {},
+                                                      },
+                                                      {
+                                                        type: "schemaReference",
+                                                        definition: {
+                                                          absolutePath:
+                                                            "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                          relativePath: "jzodObject",
+                                                        },
+                                                        context: {},
+                                                      },
+                                                    ],
+                                                  },
+                                                  {
+                                                    type: "array",
+                                                    definition: {
+                                                      type: "union",
+                                                      optional: true,
+                                                      definition: [
+                                                        {
+                                                          type: "schemaReference",
+                                                          definition: {
+                                                            absolutePath:
+                                                              "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                            relativePath: "jzodReference",
+                                                          },
+                                                          context: {},
+                                                        },
+                                                        {
+                                                          type: "schemaReference",
+                                                          definition: {
+                                                            absolutePath:
+                                                              "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                            relativePath: "jzodObject",
+                                                          },
+                                                          context: {},
+                                                        },
+                                                      ],
+                                                    },
+                                                  },
+                                                ],
+                                              },
+                                              type: {
+                                                type: "literal",
+                                                definition: "object",
+                                              },
+                                              nonStrict: {
+                                                type: "boolean",
+                                                optional: true,
+                                              },
+                                              partial: {
+                                                type: "boolean",
+                                                optional: true,
+                                              },
+                                              carryOn: {
+                                                type: "union",
+                                                optional: true,
+                                                definition: [
+                                                  {
+                                                    type: "schemaReference",
+                                                    definition: {
+                                                      absolutePath:
+                                                        "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      relativePath: "jzodObject",
+                                                    },
+                                                    context: {},
+                                                  },
+                                                  {
+                                                    type: "schemaReference",
+                                                    definition: {
+                                                      absolutePath:
+                                                        "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      relativePath: "jzodUnion",
+                                                    },
+                                                    context: {},
+                                                  },
+                                                ],
+                                              },
+                                              definition: {
+                                                type: "record",
+                                                definition: {
+                                                  type: "schemaReference",
+                                                  definition: {
+                                                    absolutePath:
+                                                      "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                    relativePath: "jzodElement",
+                                                  },
+                                                  context: {},
+                                                },
+                                              },
+                                            },
+                                          },
+                                        ],
+                                      },
+                                    },
+                                  ],
+                                },
+                                type: {
+                                  type: "literal",
+                                  definition: "object",
+                                },
+                                nonStrict: {
+                                  type: "boolean",
+                                  optional: true,
+                                },
+                                partial: {
+                                  type: "boolean",
+                                  optional: true,
+                                },
+                                carryOn: {
+                                  type: "union",
+                                  optional: true,
+                                  definition: [
+                                    {
+                                      type: "object",
+                                      extend: {
+                                        type: "schemaReference",
+                                        definition: {
+                                          eager: true,
+                                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                          relativePath: "jzodBaseObject",
+                                        },
+                                        context: {},
+                                      },
+                                      definition: {
+                                        extend: {
+                                          type: "union",
+                                          optional: true,
+                                          definition: [
+                                            {
+                                              type: "union",
+                                              optional: true,
+                                              definition: [
+                                                {
+                                                  type: "schemaReference",
+                                                  definition: {
+                                                    absolutePath:
+                                                      "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                    relativePath: "jzodReference",
+                                                  },
+                                                  context: {},
+                                                },
+                                                {
+                                                  type: "schemaReference",
+                                                  definition: {
+                                                    absolutePath:
+                                                      "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                    relativePath: "jzodObject",
+                                                  },
+                                                  context: {},
+                                                },
+                                              ],
+                                            },
+                                            {
+                                              type: "array",
+                                              definition: {
+                                                type: "union",
+                                                optional: true,
+                                                definition: [
+                                                  {
+                                                    type: "schemaReference",
+                                                    definition: {
+                                                      absolutePath:
+                                                        "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      relativePath: "jzodReference",
+                                                    },
+                                                    context: {},
+                                                  },
+                                                  {
+                                                    type: "schemaReference",
+                                                    definition: {
+                                                      absolutePath:
+                                                        "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      relativePath: "jzodObject",
+                                                    },
+                                                    context: {},
+                                                  },
+                                                ],
+                                              },
+                                            },
+                                          ],
+                                        },
+                                        type: {
+                                          type: "literal",
+                                          definition: "object",
+                                        },
+                                        nonStrict: {
+                                          type: "boolean",
+                                          optional: true,
+                                        },
+                                        partial: {
+                                          type: "boolean",
+                                          optional: true,
+                                        },
+                                        carryOn: {
+                                          type: "union",
+                                          optional: true,
+                                          definition: [
+                                            {
+                                              type: "schemaReference",
+                                              definition: {
+                                                absolutePath:
+                                                  "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                relativePath: "jzodObject",
+                                              },
+                                              context: {},
+                                            },
+                                            {
+                                              type: "schemaReference",
+                                              definition: {
+                                                absolutePath:
+                                                  "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                relativePath: "jzodUnion",
+                                              },
+                                              context: {},
+                                            },
+                                          ],
+                                        },
+                                        definition: {
+                                          type: "record",
+                                          definition: {
+                                            type: "schemaReference",
+                                            definition: {
+                                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              relativePath: "jzodElement",
+                                            },
+                                            context: {},
+                                          },
+                                        },
+                                      },
+                                    },
+                                    {
+                                      type: "object",
+                                      extend: {
+                                        type: "schemaReference",
+                                        definition: {
+                                          eager: true,
+                                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                          relativePath: "jzodBaseObject",
+                                        },
+                                        context: {},
+                                      },
+                                      definition: {
+                                        type: {
+                                          type: "literal",
+                                          definition: "union",
+                                        },
+                                        discriminator: {
+                                          type: "union",
+                                          optional: true,
+                                          definition: [
+                                            {
+                                              type: "string",
+                                            },
+                                            {
+                                              type: "array",
+                                              definition: {
+                                                type: "string",
+                                              },
+                                            },
+                                          ],
+                                        },
+                                        discriminatorNew: {
+                                          type: "union",
+                                          optional: true,
+                                          definition: [
+                                            {
+                                              type: "object",
+                                              definition: {
+                                                discriminatorType: {
+                                                  type: "literal",
+                                                  definition: "string",
+                                                },
+                                                value: {
+                                                  type: "string",
+                                                },
+                                              },
+                                            },
+                                            {
+                                              type: "object",
+                                              definition: {
+                                                discriminatorType: {
+                                                  type: "literal",
+                                                  definition: "array",
+                                                },
+                                                value: {
+                                                  type: "array",
+                                                  definition: {
+                                                    type: "string",
+                                                  },
+                                                },
+                                              },
+                                            },
+                                          ],
+                                        },
+                                        carryOn: {
+                                          optional: true,
+                                          type: "schemaReference",
+                                          definition: {
+                                            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                            relativePath: "jzodObject",
+                                          },
+                                          context: {},
+                                        },
+                                        definition: {
+                                          type: "array",
+                                          definition: {
+                                            type: "schemaReference",
+                                            definition: {
+                                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              relativePath: "jzodElement",
+                                            },
+                                            context: {},
+                                          },
+                                        },
+                                      },
+                                    },
+                                  ],
+                                },
+                                definition: {
+                                  type: "record",
+                                  definition: {
+                                    type: "union",
+                                    discriminator: "type",
+                                    definition: [
+                                      {
+                                        type: "schemaReference",
+                                        definition: {
+                                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                          relativePath: "jzodArray",
+                                        },
+                                        context: {},
+                                      },
+                                      {
+                                        type: "schemaReference",
+                                        definition: {
+                                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                          relativePath: "jzodPlainAttribute",
+                                        },
+                                        context: {},
+                                      },
+                                      {
+                                        type: "schemaReference",
+                                        definition: {
+                                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                          relativePath: "jzodAttributePlainDateWithValidations",
+                                        },
+                                        context: {},
+                                      },
+                                      {
+                                        type: "schemaReference",
+                                        definition: {
+                                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                          relativePath: "jzodAttributePlainNumberWithValidations",
+                                        },
+                                        context: {},
+                                      },
+                                      {
+                                        type: "schemaReference",
+                                        definition: {
+                                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                          relativePath: "jzodAttributePlainStringWithValidations",
+                                        },
+                                        context: {},
+                                      },
+                                      {
+                                        type: "schemaReference",
+                                        definition: {
+                                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                          relativePath: "jzodEnum",
+                                        },
+                                        context: {},
+                                      },
+                                      {
+                                        type: "schemaReference",
+                                        definition: {
+                                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                          relativePath: "jzodFunction",
+                                        },
+                                        context: {},
+                                      },
+                                      {
+                                        type: "schemaReference",
+                                        definition: {
+                                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                          relativePath: "jzodLazy",
+                                        },
+                                        context: {},
+                                      },
+                                      {
+                                        type: "schemaReference",
+                                        definition: {
+                                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                          relativePath: "jzodLiteral",
+                                        },
+                                        context: {},
+                                      },
+                                      {
+                                        type: "schemaReference",
+                                        definition: {
+                                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                          relativePath: "jzodIntersection",
+                                        },
+                                        context: {},
+                                      },
+                                      {
+                                        type: "schemaReference",
+                                        definition: {
+                                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                          relativePath: "jzodMap",
+                                        },
+                                        context: {},
+                                      },
+                                      {
+                                        type: "schemaReference",
+                                        definition: {
+                                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                          relativePath: "jzodObject",
+                                        },
+                                        context: {},
+                                      },
+                                      {
+                                        type: "schemaReference",
+                                        definition: {
+                                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                          relativePath: "jzodPromise",
+                                        },
+                                        context: {},
+                                      },
+                                      {
+                                        type: "schemaReference",
+                                        definition: {
+                                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                          relativePath: "jzodRecord",
+                                        },
+                                        context: {},
+                                      },
+                                      {
+                                        type: "schemaReference",
+                                        definition: {
+                                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                          relativePath: "jzodReference",
+                                        },
+                                        context: {},
+                                      },
+                                      {
+                                        type: "schemaReference",
+                                        definition: {
+                                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                          relativePath: "jzodSet",
+                                        },
+                                        context: {},
+                                      },
+                                      {
+                                        type: "schemaReference",
+                                        definition: {
+                                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                          relativePath: "jzodTuple",
+                                        },
+                                        context: {},
+                                      },
+                                      {
+                                        type: "schemaReference",
+                                        definition: {
+                                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                          relativePath: "jzodUnion",
+                                        },
+                                        context: {},
+                                      },
+                                    ],
+                                  },
+                                },
+                              },
+                            },
+                          ],
+                        },
+                        {
+                          type: "array",
+                          definition: {
+                            type: "union",
+                            optional: true,
+                            definition: [
+                              {
+                                type: "object",
+                                extend: {
+                                  type: "schemaReference",
+                                  definition: {
+                                    eager: true,
+                                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                    relativePath: "jzodBaseObject",
+                                  },
+                                  context: {},
+                                },
+                                definition: {
+                                  type: {
+                                    type: "literal",
+                                    definition: "schemaReference",
+                                  },
+                                  context: {
+                                    type: "record",
+                                    optional: true,
+                                    definition: {
+                                      type: "schemaReference",
+                                      definition: {
+                                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                        relativePath: "jzodElement",
+                                      },
+                                      context: {},
+                                    },
+                                  },
+                                  carryOn: {
+                                    type: "union",
+                                    optional: true,
+                                    definition: [
+                                      {
+                                        type: "schemaReference",
+                                        definition: {
+                                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                          relativePath: "jzodObject",
+                                        },
+                                        context: {},
+                                      },
+                                      {
+                                        type: "schemaReference",
+                                        definition: {
+                                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                          relativePath: "jzodUnion",
+                                        },
+                                        context: {},
+                                      },
+                                    ],
+                                  },
+                                  definition: {
+                                    type: "object",
+                                    definition: {
+                                      eager: {
+                                        type: "boolean",
+                                        optional: true,
+                                      },
+                                      partial: {
+                                        type: "boolean",
+                                        optional: true,
+                                      },
+                                      relativePath: {
+                                        type: "string",
+                                        optional: true,
+                                      },
+                                      absolutePath: {
+                                        type: "string",
+                                        optional: true,
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                              {
+                                type: "object",
+                                extend: {
+                                  type: "schemaReference",
+                                  definition: {
+                                    eager: true,
+                                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                    relativePath: "jzodBaseObject",
+                                  },
+                                  context: {},
+                                },
+                                definition: {
+                                  extend: {
+                                    type: "union",
+                                    optional: true,
+                                    definition: [
+                                      {
+                                        type: "union",
+                                        optional: true,
+                                        definition: [
+                                          {
+                                            type: "schemaReference",
+                                            definition: {
+                                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              relativePath: "jzodReference",
+                                            },
+                                            context: {},
+                                          },
+                                          {
+                                            type: "schemaReference",
+                                            definition: {
+                                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              relativePath: "jzodObject",
+                                            },
+                                            context: {},
+                                          },
+                                        ],
+                                      },
+                                      {
+                                        type: "array",
+                                        definition: {
+                                          type: "union",
+                                          optional: true,
+                                          definition: [
+                                            {
+                                              type: "schemaReference",
+                                              definition: {
+                                                absolutePath:
+                                                  "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                relativePath: "jzodReference",
+                                              },
+                                              context: {},
+                                            },
+                                            {
+                                              type: "schemaReference",
+                                              definition: {
+                                                absolutePath:
+                                                  "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                relativePath: "jzodObject",
+                                              },
+                                              context: {},
+                                            },
+                                          ],
+                                        },
+                                      },
+                                    ],
+                                  },
+                                  type: {
+                                    type: "literal",
+                                    definition: "object",
+                                  },
+                                  nonStrict: {
+                                    type: "boolean",
+                                    optional: true,
+                                  },
+                                  partial: {
+                                    type: "boolean",
+                                    optional: true,
+                                  },
+                                  carryOn: {
+                                    type: "union",
+                                    optional: true,
+                                    definition: [
+                                      {
+                                        type: "schemaReference",
+                                        definition: {
+                                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                          relativePath: "jzodObject",
+                                        },
+                                        context: {},
+                                      },
+                                      {
+                                        type: "schemaReference",
+                                        definition: {
+                                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                          relativePath: "jzodUnion",
+                                        },
+                                        context: {},
+                                      },
+                                    ],
+                                  },
+                                  definition: {
+                                    type: "record",
+                                    definition: {
+                                      type: "schemaReference",
+                                      definition: {
+                                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                        relativePath: "jzodElement",
+                                      },
+                                      context: {},
+                                    },
+                                  },
+                                },
+                              },
+                            ],
+                          },
+                        },
+                      ],
+                    },
+                    type: {
+                      type: "literal",
+                      definition: "object",
+                    },
+                    nonStrict: {
+                      type: "boolean",
+                      optional: true,
+                    },
+                    partial: {
+                      type: "boolean",
+                      optional: true,
+                    },
+                    carryOn: {
+                      type: "union",
+                      optional: true,
+                      definition: [
+                        {
+                          type: "object",
+                          extend: {
+                            type: "schemaReference",
+                            definition: {
+                              eager: true,
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "jzodBaseObject",
+                            },
+                            context: {},
+                          },
+                          definition: {
+                            extend: {
+                              type: "union",
+                              optional: true,
+                              definition: [
+                                {
+                                  type: "union",
+                                  optional: true,
+                                  definition: [
+                                    {
+                                      type: "schemaReference",
+                                      definition: {
+                                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                        relativePath: "jzodReference",
+                                      },
+                                      context: {},
+                                    },
+                                    {
+                                      type: "schemaReference",
+                                      definition: {
+                                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                        relativePath: "jzodObject",
+                                      },
+                                      context: {},
+                                    },
+                                  ],
+                                },
+                                {
+                                  type: "array",
+                                  definition: {
+                                    type: "union",
+                                    optional: true,
+                                    definition: [
+                                      {
+                                        type: "schemaReference",
+                                        definition: {
+                                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                          relativePath: "jzodReference",
+                                        },
+                                        context: {},
+                                      },
+                                      {
+                                        type: "schemaReference",
+                                        definition: {
+                                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                          relativePath: "jzodObject",
+                                        },
+                                        context: {},
+                                      },
+                                    ],
+                                  },
+                                },
+                              ],
+                            },
+                            type: {
+                              type: "literal",
+                              definition: "object",
+                            },
+                            nonStrict: {
+                              type: "boolean",
+                              optional: true,
+                            },
+                            partial: {
+                              type: "boolean",
+                              optional: true,
+                            },
+                            carryOn: {
+                              type: "union",
+                              optional: true,
+                              definition: [
+                                {
+                                  type: "schemaReference",
+                                  definition: {
+                                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                    relativePath: "jzodObject",
+                                  },
+                                  context: {},
+                                },
+                                {
+                                  type: "schemaReference",
+                                  definition: {
+                                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                    relativePath: "jzodUnion",
+                                  },
+                                  context: {},
+                                },
+                              ],
+                            },
+                            definition: {
+                              type: "record",
+                              definition: {
+                                type: "schemaReference",
+                                definition: {
+                                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                  relativePath: "jzodElement",
+                                },
+                                context: {},
+                              },
+                            },
+                          },
+                        },
+                        {
+                          type: "object",
+                          extend: {
+                            type: "schemaReference",
+                            definition: {
+                              eager: true,
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "jzodBaseObject",
+                            },
+                            context: {},
+                          },
+                          definition: {
+                            type: {
+                              type: "literal",
+                              definition: "union",
+                            },
+                            discriminator: {
+                              type: "union",
+                              optional: true,
+                              definition: [
+                                {
+                                  type: "string",
+                                },
+                                {
+                                  type: "array",
+                                  definition: {
+                                    type: "string",
+                                  },
+                                },
+                              ],
+                            },
+                            discriminatorNew: {
+                              type: "union",
+                              optional: true,
+                              definition: [
+                                {
+                                  type: "object",
+                                  definition: {
+                                    discriminatorType: {
+                                      type: "literal",
+                                      definition: "string",
+                                    },
+                                    value: {
+                                      type: "string",
+                                    },
+                                  },
+                                },
+                                {
+                                  type: "object",
+                                  definition: {
+                                    discriminatorType: {
+                                      type: "literal",
+                                      definition: "array",
+                                    },
+                                    value: {
+                                      type: "array",
+                                      definition: {
+                                        type: "string",
+                                      },
+                                    },
+                                  },
+                                },
+                              ],
+                            },
+                            carryOn: {
+                              optional: true,
+                              type: "schemaReference",
+                              definition: {
+                                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                relativePath: "jzodObject",
+                              },
+                              context: {},
+                            },
+                            definition: {
+                              type: "array",
+                              definition: {
+                                type: "schemaReference",
+                                definition: {
+                                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                  relativePath: "jzodElement",
+                                },
+                                context: {},
+                              },
+                            },
+                          },
+                        },
+                      ],
+                    },
+                    definition: {
+                      type: "record",
+                      definition: {
+                        type: "union",
+                        discriminator: "type",
+                        definition: [
+                          {
+                            type: "schemaReference",
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "jzodArray",
+                            },
+                            context: {},
+                          },
+                          {
+                            type: "schemaReference",
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "jzodPlainAttribute",
+                            },
+                            context: {},
+                          },
+                          {
+                            type: "schemaReference",
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "jzodAttributePlainDateWithValidations",
+                            },
+                            context: {},
+                          },
+                          {
+                            type: "schemaReference",
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "jzodAttributePlainNumberWithValidations",
+                            },
+                            context: {},
+                          },
+                          {
+                            type: "schemaReference",
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "jzodAttributePlainStringWithValidations",
+                            },
+                            context: {},
+                          },
+                          {
+                            type: "schemaReference",
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "jzodEnum",
+                            },
+                            context: {},
+                          },
+                          {
+                            type: "schemaReference",
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "jzodFunction",
+                            },
+                            context: {},
+                          },
+                          {
+                            type: "schemaReference",
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "jzodLazy",
+                            },
+                            context: {},
+                          },
+                          {
+                            type: "schemaReference",
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "jzodLiteral",
+                            },
+                            context: {},
+                          },
+                          {
+                            type: "schemaReference",
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "jzodIntersection",
+                            },
+                            context: {},
+                          },
+                          {
+                            type: "schemaReference",
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "jzodMap",
+                            },
+                            context: {},
+                          },
+                          {
+                            type: "schemaReference",
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "jzodObject",
+                            },
+                            context: {},
+                          },
+                          {
+                            type: "schemaReference",
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "jzodPromise",
+                            },
+                            context: {},
+                          },
+                          {
+                            type: "schemaReference",
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "jzodRecord",
+                            },
+                            context: {},
+                          },
+                          {
+                            type: "schemaReference",
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "jzodReference",
+                            },
+                            context: {},
+                          },
+                          {
+                            type: "schemaReference",
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "jzodSet",
+                            },
+                            context: {},
+                          },
+                          {
+                            type: "schemaReference",
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "jzodTuple",
+                            },
+                            context: {},
+                          },
+                          {
+                            type: "schemaReference",
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "jzodUnion",
+                            },
+                            context: {},
+                          },
+                        ],
+                      },
+                    },
+                  },
+                  tag: {
+                    value: {
+                      id: 12,
+                      defaultLabel: "Jzod Schema",
+                      editable: true,
+                    },
+                  },
+                },
+              },
+            },
+            // }
+          },
+          // Simple test to verify circular reference detection works
+          test421: {
+            miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+            testSchema: {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "jzodElement",
+              },
+              context: {},
+            },
+            expectedResult: {
+              type: "union",
+              discriminator: "type",
+              definition: [
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodArray",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodPlainAttribute",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodAttributePlainDateWithValidations",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodAttributePlainNumberWithValidations",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodAttributePlainStringWithValidations",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodEnum",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodFunction",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodLazy",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodLiteral",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodIntersection",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodMap",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodObject",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodPromise",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodRecord",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodReference",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodSet",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodTuple",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodUnion",
+                  },
+                  context: {},
+                },
+              ],
             },
           },
         };

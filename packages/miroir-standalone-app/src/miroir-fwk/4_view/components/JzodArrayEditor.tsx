@@ -12,7 +12,7 @@ import {
   unfoldJzodSchemaOnce,
   UnfoldJzodSchemaOnceReturnType
 } from "miroir-core";
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import { packageName } from "../../../constants";
 import { cleanLevel } from "../constants";
 import {
@@ -223,7 +223,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     ]
   );
   // ##############################################################################################
-  const arrayItems: JSX.Element = (
+  const arrayItems: JSX.Element = useMemo(()=>(
     <div
       id={listKey + ".inner"}
       key={listKey + ".inner"}
@@ -243,35 +243,43 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
           //   "attribute",
           //   attribute,
           // );
-          const currentArrayElementRawDefinition: UnfoldJzodSchemaOnceReturnType | undefined =
+          const currentArrayElementRawDefinition: JzodElement | undefined =
+          // const currentArrayElementRawDefinition: UnfoldJzodSchemaOnceReturnType | undefined =
+            // useMemo(
+            //   () =>
             context.miroirFundamentalJzodSchema
               ? // const currentArrayElementRawDefinition= context.miroirFundamentalJzodSchema
                 rawJzodSchema?.type == "array"
-                ? unfoldJzodSchemaOnce(
-                    context.miroirFundamentalJzodSchema,
-                    rawJzodSchema.definition,
-                    currentModel,
-                    miroirMetaModel
-                  )
+                ? // ? unfoldJzodSchemaOnce(
+                  // unfoldJzodSchemaOnce(
+                  //   context.miroirFundamentalJzodSchema,
+                    rawJzodSchema.definition
+                  //   currentModel,
+                  //   miroirMetaModel
+                  // )
                 : rawJzodSchema?.type == "tuple"
-                ? unfoldJzodSchemaOnce(
-                    context.miroirFundamentalJzodSchema as any, // OK: dereferencing prevents correct type-checking.
-                    rawJzodSchema.definition[index],
-                    currentModel,
-                    miroirMetaModel
-                  )
+                ? // ? unfoldJzodSchemaOnce(
+                  // unfoldJzodSchemaOnce(
+                  //   context.miroirFundamentalJzodSchema as any, // OK: dereferencing prevents correct type-checking.
+                    rawJzodSchema.definition[index]
+                  //   currentModel,
+                  //   miroirMetaModel
+                  // )
                 : undefined
               : undefined;
-          const resolutionError =
-            currentArrayElementRawDefinition && currentArrayElementRawDefinition.status != "ok";
-          if (!currentArrayElementRawDefinition || resolutionError) {
-            throw new Error(
-              "JzodArrayEditor could not unfold jzod schema: " +
-                JSON.stringify(currentArrayElementRawDefinition, null, 2) +
-                " at " +
-                JSON.stringify(resolutionError, null, 2)
-            );
-          }
+                  ;
+            //   [rawJzodSchema, currentModel, miroirMetaModel]
+            // );
+          // const resolutionError =
+          //   currentArrayElementRawDefinition && currentArrayElementRawDefinition.status != "ok";
+          // if (!currentArrayElementRawDefinition || resolutionError) {
+          //   throw new Error(
+          //     "JzodArrayEditor could not unfold jzod schema: " +
+          //       JSON.stringify(currentArrayElementRawDefinition, null, 2) +
+          //       " at " +
+          //       JSON.stringify(resolutionError, null, 2)
+          //   );
+          // }
 
           // log.info(
           //   "array [",
@@ -312,7 +320,8 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
                   name={"" + index}
                   listKey={listKey + "." + index}
                   indentLevel={usedIndentLevel + 1}
-                  labelElement={<span>{resolvedElementJzodSchema?.tag?.value?.defaultLabel}</span>}
+                  // labelElement={<span>{resolvedElementJzodSchema?.tag?.value?.defaultLabel}</span>}
+                  labelElement={<></>}
                   // paramMiroirFundamentalJzodSchema={paramMiroirFundamentalJzodSchema}
                   currentDeploymentUuid={currentDeploymentUuid}
                   currentApplicationSection={currentApplicationSection}
@@ -320,7 +329,8 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
                     rootLessListKey.length > 0 ? rootLessListKey + "." + index : "" + index
                   }
                   rootLessListKeyArray={[...rootLessListKeyArray, "" + index]}
-                  rawJzodSchema={currentArrayElementRawDefinition.element}
+                  // rawJzodSchema={currentArrayElementRawDefinition.element}
+                  rawJzodSchema={currentArrayElementRawDefinition}
                   resolvedElementJzodSchema={
                     resolvedElementJzodSchema?.type == "array"
                       ? ((resolvedElementJzodSchema as JzodArray)?.definition as any)
@@ -336,7 +346,26 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
           );
         })}
     </div>
-  );
+  ), [
+    // listKey,
+    rootLessListKey,
+    // rootLessListKeyArray,
+    rawJzodSchema,
+    unfoldedRawSchema,
+    formik.values,
+    resolvedElementJzodSchema,
+    localRootLessListKeyMap,
+    currentDeploymentUuid,
+    currentApplicationSection,
+    usedIndentLevel,
+    foreignKeyObjects,
+    // hiddenFormItems[listKey],
+    hiddenFormItems,
+    itemsOrder,
+    insideAny,
+    displayAsStructuredElementSwitch,
+    // formik.values[rootLessListKey],
+  ]);
   // ##############################################################################################
   return (
     <div id={rootLessListKey} key={rootLessListKey}>

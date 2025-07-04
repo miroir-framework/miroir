@@ -470,15 +470,15 @@ export function jzodTypeCheck(
   miroirMetaModel: MetaModel,
   relativeReferenceJzodContext: {[k:string]: JzodElement},
 ): ResolvedJzodSchemaReturnType {
-  log.info(
-    "jzodTypeCheck called for valuePath=." + 
-    currentValuePath.join("."),
-    // "value",
-    // // JSON.stringify(valueObject, null, 2),
-    // valueObject,
-    // "schema",
-    // JSON.stringify(jzodSchema, null, 2)
-  );
+  // log.info(
+  //   "jzodTypeCheck called for valuePath=." + 
+  //   currentValuePath.join("."),
+  //   // "value",
+  //   // // JSON.stringify(valueObject, null, 2),
+  //   // valueObject,
+  //   // "schema",
+  //   // JSON.stringify(jzodSchema, null, 2)
+  // );
   switch (jzodSchema?.type) {
     case "schemaReference": {
       const newContext = {...relativeReferenceJzodContext, ...jzodSchema.context}

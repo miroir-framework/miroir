@@ -68,7 +68,7 @@ function local_getUnionInformation(
   
   return getUnionInformation(
     unfoldedRawSchema.element,
-    resolvedElementJzodSchema.element,
+    resolvedElementJzodSchema.resolvedSchema,
     recursivelyUnfoldedSchema,
   );
 }

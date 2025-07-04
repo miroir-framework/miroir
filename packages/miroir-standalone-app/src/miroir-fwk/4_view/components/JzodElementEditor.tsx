@@ -114,8 +114,6 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
   const {
     // general use
     context,
-    // currentModel,
-    // deploymentEntityStateSelectorMap,
     // editor state
     formik,
     codeMirrorValue,
@@ -124,17 +122,10 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
     setCodeMirrorIsValidJson,
     displayAsStructuredElement,
     setDisplayAsStructuredElement,
-    // displayEditor,
-    // setDisplayEditor,
-    // current value and schema ##########################
     currentValue,
     localResolvedElementJzodSchemaBasedOnValue,
-    // rootLessListKeyMap,
     unfoldedRawSchema,
-    // miroirMetaModel,
     recursivelyUnfoldedRawSchema,
-    // unfoldedRawSchema,
-    // uuid
     foreignKeyObjects,
     // union
     unionInformation,

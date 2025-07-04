@@ -670,9 +670,7 @@ interface testFormat {
       },
       // array of schemaReference / object
       test100: {
-        testValueObject: [
-          { a: "myString" },
-        ],
+        testValueObject: [{ a: "myString" }],
         testSchema: {
           type: "array",
           definition: {
@@ -1020,29 +1018,29 @@ interface testFormat {
             },
           },
         },
-        expectedResolvedSchema:  {
-          "type": "tuple",
-          "definition": [
+        expectedResolvedSchema: {
+          type: "tuple",
+          definition: [
             {
-              "type": "tuple",
-              "definition": [
+              type: "tuple",
+              definition: [
                 {
-                  "type": "string"
+                  type: "string",
                 },
                 {
-                  "type": "string"
-                }
-              ]
+                  type: "string",
+                },
+              ],
             },
             {
-              "type": "tuple",
-              "definition": [
+              type: "tuple",
+              definition: [
                 {
-                  "type": "string"
-                }
-              ]
-            }
-          ]
+                  type: "string",
+                },
+              ],
+            },
+          ],
         },
       },
       // tuple of [string, number]
@@ -1073,7 +1071,10 @@ interface testFormat {
       },
       // array of tuples of [string, number, bigint]
       test210: {
-        testValueObject: [["myString", 42, 100n], ["anotherString", 43, 101n]],
+        testValueObject: [
+          ["myString", 42, 100n],
+          ["anotherString", 43, 101n],
+        ],
         testSchema: {
           type: "array",
           definition: {
@@ -1091,38 +1092,38 @@ interface testFormat {
             ],
           },
         },
-        expectedResolvedSchema:  {
-            "type": "tuple",
-          "definition": [
+        expectedResolvedSchema: {
+          type: "tuple",
+          definition: [
             {
-              "type": "tuple",
-              "definition": [
+              type: "tuple",
+              definition: [
                 {
-                  "type": "string"
+                  type: "string",
                 },
                 {
-                  "type": "number"
+                  type: "number",
                 },
                 {
-                  "type": "bigint"
-                }
-              ]
+                  type: "bigint",
+                },
+              ],
             },
             {
-              "type": "tuple",
-              "definition": [
+              type: "tuple",
+              definition: [
                 {
-                  "type": "string"
+                  type: "string",
                 },
                 {
-                  "type": "number"
+                  type: "number",
                 },
                 {
-                  "type": "bigint"
-                }
-              ]
-            }
-          ]
+                  type: "bigint",
+                },
+              ],
+            },
+          ],
         },
       },
       // array of discriminated unions
@@ -1286,7 +1287,10 @@ interface testFormat {
         },
         testValueObject: {
           type: "schemaReference",
-          definition: { absolutePath: miroirFundamentalJzodSchemaUuid, relativePath: "jzodElement" },
+          definition: {
+            absolutePath: miroirFundamentalJzodSchemaUuid,
+            relativePath: "jzodElement",
+          },
         },
         expectedResolvedSchema: {
           type: "object",
@@ -1392,7 +1396,7 @@ interface testFormat {
       // // ##########################################################################################
       test400: {
         testSchema: {
-          type: "any"
+          type: "any",
         },
         testValueObject: "test",
         expectedResolvedSchema: {
@@ -1401,9 +1405,9 @@ interface testFormat {
       },
       test410: {
         testSchema: {
-          type: "any"
+          type: "any",
         },
-        testValueObject: [ 42, "test", { "a": { "b": 42n, "c": true }, d: [ 1, 2, 3 ]} ],
+        testValueObject: [42, "test", { a: { b: 42n, c: true }, d: [1, 2, 3] }],
         expectedResolvedSchema: {
           type: "tuple",
           definition: [
@@ -1416,17 +1420,17 @@ interface testFormat {
                   type: "object",
                   definition: {
                     b: { type: "bigint" },
-                    c: { type: "boolean" }
-                  }
+                    c: { type: "boolean" },
+                  },
                 },
                 d: {
                   type: "tuple",
-                  definition: [{ type: "number" }, { type: "number" }, { type: "number" }]
-                }
-              }
-            }
-          ]
-        }
+                  definition: [{ type: "number" }, { type: "number" }, { type: "number" }],
+                },
+              },
+            },
+          ],
+        },
       },
       // ##########################################################################################
       // ################################# TRANSFORMERS ###########################################
@@ -1625,16 +1629,16 @@ interface testFormat {
                       definition: "build",
                     },
                     referencePath: {
-                      "optional": true,
-                      "type": "tuple",
-                      "definition": [
+                      optional: true,
+                      type: "tuple",
+                      definition: [
                         {
-                          "type": "string"
+                          type: "string",
                         },
                         {
-                          "type": "string"
-                        }
-                      ]
+                          type: "string",
+                        },
+                      ],
                     },
                   },
                 },
@@ -1738,264 +1742,264 @@ interface testFormat {
           },
         },
         expectedResolvedSchema: {
-          "type": "object",
-          "definition": {
-            "queryType": {
-              "type": "literal",
-              "definition": "boxedQueryWithExtractorCombinerTransformer"
+          type: "object",
+          definition: {
+            queryType: {
+              type: "literal",
+              definition: "boxedQueryWithExtractorCombinerTransformer",
             },
-            "deploymentUuid": {
-              "type": "uuid",
-              "tag": {
-                "value": {
-                  "id": 1,
-                  "canBeTemplate": true,
-                  "defaultLabel": "Uuid",
-                  "editable": false
-                }
-              }
-            },
-            "pageParams": {
-              "type": "object",
-              "definition": {}
-            },
-            "queryParams": {
-              "type": "object",
-              "definition": {}
-            },
-            "contextResults": {
-              "type": "object",
-              "definition": {}
-            },
-            "extractors": {
-              "type": "object",
-              "definition": {
-                "menuList": {
-                  "type": "object",
-                  "definition": {
-                    "extractorOrCombinerType": {
-                      "type": "literal",
-                      "definition": "extractorByEntityReturningObjectList"
-                    },
-                    "applicationSection": {
-                      "type": "literal",
-                      "definition": "model"
-                    },
-                    "parentName": {
-                      "type": "string",
-                      "optional": true,
-                      "tag": {
-                        "value": {
-                          "id": 3,
-                          "canBeTemplate": true,
-                          "defaultLabel": "Parent Name",
-                          "editable": false
-                        }
-                      }
-                    },
-                    "parentUuid": {
-                      "type": "uuid",
-                      "tag": {
-                        "value": {
-                          "id": 4,
-                          "canBeTemplate": true,
-                          "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                          "defaultLabel": "Parent Uuid",
-                          "editable": false
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            "runtimeTransformers": {
-              "type": "object",
-              "optional": true,
-              "definition": {
-                "menu": {
-                  "type": "object",
-                  "definition": {
-                    "transformerType": {
-                      "type": "literal",
-                      "definition": "listPickElement"
-                    },
-                    "interpolation": {
-                      "type": "literal",
-                      "definition": "runtime"
-                    },
-                    "applyTo": {
-                      "type": "object",
-                      "definition": {
-                        "referenceType": {
-                          "type": "literal",
-                          "definition": "referencedTransformer"
-                        },
-                        "reference": {
-                          "type": "object",
-                          "definition": {
-                            "transformerType": {
-                              "type": "literal",
-                              "definition": "contextReference"
-                            },
-                            "interpolation": {
-                              "type": "literal",
-                              "optional": true,
-                              "definition": "runtime"
-                            },
-                            "referenceName": {
-                              "optional": true,
-                              "type": "string"
-                            }
-                          }
-                        }
-                      }
-                    },
-                    "index": {
-                      "type": "number"
-                    }
-                  }
+            deploymentUuid: {
+              type: "uuid",
+              tag: {
+                value: {
+                  id: 1,
+                  canBeTemplate: true,
+                  defaultLabel: "Uuid",
+                  editable: false,
                 },
-                "menuItem": {
-                  "type": "object",
-                  "definition": {
-                    "transformerType": {
-                      "type": "literal",
-                      "definition": "freeObjectTemplate"
+              },
+            },
+            pageParams: {
+              type: "object",
+              definition: {},
+            },
+            queryParams: {
+              type: "object",
+              definition: {},
+            },
+            contextResults: {
+              type: "object",
+              definition: {},
+            },
+            extractors: {
+              type: "object",
+              definition: {
+                menuList: {
+                  type: "object",
+                  definition: {
+                    extractorOrCombinerType: {
+                      type: "literal",
+                      definition: "extractorByEntityReturningObjectList",
                     },
-                    "interpolation": {
-                      "type": "literal",
-                      "definition": "runtime"
+                    applicationSection: {
+                      type: "literal",
+                      definition: "model",
                     },
-                    "definition": {
-                      "type": "object",
-                      "definition": {
-                        "reportUuid": {
-                          "type": "object",
-                          "definition": {
-                            "transformerType": {
-                              "type": "literal",
-                              "definition": "parameterReference"
-                            },
-                            "interpolation": {
-                              "type": "literal",
-                              "optional": true,
-                              "definition": "build"
-                            },
-                            "referenceName": {
-                              "optional": true,
-                              "type": "string"
-                            }
-                          }
+                    parentName: {
+                      type: "string",
+                      optional: true,
+                      tag: {
+                        value: {
+                          id: 3,
+                          canBeTemplate: true,
+                          defaultLabel: "Parent Name",
+                          editable: false,
                         },
-                        "label": {
-                          "type": "object",
-                          "definition": {
-                            "transformerType": {
-                              "type": "literal",
-                              "definition": "mustacheStringTemplate"
-                            },
-                            "interpolation": {
-                              "type": "literal",
-                              "definition": "build"
-                            },
-                            "definition": {
-                              "type": "string"
-                            }
-                          }
+                      },
+                    },
+                    parentUuid: {
+                      type: "uuid",
+                      tag: {
+                        value: {
+                          id: 4,
+                          canBeTemplate: true,
+                          targetEntity: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                          defaultLabel: "Parent Uuid",
+                          editable: false,
                         },
-                        "section": {
-                          "type": "string"
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            runtimeTransformers: {
+              type: "object",
+              optional: true,
+              definition: {
+                menu: {
+                  type: "object",
+                  definition: {
+                    transformerType: {
+                      type: "literal",
+                      definition: "listPickElement",
+                    },
+                    interpolation: {
+                      type: "literal",
+                      definition: "runtime",
+                    },
+                    applyTo: {
+                      type: "object",
+                      definition: {
+                        referenceType: {
+                          type: "literal",
+                          definition: "referencedTransformer",
                         },
-                        "selfApplication": {
-                          "type": "object",
-                          "definition": {
-                            "transformerType": {
-                              "type": "literal",
-                              "definition": "parameterReference"
+                        reference: {
+                          type: "object",
+                          definition: {
+                            transformerType: {
+                              type: "literal",
+                              definition: "contextReference",
                             },
-                            "interpolation": {
-                              "type": "literal",
-                              "optional": true,
-                              "definition": "build"
+                            interpolation: {
+                              type: "literal",
+                              optional: true,
+                              definition: "runtime",
                             },
-                            "referencePath": {
-                              "optional": true,
-                              "type": "tuple",
-                              "definition": [
+                            referenceName: {
+                              optional: true,
+                              type: "string",
+                            },
+                          },
+                        },
+                      },
+                    },
+                    index: {
+                      type: "number",
+                    },
+                  },
+                },
+                menuItem: {
+                  type: "object",
+                  definition: {
+                    transformerType: {
+                      type: "literal",
+                      definition: "freeObjectTemplate",
+                    },
+                    interpolation: {
+                      type: "literal",
+                      definition: "runtime",
+                    },
+                    definition: {
+                      type: "object",
+                      definition: {
+                        reportUuid: {
+                          type: "object",
+                          definition: {
+                            transformerType: {
+                              type: "literal",
+                              definition: "parameterReference",
+                            },
+                            interpolation: {
+                              type: "literal",
+                              optional: true,
+                              definition: "build",
+                            },
+                            referenceName: {
+                              optional: true,
+                              type: "string",
+                            },
+                          },
+                        },
+                        label: {
+                          type: "object",
+                          definition: {
+                            transformerType: {
+                              type: "literal",
+                              definition: "mustacheStringTemplate",
+                            },
+                            interpolation: {
+                              type: "literal",
+                              definition: "build",
+                            },
+                            definition: {
+                              type: "string",
+                            },
+                          },
+                        },
+                        section: {
+                          type: "string",
+                        },
+                        selfApplication: {
+                          type: "object",
+                          definition: {
+                            transformerType: {
+                              type: "literal",
+                              definition: "parameterReference",
+                            },
+                            interpolation: {
+                              type: "literal",
+                              optional: true,
+                              definition: "build",
+                            },
+                            referencePath: {
+                              optional: true,
+                              type: "tuple",
+                              definition: [
                                 {
-                                  "type": "string"
+                                  type: "string",
                                 },
                                 {
-                                  "type": "string"
-                                }
-                              ]
-                            }
-                          }
+                                  type: "string",
+                                },
+                              ],
+                            },
+                          },
                         },
-                        "icon": {
-                          "type": "string"
-                        }
-                      }
-                    }
-                  }
+                        icon: {
+                          type: "string",
+                        },
+                      },
+                    },
+                  },
                 },
-                "updatedMenu": {
-                  "type": "object",
-                  "definition": {
-                    "transformerType": {
-                      "type": "literal",
-                      "definition": "transformer_menu_addItem"
+                updatedMenu: {
+                  type: "object",
+                  definition: {
+                    transformerType: {
+                      type: "literal",
+                      definition: "transformer_menu_addItem",
                     },
-                    "interpolation": {
-                      "type": "literal",
-                      "definition": "runtime"
+                    interpolation: {
+                      type: "literal",
+                      definition: "runtime",
                     },
-                    "menuItemReference": {
-                      "type": "object",
-                      "definition": {
-                        "transformerType": {
-                          "type": "literal",
-                          "definition": "contextReference"
+                    menuItemReference: {
+                      type: "object",
+                      definition: {
+                        transformerType: {
+                          type: "literal",
+                          definition: "contextReference",
                         },
-                        "interpolation": {
-                          "type": "literal",
-                          "optional": true,
-                          "definition": "runtime"
+                        interpolation: {
+                          type: "literal",
+                          optional: true,
+                          definition: "runtime",
                         },
-                        "referenceName": {
-                          "optional": true,
-                          "type": "string"
-                        }
-                      }
+                        referenceName: {
+                          optional: true,
+                          type: "string",
+                        },
+                      },
                     },
-                    "menuReference": {
-                      "type": "object",
-                      "definition": {
-                        "transformerType": {
-                          "type": "literal",
-                          "definition": "contextReference"
+                    menuReference: {
+                      type: "object",
+                      definition: {
+                        transformerType: {
+                          type: "literal",
+                          definition: "contextReference",
                         },
-                        "interpolation": {
-                          "type": "literal",
-                          "optional": true,
-                          "definition": "runtime"
+                        interpolation: {
+                          type: "literal",
+                          optional: true,
+                          definition: "runtime",
                         },
-                        "referenceName": {
-                          "optional": true,
-                          "type": "string"
-                        }
-                      }
+                        referenceName: {
+                          optional: true,
+                          type: "string",
+                        },
+                      },
                     },
-                    "menuSectionItemInsertionIndex": {
-                      "type": "number",
-                      "optional": true
-                    }
-                  }
-                }
-              }
-            }
-          }
+                    menuSectionItemInsertionIndex: {
+                      type: "number",
+                      optional: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
         },
       },
       // ##########################################################################################
@@ -2649,2188 +2653,2179 @@ interface testFormat {
           ],
         },
         expectedResolvedSchema: {
-          "type": "object",
-          "definition": {
-            "actionType": {
-              "type": "literal",
-              "definition": "compositeAction"
+          type: "object",
+          definition: {
+            actionType: {
+              type: "literal",
+              definition: "compositeAction",
             },
-            "actionLabel": {
-              "type": "string",
-              "optional": true
+            actionLabel: {
+              type: "string",
+              optional: true,
             },
-            "actionName": {
-              "type": "literal",
-              "definition": "sequence"
+            actionName: {
+              type: "literal",
+              definition: "sequence",
             },
-            "templates": {
-              "type": "object",
-              "optional": true,
-              "definition": {
-                "createEntity_newEntity": {
-                  "type": "object",
-                  "definition": {
-                    "uuid": {
-                      "type": "object",
-                      "definition": {
-                        "transformerType": {
-                          "type": "string"
+            templates: {
+              type: "object",
+              optional: true,
+              definition: {
+                createEntity_newEntity: {
+                  type: "object",
+                  definition: {
+                    uuid: {
+                      type: "object",
+                      definition: {
+                        transformerType: {
+                          type: "string",
                         },
-                        "interpolation": {
-                          "type": "string"
+                        interpolation: {
+                          type: "string",
                         },
-                        "referenceName": {
-                          "type": "string"
-                        }
-                      }
+                        referenceName: {
+                          type: "string",
+                        },
+                      },
                     },
-                    "parentUuid": {
-                      "type": "object",
-                      "definition": {
-                        "transformerType": {
-                          "type": "string"
+                    parentUuid: {
+                      type: "object",
+                      definition: {
+                        transformerType: {
+                          type: "string",
                         },
-                        "interpolation": {
-                          "type": "string"
+                        interpolation: {
+                          type: "string",
                         },
-                        "referencePath": {
-                          "type": "tuple",
-                          "definition": [
+                        referencePath: {
+                          type: "tuple",
+                          definition: [
                             {
-                              "type": "string"
+                              type: "string",
                             },
                             {
-                              "type": "string"
-                            }
-                          ]
-                        }
-                      }
+                              type: "string",
+                            },
+                          ],
+                        },
+                      },
                     },
-                    "selfApplication": {
-                      "type": "object",
-                      "definition": {
-                        "transformerType": {
-                          "type": "string"
+                    selfApplication: {
+                      type: "object",
+                      definition: {
+                        transformerType: {
+                          type: "string",
                         },
-                        "interpolation": {
-                          "type": "string"
+                        interpolation: {
+                          type: "string",
                         },
-                        "referenceName": {
-                          "type": "string"
-                        }
-                      }
+                        referenceName: {
+                          type: "string",
+                        },
+                      },
                     },
-                    "description": {
-                      "type": "object",
-                      "definition": {
-                        "transformerType": {
-                          "type": "string"
+                    description: {
+                      type: "object",
+                      definition: {
+                        transformerType: {
+                          type: "string",
                         },
-                        "interpolation": {
-                          "type": "string"
+                        interpolation: {
+                          type: "string",
                         },
-                        "referenceName": {
-                          "type": "string"
-                        }
-                      }
+                        referenceName: {
+                          type: "string",
+                        },
+                      },
                     },
-                    "name": {
-                      "type": "object",
-                      "definition": {
-                        "transformerType": {
-                          "type": "string"
+                    name: {
+                      type: "object",
+                      definition: {
+                        transformerType: {
+                          type: "string",
                         },
-                        "interpolation": {
-                          "type": "string"
+                        interpolation: {
+                          type: "string",
                         },
-                        "referenceName": {
-                          "type": "string"
-                        }
-                      }
-                    }
-                  }
+                        referenceName: {
+                          type: "string",
+                        },
+                      },
+                    },
+                  },
                 },
-                "createEntity_newEntityDefinition": {
-                  "type": "object",
-                  "definition": {
-                    "name": {
-                      "type": "object",
-                      "definition": {
-                        "transformerType": {
-                          "type": "string"
+                createEntity_newEntityDefinition: {
+                  type: "object",
+                  definition: {
+                    name: {
+                      type: "object",
+                      definition: {
+                        transformerType: {
+                          type: "string",
                         },
-                        "interpolation": {
-                          "type": "string"
+                        interpolation: {
+                          type: "string",
                         },
-                        "referenceName": {
-                          "type": "string"
-                        }
-                      }
+                        referenceName: {
+                          type: "string",
+                        },
+                      },
                     },
-                    "uuid": {
-                      "type": "object",
-                      "definition": {
-                        "transformerType": {
-                          "type": "string"
+                    uuid: {
+                      type: "object",
+                      definition: {
+                        transformerType: {
+                          type: "string",
                         },
-                        "interpolation": {
-                          "type": "string"
+                        interpolation: {
+                          type: "string",
                         },
-                        "referenceName": {
-                          "type": "string"
-                        }
-                      }
+                        referenceName: {
+                          type: "string",
+                        },
+                      },
                     },
-                    "parentName": {
-                      "type": "string"
+                    parentName: {
+                      type: "string",
                     },
-                    "parentUuid": {
-                      "type": "object",
-                      "definition": {
-                        "transformerType": {
-                          "type": "string"
+                    parentUuid: {
+                      type: "object",
+                      definition: {
+                        transformerType: {
+                          type: "string",
                         },
-                        "interpolation": {
-                          "type": "string"
+                        interpolation: {
+                          type: "string",
                         },
-                        "referencePath": {
-                          "type": "tuple",
-                          "definition": [
+                        referencePath: {
+                          type: "tuple",
+                          definition: [
                             {
-                              "type": "string"
+                              type: "string",
                             },
                             {
-                              "type": "string"
-                            }
-                          ]
-                        }
-                      }
+                              type: "string",
+                            },
+                          ],
+                        },
+                      },
                     },
-                    "entityUuid": {
-                      "type": "object",
-                      "definition": {
-                        "transformerType": {
-                          "type": "string"
+                    entityUuid: {
+                      type: "object",
+                      definition: {
+                        transformerType: {
+                          type: "string",
                         },
-                        "interpolation": {
-                          "type": "string"
+                        interpolation: {
+                          type: "string",
                         },
-                        "referencePath": {
-                          "type": "tuple",
-                          "definition": [
+                        referencePath: {
+                          type: "tuple",
+                          definition: [
                             {
-                              "type": "string"
+                              type: "string",
                             },
                             {
-                              "type": "string"
-                            }
-                          ]
-                        }
-                      }
+                              type: "string",
+                            },
+                          ],
+                        },
+                      },
                     },
-                    "conceptLevel": {
-                      "type": "string"
+                    conceptLevel: {
+                      type: "string",
                     },
-                    "defaultInstanceDetailsReportUuid": {
-                      "type": "object",
-                      "definition": {
-                        "transformerType": {
-                          "type": "string"
+                    defaultInstanceDetailsReportUuid: {
+                      type: "object",
+                      definition: {
+                        transformerType: {
+                          type: "string",
                         },
-                        "interpolation": {
-                          "type": "string"
+                        interpolation: {
+                          type: "string",
                         },
-                        "referenceName": {
-                          "type": "string"
-                        }
-                      }
+                        referenceName: {
+                          type: "string",
+                        },
+                      },
                     },
-                    "jzodSchema": {
-                      "type": "object",
-                      "definition": {
-                        "transformerType": {
-                          "type": "string"
+                    jzodSchema: {
+                      type: "object",
+                      definition: {
+                        transformerType: {
+                          type: "string",
                         },
-                        "interpolation": {
-                          "type": "string"
+                        interpolation: {
+                          type: "string",
                         },
-                        "referenceName": {
-                          "type": "string"
-                        }
-                      }
-                    }
-                  }
+                        referenceName: {
+                          type: "string",
+                        },
+                      },
+                    },
+                  },
                 },
-                "newEntityListReport": {
-                  "type": "object",
-                  "definition": {
-                    "uuid": {
-                      "type": "object",
-                      "definition": {
-                        "transformerType": {
-                          "type": "string"
+                newEntityListReport: {
+                  type: "object",
+                  definition: {
+                    uuid: {
+                      type: "object",
+                      definition: {
+                        transformerType: {
+                          type: "string",
                         },
-                        "interpolation": {
-                          "type": "string"
+                        interpolation: {
+                          type: "string",
                         },
-                        "referenceName": {
-                          "type": "string"
-                        }
-                      }
+                        referenceName: {
+                          type: "string",
+                        },
+                      },
                     },
-                    "selfApplication": {
-                      "type": "object",
-                      "definition": {
-                        "transformerType": {
-                          "type": "string"
+                    selfApplication: {
+                      type: "object",
+                      definition: {
+                        transformerType: {
+                          type: "string",
                         },
-                        "interpolation": {
-                          "type": "string"
+                        interpolation: {
+                          type: "string",
                         },
-                        "referenceName": {
-                          "type": "string"
-                        }
-                      }
+                        referenceName: {
+                          type: "string",
+                        },
+                      },
                     },
-                    "parentName": {
-                      "type": "string"
+                    parentName: {
+                      type: "string",
                     },
-                    "parentUuid": {
-                      "type": "object",
-                      "definition": {
-                        "transformerType": {
-                          "type": "string"
+                    parentUuid: {
+                      type: "object",
+                      definition: {
+                        transformerType: {
+                          type: "string",
                         },
-                        "interpolation": {
-                          "type": "string"
+                        interpolation: {
+                          type: "string",
                         },
-                        "definition": {
-                          "type": "string"
-                        }
-                      }
+                        definition: {
+                          type: "string",
+                        },
+                      },
                     },
-                    "conceptLevel": {
-                      "type": "string"
+                    conceptLevel: {
+                      type: "string",
                     },
-                    "name": {
-                      "type": "object",
-                      "definition": {
-                        "transformerType": {
-                          "type": "string"
+                    name: {
+                      type: "object",
+                      definition: {
+                        transformerType: {
+                          type: "string",
                         },
-                        "interpolation": {
-                          "type": "string"
+                        interpolation: {
+                          type: "string",
                         },
-                        "definition": {
-                          "type": "string"
-                        }
-                      }
+                        definition: {
+                          type: "string",
+                        },
+                      },
                     },
-                    "defaultLabel": {
-                      "type": "object",
-                      "definition": {
-                        "transformerType": {
-                          "type": "string"
+                    defaultLabel: {
+                      type: "object",
+                      definition: {
+                        transformerType: {
+                          type: "string",
                         },
-                        "interpolation": {
-                          "type": "string"
+                        interpolation: {
+                          type: "string",
                         },
-                        "definition": {
-                          "type": "string"
-                        }
-                      }
+                        definition: {
+                          type: "string",
+                        },
+                      },
                     },
-                    "type": {
-                      "type": "string"
+                    type: {
+                      type: "string",
                     },
-                    "definition": {
-                      "type": "object",
-                      "definition": {
-                        "extractors": {
-                          "type": "object",
-                          "definition": {
-                            "instanceList": {
-                              "type": "object",
-                              "definition": {
-                                "extractorOrCombinerType": {
-                                  "type": "string"
+                    definition: {
+                      type: "object",
+                      definition: {
+                        extractors: {
+                          type: "object",
+                          definition: {
+                            instanceList: {
+                              type: "object",
+                              definition: {
+                                extractorOrCombinerType: {
+                                  type: "string",
                                 },
-                                "parentName": {
-                                  "type": "object",
-                                  "definition": {
-                                    "transformerType": {
-                                      "type": "string"
+                                parentName: {
+                                  type: "object",
+                                  definition: {
+                                    transformerType: {
+                                      type: "string",
                                     },
-                                    "interpolation": {
-                                      "type": "string"
+                                    interpolation: {
+                                      type: "string",
                                     },
-                                    "referenceName": {
-                                      "type": "string"
-                                    }
-                                  }
+                                    referenceName: {
+                                      type: "string",
+                                    },
+                                  },
                                 },
-                                "parentUuid": {
-                                  "type": "object",
-                                  "definition": {
-                                    "transformerType": {
-                                      "type": "string"
+                                parentUuid: {
+                                  type: "object",
+                                  definition: {
+                                    transformerType: {
+                                      type: "string",
                                     },
-                                    "interpolation": {
-                                      "type": "string"
+                                    interpolation: {
+                                      type: "string",
                                     },
-                                    "definition": {
-                                      "type": "string"
-                                    }
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        },
-                        "section": {
-                          "type": "object",
-                          "definition": {
-                            "type": {
-                              "type": "string"
+                                    definition: {
+                                      type: "string",
+                                    },
+                                  },
+                                },
+                              },
                             },
-                            "definition": {
-                              "type": "object",
-                              "definition": {
-                                "label": {
-                                  "type": "object",
-                                  "definition": {
-                                    "transformerType": {
-                                      "type": "string"
-                                    },
-                                    "interpolation": {
-                                      "type": "string"
-                                    },
-                                    "definition": {
-                                      "type": "string"
-                                    }
-                                  }
-                                },
-                                "parentUuid": {
-                                  "type": "object",
-                                  "definition": {
-                                    "transformerType": {
-                                      "type": "string"
-                                    },
-                                    "interpolation": {
-                                      "type": "string"
-                                    },
-                                    "definition": {
-                                      "type": "string"
-                                    }
-                                  }
-                                },
-                                "fetchedDataReference": {
-                                  "type": "string"
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                },
-                "newEntityDetailsReport": {
-                  "type": "object",
-                  "definition": {
-                    "uuid": {
-                      "type": "object",
-                      "definition": {
-                        "transformerType": {
-                          "type": "string"
-                        },
-                        "interpolation": {
-                          "type": "string"
-                        },
-                        "referenceName": {
-                          "type": "string"
-                        }
-                      }
-                    },
-                    "selfApplication": {
-                      "type": "object",
-                      "definition": {
-                        "transformerType": {
-                          "type": "string"
-                        },
-                        "interpolation": {
-                          "type": "string"
-                        },
-                        "referenceName": {
-                          "type": "string"
-                        }
-                      }
-                    },
-                    "parentName": {
-                      "type": "object",
-                      "definition": {
-                        "transformerType": {
-                          "type": "string"
-                        },
-                        "interpolation": {
-                          "type": "string"
-                        },
-                        "definition": {
-                          "type": "string"
-                        }
-                      }
-                    },
-                    "parentUuid": {
-                      "type": "object",
-                      "definition": {
-                        "transformerType": {
-                          "type": "string"
-                        },
-                        "interpolation": {
-                          "type": "string"
-                        },
-                        "definition": {
-                          "type": "string"
-                        }
-                      }
-                    },
-                    "conceptLevel": {
-                      "type": "string"
-                    },
-                    "name": {
-                      "type": "object",
-                      "definition": {
-                        "transformerType": {
-                          "type": "string"
-                        },
-                        "interpolation": {
-                          "type": "string"
-                        },
-                        "definition": {
-                          "type": "string"
-                        }
-                      }
-                    },
-                    "defaultLabel": {
-                      "type": "object",
-                      "definition": {
-                        "transformerType": {
-                          "type": "string"
-                        },
-                        "interpolation": {
-                          "type": "string"
-                        },
-                        "definition": {
-                          "type": "string"
-                        }
-                      }
-                    },
-                    "definition": {
-                      "type": "object",
-                      "definition": {
-                        "extractorTemplates": {
-                          "type": "object",
-                          "definition": {
-                            "elementToDisplay": {
-                              "type": "object",
-                              "definition": {
-                                "transformerType": {
-                                  "type": "string"
-                                },
-                                "interpolation": {
-                                  "type": "string"
-                                },
-                                "value": {
-                                  "type": "object",
-                                  "definition": {
-                                    "extractorTemplateType": {
-                                      "type": "string"
-                                    },
-                                    "parentName": {
-                                      "type": "object",
-                                      "definition": {
-                                        "transformerType": {
-                                          "type": "string"
-                                        },
-                                        "interpolation": {
-                                          "type": "string"
-                                        },
-                                        "referenceName": {
-                                          "type": "string"
-                                        }
-                                      }
-                                    },
-                                    "parentUuid": {
-                                      "type": "object",
-                                      "definition": {
-                                        "transformerType": {
-                                          "type": "string"
-                                        },
-                                        "interpolation": {
-                                          "type": "string"
-                                        },
-                                        "definition": {
-                                          "type": "string"
-                                        }
-                                      }
-                                    },
-                                    "instanceUuid": {
-                                      "type": "object",
-                                      "definition": {
-                                        "transformerType": {
-                                          "type": "string"
-                                        },
-                                        "interpolation": {
-                                          "type": "string"
-                                        },
-                                        "value": {
-                                          "type": "object",
-                                          "definition": {
-                                            "transformerType": {
-                                              "type": "string"
-                                            },
-                                            "interpolation": {
-                                              "type": "string"
-                                            },
-                                            "referenceName": {
-                                              "type": "string"
-                                            }
-                                          }
-                                        }
-                                      }
-                                    }
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        },
-                        "section": {
-                          "type": "object",
-                          "definition": {
-                            "type": {
-                              "type": "string"
-                            },
-                            "definition": {
-                              "type": "tuple",
-                              "definition": [
-                                {
-                                  "type": "object",
-                                  "definition": {
-                                    "type": {
-                                      "type": "string"
-                                    },
-                                    "definition": {
-                                      "type": "object",
-                                      "definition": {
-                                        "label": {
-                                          "type": "object",
-                                          "definition": {
-                                            "transformerType": {
-                                              "type": "string"
-                                            },
-                                            "interpolation": {
-                                              "type": "string"
-                                            },
-                                            "definition": {
-                                              "type": "string"
-                                            }
-                                          }
-                                        },
-                                        "parentUuid": {
-                                          "type": "object",
-                                          "definition": {
-                                            "transformerType": {
-                                              "type": "string"
-                                            },
-                                            "interpolation": {
-                                              "type": "string"
-                                            },
-                                            "definition": {
-                                              "type": "string"
-                                            }
-                                          }
-                                        },
-                                        "fetchedDataReference": {
-                                          "type": "string"
-                                        }
-                                      }
-                                    }
-                                  }
-                                }
-                              ]
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            "definition": {
-              "type": "tuple",
-              "definition": [
-                {
-                  "type": "object",
-                  "definition": {
-                    "actionType": {
-                      "type": "literal",
-                      "definition": "createEntity"
-                    },
-                    "actionLabel": {
-                      "type": "string",
-                      "optional": true
-                    },
-                    "deploymentUuid": {
-                      "type": "object",
-                      "definition": {
-                        "transformerType": {
-                          "type": "literal",
-                          "definition": "parameterReference"
-                        },
-                        "interpolation": {
-                          "type": "literal",
-                          "optional": true,
-                          "definition": "build"
-                        },
-                        "referenceName": {
-                          "optional": true,
-                          "type": "string"
-                        }
-                      }
-                    },
-                    "endpoint": {
-                      "type": "literal",
-                      "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
-                    },
-                    "entities": {
-                      "type": "tuple",
-                      "definition": [
-                        {
-                          "type": "object",
-                          "definition": {
-                            "entity": {
-                              "type": "object",
-                              "definition": {
-                                "transformerType": {
-                                  "type": "literal",
-                                  "definition": "parameterReference"
-                                },
-                                "interpolation": {
-                                  "type": "literal",
-                                  "optional": true,
-                                  "definition": "build"
-                                },
-                                "referenceName": {
-                                  "optional": true,
-                                  "type": "string"
-                                }
-                              }
-                            },
-                            "entityDefinition": {
-                              "type": "object",
-                              "definition": {
-                                "transformerType": {
-                                  "type": "literal",
-                                  "definition": "parameterReference"
-                                },
-                                "interpolation": {
-                                  "type": "literal",
-                                  "optional": true,
-                                  "definition": "build"
-                                },
-                                "referenceName": {
-                                  "optional": true,
-                                  "type": "string"
-                                }
-                              }
-                            }
-                          }
-                        }
-                      ]
-                    }
-                  }
-                },
-                {
-                  "type": "object",
-                  "definition": {
-                    "actionType": {
-                      "type": "literal",
-                      "definition": "transactionalInstanceAction"
-                    },
-                    "actionLabel": {
-                      "type": "string",
-                      "optional": true
-                    },
-                    "instanceAction": {
-                      "type": "object",
-                      "definition": {
-                        "actionType": {
-                          "type": "literal",
-                          "definition": "createInstance"
-                        },
-                        "applicationSection": {
-                          "type": "literal",
-                          "definition": "model"
-                        },
-                        "deploymentUuid": {
-                          "type": "object",
-                          "definition": {
-                            "transformerType": {
-                              "type": "literal",
-                              "definition": "parameterReference"
-                            },
-                            "interpolation": {
-                              "type": "literal",
-                              "optional": true,
-                              "definition": "build"
-                            },
-                            "referenceName": {
-                              "optional": true,
-                              "type": "string"
-                            }
-                          }
-                        },
-                        "endpoint": {
-                          "type": "literal",
-                          "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
-                        },
-                        "objects": {
-                          "type": "tuple",
-                          "tag": {
-                            "value": {
-                              "id": 2,
-                              "defaultLabel": "Entity Instances to create",
-                              "editable": true
-                            }
                           },
-                          "definition": [
+                        },
+                        section: {
+                          type: "object",
+                          definition: {
+                            type: {
+                              type: "string",
+                            },
+                            definition: {
+                              type: "object",
+                              definition: {
+                                label: {
+                                  type: "object",
+                                  definition: {
+                                    transformerType: {
+                                      type: "string",
+                                    },
+                                    interpolation: {
+                                      type: "string",
+                                    },
+                                    definition: {
+                                      type: "string",
+                                    },
+                                  },
+                                },
+                                parentUuid: {
+                                  type: "object",
+                                  definition: {
+                                    transformerType: {
+                                      type: "string",
+                                    },
+                                    interpolation: {
+                                      type: "string",
+                                    },
+                                    definition: {
+                                      type: "string",
+                                    },
+                                  },
+                                },
+                                fetchedDataReference: {
+                                  type: "string",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+                newEntityDetailsReport: {
+                  type: "object",
+                  definition: {
+                    uuid: {
+                      type: "object",
+                      definition: {
+                        transformerType: {
+                          type: "string",
+                        },
+                        interpolation: {
+                          type: "string",
+                        },
+                        referenceName: {
+                          type: "string",
+                        },
+                      },
+                    },
+                    selfApplication: {
+                      type: "object",
+                      definition: {
+                        transformerType: {
+                          type: "string",
+                        },
+                        interpolation: {
+                          type: "string",
+                        },
+                        referenceName: {
+                          type: "string",
+                        },
+                      },
+                    },
+                    parentName: {
+                      type: "object",
+                      definition: {
+                        transformerType: {
+                          type: "string",
+                        },
+                        interpolation: {
+                          type: "string",
+                        },
+                        definition: {
+                          type: "string",
+                        },
+                      },
+                    },
+                    parentUuid: {
+                      type: "object",
+                      definition: {
+                        transformerType: {
+                          type: "string",
+                        },
+                        interpolation: {
+                          type: "string",
+                        },
+                        definition: {
+                          type: "string",
+                        },
+                      },
+                    },
+                    conceptLevel: {
+                      type: "string",
+                    },
+                    name: {
+                      type: "object",
+                      definition: {
+                        transformerType: {
+                          type: "string",
+                        },
+                        interpolation: {
+                          type: "string",
+                        },
+                        definition: {
+                          type: "string",
+                        },
+                      },
+                    },
+                    defaultLabel: {
+                      type: "object",
+                      definition: {
+                        transformerType: {
+                          type: "string",
+                        },
+                        interpolation: {
+                          type: "string",
+                        },
+                        definition: {
+                          type: "string",
+                        },
+                      },
+                    },
+                    definition: {
+                      type: "object",
+                      definition: {
+                        extractorTemplates: {
+                          type: "object",
+                          definition: {
+                            elementToDisplay: {
+                              type: "object",
+                              definition: {
+                                transformerType: {
+                                  type: "string",
+                                },
+                                interpolation: {
+                                  type: "string",
+                                },
+                                value: {
+                                  type: "object",
+                                  definition: {
+                                    extractorTemplateType: {
+                                      type: "string",
+                                    },
+                                    parentName: {
+                                      type: "object",
+                                      definition: {
+                                        transformerType: {
+                                          type: "string",
+                                        },
+                                        interpolation: {
+                                          type: "string",
+                                        },
+                                        referenceName: {
+                                          type: "string",
+                                        },
+                                      },
+                                    },
+                                    parentUuid: {
+                                      type: "object",
+                                      definition: {
+                                        transformerType: {
+                                          type: "string",
+                                        },
+                                        interpolation: {
+                                          type: "string",
+                                        },
+                                        definition: {
+                                          type: "string",
+                                        },
+                                      },
+                                    },
+                                    instanceUuid: {
+                                      type: "object",
+                                      definition: {
+                                        transformerType: {
+                                          type: "string",
+                                        },
+                                        interpolation: {
+                                          type: "string",
+                                        },
+                                        value: {
+                                          type: "object",
+                                          definition: {
+                                            transformerType: {
+                                              type: "string",
+                                            },
+                                            interpolation: {
+                                              type: "string",
+                                            },
+                                            referenceName: {
+                                              type: "string",
+                                            },
+                                          },
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                        section: {
+                          type: "object",
+                          definition: {
+                            type: {
+                              type: "string",
+                            },
+                            definition: {
+                              type: "tuple",
+                              definition: [
+                                {
+                                  type: "object",
+                                  definition: {
+                                    type: {
+                                      type: "string",
+                                    },
+                                    definition: {
+                                      type: "object",
+                                      definition: {
+                                        label: {
+                                          type: "object",
+                                          definition: {
+                                            transformerType: {
+                                              type: "string",
+                                            },
+                                            interpolation: {
+                                              type: "string",
+                                            },
+                                            definition: {
+                                              type: "string",
+                                            },
+                                          },
+                                        },
+                                        parentUuid: {
+                                          type: "object",
+                                          definition: {
+                                            transformerType: {
+                                              type: "string",
+                                            },
+                                            interpolation: {
+                                              type: "string",
+                                            },
+                                            definition: {
+                                              type: "string",
+                                            },
+                                          },
+                                        },
+                                        fetchedDataReference: {
+                                          type: "string",
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                              ],
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            definition: {
+              type: "tuple",
+              definition: [
+                {
+                  type: "object",
+                  definition: {
+                    actionType: {
+                      type: "literal",
+                      definition: "createEntity",
+                    },
+                    actionLabel: {
+                      type: "string",
+                      optional: true,
+                    },
+                    deploymentUuid: {
+                      type: "object",
+                      definition: {
+                        transformerType: {
+                          type: "literal",
+                          definition: "parameterReference",
+                        },
+                        interpolation: {
+                          type: "literal",
+                          optional: true,
+                          definition: "build",
+                        },
+                        referenceName: {
+                          optional: true,
+                          type: "string",
+                        },
+                      },
+                    },
+                    endpoint: {
+                      type: "literal",
+                      definition: "7947ae40-eb34-4149-887b-15a9021e714e",
+                    },
+                    entities: {
+                      type: "tuple",
+                      definition: [
+                        {
+                          type: "object",
+                          definition: {
+                            entity: {
+                              type: "object",
+                              definition: {
+                                transformerType: {
+                                  type: "literal",
+                                  definition: "parameterReference",
+                                },
+                                interpolation: {
+                                  type: "literal",
+                                  optional: true,
+                                  definition: "build",
+                                },
+                                referenceName: {
+                                  optional: true,
+                                  type: "string",
+                                },
+                              },
+                            },
+                            entityDefinition: {
+                              type: "object",
+                              definition: {
+                                transformerType: {
+                                  type: "literal",
+                                  definition: "parameterReference",
+                                },
+                                interpolation: {
+                                  type: "literal",
+                                  optional: true,
+                                  definition: "build",
+                                },
+                                referenceName: {
+                                  optional: true,
+                                  type: "string",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      ],
+                    },
+                  },
+                },
+                {
+                  type: "object",
+                  definition: {
+                    actionType: {
+                      type: "literal",
+                      definition: "transactionalInstanceAction",
+                    },
+                    actionLabel: {
+                      type: "string",
+                      optional: true,
+                    },
+                    instanceAction: {
+                      type: "object",
+                      definition: {
+                        actionType: {
+                          type: "literal",
+                          definition: "createInstance",
+                        },
+                        applicationSection: {
+                          type: "literal",
+                          definition: "model",
+                        },
+                        deploymentUuid: {
+                          type: "object",
+                          definition: {
+                            transformerType: {
+                              type: "literal",
+                              definition: "parameterReference",
+                            },
+                            interpolation: {
+                              type: "literal",
+                              optional: true,
+                              definition: "build",
+                            },
+                            referenceName: {
+                              optional: true,
+                              type: "string",
+                            },
+                          },
+                        },
+                        endpoint: {
+                          type: "literal",
+                          definition: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                        },
+                        objects: {
+                          type: "tuple",
+                          tag: {
+                            value: {
+                              id: 2,
+                              defaultLabel: "Entity Instances to create",
+                              editable: true,
+                            },
+                          },
+                          definition: [
                             {
-                              "type": "object",
-                              "definition": {
-                                "parentName": {
-                                  "type": "object",
-                                  "definition": {
-                                    "transformerType": {
-                                      "type": "literal",
-                                      "definition": "parameterReference"
+                              type: "object",
+                              definition: {
+                                parentName: {
+                                  type: "object",
+                                  definition: {
+                                    transformerType: {
+                                      type: "literal",
+                                      definition: "parameterReference",
                                     },
-                                    "interpolation": {
-                                      "type": "literal",
-                                      "optional": true,
-                                      "definition": "build"
+                                    interpolation: {
+                                      type: "literal",
+                                      optional: true,
+                                      definition: "build",
                                     },
-                                    "referencePath": {
-                                      "optional": true,
-                                      "type": "tuple",
-                                      "definition": [
+                                    referencePath: {
+                                      optional: true,
+                                      type: "tuple",
+                                      definition: [
                                         {
-                                          "type": "string"
+                                          type: "string",
                                         },
                                         {
-                                          "type": "string"
-                                        }
-                                      ]
-                                    }
-                                  }
+                                          type: "string",
+                                        },
+                                      ],
+                                    },
+                                  },
                                 },
-                                "parentUuid": {
-                                  "type": "object",
-                                  "definition": {
-                                    "transformerType": {
-                                      "type": "literal",
-                                      "definition": "parameterReference"
+                                parentUuid: {
+                                  type: "object",
+                                  definition: {
+                                    transformerType: {
+                                      type: "literal",
+                                      definition: "parameterReference",
                                     },
-                                    "interpolation": {
-                                      "type": "literal",
-                                      "optional": true,
-                                      "definition": "build"
+                                    interpolation: {
+                                      type: "literal",
+                                      optional: true,
+                                      definition: "build",
                                     },
-                                    "referencePath": {
-                                      "optional": true,
-                                      "type": "tuple",
-                                      "definition": [
+                                    referencePath: {
+                                      optional: true,
+                                      type: "tuple",
+                                      definition: [
                                         {
-                                          "type": "string"
+                                          type: "string",
                                         },
                                         {
-                                          "type": "string"
-                                        }
-                                      ]
-                                    }
-                                  }
+                                          type: "string",
+                                        },
+                                      ],
+                                    },
+                                  },
                                 },
-                                "applicationSection": {
-                                  "type": "literal",
-                                  "definition": "model"
+                                applicationSection: {
+                                  type: "literal",
+                                  definition: "model",
                                 },
-                                "instances": {
-                                  "type": "tuple",
-                                  "definition": [
+                                instances: {
+                                  type: "tuple",
+                                  definition: [
                                     {
-                                      "type": "object",
-                                      "definition": {
-                                        "transformerType": {
-                                          "type": "literal",
-                                          "definition": "parameterReference"
+                                      type: "object",
+                                      definition: {
+                                        transformerType: {
+                                          type: "literal",
+                                          definition: "parameterReference",
                                         },
-                                        "interpolation": {
-                                          "type": "literal",
-                                          "optional": true,
-                                          "definition": "build"
+                                        interpolation: {
+                                          type: "literal",
+                                          optional: true,
+                                          definition: "build",
                                         },
-                                        "referenceName": {
-                                          "optional": true,
-                                          "type": "string"
-                                        }
-                                      }
+                                        referenceName: {
+                                          optional: true,
+                                          type: "string",
+                                        },
+                                      },
                                     },
                                     {
-                                      "type": "object",
-                                      "definition": {
-                                        "transformerType": {
-                                          "type": "literal",
-                                          "definition": "parameterReference"
+                                      type: "object",
+                                      definition: {
+                                        transformerType: {
+                                          type: "literal",
+                                          definition: "parameterReference",
                                         },
-                                        "interpolation": {
-                                          "type": "literal",
-                                          "optional": true,
-                                          "definition": "build"
+                                        interpolation: {
+                                          type: "literal",
+                                          optional: true,
+                                          definition: "build",
                                         },
-                                        "referenceName": {
-                                          "optional": true,
-                                          "type": "string"
-                                        }
-                                      }
-                                    }
-                                  ]
-                                }
-                              }
-                            }
-                          ]
-                        }
-                      }
-                    }
-                  }
+                                        referenceName: {
+                                          optional: true,
+                                          type: "string",
+                                        },
+                                      },
+                                    },
+                                  ],
+                                },
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    },
+                  },
                 },
                 {
-                  "type": "object",
-                  "definition": {
-                    "actionType": {
-                      "type": "literal",
-                      "definition": "commit"
+                  type: "object",
+                  definition: {
+                    actionType: {
+                      type: "literal",
+                      definition: "commit",
                     },
-                    "actionLabel": {
-                      "type": "string",
-                      "optional": true
+                    actionLabel: {
+                      type: "string",
+                      optional: true,
                     },
-                    "endpoint": {
-                      "type": "literal",
-                      "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+                    endpoint: {
+                      type: "literal",
+                      definition: "7947ae40-eb34-4149-887b-15a9021e714e",
                     },
-                    "deploymentUuid": {
-                      "type": "object",
-                      "definition": {
-                        "transformerType": {
-                          "type": "literal",
-                          "definition": "parameterReference"
+                    deploymentUuid: {
+                      type: "object",
+                      definition: {
+                        transformerType: {
+                          type: "literal",
+                          definition: "parameterReference",
                         },
-                        "interpolation": {
-                          "type": "literal",
-                          "optional": true,
-                          "definition": "build"
+                        interpolation: {
+                          type: "literal",
+                          optional: true,
+                          definition: "build",
                         },
-                        "referenceName": {
-                          "optional": true,
-                          "type": "string"
-                        }
-                      }
-                    }
-                  }
+                        referenceName: {
+                          optional: true,
+                          type: "string",
+                        },
+                      },
+                    },
+                  },
                 },
                 {
-                  "type": "object",
-                  "definition": {
-                    "actionType": {
-                      "type": "literal",
-                      "definition": "compositeRunBoxedExtractorOrQueryAction"
+                  type: "object",
+                  definition: {
+                    actionType: {
+                      type: "literal",
+                      definition: "compositeRunBoxedExtractorOrQueryAction",
                     },
-                    "actionLabel": {
-                      "type": "string",
-                      "optional": true
+                    actionLabel: {
+                      type: "string",
+                      optional: true,
                     },
-                    "nameGivenToResult": {
-                      "type": "string"
+                    nameGivenToResult: {
+                      type: "string",
                     },
-                    "query": {
-                      "type": "object",
-                      "definition": {
-                        "actionType": {
-                          "type": "literal",
-                          "definition": "runBoxedExtractorOrQueryAction"
+                    query: {
+                      type: "object",
+                      definition: {
+                        actionType: {
+                          type: "literal",
+                          definition: "runBoxedExtractorOrQueryAction",
                         },
-                        "actionName": {
-                          "type": "literal",
-                          "definition": "runQuery"
+                        actionName: {
+                          type: "literal",
+                          definition: "runQuery",
                         },
-                        "endpoint": {
-                          "type": "literal",
-                          "definition": "9e404b3c-368c-40cb-be8b-e3c28550c25e"
+                        endpoint: {
+                          type: "literal",
+                          definition: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                         },
-                        "applicationSection": {
-                          "type": "literal",
-                          "definition": "model"
+                        applicationSection: {
+                          type: "literal",
+                          definition: "model",
                         },
-                        "deploymentUuid": {
-                          "type": "object",
-                          "definition": {
-                            "transformerType": {
-                              "type": "literal",
-                              "definition": "parameterReference"
+                        deploymentUuid: {
+                          type: "object",
+                          definition: {
+                            transformerType: {
+                              type: "literal",
+                              definition: "parameterReference",
                             },
-                            "interpolation": {
-                              "type": "literal",
-                              "optional": true,
-                              "definition": "build"
+                            interpolation: {
+                              type: "literal",
+                              optional: true,
+                              definition: "build",
                             },
-                            "referenceName": {
-                              "optional": true,
-                              "type": "string"
-                            }
-                          }
+                            referenceName: {
+                              optional: true,
+                              type: "string",
+                            },
+                          },
                         },
-                        "query": {
-                          "type": "object",
-                          "definition": {
-                            "queryType": {
-                              "type": "literal",
-                              "definition": "boxedQueryWithExtractorCombinerTransformer"
+                        query: {
+                          type: "object",
+                          definition: {
+                            queryType: {
+                              type: "literal",
+                              definition: "boxedQueryWithExtractorCombinerTransformer",
                             },
-                            "deploymentUuid": {
-                              "type": "object",
-                              "definition": {
-                                "transformerType": {
-                                  "type": "literal",
-                                  "definition": "parameterReference"
+                            deploymentUuid: {
+                              type: "object",
+                              definition: {
+                                transformerType: {
+                                  type: "literal",
+                                  definition: "parameterReference",
                                 },
-                                "interpolation": {
-                                  "type": "literal",
-                                  "optional": true,
-                                  "definition": "build"
+                                interpolation: {
+                                  type: "literal",
+                                  optional: true,
+                                  definition: "build",
                                 },
-                                "referenceName": {
-                                  "optional": true,
-                                  "type": "string"
-                                }
-                              }
+                                referenceName: {
+                                  optional: true,
+                                  type: "string",
+                                },
+                              },
                             },
-                            "pageParams": {
-                              "type": "object",
-                              "definition": {
-                                "currentDeploymentUuid": {
-                                  "type": "object",
-                                  "definition": {
-                                    "transformerType": {
-                                      "type": "string"
+                            pageParams: {
+                              type: "object",
+                              definition: {
+                                currentDeploymentUuid: {
+                                  type: "object",
+                                  definition: {
+                                    transformerType: {
+                                      type: "string",
                                     },
-                                    "interpolation": {
-                                      "type": "string"
+                                    interpolation: {
+                                      type: "string",
                                     },
-                                    "referenceName": {
-                                      "type": "string"
-                                    }
-                                  }
-                                }
-                              }
+                                    referenceName: {
+                                      type: "string",
+                                    },
+                                  },
+                                },
+                              },
                             },
-                            "queryParams": {
-                              "type": "object",
-                              "definition": {}
+                            queryParams: {
+                              type: "object",
+                              definition: {},
                             },
-                            "contextResults": {
-                              "type": "object",
-                              "definition": {}
+                            contextResults: {
+                              type: "object",
+                              definition: {},
                             },
-                            "extractors": {
-                              "type": "object",
-                              "definition": {
-                                "entityDefinitions": {
-                                  "type": "object",
-                                  "definition": {
-                                    "extractorOrCombinerType": {
-                                      "type": "literal",
-                                      "definition": "extractorByEntityReturningObjectList"
+                            extractors: {
+                              type: "object",
+                              definition: {
+                                entityDefinitions: {
+                                  type: "object",
+                                  definition: {
+                                    extractorOrCombinerType: {
+                                      type: "literal",
+                                      definition: "extractorByEntityReturningObjectList",
                                     },
-                                    "applicationSection": {
-                                      "type": "literal",
-                                      "definition": "model"
+                                    applicationSection: {
+                                      type: "literal",
+                                      definition: "model",
                                     },
-                                    "parentName": {
-                                      "type": "object",
-                                      "definition": {
-                                        "transformerType": {
-                                          "type": "literal",
-                                          "definition": "parameterReference"
+                                    parentName: {
+                                      type: "object",
+                                      definition: {
+                                        transformerType: {
+                                          type: "literal",
+                                          definition: "parameterReference",
                                         },
-                                        "interpolation": {
-                                          "type": "literal",
-                                          "optional": true,
-                                          "definition": "build"
+                                        interpolation: {
+                                          type: "literal",
+                                          optional: true,
+                                          definition: "build",
                                         },
-                                        "referencePath": {
-                                          "optional": true,
-                                          "type": "tuple",
-                                          "definition": [
+                                        referencePath: {
+                                          optional: true,
+                                          type: "tuple",
+                                          definition: [
                                             {
-                                              "type": "string"
+                                              type: "string",
                                             },
                                             {
-                                              "type": "string"
-                                            }
-                                          ]
-                                        }
-                                      }
+                                              type: "string",
+                                            },
+                                          ],
+                                        },
+                                      },
                                     },
-                                    "parentUuid": {
-                                      "type": "object",
-                                      "definition": {
-                                        "transformerType": {
-                                          "type": "literal",
-                                          "definition": "parameterReference"
+                                    parentUuid: {
+                                      type: "object",
+                                      definition: {
+                                        transformerType: {
+                                          type: "literal",
+                                          definition: "parameterReference",
                                         },
-                                        "interpolation": {
-                                          "type": "literal",
-                                          "optional": true,
-                                          "definition": "build"
+                                        interpolation: {
+                                          type: "literal",
+                                          optional: true,
+                                          definition: "build",
                                         },
-                                        "referencePath": {
-                                          "optional": true,
-                                          "type": "tuple",
-                                          "definition": [
+                                        referencePath: {
+                                          optional: true,
+                                          type: "tuple",
+                                          definition: [
                                             {
-                                              "type": "string"
+                                              type: "string",
                                             },
                                             {
-                                              "type": "string"
-                                            }
-                                          ]
-                                        }
-                                      }
-                                    },
-                                    "orderBy": {
-                                      "type": "object",
-                                      "optional": true,
-                                      "definition": {
-                                        "attributeName": {
-                                          "type": "string"
+                                              type: "string",
+                                            },
+                                          ],
                                         },
-                                        "direction": {
-                                          "type": "enum",
-                                          "optional": true,
-                                          "definition": [
-                                            "ASC",
-                                            "DESC"
-                                          ]
-                                        }
-                                      }
-                                    }
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
+                                      },
+                                    },
+                                    orderBy: {
+                                      type: "object",
+                                      optional: true,
+                                      definition: {
+                                        attributeName: {
+                                          type: "string",
+                                        },
+                                        direction: {
+                                          type: "enum",
+                                          optional: true,
+                                          definition: ["ASC", "DESC"],
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
                 },
                 {
-                  "type": "object",
-                  "definition": {
-                    "actionType": {
-                      "type": "literal",
-                      "definition": "compositeRunBoxedExtractorOrQueryAction"
+                  type: "object",
+                  definition: {
+                    actionType: {
+                      type: "literal",
+                      definition: "compositeRunBoxedExtractorOrQueryAction",
                     },
-                    "actionLabel": {
-                      "type": "string",
-                      "optional": true
+                    actionLabel: {
+                      type: "string",
+                      optional: true,
                     },
-                    "nameGivenToResult": {
-                      "type": "string"
+                    nameGivenToResult: {
+                      type: "string",
                     },
-                    "query": {
-                      "type": "object",
-                      "definition": {
-                        "actionType": {
-                          "type": "literal",
-                          "definition": "runBoxedExtractorOrQueryAction"
+                    query: {
+                      type: "object",
+                      definition: {
+                        actionType: {
+                          type: "literal",
+                          definition: "runBoxedExtractorOrQueryAction",
                         },
-                        "actionName": {
-                          "type": "literal",
-                          "definition": "runQuery"
+                        actionName: {
+                          type: "literal",
+                          definition: "runQuery",
                         },
-                        "endpoint": {
-                          "type": "literal",
-                          "definition": "9e404b3c-368c-40cb-be8b-e3c28550c25e"
+                        endpoint: {
+                          type: "literal",
+                          definition: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                         },
-                        "applicationSection": {
-                          "type": "literal",
-                          "definition": "model"
+                        applicationSection: {
+                          type: "literal",
+                          definition: "model",
                         },
-                        "deploymentUuid": {
-                          "type": "object",
-                          "definition": {
-                            "transformerType": {
-                              "type": "literal",
-                              "definition": "parameterReference"
+                        deploymentUuid: {
+                          type: "object",
+                          definition: {
+                            transformerType: {
+                              type: "literal",
+                              definition: "parameterReference",
                             },
-                            "interpolation": {
-                              "type": "literal",
-                              "optional": true,
-                              "definition": "build"
+                            interpolation: {
+                              type: "literal",
+                              optional: true,
+                              definition: "build",
                             },
-                            "referenceName": {
-                              "optional": true,
-                              "type": "string"
-                            }
-                          }
+                            referenceName: {
+                              optional: true,
+                              type: "string",
+                            },
+                          },
                         },
-                        "query": {
-                          "type": "object",
-                          "definition": {
-                            "queryType": {
-                              "type": "literal",
-                              "definition": "boxedQueryWithExtractorCombinerTransformer"
+                        query: {
+                          type: "object",
+                          definition: {
+                            queryType: {
+                              type: "literal",
+                              definition: "boxedQueryWithExtractorCombinerTransformer",
                             },
-                            "deploymentUuid": {
-                              "type": "object",
-                              "definition": {
-                                "transformerType": {
-                                  "type": "literal",
-                                  "definition": "parameterReference"
+                            deploymentUuid: {
+                              type: "object",
+                              definition: {
+                                transformerType: {
+                                  type: "literal",
+                                  definition: "parameterReference",
                                 },
-                                "interpolation": {
-                                  "type": "literal",
-                                  "optional": true,
-                                  "definition": "build"
+                                interpolation: {
+                                  type: "literal",
+                                  optional: true,
+                                  definition: "build",
                                 },
-                                "referenceName": {
-                                  "optional": true,
-                                  "type": "string"
-                                }
-                              }
+                                referenceName: {
+                                  optional: true,
+                                  type: "string",
+                                },
+                              },
                             },
-                            "pageParams": {
-                              "type": "object",
-                              "definition": {
-                                "currentDeploymentUuid": {
-                                  "type": "object",
-                                  "definition": {
-                                    "transformerType": {
-                                      "type": "string"
+                            pageParams: {
+                              type: "object",
+                              definition: {
+                                currentDeploymentUuid: {
+                                  type: "object",
+                                  definition: {
+                                    transformerType: {
+                                      type: "string",
                                     },
-                                    "interpolation": {
-                                      "type": "string"
+                                    interpolation: {
+                                      type: "string",
                                     },
-                                    "referenceName": {
-                                      "type": "string"
-                                    }
-                                  }
-                                }
-                              }
+                                    referenceName: {
+                                      type: "string",
+                                    },
+                                  },
+                                },
+                              },
                             },
-                            "queryParams": {
-                              "type": "object",
-                              "definition": {}
+                            queryParams: {
+                              type: "object",
+                              definition: {},
                             },
-                            "contextResults": {
-                              "type": "object",
-                              "definition": {}
+                            contextResults: {
+                              type: "object",
+                              definition: {},
                             },
-                            "extractors": {
-                              "type": "object",
-                              "definition": {
-                                "entities": {
-                                  "type": "object",
-                                  "definition": {
-                                    "extractorOrCombinerType": {
-                                      "type": "literal",
-                                      "definition": "extractorByEntityReturningObjectList"
+                            extractors: {
+                              type: "object",
+                              definition: {
+                                entities: {
+                                  type: "object",
+                                  definition: {
+                                    extractorOrCombinerType: {
+                                      type: "literal",
+                                      definition: "extractorByEntityReturningObjectList",
                                     },
-                                    "applicationSection": {
-                                      "type": "literal",
-                                      "definition": "model"
+                                    applicationSection: {
+                                      type: "literal",
+                                      definition: "model",
                                     },
-                                    "parentName": {
-                                      "type": "object",
-                                      "definition": {
-                                        "transformerType": {
-                                          "type": "literal",
-                                          "definition": "parameterReference"
+                                    parentName: {
+                                      type: "object",
+                                      definition: {
+                                        transformerType: {
+                                          type: "literal",
+                                          definition: "parameterReference",
                                         },
-                                        "interpolation": {
-                                          "type": "literal",
-                                          "optional": true,
-                                          "definition": "build"
+                                        interpolation: {
+                                          type: "literal",
+                                          optional: true,
+                                          definition: "build",
                                         },
-                                        "referencePath": {
-                                          "optional": true,
-                                          "type": "tuple",
-                                          "definition": [
+                                        referencePath: {
+                                          optional: true,
+                                          type: "tuple",
+                                          definition: [
                                             {
-                                              "type": "string"
+                                              type: "string",
                                             },
                                             {
-                                              "type": "string"
-                                            }
-                                          ]
-                                        }
-                                      }
+                                              type: "string",
+                                            },
+                                          ],
+                                        },
+                                      },
                                     },
-                                    "parentUuid": {
-                                      "type": "object",
-                                      "definition": {
-                                        "transformerType": {
-                                          "type": "literal",
-                                          "definition": "parameterReference"
+                                    parentUuid: {
+                                      type: "object",
+                                      definition: {
+                                        transformerType: {
+                                          type: "literal",
+                                          definition: "parameterReference",
                                         },
-                                        "interpolation": {
-                                          "type": "literal",
-                                          "optional": true,
-                                          "definition": "build"
+                                        interpolation: {
+                                          type: "literal",
+                                          optional: true,
+                                          definition: "build",
                                         },
-                                        "referencePath": {
-                                          "optional": true,
-                                          "type": "tuple",
-                                          "definition": [
+                                        referencePath: {
+                                          optional: true,
+                                          type: "tuple",
+                                          definition: [
                                             {
-                                              "type": "string"
+                                              type: "string",
                                             },
                                             {
-                                              "type": "string"
-                                            }
-                                          ]
-                                        }
-                                      }
-                                    },
-                                    "orderBy": {
-                                      "type": "object",
-                                      "optional": true,
-                                      "definition": {
-                                        "attributeName": {
-                                          "type": "string"
+                                              type: "string",
+                                            },
+                                          ],
                                         },
-                                        "direction": {
-                                          "type": "enum",
-                                          "optional": true,
-                                          "definition": [
-                                            "ASC",
-                                            "DESC"
-                                          ]
-                                        }
-                                      }
-                                    }
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
+                                      },
+                                    },
+                                    orderBy: {
+                                      type: "object",
+                                      optional: true,
+                                      definition: {
+                                        attributeName: {
+                                          type: "string",
+                                        },
+                                        direction: {
+                                          type: "enum",
+                                          optional: true,
+                                          definition: ["ASC", "DESC"],
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
                 },
                 {
-                  "type": "object",
-                  "definition": {
-                    "actionType": {
-                      "type": "literal",
-                      "definition": "compositeRunBoxedExtractorOrQueryAction"
+                  type: "object",
+                  definition: {
+                    actionType: {
+                      type: "literal",
+                      definition: "compositeRunBoxedExtractorOrQueryAction",
                     },
-                    "actionLabel": {
-                      "type": "string",
-                      "optional": true
+                    actionLabel: {
+                      type: "string",
+                      optional: true,
                     },
-                    "nameGivenToResult": {
-                      "type": "string"
+                    nameGivenToResult: {
+                      type: "string",
                     },
-                    "query": {
-                      "type": "object",
-                      "definition": {
-                        "actionType": {
-                          "type": "literal",
-                          "definition": "runBoxedExtractorOrQueryAction"
+                    query: {
+                      type: "object",
+                      definition: {
+                        actionType: {
+                          type: "literal",
+                          definition: "runBoxedExtractorOrQueryAction",
                         },
-                        "actionName": {
-                          "type": "literal",
-                          "definition": "runQuery"
+                        actionName: {
+                          type: "literal",
+                          definition: "runQuery",
                         },
-                        "endpoint": {
-                          "type": "literal",
-                          "definition": "9e404b3c-368c-40cb-be8b-e3c28550c25e"
+                        endpoint: {
+                          type: "literal",
+                          definition: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                         },
-                        "applicationSection": {
-                          "type": "literal",
-                          "definition": "model"
+                        applicationSection: {
+                          type: "literal",
+                          definition: "model",
                         },
-                        "deploymentUuid": {
-                          "type": "object",
-                          "definition": {
-                            "transformerType": {
-                              "type": "literal",
-                              "definition": "parameterReference"
+                        deploymentUuid: {
+                          type: "object",
+                          definition: {
+                            transformerType: {
+                              type: "literal",
+                              definition: "parameterReference",
                             },
-                            "interpolation": {
-                              "type": "literal",
-                              "optional": true,
-                              "definition": "build"
+                            interpolation: {
+                              type: "literal",
+                              optional: true,
+                              definition: "build",
                             },
-                            "referenceName": {
-                              "optional": true,
-                              "type": "string"
-                            }
-                          }
+                            referenceName: {
+                              optional: true,
+                              type: "string",
+                            },
+                          },
                         },
-                        "query": {
-                          "type": "object",
-                          "definition": {
-                            "queryType": {
-                              "type": "literal",
-                              "definition": "boxedQueryWithExtractorCombinerTransformer"
+                        query: {
+                          type: "object",
+                          definition: {
+                            queryType: {
+                              type: "literal",
+                              definition: "boxedQueryWithExtractorCombinerTransformer",
                             },
-                            "deploymentUuid": {
-                              "type": "object",
-                              "definition": {
-                                "transformerType": {
-                                  "type": "literal",
-                                  "definition": "parameterReference"
+                            deploymentUuid: {
+                              type: "object",
+                              definition: {
+                                transformerType: {
+                                  type: "literal",
+                                  definition: "parameterReference",
                                 },
-                                "interpolation": {
-                                  "type": "literal",
-                                  "optional": true,
-                                  "definition": "build"
+                                interpolation: {
+                                  type: "literal",
+                                  optional: true,
+                                  definition: "build",
                                 },
-                                "referenceName": {
-                                  "optional": true,
-                                  "type": "string"
-                                }
-                              }
+                                referenceName: {
+                                  optional: true,
+                                  type: "string",
+                                },
+                              },
                             },
-                            "pageParams": {
-                              "type": "object",
-                              "definition": {
-                                "currentDeploymentUuid": {
-                                  "type": "object",
-                                  "definition": {
-                                    "transformerType": {
-                                      "type": "string"
+                            pageParams: {
+                              type: "object",
+                              definition: {
+                                currentDeploymentUuid: {
+                                  type: "object",
+                                  definition: {
+                                    transformerType: {
+                                      type: "string",
                                     },
-                                    "interpolation": {
-                                      "type": "string"
+                                    interpolation: {
+                                      type: "string",
                                     },
-                                    "referenceName": {
-                                      "type": "string"
-                                    }
-                                  }
-                                }
-                              }
-                            },
-                            "runAsSql": {
-                              "type": "boolean",
-                              "optional": true
-                            },
-                            "queryParams": {
-                              "type": "object",
-                              "definition": {}
-                            },
-                            "contextResults": {
-                              "type": "object",
-                              "definition": {}
-                            },
-                            "extractors": {
-                              "type": "object",
-                              "definition": {
-                                "reports": {
-                                  "type": "object",
-                                  "definition": {
-                                    "extractorOrCombinerType": {
-                                      "type": "literal",
-                                      "definition": "extractorByEntityReturningObjectList"
+                                    referenceName: {
+                                      type: "string",
                                     },
-                                    "applicationSection": {
-                                      "type": "literal",
-                                      "definition": "model"
+                                  },
+                                },
+                              },
+                            },
+                            runAsSql: {
+                              type: "boolean",
+                              optional: true,
+                            },
+                            queryParams: {
+                              type: "object",
+                              definition: {},
+                            },
+                            contextResults: {
+                              type: "object",
+                              definition: {},
+                            },
+                            extractors: {
+                              type: "object",
+                              definition: {
+                                reports: {
+                                  type: "object",
+                                  definition: {
+                                    extractorOrCombinerType: {
+                                      type: "literal",
+                                      definition: "extractorByEntityReturningObjectList",
                                     },
-                                    "parentName": {
-                                      "type": "object",
-                                      "definition": {
-                                        "transformerType": {
-                                          "type": "literal",
-                                          "definition": "parameterReference"
+                                    applicationSection: {
+                                      type: "literal",
+                                      definition: "model",
+                                    },
+                                    parentName: {
+                                      type: "object",
+                                      definition: {
+                                        transformerType: {
+                                          type: "literal",
+                                          definition: "parameterReference",
                                         },
-                                        "interpolation": {
-                                          "type": "literal",
-                                          "optional": true,
-                                          "definition": "build"
+                                        interpolation: {
+                                          type: "literal",
+                                          optional: true,
+                                          definition: "build",
                                         },
-                                        "referencePath": {
-                                          "optional": true,
-                                          "type": "tuple",
-                                          "definition": [
+                                        referencePath: {
+                                          optional: true,
+                                          type: "tuple",
+                                          definition: [
                                             {
-                                              "type": "string"
+                                              type: "string",
                                             },
                                             {
-                                              "type": "string"
-                                            }
-                                          ]
-                                        }
-                                      }
+                                              type: "string",
+                                            },
+                                          ],
+                                        },
+                                      },
                                     },
-                                    "parentUuid": {
-                                      "type": "object",
-                                      "definition": {
-                                        "transformerType": {
-                                          "type": "literal",
-                                          "definition": "parameterReference"
+                                    parentUuid: {
+                                      type: "object",
+                                      definition: {
+                                        transformerType: {
+                                          type: "literal",
+                                          definition: "parameterReference",
                                         },
-                                        "interpolation": {
-                                          "type": "literal",
-                                          "optional": true,
-                                          "definition": "build"
+                                        interpolation: {
+                                          type: "literal",
+                                          optional: true,
+                                          definition: "build",
                                         },
-                                        "referencePath": {
-                                          "optional": true,
-                                          "type": "tuple",
-                                          "definition": [
+                                        referencePath: {
+                                          optional: true,
+                                          type: "tuple",
+                                          definition: [
                                             {
-                                              "type": "string"
+                                              type: "string",
                                             },
                                             {
-                                              "type": "string"
-                                            }
-                                          ]
-                                        }
-                                      }
-                                    },
-                                    "orderBy": {
-                                      "type": "object",
-                                      "optional": true,
-                                      "definition": {
-                                        "attributeName": {
-                                          "type": "string"
+                                              type: "string",
+                                            },
+                                          ],
                                         },
-                                        "direction": {
-                                          "type": "enum",
-                                          "optional": true,
-                                          "definition": [
-                                            "ASC",
-                                            "DESC"
-                                          ]
-                                        }
-                                      }
-                                    }
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
+                                      },
+                                    },
+                                    orderBy: {
+                                      type: "object",
+                                      optional: true,
+                                      definition: {
+                                        attributeName: {
+                                          type: "string",
+                                        },
+                                        direction: {
+                                          type: "enum",
+                                          optional: true,
+                                          definition: ["ASC", "DESC"],
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
                 },
                 {
-                  "type": "object",
-                  "definition": {
-                    "actionType": {
-                      "type": "literal",
-                      "definition": "compositeRunBoxedQueryAction"
+                  type: "object",
+                  definition: {
+                    actionType: {
+                      type: "literal",
+                      definition: "compositeRunBoxedQueryAction",
                     },
-                    "actionLabel": {
-                      "type": "string",
-                      "optional": true
+                    actionLabel: {
+                      type: "string",
+                      optional: true,
                     },
-                    "nameGivenToResult": {
-                      "type": "string"
+                    nameGivenToResult: {
+                      type: "string",
                     },
-                    "queryTemplate": {
-                      "type": "object",
-                      "definition": {
-                        "actionType": {
-                          "type": "literal",
-                          "definition": "runBoxedQueryAction"
+                    queryTemplate: {
+                      type: "object",
+                      definition: {
+                        actionType: {
+                          type: "literal",
+                          definition: "runBoxedQueryAction",
                         },
-                        "actionName": {
-                          "type": "literal",
-                          "definition": "runQuery"
+                        actionName: {
+                          type: "literal",
+                          definition: "runQuery",
                         },
-                        "endpoint": {
-                          "type": "literal",
-                          "definition": "9e404b3c-368c-40cb-be8b-e3c28550c25e"
+                        endpoint: {
+                          type: "literal",
+                          definition: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                         },
-                        "applicationSection": {
-                          "type": "literal",
-                          "definition": "model"
+                        applicationSection: {
+                          type: "literal",
+                          definition: "model",
                         },
-                        "deploymentUuid": {
-                          "type": "object",
-                          "definition": {
-                            "transformerType": {
-                              "type": "literal",
-                              "definition": "parameterReference"
+                        deploymentUuid: {
+                          type: "object",
+                          definition: {
+                            transformerType: {
+                              type: "literal",
+                              definition: "parameterReference",
                             },
-                            "interpolation": {
-                              "type": "literal",
-                              "optional": true,
-                              "definition": "build"
+                            interpolation: {
+                              type: "literal",
+                              optional: true,
+                              definition: "build",
                             },
-                            "referenceName": {
-                              "optional": true,
-                              "type": "string"
-                            }
-                          }
+                            referenceName: {
+                              optional: true,
+                              type: "string",
+                            },
+                          },
                         },
-                        "query": {
-                          "type": "object",
-                          "definition": {
-                            "queryType": {
-                              "type": "literal",
-                              "definition": "boxedQueryWithExtractorCombinerTransformer"
+                        query: {
+                          type: "object",
+                          definition: {
+                            queryType: {
+                              type: "literal",
+                              definition: "boxedQueryWithExtractorCombinerTransformer",
                             },
-                            "deploymentUuid": {
-                              "type": "object",
-                              "definition": {
-                                "transformerType": {
-                                  "type": "literal",
-                                  "definition": "parameterReference"
+                            deploymentUuid: {
+                              type: "object",
+                              definition: {
+                                transformerType: {
+                                  type: "literal",
+                                  definition: "parameterReference",
                                 },
-                                "interpolation": {
-                                  "type": "literal",
-                                  "optional": true,
-                                  "definition": "build"
+                                interpolation: {
+                                  type: "literal",
+                                  optional: true,
+                                  definition: "build",
                                 },
-                                "referenceName": {
-                                  "optional": true,
-                                  "type": "string"
-                                }
-                              }
-                            },
-                            "pageParams": {
-                              "type": "object",
-                              "definition": {}
-                            },
-                            "queryParams": {
-                              "type": "object",
-                              "definition": {}
-                            },
-                            "contextResults": {
-                              "type": "object",
-                              "definition": {}
-                            },
-                            "extractors": {
-                              "type": "object",
-                              "definition": {
-                                "menuList": {
-                                  "type": "object",
-                                  "definition": {
-                                    "extractorOrCombinerType": {
-                                      "type": "literal",
-                                      "definition": "extractorByEntityReturningObjectList"
-                                    },
-                                    "applicationSection": {
-                                      "type": "literal",
-                                      "definition": "model"
-                                    },
-                                    "parentName": {
-                                      "type": "object",
-                                      "definition": {
-                                        "transformerType": {
-                                          "type": "literal",
-                                          "definition": "parameterReference"
-                                        },
-                                        "interpolation": {
-                                          "type": "literal",
-                                          "optional": true,
-                                          "definition": "build"
-                                        },
-                                        "referencePath": {
-                                          "optional": true,
-                                          "type": "tuple",
-                                          "definition": [
-                                            {
-                                              "type": "string"
-                                            },
-                                            {
-                                              "type": "string"
-                                            }
-                                          ]
-                                        }
-                                      }
-                                    },
-                                    "parentUuid": {
-                                      "type": "object",
-                                      "definition": {
-                                        "transformerType": {
-                                          "type": "literal",
-                                          "definition": "parameterReference"
-                                        },
-                                        "interpolation": {
-                                          "type": "literal",
-                                          "optional": true,
-                                          "definition": "build"
-                                        },
-                                        "referencePath": {
-                                          "optional": true,
-                                          "type": "tuple",
-                                          "definition": [
-                                            {
-                                              "type": "string"
-                                            },
-                                            {
-                                              "type": "string"
-                                            }
-                                          ]
-                                        }
-                                      }
-                                    }
-                                  }
-                                }
-                              }
-                            },
-                            "runtimeTransformers": {
-                              "type": "object",
-                              "optional": true,
-                              "definition": {
-                                "menu": {
-                                  "type": "object",
-                                  "definition": {
-                                    "transformerType": {
-                                      "type": "literal",
-                                      "definition": "listPickElement"
-                                    },
-                                    "interpolation": {
-                                      "type": "literal",
-                                      "definition": "runtime"
-                                    },
-                                    "applyTo": {
-                                      "type": "object",
-                                      "definition": {
-                                        "referenceType": {
-                                          "type": "literal",
-                                          "definition": "referencedTransformer"
-                                        },
-                                        "reference": {
-                                          "type": "object",
-                                          "definition": {
-                                            "transformerType": {
-                                              "type": "literal",
-                                              "definition": "contextReference"
-                                            },
-                                            "interpolation": {
-                                              "type": "literal",
-                                              "optional": true,
-                                              "definition": "runtime"
-                                            },
-                                            "referenceName": {
-                                              "optional": true,
-                                              "type": "string"
-                                            }
-                                          }
-                                        }
-                                      }
-                                    },
-                                    "index": {
-                                      "type": "number"
-                                    }
-                                  }
+                                referenceName: {
+                                  optional: true,
+                                  type: "string",
                                 },
-                                "menuItem": {
-                                  "type": "object",
-                                  "definition": {
-                                    "transformerType": {
-                                      "type": "literal",
-                                      "definition": "freeObjectTemplate"
+                              },
+                            },
+                            pageParams: {
+                              type: "object",
+                              definition: {},
+                            },
+                            queryParams: {
+                              type: "object",
+                              definition: {},
+                            },
+                            contextResults: {
+                              type: "object",
+                              definition: {},
+                            },
+                            extractors: {
+                              type: "object",
+                              definition: {
+                                menuList: {
+                                  type: "object",
+                                  definition: {
+                                    extractorOrCombinerType: {
+                                      type: "literal",
+                                      definition: "extractorByEntityReturningObjectList",
                                     },
-                                    "interpolation": {
-                                      "type": "literal",
-                                      "definition": "runtime"
+                                    applicationSection: {
+                                      type: "literal",
+                                      definition: "model",
                                     },
-                                    "definition": {
-                                      "type": "object",
-                                      "definition": {
-                                        "reportUuid": {
-                                          "type": "object",
-                                          "definition": {
-                                            "transformerType": {
-                                              "type": "literal",
-                                              "definition": "parameterReference"
-                                            },
-                                            "interpolation": {
-                                              "type": "literal",
-                                              "optional": true,
-                                              "definition": "build"
-                                            },
-                                            "referenceName": {
-                                              "optional": true,
-                                              "type": "string"
-                                            }
-                                          }
+                                    parentName: {
+                                      type: "object",
+                                      definition: {
+                                        transformerType: {
+                                          type: "literal",
+                                          definition: "parameterReference",
                                         },
-                                        "label": {
-                                          "type": "object",
-                                          "definition": {
-                                            "transformerType": {
-                                              "type": "literal",
-                                              "definition": "mustacheStringTemplate"
-                                            },
-                                            "interpolation": {
-                                              "type": "literal",
-                                              "definition": "build"
-                                            },
-                                            "definition": {
-                                              "type": "string"
-                                            }
-                                          }
+                                        interpolation: {
+                                          type: "literal",
+                                          optional: true,
+                                          definition: "build",
                                         },
-                                        "section": {
-                                          "type": "string"
+                                        referencePath: {
+                                          optional: true,
+                                          type: "tuple",
+                                          definition: [
+                                            {
+                                              type: "string",
+                                            },
+                                            {
+                                              type: "string",
+                                            },
+                                          ],
                                         },
-                                        "selfApplication": {
-                                          "type": "object",
-                                          "definition": {
-                                            "transformerType": {
-                                              "type": "literal",
-                                              "definition": "parameterReference"
+                                      },
+                                    },
+                                    parentUuid: {
+                                      type: "object",
+                                      definition: {
+                                        transformerType: {
+                                          type: "literal",
+                                          definition: "parameterReference",
+                                        },
+                                        interpolation: {
+                                          type: "literal",
+                                          optional: true,
+                                          definition: "build",
+                                        },
+                                        referencePath: {
+                                          optional: true,
+                                          type: "tuple",
+                                          definition: [
+                                            {
+                                              type: "string",
                                             },
-                                            "interpolation": {
-                                              "type": "literal",
-                                              "optional": true,
-                                              "definition": "build"
+                                            {
+                                              type: "string",
                                             },
-                                            "referencePath": {
-                                              "optional": true,
-                                              "type": "tuple",
-                                              "definition": [
+                                          ],
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                            runtimeTransformers: {
+                              type: "object",
+                              optional: true,
+                              definition: {
+                                menu: {
+                                  type: "object",
+                                  definition: {
+                                    transformerType: {
+                                      type: "literal",
+                                      definition: "listPickElement",
+                                    },
+                                    interpolation: {
+                                      type: "literal",
+                                      definition: "runtime",
+                                    },
+                                    applyTo: {
+                                      type: "object",
+                                      definition: {
+                                        referenceType: {
+                                          type: "literal",
+                                          definition: "referencedTransformer",
+                                        },
+                                        reference: {
+                                          type: "object",
+                                          definition: {
+                                            transformerType: {
+                                              type: "literal",
+                                              definition: "contextReference",
+                                            },
+                                            interpolation: {
+                                              type: "literal",
+                                              optional: true,
+                                              definition: "runtime",
+                                            },
+                                            referenceName: {
+                                              optional: true,
+                                              type: "string",
+                                            },
+                                          },
+                                        },
+                                      },
+                                    },
+                                    index: {
+                                      type: "number",
+                                    },
+                                  },
+                                },
+                                menuItem: {
+                                  type: "object",
+                                  definition: {
+                                    transformerType: {
+                                      type: "literal",
+                                      definition: "freeObjectTemplate",
+                                    },
+                                    interpolation: {
+                                      type: "literal",
+                                      definition: "runtime",
+                                    },
+                                    definition: {
+                                      type: "object",
+                                      definition: {
+                                        reportUuid: {
+                                          type: "object",
+                                          definition: {
+                                            transformerType: {
+                                              type: "literal",
+                                              definition: "parameterReference",
+                                            },
+                                            interpolation: {
+                                              type: "literal",
+                                              optional: true,
+                                              definition: "build",
+                                            },
+                                            referenceName: {
+                                              optional: true,
+                                              type: "string",
+                                            },
+                                          },
+                                        },
+                                        label: {
+                                          type: "object",
+                                          definition: {
+                                            transformerType: {
+                                              type: "literal",
+                                              definition: "mustacheStringTemplate",
+                                            },
+                                            interpolation: {
+                                              type: "literal",
+                                              definition: "build",
+                                            },
+                                            definition: {
+                                              type: "string",
+                                            },
+                                          },
+                                        },
+                                        section: {
+                                          type: "string",
+                                        },
+                                        selfApplication: {
+                                          type: "object",
+                                          definition: {
+                                            transformerType: {
+                                              type: "literal",
+                                              definition: "parameterReference",
+                                            },
+                                            interpolation: {
+                                              type: "literal",
+                                              optional: true,
+                                              definition: "build",
+                                            },
+                                            referencePath: {
+                                              optional: true,
+                                              type: "tuple",
+                                              definition: [
                                                 {
-                                                  "type": "string"
+                                                  type: "string",
                                                 },
                                                 {
-                                                  "type": "string"
-                                                }
-                                              ]
-                                            }
-                                          }
+                                                  type: "string",
+                                                },
+                                              ],
+                                            },
+                                          },
                                         },
-                                        "icon": {
-                                          "type": "string"
-                                        }
-                                      }
-                                    }
-                                  }
+                                        icon: {
+                                          type: "string",
+                                        },
+                                      },
+                                    },
+                                  },
                                 },
-                                "updatedMenu": {
-                                  "type": "object",
-                                  "definition": {
-                                    "transformerType": {
-                                      "type": "literal",
-                                      "definition": "transformer_menu_addItem"
+                                updatedMenu: {
+                                  type: "object",
+                                  definition: {
+                                    transformerType: {
+                                      type: "literal",
+                                      definition: "transformer_menu_addItem",
                                     },
-                                    "interpolation": {
-                                      "type": "literal",
-                                      "definition": "runtime"
+                                    interpolation: {
+                                      type: "literal",
+                                      definition: "runtime",
                                     },
-                                    "menuItemReference": {
-                                      "type": "object",
-                                      "definition": {
-                                        "transformerType": {
-                                          "type": "literal",
-                                          "definition": "contextReference"
+                                    menuItemReference: {
+                                      type: "object",
+                                      definition: {
+                                        transformerType: {
+                                          type: "literal",
+                                          definition: "contextReference",
                                         },
-                                        "interpolation": {
-                                          "type": "literal",
-                                          "optional": true,
-                                          "definition": "runtime"
+                                        interpolation: {
+                                          type: "literal",
+                                          optional: true,
+                                          definition: "runtime",
                                         },
-                                        "referenceName": {
-                                          "optional": true,
-                                          "type": "string"
-                                        }
-                                      }
+                                        referenceName: {
+                                          optional: true,
+                                          type: "string",
+                                        },
+                                      },
                                     },
-                                    "menuReference": {
-                                      "type": "object",
-                                      "definition": {
-                                        "transformerType": {
-                                          "type": "literal",
-                                          "definition": "contextReference"
+                                    menuReference: {
+                                      type: "object",
+                                      definition: {
+                                        transformerType: {
+                                          type: "literal",
+                                          definition: "contextReference",
                                         },
-                                        "interpolation": {
-                                          "type": "literal",
-                                          "optional": true,
-                                          "definition": "runtime"
+                                        interpolation: {
+                                          type: "literal",
+                                          optional: true,
+                                          definition: "runtime",
                                         },
-                                        "referenceName": {
-                                          "optional": true,
-                                          "type": "string"
-                                        }
-                                      }
+                                        referenceName: {
+                                          optional: true,
+                                          type: "string",
+                                        },
+                                      },
                                     },
-                                    "menuSectionItemInsertionIndex": {
-                                      "type": "number",
-                                      "optional": true
-                                    }
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                },
-                {
-                  "type": "object",
-                  "definition": {
-                    "actionType": {
-                      "type": "literal",
-                      "definition": "transactionalInstanceAction"
-                    },
-                    "actionLabel": {
-                      "type": "string",
-                      "optional": true
-                    },
-                    "instanceAction": {
-                      "type": "object",
-                      "definition": {
-                        "actionType": {
-                          "type": "literal",
-                          "definition": "updateInstance"
-                        },
-                        "applicationSection": {
-                          "type": "literal",
-                          "definition": "model"
-                        },
-                        "deploymentUuid": {
-                          "type": "object",
-                          "definition": {
-                            "transformerType": {
-                              "type": "literal",
-                              "definition": "parameterReference"
+                                    menuSectionItemInsertionIndex: {
+                                      type: "number",
+                                      optional: true,
+                                    },
+                                  },
+                                },
+                              },
                             },
-                            "interpolation": {
-                              "type": "literal",
-                              "optional": true,
-                              "definition": "build"
-                            },
-                            "referenceName": {
-                              "optional": true,
-                              "type": "string"
-                            }
-                          }
-                        },
-                        "endpoint": {
-                          "type": "literal",
-                          "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
-                        },
-                        "objects": {
-                          "type": "tuple",
-                          "tag": {
-                            "value": {
-                              "id": 2,
-                              "defaultLabel": "Entity Instances to update",
-                              "editable": true
-                            }
                           },
-                          "definition": [
+                        },
+                      },
+                    },
+                  },
+                },
+                {
+                  type: "object",
+                  definition: {
+                    actionType: {
+                      type: "literal",
+                      definition: "transactionalInstanceAction",
+                    },
+                    actionLabel: {
+                      type: "string",
+                      optional: true,
+                    },
+                    instanceAction: {
+                      type: "object",
+                      definition: {
+                        actionType: {
+                          type: "literal",
+                          definition: "updateInstance",
+                        },
+                        applicationSection: {
+                          type: "literal",
+                          definition: "model",
+                        },
+                        deploymentUuid: {
+                          type: "object",
+                          definition: {
+                            transformerType: {
+                              type: "literal",
+                              definition: "parameterReference",
+                            },
+                            interpolation: {
+                              type: "literal",
+                              optional: true,
+                              definition: "build",
+                            },
+                            referenceName: {
+                              optional: true,
+                              type: "string",
+                            },
+                          },
+                        },
+                        endpoint: {
+                          type: "literal",
+                          definition: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                        },
+                        objects: {
+                          type: "tuple",
+                          tag: {
+                            value: {
+                              id: 2,
+                              defaultLabel: "Entity Instances to update",
+                              editable: true,
+                            },
+                          },
+                          definition: [
                             {
-                              "type": "object",
-                              "definition": {
-                                "parentName": {
-                                  "type": "object",
-                                  "definition": {
-                                    "transformerType": {
-                                      "type": "literal",
-                                      "definition": "parameterReference"
+                              type: "object",
+                              definition: {
+                                parentName: {
+                                  type: "object",
+                                  definition: {
+                                    transformerType: {
+                                      type: "literal",
+                                      definition: "parameterReference",
                                     },
-                                    "interpolation": {
-                                      "type": "literal",
-                                      "optional": true,
-                                      "definition": "build"
+                                    interpolation: {
+                                      type: "literal",
+                                      optional: true,
+                                      definition: "build",
                                     },
-                                    "referencePath": {
-                                      "optional": true,
-                                      "type": "tuple",
-                                      "definition": [
+                                    referencePath: {
+                                      optional: true,
+                                      type: "tuple",
+                                      definition: [
                                         {
-                                          "type": "string"
+                                          type: "string",
                                         },
                                         {
-                                          "type": "string"
-                                        }
-                                      ]
-                                    }
-                                  }
+                                          type: "string",
+                                        },
+                                      ],
+                                    },
+                                  },
                                 },
-                                "parentUuid": {
-                                  "type": "object",
-                                  "definition": {
-                                    "transformerType": {
-                                      "type": "literal",
-                                      "definition": "parameterReference"
+                                parentUuid: {
+                                  type: "object",
+                                  definition: {
+                                    transformerType: {
+                                      type: "literal",
+                                      definition: "parameterReference",
                                     },
-                                    "interpolation": {
-                                      "type": "literal",
-                                      "optional": true,
-                                      "definition": "build"
+                                    interpolation: {
+                                      type: "literal",
+                                      optional: true,
+                                      definition: "build",
                                     },
-                                    "referencePath": {
-                                      "optional": true,
-                                      "type": "tuple",
-                                      "definition": [
+                                    referencePath: {
+                                      optional: true,
+                                      type: "tuple",
+                                      definition: [
                                         {
-                                          "type": "string"
+                                          type: "string",
                                         },
                                         {
-                                          "type": "string"
-                                        }
-                                      ]
-                                    }
-                                  }
+                                          type: "string",
+                                        },
+                                      ],
+                                    },
+                                  },
                                 },
-                                "applicationSection": {
-                                  "type": "literal",
-                                  "definition": "model"
+                                applicationSection: {
+                                  type: "literal",
+                                  definition: "model",
                                 },
-                                "instances": {
-                                  "type": "tuple",
-                                  "definition": [
+                                instances: {
+                                  type: "tuple",
+                                  definition: [
                                     {
-                                      "type": "object",
-                                      "definition": {
-                                        "transformerType": {
-                                          "type": "literal",
-                                          "definition": "contextReference"
+                                      type: "object",
+                                      definition: {
+                                        transformerType: {
+                                          type: "literal",
+                                          definition: "contextReference",
                                         },
-                                        "interpolation": {
-                                          "type": "literal",
-                                          "optional": true,
-                                          "definition": "runtime"
+                                        interpolation: {
+                                          type: "literal",
+                                          optional: true,
+                                          definition: "runtime",
                                         },
-                                        "referencePath": {
-                                          "optional": true,
-                                          "type": "tuple",
-                                          "definition": [
+                                        referencePath: {
+                                          optional: true,
+                                          type: "tuple",
+                                          definition: [
                                             {
-                                              "type": "string"
+                                              type: "string",
                                             },
                                             {
-                                              "type": "string"
-                                            }
-                                          ]
-                                        }
-                                      }
-                                    }
-                                  ]
-                                }
-                              }
-                            }
-                          ]
-                        }
-                      }
-                    }
-                  }
+                                              type: "string",
+                                            },
+                                          ],
+                                        },
+                                      },
+                                    },
+                                  ],
+                                },
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    },
+                  },
                 },
                 {
-                  "type": "object",
-                  "definition": {
-                    "actionType": {
-                      "type": "literal",
-                      "definition": "commit"
+                  type: "object",
+                  definition: {
+                    actionType: {
+                      type: "literal",
+                      definition: "commit",
                     },
-                    "actionLabel": {
-                      "type": "string",
-                      "optional": true
+                    actionLabel: {
+                      type: "string",
+                      optional: true,
                     },
-                    "endpoint": {
-                      "type": "literal",
-                      "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+                    endpoint: {
+                      type: "literal",
+                      definition: "7947ae40-eb34-4149-887b-15a9021e714e",
                     },
-                    "deploymentUuid": {
-                      "type": "object",
-                      "definition": {
-                        "transformerType": {
-                          "type": "literal",
-                          "definition": "parameterReference"
+                    deploymentUuid: {
+                      type: "object",
+                      definition: {
+                        transformerType: {
+                          type: "literal",
+                          definition: "parameterReference",
                         },
-                        "interpolation": {
-                          "type": "literal",
-                          "optional": true,
-                          "definition": "build"
+                        interpolation: {
+                          type: "literal",
+                          optional: true,
+                          definition: "build",
                         },
-                        "referenceName": {
-                          "optional": true,
-                          "type": "string"
-                        }
-                      }
-                    }
-                  }
+                        referenceName: {
+                          optional: true,
+                          type: "string",
+                        },
+                      },
+                    },
+                  },
                 },
                 {
-                  "type": "object",
-                  "definition": {
-                    "actionType": {
-                      "type": "literal",
-                      "definition": "compositeRunBoxedQueryAction"
+                  type: "object",
+                  definition: {
+                    actionType: {
+                      type: "literal",
+                      definition: "compositeRunBoxedQueryAction",
                     },
-                    "actionLabel": {
-                      "type": "string",
-                      "optional": true
+                    actionLabel: {
+                      type: "string",
+                      optional: true,
                     },
-                    "nameGivenToResult": {
-                      "type": "string"
+                    nameGivenToResult: {
+                      type: "string",
                     },
-                    "queryTemplate": {
-                      "type": "object",
-                      "definition": {
-                        "actionType": {
-                          "type": "literal",
-                          "definition": "runBoxedQueryAction"
+                    queryTemplate: {
+                      type: "object",
+                      definition: {
+                        actionType: {
+                          type: "literal",
+                          definition: "runBoxedQueryAction",
                         },
-                        "actionName": {
-                          "type": "literal",
-                          "definition": "runQuery"
+                        actionName: {
+                          type: "literal",
+                          definition: "runQuery",
                         },
-                        "endpoint": {
-                          "type": "literal",
-                          "definition": "9e404b3c-368c-40cb-be8b-e3c28550c25e"
+                        endpoint: {
+                          type: "literal",
+                          definition: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                         },
-                        "applicationSection": {
-                          "type": "literal",
-                          "definition": "model"
+                        applicationSection: {
+                          type: "literal",
+                          definition: "model",
                         },
-                        "deploymentUuid": {
-                          "type": "object",
-                          "definition": {
-                            "transformerType": {
-                              "type": "literal",
-                              "definition": "parameterReference"
+                        deploymentUuid: {
+                          type: "object",
+                          definition: {
+                            transformerType: {
+                              type: "literal",
+                              definition: "parameterReference",
                             },
-                            "interpolation": {
-                              "type": "literal",
-                              "optional": true,
-                              "definition": "build"
+                            interpolation: {
+                              type: "literal",
+                              optional: true,
+                              definition: "build",
                             },
-                            "referenceName": {
-                              "optional": true,
-                              "type": "string"
-                            }
-                          }
+                            referenceName: {
+                              optional: true,
+                              type: "string",
+                            },
+                          },
                         },
-                        "query": {
-                          "type": "object",
-                          "definition": {
-                            "queryType": {
-                              "type": "literal",
-                              "definition": "boxedQueryWithExtractorCombinerTransformer"
+                        query: {
+                          type: "object",
+                          definition: {
+                            queryType: {
+                              type: "literal",
+                              definition: "boxedQueryWithExtractorCombinerTransformer",
                             },
-                            "deploymentUuid": {
-                              "type": "object",
-                              "definition": {
-                                "transformerType": {
-                                  "type": "literal",
-                                  "definition": "parameterReference"
+                            deploymentUuid: {
+                              type: "object",
+                              definition: {
+                                transformerType: {
+                                  type: "literal",
+                                  definition: "parameterReference",
                                 },
-                                "interpolation": {
-                                  "type": "literal",
-                                  "optional": true,
-                                  "definition": "build"
+                                interpolation: {
+                                  type: "literal",
+                                  optional: true,
+                                  definition: "build",
                                 },
-                                "referenceName": {
-                                  "optional": true,
-                                  "type": "string"
-                                }
-                              }
+                                referenceName: {
+                                  optional: true,
+                                  type: "string",
+                                },
+                              },
                             },
-                            "pageParams": {
-                              "type": "object",
-                              "definition": {}
+                            pageParams: {
+                              type: "object",
+                              definition: {},
                             },
-                            "queryParams": {
-                              "type": "object",
-                              "definition": {}
+                            queryParams: {
+                              type: "object",
+                              definition: {},
                             },
-                            "contextResults": {
-                              "type": "object",
-                              "definition": {}
+                            contextResults: {
+                              type: "object",
+                              definition: {},
                             },
-                            "extractors": {
-                              "type": "object",
-                              "definition": {
-                                "menuList": {
-                                  "type": "object",
-                                  "definition": {
-                                    "extractorOrCombinerType": {
-                                      "type": "literal",
-                                      "definition": "extractorByEntityReturningObjectList"
+                            extractors: {
+                              type: "object",
+                              definition: {
+                                menuList: {
+                                  type: "object",
+                                  definition: {
+                                    extractorOrCombinerType: {
+                                      type: "literal",
+                                      definition: "extractorByEntityReturningObjectList",
                                     },
-                                    "applicationSection": {
-                                      "type": "literal",
-                                      "definition": "model"
+                                    applicationSection: {
+                                      type: "literal",
+                                      definition: "model",
                                     },
-                                    "parentName": {
-                                      "type": "string",
-                                      "optional": true,
-                                      "tag": {
-                                        "value": {
-                                          "id": 3,
-                                          "canBeTemplate": true,
-                                          "defaultLabel": "Parent Name",
-                                          "editable": false
-                                        }
-                                      }
-                                    },
-                                    "parentUuid": {
-                                      "type": "object",
-                                      "definition": {
-                                        "transformerType": {
-                                          "type": "literal",
-                                          "definition": "parameterReference"
+                                    parentName: {
+                                      type: "string",
+                                      optional: true,
+                                      tag: {
+                                        value: {
+                                          id: 3,
+                                          canBeTemplate: true,
+                                          defaultLabel: "Parent Name",
+                                          editable: false,
                                         },
-                                        "interpolation": {
-                                          "type": "literal",
-                                          "optional": true,
-                                          "definition": "build"
+                                      },
+                                    },
+                                    parentUuid: {
+                                      type: "object",
+                                      definition: {
+                                        transformerType: {
+                                          type: "literal",
+                                          definition: "parameterReference",
                                         },
-                                        "referencePath": {
-                                          "optional": true,
-                                          "type": "tuple",
-                                          "definition": [
+                                        interpolation: {
+                                          type: "literal",
+                                          optional: true,
+                                          definition: "build",
+                                        },
+                                        referencePath: {
+                                          optional: true,
+                                          type: "tuple",
+                                          definition: [
                                             {
-                                              "type": "string"
+                                              type: "string",
                                             },
                                             {
-                                              "type": "string"
-                                            }
-                                          ]
-                                        }
-                                      }
-                                    }
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              ]
-            }
-          }
+                                              type: "string",
+                                            },
+                                          ],
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              ],
+            },
+          },
         } as any, // TODO: cannot be typed because of "canBeTemplate" in the definition
       },
       // ##########################################################################################
@@ -5037,251 +5032,237 @@ interface testFormat {
           },
         },
         testValueObject: {
-        "uuid": "797dd185-0155-43fd-b23f-f6d0af8cae06",
-        "parentName": "EntityDefinition",
-        "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
-        "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
-        "entityUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-        "conceptLevel": "Model",
-        "name": "Book",
-        "icon": "Book",
-        "defaultInstanceDetailsReportUuid": "c3503412-3d8a-43ef-a168-aa36e975e606",
-        "viewAttributes": [
-          "name",
-          "author",
-          "publisher",
-          "uuid"
-        ],
-        "jzodSchema": {
-          "type": "object",
-          "definition": {
-            "uuid": {
-              "type": "uuid",
-              "tag": {
-                "value": {
-                  "id": 1,
-                  "defaultLabel": "Uuid",
-                  "editable": false
-                }
-              }
+          uuid: "797dd185-0155-43fd-b23f-f6d0af8cae06",
+          parentName: "EntityDefinition",
+          parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+          parentDefinitionVersionUuid: "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+          entityUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+          conceptLevel: "Model",
+          name: "Book",
+          icon: "Book",
+          defaultInstanceDetailsReportUuid: "c3503412-3d8a-43ef-a168-aa36e975e606",
+          viewAttributes: ["name", "author", "publisher", "uuid"],
+          jzodSchema: {
+            type: "object",
+            definition: {
+              uuid: {
+                type: "uuid",
+                tag: {
+                  value: {
+                    id: 1,
+                    defaultLabel: "Uuid",
+                    editable: false,
+                  },
+                },
+              },
+              parentName: {
+                type: "string",
+                optional: true,
+                tag: {
+                  value: {
+                    id: 2,
+                    defaultLabel: "Entity Name",
+                    editable: false,
+                  },
+                },
+              },
+              parentUuid: {
+                type: "uuid",
+                tag: {
+                  value: {
+                    id: 3,
+                    defaultLabel: "Entity Uuid",
+                    editable: false,
+                  },
+                },
+              },
+              conceptLevel: {
+                type: "enum",
+                definition: ["MetaModel", "Model", "Data"],
+                optional: true,
+                tag: {
+                  value: {
+                    id: 5,
+                    defaultLabel: "Concept Level",
+                    editable: false,
+                  },
+                },
+              },
+              name: {
+                type: "string",
+                tag: {
+                  value: {
+                    id: 4,
+                    defaultLabel: "Name",
+                    editable: true,
+                  },
+                },
+              },
+              author: {
+                type: "uuid",
+                optional: true,
+                tag: {
+                  value: {
+                    id: 5,
+                    defaultLabel: "Author",
+                    targetEntity: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                    editable: true,
+                  },
+                },
+              },
+              publisher: {
+                type: "uuid",
+                optional: true,
+                tag: {
+                  value: {
+                    id: 5,
+                    defaultLabel: "Publisher",
+                    targetEntity: "a027c379-8468-43a5-ba4d-bf618be25cab",
+                    editable: true,
+                  },
+                },
+              },
             },
-            "parentName": {
-              "type": "string",
-              "optional": true,
-              "tag": {
-                "value": {
-                  "id": 2,
-                  "defaultLabel": "Entity Name",
-                  "editable": false
-                }
-              }
-            },
-            "parentUuid": {
-              "type": "uuid",
-              "tag": {
-                "value": {
-                  "id": 3,
-                  "defaultLabel": "Entity Uuid",
-                  "editable": false
-                }
-              }
-            },
-            "conceptLevel": {
-              "type": "enum",
-              "definition": [
-                "MetaModel",
-                "Model",
-                "Data"
-              ],
-              "optional": true,
-              "tag": {
-                "value": {
-                  "id": 5,
-                  "defaultLabel": "Concept Level",
-                  "editable": false
-                }
-              }
-            },
-            "name": {
-              "type": "string",
-              "tag": {
-                "value": {
-                  "id": 4,
-                  "defaultLabel": "Name",
-                  "editable": true
-                }
-              }
-            },
-            "author": {
-              "type": "uuid",
-              "optional": true,
-              "tag": {
-                "value": {
-                  "id": 5,
-                  "defaultLabel": "Author",
-                  "targetEntity": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-                  "editable": true
-                }
-              }
-            },
-            "publisher": {
-              "type": "uuid",
-              "optional": true,
-              "tag": {
-                "value": {
-                  "id": 5,
-                  "defaultLabel": "Publisher",
-                  "targetEntity": "a027c379-8468-43a5-ba4d-bf618be25cab",
-                  "editable": true
-                }
-              }
-            }
-          }
-        }
+          },
         },
         expectedResolvedSchema: {
-          "type": "object",
-          "definition": {
-            "uuid": {
-              "type": "uuid",
-              "tag": {
-                "value": {
-                  "id": 1,
-                  "defaultLabel": "Uuid",
-                  "editable": false
-                }
-              }
+          type: "object",
+          definition: {
+            uuid: {
+              type: "uuid",
+              tag: {
+                value: {
+                  id: 1,
+                  defaultLabel: "Uuid",
+                  editable: false,
+                },
+              },
             },
-            "parentName": {
-              "type": "string",
-              "tag": {
-                "value": {
-                  "id": 2,
-                  "defaultLabel": "Entity Name",
-                  "editable": false
-                }
-              }
+            parentName: {
+              type: "string",
+              tag: {
+                value: {
+                  id: 2,
+                  defaultLabel: "Entity Name",
+                  editable: false,
+                },
+              },
             },
-            "parentUuid": {
-              "type": "uuid",
-              "tag": {
-                "value": {
-                  "id": 3,
-                  "defaultLabel": "Entity Uuid",
-                  "editable": false
-                }
-              }
+            parentUuid: {
+              type: "uuid",
+              tag: {
+                value: {
+                  id: 3,
+                  defaultLabel: "Entity Uuid",
+                  editable: false,
+                },
+              },
             },
-            "parentDefinitionVersionUuid": {
-              "type": "uuid",
-              "optional": true,
-              "tag": {
-                "value": {
-                  "id": 4,
-                  "defaultLabel": "Entity Definition Version Uuid",
-                  "editable": false
-                }
-              }
+            parentDefinitionVersionUuid: {
+              type: "uuid",
+              optional: true,
+              tag: {
+                value: {
+                  id: 4,
+                  defaultLabel: "Entity Definition Version Uuid",
+                  editable: false,
+                },
+              },
             },
-            "entityUuid": {
-              "type": "uuid",
-              "tag": {
-                "value": {
-                  "id": 6,
-                  "defaultLabel": "Entity Uuid of the Entity which this definition is the definition",
-                  "editable": false
-                }
-              }
+            entityUuid: {
+              type: "uuid",
+              tag: {
+                value: {
+                  id: 6,
+                  defaultLabel: "Entity Uuid of the Entity which this definition is the definition",
+                  editable: false,
+                },
+              },
             },
-            "conceptLevel": {
-              "type": "enum",
-              "definition": [
-                "MetaModel",
-                "Model",
-                "Data"
+            conceptLevel: {
+              type: "enum",
+              definition: ["MetaModel", "Model", "Data"],
+              optional: true,
+              tag: {
+                value: {
+                  id: 7,
+                  defaultLabel: "Concept Level",
+                  editable: false,
+                },
+              },
+            },
+            name: {
+              type: "string",
+              tag: {
+                value: {
+                  id: 5,
+                  defaultLabel: "Name",
+                  editable: false,
+                },
+              },
+            },
+            icon: {
+              type: "string",
+              optional: true,
+              tag: {
+                value: {
+                  id: 11,
+                  defaultLabel: "Icon used to represent instances of this Entity",
+                  editable: true,
+                },
+              },
+            },
+            defaultInstanceDetailsReportUuid: {
+              type: "uuid",
+              optional: true,
+              tag: {
+                value: {
+                  id: 9,
+                  defaultLabel: "Default Report used to display instances of this Entity",
+                  editable: false,
+                },
+              },
+            },
+            viewAttributes: {
+              type: "tuple",
+              optional: true,
+              definition: [
+                {
+                  type: "string",
+                },
+                {
+                  type: "string",
+                },
+                {
+                  type: "string",
+                },
+                {
+                  type: "string",
+                },
               ],
-              "optional": true,
-              "tag": {
-                "value": {
-                  "id": 7,
-                  "defaultLabel": "Concept Level",
-                  "editable": false
-                }
-              }
-            },
-            "name": {
-              "type": "string",
-              "tag": {
-                "value": {
-                  "id": 5,
-                  "defaultLabel": "Name",
-                  "editable": false
-                }
-              }
-            },
-            "icon": {
-              "type": "string",
-              "optional": true,
-              "tag": {
-                "value": {
-                  "id": 11,
-                  "defaultLabel": "Icon used to represent instances of this Entity",
-                  "editable": true
-                }
-              }
-            },
-            "defaultInstanceDetailsReportUuid": {
-              "type": "uuid",
-              "optional": true,
-              "tag": {
-                "value": {
-                  "id": 9,
-                  "defaultLabel": "Default Report used to display instances of this Entity",
-                  "editable": false
-                }
-              }
-            },
-            "viewAttributes": {
-              "type": "tuple",
-              "optional": true,
-              "definition": [
-                {
-                  "type": "string"
+              tag: {
+                value: {
+                  id: 10,
+                  editable: true,
                 },
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "string"
-                }
-              ],
-              "tag": {
-                "value": {
-                  "id": 10,
-                  "defaultLabel": "Attributes to display by default",
-                  "editable": true
-                }
-              }
+              },
             },
-            "jzodSchema": {
-              "type": "object",
-              "definition": {
-                "type": {
-                  "type": "literal",
-                  "definition": "object"
+            jzodSchema: {
+              type: "object",
+              definition: {
+                type: {
+                  type: "literal",
+                  definition: "object",
                 },
-                "definition": {
-                  "type": "object",
-                  "definition": {
-                    "uuid": {
-                      "type": "object",
-                      "definition": {
-                        "type": {
-                          "type": "enum",
-                          "definition": [
+                definition: {
+                  type: "object",
+                  definition: {
+                    uuid: {
+                      type: "object",
+                      definition: {
+                        type: {
+                          type: "enum",
+                          definition: [
                             "any",
                             "bigint",
                             "boolean",
@@ -5290,78 +5271,78 @@ interface testFormat {
                             "uuid",
                             "undefined",
                             "unknown",
-                            "void"
-                          ]
+                            "void",
+                          ],
                         },
-                        "tag": {
-                          "type": "object",
-                          "optional": true,
-                          "definition": {
-                            "value": {
-                              "type": "object",
-                              "optional": true,
-                              "definition": {
-                                "id": {
-                                  "type": "number",
-                                  "optional": true
+                        tag: {
+                          type: "object",
+                          optional: true,
+                          definition: {
+                            value: {
+                              type: "object",
+                              optional: true,
+                              definition: {
+                                id: {
+                                  type: "number",
+                                  optional: true,
                                 },
-                                "defaultLabel": {
-                                  "type": "string",
-                                  "optional": true
+                                defaultLabel: {
+                                  type: "string",
+                                  optional: true,
                                 },
-                                "editable": {
-                                  "type": "boolean",
-                                  "optional": true
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
+                                editable: {
+                                  type: "boolean",
+                                  optional: true,
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
                     },
-                    "parentName": {
-                      "type": "object",
-                      "definition": {
-                        "type": {
-                          "type": "literal",
-                          "definition": "string"
+                    parentName: {
+                      type: "object",
+                      definition: {
+                        type: {
+                          type: "literal",
+                          definition: "string",
                         },
-                        "optional": {
-                          "type": "boolean",
-                          "optional": true
+                        optional: {
+                          type: "boolean",
+                          optional: true,
                         },
-                        "tag": {
-                          "type": "object",
-                          "optional": true,
-                          "definition": {
-                            "value": {
-                              "type": "object",
-                              "optional": true,
-                              "definition": {
-                                "id": {
-                                  "type": "number",
-                                  "optional": true
+                        tag: {
+                          type: "object",
+                          optional: true,
+                          definition: {
+                            value: {
+                              type: "object",
+                              optional: true,
+                              definition: {
+                                id: {
+                                  type: "number",
+                                  optional: true,
                                 },
-                                "defaultLabel": {
-                                  "type": "string",
-                                  "optional": true
+                                defaultLabel: {
+                                  type: "string",
+                                  optional: true,
                                 },
-                                "editable": {
-                                  "type": "boolean",
-                                  "optional": true
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
+                                editable: {
+                                  type: "boolean",
+                                  optional: true,
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
                     },
-                    "parentUuid": {
-                      "type": "object",
-                      "definition": {
-                        "type": {
-                          "type": "enum",
-                          "definition": [
+                    parentUuid: {
+                      type: "object",
+                      definition: {
+                        type: {
+                          type: "enum",
+                          definition: [
                             "any",
                             "bigint",
                             "boolean",
@@ -5370,125 +5351,125 @@ interface testFormat {
                             "uuid",
                             "undefined",
                             "unknown",
-                            "void"
-                          ]
+                            "void",
+                          ],
                         },
-                        "tag": {
-                          "type": "object",
-                          "optional": true,
-                          "definition": {
-                            "value": {
-                              "type": "object",
-                              "optional": true,
-                              "definition": {
-                                "id": {
-                                  "type": "number",
-                                  "optional": true
+                        tag: {
+                          type: "object",
+                          optional: true,
+                          definition: {
+                            value: {
+                              type: "object",
+                              optional: true,
+                              definition: {
+                                id: {
+                                  type: "number",
+                                  optional: true,
                                 },
-                                "defaultLabel": {
-                                  "type": "string",
-                                  "optional": true
+                                defaultLabel: {
+                                  type: "string",
+                                  optional: true,
                                 },
-                                "editable": {
-                                  "type": "boolean",
-                                  "optional": true
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
+                                editable: {
+                                  type: "boolean",
+                                  optional: true,
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
                     },
-                    "conceptLevel": {
-                      "type": "object",
-                      "definition": {
-                        "type": {
-                          "type": "literal",
-                          "definition": "enum"
+                    conceptLevel: {
+                      type: "object",
+                      definition: {
+                        type: {
+                          type: "literal",
+                          definition: "enum",
                         },
-                        "definition": {
-                          "type": "tuple",
-                          "definition": [
+                        definition: {
+                          type: "tuple",
+                          definition: [
                             {
-                              "type": "string"
+                              type: "string",
                             },
                             {
-                              "type": "string"
+                              type: "string",
                             },
                             {
-                              "type": "string"
-                            }
-                          ]
+                              type: "string",
+                            },
+                          ],
                         },
-                        "optional": {
-                          "type": "boolean",
-                          "optional": true
+                        optional: {
+                          type: "boolean",
+                          optional: true,
                         },
-                        "tag": {
-                          "type": "object",
-                          "optional": true,
-                          "definition": {
-                            "value": {
-                              "type": "object",
-                              "optional": true,
-                              "definition": {
-                                "id": {
-                                  "type": "number",
-                                  "optional": true
+                        tag: {
+                          type: "object",
+                          optional: true,
+                          definition: {
+                            value: {
+                              type: "object",
+                              optional: true,
+                              definition: {
+                                id: {
+                                  type: "number",
+                                  optional: true,
                                 },
-                                "defaultLabel": {
-                                  "type": "string",
-                                  "optional": true
+                                defaultLabel: {
+                                  type: "string",
+                                  optional: true,
                                 },
-                                "editable": {
-                                  "type": "boolean",
-                                  "optional": true
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
+                                editable: {
+                                  type: "boolean",
+                                  optional: true,
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
                     },
-                    "name": {
-                      "type": "object",
-                      "definition": {
-                        "type": {
-                          "type": "literal",
-                          "definition": "string"
+                    name: {
+                      type: "object",
+                      definition: {
+                        type: {
+                          type: "literal",
+                          definition: "string",
                         },
-                        "tag": {
-                          "type": "object",
-                          "optional": true,
-                          "definition": {
-                            "value": {
-                              "type": "object",
-                              "optional": true,
-                              "definition": {
-                                "id": {
-                                  "type": "number",
-                                  "optional": true
+                        tag: {
+                          type: "object",
+                          optional: true,
+                          definition: {
+                            value: {
+                              type: "object",
+                              optional: true,
+                              definition: {
+                                id: {
+                                  type: "number",
+                                  optional: true,
                                 },
-                                "defaultLabel": {
-                                  "type": "string",
-                                  "optional": true
+                                defaultLabel: {
+                                  type: "string",
+                                  optional: true,
                                 },
-                                "editable": {
-                                  "type": "boolean",
-                                  "optional": true
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
+                                editable: {
+                                  type: "boolean",
+                                  optional: true,
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
                     },
-                    "author": {
-                      "type": "object",
-                      "definition": {
-                        "type": {
-                          "type": "enum",
-                          "definition": [
+                    author: {
+                      type: "object",
+                      definition: {
+                        type: {
+                          type: "enum",
+                          definition: [
                             "any",
                             "bigint",
                             "boolean",
@@ -5497,49 +5478,49 @@ interface testFormat {
                             "uuid",
                             "undefined",
                             "unknown",
-                            "void"
-                          ]
+                            "void",
+                          ],
                         },
-                        "optional": {
-                          "type": "boolean",
-                          "optional": true
+                        optional: {
+                          type: "boolean",
+                          optional: true,
                         },
-                        "tag": {
-                          "type": "object",
-                          "optional": true,
-                          "definition": {
-                            "value": {
-                              "type": "object",
-                              "optional": true,
-                              "definition": {
-                                "id": {
-                                  "type": "number",
-                                  "optional": true
+                        tag: {
+                          type: "object",
+                          optional: true,
+                          definition: {
+                            value: {
+                              type: "object",
+                              optional: true,
+                              definition: {
+                                id: {
+                                  type: "number",
+                                  optional: true,
                                 },
-                                "defaultLabel": {
-                                  "type": "string",
-                                  "optional": true
+                                defaultLabel: {
+                                  type: "string",
+                                  optional: true,
                                 },
-                                "targetEntity": {
-                                  "type": "string",
-                                  "optional": true
+                                targetEntity: {
+                                  type: "string",
+                                  optional: true,
                                 },
-                                "editable": {
-                                  "type": "boolean",
-                                  "optional": true
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
+                                editable: {
+                                  type: "boolean",
+                                  optional: true,
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
                     },
-                    "publisher": {
-                      "type": "object",
-                      "definition": {
-                        "type": {
-                          "type": "enum",
-                          "definition": [
+                    publisher: {
+                      type: "object",
+                      definition: {
+                        type: {
+                          type: "enum",
+                          definition: [
                             "any",
                             "bigint",
                             "boolean",
@@ -5548,49 +5529,49 @@ interface testFormat {
                             "uuid",
                             "undefined",
                             "unknown",
-                            "void"
-                          ]
+                            "void",
+                          ],
                         },
-                        "optional": {
-                          "type": "boolean",
-                          "optional": true
+                        optional: {
+                          type: "boolean",
+                          optional: true,
                         },
-                        "tag": {
-                          "type": "object",
-                          "optional": true,
-                          "definition": {
-                            "value": {
-                              "type": "object",
-                              "optional": true,
-                              "definition": {
-                                "id": {
-                                  "type": "number",
-                                  "optional": true
+                        tag: {
+                          type: "object",
+                          optional: true,
+                          definition: {
+                            value: {
+                              type: "object",
+                              optional: true,
+                              definition: {
+                                id: {
+                                  type: "number",
+                                  optional: true,
                                 },
-                                "defaultLabel": {
-                                  "type": "string",
-                                  "optional": true
+                                defaultLabel: {
+                                  type: "string",
+                                  optional: true,
                                 },
-                                "targetEntity": {
-                                  "type": "string",
-                                  "optional": true
+                                targetEntity: {
+                                  type: "string",
+                                  optional: true,
                                 },
-                                "editable": {
-                                  "type": "boolean",
-                                  "optional": true
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
+                                editable: {
+                                  type: "boolean",
+                                  optional: true,
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
       },
       // complexMenu
       test950: {
@@ -5835,551 +5816,551 @@ interface testFormat {
             },
           ],
         },
-        expectedResolvedSchema:  {
-          "type": "object",
-          "definition": {
-            "menuType": {
-              "type": "literal",
-              "definition": "complexMenu"
+        expectedResolvedSchema: {
+          type: "object",
+          definition: {
+            menuType: {
+              type: "literal",
+              definition: "complexMenu",
             },
-            "definition": {
-              "type": "tuple",
-              "definition": [
+            definition: {
+              type: "tuple",
+              definition: [
                 {
-                  "type": "object",
-                  "definition": {
-                    "title": {
-                      "type": "string"
+                  type: "object",
+                  definition: {
+                    title: {
+                      type: "string",
                     },
-                    "label": {
-                      "type": "string"
+                    label: {
+                      type: "string",
                     },
-                    "items": {
-                      "type": "tuple",
-                      "definition": [
+                    items: {
+                      type: "tuple",
+                      definition: [
                         {
-                          "type": "object",
-                          "definition": {
-                            "label": {
-                              "type": "string"
+                          type: "object",
+                          definition: {
+                            label: {
+                              type: "string",
                             },
-                            "section": {
-                              "type": "literal",
-                              "definition": "model"
+                            section: {
+                              type: "literal",
+                              definition: "model",
                             },
-                            "selfApplication": {
-                              "type": "string",
-                              "validations": [
+                            selfApplication: {
+                              type: "string",
+                              validations: [
                                 {
-                                  "type": "uuid"
-                                }
+                                  type: "uuid",
+                                },
                               ],
-                              "tag": {
-                                "value": {
-                                  "id": 1,
-                                  "defaultLabel": "Uuid",
-                                  "editable": false
-                                }
-                              }
+                              tag: {
+                                value: {
+                                  id: 1,
+                                  defaultLabel: "Uuid",
+                                  editable: false,
+                                },
+                              },
                             },
-                            "reportUuid": {
-                              "type": "string",
-                              "validations": [
+                            reportUuid: {
+                              type: "string",
+                              validations: [
                                 {
-                                  "type": "uuid"
-                                }
+                                  type: "uuid",
+                                },
                               ],
-                              "tag": {
-                                "value": {
-                                  "id": 1,
-                                  "defaultLabel": "Uuid",
-                                  "editable": false
-                                }
-                              }
+                              tag: {
+                                value: {
+                                  id: 1,
+                                  defaultLabel: "Uuid",
+                                  editable: false,
+                                },
+                              },
                             },
-                            "icon": {
-                              "type": "string",
-                              "validations": [
+                            icon: {
+                              type: "string",
+                              validations: [
                                 {
-                                  "type": "uuid"
-                                }
-                              ]
-                            }
-                          }
+                                  type: "uuid",
+                                },
+                              ],
+                            },
+                          },
                         },
                         {
-                          "type": "object",
-                          "definition": {
-                            "label": {
-                              "type": "string"
+                          type: "object",
+                          definition: {
+                            label: {
+                              type: "string",
                             },
-                            "section": {
-                              "type": "literal",
-                              "definition": "model"
+                            section: {
+                              type: "literal",
+                              definition: "model",
                             },
-                            "selfApplication": {
-                              "type": "string",
-                              "validations": [
+                            selfApplication: {
+                              type: "string",
+                              validations: [
                                 {
-                                  "type": "uuid"
-                                }
+                                  type: "uuid",
+                                },
                               ],
-                              "tag": {
-                                "value": {
-                                  "id": 1,
-                                  "defaultLabel": "Uuid",
-                                  "editable": false
-                                }
-                              }
+                              tag: {
+                                value: {
+                                  id: 1,
+                                  defaultLabel: "Uuid",
+                                  editable: false,
+                                },
+                              },
                             },
-                            "reportUuid": {
-                              "type": "string",
-                              "validations": [
+                            reportUuid: {
+                              type: "string",
+                              validations: [
                                 {
-                                  "type": "uuid"
-                                }
+                                  type: "uuid",
+                                },
                               ],
-                              "tag": {
-                                "value": {
-                                  "id": 1,
-                                  "defaultLabel": "Uuid",
-                                  "editable": false
-                                }
-                              }
+                              tag: {
+                                value: {
+                                  id: 1,
+                                  defaultLabel: "Uuid",
+                                  editable: false,
+                                },
+                              },
                             },
-                            "icon": {
-                              "type": "string",
-                              "validations": [
+                            icon: {
+                              type: "string",
+                              validations: [
                                 {
-                                  "type": "uuid"
-                                }
-                              ]
-                            }
-                          }
+                                  type: "uuid",
+                                },
+                              ],
+                            },
+                          },
                         },
                         {
-                          "type": "object",
-                          "definition": {
-                            "label": {
-                              "type": "string"
+                          type: "object",
+                          definition: {
+                            label: {
+                              type: "string",
                             },
-                            "section": {
-                              "type": "literal",
-                              "definition": "data"
+                            section: {
+                              type: "literal",
+                              definition: "data",
                             },
-                            "selfApplication": {
-                              "type": "string",
-                              "validations": [
+                            selfApplication: {
+                              type: "string",
+                              validations: [
                                 {
-                                  "type": "uuid"
-                                }
+                                  type: "uuid",
+                                },
                               ],
-                              "tag": {
-                                "value": {
-                                  "id": 1,
-                                  "defaultLabel": "Uuid",
-                                  "editable": false
-                                }
-                              }
+                              tag: {
+                                value: {
+                                  id: 1,
+                                  defaultLabel: "Uuid",
+                                  editable: false,
+                                },
+                              },
                             },
-                            "reportUuid": {
-                              "type": "string",
-                              "validations": [
+                            reportUuid: {
+                              type: "string",
+                              validations: [
                                 {
-                                  "type": "uuid"
-                                }
+                                  type: "uuid",
+                                },
                               ],
-                              "tag": {
-                                "value": {
-                                  "id": 1,
-                                  "defaultLabel": "Uuid",
-                                  "editable": false
-                                }
-                              }
+                              tag: {
+                                value: {
+                                  id: 1,
+                                  defaultLabel: "Uuid",
+                                  editable: false,
+                                },
+                              },
                             },
-                            "icon": {
-                              "type": "string",
-                              "validations": [
+                            icon: {
+                              type: "string",
+                              validations: [
                                 {
-                                  "type": "uuid"
-                                }
-                              ]
-                            }
-                          }
+                                  type: "uuid",
+                                },
+                              ],
+                            },
+                          },
                         },
                         {
-                          "type": "object",
-                          "definition": {
-                            "label": {
-                              "type": "string"
+                          type: "object",
+                          definition: {
+                            label: {
+                              type: "string",
                             },
-                            "section": {
-                              "type": "literal",
-                              "definition": "data"
+                            section: {
+                              type: "literal",
+                              definition: "data",
                             },
-                            "selfApplication": {
-                              "type": "string",
-                              "validations": [
+                            selfApplication: {
+                              type: "string",
+                              validations: [
                                 {
-                                  "type": "uuid"
-                                }
+                                  type: "uuid",
+                                },
                               ],
-                              "tag": {
-                                "value": {
-                                  "id": 1,
-                                  "defaultLabel": "Uuid",
-                                  "editable": false
-                                }
-                              }
+                              tag: {
+                                value: {
+                                  id: 1,
+                                  defaultLabel: "Uuid",
+                                  editable: false,
+                                },
+                              },
                             },
-                            "reportUuid": {
-                              "type": "string",
-                              "validations": [
+                            reportUuid: {
+                              type: "string",
+                              validations: [
                                 {
-                                  "type": "uuid"
-                                }
+                                  type: "uuid",
+                                },
                               ],
-                              "tag": {
-                                "value": {
-                                  "id": 1,
-                                  "defaultLabel": "Uuid",
-                                  "editable": false
-                                }
-                              }
+                              tag: {
+                                value: {
+                                  id: 1,
+                                  defaultLabel: "Uuid",
+                                  editable: false,
+                                },
+                              },
                             },
-                            "icon": {
-                              "type": "string",
-                              "validations": [
+                            icon: {
+                              type: "string",
+                              validations: [
                                 {
-                                  "type": "uuid"
-                                }
-                              ]
-                            }
-                          }
-                        }
-                      ]
-                    }
-                  }
+                                  type: "uuid",
+                                },
+                              ],
+                            },
+                          },
+                        },
+                      ],
+                    },
+                  },
                 },
                 {
-                  "type": "object",
-                  "definition": {
-                    "title": {
-                      "type": "string"
+                  type: "object",
+                  definition: {
+                    title: {
+                      type: "string",
                     },
-                    "label": {
-                      "type": "string"
+                    label: {
+                      type: "string",
                     },
-                    "items": {
-                      "type": "tuple",
-                      "definition": [
+                    items: {
+                      type: "tuple",
+                      definition: [
                         {
-                          "type": "object",
-                          "definition": {
-                            "label": {
-                              "type": "string"
+                          type: "object",
+                          definition: {
+                            label: {
+                              type: "string",
                             },
-                            "section": {
-                              "type": "literal",
-                              "definition": "model"
+                            section: {
+                              type: "literal",
+                              definition: "model",
                             },
-                            "selfApplication": {
-                              "type": "string",
-                              "validations": [
+                            selfApplication: {
+                              type: "string",
+                              validations: [
                                 {
-                                  "type": "uuid"
-                                }
+                                  type: "uuid",
+                                },
                               ],
-                              "tag": {
-                                "value": {
-                                  "id": 1,
-                                  "defaultLabel": "Uuid",
-                                  "editable": false
-                                }
-                              }
+                              tag: {
+                                value: {
+                                  id: 1,
+                                  defaultLabel: "Uuid",
+                                  editable: false,
+                                },
+                              },
                             },
-                            "reportUuid": {
-                              "type": "string",
-                              "validations": [
+                            reportUuid: {
+                              type: "string",
+                              validations: [
                                 {
-                                  "type": "uuid"
-                                }
+                                  type: "uuid",
+                                },
                               ],
-                              "tag": {
-                                "value": {
-                                  "id": 1,
-                                  "defaultLabel": "Uuid",
-                                  "editable": false
-                                }
-                              }
+                              tag: {
+                                value: {
+                                  id: 1,
+                                  defaultLabel: "Uuid",
+                                  editable: false,
+                                },
+                              },
                             },
-                            "icon": {
-                              "type": "string",
-                              "validations": [
+                            icon: {
+                              type: "string",
+                              validations: [
                                 {
-                                  "type": "uuid"
-                                }
-                              ]
-                            }
-                          }
+                                  type: "uuid",
+                                },
+                              ],
+                            },
+                          },
                         },
                         {
-                          "type": "object",
-                          "definition": {
-                            "label": {
-                              "type": "string"
+                          type: "object",
+                          definition: {
+                            label: {
+                              type: "string",
                             },
-                            "section": {
-                              "type": "literal",
-                              "definition": "model"
+                            section: {
+                              type: "literal",
+                              definition: "model",
                             },
-                            "selfApplication": {
-                              "type": "string",
-                              "validations": [
+                            selfApplication: {
+                              type: "string",
+                              validations: [
                                 {
-                                  "type": "uuid"
-                                }
+                                  type: "uuid",
+                                },
                               ],
-                              "tag": {
-                                "value": {
-                                  "id": 1,
-                                  "defaultLabel": "Uuid",
-                                  "editable": false
-                                }
-                              }
+                              tag: {
+                                value: {
+                                  id: 1,
+                                  defaultLabel: "Uuid",
+                                  editable: false,
+                                },
+                              },
                             },
-                            "reportUuid": {
-                              "type": "string",
-                              "validations": [
+                            reportUuid: {
+                              type: "string",
+                              validations: [
                                 {
-                                  "type": "uuid"
-                                }
+                                  type: "uuid",
+                                },
                               ],
-                              "tag": {
-                                "value": {
-                                  "id": 1,
-                                  "defaultLabel": "Uuid",
-                                  "editable": false
-                                }
-                              }
+                              tag: {
+                                value: {
+                                  id: 1,
+                                  defaultLabel: "Uuid",
+                                  editable: false,
+                                },
+                              },
                             },
-                            "icon": {
-                              "type": "string",
-                              "validations": [
+                            icon: {
+                              type: "string",
+                              validations: [
                                 {
-                                  "type": "uuid"
-                                }
-                              ]
-                            }
-                          }
+                                  type: "uuid",
+                                },
+                              ],
+                            },
+                          },
                         },
                         {
-                          "type": "object",
-                          "definition": {
-                            "label": {
-                              "type": "string"
+                          type: "object",
+                          definition: {
+                            label: {
+                              type: "string",
                             },
-                            "section": {
-                              "type": "literal",
-                              "definition": "data"
+                            section: {
+                              type: "literal",
+                              definition: "data",
                             },
-                            "selfApplication": {
-                              "type": "string",
-                              "validations": [
+                            selfApplication: {
+                              type: "string",
+                              validations: [
                                 {
-                                  "type": "uuid"
-                                }
+                                  type: "uuid",
+                                },
                               ],
-                              "tag": {
-                                "value": {
-                                  "id": 1,
-                                  "defaultLabel": "Uuid",
-                                  "editable": false
-                                }
-                              }
+                              tag: {
+                                value: {
+                                  id: 1,
+                                  defaultLabel: "Uuid",
+                                  editable: false,
+                                },
+                              },
                             },
-                            "reportUuid": {
-                              "type": "string",
-                              "validations": [
+                            reportUuid: {
+                              type: "string",
+                              validations: [
                                 {
-                                  "type": "uuid"
-                                }
+                                  type: "uuid",
+                                },
                               ],
-                              "tag": {
-                                "value": {
-                                  "id": 1,
-                                  "defaultLabel": "Uuid",
-                                  "editable": false
-                                }
-                              }
+                              tag: {
+                                value: {
+                                  id: 1,
+                                  defaultLabel: "Uuid",
+                                  editable: false,
+                                },
+                              },
                             },
-                            "icon": {
-                              "type": "string",
-                              "validations": [
+                            icon: {
+                              type: "string",
+                              validations: [
                                 {
-                                  "type": "uuid"
-                                }
-                              ]
-                            }
-                          }
+                                  type: "uuid",
+                                },
+                              ],
+                            },
+                          },
                         },
                         {
-                          "type": "object",
-                          "definition": {
-                            "label": {
-                              "type": "string"
+                          type: "object",
+                          definition: {
+                            label: {
+                              type: "string",
                             },
-                            "section": {
-                              "type": "literal",
-                              "definition": "data"
+                            section: {
+                              type: "literal",
+                              definition: "data",
                             },
-                            "selfApplication": {
-                              "type": "string",
-                              "validations": [
+                            selfApplication: {
+                              type: "string",
+                              validations: [
                                 {
-                                  "type": "uuid"
-                                }
+                                  type: "uuid",
+                                },
                               ],
-                              "tag": {
-                                "value": {
-                                  "id": 1,
-                                  "defaultLabel": "Uuid",
-                                  "editable": false
-                                }
-                              }
+                              tag: {
+                                value: {
+                                  id: 1,
+                                  defaultLabel: "Uuid",
+                                  editable: false,
+                                },
+                              },
                             },
-                            "reportUuid": {
-                              "type": "string",
-                              "validations": [
+                            reportUuid: {
+                              type: "string",
+                              validations: [
                                 {
-                                  "type": "uuid"
-                                }
+                                  type: "uuid",
+                                },
                               ],
-                              "tag": {
-                                "value": {
-                                  "id": 1,
-                                  "defaultLabel": "Uuid",
-                                  "editable": false
-                                }
-                              }
+                              tag: {
+                                value: {
+                                  id: 1,
+                                  defaultLabel: "Uuid",
+                                  editable: false,
+                                },
+                              },
                             },
-                            "icon": {
-                              "type": "string",
-                              "validations": [
+                            icon: {
+                              type: "string",
+                              validations: [
                                 {
-                                  "type": "uuid"
-                                }
-                              ]
-                            }
-                          }
+                                  type: "uuid",
+                                },
+                              ],
+                            },
+                          },
                         },
                         {
-                          "type": "object",
-                          "definition": {
-                            "label": {
-                              "type": "string"
+                          type: "object",
+                          definition: {
+                            label: {
+                              type: "string",
                             },
-                            "section": {
-                              "type": "literal",
-                              "definition": "data"
+                            section: {
+                              type: "literal",
+                              definition: "data",
                             },
-                            "selfApplication": {
-                              "type": "string",
-                              "validations": [
+                            selfApplication: {
+                              type: "string",
+                              validations: [
                                 {
-                                  "type": "uuid"
-                                }
+                                  type: "uuid",
+                                },
                               ],
-                              "tag": {
-                                "value": {
-                                  "id": 1,
-                                  "defaultLabel": "Uuid",
-                                  "editable": false
-                                }
-                              }
+                              tag: {
+                                value: {
+                                  id: 1,
+                                  defaultLabel: "Uuid",
+                                  editable: false,
+                                },
+                              },
                             },
-                            "reportUuid": {
-                              "type": "string",
-                              "validations": [
+                            reportUuid: {
+                              type: "string",
+                              validations: [
                                 {
-                                  "type": "uuid"
-                                }
+                                  type: "uuid",
+                                },
                               ],
-                              "tag": {
-                                "value": {
-                                  "id": 1,
-                                  "defaultLabel": "Uuid",
-                                  "editable": false
-                                }
-                              }
+                              tag: {
+                                value: {
+                                  id: 1,
+                                  defaultLabel: "Uuid",
+                                  editable: false,
+                                },
+                              },
                             },
-                            "icon": {
-                              "type": "string",
-                              "validations": [
+                            icon: {
+                              type: "string",
+                              validations: [
                                 {
-                                  "type": "uuid"
-                                }
-                              ]
-                            }
-                          }
+                                  type: "uuid",
+                                },
+                              ],
+                            },
+                          },
                         },
                         {
-                          "type": "object",
-                          "definition": {
-                            "label": {
-                              "type": "string"
+                          type: "object",
+                          definition: {
+                            label: {
+                              type: "string",
                             },
-                            "section": {
-                              "type": "literal",
-                              "definition": "data"
+                            section: {
+                              type: "literal",
+                              definition: "data",
                             },
-                            "selfApplication": {
-                              "type": "string",
-                              "validations": [
+                            selfApplication: {
+                              type: "string",
+                              validations: [
                                 {
-                                  "type": "uuid"
-                                }
+                                  type: "uuid",
+                                },
                               ],
-                              "tag": {
-                                "value": {
-                                  "id": 1,
-                                  "defaultLabel": "Uuid",
-                                  "editable": false
-                                }
-                              }
+                              tag: {
+                                value: {
+                                  id: 1,
+                                  defaultLabel: "Uuid",
+                                  editable: false,
+                                },
+                              },
                             },
-                            "reportUuid": {
-                              "type": "string",
-                              "validations": [
+                            reportUuid: {
+                              type: "string",
+                              validations: [
                                 {
-                                  "type": "uuid"
-                                }
+                                  type: "uuid",
+                                },
                               ],
-                              "tag": {
-                                "value": {
-                                  "id": 1,
-                                  "defaultLabel": "Uuid",
-                                  "editable": false
-                                }
-                              }
+                              tag: {
+                                value: {
+                                  id: 1,
+                                  defaultLabel: "Uuid",
+                                  editable: false,
+                                },
+                              },
                             },
-                            "icon": {
-                              "type": "string",
-                              "validations": [
+                            icon: {
+                              type: "string",
+                              validations: [
                                 {
-                                  "type": "uuid"
-                                }
-                              ]
-                            }
-                          }
-                        }
-                      ]
-                    }
-                  }
-                }
-              ]
-            }
-          }
+                                  type: "uuid",
+                                },
+                              ],
+                            },
+                          },
+                        },
+                      ],
+                    },
+                  },
+                },
+              ],
+            },
+          },
         },
       },
     };

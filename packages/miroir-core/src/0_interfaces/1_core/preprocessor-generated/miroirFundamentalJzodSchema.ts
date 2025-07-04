@@ -7328,7 +7328,6 @@ export const miroirFundamentalJzodSchema = {
             "tag": {
               "value": {
                 "id": 10,
-                "defaultLabel": "Attributes to display by default",
                 "editable": true
               }
             }
@@ -27432,7 +27431,6 @@ export const miroirFundamentalJzodSchema = {
                     "tag": {
                       "value": {
                         "id": 10,
-                        "defaultLabel": "Attributes to display by default",
                         "editable": true
                       }
                     }
@@ -27447,7 +27445,6 @@ export const miroirFundamentalJzodSchema = {
                 "tag": {
                   "value": {
                     "id": 10,
-                    "defaultLabel": "Attributes to display by default",
                     "editable": true
                   }
                 }
