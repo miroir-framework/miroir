@@ -190,17 +190,10 @@ export const ReportView = (props: ReportViewProps) => {
   //   // fetchedDataJzodSchema
   // );
 
-  // const jzodSchemaSelectorTemplateMap: QueryTemplateRunnerMapForJzodSchema<DeploymentEntityState> = useMemo(
-  //   () => getMemoizedDeploymentEntityStateJzodSchemaSelectorTemplateMap(),
-  //   []
-  // )
   const jzodSchemaSelectorMap: QueryRunnerMapForJzodSchema<DeploymentEntityState> = useMemo(
     () => getMemoizedDeploymentEntityStateJzodSchemaSelectorMap(),
     []
   );
-
-  // log.info("################################################################ Fecth Template report schema")
-
 
   log.info("################################################################ Fecth NON-Template report schema");
 
