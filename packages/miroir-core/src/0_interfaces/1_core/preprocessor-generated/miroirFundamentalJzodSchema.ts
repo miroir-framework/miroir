@@ -7347,7 +7347,7 @@ export const miroirFundamentalJzodSchema = {
           "jzodSchema": {
             "type": "schemaReference",
             "definition": {
-              "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "jzodObject"
             },
             "tag": {

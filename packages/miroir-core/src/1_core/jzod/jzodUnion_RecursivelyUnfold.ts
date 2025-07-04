@@ -60,6 +60,7 @@ export const jzodUnion_recursivelyUnfold = (
     
     // treating unions
     const newExpandedReferences = new Set([
+      ...expandedReferences,
       ...referencesToBeExplored.map((a: JzodReference) => a.definition.relativePath as string),
     ]);
     const unionsToBeExplored: JzodUnion[] = [

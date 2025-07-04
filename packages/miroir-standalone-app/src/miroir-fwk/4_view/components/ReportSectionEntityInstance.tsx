@@ -64,14 +64,16 @@ export interface ReportSectionEntityInstanceProps {
 
 // const label = { inputProps: { 'aria-label': 'Color switch demo' } };
 
-
+let ReportSectionEntityInstanceCount = 0
 // ###############################################################################################################
 export const ReportSectionEntityInstance = (props: ReportSectionEntityInstanceProps) => {
   const errorLog = useErrorLogService();
   const context = useMiroirContextService();
 
   log.info(
-    "++++++++++++++++++++++++++++++++ render with props",
+    "++++++++++++++++++++++++++++++++ render",
+    ReportSectionEntityInstanceCount++,
+    "with props",
     props
   );
 
@@ -174,6 +176,10 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     }
     return result;
   }, [props, currentReportTargetEntityDefinition, instance, context]);
+  log.info(
+    "ReportSectionEntityInstance jzodTypeCheck done, resolvedJzodSchema",
+    resolvedJzodSchema,
+  );
 
   if (!resolvedJzodSchema || resolvedJzodSchema.status != "ok") {
     log.error(
@@ -184,6 +190,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     return <>ReportSectionEntityInstance: could not resolve jzod schema: {JSON.stringify(resolvedJzodSchema)}</>;
   }
 
+  log.info("ReportSectionEntityInstance computing localRootLessListKeyMap");
   const localRootLessListKeyMap:
     | Record<string, { resolvedElementJzodSchema: JzodElement }>
     | undefined = useMemo(() => {
@@ -202,7 +209,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
           )
         : undefined;
     log.info(
-      "getJzodElementEditorHooks",
+      "ReportSectionEntityInstance",
       "rootLessListKeyMap",
       result
       // props.rootLessListKey,
@@ -216,7 +223,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     context.miroirFundamentalJzodSchema,
     instance,
   ]);
-  log.info("getJzodElementEditorHooks", "rootLessListKeyMap", localRootLessListKeyMap);
+  log.info("ReportSectionEntityInstance", "rootLessListKeyMap", localRootLessListKeyMap);
   
   const foreignKeyObjectsFetchQueryParams: SyncQueryRunnerParams<DeploymentEntityState> = useMemo(
     () =>
@@ -334,7 +341,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   //   // setdialogOuterFormObject(JSON.parse(values))
   //   log.info('edit code done');
   // }, []);
-  
+  log.info("ReportSectionEntityInstance start rendering!");
   // ##############################################################################################
   if (instance) {
     return (

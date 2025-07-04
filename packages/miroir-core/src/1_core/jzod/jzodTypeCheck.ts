@@ -473,12 +473,11 @@ export function jzodTypeCheck(
   log.info(
     "jzodTypeCheck called for valuePath=." + 
     currentValuePath.join("."),
-    "value",
-    // JSON.stringify(valueObject, null, 2),
-    valueObject,
-    "schema",
-    JSON.stringify(jzodSchema, null, 2)
-    // jzodSchema
+    // "value",
+    // // JSON.stringify(valueObject, null, 2),
+    // valueObject,
+    // "schema",
+    // JSON.stringify(jzodSchema, null, 2)
   );
   switch (jzodSchema?.type) {
     case "schemaReference": {
@@ -490,12 +489,12 @@ export function jzodTypeCheck(
         miroirMetaModel,
         newContext
       );
-      log.info(
-        "jzodTypeCheck schemaReference resultJzodSchema",
-        JSON.stringify(resolvedJzodSchema, null, 2),
-        "valueObject",
-        JSON.stringify(valueObject, null, 2)
-      );
+      // log.info(
+      //   "jzodTypeCheck schemaReference resultJzodSchema",
+      //   JSON.stringify(resolvedJzodSchema, null, 2),
+      //   "valueObject",
+      //   JSON.stringify(valueObject, null, 2)
+      // );
       const typeCheck = jzodTypeCheck(
         resolvedJzodSchema,
         valueObject,
@@ -571,7 +570,7 @@ export function jzodTypeCheck(
       } else {
         extendedJzodSchema = jzodSchema
       }
-      log.info("jzodTypeCheck object extendedJzodSchema",JSON.stringify(extendedJzodSchema, null, 2));
+      // log.info("jzodTypeCheck object extendedJzodSchema",JSON.stringify(extendedJzodSchema, null, 2));
 
       const resolvedObjectEntries:[string, ResolvedJzodSchemaReturnType][] = Object.entries(valueObject).map(
         (e: [string, any]) => {
@@ -693,13 +692,13 @@ export function jzodTypeCheck(
       }
       const concreteUnfoldedJzodSchemas: JzodElement[] = unfoldedJzodSchema.result;
 
-      log.info(
-        "jzodTypeCheck called for union",
-        jzodSchema,
-        "concreteUnrolledJzodSchemas resolved type:",
-        // JSON.stringify(concreteUnfoldedJzodSchemas, null, 2)
-        concreteUnfoldedJzodSchemas
-      );
+      // log.info(
+      //   "jzodTypeCheck called for union",
+      //   jzodSchema,
+      //   "concreteUnrolledJzodSchemas resolved type:",
+      //   // JSON.stringify(concreteUnfoldedJzodSchemas, null, 2)
+      //   concreteUnfoldedJzodSchemas
+      // );
       switch (typeof valueObject) {
         case "number":
         case "bigint":
@@ -751,14 +750,14 @@ export function jzodTypeCheck(
               (a.type == "literal" && a.definition == valueObject)
           );
           if (resultJzodSchema) {
-            log.info(
-              "jzodTypeCheck union for string at",
-              currentValuePath.join("."),
-              "type:",
-              JSON.stringify(resultJzodSchema, null, 2),
-              "validates",
-              JSON.stringify(valueObject, null, 2)
-            );
+            // log.info(
+            //   "jzodTypeCheck union for string at",
+            //   currentValuePath.join("."),
+            //   "type:",
+            //   JSON.stringify(resultJzodSchema, null, 2),
+            //   "validates",
+            //   JSON.stringify(valueObject, null, 2)
+            // );
             return {
               status: "ok",
               valuePath: currentValuePath,
@@ -804,14 +803,14 @@ export function jzodTypeCheck(
             relativeReferenceJzodContext
           );
           if (subResolvedSchemas.status == "ok") {
-            log.info(
-              "jzodTypeCheck object at",
-              currentValuePath.join("."),
-              "type:",
-              JSON.stringify(subResolvedSchemas.resolvedSchema, null, 2),
-              "validates",
-              JSON.stringify(valueObject, null, 2)
-            );
+            // log.info(
+            //   "jzodTypeCheck object at",
+            //   currentValuePath.join("."),
+            //   "type:",
+            //   JSON.stringify(subResolvedSchemas.resolvedSchema, null, 2),
+            //   "validates",
+            //   JSON.stringify(valueObject, null, 2)
+            // );
             return {
               status: "ok",
               valuePath: subResolvedSchemas.valuePath,

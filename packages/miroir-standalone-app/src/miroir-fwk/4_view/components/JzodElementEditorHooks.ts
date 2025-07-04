@@ -76,7 +76,8 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
   const context = useMiroirContextService();
   const currentModel: MetaModel = useCurrentModel(props.currentDeploymentUuid);
   const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
-
+  let dbgInt = 0;
+  log.info("getJzodElementEditorHooks ", dbgInt++, "count", count, "caller", caller);
   
   // ################################################################################################
   // codeMirror state
@@ -98,6 +99,7 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
   const [displayAsStructuredElement, setDisplayAsStructuredElement] = useState(true);
   // const [displayEditor, setDisplayEditor] = useState(true);
 
+  log.info("getJzodElementEditorHooks ", dbgInt++, "count", count, "caller", caller);
 
   // ################################################################################################
   // ################################################################################################
@@ -126,6 +128,7 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
 
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState> =
     useMemo(() => getMemoizedDeploymentEntityStateSelectorMap(), []);
+  log.info("getJzodElementEditorHooks ", dbgInt++, "count", count, "caller", caller);
 
   let unfoldedRawSchemaReturnType: UnfoldJzodSchemaOnceReturnType | undefined;
   try {
@@ -161,6 +164,7 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
     //   e
     // );
   }
+  log.info("getJzodElementEditorHooks ", dbgInt++, "count", count, "caller", caller);
   if (!unfoldedRawSchemaReturnType || unfoldedRawSchemaReturnType.status == "error") {
     throw new Error(
       "JzodElementEditor could not unfold raw schema " +
@@ -181,6 +185,7 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
   }
   const unfoldedRawSchema: JzodElement = unfoldedRawSchemaReturnType.element;
 
+  log.info("getJzodElementEditorHooks ", dbgInt++, "count", count, "caller", caller);
   const recursivelyUnfoldedRawSchema: JzodUnion_RecursivelyUnfold_ReturnType | undefined =
     useMemo(() => {
       if (
@@ -213,6 +218,7 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
         count
     );
   }
+  log.info("getJzodElementEditorHooks ", dbgInt++, "count", count, "caller", caller);
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
@@ -231,6 +237,7 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
       : undefined;
   }, [unfoldedRawSchema, localResolvedElementJzodSchemaBasedOnValue, recursivelyUnfoldedRawSchema]);
 
+  log.info("getJzodElementEditorHooks ", dbgInt++, "count", count, "caller", caller);
   // ##############################################################################################
   // state for Array / Object fold / unfold, order
   const [hiddenFormItems, setHiddenFormItems] = useState<{ [k: string]: boolean }>({});
@@ -239,6 +246,7 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
     [localResolvedElementJzodSchemaBasedOnValue, currentValue]
   );
 
+  log.info("getJzodElementEditorHooks ", dbgInt++, "count", count, "caller", caller);
   // ######################### foreignKeyObjects #########################
   const foreignKeyObjectsFetchQueryParams: SyncQueryRunnerParams<DeploymentEntityState> = useMemo(
     () =>
@@ -273,6 +281,7 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
       ),
     [deploymentEntityStateSelectorMap, props.currentDeploymentUuid, unfoldedRawSchema]
   );
+  log.info("getJzodElementEditorHooks ", dbgInt++, "count", count, "caller", caller);
 
   const foreignKeyObjects: Record<string, EntityInstancesUuidIndex> =
     useDeploymentEntityStateQuerySelectorForCleanedResult(
@@ -283,6 +292,7 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
       foreignKeyObjectsFetchQueryParams
   );
 
+  log.info("getJzodElementEditorHooks ", dbgInt++, "count", count, "caller", caller);
   const discriminatedSchemaForObject: JzodObject | undefined =
     props.rawJzodSchema?.type == "union" &&
     props.rawJzodSchema.discriminator &&
@@ -301,6 +311,7 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
         )
       : undefined;
 
+  log.info("getJzodElementEditorHooks ", dbgInt++, "count", count, "caller", caller);
   // ################################# objects ###################################
   const undefinedOptionalAttributes: string[] = useMemo(() => {
     if (unfoldedRawSchema.type == "object") {
@@ -357,6 +368,7 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
     }
     return [];
   }, [localResolvedElementJzodSchemaBasedOnValue, foreignKeyObjects]);
+  log.info("getJzodElementEditorHooks ", dbgInt++, "count", count, "caller", caller);
 
   return {
     context,

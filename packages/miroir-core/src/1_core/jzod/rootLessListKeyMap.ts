@@ -202,6 +202,7 @@ export function rootLessListKeyMap(
     result
   );
 
-  log.info("rootLessListKeyMap result", JSON.stringify(result, null, 2))
+  // log.info("rootLessListKeyMap result", JSON.stringify(result, null, 2))
+  log.info("rootLessListKeyMap result", result, "for rootLessListKey", rootLessListKey, "currentValue", currentValue);
   return result;
 }
