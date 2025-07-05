@@ -182,32 +182,32 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
   );
   
   // const localResolvedElementJzodSchemaBasedOnValue = rootLessListKeyMap[props.rootLessListKey]?.resolvedElementJzodSchema;
-  if (!localResolvedElementJzodSchemaBasedOnValue) {
-    log.error(
-      "JzodElementEditorComponent",
-      count,
-      "No resolved schema found for rootLessListKey",
-      props.rootLessListKey,
-      "with value",
-      currentValue,
-      "and props.localRootLessListKeyMap",
-      JSON.stringify(props.localRootLessListKeyMap, null, 2),
-    );
-    return (
-      <div>
-        Could not find resolved schema for item: {props.rootLessListKey}
-        <br />
-        value {JSON.stringify(currentValue, null, 2)}
-        <br />
-        raw Jzod schema: {JSON.stringify(props.rawJzodSchema, null, 2)}
-      </div>
-    );
-  }
+  // if (!localResolvedElementJzodSchemaBasedOnValue) {
+  //   log.error(
+  //     "JzodElementEditorComponent",
+  //     count,
+  //     "No resolved schema found for rootLessListKey",
+  //     props.rootLessListKey,
+  //     "with value",
+  //     currentValue,
+  //     "and props.localRootLessListKeyMap",
+  //     JSON.stringify(props.localRootLessListKeyMap, null, 2),
+  //   );
+  //   return (
+  //     <div>
+  //       Could not find resolved schema for item: {props.rootLessListKey}
+  //       <br />
+  //       value {JSON.stringify(currentValue, null, 2)}
+  //       <br />
+  //       raw Jzod schema: {JSON.stringify(props.rawJzodSchema, null, 2)}
+  //     </div>
+  //   );
+  // }
   // Determine if the element is an object, array or any type
   const objectOrArrayOrAny = useMemo(() => 
-    ["any", "object", "record", "array", "tuple"].includes(
+    !localResolvedElementJzodSchemaBasedOnValue || ["any", "object", "record", "array", "tuple"].includes(
       localResolvedElementJzodSchemaBasedOnValue.type
-    ), [localResolvedElementJzodSchemaBasedOnValue.type]
+    ), [localResolvedElementJzodSchemaBasedOnValue]
   );
   
   // Switches for display mode
@@ -237,11 +237,31 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
   );
 
   const hideSubJzodEditor = useMemo(() => 
-    props.hidden || props.insideAny || !displayAsStructuredElement, 
-    [props.hidden, props.insideAny, displayAsStructuredElement]
+    props.hidden || props.insideAny || props.hasTypeError || !displayAsStructuredElement, 
+    [props.hidden, props.insideAny, props.hasTypeError, displayAsStructuredElement]
   );
 
+  const displayCodeEditor =
+    !hideSubJzodEditor ||
+    props.rawJzodSchema?.type == "any" ||
+    !localResolvedElementJzodSchemaBasedOnValue ||
+    ["undefined", "any"].includes(localResolvedElementJzodSchemaBasedOnValue.type);
 
+  log.info("JzodElementEditor",
+    count,
+    "Rendering JzodElementEditor for listKey",
+    props.listKey,
+    "objectOrArrayOrAny",
+    objectOrArrayOrAny,
+    "displayAsStructuredElement",
+    displayAsStructuredElement,
+    "hideSubJzodEditor",
+    hideSubJzodEditor,
+    "displayCodeEditor",
+    displayCodeEditor,
+    "currentValue",
+    currentValue,
+  )
 
   // Code editor element
   const codeEditor: JSX.Element = useMemo(
@@ -255,7 +275,8 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
           setCodeMirrorIsValidJson={setCodeMirrorIsValidJson}
           rootLessListKey={props.rootLessListKey}
           rootLessListKeyArray={props.rootLessListKeyArray}
-          hidden={props.hidden || displayAsStructuredElement}
+          // hidden={props.hidden || displayAsStructuredElement}
+          hidden={!displayCodeEditor}
           insideAny={props.insideAny}
           isUnderTest={isUnderTest}
           displayAsStructuredElementSwitch={displayAsStructuredElementSwitch}
@@ -268,6 +289,7 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
       isUnderTest,
       // JzodSchemaTooltip,
       codeMirrorValue,
+      currentValue,
       setCodeMirrorValue,
       codeMirrorIsValidJson,
       setCodeMirrorIsValidJson,
@@ -276,7 +298,6 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
       props.hidden,
       displayAsStructuredElement,
       props.insideAny,
-      currentValue,
     ]
   );
 
@@ -761,18 +782,17 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
 
   return (
     <span>
+      hideSubJzodEditor: {hideSubJzodEditor ? "true" : "false"}
+      <br />
       <ErrorBoundary
         FallbackComponent={({ error, resetErrorBoundary }) => (
           <ErrorFallbackComponent
-          error={error}
-          resetErrorBoundary={resetErrorBoundary}
-          context={{
+            error={error}
+            resetErrorBoundary={resetErrorBoundary}
+            context={{
               origin: "JzodElementEditor",
               objectType: "object",
               rootLessListKey: props.rootLessListKey,
-              // attributeRootLessListKeyArray: p,
-              // attributeName: attribute[0],
-              // attributeListKey,
               currentValue,
               formikValues: formik.values,
               rawJzodSchema: props.rawJzodSchema,
@@ -808,24 +828,16 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
                     alignItems: "center",
                   }}
                 >
-                  <span>
-                    {props.submitButton}
-                  </span>
+                  <span>{props.submitButton}</span>
                 </span>
                 <span>
                   <span style={{ display: "flex" }}>
                     <span
                       style={{
-                        display:
-                          !hideSubJzodEditor ||
-                          (props.rawJzodSchema?.type == "any" &&
-                            ["undefined", "any"].includes(
-                              localResolvedElementJzodSchemaBasedOnValue.type
-                            ))
-                            ? "none"
-                            : "inline-block",
+                        display: !displayCodeEditor ? "none" : "inline-block",
                       }}
                     >
+                      code editor:
                       {codeEditor}
                     </span>
                   </span>
@@ -856,10 +868,12 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
             {/* {props.labelElement} */}
             <span
               style={{
-                display: !hideSubJzodEditor ? "none" : "inline-block",
+                // display: !hideSubJzodEditor ? "none" : "inline-block",
+                display: !displayCodeEditor ? "none" : "inline-block",
                 flexGrow: 1,
               }}
             >
+              code editor
               {/* {props.labelElement} */}
               {codeEditor}
             </span>

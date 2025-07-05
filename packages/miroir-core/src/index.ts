@@ -915,7 +915,7 @@ const reportMenuList = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a4
 const reportJzodSchemaList = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/8b22e84e-9374-4121-b2a7-d13d947a0ba2.json");
 const reportQueryVersionList = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/7aed09a9-8a2d-4437-95ab-62966e38352c.json");
 const reportReportList = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855.json");
-const reportReportDetails = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/ef57aada-6b77-4384-8007-12f13eddd337.json);");
+const reportReportDetails = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/ef57aada-6b77-4384-8007-12f13eddd337.json");
 const reportTestList = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/683ba925-835e-4f9d-845b-7fae500316ad.json");
 const reportTestDetails = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/d65d8dc8-2a7f-4111-81b1-0324e816c1a8.json");
 

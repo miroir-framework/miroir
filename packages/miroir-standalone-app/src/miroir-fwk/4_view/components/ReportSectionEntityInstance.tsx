@@ -137,7 +137,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   // log.info("ReportSectionEntityInstance currentReportTargetEntityDefinition", currentReportTargetEntityDefinition);
   // log.info("ReportSectionEntityInstance currentModel", currentModel);
   // log.info("ReportSectionEntityInstance currentMiroirModel", currentMiroirModel);
-
+  let typeError: JSX.Element | undefined = undefined;
   const resolvedJzodSchema: ResolvedJzodSchemaReturnType | undefined = useMemo(() => {
     let result: ResolvedJzodSchemaReturnType | undefined = undefined;
     try {
@@ -184,51 +184,20 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   if (!resolvedJzodSchema || resolvedJzodSchema.status != "ok") {
     log.error(
       "ReportSectionEntityInstance could not resolve jzod schema",
-      props,
-      context, resolvedJzodSchema
+      // props,
+      // context, resolvedJzodSchema
     );
-    return <>ReportSectionEntityInstance: could not resolve jzod schema: {JSON.stringify(resolvedJzodSchema)}</>;
+    // return <>ReportSectionEntityInstance: could not resolve jzod schema: {JSON.stringify(resolvedJzodSchema)}</>;
+    typeError = <>ReportSectionEntityInstance: could not resolve jzod schema: {JSON.stringify(resolvedJzodSchema)}</>;
   }
 
-  log.info("ReportSectionEntityInstance computing localRootLessListKeyMap");
-  const localRootLessListKeyMap:
-    | Record<string, { resolvedElementJzodSchema: JzodElement }>
-    | undefined = useMemo(() => {
-    const result =
-      context.miroirFundamentalJzodSchema != undefined &&
-      currentReportTargetEntityDefinition?.jzodSchema &&
-      instance &&
-      currentModel
-        ? rootLessListKeyMap(
-            "",
-            currentReportTargetEntityDefinition?.jzodSchema,
-            currentModel,
-            currentMiroirModel,
-            context.miroirFundamentalJzodSchema,
-            instance
-          )
-        : undefined;
-    log.info(
-      "ReportSectionEntityInstance",
-      "rootLessListKeyMap",
-      result
-      // props.rootLessListKey,
-      // props.rawJzodSchema?.type
-    );
-    return result;
-  }, [
-    currentReportTargetEntityDefinition?.jzodSchema,
-    currentModel,
-    currentMiroirModel,
-    context.miroirFundamentalJzodSchema,
-    instance,
-  ]);
-  log.info("ReportSectionEntityInstance", "rootLessListKeyMap", localRootLessListKeyMap);
   
   const foreignKeyObjectsFetchQueryParams: SyncQueryRunnerParams<DeploymentEntityState> = useMemo(
     () =>
       getQueryRunnerParamsForDeploymentEntityState(
         props.deploymentUuid &&
+          resolvedJzodSchema &&
+          resolvedJzodSchema.status == "ok" &&
           resolvedJzodSchema.resolvedSchema.type == "uuid" &&
           resolvedJzodSchema.resolvedSchema.tag?.value?.targetEntity
           ? {
@@ -375,6 +344,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
             <span>
               displayAsStructuredElement: {displayAsStructuredElement ? "true" : "false"}{" "}
               displayEditor: {displayEditor ? "true" : "false"}
+              hasTypeError: {typeError ? "true" : "false"}
             </span>
           </div>
           <h1>
@@ -383,9 +353,10 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
           {currentReportTargetEntity &&
           currentEnumJzodSchemaResolver &&
           currentReportTargetEntityDefinition &&
-          context.applicationSection &&
-          resolvedJzodSchema &&
-          (resolvedJzodSchema as any)?.status == "ok" ? (
+          context.applicationSection
+          // resolvedJzodSchema &&
+          // (resolvedJzodSchema as any)?.status == "ok"
+          ? (
             displayEditor ? (
               <div>
                 <Formik
@@ -417,21 +388,33 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                   {(formik: FormikProps<Record<string, any>>) => {
                     // Create a memoized localRootLessListKeyMap that updates when formik values change
                     const dynamicLocalRootLessListKeyMap = useMemo(() => {
-                      const result =
-                        context.miroirFundamentalJzodSchema != undefined &&
-                        currentReportTargetEntityDefinition?.jzodSchema &&
-                        formik.values &&
-                        currentModel
-                          ? rootLessListKeyMap(
-                              "",
-                              currentReportTargetEntityDefinition?.jzodSchema,
-                              currentModel,
-                              currentMiroirModel,
-                              context.miroirFundamentalJzodSchema,
-                              formik.values
-                            )
-                          : undefined;
-                      return result;
+                      try {
+                        const result =
+                          context.miroirFundamentalJzodSchema != undefined &&
+                          currentReportTargetEntityDefinition?.jzodSchema &&
+                          formik.values &&
+                          currentModel
+                            ? rootLessListKeyMap(
+                                "",
+                                currentReportTargetEntityDefinition?.jzodSchema,
+                                currentModel,
+                                currentMiroirModel,
+                                context.miroirFundamentalJzodSchema,
+                                formik.values
+                              )
+                            : undefined;
+                        return result;
+                      } catch (e) {
+                        log.warn(
+                          "ReportSectionEntityInstance dynamicLocalRootLessListKeyMap error",
+                          // e,
+                          // "props",
+                          // props,
+                          // "context",
+                          // context
+                        );
+                        return undefined;
+                      }
                     }, [
                       currentReportTargetEntityDefinition?.jzodSchema,
                       currentModel,
@@ -441,9 +424,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                     ]);
 
                     return (
-                    <>
-                      <form id={"form." + pageLabel} onSubmit={formik.handleSubmit}>
-                        {resolvedJzodSchema != undefined && resolvedJzodSchema.status == "ok" ? (
+                      <>
+                        <form id={"form." + pageLabel} onSubmit={formik.handleSubmit}>
                           <div>
                             <JzodElementEditor
                               name={"ROOT"}
@@ -460,6 +442,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                                   ? resolvedJzodSchema.resolvedSchema
                                   : undefined
                               }
+                              hasTypeError={typeError != undefined}
                               localRootLessListKeyMap={dynamicLocalRootLessListKeyMap}
                               // localRootLessListKeyMap={{}}
                               foreignKeyObjects={foreignKeyObjects}
@@ -476,15 +459,9 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                               // displayAsCode={!displayAsStructuredElement}
                             />
                           </div>
-                        ) : (
-                          <div>
-                            could not display editor because schema could not be resolved:{" "}
-                            {JSON.stringify(resolvedJzodSchema)}
-                          </div>
-                        )}
-                      </form>
-                    </>
-                  );
+                        </form>
+                      </>
+                    );
                   }}
                 </Formik>
               </div>
@@ -535,6 +512,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
             </div>
           )}
         </div>
+        <div>{typeError?"typeError: ": ""}<pre>{typeError??<></>}</pre></div>
       </>
     );
   } else {

@@ -588,18 +588,23 @@ export function jzodTypeCheck(
             return [e[0], resultSchemaTmp];
           } else {
             // TODO: RETURN AN ERROR ResolvedJzodSchemaReturnTypeError
-            log.warn(JSON.stringify({
-              path: currentValuePath.join(".") + "." + e[0],
-              valueObject,
-              extendedJzodSchema,
-              error: "jzodTypeCheck error on matching valueObject with extendedJzodSchema, path not found in extendedJzodSchema"
-              // error: "jzodTypeCheck error on resolving object, valueObject attribute " +
-              //   currentValuePath.join(".") + e[0] +
-              //   " not present in definition of type " +
-              //   JSON.stringify(extendedJzodSchema) +
-              //   " valueObject " + 
-              //   JSON.stringify(valueObject)
-            }, null, 2));
+            log.warn(
+              "jzodTypeCheck error on matching valueObject with extendedJzodSchema, path not found in extendedJzodSchema",
+              // JSON.stringify(
+                {
+                  path: (currentValuePath.length >0?(currentValuePath.join(".") + "."):"") + e[0],
+                  valueObject,
+                  extendedJzodSchema,
+                  error: "jzodTypeCheck error on matching valueObject with extendedJzodSchema, path not found in extendedJzodSchema"
+                  // error: "jzodTypeCheck error on resolving object, valueObject attribute " +
+                  //   currentValuePath.join(".") + e[0] +
+                  //   " not present in definition of type " +
+                  //   JSON.stringify(extendedJzodSchema) +
+                  //   " valueObject " + 
+                  //   JSON.stringify(valueObject)
+                },
+                //  null, 2)
+            );
             return [
               e[0],
               {

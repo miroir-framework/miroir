@@ -110,9 +110,26 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
   const formik = useFormikContext<Record<string, any>>();
   
   const currentValue = useMemo(() => {
-    return props.rootLessListKeyArray.length > 0
-      ? resolvePathOnObject(formik.values, props.rootLessListKeyArray)
-      : formik.values;
+    try {
+      return props.rootLessListKeyArray.length > 0
+        ? resolvePathOnObject(formik.values, props.rootLessListKeyArray)
+        : formik.values;
+    } catch (e) {
+      log.warn(
+        "getJzodElementEditorHooks resolvePathOnObject error",
+        "count",
+        count,
+        "caller",
+        caller,
+        "rootLessListKeyArray",
+        props.rootLessListKeyArray,
+        "formik.values",
+        formik.values,
+        "error",
+        e
+      );
+      return formik.values; // fallback to formik.values if the path resolution fails
+    }
   }, [formik.values, props.rootLessListKeyArray]);
 
   const [codeMirrorValue, setCodeMirrorValue] = useState<string>("");

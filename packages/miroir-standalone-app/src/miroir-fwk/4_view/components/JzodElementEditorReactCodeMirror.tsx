@@ -4,7 +4,7 @@ import { javascript } from "@codemirror/lang-javascript";
 // import {ReactCodeMirror} from '@uiw/react-codemirror';
 import ReactCodeMirror from '@uiw/react-codemirror';
 import { LoggerInterface, MiroirLoggerFactory } from "miroir-core";
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import { packageName } from "../../../constants";
 import { cleanLevel } from "../constants";
 import { JzodElementEditorReactCodeMirrorProps } from "./JzodElementEditorInterface";
@@ -44,7 +44,26 @@ const JzodElementEditorReactCodeMirrorComponent: React.FC<JzodElementEditorReact
       </div>
     );
   }
-  
+   useEffect(() => {
+    log.info(
+      "JzodElementEditorReactCodeMirrorComponent mounted with initialValue:",
+      initialValue
+    );
+    if (initialValue) {
+      setCodeMirrorValue(initialValue);
+      try {
+        JSON.parse(initialValue);
+        setCodeMirrorIsValidJson(true);
+      } catch {
+        setCodeMirrorIsValidJson(false);
+      }
+    } else {
+      setCodeMirrorValue("");
+      setCodeMirrorIsValidJson(false);
+    }
+  }, [
+  ]);
+
   const handleFormat = useCallback(() => {
     try {
       const parsed = JSON.parse(codeMirrorValue);
