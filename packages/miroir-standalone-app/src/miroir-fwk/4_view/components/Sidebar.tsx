@@ -1,3 +1,5 @@
+import { FC, useMemo, useState, useRef, useCallback, useEffect } from 'react';
+
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft.js';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight.js';
 import Divider from '@mui/material/Divider';
@@ -17,7 +19,6 @@ import {
   menuDefaultMiroir,
   MiroirLoggerFactory
 } from "miroir-core";
-import { FC, useMemo, useState, useRef, useCallback, useEffect } from 'react';
 import { adminConfigurationDeploymentParis, defaultMenuParisUuid, packageName } from '../../../constants.js';
 import { cleanLevel } from '../constants.js';
 import { SidebarSection } from './SidebarSection.js';

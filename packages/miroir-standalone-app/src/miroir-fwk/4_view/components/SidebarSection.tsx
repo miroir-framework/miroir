@@ -1,5 +1,9 @@
+import { FC, useMemo } from 'react';
 // import ChevronLeft from '@mui/icons-material/ChevronLeft';
 // import ChevronRight from '@mui/icons-material/ChevronRight';
+import AutoStories from '@mui/icons-material/AutoStories';
+import { CSSObject, styled, Theme, useTheme } from '@mui/material/styles';
+import { Icon } from '@mui/material';
 import Divider from '@mui/material/Divider';
 import MuiDrawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
@@ -7,12 +11,10 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import { CSSObject, styled, Theme, useTheme } from '@mui/material/styles';
+import SavedSearch from '@mui/icons-material/SavedSearch.js';
 import { Link } from 'react-router-dom';
 
 
-import AutoStories from '@mui/icons-material/AutoStories';
-import { Icon } from '@mui/material';
 import {
   adminConfigurationDeploymentMiroir,
   DeploymentEntityState,
@@ -27,7 +29,6 @@ import {
   Uuid
 } from "miroir-core";
 import { getMemoizedDeploymentEntityStateSelectorMap } from 'miroir-localcache-redux';
-import { FC, useMemo } from 'react';
 import { packageName } from '../../../constants.js';
 import { cleanLevel } from '../constants.js';
 import { useDeploymentEntityStateQuerySelector } from '../ReduxHooks.js';

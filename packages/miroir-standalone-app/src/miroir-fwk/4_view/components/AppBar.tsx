@@ -1,22 +1,23 @@
-import AdbIcon from '@mui/icons-material/Adb';
-import MenuIcon from '@mui/icons-material/Menu';
+import { useState } from 'react';
+import { useTheme } from '@emotion/react';
+
 import { default as MuiAppBar, AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
+import { styled } from '@mui/material/styles';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import { Icon } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Toolbar from '@mui/material/Toolbar';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
-import { styled } from '@mui/material/styles';
-import { useState } from 'react';
+import AdbIcon from '@mui/icons-material/Adb';
+import MenuIcon from '@mui/icons-material/Menu';
 
 import { LoggerInterface, MiroirLoggerFactory, MiroirMenuItem } from 'miroir-core';
 
-import { useTheme } from '@emotion/react';
-import { Icon } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import { packageName } from '../../../constants.js';
 import { cleanLevel } from '../constants.js';

@@ -571,6 +571,21 @@ interface testFormat {
               },
             },
           },
+          value: {
+            name: 30,
+            age: "John",
+          },
+          rawSchema: {
+            type: "object",
+            definition: {
+              name: {
+                type: "string",
+              },
+              age: {
+                type: "number",
+              },
+            },
+          },
         },
       },
       // simple object with attribute mismatch
@@ -614,6 +629,22 @@ interface testFormat {
                     type: "number",
                   },
                 },
+              },
+            },
+          },
+          value: {
+            name: "John",
+            age: 30,
+            unknownAttribute: "error",
+          },
+          rawSchema: {
+            type: "object",
+            definition: {
+              name: {
+                type: "string",
+              },
+              age: {
+                type: "number",
               },
             },
           },
@@ -674,6 +705,58 @@ interface testFormat {
                   },
                 },
               },
+              value: {
+                name: 30,
+                age: 30,
+              },
+              rawSchema: {
+                type: "object",
+                definition: {
+                  name: {
+                    type: "string",
+                  },
+                  age: {
+                    type: "number",
+                  },
+                },
+              },
+            },
+          },
+          value: {
+            person: {
+              name: 30,
+              age: 30,
+            },
+            address: {
+              street: "Main St",
+              city: "Springfield",
+            },
+          },
+          rawSchema: {
+            type: "object",
+            definition: {
+              person: {
+                type: "object",
+                definition: {
+                  name: {
+                    type: "string",
+                  },
+                  age: {
+                    type: "number",
+                  },
+                },
+              },
+              address: {
+                type: "object",
+                definition: {
+                  street: {
+                    type: "string",
+                  },
+                  city: {
+                    type: "string",
+                  },
+                },
+              },
             },
           },
         },
@@ -720,6 +803,56 @@ interface testFormat {
               valuePath: ["person"],
               typePath: ["person"],
               errorOnSchemaAttributes: ["age"],
+              value: {
+                name: "John",
+              },
+              rawSchema: {
+                type: "object",
+                definition: {
+                  name: {
+                    type: "string",
+                  },
+                  age: {
+                    type: "number",
+                  },
+                },
+              },
+            },
+          },
+          value: {
+            person: {
+              name: "John",
+            },
+            address: {
+              street: "Main St",
+              city: "Springfield",
+            },
+          },
+          rawSchema: {
+            type: "object",
+            definition: {
+              person: {
+                type: "object",
+                definition: {
+                  name: {
+                    type: "string",
+                  },
+                  age: {
+                    type: "number",
+                  },
+                },
+              },
+              address: {
+                type: "object",
+                definition: {
+                  street: {
+                    type: "string",
+                  },
+                  city: {
+                    type: "string",
+                  },
+                },
+              },
             },
           },
         },

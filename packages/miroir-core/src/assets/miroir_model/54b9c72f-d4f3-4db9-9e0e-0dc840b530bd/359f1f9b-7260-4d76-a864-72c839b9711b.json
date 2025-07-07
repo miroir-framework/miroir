@@ -5,7 +5,8 @@
   "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "entityUuid": "e4320b9e-ab45-4abe-85d8-359604b3c62f",
   "name": "Query",
-  "conceptLevel": "MetaModel",
+  "defaultInstanceDetailsReportUuid": "4bbf3894-93ea-4c7f-9d8a-827152a0118e",
+  "conceptLevel": "Model",
   "description": "Definition of a Query",
   "jzodSchema": {
     "type": "object",

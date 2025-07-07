@@ -29,7 +29,7 @@ const reportApplicationList = require('../assets/miroir_data/3f2baa83-3ef7-45ce-
 const reportReportList = require('../assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855.json');
 const reportConfigurationList = require('../assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/43f04807-8f96-43f9-876f-9a0210f7b99c.json');
 const reportApplicationModelBranchList = require('../assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/60648b22-e2c6-4b74-8031-53884f597d63.json');
-const reportQueryVersionList = require('../assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/7aed09a9-8a2d-4437-95ab-62966e38352c.json');
+const reportQueryList = require('../assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/7aed09a9-8a2d-4437-95ab-62966e38352c.json');
 const reportJzodSchemaList = require('../assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/8b22e84e-9374-4121-b2a7-d13d947a0ba2.json');
 const reportEndpointVersionList = require('../assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/ace3d5c9-b6a7-43e6-a277-595329e7532a.json');
 const reportEntityList = require('../assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/c9ea3359-690c-4620-9603-b5b402e4a2b9.json');
@@ -165,7 +165,7 @@ export async function modelInitialize(
     await persistenceStoreController.upsertInstance('data', reportReportList as EntityInstance);
     await persistenceStoreController.upsertInstance('data', reportJzodSchemaList as EntityInstance);
     // await persistenceStoreController.upsertInstance('data', reportQueryList as EntityInstance);
-    await persistenceStoreController.upsertInstance('data', reportQueryVersionList as EntityInstance);
+    await persistenceStoreController.upsertInstance('data', reportQueryList as EntityInstance);
     await persistenceStoreController.upsertInstance('data', menuDefaultMiroir as EntityInstance);
     await persistenceStoreController.upsertInstance('data', miroirJzodSchemaBootstrap as EntityInstance);
     

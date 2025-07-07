@@ -42,16 +42,20 @@ export interface ResolvedJzodSchemaReturnTypeOK {
     | undefined; // for unions, this is the list of sub-schemas that were resolved
 }
 export interface ResolvedJzodSchemaReturnTypeError {
-  status: "error",
-  error: string
-  rawJzodSchemaType?: string,
-  valuePath: (string | number)[],
-  typePath: (string | number)[],
-  value?: any, // the value that was checked
-  rawSchema?: JzodElement, // the raw schema that was checked
-  errorOnValueAttributes?: string[], // the attributes that failed to check, if relevant
-  errorOnSchemaAttributes?: string[], // the attributes that failed to check, if relevant
-  innerError?: JzodUnion_RecursivelyUnfold_ReturnTypeError | ResolvedJzodSchemaReturnTypeError | Record<string, ResolvedJzodSchemaReturnTypeError> | undefined; // for unions, this is the error of the sub-schema that failed
+  status: "error";
+  error: string;
+  rawJzodSchemaType?: string;
+  valuePath: (string | number)[];
+  typePath: (string | number)[];
+  value?: any; // the value that was checked
+  rawSchema?: JzodElement; // the raw schema that was checked
+  errorOnValueAttributes?: string[]; // the attributes that failed to check, if relevant
+  errorOnSchemaAttributes?: string[]; // the attributes that failed to check, if relevant
+  innerError?:
+    | JzodUnion_RecursivelyUnfold_ReturnTypeError
+    | ResolvedJzodSchemaReturnTypeError
+    | Record<string, ResolvedJzodSchemaReturnTypeError>
+    | undefined; // for unions, this is the error of the sub-schema that failed
 }
 export type ResolvedJzodSchemaReturnType = ResolvedJzodSchemaReturnTypeError | ResolvedJzodSchemaReturnTypeOK;
 
@@ -199,6 +203,28 @@ export function unionObjectChoices (
 ;
 
 // #####################################################################################################
+export interface SelectUnionBranchFromDiscriminatorReturnTypeOK {
+  status: "ok";
+  currentDiscriminatedObjectJzodSchema: JzodObject;
+  flattenedUnionChoices: JzodObject[];
+  chosenDiscriminator: {discriminator: string, value: any}[];
+}
+
+export interface SelectUnionBranchFromDiscriminatorReturnTypeError {
+  status: "error";
+  error: string;
+  discriminator?: string | string[] | undefined;
+  discriminatorValues?: any;
+  valuePath: (string | number)[];
+  typePath: (string | number)[];
+  value?: any;
+  objectUnionChoices?: JzodObject[];
+  flattenedUnionChoices?: JzodObject[];
+}
+
+export type SelectUnionBranchFromDiscriminatorReturnType = 
+  SelectUnionBranchFromDiscriminatorReturnTypeOK | SelectUnionBranchFromDiscriminatorReturnTypeError;
+
 // #####################################################################################################
 export function selectUnionBranchFromDiscriminator(
   objectUnionChoices: JzodObject[],
@@ -211,11 +237,7 @@ export function selectUnionBranchFromDiscriminator(
   currentModel: MetaModel,
   miroirMetaModel: MetaModel,
   relativeReferenceJzodContext: {[k:string]: JzodElement},
-): {
-  currentDiscriminatedObjectJzodSchema: JzodObject;
-  flattenedUnionChoices: JzodObject[];
-  chosenDiscriminator: {discriminator: string, value: any}[];
-} {
+): SelectUnionBranchFromDiscriminatorReturnType {
   const discriminators: string | string[] | undefined = !discriminator
     ? discriminator
     : Array.isArray(discriminator)
@@ -224,7 +246,7 @@ export function selectUnionBranchFromDiscriminator(
 
 
   // "flatten" object hierarchy, if there is an extend clause, we resolve it
-  let flattenedUnionChoices = objectUnionChoices.map(
+  const flatteningResults = objectUnionChoices.map(
     (jzodObjectSchema) => {
       let extendedJzodSchema: JzodObject
       if (jzodObjectSchema.extend) {
@@ -244,19 +266,31 @@ export function selectUnionBranchFromDiscriminator(
             }
           }
         } else {
-          throw new Error(
-            "selectUnionBranchFromDiscriminator object extend clause schema " +
-              JSON.stringify(jzodObjectSchema) +
-              " is not an object " +
-              JSON.stringify(extension)
-          );
+          return {
+            status: "error" as const,
+            error: "selectUnionBranchFromDiscriminator object extend clause schema is not an object",
+            discriminator,
+            valuePath: valueObjectPath,
+            typePath,
+            value: valueObject,
+            objectUnionChoices,
+          };
         }
       } else {
         extendedJzodSchema = jzodObjectSchema
       }
-      return extendedJzodSchema;
+      return { status: "ok" as const, result: extendedJzodSchema };
     }
   );
+
+  // Check if any errors occurred during flattening
+  const flatteningErrors = flatteningResults.filter(r => r.status === "error");
+  if (flatteningErrors.length > 0) {
+    return flatteningErrors[0] as SelectUnionBranchFromDiscriminatorReturnTypeError;
+  }
+
+  // Extract successful results
+  const flattenedUnionChoices = flatteningResults.map(r => (r as any).result) as JzodObject[];
   // log.info(
   //   "selectUnionBranchFromDiscriminator called for union-type value object with discriminator(s)=",
   //   discriminators,
@@ -336,16 +370,31 @@ export function selectUnionBranchFromDiscriminator(
     // );
   }
 
+  const discriminatorValues =
+    discriminators != undefined
+      ? typeof discriminators == "string"
+        ? valueObject[discriminators]
+        : discriminators.map((d) => valueObject[d])
+      : undefined;
+
 
   if (filteredFlattenedUnionChoices.length == 0) {
-    throw new Error(
-      "selectUnionBranchFromDiscriminator called for union-type value object found no match with discriminator(s)=" +
+    return {
+      status: "error",
+      error: "selectUnionBranchFromDiscriminator called for union-type value object found no match with discriminator(s)=" +
         JSON.stringify(discriminators) +
         " valueObject[discriminator]=" +
-        JSON.stringify(discriminators??[].map(d => valueObject[d])) +
+        JSON.stringify(discriminatorValues) +
         " #################### valueObject=" + JSON.stringify(valueObject, null, 2) +
-        " #################### objectUnionChoices=" + JSON.stringify(objectUnionChoices)
-    );
+        " #################### objectUnionChoices=" + JSON.stringify(objectUnionChoices),
+      discriminator: discriminators,
+      discriminatorValues,
+      valuePath: valueObjectPath,
+      typePath,
+      value: valueObject,
+      objectUnionChoices,
+      flattenedUnionChoices: filteredFlattenedUnionChoices,
+    };
   }
   if (filteredFlattenedUnionChoices.length > 1) {
     // log.info(
@@ -354,8 +403,9 @@ export function selectUnionBranchFromDiscriminator(
     //   "filteredFlattenedUnionChoices=",
     //   filteredFlattenedUnionChoices
     // )
-    throw new Error(
-      "selectUnionBranchFromDiscriminator called for union-type value object found many matches with discriminator(s)=" +
+    return {
+      status: "error",
+      error: "selectUnionBranchFromDiscriminator called for union-type value object found many matches with discriminator(s)=" +
         JSON.stringify(discriminators) +
         " valueObject[discriminator]=" +
         JSON.stringify(discriminators??[].map(d => valueObject[d])) +
@@ -375,14 +425,15 @@ export function selectUnionBranchFromDiscriminator(
           filteredFlattenedUnionChoices,
           // null,
           // 2
-        )
-        // " matches, objectUnionChoices=" +
-        // JSON.stringify(
-        //   objectUnionChoices.map((e) => discriminators??[].map(d => (e.definition[d] as any)?.definition)),
-        //   null,
-        //   2
-        // )
-    );
+        ),
+      discriminator: discriminators,
+      discriminatorValues: discriminators??[].map(d => valueObject[d]),
+      valuePath: valueObjectPath,
+      typePath,
+      value: valueObject,
+      objectUnionChoices,
+      flattenedUnionChoices: filteredFlattenedUnionChoices,
+    };
   }
   // log.info("selectUnionBranchFromDiscriminator found exactly 1 match for union-type at valuepath=valueObject." +
   //   valueObjectPath.join("."),
@@ -394,6 +445,7 @@ export function selectUnionBranchFromDiscriminator(
   const currentDiscriminatedObjectJzodSchema: JzodObject =
     filteredFlattenedUnionChoices[0] as JzodObject;
   return {
+    status: "ok",
     currentDiscriminatedObjectJzodSchema,
     flattenedUnionChoices: filteredFlattenedUnionChoices,
     chosenDiscriminator,
@@ -429,15 +481,7 @@ export function jzodUnionResolvedTypeForObject(
         JSON.stringify(concreteUnrolledJzodSchemas, null, 2)
     );
   }
-  const {
-    currentDiscriminatedObjectJzodSchema,
-    flattenedUnionChoices,
-    chosenDiscriminator,
-  }: {
-    currentDiscriminatedObjectJzodSchema: JzodObject;
-    flattenedUnionChoices: JzodObject[];
-    chosenDiscriminator: { discriminator: string; value: any }[];
-  } = selectUnionBranchFromDiscriminator(
+  const selectUnionResult = selectUnionBranchFromDiscriminator(
     objectUnionChoices,
     discriminator,
     valueObject,
@@ -449,6 +493,19 @@ export function jzodUnionResolvedTypeForObject(
     miroirMetaModel,
     relativeReferenceJzodContext
   );
+  
+  if (selectUnionResult.status === "error") {
+    // TODO: return error value, do not throw
+    throw new Error(
+      "jzodUnionResolvedTypeForObject failed to select union branch: " + selectUnionResult.error
+    );
+  }
+
+  const {
+    currentDiscriminatedObjectJzodSchema,
+    flattenedUnionChoices,
+    chosenDiscriminator,
+  } = selectUnionResult;
   return currentDiscriminatedObjectJzodSchema;
 } // end of jzodUnionResolvedTypeForObject
 

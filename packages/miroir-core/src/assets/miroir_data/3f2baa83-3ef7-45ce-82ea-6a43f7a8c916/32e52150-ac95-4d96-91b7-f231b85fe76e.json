@@ -1,16 +1,17 @@
 {
-  "uuid": "7aed09a9-8a2d-4437-95ab-62966e38352c",
+  "uuid": "32e52150-ac95-4d96-91b7-f231b85fe76e",
   "selfApplication": "21840247-b5b1-4344-baec-f818f4797d92",
   "parentName": "Report",
   "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
   "name": "QueryList",
-  "defaultLabel": "Queries 1",
+  "defaultLabel": "Queries 2",
+  "type": "list",
   "definition": {
     "reportParameters": {},
     "extractorTemplates": {
       "queries": {
         "extractorTemplateType": "extractorTemplateForObjectListByEntity",
-        "parentName": "Query",
+        "parentName": "Report",
         "parentUuid": {
           "transformerType": "constantUuid",
           "interpolation": "build",

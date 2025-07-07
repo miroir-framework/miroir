@@ -911,7 +911,8 @@ const reportEntityList = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6
 const reportEntityDetails = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/074d1de9-594d-42d6-8848-467baeb6f3e0.json");
 const reportMenuList = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/ecfd8787-09cc-417d-8d2c-173633c9f998.json");
 const reportJzodSchemaList = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/8b22e84e-9374-4121-b2a7-d13d947a0ba2.json");
-const reportQueryVersionList = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/7aed09a9-8a2d-4437-95ab-62966e38352c.json");
+const reportQueryList = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/7aed09a9-8a2d-4437-95ab-62966e38352c.json");
+const reportQueryDetails = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/4bbf3894-93ea-4c7f-9d8a-827152a0118e.json");
 const reportReportList = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855.json");
 const reportReportDetails = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/ef57aada-6b77-4384-8007-12f13eddd337.json");
 const reportTestList = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/683ba925-835e-4f9d-845b-7fae500316ad.json");
@@ -1028,8 +1029,8 @@ export {
   reportEntityList,
   reportJzodSchemaList,
   reportMenuList,
-  // reportQueryList,
-  reportQueryVersionList,
+  reportQueryList,
+  reportQueryDetails,
   reportReportList,
   reportReportDetails,
   reportTestDetails,
