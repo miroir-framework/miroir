@@ -14,8 +14,6 @@ export {
   actionEntityInstanceSuccess,
   ActionError,
   actionError,
-  ActionHandler,
-  actionHandler,
   ActionReturnType,
   actionReturnType,
   ActionSuccess,

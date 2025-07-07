@@ -235,17 +235,18 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
       codeMirrorIsValidJson,
     ]
   );
+  const displayCodeEditor =
+    props.hasTypeError ||
+    !localResolvedElementJzodSchemaBasedOnValue || // same as props.hasTypeError?
+    !displayAsStructuredElement ||
+    props.rawJzodSchema?.type == "any" ||
+    ["undefined", "any"].includes(localResolvedElementJzodSchemaBasedOnValue.type);
 
   const hideSubJzodEditor = useMemo(() => 
-    props.hidden || props.insideAny || props.hasTypeError || !displayAsStructuredElement, 
-    [props.hidden, props.insideAny, props.hasTypeError, displayAsStructuredElement]
+    props.hidden || props.insideAny || displayCodeEditor, 
+    [props.hidden, props.insideAny, props.hasTypeError]
   );
 
-  const displayCodeEditor =
-    !hideSubJzodEditor ||
-    props.rawJzodSchema?.type == "any" ||
-    !localResolvedElementJzodSchemaBasedOnValue ||
-    ["undefined", "any"].includes(localResolvedElementJzodSchemaBasedOnValue.type);
 
   log.info("JzodElementEditor",
     count,
@@ -782,8 +783,10 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
 
   return (
     <span>
-      hideSubJzodEditor: {hideSubJzodEditor ? "true" : "false"}
-      <br />
+      {/* hideSubJzodEditor: {hideSubJzodEditor ? "true" : "false"}{" "}
+      displayCodeEditor: {displayCodeEditor ? "true" : "false"}{" "}
+      displayAsStructuredElement: {displayAsStructuredElement ? "true" : "false"}{" "}
+      <br /> */}
       <ErrorBoundary
         FallbackComponent={({ error, resetErrorBoundary }) => (
           <ErrorFallbackComponent

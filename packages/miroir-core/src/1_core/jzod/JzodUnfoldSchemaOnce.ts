@@ -193,18 +193,25 @@ export function unfoldJzodSchemaOnce(
         // tag: jzodSchema.tag,
       //   ...resolvedJzodSchema
       // }
-      if (jzodSchema.optional) {
-        resultJzodSchema.optional = true;
+      if (Object.hasOwn(jzodSchema, "optional")) {
+        resultJzodSchema.optional = jzodSchema.optional;
       }
-      if (jzodSchema.nullable) {
-        resultJzodSchema.optional = true;
+      if (Object.hasOwn(jzodSchema, "nullable")) {
+        resultJzodSchema.optional = jzodSchema.nullable;
       }
       if (jzodSchema.tag) {
         resultJzodSchema.tag = jzodSchema.tag;
       }
 
       if (resultJzodSchema.optional != jzodSchema.optional) {
-        throw new Error("unfoldJzodSchemaOnce mismatch on optional " + JSON.stringify(jzodSchema));
+        throw new Error(
+          "unfoldJzodSchemaOnce mismatch on optional jzoSchema=" +
+            JSON.stringify(jzodSchema) +
+            " resolvedJzodSchema=" +
+            JSON.stringify(resultJzodSchema) +
+            " for schemaReference " +
+            jzodSchema.definition.relativePath
+        );
       }
       // log.info(
       //   "unfoldJzodSchemaOnce schemaReference resultJzodSchema",

@@ -13,7 +13,7 @@ import {
 import { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../../4_services/LoggerFactory";
 import { resolveJzodSchemaReferenceInContext } from "./jzodResolveSchemaReferenceInContext";
-import { jzodUnion_recursivelyUnfold } from "./jzodUnion_RecursivelyUnfold";
+import { jzodUnion_recursivelyUnfold, JzodUnion_RecursivelyUnfold_ReturnTypeError } from "./jzodUnion_RecursivelyUnfold";
 
 import { packageName } from "../../constants";
 import { cleanLevel } from "../constants";
@@ -28,7 +28,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 ).then((logger: LoggerInterface) => {log = logger});
 
 
-
+// #################################################################################################
 export interface ResolvedJzodSchemaReturnTypeOK {
   status: "ok";
   valuePath: (string | number)[];
@@ -43,10 +43,15 @@ export interface ResolvedJzodSchemaReturnTypeOK {
 }
 export interface ResolvedJzodSchemaReturnTypeError {
   status: "error",
+  error: string
+  rawJzodSchemaType?: string,
   valuePath: (string | number)[],
   typePath: (string | number)[],
-  error: string
-  innerError?: ResolvedJzodSchemaReturnTypeError
+  value?: any, // the value that was checked
+  rawSchema?: JzodElement, // the raw schema that was checked
+  errorOnValueAttributes?: string[], // the attributes that failed to check, if relevant
+  errorOnSchemaAttributes?: string[], // the attributes that failed to check, if relevant
+  innerError?: JzodUnion_RecursivelyUnfold_ReturnTypeError | ResolvedJzodSchemaReturnTypeError | Record<string, ResolvedJzodSchemaReturnTypeError> | undefined; // for unions, this is the error of the sub-schema that failed
 }
 export type ResolvedJzodSchemaReturnType = ResolvedJzodSchemaReturnTypeError | ResolvedJzodSchemaReturnTypeOK;
 
@@ -111,6 +116,13 @@ export function resolveObjectExtendClauseAndDefinition(
   // } else {
   //   return j;
   // }
+}
+
+// ################################################################################################
+function isValidUUID(uuid: string): boolean {
+  // Regular expression to validate UUID v4 format
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  return uuidRegex.test(uuid);
 }
 
 // ################################################################################################
@@ -479,6 +491,35 @@ export function jzodTypeCheck(
   //   // "schema",
   //   // JSON.stringify(jzodSchema, null, 2)
   // );
+
+  // Check for null and undefined values first
+  if (valueObject === null || valueObject === undefined) {
+    // Check if the schema is optional or nullable
+    const isOptional = jzodSchema.optional === true;
+    const isNullable = jzodSchema.nullable === true;
+    
+    if (!isOptional && !isNullable) {
+      return {
+        status: "error",
+        error: `jzodTypeCheck expected a value but got ${valueObject === null ? 'null' : 'undefined'} for non-optional schema`,
+        rawJzodSchemaType: jzodSchema.type,
+        valuePath: currentValuePath,
+        typePath: currentTypePath,
+        value: valueObject,
+        rawSchema: jzodSchema,
+      };
+    }
+    
+    // If schema is optional or nullable, we're good
+    return {
+      status: "ok",
+      valuePath: currentValuePath,
+      typePath: currentTypePath,
+      rawSchema: jzodSchema,
+      resolvedSchema: jzodSchema,
+    };
+  }
+
   switch (jzodSchema?.type) {
     case "schemaReference": {
       const newContext = {...relativeReferenceJzodContext, ...jzodSchema.context}
@@ -514,9 +555,13 @@ export function jzodTypeCheck(
         subSchemas: typeCheck.subSchemas // for unions, this is the list of sub-schemas that were resolved
       }: {
         status: "error",
+        error: typeCheck.error,
+        rawJzodSchemaType: jzodSchema.type,
         valuePath: currentValuePath,
         typePath: currentTypePath,
-        error: typeCheck.error
+        innerError: typeCheck,
+        value: valueObject,
+        rawSchema: jzodSchema,
       };
       break;
     }
@@ -524,12 +569,12 @@ export function jzodTypeCheck(
       if ( typeof valueObject != "object") {
         return ({
           status: "error",
+          error: "jzodTypeCheck failed for object schema to match non-object value",
+          rawJzodSchemaType: jzodSchema.type,
           valuePath: currentValuePath,
-          typePath: [],
-          error: "jzodTypeCheck failed to match object value with schema " +
-              JSON.stringify(jzodSchema) +
-              " for value " +
-              JSON.stringify(valueObject)
+          typePath: currentTypePath,
+          value: valueObject,
+          rawSchema: jzodSchema,
         })
       }
 
@@ -544,7 +589,6 @@ export function jzodTypeCheck(
         )
         if (extension.type == "object") {
           extendedJzodSchema = {
-            // type: "object",
             ...jzodSchema,
             definition: {
               ...extension.definition,
@@ -553,25 +597,22 @@ export function jzodTypeCheck(
           }
           delete extendedJzodSchema.extend; // remove the extend clause, since it is already resolved
         } else {
-          throw new Error(
-            "jzodTypeCheck object extend clause schema " +
-              JSON.stringify(jzodSchema) +
-              " is not an object " +
-              JSON.stringify(extension)
-          );
-          // return ({
-          //   status: "error",
-          //   error: "jzodTypeCheck object extend clause schema " +
-          //       JSON.stringify(jzodSchema) +
-          //       " is not an object " +
-          //       JSON.stringify(extension)
-          // })
+          return {
+            status: "error",
+            error: "jzodTypeCheck failed to resolve extend clause for object schema.",
+            rawJzodSchemaType: jzodSchema.type,
+            valuePath: currentValuePath,
+            typePath: currentTypePath,
+            value: valueObject,
+            rawSchema: jzodSchema,
+          }
         }
       } else {
         extendedJzodSchema = jzodSchema
       }
       // log.info("jzodTypeCheck object extendedJzodSchema",JSON.stringify(extendedJzodSchema, null, 2));
 
+      // checks that all attributes of the valueObject are present in the schema definition
       const resolvedObjectEntries:[string, ResolvedJzodSchemaReturnType][] = Object.entries(valueObject).map(
         (e: [string, any]) => {
           if (extendedJzodSchema.definition[e[0]]) {
@@ -587,38 +628,17 @@ export function jzodTypeCheck(
             )
             return [e[0], resultSchemaTmp];
           } else {
-            // TODO: RETURN AN ERROR ResolvedJzodSchemaReturnTypeError
-            log.warn(
-              "jzodTypeCheck error on matching valueObject with extendedJzodSchema, path not found in extendedJzodSchema",
-              // JSON.stringify(
-                {
-                  path: (currentValuePath.length >0?(currentValuePath.join(".") + "."):"") + e[0],
-                  valueObject,
-                  extendedJzodSchema,
-                  error: "jzodTypeCheck error on matching valueObject with extendedJzodSchema, path not found in extendedJzodSchema"
-                  // error: "jzodTypeCheck error on resolving object, valueObject attribute " +
-                  //   currentValuePath.join(".") + e[0] +
-                  //   " not present in definition of type " +
-                  //   JSON.stringify(extendedJzodSchema) +
-                  //   " valueObject " + 
-                  //   JSON.stringify(valueObject)
-                },
-                //  null, 2)
-            );
             return [
               e[0],
               {
                 status: "error",
-                valuePath: [...currentValuePath, e[0]],
-                typePath: [...currentTypePath, e[0]],
                 error:
-                  "jzodTypeCheck error on resolving object, valueObject attribute " +
-                  currentValuePath.join(".") +
-                  e[0] +
-                  " not present in definition of type " +
-                  JSON.stringify(extendedJzodSchema) +
-                  " valueObject " +
-                  JSON.stringify(valueObject),
+                  "jzodTypeCheck value attribute '" + e[0] + "' not found in schema definition",
+                rawJzodSchemaType: jzodSchema.type,
+                valuePath: [...currentValuePath, e[0]],
+                typePath: currentTypePath,
+                value: valueObject,
+                rawSchema: jzodSchema,
               },
             ];
           }
@@ -628,18 +648,43 @@ export function jzodTypeCheck(
       const foundErrors = resolvedObjectEntries.filter(
         (e: [string, ResolvedJzodSchemaReturnType]) => e[1].status == "error"
       );
-      // TODO: inheritance!!!
       if (foundErrors.length > 0) {
         return {
           status: "error",
-          valuePath: foundErrors[0][1].valuePath,
-          typePath: foundErrors[0][1].typePath,
-          error: "jzodTypeCheck failed when matching object value with schema " +
-            JSON.stringify(jzodSchema) +
-            " for value " +
-            JSON.stringify(valueObject) +
-            " has mismatch on attribute: " +
-            foundErrors.map((e) => e[1].valuePath).join(", ")
+          error:
+            "jzodTypeCheck failed to match some object value attribute(s) with the schema of that attribute(s)",
+          rawJzodSchemaType: jzodSchema.type,
+          valuePath: currentValuePath,
+          typePath: currentTypePath,
+          errorOnValueAttributes: foundErrors.map((e) => e[0]),
+          innerError: Object.fromEntries(
+            foundErrors.map((e: [string, ResolvedJzodSchemaReturnType]) => [
+              e[0],
+              e[1] as ResolvedJzodSchemaReturnTypeError,
+            ])
+          ),
+          value: valueObject,
+          rawSchema: jzodSchema,
+        };
+      }
+      // checks that all mandatory attributes of the schema definition are present in the valueObject
+      const missingMandatoryAttributes = Object.entries(extendedJzodSchema.definition).filter(
+        (e: [string, JzodElement]) =>
+          e[1].optional !== true &&
+          e[1].nullable !== true &&
+          !Object.keys(valueObject).includes(e[0])
+      );
+      if (missingMandatoryAttributes.length > 0) {
+        return {
+          status: "error",
+          error:
+            "jzodTypeCheck failed to match some mandatory object value attribute(s) with the schema of that attribute(s)",
+          rawJzodSchemaType: jzodSchema.type,
+          valuePath: currentValuePath,
+          typePath: currentTypePath,
+          errorOnSchemaAttributes: missingMandatoryAttributes.map((e) => e[0]),
+          value: valueObject,
+          rawSchema: jzodSchema,
         };
       }
       const resultResolvedJzodSchema: JzodObject = {
@@ -651,21 +696,13 @@ export function jzodTypeCheck(
           ])
         ),
       } as JzodObject;
-      // log.info(
-      //   "jzodTypeCheck object at",
-      //   currentValuePath.join("."),
-      //   "type:",
-      //   JSON.stringify(resultElement, null, 2),
-      //   "validates",
-      //   JSON.stringify(valueObject, null, 2)
-      // );
       return {
         status: "ok",
         valuePath: currentValuePath,
-        typePath: [],
+        typePath: currentTypePath,
         rawSchema: jzodSchema,
         resolvedSchema: resultResolvedJzodSchema,
-        subSchemas: Object.fromEntries(resolvedObjectEntries)
+        subSchemas: Object.fromEntries(resolvedObjectEntries),
       };
       break;
     }
@@ -680,20 +717,22 @@ export function jzodTypeCheck(
       );
 
       if (unfoldedJzodSchema.status == "error") {
-        log.error(
-          "jzodTypeCheck union schema",
-          JSON.stringify(jzodSchema, null, 2),
-          "could not be unfolded, error:",
-          unfoldedJzodSchema.error
-        );
+        // log.error(
+        //   "jzodTypeCheck union schema",
+        //   JSON.stringify(jzodSchema, null, 2),
+        //   "could not be unfolded, error:",
+        //   unfoldedJzodSchema.error
+        // );
         return {
           status: "error",
+          error: "jzodTypeCheck failed to recursively unfold schema",
+          rawJzodSchemaType: jzodSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
-          error: "jzodTypeCheck union schema " +
-            JSON.stringify(jzodSchema) +
-            " could not be unfolded, error: " + unfoldedJzodSchema.error
-        }
+          innerError: unfoldedJzodSchema,
+          value: valueObject,
+          rawSchema: jzodSchema,
+        };
       }
       const concreteUnfoldedJzodSchemas: JzodElement[] = unfoldedJzodSchema.result;
 
@@ -736,13 +775,12 @@ export function jzodTypeCheck(
           } else {
             return {
               status: "error",
+              error: "jzodTypeCheck could not find type for value in resolved union",
+              rawJzodSchemaType: jzodSchema.type,
               valuePath: currentValuePath,
               typePath: currentTypePath,
-              error:
-                "jzodTypeCheck could not find " + typeof valueObject + " type for value" +
-                valueObject +
-                " in resolved union " +
-                JSON.stringify(concreteUnfoldedJzodSchemas, null, 2),
+              value: valueObject,
+              rawSchema: jzodSchema,
             };
           }
           break;
@@ -773,13 +811,12 @@ export function jzodTypeCheck(
           } else {
             return {
               status: "error",
+              error: "jzodTypeCheck could not find type for value in resolved union",
+              rawJzodSchemaType: jzodSchema.type,
               valuePath: currentValuePath,
               typePath: currentTypePath,
-              error:
-                "jzodTypeCheck could not find string or literal type for value" +
-                valueObject +
-                " in resolved union " +
-                JSON.stringify(concreteUnfoldedJzodSchemas, null, 2),
+              value: valueObject,
+              rawSchema: jzodSchema,
             };
           }
           break;
@@ -827,14 +864,13 @@ export function jzodTypeCheck(
           } else {
             return {
               status: "error",
+              error: "jzodTypeCheck union failed to match object attribute value with schema attribute",
+              rawJzodSchemaType: jzodSchema.type,
               valuePath: currentValuePath,
               typePath: currentTypePath,
-              error:
-                "jzodTypeCheck could not find object type for value" +
-                valueObject +
-                " in resolved union " +
-                JSON.stringify(concreteUnfoldedJzodSchemas, null, 2) +
-                " error: " + subResolvedSchemas.error
+              innerError: subResolvedSchemas,
+              value: valueObject,
+              rawSchema: jzodSchema,
             };
           }
         }
@@ -842,20 +878,38 @@ export function jzodTypeCheck(
         case "symbol": // TODO: what does this correspond to?
         case "undefined":
         default: {
-          throw new Error("jzodTypeCheck could not resolve type for union with valueObject " + valueObject);
+          // throw new Error("jzodTypeCheck could not resolve type for union with valueObject " + valueObject);
+          return {
+            status: "error",
+            error: "jzodTypeCheck value type not supported for union schema: " + typeof valueObject,
+            rawJzodSchemaType: jzodSchema.type,
+            valuePath: currentValuePath,
+            typePath: currentTypePath,
+            value: valueObject,
+            rawSchema: jzodSchema,
+          };
           break;
         }
-      }     
+      }
       break;
     }
     case "record": {
       if ( typeof valueObject != "object") {
-        throw new Error(
-          "jzodTypeCheck record schema " +
-            JSON.stringify(jzodSchema) +
-            " for value " +
-            JSON.stringify(valueObject)
-        );
+        // throw new Error(
+        //   "jzodTypeCheck record schema " +
+        //     JSON.stringify(jzodSchema) +
+        //     " for value " +
+        //     JSON.stringify(valueObject)
+        // );
+        return {
+          status: "error",
+          error: "jzodTypeCheck record schema for value is not an object",
+          rawJzodSchemaType: jzodSchema.type,
+          valuePath: currentValuePath,
+          typePath: currentTypePath,
+          value: valueObject,
+          rawSchema: jzodSchema,
+        }; 
       }
       const definition: {[k:string]: ResolvedJzodSchemaReturnType} = Object.fromEntries(
         Object.entries(valueObject).map(
@@ -880,17 +934,18 @@ export function jzodTypeCheck(
       return foundErrors.length > 0
         ? {
             status: "error",
+            error: "jzodTypeCheck failed to match object value with schema",
+            rawJzodSchemaType: jzodSchema.type,
             valuePath: currentValuePath,
             typePath: currentTypePath,
-            error:
-              "jzodTypeCheck record could not find schema for attributes " +
-              foundErrors.map((e) => e[0]).join(", ") +
-              " at path=" +
-              currentValuePath.join(".") +
-              " in valueObject=" +
-              JSON.stringify(valueObject, null, 2) +
-              " definition=" +
-              JSON.stringify(definition, null, 2),
+            innerError: Object.fromEntries(
+              foundErrors.map((e: [string, ResolvedJzodSchemaReturnType]) => [
+                e[0],
+                e[1] as ResolvedJzodSchemaReturnTypeError,
+              ])
+            ),
+            value: valueObject,
+            rawSchema: jzodSchema,
           }
         : {
             status: "ok",
@@ -931,13 +986,12 @@ export function jzodTypeCheck(
       } else {
         return {
           status: "error",
+          error: "jzodTypeCheck failed to match object value with schema",
+          rawJzodSchemaType: jzodSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
-          error:
-            "jzodTypeCheck could not find literal type in resolved union " +
-            JSON.stringify(valueObject, null, 2) +
-            " jzodSchema=" +
-            JSON.stringify(jzodSchema, null, 2),
+          value: valueObject,
+          rawSchema: jzodSchema,
         };
       }
       break;
@@ -963,13 +1017,13 @@ export function jzodTypeCheck(
       if ( !Array.isArray(valueObject)) {
         return {
           status: "error",
+          error: "jzodTypeCheck failed to match object value with schema",
+          rawJzodSchemaType: jzodSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
-          error: "jzodTypeCheck can not handle tuple schema " +
-          JSON.stringify(jzodSchema) +
-          " for value " +
-          JSON.stringify(valueObject)
-        }
+          value: valueObject,
+          rawSchema: jzodSchema,
+        };
       }
       // return {
       //   status: "error",
@@ -1000,15 +1054,12 @@ export function jzodTypeCheck(
       return foundErrors.length > 0
         ? {
             status: "error",
+            error: "jzodTypeCheck failed to match object value with schema",
+            rawJzodSchemaType: jzodSchema.type,
             valuePath: currentValuePath,
             typePath: currentTypePath,
-            error:
-              "jzodTypeCheck tuple could not find schema for elements at indices " +
-              foundErrors.map((e, index) => index).join(", ") +
-              " at path=" +
-              currentValuePath.join(".") +
-              " in valueObject=" +
-              JSON.stringify(valueObject, null, 2),
+            value: valueObject,
+            rawSchema: jzodSchema,
           }
         : {
             status: "ok",
@@ -1030,13 +1081,13 @@ export function jzodTypeCheck(
       if ( !Array.isArray(valueObject)) {
         return {
           status: "error",
+          error: "jzodTypeCheck failed to match object value with schema",
+          rawJzodSchemaType: jzodSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
-          error: "jzodTypeCheck array schema " +
-          JSON.stringify(jzodSchema) +
-          " for value " +
-          JSON.stringify(valueObject)
-        }
+          value: valueObject,
+          rawSchema: jzodSchema,
+        };
       }
       // const innerSchema = jzodSchema.definition.type == "schemaReference"?
       //   resolveJzodSchemaReferenceInContext(
@@ -1078,15 +1129,13 @@ export function jzodTypeCheck(
             return subSchema.status == "error"
               ? {
                   status: "error",
+                  error: "jzodTypeCheck failed to match object value with schema",
+                  rawJzodSchemaType: jzodSchema.type,
                   valuePath: [...currentValuePath, index],
                   typePath: [...currentTypePath, index],
-                  error:
-                    "jzodTypeCheck could not find schema for array element at index " +
-                    index +
-                    " in valueObject=" +
-                    JSON.stringify(valueObject, null, 2) +
-                    " error: " +
-                    subSchema.error,
+                  innerError: subSchema,
+                  value: valueObject,
+                  rawSchema: jzodSchema,
                 }
               : {
                   status: "ok",
@@ -1097,36 +1146,41 @@ export function jzodTypeCheck(
                 };
           }
         );
-        const foundErrors = subSchemas.filter(
+        const foundErrors: ResolvedJzodSchemaReturnTypeError[] = subSchemas.filter(
           (e: ResolvedJzodSchemaReturnType) => e.status == "error"
         );
 
         return foundErrors.length > 0
           ? {
               status: "error",
+              error: "jzodTypeCheck failed to match object value with schema",
+              rawJzodSchemaType: jzodSchema.type,
               valuePath: currentValuePath,
               typePath: currentTypePath,
-              error:
-                "jzodTypeCheck array could not find schema for elements at indices " +
-                foundErrors.map((e, index) => index).join(", ") +
-                " at path=" +
-                currentValuePath.join(".") +
-                " in valueObject=" +
-                JSON.stringify(valueObject, null, 2),
-          }:
-          {
-          status: "ok",
-          valuePath: currentValuePath,
-          typePath: currentTypePath,
-          rawSchema: jzodSchema,
-          resolvedSchema: {
-            ...jzodSchema,
-            type: "tuple",
-            definition: subSchemas.map(s => (s as ResolvedJzodSchemaReturnTypeOK).resolvedSchema), // TODO: this is a shortcut assuming that all items in the array are of the same type, which is not always true
-          }, // TODO: this is a shortcut assuming that all items in the array are of the same type, which is not always true
-          // resolvedSchema: { ...jzodSchema, type: "array", definition: innerSchema },
-          subSchemas,
-        };
+              innerError: Object.fromEntries(
+                foundErrors.map((e: ResolvedJzodSchemaReturnTypeError) => [
+                  e.valuePath && e.valuePath.length > 0 ? e.valuePath.join(".") : "",
+                  e,
+                ])
+              ),
+              value: valueObject,
+              rawSchema: jzodSchema,
+            }
+          : {
+              status: "ok",
+              valuePath: currentValuePath,
+              typePath: currentTypePath,
+              rawSchema: jzodSchema,
+              resolvedSchema: {
+                ...jzodSchema,
+                type: "tuple",
+                definition: subSchemas.map(
+                  (s) => (s as ResolvedJzodSchemaReturnTypeOK).resolvedSchema
+                ), // TODO: this is a shortcut assuming that all items in the array are of the same type, which is not always true
+              }, // TODO: this is a shortcut assuming that all items in the array are of the same type, which is not always true
+              // resolvedSchema: { ...jzodSchema, type: "array", definition: innerSchema },
+              subSchemas,
+            };
       break;
     }
     // plain Attributes
@@ -1139,13 +1193,130 @@ export function jzodTypeCheck(
         resolvedSchema: valueToJzod(valueObject) as JzodElement,
       };
     }
-    case "uuid":
-    case "string":
-    case "number":
-    case "bigint":
-    case "boolean":
+    case "uuid": {
+      // log.info("jzodTypeCheck uuid at path=valueObject." + currentValue
+      if (typeof valueObject != "string" || !isValidUUID(valueObject)) {
+        return {
+          status: "error",
+          error: "jzodTypeCheck failed to match object value with schema",
+          rawJzodSchemaType: jzodSchema.type,
+          valuePath: currentValuePath,
+          typePath: currentTypePath,
+          value: valueObject,
+          rawSchema: jzodSchema,
+        };
+      }
+      return {
+        status: "ok",
+        valuePath: currentValuePath,
+        typePath: currentTypePath,
+        rawSchema: jzodSchema,
+        resolvedSchema: jzodSchema,
+        // resolvedSchema: { ...jzodSchema, type: "string" }, // TODO: this is a shortcut assuming that all items in the array are of the same type, which is not always true
+      };
+      break;
+    }
+    case "string": {
+      if (typeof valueObject != "string") {
+        return {
+          status: "error",
+          error: "jzodTypeCheck failed to match object value with schema",
+          rawJzodSchemaType: jzodSchema.type,
+          valuePath: currentValuePath,
+          typePath: currentTypePath,
+          value: valueObject,
+          rawSchema: jzodSchema,
+        };
+      }
+      return {
+        status: "ok",
+        valuePath: currentValuePath,
+        typePath: currentTypePath,
+        rawSchema: jzodSchema,
+        resolvedSchema: jzodSchema,
+      };
+    }
+    case "number": {
+      if (typeof valueObject != "number") {
+        return {
+          status: "error",
+          error: "jzodTypeCheck failed to match object value with schema",
+          rawJzodSchemaType: jzodSchema.type,
+          valuePath: currentValuePath,
+          typePath: currentTypePath,
+          value: valueObject,
+          rawSchema: jzodSchema,
+        };
+      }
+      return {
+        status: "ok",
+        valuePath: currentValuePath,
+        typePath: currentTypePath,
+        rawSchema: jzodSchema,
+        resolvedSchema: jzodSchema,
+      };
+    }
+    case "bigint": {
+      if (typeof valueObject != "bigint") {
+        return {
+          status: "error",
+          error: "jzodTypeCheck failed to match object value with schema",
+          rawJzodSchemaType: jzodSchema.type,
+          valuePath: currentValuePath,
+          typePath: currentTypePath,
+          value: valueObject,
+          rawSchema: jzodSchema,
+        };
+      }
+      return {
+        status: "ok",
+        valuePath: currentValuePath,
+        typePath: currentTypePath,
+        rawSchema: jzodSchema,
+        resolvedSchema: jzodSchema,
+      };
+    }
+    case "boolean": {
+      if (typeof valueObject != "boolean") {
+        return {
+          status: "error",
+          error: "jzodTypeCheck failed to match object value with schema",
+          rawJzodSchemaType: jzodSchema.type,
+          valuePath: currentValuePath,
+          typePath: currentTypePath,
+          value: valueObject,
+          rawSchema: jzodSchema,
+        };
+      }
+      return {
+        status: "ok",
+        valuePath: currentValuePath,
+        typePath: currentTypePath,
+        rawSchema: jzodSchema,
+        resolvedSchema: jzodSchema,
+      };
+    }
+    case "date": {
+      if (!(valueObject instanceof Date)) {
+        return {
+          status: "error",
+          error: "jzodTypeCheck failed to match object value with schema",
+          rawJzodSchemaType: jzodSchema.type,
+          valuePath: currentValuePath,
+          typePath: currentTypePath,
+          value: valueObject,
+          rawSchema: jzodSchema,
+        };
+      }
+      return {
+        status: "ok",
+        valuePath: currentValuePath,
+        typePath: currentTypePath,
+        rawSchema: jzodSchema,
+        resolvedSchema: jzodSchema,
+      };
+    }
     case "undefined":
-    case "date":
     case "never":
     case "null":
     case "unknown":
@@ -1158,14 +1329,6 @@ export function jzodTypeCheck(
     case "map":
     // case "simpleType":
     case "lazy": {
-      // log.info(
-      //   "jzodTypeCheck", jzodSchema?.type, "at path=valueObject." + 
-      //   currentValuePath.join("."),
-      //   ", type:",
-      //   JSON.stringify(jzodSchema, null, 2),
-      //   "validates",
-      //   JSON.stringify(valueObject, null, 2)
-      // );
       return {
         status: "ok",
         valuePath: currentValuePath,
@@ -1175,12 +1338,21 @@ export function jzodTypeCheck(
       };
     }
     default: {
-      throw new Error(
-        "jzodTypeCheck could not resolve schemaReferences for valueObject " +
-          JSON.stringify(valueObject, undefined, 2) +
-          " and schema " +
-          JSON.stringify(jzodSchema)
-      );
+      // throw new Error(
+      //   "jzodTypeCheck could not resolve schemaReferences for valueObject " +
+      //     JSON.stringify(valueObject, undefined, 2) +
+      //     " and schema " +
+      //     JSON.stringify(jzodSchema)
+      // );
+      return {
+        status: "error",
+        error: "jzodTypeCheck failed to match object value with schema",
+        rawJzodSchemaType: "not supported",
+        valuePath: currentValuePath,
+        typePath: currentTypePath,
+        value: valueObject,
+        rawSchema: jzodSchema,
+      };
       break;
     }
   }

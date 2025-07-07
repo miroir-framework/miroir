@@ -328,7 +328,8 @@
             ]
           },
           "parameter": {
-            "type": "any"
+            "type": "any",
+            "optional": true
           }
         }
       },

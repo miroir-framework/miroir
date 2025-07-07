@@ -104,7 +104,8 @@ export function resolveJzodSchemaReferenceInContext(
 
 
 // ################################################################################################
-// TODO: redundant to resolveJzodSchemaReferenceInContext, resolveJzodSchemaReference is used only in JzodTools, refactor / merge with resolveJzodSchemaReferenceInContext.
+// TODO: redundant to resolveJzodSchemaReferenceInContext, resolveJzodSchemaReference is used only in JzodTools,
+// refactor / merge with resolveJzodSchemaReferenceInContext.
 export function resolveJzodSchemaReference(
   miroirFundamentalJzodSchema: JzodSchema,
   jzodReference?: JzodReference,

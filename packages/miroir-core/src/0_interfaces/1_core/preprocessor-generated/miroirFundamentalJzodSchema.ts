@@ -343,7 +343,8 @@ export const miroirFundamentalJzodSchema = {
             ]
           },
           "parameter": {
-            "type": "any"
+            "type": "any",
+            "optional": true
           }
         }
       },
@@ -1885,44 +1886,6 @@ export const miroirFundamentalJzodSchema = {
             "context": {}
           }
         ]
-      },
-      "actionHandler": {
-        "type": "object",
-        "definition": {
-          "interface": {
-            "type": "object",
-            "definition": {
-              "actionJzodObjectSchema": {
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "jzodObject"
-                },
-                "context": {}
-              }
-            }
-          },
-          "implementation": {
-            "type": "object",
-            "definition": {
-              "templates": {
-                "type": "record",
-                "optional": true,
-                "definition": {
-                  "type": "any"
-                }
-              },
-              "compositeActionTemplate": {
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "compositeActionTemplate"
-                },
-                "context": {}
-              }
-            }
-          }
-        }
       },
       "zodParseErrorIssueInvalidUnion": {
         "type": "object",
@@ -7951,6 +7914,50 @@ export const miroirFundamentalJzodSchema = {
                 "id": 1,
                 "defaultLabel": "parentUuid",
                 "editable": false
+              }
+            }
+          },
+          "selfApplication": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "id": 9,
+                "defaultLabel": "SelfApplication",
+                "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+                "editable": false
+              }
+            }
+          },
+          "branch": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "id": 10,
+                "defaultLabel": "Branch",
+                "description": "The Branch of the SelfApplication",
+                "editable": false
+              }
+            }
+          },
+          "name": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 1,
+                "defaultLabel": "Name",
+                "editable": true
+              }
+            }
+          },
+          "description": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 1,
+                "defaultLabel": "Name",
+                "editable": true
               }
             }
           },
@@ -17944,9 +17951,11 @@ export const miroirFundamentalJzodSchema = {
           },
           "parameter": {
             "type": "union",
+            "optional": true,
             "definition": [
               {
-                "type": "any"
+                "type": "any",
+                "optional": true
               },
               {
                 "type": "schemaReference",
@@ -38633,9 +38642,11 @@ export const miroirFundamentalJzodSchema = {
               },
               "parameter": {
                 "type": "union",
+                "optional": true,
                 "definition": [
                   {
-                    "type": "any"
+                    "type": "any",
+                    "optional": true
                   },
                   {
                     "type": "schemaReference",
@@ -45474,7 +45485,8 @@ export const miroirFundamentalJzodSchema = {
             ]
           },
           "parameter": {
-            "type": "any"
+            "type": "any",
+            "optional": true
           }
         }
       },
@@ -51910,7 +51922,8 @@ export const miroirFundamentalJzodSchema = {
             ]
           },
           "parameter": {
-            "type": "any"
+            "type": "any",
+            "optional": true
           }
         }
       },
@@ -58310,7 +58323,8 @@ export const miroirFundamentalJzodSchema = {
             ]
           },
           "parameter": {
-            "type": "any"
+            "type": "any",
+            "optional": true
           }
         }
       },

@@ -62,6 +62,8 @@ export interface ReportSectionEntityInstanceProps {
   entityUuid: Uuid,
 }
 
+const codeMirrorExtensions = [javascript()];
+
 // const label = { inputProps: { 'aria-label': 'Color switch demo' } };
 
 let ReportSectionEntityInstanceCount = 0
@@ -185,10 +187,20 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     log.error(
       "ReportSectionEntityInstance could not resolve jzod schema",
       // props,
-      // context, resolvedJzodSchema
+      // context,
+      resolvedJzodSchema
     );
     // return <>ReportSectionEntityInstance: could not resolve jzod schema: {JSON.stringify(resolvedJzodSchema)}</>;
-    typeError = <>ReportSectionEntityInstance: could not resolve jzod schema: {JSON.stringify(resolvedJzodSchema)}</>;
+    // typeError = <>ReportSectionEntityInstance: could not resolve jzod schema: {JSON.stringify(resolvedJzodSchema, null, 2)}</>;
+    typeError = (
+      <ReactCodeMirror
+        editable={false}
+        height="100ex"
+        value={`${JSON.stringify(resolvedJzodSchema, null, 2)}`}
+        extensions={codeMirrorExtensions}
+        // onChange={handleChange}
+      />
+    );
   }
 
   
@@ -319,6 +331,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
           {/* <p>
         ReportSectionEntityInstance
         </p> */}
+          <div>{typeError?"typeError: ": ""}<pre>{typeError??<></>}</pre></div>
+
           {/* <div>
             <pre>
               {JSON.stringify(resolvedJzodSchema.element, null, 2)}
@@ -343,8 +357,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
           <div>
             <span>
               displayAsStructuredElement: {displayAsStructuredElement ? "true" : "false"}{" "}
-              displayEditor: {displayEditor ? "true" : "false"}
-              hasTypeError: {typeError ? "true" : "false"}
+              displayEditor: {displayEditor ? "true" : "false"}{" "}
+              hasTypeError: {typeError ? "true" : "false"}{" "}
             </span>
           </div>
           <h1>
@@ -512,7 +526,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
             </div>
           )}
         </div>
-        <div>{typeError?"typeError: ": ""}<pre>{typeError??<></>}</pre></div>
       </>
     );
   } else {

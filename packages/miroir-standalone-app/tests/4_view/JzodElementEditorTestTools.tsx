@@ -861,7 +861,39 @@ export function extractValuesFromRenderedElements(
   label: string = "",
   step?: string,
 ): Record<string, any> {
+  const values: Record<string, any> = {};
   console.log("########### extractValuesFromRenderedElements for label", label, "step", step);
+  // let displayedValues: HTMLElement[] = [];
+  // try {
+  //   displayedValues = screen.getAllByTestId("miroirDisplayedValue");
+  // } catch (e) {
+  //   // No displayed values found, leave displayedValues as empty array
+  // }
+  // const displayedValuesInfo = displayedValues.map((i) => {
+  //   return {
+  //     name:
+  //       (i as HTMLElement).id.replace(new RegExp(`^${label}\\.`), "") ||
+  //       (i as HTMLElement).getAttribute("aria-label")?.replace(new RegExp(`^${label}\\.`), ""),
+  //     value: (i as HTMLElement).textContent,
+  //     type: "string", // Assuming displayed values are strings
+  //   };
+  // });
+  // Handle displayed values
+  // displayedValuesInfo.forEach((d) => {
+  //   let value: any = d.value;
+  //   // if (d.value === "" && d.defaultValue !== undefined) {
+  //   //   value = d.defaultValue;
+  //   // }
+  //   if (d.type === "number") {
+  //     if (!isNaN(Number(value)) && value !== "") {
+  //       value = Number(value);
+  //     } else {
+  //       expect(false, "number displayed value is not a number for " + d.name).toBeTruthy();
+  //     }
+  //   }
+  //   values[d.name??""] = value;
+  // });
+  // #############################################################
   let textBoxes: HTMLElement[] = [];
   try {
     textBoxes = screen
@@ -875,7 +907,7 @@ export function extractValuesFromRenderedElements(
     const name = (i as HTMLInputElement).id.replace(new RegExp(`^${label}\\.`), "") || (i as HTMLInputElement).name.replace(new RegExp(`^${label}\\.`), "");
     return {
       name,
-      value: (i as HTMLInputElement).value,
+      value: (i as HTMLInputElement).innerText,
       defaultValue: (i as HTMLInputElement).defaultValue,
       type: (i as HTMLInputElement).type,
     };
@@ -938,7 +970,6 @@ export function extractValuesFromRenderedElements(
   console.log("options", optionsInfo);
 
   // #############################################################
-  const values: Record<string, any> = {};
   textBoxesInfo.forEach((c) => {
     let value: any = c.value;
     if (c.value === "" && c.defaultValue !== undefined) {
