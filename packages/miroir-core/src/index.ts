@@ -632,6 +632,9 @@ export {
   // getReportSectionTargetEntityUuid,
   jzodTypeCheck,
   jzodUnionResolvedTypeForObject,
+  JzodUnionResolvedTypeForObjectReturnType,
+  JzodUnionResolvedTypeForObjectReturnTypeOK,
+  JzodUnionResolvedTypeForObjectReturnTypeError,
   unionObjectChoices,
   selectUnionBranchFromDiscriminator,
 } from "./1_core/jzod/jzodTypeCheck.js";

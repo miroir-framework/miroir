@@ -117,7 +117,16 @@ export function getColumnDefinitionsFromEntityDefinitionAttribute(
       };
     }
     default: {
-      log.info("column default:", name, jzodSchema);
+      if (!jzodSchema) {
+        log.error(
+          "getColumnDefinitionsFromEntityDefinitionAttribute: jzodSchema is undefined for name",
+          name,
+          "entityDefinition",
+          entityDefinition
+        );
+      } else {
+        log.info("column default:", name, jzodSchema);
+      }
       return {
         field: name,
         cellRenderer: DefaultCellRenderer,
@@ -140,6 +149,17 @@ export function getColumnDefinitionsFromEntityDefinitionJzodObjectSchema(
   viewAttributes?: string[],
   entityDefinition?: EntityDefinition | undefined
 ): ColDef<any>[] {
+  log.info(
+    "getColumnDefinitionsFromEntityDefinitionJzodObjectSchema",
+    "deploymentUuid",
+    deploymentUuid,
+    "jzodSchema",
+    jzodSchema,
+    "viewAttributes",
+    viewAttributes,
+    "entityDefinition",
+    entityDefinition
+  );
   switch (jzodSchema?.type) {
     case "object":
       {

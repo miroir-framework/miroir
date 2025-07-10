@@ -125,7 +125,7 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
     currentValue,
     localResolvedElementJzodSchemaBasedOnValue,
     unfoldedRawSchema,
-    recursivelyUnfoldedRawSchema,
+    // recursivelyUnfoldedRawSchema,
     foreignKeyObjects,
     // union
     unionInformation,
@@ -356,18 +356,18 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
       );
     }
 
-    if (recursivelyUnfoldedRawSchema && recursivelyUnfoldedRawSchema.status === "error") {
-      return (
-        <div>
-          <p>
-            Error unfolding union schema {props.listKey} {count}:
-          </p>
-          <pre style={{ color: "red" }}>
-            {JSON.stringify(recursivelyUnfoldedRawSchema, null, 2)}
-          </pre>
-        </div>
-      );
-    }
+    // if (recursivelyUnfoldedRawSchema && recursivelyUnfoldedRawSchema.status === "error") {
+    //   return (
+    //     <div>
+    //       <p>
+    //         Error unfolding union schema {props.listKey} {count}:
+    //       </p>
+    //       <pre style={{ color: "red" }}>
+    //         {JSON.stringify(recursivelyUnfoldedRawSchema, null, 2)}
+    //       </pre>
+    //     </div>
+    //   );
+    // }
 
     // Handle "any" type
     if (props.rawJzodSchema?.type === "any" && !props.insideAny) {
@@ -760,7 +760,7 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
     localResolvedElementJzodSchemaBasedOnValue, 
     formik, 
     currentValue, 
-    recursivelyUnfoldedRawSchema,
+    // recursivelyUnfoldedRawSchema,
     unionInformation,
     foreignKeyObjects,
     hideSubJzodEditor,

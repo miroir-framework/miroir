@@ -129,7 +129,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     currentDeploymentUuid,
     currentApplicationSection,
     indentLevel,
-    resolvedElementJzodSchema,
+    // resolvedElementJzodSchema,
     localRootLessListKeyMap,
     insideAny,
     displayAsStructuredElementSwitch,
@@ -152,11 +152,11 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     // general use
     context,
     currentModel,
-    deploymentEntityStateSelectorMap,
+    // deploymentEntityStateSelectorMap,
     formik,
     localResolvedElementJzodSchemaBasedOnValue,
     miroirMetaModel,
-    recursivelyUnfoldedRawSchema,
+    // recursivelyUnfoldedRawSchema,
     unfoldedRawSchema,
     discriminatedSchemaForObject,
     // uuid
@@ -544,16 +544,21 @@ ${JSON.stringify(props.rawJzodSchema, null, 2)}`}
                 concreteObjectRawJzodSchema.extend
               ) {
                 const resolvedConcreteObjectJzodSchemaTmp = useMemo(
-                  () =>
-                    currentMiroirFundamentalJzodSchema
+                  () => {
+                    log.info("getJzodElementEditorHooks unfoldJzodSchemaOnce FROM JZOD OBJECT EDITOR", "count", count, "call");
+
+                    return currentMiroirFundamentalJzodSchema
                       ? // ? unfoldJzodSchemaOnce(
                         unfoldJzodSchemaOnce(
                           currentMiroirFundamentalJzodSchema,
                           concreteObjectRawJzodSchema,
+                          concreteObjectRawJzodSchema, // rootSchema
+                          0, // depth
                           currentModel,
                           miroirMetaModel
                         )
-                      : undefined,
+                      : undefined;
+                  },
                   [
                     currentMiroirFundamentalJzodSchema,
                     concreteObjectRawJzodSchema,

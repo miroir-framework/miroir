@@ -142,6 +142,10 @@ export function localizeJzodSchemaReferenceContext<T extends JzodElement>(
 
 
 let dummy: any;
+
+// Track recursion level for performance monitoring
+let recursionLevel = 0;
+
 // #####################################################################################################
 // #####################################################################################################
 // #####################################################################################################
@@ -151,21 +155,53 @@ let dummy: any;
 export function unfoldJzodSchemaOnce(
   miroirFundamentalJzodSchema: JzodSchema,
   jzodSchema: JzodElement | undefined,
+  rootSchema:JzodElement | undefined,
+  depth: number, // used to limit the unfolding depth
   currentModel?: MetaModel,
   miroirMetaModel?: MetaModel,
   relativeReferenceJzodContext?: {[k:string]: JzodElement},
-  isUnfoldingSubUnion: boolean = false, // used to avoid infinite recursion in case of union unfolding
+  // isUnfoldingSubUnion: boolean = false, // used to avoid infinite recursion in case of union unfolding
 ): UnfoldJzodSchemaOnceReturnType {
-  // log.info(
-  //   "unfoldJzodSchemaOnce called for schema",
-  //   jzodSchema
-  //   // JSON.stringify(jzodSchema, null, 2)
-  // );
+  const startTime = performance.now();
+  recursionLevel++;
+  const currentRecursionLevel = recursionLevel;
+  
+  log.info(
+    `unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] called for schema`,
+    jzodSchema,
+    (jzodSchema?.type == "object"?JSON.stringify(Object.keys((jzodSchema as any).definition??{}), null, 2):"not an object"),
+    "rootSchema",
+    rootSchema
+  );
 
   if (!jzodSchema) {
+    recursionLevel--;
+    const endTime = performance.now();
+    const executionTime = endTime - startTime;
+    log.info(`unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] execution time: ${executionTime.toFixed(2)}ms - returning never type`);
     return { status: "ok", element: { type: "never" } }
   }
 
+  if (
+    (jzodSchema.type != "union" && depth > 1) ||
+    // (jzodSchema.type == "union" && depth > 2) 
+    (jzodSchema.type == "union" && depth > 1) 
+    
+  ) {
+    // we let unions within unions be unfolded
+    recursionLevel--;
+    const endTime = performance.now();
+    const executionTime = endTime - startTime;
+    log.info(
+      `unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] execution time: ${executionTime.toFixed(
+        2
+      )}ms - returning never type for sub-union`
+    );
+    return {
+      status: "ok",
+      element: jzodSchema,
+    };
+  }
   switch (jzodSchema?.type) {
     case "schemaReference": {
       const unfoldedReferenceJzodSchema = localizeJzodSchemaReferenceContext(
@@ -220,6 +256,10 @@ export function unfoldJzodSchemaOnce(
       //   JSON.stringify(valueObject, null, 2)
       // );
 
+      recursionLevel--;
+      const endTime = performance.now();
+      const executionTime = endTime - startTime;
+      log.info(`unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] execution time: ${executionTime.toFixed(2)}ms - schemaReference resolved`);
       return { status: "ok", element: resultJzodSchema};
       break;
     }
@@ -262,10 +302,11 @@ export function unfoldJzodSchemaOnce(
             const resultSchemaTmp = unfoldJzodSchemaOnce(
               miroirFundamentalJzodSchema,
               e[1],
+              rootSchema, // rootSchema
+              depth + 1, // depth
               currentModel,
               miroirMetaModel,
               relativeReferenceJzodContext,
-              isUnfoldingSubUnion
             )
             // log.info("unfoldJzodSchemaOnce object attribute",e,"result",resultSchemaTmp)
             if (resultSchemaTmp.status == "ok") {
@@ -304,6 +345,10 @@ export function unfoldJzodSchemaOnce(
         definition: Object.fromEntries(resolvedObjectEntries),
       } as JzodElement;
       // log.info("unfoldJzodSchemaOnce object result", JSON.stringify(result, null, 2))
+      recursionLevel--;
+      const endTime = performance.now();
+      const executionTime = endTime - startTime;
+      log.info(`unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] execution time: ${executionTime.toFixed(2)}ms - object resolved`);
       return {status: "ok", element: resultElement};
       break;
     }
@@ -315,14 +360,19 @@ export function unfoldJzodSchemaOnce(
           unfoldJzodSchemaOnce(
             miroirFundamentalJzodSchema,
             a,
+            rootSchema, // rootSchema
+            depth + 1, // depth
             currentModel,
             miroirMetaModel,
             relativeReferenceJzodContext,
-            isUnfoldingSubUnion
           )
         );
       const failedIndex = unfoldedJzodSchemaReturnType.find(a => a.status!="ok")
       if (failedIndex) {
+        recursionLevel--;
+        const endTime = performance.now();
+        const executionTime = endTime - startTime;
+        log.info(`unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] execution time: ${executionTime.toFixed(2)}ms - union failed`);
         return {
           status: "error",
           error:
@@ -337,21 +387,28 @@ export function unfoldJzodSchemaOnce(
       // log.info("unfoldJzodSchemaOnce union unfoldedJzodSchemas", unfoldedJzodSchemas);
       const secondLevelUnfoldedTmpResults: (JzodElement | UnfoldJzodSchemaOnceReturnType)[] = firstLevelUnfoldedJzodSchemas.map(
         (s:JzodElement)=> {
-          if (s.type != "union" || isUnfoldingSubUnion) {
-            return s
-          }
+          // if (s.type != "union" || isUnfoldingSubUnion) {
+          //   return s
+          // }
           return unfoldJzodSchemaOnce(
             miroirFundamentalJzodSchema,
             s,
+            rootSchema, // rootSchema
+            // depth + 1, // depth
+            0, // depth
+            // 1, // depth
             currentModel,
             miroirMetaModel,
-            relativeReferenceJzodContext,
-            true // isUnfoldingSubUnion = true, to avoid infinite recursion in case of union unfolding
+            relativeReferenceJzodContext
           );
         }
       )
       const secondLineFailedIndex = secondLevelUnfoldedTmpResults.find((a:any) => Object.hasOwn(a,"status") && a.status!="ok")
       if (secondLineFailedIndex) {
+        recursionLevel--;
+        const endTime = performance.now();
+        const executionTime = endTime - startTime;
+        log.info(`unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] execution time: ${executionTime.toFixed(2)}ms - sub-union failed`);
         return {
           status: "error",
           error:
@@ -370,6 +427,10 @@ export function unfoldJzodSchemaOnce(
       // const resultElement = { ...jzodSchema, definition: firstLevelUnfoldedJzodSchemas}
       const resultElement = { ...jzodSchema, definition: secondLevelUnfoldedResults}
       // log.info("unfoldJzodSchemaOnce union resultElement", resultElement);
+      recursionLevel--;
+      const endTime = performance.now();
+      const executionTime = endTime - startTime;
+      log.info(`unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] execution time: ${executionTime.toFixed(2)}ms - union resolved`);
       return { status: "ok", element: resultElement}
       break;
     }
@@ -377,17 +438,22 @@ export function unfoldJzodSchemaOnce(
       const resultSchemaTmp: UnfoldJzodSchemaOnceReturnType = unfoldJzodSchemaOnce(
         miroirFundamentalJzodSchema,
         jzodSchema.definition,
+        rootSchema, // rootSchema
+        depth + 1, // depth
         currentModel,
         miroirMetaModel,
-        relativeReferenceJzodContext,
-        isUnfoldingSubUnion
-      )
+        relativeReferenceJzodContext
+      );
       if (resultSchemaTmp.status == "ok") {
         const result: UnfoldJzodSchemaOnceReturnType = {
           status: "ok",
           element: { ...jzodSchema, definition: resultSchemaTmp.element },
         };
         // log.info("unfoldJzodSchemaOnce record, result", JSON.stringify(result, null, 2))
+        recursionLevel--;
+        const endTime = performance.now();
+        const executionTime = endTime - startTime;
+        log.info(`unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] execution time: ${executionTime.toFixed(2)}ms - record resolved`);
         return result
       } else {
         log.warn(
@@ -395,36 +461,57 @@ export function unfoldJzodSchemaOnce(
           jzodSchema.definition +
           "' error:", JSON.stringify(resultSchemaTmp, null, 2)
         );
+        recursionLevel--;
+        const endTime = performance.now();
+        const executionTime = endTime - startTime;
+        log.info(`unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] execution time: ${executionTime.toFixed(2)}ms - record failed`);
         return { status: "ok", element: { type: "never" } }
       }
       break;
     }
     case "literal": {
+      recursionLevel--;
+      const endTime = performance.now();
+      const executionTime = endTime - startTime;
+      log.info(`unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] execution time: ${executionTime.toFixed(2)}ms - literal resolved`);
       return { status: "ok", element: jzodSchema };
       break;
     }
     case "enum": {
+      recursionLevel--;
+      const endTime = performance.now();
+      const executionTime = endTime - startTime;
+      log.info(`unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] execution time: ${executionTime.toFixed(2)}ms - enum resolved`);
       return { status: "ok", element: jzodSchema };
     }
     case "tuple": {
-      const subTypes = jzodSchema.definition.map(
-        (e) => unfoldJzodSchemaOnce(
+      const subTypes = jzodSchema.definition.map((e) =>
+        unfoldJzodSchemaOnce(
           miroirFundamentalJzodSchema,
           e,
+          rootSchema, // rootSchema
+          depth + 1, // depth
           currentModel,
           miroirMetaModel,
-          relativeReferenceJzodContext,
-          isUnfoldingSubUnion
+          relativeReferenceJzodContext
         )
-      )
+      );
       const foundError = subTypes.find(e=>e.status == "error");
       if (foundError) {
+        recursionLevel--;
+        const endTime = performance.now();
+        const executionTime = endTime - startTime;
+        log.info(`unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] execution time: ${executionTime.toFixed(2)}ms - tuple failed`);
         return {
           status: "error",
           error: "unfoldJzodSchemaOnce can not handle tuple schema " +
           JSON.stringify(jzodSchema) + " error " + JSON.stringify(foundError)
         }
       }
+      recursionLevel--;
+      const endTime = performance.now();
+      const executionTime = endTime - startTime;
+      log.info(`unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] execution time: ${executionTime.toFixed(2)}ms - tuple resolved`);
       return {
         status: "ok",
         element: {
@@ -438,13 +525,18 @@ export function unfoldJzodSchemaOnce(
       const subType = unfoldJzodSchemaOnce(
         miroirFundamentalJzodSchema,
         jzodSchema.definition,
+        rootSchema, // rootSchema
+        depth + 1, // depth
         currentModel,
         miroirMetaModel,
-        relativeReferenceJzodContext,
-        isUnfoldingSubUnion
+        relativeReferenceJzodContext
       );
 
       if (subType.status == "ok") {
+        recursionLevel--;
+        const endTime = performance.now();
+        const executionTime = endTime - startTime;
+        log.info(`unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] execution time: ${executionTime.toFixed(2)}ms - array resolved`);
         return {
           status: "ok",
           element: {
@@ -461,6 +553,10 @@ export function unfoldJzodSchemaOnce(
             // JSON.stringify(valueObject) +
             " found error: " + subType.error
         );
+        recursionLevel--;
+        const endTime = performance.now();
+        const executionTime = endTime - startTime;
+        log.info(`unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] execution time: ${executionTime.toFixed(2)}ms - array failed`);
         return { status: "ok", element: { type: "never" }}
       }
       break;
@@ -486,6 +582,10 @@ export function unfoldJzodSchemaOnce(
     case "map":
     // case "simpleType":
     case "lazy": {
+      recursionLevel--;
+      const endTime = performance.now();
+      const executionTime = endTime - startTime;
+      log.info(`unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] execution time: ${executionTime.toFixed(2)}ms - ${jzodSchema.type} resolved`);
       return {status: "ok", element: jzodSchema}
     }
     default: {

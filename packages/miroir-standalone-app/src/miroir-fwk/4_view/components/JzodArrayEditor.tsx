@@ -102,7 +102,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     rootLessListKey,
     rootLessListKeyArray,
     rawJzodSchema,
-    unfoldedRawSchema,
+    unfoldedRawSchema: parentUnfoldedRawSchema,
     resolvedElementJzodSchema,
     localRootLessListKeyMap,
     // paramMiroirFundamentalJzodSchema,
@@ -163,7 +163,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
       }
 
       // const newItem = getDefaultValueForJzodSchema(rawJzodSchema.definition)
-      const newItem = getDefaultValueForJzodSchema(unfoldedRawSchema.definition)
+      const newItem = getDefaultValueForJzodSchema(parentUnfoldedRawSchema.definition)
       // Create the new array value
       const newArrayValue = [
         ...arrayValueObject,
@@ -219,7 +219,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
       rawJzodSchema,
       arrayValueObject,
       // resolvedElementJzodSchema,
-      unfoldedRawSchema,
+      parentUnfoldedRawSchema,
     ]
   );
   // ##############################################################################################
@@ -339,7 +339,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
                   localRootLessListKeyMap={localRootLessListKeyMap}
                   foreignKeyObjects={foreignKeyObjects}
                   insideAny={insideAny}
-                  parentType={unfoldedRawSchema.type} // used to control the parent type of the element, used for array items
+                  parentType={parentUnfoldedRawSchema.type} // used to control the parent type of the element, used for array items
                 />
               </div>
             </div>
@@ -351,7 +351,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     rootLessListKey,
     // rootLessListKeyArray,
     rawJzodSchema,
-    unfoldedRawSchema,
+    parentUnfoldedRawSchema,
     formik.values,
     resolvedElementJzodSchema,
     localRootLessListKeyMap,

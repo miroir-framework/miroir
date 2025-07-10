@@ -16,13 +16,16 @@ import {
 } from "../../../src/1_core/jzod/jzodTypeCheck";
 import { miroirFundamentalJzodSchema } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
 import { resolveJzodSchemaReferenceInContext } from '../../../src/1_core/jzod/jzodResolveSchemaReferenceInContext';
+import { defaultMiroirMetaModel } from '../../test_assets/defaultMiroirMetaModel';
 
 // Minimal mocks for MetaModel and JzodSchema
-const mockMetaModel: MetaModel = {} as MetaModel;
-const mockJzodSchema: JzodSchema = {
-  uuid: "mock",
-  definition: { context: {} }
-} as JzodSchema;
+// const mockMetaModel: MetaModel = {} as MetaModel;
+// const mockJzodSchema: JzodSchema = {
+//   uuid: "mock",
+//   definition: { context: {} }
+// } as JzodSchema;
+
+const castMiroirFundamentalJzodSchema = miroirFundamentalJzodSchema as JzodSchema;
 
 describe("unionObjectChoices", () => {
   it("returns only object types from a flat union", () => {
@@ -32,9 +35,9 @@ describe("unionObjectChoices", () => {
 
     const result = unionObjectChoices(
       union.definition,
-      mockJzodSchema,
-      mockMetaModel,
-      mockMetaModel,
+      castMiroirFundamentalJzodSchema,
+      defaultMiroirMetaModel,
+      defaultMiroirMetaModel,
       {}
     );
     expect(result).toEqual([obj1, obj2]);
@@ -80,52 +83,55 @@ describe("unionObjectChoices", () => {
 
     const result = unionObjectChoices(
       union.definition,
-      mockJzodSchema,
-      mockMetaModel,
-      mockMetaModel,
+      castMiroirFundamentalJzodSchema,
+      defaultMiroirMetaModel,
+      defaultMiroirMetaModel,
       {}
     );
     expect(result).toEqual([obj1, obj2, obj3]);
   });
 
-  // // ##############################################################################################
-  // it("resolves schemaReferences in nested unions", () => {
-  //   // Simulate a schemaReference to an object
-  //   const referencedObj: JzodObject = { type: "object", definition: { d: { type: "string" } } };
-  //   const schemaReference: JzodReference = {
-  //     type: "schemaReference",
-  //     definition: { absolutePath: "mock", relativePath: "refObj" },
-  //     context: {}
-  //   };
-  //   const nestedUnion: JzodUnion = { type: "union", definition: [schemaReference] };
-  //   const union: JzodUnion = { type: "union", definition: [nestedUnion] };
+  // ##############################################################################################
+  it("resolves schemaReferences in nested unions", () => {
+    // Simulate a schemaReference to an object
+    const referencedObj: JzodObject = { type: "object", definition: { d: { type: "string" } } };
+    const schemaReference: JzodReference = {
+      type: "schemaReference",
+      definition: { 
+        // absolutePath: "mock",
+         relativePath: "refObj" },
+      context: {}
+    };
+    const nestedUnion: JzodUnion = { type: "union", definition: [schemaReference] };
+    const union: JzodUnion = { type: "union", definition: [nestedUnion] };
 
-  //   // Patch resolveJzodSchemaReferenceInContext to return referencedObj
-  //   // const { resolveJzodSchemaReferenceInContext } = await import("./JzodUnfoldSchemaForValue");
-  //   // const original = resolveJzodSchemaReferenceInContext;
-  //   // (globalThis as any).resolveJzodSchemaReferenceInContext = () => referencedObj;
+    // Patch resolveJzodSchemaReferenceInContext to return referencedObj
+    // const { resolveJzodSchemaReferenceInContext } = await import("./JzodUnfoldSchemaForValue");
+    // const original = resolveJzodSchemaReferenceInContext;
+    // (globalThis as any).resolveJzodSchemaReferenceInContext = () => referencedObj;
 
-  //   const result = unionChoices(
-  //     union.definition,
-  //     mockJzodSchema,
-  //     mockMetaModel,
-  //     mockMetaModel,
-  //     { refObj: referencedObj }
-  //   );
-  //   expect(result).toEqual([referencedObj]);
+    const result = unionObjectChoices(
+      union.definition,
+      castMiroirFundamentalJzodSchema,
+      defaultMiroirMetaModel,
+      defaultMiroirMetaModel,
+      { refObj: referencedObj }
+      // { mock: referencedObj }
+    );
+    expect(result).toEqual([referencedObj]);
 
-  //   // Restore original
-  //   // (globalThis as any).resolveJzodSchemaReferenceInContext = original;
-  // });
+    // Restore original
+    // (globalThis as any).resolveJzodSchemaReferenceInContext = original;
+  });
 
   // ##############################################################################################
   it("returns empty array if no object types are present", () => {
     const union: JzodUnion = { type: "union", definition: [{ type: "string" }, { type: "number" }] };
     const result = unionObjectChoices(
       union.definition,
-      mockJzodSchema,
-      mockMetaModel,
-      mockMetaModel,
+      castMiroirFundamentalJzodSchema,
+      defaultMiroirMetaModel,
+      defaultMiroirMetaModel,
       {}
     );
     expect(result).toEqual([]);

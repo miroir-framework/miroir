@@ -27,6 +27,7 @@ import {
   getQueryRunnerParamsForDeploymentEntityState,
   EntityInstance,
   jzodUnionResolvedTypeForObject,
+  JzodUnionResolvedTypeForObjectReturnType,
   UnfoldJzodSchemaOnceReturnType,
 } from "miroir-core";
 import { getMemoizedDeploymentEntityStateSelectorMap } from "miroir-localcache-redux";
@@ -65,8 +66,7 @@ export interface JzodElementEditorHooks {
   setDisplayAsStructuredElement: React.Dispatch<React.SetStateAction<boolean>>;
   // currentValue jzod schema
   localResolvedElementJzodSchemaBasedOnValue: JzodElement | undefined;
-  // rootLessListKeyMap: Record<string, { resolvedElementJzodSchema: JzodElement }>
-  recursivelyUnfoldedRawSchema: JzodUnion_RecursivelyUnfold_ReturnType | undefined;
+  // recursivelyUnfoldedRawSchema: JzodUnion_RecursivelyUnfold_ReturnType | undefined;
   unfoldedRawSchema: JzodElement;
   // union
   discriminatedSchemaForObject: JzodObject | undefined
@@ -177,6 +177,8 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
         ? unfoldJzodSchemaOnce(
             context.miroirFundamentalJzodSchema, // context.miroirFundamentalJzodSchema,
             props.rawJzodSchema,
+            props.rawJzodSchema, // rootSchema
+            0, // depth
             currentModel,
             miroirMetaModel
           )
@@ -247,7 +249,7 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
       }
     }, [unfoldedRawSchema, context.miroirFundamentalJzodSchema, currentModel, miroirMetaModel]);
 
-  if (recursivelyUnfoldedRawSchema && recursivelyUnfoldedRawSchema.status == "error") {
+  if (recursivelyUnfoldedRawSchema && recursivelyUnfoldedRawSchema.status != "ok") {
     throw new Error(
       "JzodElementEditor could not recursively unfold raw schema " +
         "error " +
@@ -330,7 +332,7 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
       foreignKeyObjectsFetchQueryParams
   );
 
-  const discriminatedSchemaForObject: JzodObject | undefined =
+  const discriminatedSchemaResult: JzodUnionResolvedTypeForObjectReturnType | undefined = 
     props.rawJzodSchema?.type == "union" &&
     props.rawJzodSchema.discriminator &&
     typeof currentValue == "object" &&
@@ -346,6 +348,11 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
           miroirMetaModel,
           {} // relativeReferenceJzodContext
         )
+      : undefined;
+
+  const discriminatedSchemaForObject: JzodObject | undefined = 
+    discriminatedSchemaResult?.status === "ok" 
+      ? discriminatedSchemaResult.resolvedJzodObjectSchema 
       : undefined;
 
   // ################################# objects ###################################
@@ -420,7 +427,7 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
     setCodeMirrorIsValidJson,
     deploymentEntityStateSelectorMap,
     localResolvedElementJzodSchemaBasedOnValue,
-    recursivelyUnfoldedRawSchema,
+    // recursivelyUnfoldedRawSchema,
     unfoldedRawSchema,
     foreignKeyObjects,
     discriminatedSchemaForObject,

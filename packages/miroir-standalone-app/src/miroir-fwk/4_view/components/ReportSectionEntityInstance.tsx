@@ -1,4 +1,7 @@
 import { ChangeEvent, useCallback, useMemo, useState } from 'react';
+import { Formik, FormikProps } from 'formik';
+import { EditorView } from '@codemirror/view';
+import ReactCodeMirror from '@uiw/react-codemirror';
 
 import {
   ApplicationSection,
@@ -27,6 +30,7 @@ import {
   jzodTypeCheck,
   rootLessListKeyMap
 } from "miroir-core";
+import { getMemoizedDeploymentEntityStateSelectorMap } from 'miroir-localcache-redux';
 
 import {
   useDomainControllerService,
@@ -35,7 +39,6 @@ import {
 
 import { javascript } from '@codemirror/lang-javascript';
 import { Switch } from '@mui/material';
-import ReactCodeMirror from '@uiw/react-codemirror';
 import { packageName } from '../../../constants.js';
 import { JzodEnumSchemaToJzodElementResolver, getCurrentEnumJzodSchemaResolver } from '../../JzodTools.js';
 import { cleanLevel } from '../constants.js';
@@ -44,9 +47,7 @@ import {
   useDeploymentEntityStateQuerySelectorForCleanedResult
 } from "../ReduxHooks.js";
 import { JzodElementDisplay } from './JzodElementDisplay.js';
-import { Formik, FormikProps } from 'formik';
 import { JzodElementEditor } from './JzodElementEditor.js';
-import { getMemoizedDeploymentEntityStateSelectorMap } from 'miroir-localcache-redux';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -192,15 +193,67 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     );
     // return <>ReportSectionEntityInstance: could not resolve jzod schema: {JSON.stringify(resolvedJzodSchema)}</>;
     // typeError = <>ReportSectionEntityInstance: could not resolve jzod schema: {JSON.stringify(resolvedJzodSchema, null, 2)}</>;
-    typeError = (
-      <ReactCodeMirror
-        editable={false}
-        height="100ex"
-        value={`${JSON.stringify(resolvedJzodSchema, null, 2)}`}
-        extensions={codeMirrorExtensions}
-        // onChange={handleChange}
-      />
-    );
+    // Calculate the maximum line width for fixed sizing
+  const jsonString = JSON.stringify(resolvedJzodSchema, null, 2);
+  const lines = jsonString.split('\n');
+  const maxLineLength = Math.max(...lines.map(line => line.length));
+  const fixedWidth = Math.min(Math.max(maxLineLength * 0.6, 1200), 1800); // 0.6px per character, min 400px, max 1200px
+  
+  typeError = (
+    <ReactCodeMirror
+      editable={false}
+      height="100ex"
+      style={{ 
+        width: `${fixedWidth}px`, // Fixed width based on content
+        maxWidth: '90vw' // Prevent overflow on small screens
+      }}
+      value={jsonString}
+      extensions={[
+        ...codeMirrorExtensions,
+        EditorView.lineWrapping, // Enable line wrapping
+        EditorView.theme({
+          ".cm-editor": {
+            width: `${fixedWidth}px`,
+          },
+          ".cm-scroller": {
+            width: "100%",
+            overflowX: "auto", // Enable horizontal scrolling if needed
+          },
+          ".cm-content": {
+            minWidth: `${fixedWidth}px`,
+          }
+        }),
+      ]}
+      basicSetup={{
+        foldGutter: true,
+        lineNumbers: true,
+      }}
+    />
+  );
+    // typeError = (
+    //   <ReactCodeMirror
+    //     editable={false}
+    //     height="100ex"
+    //     style={{ maxWidth: '80%' }}
+    //     value={`${JSON.stringify(resolvedJzodSchema, null, 2)}`}
+    //     extensions={[
+    //       ...codeMirrorExtensions,
+    //       EditorView.lineWrapping, // Enable line wrapping
+    //       EditorView.theme({
+    //         ".cm-editor": {
+    //           maxWidth: "80%",
+    //         },
+    //         ".cm-scroller": {
+    //           maxWidth: "100%",
+    //         },
+    //       }),
+    //     ]}
+    //     basicSetup={{
+    //       foldGutter: true,
+    //       lineNumbers: true,
+    //     }}
+    //   />
+    // );
   }
 
   

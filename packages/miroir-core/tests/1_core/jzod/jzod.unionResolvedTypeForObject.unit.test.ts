@@ -51,10 +51,13 @@ describe('jzodUnionResolvedTypeForObject', () => {
     );
 
     // Assert
-    expect(result).toEqual(singleObjectChoice);
+    expect(result.status).toBe("ok");
+    if (result.status === "ok") {
+      expect(result.resolvedJzodObjectSchema).toEqual(singleObjectChoice);
+    }
   });
 
-  it("should throw error when no object choices are found", () => {
+  it("should return error when no object choices are found", () => {
     // Setup
     const valueObject = { name: "test", type: "notFound" };
     const currentValuePath = ["root"];
@@ -62,20 +65,24 @@ describe('jzodUnionResolvedTypeForObject', () => {
     const discriminator = "type";
     const concreteUnrolledJzodSchemas: JzodElement[] = [{ type: "string" }];
 
-    // Act & Assert
-    expect(() =>
-      jzodUnionResolvedTypeForObject(
-        concreteUnrolledJzodSchemas,
-        discriminator,
-        valueObject,
-        currentValuePath,
-        currentTypePath,
-        mockMiroirFundamentalJzodSchema,
-        mockCurrentModel,
-        mockMiroirMetaModel,
-        mockRelativeReferenceJzodContext
-      )
-    ).toThrow(/jzodTypeCheck could not find object type/);
+    // Act
+    const result = jzodUnionResolvedTypeForObject(
+      concreteUnrolledJzodSchemas,
+      discriminator,
+      valueObject,
+      currentValuePath,
+      currentTypePath,
+      mockMiroirFundamentalJzodSchema,
+      mockCurrentModel,
+      mockMiroirMetaModel,
+      mockRelativeReferenceJzodContext
+    );
+
+    // Assert
+    expect(result.status).toBe("error");
+    if (result.status === "error") {
+      expect(result.error).toMatch(/could not find object type/);
+    }
   });
 
   it('should use selectUnionBranchFromDiscriminator when multiple object choices exist', () => {
@@ -119,7 +126,10 @@ describe('jzodUnionResolvedTypeForObject', () => {
     );
 
     // Assert
-    expect(result).toEqual(objectChoiceA);
+    expect(result.status).toBe("ok");
+    if (result.status === "ok") {
+      expect(result.resolvedJzodObjectSchema).toEqual(objectChoiceA);
+    }
   });
 
   it('should handle complex discriminator selection with union types', () => {
@@ -172,7 +182,10 @@ describe('jzodUnionResolvedTypeForObject', () => {
     );
 
     // Assert
-    expect(result).toEqual(objectChoice);
+    expect(result.status).toBe("ok");
+    if (result.status === "ok") {
+      expect(result.resolvedJzodObjectSchema).toEqual(objectChoice);
+    }
   });
 });
 

@@ -681,21 +681,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": "literal"
           },
           "definition": {
-            "type": "union",
-            "definition": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "number"
-              },
-              {
-                "type": "bigint"
-              },
-              {
-                "type": "boolean"
-              }
-            ]
+            "type": "string"
           }
         }
       },
@@ -796,6 +782,7 @@ export const miroirFundamentalJzodSchema = {
               {
                 "type": "union",
                 "optional": true,
+                "discriminator": "type",
                 "definition": [
                   {
                     "type": "schemaReference",
@@ -820,6 +807,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "type": "union",
                   "optional": true,
+                  "discriminator": "type",
                   "definition": [
                     {
                       "type": "schemaReference",
@@ -856,6 +844,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "carryOn": {
             "type": "union",
+            "discriminator": "type",
             "optional": true,
             "definition": [
               {
@@ -972,6 +961,7 @@ export const miroirFundamentalJzodSchema = {
           "carryOn": {
             "type": "union",
             "optional": true,
+            "discriminator": "type",
             "definition": [
               {
                 "type": "schemaReference",
@@ -18460,15 +18450,6 @@ export const miroirFundamentalJzodSchema = {
                 "type": "string"
               },
               {
-                "type": "number"
-              },
-              {
-                "type": "bigint"
-              },
-              {
-                "type": "boolean"
-              },
-              {
                 "type": "schemaReference",
                 "definition": {
                   "relativePath": "transformerForBuildCarryOnObject"
@@ -18666,6 +18647,7 @@ export const miroirFundamentalJzodSchema = {
               {
                 "type": "union",
                 "optional": true,
+                "discriminator": "type",
                 "definition": [
                   {
                     "type": "schemaReference",
@@ -18688,6 +18670,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "type": "union",
                   "optional": true,
+                  "discriminator": "type",
                   "definition": [
                     {
                       "type": "schemaReference",
@@ -18769,6 +18752,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "carryOn": {
             "type": "union",
+            "discriminator": "type",
             "optional": true,
             "definition": [
               {
@@ -18992,6 +18976,7 @@ export const miroirFundamentalJzodSchema = {
           "carryOn": {
             "type": "union",
             "optional": true,
+            "discriminator": "type",
             "definition": [
               {
                 "type": "schemaReference",
@@ -31513,15 +31498,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "string"
                   },
                   {
-                    "type": "number"
-                  },
-                  {
-                    "type": "bigint"
-                  },
-                  {
-                    "type": "boolean"
-                  },
-                  {
                     "type": "schemaReference",
                     "definition": {
                       "relativePath": "transformerForBuildCarryOnObject"
@@ -31752,6 +31728,7 @@ export const miroirFundamentalJzodSchema = {
                   {
                     "type": "union",
                     "optional": true,
+                    "discriminator": "type",
                     "definition": [
                       {
                         "type": "schemaReference",
@@ -31774,6 +31751,7 @@ export const miroirFundamentalJzodSchema = {
                     "definition": {
                       "type": "union",
                       "optional": true,
+                      "discriminator": "type",
                       "definition": [
                         {
                           "type": "schemaReference",
@@ -31855,6 +31833,7 @@ export const miroirFundamentalJzodSchema = {
               },
               "carryOn": {
                 "type": "union",
+                "discriminator": "type",
                 "optional": true,
                 "definition": [
                   {
@@ -32111,6 +32090,7 @@ export const miroirFundamentalJzodSchema = {
               "carryOn": {
                 "type": "union",
                 "optional": true,
+                "discriminator": "type",
                 "definition": [
                   {
                     "type": "schemaReference",
@@ -45806,21 +45786,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": "literal"
           },
           "definition": {
-            "type": "union",
-            "definition": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "number"
-              },
-              {
-                "type": "bigint"
-              },
-              {
-                "type": "boolean"
-              }
-            ]
+            "type": "string"
           }
         }
       },
@@ -45920,6 +45886,7 @@ export const miroirFundamentalJzodSchema = {
               {
                 "type": "union",
                 "optional": true,
+                "discriminator": "type",
                 "definition": [
                   {
                     "type": "schemaReference",
@@ -45942,6 +45909,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "type": "union",
                   "optional": true,
+                  "discriminator": "type",
                   "definition": [
                     {
                       "type": "schemaReference",
@@ -45976,6 +45944,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "carryOn": {
             "type": "union",
+            "discriminator": "type",
             "optional": true,
             "definition": [
               {
@@ -46089,6 +46058,7 @@ export const miroirFundamentalJzodSchema = {
           "carryOn": {
             "type": "union",
             "optional": true,
+            "discriminator": "type",
             "definition": [
               {
                 "type": "schemaReference",
@@ -52243,21 +52213,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": "literal"
           },
           "definition": {
-            "type": "union",
-            "definition": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "number"
-              },
-              {
-                "type": "bigint"
-              },
-              {
-                "type": "boolean"
-              }
-            ]
+            "type": "string"
           }
         }
       },
@@ -52357,6 +52313,7 @@ export const miroirFundamentalJzodSchema = {
               {
                 "type": "union",
                 "optional": true,
+                "discriminator": "type",
                 "definition": [
                   {
                     "type": "schemaReference",
@@ -52379,6 +52336,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "type": "union",
                   "optional": true,
+                  "discriminator": "type",
                   "definition": [
                     {
                       "type": "schemaReference",
@@ -52413,6 +52371,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "carryOn": {
             "type": "union",
+            "discriminator": "type",
             "optional": true,
             "definition": [
               {
@@ -52526,6 +52485,7 @@ export const miroirFundamentalJzodSchema = {
           "carryOn": {
             "type": "union",
             "optional": true,
+            "discriminator": "type",
             "definition": [
               {
                 "type": "schemaReference",
@@ -58644,21 +58604,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": "literal"
           },
           "definition": {
-            "type": "union",
-            "definition": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "number"
-              },
-              {
-                "type": "bigint"
-              },
-              {
-                "type": "boolean"
-              }
-            ]
+            "type": "string"
           }
         }
       },
@@ -58758,6 +58704,7 @@ export const miroirFundamentalJzodSchema = {
               {
                 "type": "union",
                 "optional": true,
+                "discriminator": "type",
                 "definition": [
                   {
                     "type": "schemaReference",
@@ -58780,6 +58727,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "type": "union",
                   "optional": true,
+                  "discriminator": "type",
                   "definition": [
                     {
                       "type": "schemaReference",
@@ -58814,6 +58762,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "carryOn": {
             "type": "union",
+            "discriminator": "type",
             "optional": true,
             "definition": [
               {
@@ -58927,6 +58876,7 @@ export const miroirFundamentalJzodSchema = {
           "carryOn": {
             "type": "union",
             "optional": true,
+            "discriminator": "type",
             "definition": [
               {
                 "type": "schemaReference",

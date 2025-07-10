@@ -639,21 +639,7 @@
             "definition": "literal"
           },
           "definition": {
-            "type": "union",
-            "definition": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "number"
-              },
-              {
-                "type": "bigint"
-              },
-              {
-                "type": "boolean"
-              }
-            ]
+            "type": "string"
           }
         }
       },
@@ -747,6 +733,7 @@
               {
                 "type": "union",
                 "optional": true,
+                "discriminator": "type",
                 "definition": [
                   { "type": "schemaReference", "definition": { "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", "relativePath": "jzodReference" } },
                   { "type": "schemaReference", "definition": { "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", "relativePath": "jzodObject" } }
@@ -757,12 +744,22 @@
                 "definition": {
                   "type": "union",
                   "optional": true,
+                  "discriminator": "type",
                   "definition": [
                     {
                       "type": "schemaReference",
-                      "definition": { "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", "relativePath": "jzodReference" }
+                      "definition": {
+                        "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                        "relativePath": "jzodReference"
+                      }
                     },
-                    { "type": "schemaReference", "definition": { "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", "relativePath": "jzodObject" } }
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                        "relativePath": "jzodObject"
+                      }
+                    }
                   ]
                 }
               }
@@ -782,6 +779,7 @@
           },
           "carryOn": {
             "type": "union",
+            "discriminator": "type",
             "optional": true,
             "definition": [
               {
@@ -889,6 +887,7 @@
           "carryOn": {
             "type": "union",
             "optional": true,
+            "discriminator":"type",
             "definition": [
               {
                 "type": "schemaReference",

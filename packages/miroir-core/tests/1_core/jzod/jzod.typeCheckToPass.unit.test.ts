@@ -1518,358 +1518,571 @@ interface testFormat {
       //     },
       //   },
       // },
-      // ##########################################################################################
-      // ########################### QUERIES ######################################
-      // ##########################################################################################
-      test700: {
+      test630: {
         testSchema: {
-          type: "schemaReference",
-          definition: {
-            absolutePath: castMiroirFundamentalJzodSchema.uuid,
-            relativePath: "boxedQueryWithExtractorCombinerTransformer",
-          },
+          "type": "object",
+          "definition": {
+            "uuid": {
+              "type": "uuid",
+              "tag": {
+                "value": {
+                  "id": 1,
+                  "defaultLabel": "Uuid",
+                  "editable": false
+                }
+              }
+            },
+            "parentName": {
+              "type": "string",
+              "optional": true,
+              "tag": {
+                "value": {
+                  "id": 2,
+                  "defaultLabel": "Entity Name",
+                  "editable": false
+                }
+              }
+            },
+            "parentUuid": {
+              "type": "uuid",
+              "tag": {
+                "value": {
+                  "id": 3,
+                  "defaultLabel": "Entity Uuid",
+                  "editable": false
+                }
+              }
+            },
+            "parentDefinitionVersionUuid": {
+              "type": "uuid",
+              "optional": true,
+              "tag": {
+                "value": {
+                  "id": 4,
+                  "defaultLabel": "Entity Definition Version Uuid",
+                  "editable": false
+                }
+              }
+            },
+            "name": {
+              "type": "string",
+              "tag": {
+                "value": {
+                  "id": 5,
+                  "defaultLabel": "Name",
+                  "editable": true
+                }
+              }
+            },
+            "defaultLabel": {
+              "type": "string",
+              "tag": {
+                "value": {
+                  "id": 6,
+                  "defaultLabel": "Default Label",
+                  "editable": true
+                }
+              }
+            },
+            "description": {
+              "type": "string",
+              "optional": true,
+              "tag": {
+                "value": {
+                  "id": 7,
+                  "defaultLabel": "Description",
+                  "editable": true
+                }
+              }
+            },
+            "transformerInterface": {
+              "type": "object",
+              "definition": {
+                "transformerParameterSchema": {
+                  "type": "object",
+                  "definition": {
+                    "transformerType": {
+                      "type": "schemaReference",
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "jzodLiteral"
+                      }
+                    },
+                    "transformerDefinition": {
+                      "type": "schemaReference",
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "jzodObject"
+                      }
+                    }
+                  }
+                },
+                "transformerResultSchema": {
+                  "type": "schemaReference",
+                  "optional": true,
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "jzodElement"
+                  }
+                }
+              }
+            },
+            "transformerImplementation": {
+              "type": "union",
+              "discriminator": "transformerImplementationType",
+              "definition": [
+                {
+                  "type": "object",
+                  "definition": {
+                    "transformerImplementationType": {
+                      "type": "literal",
+                      "definition": "libraryImplementation"
+                    },
+                    "inMemoryImplementationFunctionName": {
+                      "type": "string"
+                    },
+                    "sqlImplementationFunctionName": {
+                      "type": "string",
+                      "optional": true
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "definition": {
+                    "transformerImplementationType": {
+                      "type": "literal",
+                      "definition": "transformer"
+                    },
+                    "definition": {
+                      "type": "schemaReference",
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "transformerForBuildOrRuntime"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
         },
         testValueObject: {
-          queryType: "boxedQueryWithExtractorCombinerTransformer",
-          deploymentUuid: {
-            transformerType: "parameterReference",
-            interpolation: "build",
-            referenceName: "testDeploymentUuid",
+          "uuid": "3ec73049-5e54-40aa-bc86-4c4906d00baa",
+          "name": "mapperListToList",
+          "defaultLabel": "mapperListToList",
+          "description": "Transform a list into another list, running the given transformer on each item of the list",
+          "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
+          "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
+          "parentName": "TransformerDefinition",
+          "transformerInterface": {
+            "transformerParameterSchema": {
+              "transformerType": {
+                "type": "literal",
+                "definition": "mapperListToList"
+              },
+              "transformerDefinition": {
+                "type": "object",
+                "extend": [
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "eager": true,
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "transformer_orderBy"
+                    }
+                  }
+                ],
+                "definition": {
+                  "applyTo": {
+                    "type": "array",
+                    "definition": {
+                      "type": "any"
+                    }
+                  },
+                  "referenceToOuterObject": {
+                    "type": "string"
+                  },
+                  "elementTransformer": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "transformer_inner_elementTransformer_transformerForBuildPlusRuntime"
+                    }
+                  }
+                }
+              }
+            },
+            "transformerResultSchema": {
+              "type": "array",
+              "definition": {
+                "type": "any"
+              }
+            }
           },
-          pageParams: {},
-          queryParams: {},
-          contextResults: {},
-          extractors: {
-            menuList: {
-              extractorOrCombinerType: "extractorByEntityReturningObjectList",
-              applicationSection: "model",
-              parentName: {
-                transformerType: "parameterReference",
-                interpolation: "build",
-                referencePath: ["entityMenu", "name"],
-              },
-              parentUuid: {
-                transformerType: "parameterReference",
-                interpolation: "build",
-                referencePath: ["entityMenu", "uuid"],
-              },
-            },
-          },
-          runtimeTransformers: {
-            menu: {
-              transformerType: "listPickElement",
-              interpolation: "runtime",
-              applyTo: {
-                referenceType: "referencedTransformer",
-                reference: {
-                  transformerType: "contextReference",
-                  interpolation: "runtime",
-                  referenceName: "menuList",
-                },
-              },
-              index: 0,
-            },
-            menuItem: {
-              transformerType: "freeObjectTemplate",
-              interpolation: "runtime",
-              definition: {
-                reportUuid: {
-                  transformerType: "parameterReference",
-                  interpolation: "build",
-                  referenceName: "createEntity_newEntityListReportUuid",
-                },
-                label: {
-                  transformerType: "mustacheStringTemplate",
-                  interpolation: "build",
-                  definition: "List of {{newEntityName}}s",
-                },
-                section: "data",
-                selfApplication: {
-                  transformerType: "parameterReference",
-                  interpolation: "build",
-                  referencePath: ["adminConfigurationDeploymentParis", "uuid"],
-                },
-                icon: "local_drink",
-              },
-            },
-            updatedMenu: {
-              transformerType: "transformer_menu_addItem",
-              interpolation: "runtime",
-              menuItemReference: {
-                transformerType: "contextReference",
-                interpolation: "runtime",
-                referenceName: "menuItem",
-              },
-              menuReference: {
-                transformerType: "contextReference",
-                interpolation: "runtime",
-                referenceName: "menu",
-              },
-              menuSectionItemInsertionIndex: -1,
-            },
-          },
+          "transformerImplementation": {
+            "transformerImplementationType": "libraryImplementation",
+            "inMemoryImplementationFunctionName": "transformerForBuild_list_listMapperToList_apply",
+            "sqlImplementationFunctionName": "sqlStringForMapperListToListTransformer"
+          }
         },
         expectedResolvedSchema: {
           type: "object",
-          definition: {
-            queryType: {
-              type: "literal",
-              definition: "boxedQueryWithExtractorCombinerTransformer",
-            },
-            deploymentUuid: {
-              type: "uuid",
-              tag: {
-                value: {
-                  id: 1,
-                  canBeTemplate: true,
-                  defaultLabel: "Uuid",
-                  editable: false,
-                },
-              },
-            },
-            pageParams: {
-              type: "object",
-              definition: {},
-            },
-            queryParams: {
-              type: "object",
-              definition: {},
-            },
-            contextResults: {
-              type: "object",
-              definition: {},
-            },
-            extractors: {
-              type: "object",
-              definition: {
-                menuList: {
-                  type: "object",
-                  definition: {
-                    extractorOrCombinerType: {
-                      type: "literal",
-                      definition: "extractorByEntityReturningObjectList",
-                    },
-                    applicationSection: {
-                      type: "literal",
-                      definition: "model",
-                    },
-                    parentName: {
-                      type: "string",
-                      optional: true,
-                      tag: {
-                        value: {
-                          id: 3,
-                          canBeTemplate: true,
-                          defaultLabel: "Parent Name",
-                          editable: false,
-                        },
-                      },
-                    },
-                    parentUuid: {
-                      type: "uuid",
-                      tag: {
-                        value: {
-                          id: 4,
-                          canBeTemplate: true,
-                          targetEntity: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                          defaultLabel: "Parent Uuid",
-                          editable: false,
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            runtimeTransformers: {
-              type: "object",
-              optional: true,
-              definition: {
-                menu: {
-                  type: "object",
-                  definition: {
-                    transformerType: {
-                      type: "literal",
-                      definition: "listPickElement",
-                    },
-                    interpolation: {
-                      type: "literal",
-                      definition: "runtime",
-                    },
-                    applyTo: {
-                      type: "object",
-                      definition: {
-                        referenceType: {
-                          type: "literal",
-                          definition: "referencedTransformer",
-                        },
-                        reference: {
-                          type: "object",
-                          definition: {
-                            transformerType: {
-                              type: "literal",
-                              definition: "contextReference",
-                            },
-                            interpolation: {
-                              type: "literal",
-                              optional: true,
-                              definition: "runtime",
-                            },
-                            referenceName: {
-                              optional: true,
-                              type: "string",
-                            },
-                          },
-                        },
-                      },
-                    },
-                    index: {
-                      type: "number",
-                    },
-                  },
-                },
-                menuItem: {
-                  type: "object",
-                  definition: {
-                    transformerType: {
-                      type: "literal",
-                      definition: "freeObjectTemplate",
-                    },
-                    interpolation: {
-                      type: "literal",
-                      definition: "runtime",
-                    },
-                    definition: {
-                      type: "object",
-                      definition: {
-                        reportUuid: {
-                          type: "object",
-                          definition: {
-                            transformerType: {
-                              type: "literal",
-                              definition: "parameterReference",
-                            },
-                            interpolation: {
-                              type: "literal",
-                              optional: true,
-                              definition: "build",
-                            },
-                            referenceName: {
-                              optional: true,
-                              type: "string",
-                            },
-                          },
-                        },
-                        label: {
-                          type: "object",
-                          definition: {
-                            transformerType: {
-                              type: "literal",
-                              definition: "mustacheStringTemplate",
-                            },
-                            interpolation: {
-                              type: "literal",
-                              definition: "build",
-                            },
-                            definition: {
-                              type: "string",
-                            },
-                          },
-                        },
-                        section: {
-                          type: "string",
-                        },
-                        selfApplication: {
-                          type: "object",
-                          definition: {
-                            transformerType: {
-                              type: "literal",
-                              definition: "parameterReference",
-                            },
-                            interpolation: {
-                              type: "literal",
-                              optional: true,
-                              definition: "build",
-                            },
-                            referencePath: {
-                              optional: true,
-                              type: "tuple",
-                              definition: [
-                                {
-                                  type: "string",
-                                },
-                                {
-                                  type: "string",
-                                },
-                              ],
-                            },
-                          },
-                        },
-                        icon: {
-                          type: "string",
-                        },
-                      },
-                    },
-                  },
-                },
-                updatedMenu: {
-                  type: "object",
-                  definition: {
-                    transformerType: {
-                      type: "literal",
-                      definition: "transformer_menu_addItem",
-                    },
-                    interpolation: {
-                      type: "literal",
-                      definition: "runtime",
-                    },
-                    menuItemReference: {
-                      type: "object",
-                      definition: {
-                        transformerType: {
-                          type: "literal",
-                          definition: "contextReference",
-                        },
-                        interpolation: {
-                          type: "literal",
-                          optional: true,
-                          definition: "runtime",
-                        },
-                        referenceName: {
-                          optional: true,
-                          type: "string",
-                        },
-                      },
-                    },
-                    menuReference: {
-                      type: "object",
-                      definition: {
-                        transformerType: {
-                          type: "literal",
-                          definition: "contextReference",
-                        },
-                        interpolation: {
-                          type: "literal",
-                          optional: true,
-                          definition: "runtime",
-                        },
-                        referenceName: {
-                          optional: true,
-                          type: "string",
-                        },
-                      },
-                    },
-                    menuSectionItemInsertionIndex: {
-                      type: "number",
-                      optional: true,
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
+          definition: {}
+        }
+      }
+      // // ##########################################################################################
+      // // ########################### QUERIES ######################################
+      // // ##########################################################################################
+      // test700: {
+      //   testSchema: {
+      //     type: "schemaReference",
+      //     definition: {
+      //       absolutePath: castMiroirFundamentalJzodSchema.uuid,
+      //       relativePath: "boxedQueryWithExtractorCombinerTransformer",
+      //     },
+      //   },
+      //   testValueObject: {
+      //     queryType: "boxedQueryWithExtractorCombinerTransformer",
+      //     deploymentUuid: {
+      //       transformerType: "parameterReference",
+      //       interpolation: "build",
+      //       referenceName: "testDeploymentUuid",
+      //     },
+      //     pageParams: {},
+      //     queryParams: {},
+      //     contextResults: {},
+      //     extractors: {
+      //       menuList: {
+      //         extractorOrCombinerType: "extractorByEntityReturningObjectList",
+      //         applicationSection: "model",
+      //         parentName: {
+      //           transformerType: "parameterReference",
+      //           interpolation: "build",
+      //           referencePath: ["entityMenu", "name"],
+      //         },
+      //         parentUuid: {
+      //           transformerType: "parameterReference",
+      //           interpolation: "build",
+      //           referencePath: ["entityMenu", "uuid"],
+      //         },
+      //       },
+      //     },
+      //     runtimeTransformers: {
+      //       menu: {
+      //         transformerType: "listPickElement",
+      //         interpolation: "runtime",
+      //         applyTo: {
+      //           referenceType: "referencedTransformer",
+      //           reference: {
+      //             transformerType: "contextReference",
+      //             interpolation: "runtime",
+      //             referenceName: "menuList",
+      //           },
+      //         },
+      //         index: 0,
+      //       },
+      //       menuItem: {
+      //         transformerType: "freeObjectTemplate",
+      //         interpolation: "runtime",
+      //         definition: {
+      //           reportUuid: {
+      //             transformerType: "parameterReference",
+      //             interpolation: "build",
+      //             referenceName: "createEntity_newEntityListReportUuid",
+      //           },
+      //           label: {
+      //             transformerType: "mustacheStringTemplate",
+      //             interpolation: "build",
+      //             definition: "List of {{newEntityName}}s",
+      //           },
+      //           section: "data",
+      //           selfApplication: {
+      //             transformerType: "parameterReference",
+      //             interpolation: "build",
+      //             referencePath: ["adminConfigurationDeploymentParis", "uuid"],
+      //           },
+      //           icon: "local_drink",
+      //         },
+      //       },
+      //       updatedMenu: {
+      //         transformerType: "transformer_menu_addItem",
+      //         interpolation: "runtime",
+      //         menuItemReference: {
+      //           transformerType: "contextReference",
+      //           interpolation: "runtime",
+      //           referenceName: "menuItem",
+      //         },
+      //         menuReference: {
+      //           transformerType: "contextReference",
+      //           interpolation: "runtime",
+      //           referenceName: "menu",
+      //         },
+      //         menuSectionItemInsertionIndex: -1,
+      //       },
+      //     },
+      //   },
+      //   expectedResolvedSchema: {
+      //     type: "object",
+      //     definition: {
+      //       queryType: {
+      //         type: "literal",
+      //         definition: "boxedQueryWithExtractorCombinerTransformer",
+      //       },
+      //       deploymentUuid: {
+      //         type: "uuid",
+      //         tag: {
+      //           value: {
+      //             id: 1,
+      //             canBeTemplate: true,
+      //             defaultLabel: "Uuid",
+      //             editable: false,
+      //           },
+      //         },
+      //       },
+      //       pageParams: {
+      //         type: "object",
+      //         definition: {},
+      //       },
+      //       queryParams: {
+      //         type: "object",
+      //         definition: {},
+      //       },
+      //       contextResults: {
+      //         type: "object",
+      //         definition: {},
+      //       },
+      //       extractors: {
+      //         type: "object",
+      //         definition: {
+      //           menuList: {
+      //             type: "object",
+      //             definition: {
+      //               extractorOrCombinerType: {
+      //                 type: "literal",
+      //                 definition: "extractorByEntityReturningObjectList",
+      //               },
+      //               applicationSection: {
+      //                 type: "literal",
+      //                 definition: "model",
+      //               },
+      //               parentName: {
+      //                 type: "string",
+      //                 optional: true,
+      //                 tag: {
+      //                   value: {
+      //                     id: 3,
+      //                     canBeTemplate: true,
+      //                     defaultLabel: "Parent Name",
+      //                     editable: false,
+      //                   },
+      //                 },
+      //               },
+      //               parentUuid: {
+      //                 type: "uuid",
+      //                 tag: {
+      //                   value: {
+      //                     id: 4,
+      //                     canBeTemplate: true,
+      //                     targetEntity: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+      //                     defaultLabel: "Parent Uuid",
+      //                     editable: false,
+      //                   },
+      //                 },
+      //               },
+      //             },
+      //           },
+      //         },
+      //       },
+      //       runtimeTransformers: {
+      //         type: "object",
+      //         optional: true,
+      //         definition: {
+      //           menu: {
+      //             type: "object",
+      //             definition: {
+      //               transformerType: {
+      //                 type: "literal",
+      //                 definition: "listPickElement",
+      //               },
+      //               interpolation: {
+      //                 type: "literal",
+      //                 definition: "runtime",
+      //               },
+      //               applyTo: {
+      //                 type: "object",
+      //                 definition: {
+      //                   referenceType: {
+      //                     type: "literal",
+      //                     definition: "referencedTransformer",
+      //                   },
+      //                   reference: {
+      //                     type: "object",
+      //                     definition: {
+      //                       transformerType: {
+      //                         type: "literal",
+      //                         definition: "contextReference",
+      //                       },
+      //                       interpolation: {
+      //                         type: "literal",
+      //                         optional: true,
+      //                         definition: "runtime",
+      //                       },
+      //                       referenceName: {
+      //                         optional: true,
+      //                         type: "string",
+      //                       },
+      //                     },
+      //                   },
+      //                 },
+      //               },
+      //               index: {
+      //                 type: "number",
+      //               },
+      //             },
+      //           },
+      //           menuItem: {
+      //             type: "object",
+      //             definition: {
+      //               transformerType: {
+      //                 type: "literal",
+      //                 definition: "freeObjectTemplate",
+      //               },
+      //               interpolation: {
+      //                 type: "literal",
+      //                 definition: "runtime",
+      //               },
+      //               definition: {
+      //                 type: "object",
+      //                 definition: {
+      //                   reportUuid: {
+      //                     type: "object",
+      //                     definition: {
+      //                       transformerType: {
+      //                         type: "literal",
+      //                         definition: "parameterReference",
+      //                       },
+      //                       interpolation: {
+      //                         type: "literal",
+      //                         optional: true,
+      //                         definition: "build",
+      //                       },
+      //                       referenceName: {
+      //                         optional: true,
+      //                         type: "string",
+      //                       },
+      //                     },
+      //                   },
+      //                   label: {
+      //                     type: "object",
+      //                     definition: {
+      //                       transformerType: {
+      //                         type: "literal",
+      //                         definition: "mustacheStringTemplate",
+      //                       },
+      //                       interpolation: {
+      //                         type: "literal",
+      //                         definition: "build",
+      //                       },
+      //                       definition: {
+      //                         type: "string",
+      //                       },
+      //                     },
+      //                   },
+      //                   section: {
+      //                     type: "string",
+      //                   },
+      //                   selfApplication: {
+      //                     type: "object",
+      //                     definition: {
+      //                       transformerType: {
+      //                         type: "literal",
+      //                         definition: "parameterReference",
+      //                       },
+      //                       interpolation: {
+      //                         type: "literal",
+      //                         optional: true,
+      //                         definition: "build",
+      //                       },
+      //                       referencePath: {
+      //                         optional: true,
+      //                         type: "tuple",
+      //                         definition: [
+      //                           {
+      //                             type: "string",
+      //                           },
+      //                           {
+      //                             type: "string",
+      //                           },
+      //                         ],
+      //                       },
+      //                     },
+      //                   },
+      //                   icon: {
+      //                     type: "string",
+      //                   },
+      //                 },
+      //               },
+      //             },
+      //           },
+      //           updatedMenu: {
+      //             type: "object",
+      //             definition: {
+      //               transformerType: {
+      //                 type: "literal",
+      //                 definition: "transformer_menu_addItem",
+      //               },
+      //               interpolation: {
+      //                 type: "literal",
+      //                 definition: "runtime",
+      //               },
+      //               menuItemReference: {
+      //                 type: "object",
+      //                 definition: {
+      //                   transformerType: {
+      //                     type: "literal",
+      //                     definition: "contextReference",
+      //                   },
+      //                   interpolation: {
+      //                     type: "literal",
+      //                     optional: true,
+      //                     definition: "runtime",
+      //                   },
+      //                   referenceName: {
+      //                     optional: true,
+      //                     type: "string",
+      //                   },
+      //                 },
+      //               },
+      //               menuReference: {
+      //                 type: "object",
+      //                 definition: {
+      //                   transformerType: {
+      //                     type: "literal",
+      //                     definition: "contextReference",
+      //                   },
+      //                   interpolation: {
+      //                     type: "literal",
+      //                     optional: true,
+      //                     definition: "runtime",
+      //                   },
+      //                   referenceName: {
+      //                     optional: true,
+      //                     type: "string",
+      //                   },
+      //                 },
+      //               },
+      //               menuSectionItemInsertionIndex: {
+      //                 type: "number",
+      //                 optional: true,
+      //               },
+      //             },
+      //           },
+      //         },
+      //       },
+      //     },
+      //   },
+      // },
       // // ##########################################################################################
       // // ################################## ACTIONS ###############################################
       // // ##########################################################################################

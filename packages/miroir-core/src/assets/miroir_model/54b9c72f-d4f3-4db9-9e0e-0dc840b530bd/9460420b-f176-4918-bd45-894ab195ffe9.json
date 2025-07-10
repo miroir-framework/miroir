@@ -10,7 +10,6 @@
   "viewAttributes": [
     "name",
     "defaultLabel",
-    "selfApplication",
     "uuid"
   ],
   "jzodSchema": {

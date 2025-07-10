@@ -73,6 +73,17 @@
           }
         }
       },
+      "defaultLabel": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 7,
+            "defaultLabel": "Default Label",
+            "editable": true
+          }
+        }
+      },
       "definition": {
         "type": "schemaReference",
         "tag": {
