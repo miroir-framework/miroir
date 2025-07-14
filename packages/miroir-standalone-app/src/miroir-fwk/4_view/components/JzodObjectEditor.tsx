@@ -552,6 +552,8 @@ ${JSON.stringify(props.rawJzodSchema, null, 2)}`}
                         unfoldJzodSchemaOnce(
                           currentMiroirFundamentalJzodSchema,
                           concreteObjectRawJzodSchema,
+                          [], // path
+                          [], // unfoldingReference
                           concreteObjectRawJzodSchema, // rootSchema
                           0, // depth
                           currentModel,

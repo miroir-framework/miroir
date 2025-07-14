@@ -1,12 +1,14 @@
 import { valueToJzod } from "@miroir-framework/jzod";
 
 import {
+  JzodArray,
   JzodElement,
   JzodEnum,
   JzodLiteral,
   JzodObject,
   JzodReference,
   JzodSchema,
+  JzodTuple,
   JzodUnion,
   MetaModel
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
@@ -36,7 +38,14 @@ export interface JzodUnionResolvedTypeForObjectReturnTypeOK {
   chosenDiscriminator?: {discriminator: string, value: any}[];
 }
 
-export interface JzodUnionResolvedTypeForObjectReturnTypeError {
+export interface JzodUnionResolvedTypeForArrayReturnTypeOK {
+  status: "ok";
+  resolvedJzodObjectSchema: JzodArray | JzodTuple;
+  arrayUnionChoices: (JzodArray | JzodTuple)[];
+  chosenDiscriminator?: {discriminator: string, value: any}[];
+}
+
+export interface JzodUnionResolvedTypeReturnTypeError {
   status: "error";
   error: string;
   discriminator?: string | string[] | undefined;
@@ -44,12 +53,14 @@ export interface JzodUnionResolvedTypeForObjectReturnTypeError {
   typePath: (string | number)[];
   value?: any;
   concreteUnrolledJzodSchemas?: JzodElement[];
-  objectUnionChoices?: JzodObject[];
+  unionChoices?: JzodObject[] | (JzodArray | JzodTuple)[];
   innerError?: SelectUnionBranchFromDiscriminatorReturnTypeError;
 }
 
-export type JzodUnionResolvedTypeForObjectReturnType = 
-  JzodUnionResolvedTypeForObjectReturnTypeOK | JzodUnionResolvedTypeForObjectReturnTypeError;
+export type JzodUnionResolvedTypeReturnType =
+  | JzodUnionResolvedTypeForObjectReturnTypeOK
+  | JzodUnionResolvedTypeForArrayReturnTypeOK
+  | JzodUnionResolvedTypeReturnTypeError;
 
 
 // #################################################################################################
@@ -156,7 +167,8 @@ function isValidUUID(uuid: string): boolean {
 
 // ################################################################################################
 /**
- * returns a list of JzodObject schemas by recursively unrolling the union and references in @param concreteUnrolledJzodSchemas.
+ * returns an array of JzodObject schemas by recursively unrolling the unions and references in @param concreteUnrolledJzodSchemas.
+ * TODO: WHAT ABOUT RECORD SCHEMAS?
  * @param concreteUnrolledJzodSchemas 
  * @param miroirFundamentalJzodSchema 
  * @param currentModel 
@@ -214,7 +226,6 @@ export function unionObjectChoices (
             .filter((j) => j.type == "object") as JzodObject[]
           ).map(
             (k: JzodObject): JzodObject =>
-              // resolveObjectExtendClauseAndDefinition(
               jzodObjectFlatten(
                 k,
                 miroirFundamentalJzodSchema,
@@ -226,6 +237,59 @@ export function unionObjectChoices (
       )
     )
   ;
+}
+;
+
+// ################################################################################################
+/**
+ * returns an array of JzodArray and JzodTuple schemas by recursively unrolling the unions and references in @param concreteUnrolledJzodSchemas.
+ * @param concreteUnrolledJzodSchemas 
+ * @param miroirFundamentalJzodSchema 
+ * @param currentModel 
+ * @param miroirMetaModel 
+ * @param relativeReferenceJzodContext 
+ * @returns 
+ */
+export function unionArrayChoices (
+  concreteUnrolledJzodSchemas: JzodElement[],
+  miroirFundamentalJzodSchema: JzodSchema,
+  currentModel: MetaModel,
+  miroirMetaModel: MetaModel,
+  relativeReferenceJzodContext: { [k: string]: JzodElement }
+): (JzodArray | JzodTuple)[] {
+  return concreteUnrolledJzodSchemas
+    .filter((j) => j.type == "array" || j.type == "tuple")
+    .concat(
+      (
+        concreteUnrolledJzodSchemas.filter(
+          (j: JzodElement): boolean => j.type == "union"
+        ) as JzodUnion[]
+      ).flatMap(
+        // for sub-unions, return the sub-objects clauses, with their extend clauses resolved
+        (j: JzodUnion): (JzodArray | JzodTuple)[] =>
+          j.definition.filter((k: JzodElement) => k.type == "array" || k.type == "tuple") as (
+            | JzodArray
+            | JzodTuple
+          )[]
+      ),
+      (
+        concreteUnrolledJzodSchemas.filter((j: JzodElement) => j.type == "union") as JzodUnion[]
+      ).flatMap(
+        // if schemaReferences are found, we resolve them, squashing the extend clause for objects
+        (j: JzodUnion) =>
+          (j.definition.filter((k: JzodElement) => k.type == "schemaReference") as JzodReference[])
+            .map((k: JzodReference) =>
+              resolveJzodSchemaReferenceInContext(
+                miroirFundamentalJzodSchema,
+                k,
+                currentModel,
+                miroirMetaModel,
+                { ...relativeReferenceJzodContext, ...k.context }
+              )
+            )
+            .filter((j) => j.type == "array" || j.type == "tuple") as (JzodArray | JzodTuple)[]
+      )
+    );
 }
 ;
 
@@ -472,17 +536,116 @@ export function selectUnionBranchFromDiscriminator(
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
-export function jzodUnionResolvedTypeForObject(
+export function jzodUnionResolvedTypeForArray(
   concreteUnrolledJzodSchemas: JzodElement[],
   discriminator: string | string[] | undefined,
-  valueObject: any,
+  valueArray: any[],
   currentValuePath: (string | number)[],
   currentTypePath: (string | number)[],
   miroirFundamentalJzodSchema: JzodSchema,
   currentModel: MetaModel,
   miroirMetaModel: MetaModel,
   relativeReferenceJzodContext: { [k: string]: JzodElement }
-): JzodUnionResolvedTypeForObjectReturnType {
+): JzodUnionResolvedTypeForArrayReturnTypeOK
+  | JzodUnionResolvedTypeReturnTypeError
+ {
+  /**
+   * ALLOWING ONLY ONE MATCHING UNION BRANCH FOR THE ARRAY
+   */
+  // log.info("jzodUnionResolvedTypeForArray called for valueArray=", valueArray, "discriminator=", discriminator);
+  const arrayUnionChoices = unionArrayChoices(
+    concreteUnrolledJzodSchemas,
+    miroirFundamentalJzodSchema,
+    currentModel,
+    miroirMetaModel,
+    relativeReferenceJzodContext
+  );
+  if (arrayUnionChoices.length == 1) {
+    return {
+      status: "ok",
+      resolvedJzodObjectSchema: arrayUnionChoices[0],
+      arrayUnionChoices: arrayUnionChoices,
+    };
+  }
+  if (!arrayUnionChoices || arrayUnionChoices.length == 0) {
+    return {
+      status: "error",
+      error: "jzodUnionResolvedTypeForArray could not find object type for given array value in resolved union",
+      discriminator,
+      valuePath: currentValuePath,
+      typePath: currentTypePath,
+      value: valueArray,
+      concreteUnrolledJzodSchemas,
+      unionChoices: arrayUnionChoices,
+    };
+  }
+  return {
+    status: "error",
+    error: "jzodUnionResolvedTypeForArray called for union-type value array with discriminator(s)=" +
+      JSON.stringify(discriminator) + " found " + arrayUnionChoices.length + " matches.",
+    discriminator,
+    valuePath: currentValuePath,
+    typePath: currentTypePath,
+    value: valueArray,
+    concreteUnrolledJzodSchemas,
+    unionChoices: arrayUnionChoices,
+  };
+  // // select effective union branch based on the valuArray items
+  // // if array, all items must match the same union branch
+  // // if tuple, different items can match different union branches
+  // const selectUnionResult = selectUnionBranchFromDiscriminator(
+  //   arrayUnionChoices,
+  //   discriminator,
+  //   valueArray[0], // we take the first element of the array to determine the type
+  //   currentValuePath, // valuePath
+  //   currentTypePath, // typePath
+  //   // to resolve the extend clause of the object schema:
+  //   miroirFundamentalJzodSchema,
+  //   currentModel,
+  //   miroirMetaModel,
+  //   relativeReferenceJzodContext
+  // );
+  
+  // if (selectUnionResult.status === "error") {
+  //   return {
+  //     status: "error",
+  //     error: "jzodUnionResolvedTypeForArray failed to select union branch",
+  //     discriminator,
+  //     valuePath: currentValuePath,
+  //     typePath: currentTypePath,
+  //     value: valueArray,
+  //     concreteUnrolledJzodSchemas,
+  //     unionChoices: arrayUnionChoices,
+  //     innerError: selectUnionResult,
+  //   };
+  // }
+  // const {
+  //   currentDiscriminatedObjectJzodSchema,
+  //   flattenedUnionChoices,
+  //   chosenDiscriminator,
+  // } = selectUnionResult;
+  // return {
+  //   status: "ok",
+  //   resolvedJzodObjectSchema: currentDiscriminatedObjectJzodSchema,
+  //   arrayUnionChoices: arrayUnionChoices,
+  //   chosenDiscriminator,
+  // };
+} // end of jzodUnionResolvedTypeForArray
+
+// ################################################################################################
+export function jzodUnionResolvedTypeForObject(
+  concreteUnrolledJzodSchemas: JzodElement[],
+  discriminator: string | string[] | undefined,
+  valueObject: Record<string, any>,
+  currentValuePath: (string | number)[],
+  currentTypePath: (string | number)[],
+  miroirFundamentalJzodSchema: JzodSchema,
+  currentModel: MetaModel,
+  miroirMetaModel: MetaModel,
+  relativeReferenceJzodContext: { [k: string]: JzodElement }
+): JzodUnionResolvedTypeForObjectReturnTypeOK
+  | JzodUnionResolvedTypeReturnTypeError
+ {
   const objectUnionChoices = unionObjectChoices(
     concreteUnrolledJzodSchemas,
     miroirFundamentalJzodSchema,
@@ -494,7 +657,7 @@ export function jzodUnionResolvedTypeForObject(
     return {
       status: "ok",
       resolvedJzodObjectSchema: objectUnionChoices[0],
-      objectUnionChoices,
+      objectUnionChoices: objectUnionChoices,
     };
   }
   if (!objectUnionChoices || objectUnionChoices.length == 0) {
@@ -506,7 +669,7 @@ export function jzodUnionResolvedTypeForObject(
       typePath: currentTypePath,
       value: valueObject,
       concreteUnrolledJzodSchemas,
-      objectUnionChoices,
+      unionChoices: objectUnionChoices,
     };
   }
   const selectUnionResult = selectUnionBranchFromDiscriminator(
@@ -531,7 +694,7 @@ export function jzodUnionResolvedTypeForObject(
       typePath: currentTypePath,
       value: valueObject,
       concreteUnrolledJzodSchemas,
-      objectUnionChoices,
+      unionChoices: objectUnionChoices,
       innerError: selectUnionResult,
     };
   }
@@ -544,7 +707,7 @@ export function jzodUnionResolvedTypeForObject(
   return {
     status: "ok",
     resolvedJzodObjectSchema: currentDiscriminatedObjectJzodSchema,
-    objectUnionChoices,
+    objectUnionChoices: objectUnionChoices,
     chosenDiscriminator,
   };
 } // end of jzodUnionResolvedTypeForObject
@@ -684,38 +847,45 @@ export function jzodTypeCheck(
         })
       }
 
-      let extendedJzodSchema: JzodObject
-      if (jzodSchema.extend) {
-        const extension = resolveJzodSchemaReferenceInContext(
-          miroirFundamentalJzodSchema,
-          jzodSchema.extend,
-          currentModel,
-          miroirMetaModel,
-          relativeReferenceJzodContext
-        )
-        if (extension.type == "object") {
-          extendedJzodSchema = {
-            ...jzodSchema,
-            definition: {
-              ...extension.definition,
-              ...jzodSchema.definition
-            }
-          }
-          delete extendedJzodSchema.extend; // remove the extend clause, since it is already resolved
-        } else {
-          return {
-            status: "error",
-            error: "jzodTypeCheck resolved extend clause does not yield an object schema.",
-            rawJzodSchemaType: jzodSchema.type,
-            valuePath: currentValuePath,
-            typePath: currentTypePath,
-            value: valueObject,
-            rawSchema: jzodSchema,
-          }
-        }
-      } else {
-        extendedJzodSchema = jzodSchema
-      }
+      const extendedJzodSchema: JzodObject = jzodObjectFlatten(
+        jzodSchema,
+        miroirFundamentalJzodSchema,
+        currentModel,
+        miroirMetaModel,
+        relativeReferenceJzodContext
+      );
+      // let extendedJzodSchema: JzodObject
+      // if (jzodSchema.extend) {
+      //   const extension = resolveJzodSchemaReferenceInContext(
+      //     miroirFundamentalJzodSchema,
+      //     jzodSchema.extend,
+      //     currentModel,
+      //     miroirMetaModel,
+      //     relativeReferenceJzodContext
+      //   )
+      //   if (extension.type == "object") {
+      //     extendedJzodSchema = {
+      //       ...jzodSchema,
+      //       definition: {
+      //         ...extension.definition,
+      //         ...jzodSchema.definition
+      //       }
+      //     }
+      //     delete extendedJzodSchema.extend; // remove the extend clause, since it is already resolved
+      //   } else {
+      //     return {
+      //       status: "error",
+      //       error: "jzodTypeCheck resolved extend clause does not yield an object schema.",
+      //       rawJzodSchemaType: jzodSchema.type,
+      //       valuePath: currentValuePath,
+      //       typePath: currentTypePath,
+      //       value: valueObject,
+      //       rawSchema: jzodSchema,
+      //     }
+      //   }
+      // } else {
+      //   extendedJzodSchema = jzodSchema
+      // }
       // log.info("jzodTypeCheck object extendedJzodSchema",JSON.stringify(extendedJzodSchema, null, 2));
 
       // checks that all attributes of the valueObject are present in the schema definition
@@ -928,6 +1098,84 @@ export function jzodTypeCheck(
           break;
         }
         case "object": {
+          if (Array.isArray(valueObject)) {
+            // log.info(
+            //   "jzodTypeCheck union for array at",
+            //   currentValuePath.join("."),
+            //   "type:",
+            //   JSON.stringify(jzodSchema, null, 2),
+            //   "validates",
+            //   JSON.stringify(valueObject, null, 2)
+            // );
+            const resolveUnionResult = jzodUnionResolvedTypeForArray(
+              concreteUnfoldedJzodSchemas,
+              jzodSchema.discriminator,
+              valueObject,
+              currentValuePath,
+              currentTypePath,
+              miroirFundamentalJzodSchema,
+              currentModel,
+              miroirMetaModel,
+              relativeReferenceJzodContext
+            );
+            if (resolveUnionResult.status === "error") {
+              return {
+                status: "error",
+                error: "jzodTypeCheck failed to resolve union for array",
+                rawJzodSchemaType: jzodSchema.type,
+                valuePath: currentValuePath,
+                typePath: currentTypePath,
+                innerError: resolveUnionResult,
+                value: valueObject,
+                rawSchema: jzodSchema,
+              };
+            }
+            if (resolveUnionResult.resolvedJzodObjectSchema.type != "array") {
+              return {
+                status: "error",
+                error: "jzodTypeCheck resolved union for array did not yield an array schema",
+                rawJzodSchemaType: jzodSchema.type,
+                valuePath: currentValuePath,
+                typePath: currentTypePath,
+                value: valueObject,
+                rawSchema: jzodSchema,
+              };
+            }
+            // TODO: schema of different items may vary!
+            const arrayItemSchema = jzodTypeCheck(
+              resolveUnionResult.resolvedJzodObjectSchema.definition,
+              valueObject[0], // we take the first element of the array to determine the type
+              currentValuePath,
+              [...currentTypePath, "0"],
+              miroirFundamentalJzodSchema,
+              currentModel,
+              miroirMetaModel,
+              relativeReferenceJzodContext
+            )
+            if (arrayItemSchema.status === "error") {
+              return {
+                status: "error",
+                error: "jzodTypeCheck failed to match array item with schema",
+                rawJzodSchemaType: jzodSchema.type,
+                valuePath: currentValuePath,
+                typePath: currentTypePath,
+                innerError: arrayItemSchema,
+                value: valueObject,
+                rawSchema: jzodSchema,
+              };
+            }
+            return {
+              status: "ok",
+              valuePath: currentValuePath,
+              typePath: currentTypePath,
+              rawSchema: jzodSchema,
+              resolvedSchema: {
+                ...jzodSchema,
+                type: "array",
+                definition: arrayItemSchema.resolvedSchema
+              },
+            };
+          }
           const resolveUnionResult = jzodUnionResolvedTypeForObject(
             concreteUnfoldedJzodSchemas,
             jzodSchema.discriminator,
@@ -994,6 +1242,7 @@ export function jzodTypeCheck(
               rawSchema: jzodSchema,
             };
           }
+          break;
         }
         case "function":
         case "symbol": // TODO: what does this correspond to?

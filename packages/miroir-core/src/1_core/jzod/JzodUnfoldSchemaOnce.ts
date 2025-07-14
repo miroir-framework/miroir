@@ -155,6 +155,8 @@ let recursionLevel = 0;
 export function unfoldJzodSchemaOnce(
   miroirFundamentalJzodSchema: JzodSchema,
   jzodSchema: JzodElement | undefined,
+  path: string[],
+  unfoldingReference: string[],
   rootSchema:JzodElement | undefined,
   depth: number, // used to limit the unfolding depth
   currentModel?: MetaModel,
@@ -167,11 +169,20 @@ export function unfoldJzodSchemaOnce(
   const currentRecursionLevel = recursionLevel;
   
   log.info(
-    `unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] called for schema`,
-    jzodSchema,
-    (jzodSchema?.type == "object"?JSON.stringify(Object.keys((jzodSchema as any).definition??{}), null, 2):"not an object"),
-    "rootSchema",
-    rootSchema
+    `unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] called for type`,
+    jzodSchema?.type,
+    "path",
+    "'" + path.join(".") + "'",
+    "depth",
+    depth,
+    "schema",
+    JSON.stringify(jzodSchema, null, 2),
+    "object keys:",
+    jzodSchema?.type == "object"
+      ? JSON.stringify(Object.keys((jzodSchema as any).definition ?? {}), null, 2)
+      : "not an object",
+    // "rootSchema",
+    // rootSchema
   );
 
   if (!jzodSchema) {
@@ -302,6 +313,8 @@ export function unfoldJzodSchemaOnce(
             const resultSchemaTmp = unfoldJzodSchemaOnce(
               miroirFundamentalJzodSchema,
               e[1],
+              path.concat(e[0]), // path
+              unfoldingReference,
               rootSchema, // rootSchema
               depth + 1, // depth
               currentModel,
@@ -355,19 +368,43 @@ export function unfoldJzodSchemaOnce(
     // ############################################################################################
     case "union":{
       // const unfoldedJzodSchemas: JzodElement[] = jzodSchema.definition.map((a: JzodElement) =>
-      const unfoldedJzodSchemaReturnType: UnfoldJzodSchemaOnceReturnType[] =
+      const unfoldedJzodSchemaReturnType: {referenceRelativeName?: string, unfolded: UnfoldJzodSchemaOnceReturnType}[] =
         jzodSchema.definition.map((a: JzodElement) =>
-          unfoldJzodSchemaOnce(
-            miroirFundamentalJzodSchema,
-            a,
-            rootSchema, // rootSchema
-            depth + 1, // depth
-            currentModel,
-            miroirMetaModel,
-            relativeReferenceJzodContext,
+          (
+            {
+              referenceRelativeName: a.type == "schemaReference" ? a.definition.relativePath : undefined,
+              unfolded: unfoldJzodSchemaOnce(
+                miroirFundamentalJzodSchema,
+                a,
+                path,
+                unfoldingReference,
+                // a.type == "schemaReference"
+                //   ? unfoldingReference.concat(a.definition.relativePath ?? "")
+                //   : unfoldingReference,
+                rootSchema, // rootSchema
+                depth + 1, // depth
+                currentModel,
+                miroirMetaModel,
+                relativeReferenceJzodContext
+              )
+            }
+            // unfoldJzodSchemaOnce(
+            //   miroirFundamentalJzodSchema,
+            //   a,
+            //   path,
+            //   unfoldingReference,
+            //   // a.type == "schemaReference"
+            //   //   ? unfoldingReference.concat(a.definition.relativePath ?? "")
+            //   //   : unfoldingReference,
+            //   rootSchema, // rootSchema
+            //   depth + 1, // depth
+            //   currentModel,
+            //   miroirMetaModel,
+            //   relativeReferenceJzodContext
+            // )
           )
         );
-      const failedIndex = unfoldedJzodSchemaReturnType.find(a => a.status!="ok")
+      const failedIndex = unfoldedJzodSchemaReturnType.find(a => a.unfolded.status!="ok")
       if (failedIndex) {
         recursionLevel--;
         const endTime = performance.now();
@@ -381,21 +418,30 @@ export function unfoldJzodSchemaOnce(
         };
       }
       // log.info("unfoldJzodSchemaOnce for union ",jzodSchema, "unfoldedJzodSchemaReturnType", unfoldedJzodSchemaReturnType);
-      const firstLevelUnfoldedJzodSchemas: JzodElement[] = (
-        unfoldedJzodSchemaReturnType as UnfoldJzodSchemaOnceReturnTypeOK[]
-      ).map((a: UnfoldJzodSchemaOnceReturnTypeOK) => a.element);
+      const firstLevelUnfoldedJzodSchemas: {referenceRelativeName?: string, unfolded: JzodElement}[] = (
+        // unfoldedJzodSchemaReturnType as UnfoldJzodSchemaOnceReturnTypeOK[]
+        unfoldedJzodSchemaReturnType as {referenceRelativeName?: string, unfolded: UnfoldJzodSchemaOnceReturnTypeOK}[]
+      ).map(a => ({referenceRelativeName: a.referenceRelativeName, unfolded: a.unfolded.element}));
+
       // log.info("unfoldJzodSchemaOnce union unfoldedJzodSchemas", unfoldedJzodSchemas);
-      const secondLevelUnfoldedTmpResults: (JzodElement | UnfoldJzodSchemaOnceReturnType)[] = firstLevelUnfoldedJzodSchemas.map(
-        (s:JzodElement)=> {
+      // const secondLevelUnfoldedTmpResults: (JzodElement | UnfoldJzodSchemaOnceReturnType)[] = firstLevelUnfoldedJzodSchemas.map(
+      const secondLevelUnfoldedTmpResults: UnfoldJzodSchemaOnceReturnType[] = firstLevelUnfoldedJzodSchemas.map(
+        (s:{referenceRelativeName?: string, unfolded: JzodElement})=> {
           // if (s.type != "union" || isUnfoldingSubUnion) {
           //   return s
           // }
           return unfoldJzodSchemaOnce(
             miroirFundamentalJzodSchema,
-            s,
+            s.unfolded,
+            path,
+            s.referenceRelativeName?[...unfoldingReference, s.referenceRelativeName]: unfoldingReference, // path
+            // a.type == "schemaReference"
+            //   ? unfoldingReference.concat(a.definition.relativePath ?? "")
+            //   : unfoldingReference,
             rootSchema, // rootSchema
             // depth + 1, // depth
-            0, // depth
+            s.referenceRelativeName && unfoldingReference.includes(s.referenceRelativeName)?1:0, // depth
+            // 0,
             // 1, // depth
             currentModel,
             miroirMetaModel,
@@ -438,6 +484,8 @@ export function unfoldJzodSchemaOnce(
       const resultSchemaTmp: UnfoldJzodSchemaOnceReturnType = unfoldJzodSchemaOnce(
         miroirFundamentalJzodSchema,
         jzodSchema.definition,
+        path.concat("recordEntry"), // path
+        unfoldingReference,
         rootSchema, // rootSchema
         depth + 1, // depth
         currentModel,
@@ -489,6 +537,8 @@ export function unfoldJzodSchemaOnce(
         unfoldJzodSchemaOnce(
           miroirFundamentalJzodSchema,
           e,
+          path.concat("tupleItem"), // path
+          unfoldingReference,
           rootSchema, // rootSchema
           depth + 1, // depth
           currentModel,
@@ -525,6 +575,8 @@ export function unfoldJzodSchemaOnce(
       const subType = unfoldJzodSchemaOnce(
         miroirFundamentalJzodSchema,
         jzodSchema.definition,
+        path.concat("arrayItem"), // path
+        unfoldingReference,
         rootSchema, // rootSchema
         depth + 1, // depth
         currentModel,

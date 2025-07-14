@@ -470,11 +470,18 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                                 formik.values
                               )
                             : undefined;
+                        log.info(
+                          "ReportSectionEntityInstance dynamicLocalRootLessListKeyMap result",
+                          result,
+                          "for currentReportTargetEntityDefinition",
+                          currentReportTargetEntityDefinition?.name,
+                        );
                         return result;
                       } catch (e) {
                         log.warn(
                           "ReportSectionEntityInstance dynamicLocalRootLessListKeyMap error",
-                          // e,
+                          ReportSectionEntityInstanceCount,
+                          e,
                           // "props",
                           // props,
                           // "context",

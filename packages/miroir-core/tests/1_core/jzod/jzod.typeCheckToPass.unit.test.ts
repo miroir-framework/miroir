@@ -106,7 +106,7 @@ interface testFormat {
 // ################################################################################################
 // ################################################################################################
     const tests: { [k: string]: testFormat } = {
-      // plain literal!
+      // // plain literal!
       // test010: {
       //   testSchema: {
       //     type: "literal",
@@ -166,7 +166,7 @@ interface testFormat {
       //   },
       //   testValueObject: "myString",
       // },
-      // schemaReference: object, recursive, 1-level valueObject
+      // // schemaReference: object, recursive, 1-level valueObject
       // test040: {
       //   testValueObject: { a: "myString", c: 42 },
       //   testSchema: {
@@ -1063,7 +1063,104 @@ interface testFormat {
       //     ],
       //   },
       // },
-
+      // union type for array of references
+      // test230: {
+      //   testValueObject: [
+      //     {
+      //       "type": "schemaReference",
+      //       "definition": {
+      //         "eager": true,
+      //         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+      //         "relativePath": "transformer_orderBy"
+      //       }
+      //     }
+      //   ],
+      //   testSchema: {
+      //     "type": "union",
+      //     "optional": true,
+      //     "definition": [
+      //       {
+      //         "type": "union",
+      //         "optional": true,
+      //         "discriminator": "type",
+      //         "definition": [
+      //           {
+      //             "type": "schemaReference",
+      //             "definition": {
+      //               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+      //               "relativePath": "jzodReference"
+      //             },
+      //             "context": {}
+      //           },
+      //           {
+      //             "type": "schemaReference",
+      //             "definition": {
+      //               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+      //               "relativePath": "jzodObject"
+      //             },
+      //             "context": {}
+      //           }
+      //         ]
+      //       },
+      //       {
+      //         "type": "array",
+      //         "definition": {
+      //           "type": "union",
+      //           "optional": true,
+      //           "discriminator": "type",
+      //           "definition": [
+      //             {
+      //               "type": "schemaReference",
+      //               "definition": {
+      //                 "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+      //                 "relativePath": "jzodReference"
+      //               },
+      //               "context": {}
+      //             },
+      //             {
+      //               "type": "schemaReference",
+      //               "definition": {
+      //                 "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+      //                 "relativePath": "jzodObject"
+      //               },
+      //               "context": {}
+      //             }
+      //           ]
+      //         }
+      //       }
+      //     ]
+      //   },
+      //   expectedResolvedSchema: {
+      //     "type": "array",
+      //     "optional": true,
+      //     "definition": {
+      //       "type": "object",
+      //       "definition": {
+      //         "type": {
+      //           "type": "literal",
+      //           "definition": "schemaReference"
+      //         },
+      //         "definition": {
+      //           "type": "object",
+      //           "definition": {
+      //             "eager": {
+      //               "type": "boolean",
+      //               "optional": true
+      //             },
+      //             "relativePath": {
+      //               "type": "string",
+      //               "optional": true
+      //             },
+      //             "absolutePath": {
+      //               "type": "string",
+      //               "optional": true
+      //             }
+      //           }
+      //         }
+      //       }
+      //     }
+      //   }
+      // },
       // // // ##########################################################################################
       // // // ################################# JZOD SCHEMAS ###########################################
       // // // ##########################################################################################
@@ -1183,7 +1280,7 @@ interface testFormat {
       //     },
       //   },
       // },
-      // JzodSchema: schema reference for object with extend clause
+      // // JzodSchema: schema reference for object with extend clause
       // test340: {
       //   testSchema: {
       //     type: "schemaReference",
@@ -1518,6 +1615,7 @@ interface testFormat {
       //     },
       //   },
       // },
+      // mapperListToList Transformer
       test630: {
         testSchema: {
           "type": "object",
@@ -1727,8 +1825,251 @@ interface testFormat {
           }
         },
         expectedResolvedSchema: {
-          type: "object",
-          definition: {}
+          "type": "object",
+          "definition": {
+            "uuid": {
+              "type": "uuid",
+              "tag": {
+                "value": {
+                  "id": 1,
+                  "defaultLabel": "Uuid",
+                  "editable": false
+                }
+              }
+            },
+            "name": {
+              "type": "string",
+              "tag": {
+                "value": {
+                  "id": 5,
+                  "defaultLabel": "Name",
+                  "editable": true
+                }
+              }
+            },
+            "defaultLabel": {
+              "type": "string",
+              "tag": {
+                "value": {
+                  "id": 6,
+                  "defaultLabel": "Default Label",
+                  "editable": true
+                }
+              }
+            },
+            "description": {
+              "type": "string",
+              "optional": true,
+              "tag": {
+                "value": {
+                  "id": 7,
+                  "defaultLabel": "Description",
+                  "editable": true
+                }
+              }
+            },
+            "parentUuid": {
+              "type": "uuid",
+              "tag": {
+                "value": {
+                  "id": 3,
+                  "defaultLabel": "Entity Uuid",
+                  "editable": false
+                }
+              }
+            },
+            "parentDefinitionVersionUuid": {
+              "type": "uuid",
+              "optional": true,
+              "tag": {
+                "value": {
+                  "id": 4,
+                  "defaultLabel": "Entity Definition Version Uuid",
+                  "editable": false
+                }
+              }
+            },
+            "parentName": {
+              "type": "string",
+              "optional": true,
+              "tag": {
+                "value": {
+                  "id": 2,
+                  "defaultLabel": "Entity Name",
+                  "editable": false
+                }
+              }
+            },
+            "transformerInterface": {
+              "type": "object",
+              "definition": {
+                "transformerParameterSchema": {
+                  "type": "object",
+                  "definition": {
+                    "transformerType": {
+                      "type": "object",
+                      "definition": {
+                        "type": {
+                          "type": "literal",
+                          "definition": "literal"
+                        },
+                        "definition": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "transformerDefinition": {
+                      "type": "object",
+                      "definition": {
+                        "type": {
+                          "type": "literal",
+                          "definition": "object"
+                        },
+                        "extend": {
+                          "type": "array",
+                          "optional": true,
+                          "definition": {
+                            "type": "object",
+                            "definition": {
+                              "type": {
+                                "type": "literal",
+                                "definition": "schemaReference"
+                              },
+                              "definition": {
+                                "type": "object",
+                                "definition": {
+                                  "eager": {
+                                    "type": "boolean",
+                                    "optional": true
+                                  },
+                                  "absolutePath": {
+                                    "type": "string",
+                                    "optional": true
+                                  },
+                                  "relativePath": {
+                                    "type": "string",
+                                    "optional": true
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "definition": {
+                          "type": "object",
+                          "definition": {
+                            "applyTo": {
+                              "type": "object",
+                              "definition": {
+                                "type": {
+                                  "type": "literal",
+                                  "definition": "array"
+                                },
+                                "definition": {
+                                  "type": "object",
+                                  "definition": {
+                                    "type": {
+                                      "type": "enum",
+                                      "definition": [
+                                        "any",
+                                        "bigint",
+                                        "boolean",
+                                        "never",
+                                        "null",
+                                        "uuid",
+                                        "undefined",
+                                        "unknown",
+                                        "void"
+                                      ]
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "referenceToOuterObject": {
+                              "type": "object",
+                              "definition": {
+                                "type": {
+                                  "type": "literal",
+                                  "definition": "string"
+                                }
+                              }
+                            },
+                            "elementTransformer": {
+                              "type": "object",
+                              "definition": {
+                                "type": {
+                                  "type": "literal",
+                                  "definition": "schemaReference"
+                                },
+                                "definition": {
+                                  "type": "object",
+                                  "definition": {
+                                    "absolutePath": {
+                                      "type": "string",
+                                      "optional": true
+                                    },
+                                    "relativePath": {
+                                      "type": "string",
+                                      "optional": true
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "transformerResultSchema": {
+                  "type": "object",
+                  "definition": {
+                    "type": {
+                      "type": "literal",
+                      "definition": "array"
+                    },
+                    "definition": {
+                      "type": "object",
+                      "definition": {
+                        "type": {
+                          "type": "enum",
+                          "definition": [
+                            "any",
+                            "bigint",
+                            "boolean",
+                            "never",
+                            "null",
+                            "uuid",
+                            "undefined",
+                            "unknown",
+                            "void"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "transformerImplementation": {
+              "type": "object",
+              "definition": {
+                "transformerImplementationType": {
+                  "type": "literal",
+                  "definition": "libraryImplementation"
+                },
+                "inMemoryImplementationFunctionName": {
+                  "type": "string"
+                },
+                "sqlImplementationFunctionName": {
+                  "type": "string",
+                  "optional": true
+                }
+              }
+            }
+          }
         }
       }
       // // ##########################################################################################

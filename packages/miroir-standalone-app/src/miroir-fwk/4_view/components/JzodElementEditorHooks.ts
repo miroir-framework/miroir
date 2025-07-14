@@ -27,7 +27,7 @@ import {
   getQueryRunnerParamsForDeploymentEntityState,
   EntityInstance,
   jzodUnionResolvedTypeForObject,
-  JzodUnionResolvedTypeForObjectReturnType,
+  JzodUnionResolvedTypeReturnType,
   UnfoldJzodSchemaOnceReturnType,
 } from "miroir-core";
 import { getMemoizedDeploymentEntityStateSelectorMap } from "miroir-localcache-redux";
@@ -177,6 +177,8 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
         ? unfoldJzodSchemaOnce(
             context.miroirFundamentalJzodSchema, // context.miroirFundamentalJzodSchema,
             props.rawJzodSchema,
+            [], // path
+            [], // unfoldingReference
             props.rawJzodSchema, // rootSchema
             0, // depth
             currentModel,
@@ -332,7 +334,7 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
       foreignKeyObjectsFetchQueryParams
   );
 
-  const discriminatedSchemaResult: JzodUnionResolvedTypeForObjectReturnType | undefined = 
+  const discriminatedSchemaResult: JzodUnionResolvedTypeReturnType | undefined = 
     props.rawJzodSchema?.type == "union" &&
     props.rawJzodSchema.discriminator &&
     typeof currentValue == "object" &&

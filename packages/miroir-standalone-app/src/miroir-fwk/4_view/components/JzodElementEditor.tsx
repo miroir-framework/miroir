@@ -262,6 +262,8 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
     displayCodeEditor,
     "currentValue",
     currentValue,
+    "localResolvedElementJzodSchemaBasedOnValue",
+    localResolvedElementJzodSchemaBasedOnValue,
   )
 
   // Code editor element
@@ -898,7 +900,8 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
 }
 
 // Use React.memo to prevent unnecessary re-renders
-export const JzodElementEditor = React.memo(JzodElementEditorComponent);
+// export const JzodElementEditor = React.memo(JzodElementEditorComponent);
+export const JzodElementEditor = JzodElementEditorComponent;
 
 export const JzodObjectEditorWithErrorBoundary = withErrorBoundary(JzodElementEditor, {
   fallback: <div>Something went wrong</div>,

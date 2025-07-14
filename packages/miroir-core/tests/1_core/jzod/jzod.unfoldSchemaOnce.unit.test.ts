@@ -191,6 +191,8 @@ function testResolve(
   const testResult = unfoldJzodSchemaOnce(
     miroirFundamentalJzodSchema,
     testSchema,
+    [], // path
+    [], // unfoldingReferences
     testSchema, //rootSchema
     0, // depth
     // testValueObject,
@@ -704,44 +706,154 @@ describe(
                 "discriminator": "extractorOrCombinerType",
                 "definition": [
                   {
-                    "type": "schemaReference",
+                    "type": "object",
                     "definition": {
-                      "relativePath": "extractorOrCombinerContextReference",
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
-                    },
-                    "context": {}
+                      "extractorOrCombinerType": {
+                        "type": "literal",
+                        "definition": "extractorOrCombinerContextReference"
+                      },
+                      "extractorOrCombinerContextReference": {
+                        "type": "string"
+                      }
+                    }
                   },
                   {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "extractorOrCombinerReturningObject",
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
-                    },
-                    "context": {}
+                    "type": "union",
+                    "discriminator": "extractorOrCombinerType",
+                    "definition": [
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "extractorForObjectByDirectReference",
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                        },
+                        "context": {}
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "combinerForObjectByRelation",
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                        },
+                        "context": {}
+                      }
+                    ]
                   },
                   {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "extractorOrCombinerReturningObjectList",
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
-                    },
-                    "context": {}
+                    "type": "union",
+                    "discriminator": "extractorOrCombinerType",
+                    "definition": [
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "extractorByEntityReturningObjectList",
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                        },
+                        "context": {}
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "combinerByRelationReturningObjectList",
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                        },
+                        "context": {}
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "combinerByManyToManyRelationReturningObjectList",
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                        },
+                        "context": {}
+                      }
+                    ]
                   },
                   {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "extractorWrapper",
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
-                    },
-                    "context": {}
+                    "type": "union",
+                    "discriminator": "extractorOrCombinerType",
+                    "definition": [
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "extractorWrapperReturningObject",
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                        },
+                        "context": {}
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "extractorWrapperReturningList",
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                        },
+                        "context": {}
+                      }
+                    ]
                   },
                   {
-                    "type": "schemaReference",
+                    "type": "object",
                     "definition": {
-                      "relativePath": "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList",
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
-                    },
-                    "context": {}
+                      "extractorOrCombinerType": {
+                        "type": "literal",
+                        "definition": "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList"
+                      },
+                      "orderBy": {
+                        "type": "object",
+                        "optional": true,
+                        "definition": {
+                          "attributeName": {
+                            "type": "string"
+                          },
+                          "direction": {
+                            "type": "enum",
+                            "optional": true,
+                            "definition": [
+                              "ASC",
+                              "DESC"
+                            ]
+                          }
+                        }
+                      },
+                      "rootExtractorOrReference": {
+                        "type": "union",
+                        "discriminator": "extractorOrCombinerType",
+                        "definition": [
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "extractor"
+                            },
+                            "context": {}
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ]
+                      },
+                      "subQueryTemplate": {
+                        "type": "object",
+                        "definition": {
+                          "query": {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "extractorOrCombinerTemplate"
+                            },
+                            "context": {}
+                          },
+                          "rootQueryObjectTransformer": {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "recordOfTransformers"
+                            },
+                            "context": {}
+                          }
+                        }
+                      }
+                    }
                   },
                   {
                     "type": "object",
@@ -759,363 +871,1978 @@ describe(
               },
               "optional": true
             }
-            // expectedResult: {
-            //   type: "record",
-            //   definition: {
-            //     type: "union",
-            //     discriminator: "extractorOrCombinerType",
-            //     definition: [
-            //       {
-            //         type: "object",
-            //         definition: {
-            //           extractorOrCombinerType: {
-            //             type: "literal",
-            //             definition: "extractorOrCombinerContextReference",
-            //           },
-            //           extractorOrCombinerContextReference: {
-            //             type: "string",
-            //           },
-            //         },
-            //       },
-            //       {
-            //         type: "union",
-            //         discriminator: "extractorOrCombinerType",
-            //         definition: [
-            //           {
-            //             type: "object",
-            //             extend: {
-            //               type: "schemaReference",
-            //               definition: {
-            //                 eager: true,
-            //                 relativePath: "extractorOrCombinerRoot",
-            //                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            //               },
-            //               context: {},
-            //             },
-            //             definition: {
-            //               extractorOrCombinerType: {
-            //                 type: "literal",
-            //                 definition: "extractorForObjectByDirectReference",
-            //               },
-            //               instanceUuid: {
-            //                 type: "uuid",
-            //               },
-            //             },
-            //           },
-            //           {
-            //             type: "object",
-            //             extend: {
-            //               type: "schemaReference",
-            //               definition: {
-            //                 eager: true,
-            //                 relativePath: "extractorOrCombinerRoot",
-            //                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            //               },
-            //               context: {},
-            //             },
-            //             definition: {
-            //               extractorOrCombinerType: {
-            //                 type: "literal",
-            //                 definition: "combinerForObjectByRelation",
-            //               },
-            //               objectReference: {
-            //                 type: "string",
-            //               },
-            //               AttributeOfObjectToCompareToReferenceUuid: {
-            //                 type: "string",
-            //               },
-            //             },
-            //           },
-            //         ],
-            //       },
-            //       {
-            //         type: "union",
-            //         discriminator: "extractorOrCombinerType",
-            //         definition: [
-            //           {
-            //             type: "object",
-            //             extend: {
-            //               type: "schemaReference",
-            //               definition: {
-            //                 eager: true,
-            //                 relativePath: "extractorOrCombinerRoot",
-            //                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            //               },
-            //               context: {},
-            //             },
-            //             definition: {
-            //               extractorOrCombinerType: {
-            //                 type: "literal",
-            //                 definition: "extractorByEntityReturningObjectList",
-            //               },
-            //               orderBy: {
-            //                 type: "object",
-            //                 optional: true,
-            //                 definition: {
-            //                   attributeName: {
-            //                     type: "string",
-            //                   },
-            //                   direction: {
-            //                     type: "enum",
-            //                     optional: true,
-            //                     definition: ["ASC", "DESC"],
-            //                   },
-            //                 },
-            //               },
-            //               filter: {
-            //                 type: "object",
-            //                 optional: true,
-            //                 definition: {
-            //                   attributeName: {
-            //                     type: "string",
-            //                   },
-            //                   value: {
-            //                     type: "any",
-            //                   },
-            //                 },
-            //               },
-            //             },
-            //           },
-            //           {
-            //             type: "object",
-            //             extend: {
-            //               type: "schemaReference",
-            //               definition: {
-            //                 eager: true,
-            //                 relativePath: "extractorOrCombinerRoot",
-            //                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            //               },
-            //               context: {},
-            //             },
-            //             definition: {
-            //               extractorOrCombinerType: {
-            //                 type: "literal",
-            //                 definition: "combinerByRelationReturningObjectList",
-            //               },
-            //               orderBy: {
-            //                 type: "object",
-            //                 optional: true,
-            //                 definition: {
-            //                   attributeName: {
-            //                     type: "string",
-            //                   },
-            //                   direction: {
-            //                     type: "enum",
-            //                     optional: true,
-            //                     definition: ["ASC", "DESC"],
-            //                   },
-            //                 },
-            //               },
-            //               objectReference: {
-            //                 type: "string",
-            //               },
-            //               objectReferenceAttribute: {
-            //                 type: "string",
-            //                 optional: true,
-            //               },
-            //               AttributeOfListObjectToCompareToReferenceUuid: {
-            //                 type: "string",
-            //               },
-            //             },
-            //           },
-            //           {
-            //             type: "object",
-            //             extend: {
-            //               type: "schemaReference",
-            //               definition: {
-            //                 eager: true,
-            //                 relativePath: "extractorOrCombinerRoot",
-            //                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            //               },
-            //               context: {},
-            //             },
-            //             definition: {
-            //               extractorOrCombinerType: {
-            //                 type: "literal",
-            //                 definition: "combinerByManyToManyRelationReturningObjectList",
-            //               },
-            //               orderBy: {
-            //                 type: "object",
-            //                 optional: true,
-            //                 definition: {
-            //                   attributeName: {
-            //                     type: "string",
-            //                   },
-            //                   direction: {
-            //                     type: "enum",
-            //                     optional: true,
-            //                     definition: ["ASC", "DESC"],
-            //                   },
-            //                 },
-            //               },
-            //               objectListReference: {
-            //                 type: "string",
-            //               },
-            //               objectListReferenceAttribute: {
-            //                 type: "string",
-            //                 optional: true,
-            //               },
-            //               AttributeOfRootListObjectToCompareToListReferenceUuid: {
-            //                 type: "string",
-            //                 optional: true,
-            //               },
-            //             },
-            //           },
-            //         ],
-            //       },
-            //       {
-            //         type: "union",
-            //         discriminator: "extractorOrCombinerType",
-            //         definition: [
-            //           {
-            //             type: "object",
-            //             definition: {
-            //               extractorOrCombinerType: {
-            //                 type: "literal",
-            //                 definition: "extractorWrapperReturningObject",
-            //               },
-            //               definition: {
-            //                 type: "record",
-            //                 definition: {
-            //                   type: "union",
-            //                   discriminator: "extractorOrCombinerType",
-            //                   definition: [
-            //                     {
-            //                       type: "schemaReference",
-            //                       definition: {
-            //                         relativePath: "extractorOrCombinerContextReference",
-            //                         absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            //                       },
-            //                       context: {},
-            //                     },
-            //                     {
-            //                       type: "schemaReference",
-            //                       definition: {
-            //                         relativePath: "extractorOrCombiner",
-            //                         absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            //                       },
-            //                       context: {},
-            //                     },
-            //                   ],
-            //                 },
-            //               },
-            //             },
-            //           },
-            //           {
-            //             type: "object",
-            //             definition: {
-            //               extractorOrCombinerType: {
-            //                 type: "literal",
-            //                 definition: "extractorWrapperReturningList",
-            //               },
-            //               definition: {
-            //                 type: "array",
-            //                 definition: {
-            //                   type: "union",
-            //                   discriminator: "extractorOrCombinerType",
-            //                   definition: [
-            //                     {
-            //                       type: "schemaReference",
-            //                       definition: {
-            //                         relativePath: "extractorOrCombinerContextReference",
-            //                         absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            //                       },
-            //                       context: {},
-            //                     },
-            //                     {
-            //                       type: "schemaReference",
-            //                       definition: {
-            //                         relativePath: "extractorOrCombiner",
-            //                         absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            //                       },
-            //                       context: {},
-            //                     },
-            //                   ],
-            //                 },
-            //               },
-            //             },
-            //           },
-            //         ],
-            //       },
-            //       {
-            //         type: "object",
-            //         definition: {
-            //           extractorOrCombinerType: {
-            //             type: "literal",
-            //             definition:
-            //               "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList",
-            //           },
-            //           orderBy: {
-            //             type: "object",
-            //             optional: true,
-            //             definition: {
-            //               attributeName: {
-            //                 type: "string",
-            //               },
-            //               direction: {
-            //                 type: "enum",
-            //                 optional: true,
-            //                 definition: ["ASC", "DESC"],
-            //               },
-            //             },
-            //           },
-            //           rootExtractorOrReference: {
-            //             type: "union",
-            //             discriminator: "extractorOrCombinerType",
-            //             definition: [
-            //               {
-            //                 type: "schemaReference",
-            //                 definition: {
-            //                   absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            //                   relativePath: "extractor",
-            //                 },
-            //                 context: {},
-            //               },
-            //               {
-            //                 type: "string",
-            //               },
-            //             ],
-            //           },
-            //           subQueryTemplate: {
-            //             type: "object",
-            //             definition: {
-            //               query: {
-            //                 type: "schemaReference",
-            //                 definition: {
-            //                   absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            //                   relativePath: "extractorOrCombinerTemplate",
-            //                 },
-            //                 context: {},
-            //               },
-            //               rootQueryObjectTransformer: {
-            //                 type: "schemaReference",
-            //                 definition: {
-            //                   absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            //                   relativePath: "recordOfTransformers",
-            //                 },
-            //                 context: {},
-            //               },
-            //             },
-            //           },
-            //         },
-            //       },
-            //       {
-            //         type: "object",
-            //         definition: {
-            //           extractorOrCombinerType: {
-            //             type: "literal",
-            //             definition: "literal",
-            //           },
-            //           definition: {
-            //             type: "string",
-            //           },
-            //         },
-            //       },
-            //     ],
-            //   },
-            //   optional: true,
-            // },
           },
+          // // infinite unfold of JzodObject
+          // test210: {
+          //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+          //   testSchema: {
+          //     type: "object",
+          //     extend: {
+          //       type: "schemaReference",
+          //       definition: {
+          //         eager: true,
+          //         absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //         relativePath: "jzodBaseObject",
+          //       },
+          //       context: {},
+          //     },
+          //     definition: {
+          //       extend: {
+          //         type: "union",
+          //         optional: true,
+          //         definition: [
+          //           {
+          //             type: "union",
+          //             optional: true,
+          //             discriminator: "type",
+          //             definition: [
+          //               {
+          //                 type: "schemaReference",
+          //                 definition: {
+          //                   absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                   relativePath: "jzodReference",
+          //                 },
+          //                 context: {},
+          //               },
+          //               {
+          //                 type: "schemaReference",
+          //                 definition: {
+          //                   absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                   relativePath: "jzodObject",
+          //                 },
+          //                 context: {},
+          //               },
+          //             ],
+          //           },
+          //           {
+          //             type: "array",
+          //             definition: {
+          //               type: "union",
+          //               optional: true,
+          //               discriminator: "type",
+          //               definition: [
+          //                 {
+          //                   type: "schemaReference",
+          //                   definition: {
+          //                     absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                     relativePath: "jzodReference",
+          //                   },
+          //                   context: {},
+          //                 },
+          //                 {
+          //                   type: "schemaReference",
+          //                   definition: {
+          //                     absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                     relativePath: "jzodObject",
+          //                   },
+          //                   context: {},
+          //                 },
+          //               ],
+          //             },
+          //           },
+          //         ],
+          //       },
+          //       type: {
+          //         type: "literal",
+          //         definition: "object",
+          //       },
+          //       nonStrict: {
+          //         type: "boolean",
+          //         optional: true,
+          //       },
+          //       partial: {
+          //         type: "boolean",
+          //         optional: true,
+          //       },
+          //       carryOn: {
+          //         type: "union",
+          //         discriminator: "type",
+          //         optional: true,
+          //         definition: [
+          //           {
+          //             type: "schemaReference",
+          //             definition: {
+          //               absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //               relativePath: "jzodObject",
+          //             },
+          //             context: {},
+          //           },
+          //           {
+          //             type: "schemaReference",
+          //             definition: {
+          //               absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //               relativePath: "jzodUnion",
+          //             },
+          //             context: {},
+          //           },
+          //         ],
+          //       },
+          //       definition: {
+          //         type: "record",
+          //         definition: {
+          //           type: "schemaReference",
+          //           definition: {
+          //             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //             relativePath: "jzodElement",
+          //           },
+          //           context: {},
+          //         },
+          //       },
+          //     },
+          //   },
+          //   expectedResult: {
+          //     "type": "object",
+          //     "extend": {
+          //       "type": "schemaReference",
+          //       "definition": {
+          //         "eager": true,
+          //         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //         "relativePath": "jzodBaseObject"
+          //       },
+          //       "context": {}
+          //     },
+          //     "definition": {
+          //       "optional": {
+          //         "type": "boolean",
+          //         "optional": true
+          //       },
+          //       "nullable": {
+          //         "type": "boolean",
+          //         "optional": true
+          //       },
+          //       "tag": {
+          //         "type": "object",
+          //         "optional": true,
+          //         "definition": {
+          //           "value": {
+          //             "type": "object",
+          //             "optional": true,
+          //             "definition": {
+          //               "id": {
+          //                 "type": "number",
+          //                 "optional": true
+          //               },
+          //               "defaultLabel": {
+          //                 "type": "string",
+          //                 "optional": true
+          //               },
+          //               "description": {
+          //                 "type": "string",
+          //                 "optional": true
+          //               },
+          //               "initializeTo": {
+          //                 "type": "any",
+          //                 "optional": true
+          //               },
+          //               "targetEntity": {
+          //                 "type": "string",
+          //                 "optional": true
+          //               },
+          //               "targetEntityOrderInstancesBy": {
+          //                 "type": "string",
+          //                 "optional": true
+          //               },
+          //               "targetEntityApplicationSection": {
+          //                 "type": "enum",
+          //                 "optional": true,
+          //                 "definition": [
+          //                   "model",
+          //                   "data",
+          //                   "metaModel"
+          //                 ]
+          //               },
+          //               "editable": {
+          //                 "type": "boolean",
+          //                 "optional": true
+          //               },
+          //               "canBeTemplate": {
+          //                 "type": "boolean",
+          //                 "optional": true
+          //               }
+          //             }
+          //           }
+          //         }
+          //       },
+          //       "extend": {
+          //         "type": "union",
+          //         "optional": true,
+          //         "definition": [
+          //           {
+          //             "type": "union",
+          //             "optional": true,
+          //             "discriminator": "type",
+          //             "definition": [
+          //               {
+          //                 "type": "object",
+          //                 "extend": {
+          //                   "type": "schemaReference",
+          //                   "definition": {
+          //                     "eager": true,
+          //                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                     "relativePath": "jzodBaseObject"
+          //                   },
+          //                   "context": {}
+          //                 },
+          //                 "definition": {
+          //                   "optional": {
+          //                     "type": "boolean",
+          //                     "optional": true
+          //                   },
+          //                   "nullable": {
+          //                     "type": "boolean",
+          //                     "optional": true
+          //                   },
+          //                   "tag": {
+          //                     "type": "object",
+          //                     "optional": true,
+          //                     "definition": {
+          //                       "value": {
+          //                         "type": "object",
+          //                         "optional": true,
+          //                         "definition": {
+          //                           "id": {
+          //                             "type": "number",
+          //                             "optional": true
+          //                           },
+          //                           "defaultLabel": {
+          //                             "type": "string",
+          //                             "optional": true
+          //                           },
+          //                           "description": {
+          //                             "type": "string",
+          //                             "optional": true
+          //                           },
+          //                           "initializeTo": {
+          //                             "type": "any",
+          //                             "optional": true
+          //                           },
+          //                           "targetEntity": {
+          //                             "type": "string",
+          //                             "optional": true
+          //                           },
+          //                           "targetEntityOrderInstancesBy": {
+          //                             "type": "string",
+          //                             "optional": true
+          //                           },
+          //                           "targetEntityApplicationSection": {
+          //                             "type": "enum",
+          //                             "optional": true,
+          //                             "definition": [
+          //                               "model",
+          //                               "data",
+          //                               "metaModel"
+          //                             ]
+          //                           },
+          //                           "editable": {
+          //                             "type": "boolean",
+          //                             "optional": true
+          //                           },
+          //                           "canBeTemplate": {
+          //                             "type": "boolean",
+          //                             "optional": true
+          //                           }
+          //                         }
+          //                       }
+          //                     }
+          //                   },
+          //                   "type": {
+          //                     "type": "literal",
+          //                     "definition": "schemaReference"
+          //                   },
+          //                   "context": {
+          //                     "type": "record",
+          //                     "optional": true,
+          //                     "definition": {
+          //                       "type": "schemaReference",
+          //                       "definition": {
+          //                         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                         "relativePath": "jzodElement"
+          //                       },
+          //                       "context": {}
+          //                     }
+          //                   },
+          //                   "carryOn": {
+          //                     "type": "union",
+          //                     "optional": true,
+          //                     "discriminator": "type",
+          //                     "definition": [
+          //                       {
+          //                         "type": "object",
+          //                         "extend": {
+          //                           "type": "schemaReference",
+          //                           "definition": {
+          //                             "eager": true,
+          //                             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                             "relativePath": "jzodBaseObject"
+          //                           },
+          //                           "context": {}
+          //                         },
+          //                         "definition": {
+          //                           "extend": {
+          //                             "type": "union",
+          //                             "optional": true,
+          //                             "definition": [
+          //                               {
+          //                                 "type": "union",
+          //                                 "optional": true,
+          //                                 "discriminator": "type",
+          //                                 "definition": [
+          //                                   {
+          //                                     "type": "schemaReference",
+          //                                     "definition": {
+          //                                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                                       "relativePath": "jzodReference"
+          //                                     },
+          //                                     "context": {}
+          //                                   },
+          //                                   {
+          //                                     "type": "schemaReference",
+          //                                     "definition": {
+          //                                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                                       "relativePath": "jzodObject"
+          //                                     },
+          //                                     "context": {}
+          //                                   }
+          //                                 ]
+          //                               },
+          //                               {
+          //                                 "type": "array",
+          //                                 "definition": {
+          //                                   "type": "union",
+          //                                   "optional": true,
+          //                                   "discriminator": "type",
+          //                                   "definition": [
+          //                                     {
+          //                                       "type": "schemaReference",
+          //                                       "definition": {
+          //                                         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                                         "relativePath": "jzodReference"
+          //                                       },
+          //                                       "context": {}
+          //                                     },
+          //                                     {
+          //                                       "type": "schemaReference",
+          //                                       "definition": {
+          //                                         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                                         "relativePath": "jzodObject"
+          //                                       },
+          //                                       "context": {}
+          //                                     }
+          //                                   ]
+          //                                 }
+          //                               }
+          //                             ]
+          //                           },
+          //                           "type": {
+          //                             "type": "literal",
+          //                             "definition": "object"
+          //                           },
+          //                           "nonStrict": {
+          //                             "type": "boolean",
+          //                             "optional": true
+          //                           },
+          //                           "partial": {
+          //                             "type": "boolean",
+          //                             "optional": true
+          //                           },
+          //                           "carryOn": {
+          //                             "type": "union",
+          //                             "discriminator": "type",
+          //                             "optional": true,
+          //                             "definition": [
+          //                               {
+          //                                 "type": "schemaReference",
+          //                                 "definition": {
+          //                                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                                   "relativePath": "jzodObject"
+          //                                 },
+          //                                 "context": {}
+          //                               },
+          //                               {
+          //                                 "type": "schemaReference",
+          //                                 "definition": {
+          //                                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                                   "relativePath": "jzodUnion"
+          //                                 },
+          //                                 "context": {}
+          //                               }
+          //                             ]
+          //                           },
+          //                           "definition": {
+          //                             "type": "record",
+          //                             "definition": {
+          //                               "type": "schemaReference",
+          //                               "definition": {
+          //                                 "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                                 "relativePath": "jzodElement"
+          //                               },
+          //                               "context": {}
+          //                             }
+          //                           }
+          //                         }
+          //                       },
+          //                       {
+          //                         "type": "object",
+          //                         "extend": {
+          //                           "type": "schemaReference",
+          //                           "definition": {
+          //                             "eager": true,
+          //                             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                             "relativePath": "jzodBaseObject"
+          //                           },
+          //                           "context": {}
+          //                         },
+          //                         "definition": {
+          //                           "type": {
+          //                             "type": "literal",
+          //                             "definition": "union"
+          //                           },
+          //                           "discriminator": {
+          //                             "type": "union",
+          //                             "optional": true,
+          //                             "definition": [
+          //                               {
+          //                                 "type": "string"
+          //                               },
+          //                               {
+          //                                 "type": "array",
+          //                                 "definition": {
+          //                                   "type": "string"
+          //                                 }
+          //                               }
+          //                             ]
+          //                           },
+          //                           "discriminatorNew": {
+          //                             "type": "union",
+          //                             "optional": true,
+          //                             "definition": [
+          //                               {
+          //                                 "type": "object",
+          //                                 "definition": {
+          //                                   "discriminatorType": {
+          //                                     "type": "literal",
+          //                                     "definition": "string"
+          //                                   },
+          //                                   "value": {
+          //                                     "type": "string"
+          //                                   }
+          //                                 }
+          //                               },
+          //                               {
+          //                                 "type": "object",
+          //                                 "definition": {
+          //                                   "discriminatorType": {
+          //                                     "type": "literal",
+          //                                     "definition": "array"
+          //                                   },
+          //                                   "value": {
+          //                                     "type": "array",
+          //                                     "definition": {
+          //                                       "type": "string"
+          //                                     }
+          //                                   }
+          //                                 }
+          //                               }
+          //                             ]
+          //                           },
+          //                           "carryOn": {
+          //                             "optional": true,
+          //                             "type": "schemaReference",
+          //                             "definition": {
+          //                               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                               "relativePath": "jzodObject"
+          //                             },
+          //                             "context": {}
+          //                           },
+          //                           "definition": {
+          //                             "type": "array",
+          //                             "definition": {
+          //                               "type": "schemaReference",
+          //                               "definition": {
+          //                                 "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                                 "relativePath": "jzodElement"
+          //                               },
+          //                               "context": {}
+          //                             }
+          //                           }
+          //                         }
+          //                       }
+          //                     ]
+          //                   },
+          //                   "definition": {
+          //                     "type": "object",
+          //                     "definition": {
+          //                       "eager": {
+          //                         "type": "boolean",
+          //                         "optional": true
+          //                       },
+          //                       "partial": {
+          //                         "type": "boolean",
+          //                         "optional": true
+          //                       },
+          //                       "relativePath": {
+          //                         "type": "string",
+          //                         "optional": true
+          //                       },
+          //                       "absolutePath": {
+          //                         "type": "string",
+          //                         "optional": true
+          //                       }
+          //                     }
+          //                   }
+          //                 }
+          //               },
+          //               {
+          //                 "type": "object",
+          //                 "extend": {
+          //                   "type": "schemaReference",
+          //                   "definition": {
+          //                     "eager": true,
+          //                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                     "relativePath": "jzodBaseObject"
+          //                   },
+          //                   "context": {}
+          //                 },
+          //                 "definition": {
+          //                   "optional": {
+          //                     "type": "boolean",
+          //                     "optional": true
+          //                   },
+          //                   "nullable": {
+          //                     "type": "boolean",
+          //                     "optional": true
+          //                   },
+          //                   "tag": {
+          //                     "type": "object",
+          //                     "optional": true,
+          //                     "definition": {
+          //                       "value": {
+          //                         "type": "object",
+          //                         "optional": true,
+          //                         "definition": {
+          //                           "id": {
+          //                             "type": "number",
+          //                             "optional": true
+          //                           },
+          //                           "defaultLabel": {
+          //                             "type": "string",
+          //                             "optional": true
+          //                           },
+          //                           "description": {
+          //                             "type": "string",
+          //                             "optional": true
+          //                           },
+          //                           "initializeTo": {
+          //                             "type": "any",
+          //                             "optional": true
+          //                           },
+          //                           "targetEntity": {
+          //                             "type": "string",
+          //                             "optional": true
+          //                           },
+          //                           "targetEntityOrderInstancesBy": {
+          //                             "type": "string",
+          //                             "optional": true
+          //                           },
+          //                           "targetEntityApplicationSection": {
+          //                             "type": "enum",
+          //                             "optional": true,
+          //                             "definition": [
+          //                               "model",
+          //                               "data",
+          //                               "metaModel"
+          //                             ]
+          //                           },
+          //                           "editable": {
+          //                             "type": "boolean",
+          //                             "optional": true
+          //                           },
+          //                           "canBeTemplate": {
+          //                             "type": "boolean",
+          //                             "optional": true
+          //                           }
+          //                         }
+          //                       }
+          //                     }
+          //                   },
+          //                   "extend": {
+          //                     "type": "union",
+          //                     "optional": true,
+          //                     "definition": [
+          //                       {
+          //                         "type": "union",
+          //                         "optional": true,
+          //                         "discriminator": "type",
+          //                         "definition": [
+          //                           {
+          //                             "type": "object",
+          //                             "extend": {
+          //                               "type": "schemaReference",
+          //                               "definition": {
+          //                                 "eager": true,
+          //                                 "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                                 "relativePath": "jzodBaseObject"
+          //                               },
+          //                               "context": {}
+          //                             },
+          //                             "definition": {
+          //                               "optional": {
+          //                                 "type": "boolean",
+          //                                 "optional": true
+          //                               },
+          //                               "nullable": {
+          //                                 "type": "boolean",
+          //                                 "optional": true
+          //                               },
+          //                               "tag": {
+          //                                 "type": "object",
+          //                                 "optional": true,
+          //                                 "definition": {
+          //                                   "value": {
+          //                                     "type": "object",
+          //                                     "optional": true,
+          //                                     "definition": {
+          //                                       "id": {
+          //                                         "type": "number",
+          //                                         "optional": true
+          //                                       },
+          //                                       "defaultLabel": {
+          //                                         "type": "string",
+          //                                         "optional": true
+          //                                       },
+          //                                       "description": {
+          //                                         "type": "string",
+          //                                         "optional": true
+          //                                       },
+          //                                       "initializeTo": {
+          //                                         "type": "any",
+          //                                         "optional": true
+          //                                       },
+          //                                       "targetEntity": {
+          //                                         "type": "string",
+          //                                         "optional": true
+          //                                       },
+          //                                       "targetEntityOrderInstancesBy": {
+          //                                         "type": "string",
+          //                                         "optional": true
+          //                                       },
+          //                                       "targetEntityApplicationSection": {
+          //                                         "type": "enum",
+          //                                         "optional": true,
+          //                                         "definition": [
+          //                                           "model",
+          //                                           "data",
+          //                                           "metaModel"
+          //                                         ]
+          //                                       },
+          //                                       "editable": {
+          //                                         "type": "boolean",
+          //                                         "optional": true
+          //                                       },
+          //                                       "canBeTemplate": {
+          //                                         "type": "boolean",
+          //                                         "optional": true
+          //                                       }
+          //                                     }
+          //                                   }
+          //                                 }
+          //                               },
+          //                               "type": {
+          //                                 "type": "literal",
+          //                                 "definition": "schemaReference"
+          //                               },
+          //                               "context": {
+          //                                 "type": "record",
+          //                                 "optional": true,
+          //                                 "definition": {
+          //                                   "type": "schemaReference",
+          //                                   "definition": {
+          //                                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                                     "relativePath": "jzodElement"
+          //                                   },
+          //                                   "context": {}
+          //                                 }
+          //                               },
+          //                               "carryOn": {
+          //                                 "type": "union",
+          //                                 "optional": true,
+          //                                 "discriminator": "type",
+          //                                 "definition": [
+          //                                   {
+          //                                     "type": "object",
+          //                                     "extend": {
+          //                                       "type": "schemaReference",
+          //                                       "definition": {
+          //                                         "eager": true,
+          //                                         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                                         "relativePath": "jzodBaseObject"
+          //                                       },
+          //                                       "context": {}
+          //                                     },
+          //                                     "definition": {
+          //                                       "extend": {
+          //                                         "type": "union",
+          //                                         "optional": true,
+          //                                         "definition": [
+          //                                           {
+          //                                             "type": "union",
+          //                                             "optional": true,
+          //                                             "discriminator": "type",
+          //                                             "definition": [
+          //                                               {
+          //                                                 "type": "schemaReference",
+          //                                                 "definition": {
+          //                                                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                                                   "relativePath": "jzodReference"
+          //                                                 },
+          //                                                 "context": {}
+          //                                               },
+          //                                               {
+          //                                                 "type": "schemaReference",
+          //                                                 "definition": {
+          //                                                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                                                   "relativePath": "jzodObject"
+          //                                                 },
+          //                                                 "context": {}
+          //                                               }
+          //                                             ]
+          //                                           },
+          //                                           {
+          //                                             "type": "array",
+          //                                             "definition": {
+          //                                               "type": "union",
+          //                                               "optional": true,
+          //                                               "discriminator": "type",
+          //                                               "definition": [
+          //                                                 {
+          //                                                   "type": "schemaReference",
+          //                                                   "definition": {
+          //                                                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                                                     "relativePath": "jzodReference"
+          //                                                   },
+          //                                                   "context": {}
+          //                                                 },
+          //                                                 {
+          //                                                   "type": "schemaReference",
+          //                                                   "definition": {
+          //                                                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                                                     "relativePath": "jzodObject"
+          //                                                   },
+          //                                                   "context": {}
+          //                                                 }
+          //                                               ]
+          //                                             }
+          //                                           }
+          //                                         ]
+          //                                       },
+          //                                       "type": {
+          //                                         "type": "literal",
+          //                                         "definition": "object"
+          //                                       },
+          //                                       "nonStrict": {
+          //                                         "type": "boolean",
+          //                                         "optional": true
+          //                                       },
+          //                                       "partial": {
+          //                                         "type": "boolean",
+          //                                         "optional": true
+          //                                       },
+          //                                       "carryOn": {
+          //                                         "type": "union",
+          //                                         "discriminator": "type",
+          //                                         "optional": true,
+          //                                         "definition": [
+          //                                           {
+          //                                             "type": "schemaReference",
+          //                                             "definition": {
+          //                                               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                                               "relativePath": "jzodObject"
+          //                                             },
+          //                                             "context": {}
+          //                                           },
+          //                                           {
+          //                                             "type": "schemaReference",
+          //                                             "definition": {
+          //                                               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                                               "relativePath": "jzodUnion"
+          //                                             },
+          //                                             "context": {}
+          //                                           }
+          //                                         ]
+          //                                       },
+          //                                       "definition": {
+          //                                         "type": "record",
+          //                                         "definition": {
+          //                                           "type": "schemaReference",
+          //                                           "definition": {
+          //                                             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                                             "relativePath": "jzodElement"
+          //                                           },
+          //                                           "context": {}
+          //                                         }
+          //                                       }
+          //                                     }
+          //                                   },
+          //                                   {
+          //                                     "type": "object",
+          //                                     "extend": {
+          //                                       "type": "schemaReference",
+          //                                       "definition": {
+          //                                         "eager": true,
+          //                                         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                                         "relativePath": "jzodBaseObject"
+          //                                       },
+          //                                       "context": {}
+          //                                     },
+          //                                     "definition": {
+          //                                       "type": {
+          //                                         "type": "literal",
+          //                                         "definition": "union"
+          //                                       },
+          //                                       "discriminator": {
+          //                                         "type": "union",
+          //                                         "optional": true,
+          //                                         "definition": [
+          //                                           {
+          //                                             "type": "string"
+          //                                           },
+          //                                           {
+          //                                             "type": "array",
+          //                                             "definition": {
+          //                                               "type": "string"
+          //                                             }
+          //                                           }
+          //                                         ]
+          //                                       },
+          //                                       "discriminatorNew": {
+          //                                         "type": "union",
+          //                                         "optional": true,
+          //                                         "definition": [
+          //                                           {
+          //                                             "type": "object",
+          //                                             "definition": {
+          //                                               "discriminatorType": {
+          //                                                 "type": "literal",
+          //                                                 "definition": "string"
+          //                                               },
+          //                                               "value": {
+          //                                                 "type": "string"
+          //                                               }
+          //                                             }
+          //                                           },
+          //                                           {
+          //                                             "type": "object",
+          //                                             "definition": {
+          //                                               "discriminatorType": {
+          //                                                 "type": "literal",
+          //                                                 "definition": "array"
+          //                                               },
+          //                                               "value": {
+          //                                                 "type": "array",
+          //                                                 "definition": {
+          //                                                   "type": "string"
+          //                                                 }
+          //                                               }
+          //                                             }
+          //                                           }
+          //                                         ]
+          //                                       },
+          //                                       "carryOn": {
+          //                                         "optional": true,
+          //                                         "type": "schemaReference",
+          //                                         "definition": {
+          //                                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                                           "relativePath": "jzodObject"
+          //                                         },
+          //                                         "context": {}
+          //                                       },
+          //                                       "definition": {
+          //                                         "type": "array",
+          //                                         "definition": {
+          //                                           "type": "schemaReference",
+          //                                           "definition": {
+          //                                             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                                             "relativePath": "jzodElement"
+          //                                           },
+          //                                           "context": {}
+          //                                         }
+          //                                       }
+          //                                     }
+          //                                   }
+          //                                 ]
+          //                               },
+          //                               "definition": {
+          //                                 "type": "object",
+          //                                 "definition": {
+          //                                   "eager": {
+          //                                     "type": "boolean",
+          //                                     "optional": true
+          //                                   },
+          //                                   "partial": {
+          //                                     "type": "boolean",
+          //                                     "optional": true
+          //                                   },
+          //                                   "relativePath": {
+          //                                     "type": "string",
+          //                                     "optional": true
+          //                                   },
+          //                                   "absolutePath": {
+          //                                     "type": "string",
+          //                                     "optional": true
+          //                                   }
+          //                                 }
+          //                               }
+          //                             }
+          //                           },
+          //                           {
+          //                             "type": "object",
+          //                             "extend": {
+          //                               "type": "schemaReference",
+          //                               "definition": {
+          //                                 "eager": true,
+          //                                 "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                                 "relativePath": "jzodBaseObject"
+          //                               },
+          //                               "context": {}
+          //                             },
+          //                             "definition": {
+          //                               "optional": {
+          //                                 "type": "boolean",
+          //                                 "optional": true
+          //                               },
+          //                               "nullable": {
+          //                                 "type": "boolean",
+          //                                 "optional": true
+          //                               },
+          //                               "tag": {
+          //                                 "type": "object",
+          //                                 "optional": true,
+          //                                 "definition": {
+          //                                   "value": {
+          //                                     "type": "object",
+          //                                     "optional": true,
+          //                                     "definition": {
+          //                                       "id": {
+          //                                         "type": "number",
+          //                                         "optional": true
+          //                                       },
+          //                                       "defaultLabel": {
+          //                                         "type": "string",
+          //                                         "optional": true
+          //                                       },
+          //                                       "description": {
+          //                                         "type": "string",
+          //                                         "optional": true
+          //                                       },
+          //                                       "initializeTo": {
+          //                                         "type": "any",
+          //                                         "optional": true
+          //                                       },
+          //                                       "targetEntity": {
+          //                                         "type": "string",
+          //                                         "optional": true
+          //                                       },
+          //                                       "targetEntityOrderInstancesBy": {
+          //                                         "type": "string",
+          //                                         "optional": true
+          //                                       },
+          //                                       "targetEntityApplicationSection": {
+          //                                         "type": "enum",
+          //                                         "optional": true,
+          //                                         "definition": [
+          //                                           "model",
+          //                                           "data",
+          //                                           "metaModel"
+          //                                         ]
+          //                                       },
+          //                                       "editable": {
+          //                                         "type": "boolean",
+          //                                         "optional": true
+          //                                       },
+          //                                       "canBeTemplate": {
+          //                                         "type": "boolean",
+          //                                         "optional": true
+          //                                       }
+          //                                     }
+          //                                   }
+          //                                 }
+          //                               },
+          //                               "extend": {
+          //                                 "type": "union",
+          //                                 "optional": true,
+          //                                 "definition": [
+          //                                   {
+          //                                     "type": "union",
+          //                                     "optional": true,
+          //                                     "discriminator": "type",
+          //                                     "definition": [
+          //                                       {
+          //                                         "type": "schemaReference",
+          //                                         "definition": {
+          //                                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                                           "relativePath": "jzodReference"
+          //                                         },
+          //                                         "context": {}
+          //                                       },
+          //                                       {
+          //                                         "type": "schemaReference",
+          //                                         "definition": {
+          //                                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                                           "relativePath": "jzodObject"
+          //                                         },
+          //                                         "context": {}
+          //                                       }
+          //                                     ]
+          //                                   },
+          //                                   {
+          //                                     "type": "array",
+          //                                     "definition": {
+          //                                       "type": "union",
+          //                                       "optional": true,
+          //                                       "discriminator": "type",
+          //                                       "definition": [
+          //                                         {
+          //                                           "type": "schemaReference",
+          //                                           "definition": {
+          //                                             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                                             "relativePath": "jzodReference"
+          //                                           },
+          //                                           "context": {}
+          //                                         },
+          //                                         {
+          //                                           "type": "schemaReference",
+          //                                           "definition": {
+          //                                             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                                             "relativePath": "jzodObject"
+          //                                           },
+          //                                           "context": {}
+          //                                         }
+          //                                       ]
+          //                                     }
+          //                                   }
+          //                                 ]
+          //                               },
+          //                               "type": {
+          //                                 "type": "literal",
+          //                                 "definition": "object"
+          //                               },
+          //                               "nonStrict": {
+          //                                 "type": "boolean",
+          //                                 "optional": true
+          //                               },
+          //                               "partial": {
+          //                                 "type": "boolean",
+          //                                 "optional": true
+          //                               },
+          //                               "carryOn": {
+          //                                 "type": "union",
+          //                                 "discriminator": "type",
+          //                                 "optional": true,
+          //                                 "definition": [
+          //                                   {
+          //                                     "type": "schemaReference",
+          //                                     "definition": {
+          //                                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                                       "relativePath": "jzodObject"
+          //                                     },
+          //                                     "context": {}
+          //                                   },
+          //                                   {
+          //                                     "type": "schemaReference",
+          //                                     "definition": {
+          //                                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                                       "relativePath": "jzodUnion"
+          //                                     },
+          //                                     "context": {}
+          //                                   }
+          //                                 ]
+          //                               },
+          //                               "definition": {
+          //                                 "type": "record",
+          //                                 "definition": {
+          //                                   "type": "schemaReference",
+          //                                   "definition": {
+          //                                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                                     "relativePath": "jzodElement"
+          //                                   },
+          //                                   "context": {}
+          //                                 }
+          //                               }
+          //                             }
+          //                           }
+          //                         ]
+          //                       },
+          //                       {
+          //                         "type": "array",
+          //                         "definition": {
+          //                           "type": "union",
+          //                           "optional": true,
+          //                           "discriminator": "type",
+          //                           "definition": [
+          //                             {
+          //                               "type": "object",
+          //                               "extend": {
+          //                                 "type": "schemaReference",
+          //                                 "definition": {
+          //                                   "eager": true,
+          //                                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                                   "relativePath": "jzodBaseObject"
+          //                                 },
+          //                                 "context": {}
+          //                               },
+          //                               "definition": {
+          //                                 "type": {
+          //                                   "type": "literal",
+          //                                   "definition": "schemaReference"
+          //                                 },
+          //                                 "context": {
+          //                                   "type": "record",
+          //                                   "optional": true,
+          //                                   "definition": {
+          //                                     "type": "schemaReference",
+          //                                     "definition": {
+          //                                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                                       "relativePath": "jzodElement"
+          //                                     },
+          //                                     "context": {}
+          //                                   }
+          //                                 },
+          //                                 "carryOn": {
+          //                                   "type": "union",
+          //                                   "optional": true,
+          //                                   "discriminator": "type",
+          //                                   "definition": [
+          //                                     {
+          //                                       "type": "schemaReference",
+          //                                       "definition": {
+          //                                         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                                         "relativePath": "jzodObject"
+          //                                       },
+          //                                       "context": {}
+          //                                     },
+          //                                     {
+          //                                       "type": "schemaReference",
+          //                                       "definition": {
+          //                                         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                                         "relativePath": "jzodUnion"
+          //                                       },
+          //                                       "context": {}
+          //                                     }
+          //                                   ]
+          //                                 },
+          //                                 "definition": {
+          //                                   "type": "object",
+          //                                   "definition": {
+          //                                     "eager": {
+          //                                       "type": "boolean",
+          //                                       "optional": true
+          //                                     },
+          //                                     "partial": {
+          //                                       "type": "boolean",
+          //                                       "optional": true
+          //                                     },
+          //                                     "relativePath": {
+          //                                       "type": "string",
+          //                                       "optional": true
+          //                                     },
+          //                                     "absolutePath": {
+          //                                       "type": "string",
+          //                                       "optional": true
+          //                                     }
+          //                                   }
+          //                                 }
+          //                               }
+          //                             },
+          //                             {
+          //                               "type": "object",
+          //                               "extend": {
+          //                                 "type": "schemaReference",
+          //                                 "definition": {
+          //                                   "eager": true,
+          //                                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                                   "relativePath": "jzodBaseObject"
+          //                                 },
+          //                                 "context": {}
+          //                               },
+          //                               "definition": {
+          //                                 "extend": {
+          //                                   "type": "union",
+          //                                   "optional": true,
+          //                                   "definition": [
+          //                                     {
+          //                                       "type": "union",
+          //                                       "optional": true,
+          //                                       "discriminator": "type",
+          //                                       "definition": [
+          //                                         {
+          //                                           "type": "schemaReference",
+          //                                           "definition": {
+          //                                             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                                             "relativePath": "jzodReference"
+          //                                           },
+          //                                           "context": {}
+          //                                         },
+          //                                         {
+          //                                           "type": "schemaReference",
+          //                                           "definition": {
+          //                                             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                                             "relativePath": "jzodObject"
+          //                                           },
+          //                                           "context": {}
+          //                                         }
+          //                                       ]
+          //                                     },
+          //                                     {
+          //                                       "type": "array",
+          //                                       "definition": {
+          //                                         "type": "union",
+          //                                         "optional": true,
+          //                                         "discriminator": "type",
+          //                                         "definition": [
+          //                                           {
+          //                                             "type": "schemaReference",
+          //                                             "definition": {
+          //                                               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                                               "relativePath": "jzodReference"
+          //                                             },
+          //                                             "context": {}
+          //                                           },
+          //                                           {
+          //                                             "type": "schemaReference",
+          //                                             "definition": {
+          //                                               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                                               "relativePath": "jzodObject"
+          //                                             },
+          //                                             "context": {}
+          //                                           }
+          //                                         ]
+          //                                       }
+          //                                     }
+          //                                   ]
+          //                                 },
+          //                                 "type": {
+          //                                   "type": "literal",
+          //                                   "definition": "object"
+          //                                 },
+          //                                 "nonStrict": {
+          //                                   "type": "boolean",
+          //                                   "optional": true
+          //                                 },
+          //                                 "partial": {
+          //                                   "type": "boolean",
+          //                                   "optional": true
+          //                                 },
+          //                                 "carryOn": {
+          //                                   "type": "union",
+          //                                   "discriminator": "type",
+          //                                   "optional": true,
+          //                                   "definition": [
+          //                                     {
+          //                                       "type": "schemaReference",
+          //                                       "definition": {
+          //                                         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                                         "relativePath": "jzodObject"
+          //                                       },
+          //                                       "context": {}
+          //                                     },
+          //                                     {
+          //                                       "type": "schemaReference",
+          //                                       "definition": {
+          //                                         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                                         "relativePath": "jzodUnion"
+          //                                       },
+          //                                       "context": {}
+          //                                     }
+          //                                   ]
+          //                                 },
+          //                                 "definition": {
+          //                                   "type": "record",
+          //                                   "definition": {
+          //                                     "type": "schemaReference",
+          //                                     "definition": {
+          //                                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                                       "relativePath": "jzodElement"
+          //                                     },
+          //                                     "context": {}
+          //                                   }
+          //                                 }
+          //                               }
+          //                             }
+          //                           ]
+          //                         }
+          //                       }
+          //                     ]
+          //                   },
+          //                   "type": {
+          //                     "type": "literal",
+          //                     "definition": "object"
+          //                   },
+          //                   "nonStrict": {
+          //                     "type": "boolean",
+          //                     "optional": true
+          //                   },
+          //                   "partial": {
+          //                     "type": "boolean",
+          //                     "optional": true
+          //                   },
+          //                   "carryOn": {
+          //                     "type": "union",
+          //                     "discriminator": "type",
+          //                     "optional": true,
+          //                     "definition": [
+          //                       {
+          //                         "type": "object",
+          //                         "extend": {
+          //                           "type": "schemaReference",
+          //                           "definition": {
+          //                             "eager": true,
+          //                             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                             "relativePath": "jzodBaseObject"
+          //                           },
+          //                           "context": {}
+          //                         },
+          //                         "definition": {
+          //                           "extend": {
+          //                             "type": "union",
+          //                             "optional": true,
+          //                             "definition": [
+          //                               {
+          //                                 "type": "union",
+          //                                 "optional": true,
+          //                                 "discriminator": "type",
+          //                                 "definition": [
+          //                                   {
+          //                                     "type": "schemaReference",
+          //                                     "definition": {
+          //                                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                                       "relativePath": "jzodReference"
+          //                                     },
+          //                                     "context": {}
+          //                                   },
+          //                                   {
+          //                                     "type": "schemaReference",
+          //                                     "definition": {
+          //                                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                                       "relativePath": "jzodObject"
+          //                                     },
+          //                                     "context": {}
+          //                                   }
+          //                                 ]
+          //                               },
+          //                               {
+          //                                 "type": "array",
+          //                                 "definition": {
+          //                                   "type": "union",
+          //                                   "optional": true,
+          //                                   "discriminator": "type",
+          //                                   "definition": [
+          //                                     {
+          //                                       "type": "schemaReference",
+          //                                       "definition": {
+          //                                         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                                         "relativePath": "jzodReference"
+          //                                       },
+          //                                       "context": {}
+          //                                     },
+          //                                     {
+          //                                       "type": "schemaReference",
+          //                                       "definition": {
+          //                                         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                                         "relativePath": "jzodObject"
+          //                                       },
+          //                                       "context": {}
+          //                                     }
+          //                                   ]
+          //                                 }
+          //                               }
+          //                             ]
+          //                           },
+          //                           "type": {
+          //                             "type": "literal",
+          //                             "definition": "object"
+          //                           },
+          //                           "nonStrict": {
+          //                             "type": "boolean",
+          //                             "optional": true
+          //                           },
+          //                           "partial": {
+          //                             "type": "boolean",
+          //                             "optional": true
+          //                           },
+          //                           "carryOn": {
+          //                             "type": "union",
+          //                             "discriminator": "type",
+          //                             "optional": true,
+          //                             "definition": [
+          //                               {
+          //                                 "type": "schemaReference",
+          //                                 "definition": {
+          //                                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                                   "relativePath": "jzodObject"
+          //                                 },
+          //                                 "context": {}
+          //                               },
+          //                               {
+          //                                 "type": "schemaReference",
+          //                                 "definition": {
+          //                                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                                   "relativePath": "jzodUnion"
+          //                                 },
+          //                                 "context": {}
+          //                               }
+          //                             ]
+          //                           },
+          //                           "definition": {
+          //                             "type": "record",
+          //                             "definition": {
+          //                               "type": "schemaReference",
+          //                               "definition": {
+          //                                 "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                                 "relativePath": "jzodElement"
+          //                               },
+          //                               "context": {}
+          //                             }
+          //                           }
+          //                         }
+          //                       },
+          //                       {
+          //                         "type": "object",
+          //                         "extend": {
+          //                           "type": "schemaReference",
+          //                           "definition": {
+          //                             "eager": true,
+          //                             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                             "relativePath": "jzodBaseObject"
+          //                           },
+          //                           "context": {}
+          //                         },
+          //                         "definition": {
+          //                           "type": {
+          //                             "type": "literal",
+          //                             "definition": "union"
+          //                           },
+          //                           "discriminator": {
+          //                             "type": "union",
+          //                             "optional": true,
+          //                             "definition": [
+          //                               {
+          //                                 "type": "string"
+          //                               },
+          //                               {
+          //                                 "type": "array",
+          //                                 "definition": {
+          //                                   "type": "string"
+          //                                 }
+          //                               }
+          //                             ]
+          //                           },
+          //                           "discriminatorNew": {
+          //                             "type": "union",
+          //                             "optional": true,
+          //                             "definition": [
+          //                               {
+          //                                 "type": "object",
+          //                                 "definition": {
+          //                                   "discriminatorType": {
+          //                                     "type": "literal",
+          //                                     "definition": "string"
+          //                                   },
+          //                                   "value": {
+          //                                     "type": "string"
+          //                                   }
+          //                                 }
+          //                               },
+          //                               {
+          //                                 "type": "object",
+          //                                 "definition": {
+          //                                   "discriminatorType": {
+          //                                     "type": "literal",
+          //                                     "definition": "array"
+          //                                   },
+          //                                   "value": {
+          //                                     "type": "array",
+          //                                     "definition": {
+          //                                       "type": "string"
+          //                                     }
+          //                                   }
+          //                                 }
+          //                               }
+          //                             ]
+          //                           },
+          //                           "carryOn": {
+          //                             "optional": true,
+          //                             "type": "schemaReference",
+          //                             "definition": {
+          //                               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                               "relativePath": "jzodObject"
+          //                             },
+          //                             "context": {}
+          //                           },
+          //                           "definition": {
+          //                             "type": "array",
+          //                             "definition": {
+          //                               "type": "schemaReference",
+          //                               "definition": {
+          //                                 "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                                 "relativePath": "jzodElement"
+          //                               },
+          //                               "context": {}
+          //                             }
+          //                           }
+          //                         }
+          //                       }
+          //                     ]
+          //                   },
+          //                   "definition": {
+          //                     "type": "record",
+          //                     "definition": {
+          //                       "type": "schemaReference",
+          //                       "definition": {
+          //                         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                         "relativePath": "jzodElement"
+          //                       },
+          //                       "context": {}
+          //                     }
+          //                   }
+          //                 }
+          //               }
+          //             ]
+          //           },
+          //           {
+          //             "type": "array",
+          //             "definition": {
+          //               "type": "union",
+          //               "optional": true,
+          //               "discriminator": "type",
+          //               "definition": [
+          //                 {
+          //                   "type": "object",
+          //                   "extend": {
+          //                     "type": "schemaReference",
+          //                     "definition": {
+          //                       "eager": true,
+          //                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                       "relativePath": "jzodBaseObject"
+          //                     },
+          //                     "context": {}
+          //                   },
+          //                   "definition": {
+          //                     "type": {
+          //                       "type": "literal",
+          //                       "definition": "schemaReference"
+          //                     },
+          //                     "context": {
+          //                       "type": "record",
+          //                       "optional": true,
+          //                       "definition": {
+          //                         "type": "schemaReference",
+          //                         "definition": {
+          //                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                           "relativePath": "jzodElement"
+          //                         },
+          //                         "context": {}
+          //                       }
+          //                     },
+          //                     "carryOn": {
+          //                       "type": "union",
+          //                       "optional": true,
+          //                       "discriminator": "type",
+          //                       "definition": [
+          //                         {
+          //                           "type": "schemaReference",
+          //                           "definition": {
+          //                             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                             "relativePath": "jzodObject"
+          //                           },
+          //                           "context": {}
+          //                         },
+          //                         {
+          //                           "type": "schemaReference",
+          //                           "definition": {
+          //                             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                             "relativePath": "jzodUnion"
+          //                           },
+          //                           "context": {}
+          //                         }
+          //                       ]
+          //                     },
+          //                     "definition": {
+          //                       "type": "object",
+          //                       "definition": {
+          //                         "eager": {
+          //                           "type": "boolean",
+          //                           "optional": true
+          //                         },
+          //                         "partial": {
+          //                           "type": "boolean",
+          //                           "optional": true
+          //                         },
+          //                         "relativePath": {
+          //                           "type": "string",
+          //                           "optional": true
+          //                         },
+          //                         "absolutePath": {
+          //                           "type": "string",
+          //                           "optional": true
+          //                         }
+          //                       }
+          //                     }
+          //                   }
+          //                 },
+          //                 {
+          //                   "type": "object",
+          //                   "extend": {
+          //                     "type": "schemaReference",
+          //                     "definition": {
+          //                       "eager": true,
+          //                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                       "relativePath": "jzodBaseObject"
+          //                     },
+          //                     "context": {}
+          //                   },
+          //                   "definition": {
+          //                     "extend": {
+          //                       "type": "union",
+          //                       "optional": true,
+          //                       "definition": [
+          //                         {
+          //                           "type": "union",
+          //                           "optional": true,
+          //                           "discriminator": "type",
+          //                           "definition": [
+          //                             {
+          //                               "type": "schemaReference",
+          //                               "definition": {
+          //                                 "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                                 "relativePath": "jzodReference"
+          //                               },
+          //                               "context": {}
+          //                             },
+          //                             {
+          //                               "type": "schemaReference",
+          //                               "definition": {
+          //                                 "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                                 "relativePath": "jzodObject"
+          //                               },
+          //                               "context": {}
+          //                             }
+          //                           ]
+          //                         },
+          //                         {
+          //                           "type": "array",
+          //                           "definition": {
+          //                             "type": "union",
+          //                             "optional": true,
+          //                             "discriminator": "type",
+          //                             "definition": [
+          //                               {
+          //                                 "type": "schemaReference",
+          //                                 "definition": {
+          //                                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                                   "relativePath": "jzodReference"
+          //                                 },
+          //                                 "context": {}
+          //                               },
+          //                               {
+          //                                 "type": "schemaReference",
+          //                                 "definition": {
+          //                                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                                   "relativePath": "jzodObject"
+          //                                 },
+          //                                 "context": {}
+          //                               }
+          //                             ]
+          //                           }
+          //                         }
+          //                       ]
+          //                     },
+          //                     "type": {
+          //                       "type": "literal",
+          //                       "definition": "object"
+          //                     },
+          //                     "nonStrict": {
+          //                       "type": "boolean",
+          //                       "optional": true
+          //                     },
+          //                     "partial": {
+          //                       "type": "boolean",
+          //                       "optional": true
+          //                     },
+          //                     "carryOn": {
+          //                       "type": "union",
+          //                       "discriminator": "type",
+          //                       "optional": true,
+          //                       "definition": [
+          //                         {
+          //                           "type": "schemaReference",
+          //                           "definition": {
+          //                             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                             "relativePath": "jzodObject"
+          //                           },
+          //                           "context": {}
+          //                         },
+          //                         {
+          //                           "type": "schemaReference",
+          //                           "definition": {
+          //                             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                             "relativePath": "jzodUnion"
+          //                           },
+          //                           "context": {}
+          //                         }
+          //                       ]
+          //                     },
+          //                     "definition": {
+          //                       "type": "record",
+          //                       "definition": {
+          //                         "type": "schemaReference",
+          //                         "definition": {
+          //                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                           "relativePath": "jzodElement"
+          //                         },
+          //                         "context": {}
+          //                       }
+          //                     }
+          //                   }
+          //                 }
+          //               ]
+          //             }
+          //           }
+          //         ]
+          //       },
+          //       "type": {
+          //         "type": "literal",
+          //         "definition": "object"
+          //       },
+          //       "nonStrict": {
+          //         "type": "boolean",
+          //         "optional": true
+          //       },
+          //       "partial": {
+          //         "type": "boolean",
+          //         "optional": true
+          //       },
+          //       "carryOn": {
+          //         "type": "union",
+          //         "discriminator": "type",
+          //         "optional": true,
+          //         "definition": [
+          //           {
+          //             "type": "object",
+          //             "extend": {
+          //               "type": "schemaReference",
+          //               "definition": {
+          //                 "eager": true,
+          //                 "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                 "relativePath": "jzodBaseObject"
+          //               },
+          //               "context": {}
+          //             },
+          //             "definition": {
+          //               "extend": {
+          //                 "type": "union",
+          //                 "optional": true,
+          //                 "definition": [
+          //                   {
+          //                     "type": "union",
+          //                     "optional": true,
+          //                     "discriminator": "type",
+          //                     "definition": [
+          //                       {
+          //                         "type": "schemaReference",
+          //                         "definition": {
+          //                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                           "relativePath": "jzodReference"
+          //                         },
+          //                         "context": {}
+          //                       },
+          //                       {
+          //                         "type": "schemaReference",
+          //                         "definition": {
+          //                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                           "relativePath": "jzodObject"
+          //                         },
+          //                         "context": {}
+          //                       }
+          //                     ]
+          //                   },
+          //                   {
+          //                     "type": "array",
+          //                     "definition": {
+          //                       "type": "union",
+          //                       "optional": true,
+          //                       "discriminator": "type",
+          //                       "definition": [
+          //                         {
+          //                           "type": "schemaReference",
+          //                           "definition": {
+          //                             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                             "relativePath": "jzodReference"
+          //                           },
+          //                           "context": {}
+          //                         },
+          //                         {
+          //                           "type": "schemaReference",
+          //                           "definition": {
+          //                             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                             "relativePath": "jzodObject"
+          //                           },
+          //                           "context": {}
+          //                         }
+          //                       ]
+          //                     }
+          //                   }
+          //                 ]
+          //               },
+          //               "type": {
+          //                 "type": "literal",
+          //                 "definition": "object"
+          //               },
+          //               "nonStrict": {
+          //                 "type": "boolean",
+          //                 "optional": true
+          //               },
+          //               "partial": {
+          //                 "type": "boolean",
+          //                 "optional": true
+          //               },
+          //               "carryOn": {
+          //                 "type": "union",
+          //                 "discriminator": "type",
+          //                 "optional": true,
+          //                 "definition": [
+          //                   {
+          //                     "type": "schemaReference",
+          //                     "definition": {
+          //                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                       "relativePath": "jzodObject"
+          //                     },
+          //                     "context": {}
+          //                   },
+          //                   {
+          //                     "type": "schemaReference",
+          //                     "definition": {
+          //                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                       "relativePath": "jzodUnion"
+          //                     },
+          //                     "context": {}
+          //                   }
+          //                 ]
+          //               },
+          //               "definition": {
+          //                 "type": "record",
+          //                 "definition": {
+          //                   "type": "schemaReference",
+          //                   "definition": {
+          //                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                     "relativePath": "jzodElement"
+          //                   },
+          //                   "context": {}
+          //                 }
+          //               }
+          //             }
+          //           },
+          //           {
+          //             "type": "object",
+          //             "extend": {
+          //               "type": "schemaReference",
+          //               "definition": {
+          //                 "eager": true,
+          //                 "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                 "relativePath": "jzodBaseObject"
+          //               },
+          //               "context": {}
+          //             },
+          //             "definition": {
+          //               "type": {
+          //                 "type": "literal",
+          //                 "definition": "union"
+          //               },
+          //               "discriminator": {
+          //                 "type": "union",
+          //                 "optional": true,
+          //                 "definition": [
+          //                   {
+          //                     "type": "string"
+          //                   },
+          //                   {
+          //                     "type": "array",
+          //                     "definition": {
+          //                       "type": "string"
+          //                     }
+          //                   }
+          //                 ]
+          //               },
+          //               "discriminatorNew": {
+          //                 "type": "union",
+          //                 "optional": true,
+          //                 "definition": [
+          //                   {
+          //                     "type": "object",
+          //                     "definition": {
+          //                       "discriminatorType": {
+          //                         "type": "literal",
+          //                         "definition": "string"
+          //                       },
+          //                       "value": {
+          //                         "type": "string"
+          //                       }
+          //                     }
+          //                   },
+          //                   {
+          //                     "type": "object",
+          //                     "definition": {
+          //                       "discriminatorType": {
+          //                         "type": "literal",
+          //                         "definition": "array"
+          //                       },
+          //                       "value": {
+          //                         "type": "array",
+          //                         "definition": {
+          //                           "type": "string"
+          //                         }
+          //                       }
+          //                     }
+          //                   }
+          //                 ]
+          //               },
+          //               "carryOn": {
+          //                 "optional": true,
+          //                 "type": "schemaReference",
+          //                 "definition": {
+          //                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                   "relativePath": "jzodObject"
+          //                 },
+          //                 "context": {}
+          //               },
+          //               "definition": {
+          //                 "type": "array",
+          //                 "definition": {
+          //                   "type": "schemaReference",
+          //                   "definition": {
+          //                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //                     "relativePath": "jzodElement"
+          //                   },
+          //                   "context": {}
+          //                 }
+          //               }
+          //             }
+          //           }
+          //         ]
+          //       },
+          //       "definition": {
+          //         "type": "record",
+          //         "definition": {
+          //           "type": "schemaReference",
+          //           "definition": {
+          //             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //             "relativePath": "jzodElement"
+          //           },
+          //           "context": {}
+          //         }
+          //       }
+          //     }
+          //   },
+          // },
           // // ######################################################################################
           // // ######################################################################################
           // // ######################################################################################

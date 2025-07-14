@@ -112,7 +112,7 @@ function mapResolveJzodSchemaToValueKeys(
           "mapResolveJzodSchemaToValueKeys " +
             "path '" +
             rootLessListKey +
-            "' could not resolve jzod schema for " +
+            "' could not resolve jzod schema for object " +
             " currentValue " +
             JSON.stringify(value, null, 2) +
             " resolvedJzodSchema " +
@@ -128,7 +128,7 @@ function mapResolveJzodSchemaToValueKeys(
        "mapResolveJzodSchemaToValueKeys " +
          "path '" +
          rootLessListKey +
-         "' could not resolve jzod schema for " +
+         "' could not resolve jzod schema for default " +
          " currentValue " +
          JSON.stringify(value, null, 2) +
          " resolvedJzodSchema " +
@@ -182,8 +182,9 @@ export function rootLessListKeyMap(
       "rootLessListKeyMap " +
         "path '" +
         rootLessListKey +
-        "' could not resolve jzod schema for " +
+        "' could not jzodTypeCheck for " +
         " currentValue " +
+        // JSON.stringify(currentValue, null, 2) +
         JSON.stringify(currentValue, null, 2) +
         " rawJzodSchema " +
         JSON.stringify(rawJzodSchema, null, 2) +
@@ -194,6 +195,13 @@ export function rootLessListKeyMap(
   const localResolvedElementJzodSchemaBasedOnValue: JzodElement =
     returnedLocalResolvedElementJzodSchemaBasedOnValue.resolvedSchema;
 
+  log.info(
+    "rootLessListKeyMap found localResolvedElementJzodSchemaBasedOnValue",
+    localResolvedElementJzodSchemaBasedOnValue,
+    "for rootLessListKey",
+    rootLessListKey,
+    // JSON.stringify(localResolvedElementJzodSchemaBasedOnValue, null, 2)
+  );
   const result: Record<string, { resolvedElementJzodSchema: JzodElement }> = {};
   mapResolveJzodSchemaToValueKeys(
     localResolvedElementJzodSchemaBasedOnValue,
