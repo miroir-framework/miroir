@@ -201,19 +201,19 @@ export class LocalCache implements LocalCacheInterface {
      log.info("LocalCache action=", JSON.stringify(action, undefined, 2))
      // log.info("RestServer queryActionHandler domainState=", JSON.stringify(domainState, undefined, 2))
      let queryResult: Domain2QueryReturnType<DomainElementSuccess> = undefined as any as Domain2QueryReturnType<DomainElementSuccess>;
-     switch (action.query.queryType) {
+     switch (action.payload.query.queryType) {
        case "boxedExtractorOrCombinerReturningObject":
        case "boxedExtractorOrCombinerReturningObjectList": {
          queryResult = extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList(
            domainState,
-           getExtractorRunnerParamsForDomainState(action.query, extractorRunnerMapOnDomainState)
+           getExtractorRunnerParamsForDomainState(action.payload.query, extractorRunnerMapOnDomainState)
          );
          break;
        }
        case "boxedQueryWithExtractorCombinerTransformer": {
          queryResult = extractorRunnerMapOnDomainState.runQuery(
            domainState,
-           getQueryRunnerParamsForDomainState(action.query, extractorRunnerMapOnDomainState)
+           getQueryRunnerParamsForDomainState(action.payload.query, extractorRunnerMapOnDomainState)
          );
          break;
        }

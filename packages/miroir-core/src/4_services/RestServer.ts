@@ -460,13 +460,13 @@ export async function queryTemplateActionHandler(
     log.info("RestServer queryTemplateActionHandler domainState=", JSON.stringify(domainState, undefined, 2));
     let queryResult: Domain2QueryReturnType<any> = undefined as any as Domain2QueryReturnType<any>;
 
-    switch (runBoxedQueryTemplateOrBoxedExtractorTemplateAction.query.queryType) {
+    switch (runBoxedQueryTemplateOrBoxedExtractorTemplateAction.payload.query.queryType) {
       case "boxedExtractorTemplateReturningObject":
       case "boxedExtractorTemplateReturningObjectList": {
         queryResult = extractWithBoxedExtractorTemplate(
           domainState,
           getExtractorTemplateRunnerParamsForDomainState(
-            runBoxedQueryTemplateOrBoxedExtractorTemplateAction.query,
+            runBoxedQueryTemplateOrBoxedExtractorTemplateAction.payload.query,
             extractorRunnerMapOnDomainState
           )
         );
@@ -476,7 +476,7 @@ export async function queryTemplateActionHandler(
         queryResult = runQueryTemplateWithExtractorCombinerTransformer(
           domainState,
           getQueryTemplateRunnerParamsForDomainState(
-            runBoxedQueryTemplateOrBoxedExtractorTemplateAction.query,
+            runBoxedQueryTemplateOrBoxedExtractorTemplateAction.payload.query,
             extractorRunnerMapOnDomainState
           )
         );

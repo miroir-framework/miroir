@@ -62,7 +62,7 @@ export async function handleQueryTemplateAction(
   //   JSON.stringify(queryTemplateAction, null, 2)
   // );
   const resolvedQuery = resolveQueryTemplateWithExtractorCombinerTransformer( // TODO: separate aas resolvedQueryTemplate and resolvedExtractorTemplate
-    queryTemplateAction.query
+    queryTemplateAction.payload.query
   );
   log.info(
     "handleQueryTemplateAction for ",
@@ -80,8 +80,10 @@ export async function handleQueryTemplateAction(
       actionName: queryTemplateAction.actionName,
       deploymentUuid: queryTemplateAction.deploymentUuid,
       endpoint: queryTemplateAction.endpoint,
-      applicationSection: queryTemplateAction.applicationSection,
-      query: resolvedQuery as any,
+      payload: {
+        applicationSection: queryTemplateAction.payload.applicationSection,
+        query: resolvedQuery as any,
+      }
     },
     selectorMap
   );
@@ -100,7 +102,7 @@ export async function handleBoxedExtractorTemplateAction(
     JSON.stringify(boxedExtractorTemplateAction, null, 2)
   );
   const resolvedQuery = resolveBoxedExtractorOrCombinerTemplateReturningObjectOrObjectList( // TODO: separate aas resolvedQueryTemplate and resolvedExtractorTemplate
-    boxedExtractorTemplateAction.query,
+    boxedExtractorTemplateAction.payload.query,
   );
 
   const extractorAction: RunBoxedExtractorAction = {
@@ -108,8 +110,10 @@ export async function handleBoxedExtractorTemplateAction(
     actionName: boxedExtractorTemplateAction.actionName,
     deploymentUuid: boxedExtractorTemplateAction.deploymentUuid,
     endpoint: boxedExtractorTemplateAction.endpoint,
-    applicationSection: boxedExtractorTemplateAction.applicationSection,
-    query: resolvedQuery as any,
+    payload: {
+      applicationSection: boxedExtractorTemplateAction.payload.applicationSection,
+      query: resolvedQuery as any,
+    }
   };
 
   log.info(
@@ -144,9 +148,9 @@ export async function handleBoxedExtractorTemplateOrQueryTemplateAction(
     JSON.stringify(queryTemplateOrExtractorTemplateAction, null, 2)
   );
 
-  if ("queryType" in queryTemplateOrExtractorTemplateAction.query) {
+  if ("queryType" in queryTemplateOrExtractorTemplateAction.payload.query) {
     const resolvedQuery = resolveQueryTemplateWithExtractorCombinerTransformer( // TODO: separate aas resolvedQueryTemplate and resolvedExtractorTemplate
-      queryTemplateOrExtractorTemplateAction.query as BoxedQueryTemplateWithExtractorCombinerTransformer,
+      queryTemplateOrExtractorTemplateAction.payload.query as BoxedQueryTemplateWithExtractorCombinerTransformer,
   
     );
     log.info(
@@ -164,13 +168,15 @@ export async function handleBoxedExtractorTemplateOrQueryTemplateAction(
         actionName: queryTemplateOrExtractorTemplateAction.actionName,
         deploymentUuid: queryTemplateOrExtractorTemplateAction.deploymentUuid,
         endpoint: queryTemplateOrExtractorTemplateAction.endpoint,
-        applicationSection: queryTemplateOrExtractorTemplateAction.applicationSection,
-        query: resolvedQuery as any,
+        payload: {
+          applicationSection: queryTemplateOrExtractorTemplateAction.payload.applicationSection,
+          query: resolvedQuery as any,
+        }
       },
       selectorMap
     );
   } else {
-    const localQuery = queryTemplateOrExtractorTemplateAction.query as BoxedExtractorTemplateReturningObjectOrObjectList;
+    const localQuery = queryTemplateOrExtractorTemplateAction.payload.query as BoxedExtractorTemplateReturningObjectOrObjectList;
     const resolvedQuery = resolveBoxedExtractorOrCombinerTemplateReturningObjectOrObjectList( // TODO: separate aas resolvedQueryTemplate and resolvedExtractorTemplate
       localQuery,
     );
@@ -187,8 +193,10 @@ export async function handleBoxedExtractorTemplateOrQueryTemplateAction(
       actionName: queryTemplateOrExtractorTemplateAction.actionName,
       deploymentUuid: queryTemplateOrExtractorTemplateAction.deploymentUuid,
       endpoint: queryTemplateOrExtractorTemplateAction.endpoint,
-      applicationSection: queryTemplateOrExtractorTemplateAction.applicationSection,
-      query: resolvedQuery as any,
+      payload: {
+        applicationSection: queryTemplateOrExtractorTemplateAction.payload.applicationSection,
+        query: resolvedQuery as any,
+      }
     };
     log.info(
       "handleBoxedExtractorTemplateOrQueryTemplateAction for ",

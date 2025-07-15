@@ -3094,15 +3094,30 @@ export function getMiroirFundamentalJzodSchema(
         },
         localPersistenceAction: persistenceEndpointVersionV1.definition.actions[0].actionParameters,
         restPersistenceAction: persistenceEndpointVersionV1.definition.actions[1].actionParameters,
-        runBoxedQueryTemplateOrBoxedExtractorTemplateAction:
-          queryEndpointVersionV1.definition.actions[0].actionParameters,
-        runBoxedExtractorOrQueryAction:
-          queryEndpointVersionV1.definition.actions[1].actionParameters,
-        runBoxedQueryTemplateAction: queryEndpointVersionV1.definition.actions[2].actionParameters,
-        runBoxedExtractorTemplateAction:
-          queryEndpointVersionV1.definition.actions[3].actionParameters,
-        runBoxedQueryAction: queryEndpointVersionV1.definition.actions[4].actionParameters,
-        runBoxedExtractorAction: queryEndpointVersionV1.definition.actions[5].actionParameters,
+        runBoxedQueryTemplateOrBoxedExtractorTemplateAction: {
+          type: "object",
+          definition: queryEndpointVersionV1.definition.actions[0].actionParameters,
+        },
+        runBoxedExtractorOrQueryAction: {
+          type: "object",
+          definition: queryEndpointVersionV1.definition.actions[1].actionParameters,
+        },
+        runBoxedQueryTemplateAction: {
+          type: "object",
+          definition: queryEndpointVersionV1.definition.actions[2].actionParameters,
+        },
+        runBoxedExtractorTemplateAction: {
+          type: "object",
+          definition: queryEndpointVersionV1.definition.actions[3].actionParameters,
+        },
+        runBoxedQueryAction: {
+          type: "object",
+          definition: queryEndpointVersionV1.definition.actions[4].actionParameters,
+        },
+        runBoxedExtractorAction: {
+          type: "object",
+          definition: queryEndpointVersionV1.definition.actions[5].actionParameters,
+        },
         // ################################################################################
         compositeActionDefinition: domainEndpointVersionV1.definition.actions.find(
           (a: any) => a.actionParameters?.definition?.actionType?.definition == "compositeAction"

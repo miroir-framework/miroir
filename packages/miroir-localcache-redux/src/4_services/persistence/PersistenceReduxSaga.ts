@@ -451,33 +451,37 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
             "innerHandlePersistenceActionForLocalPersistenceStore could not find controller for deployment: " + action.deploymentUuid
           );
         }
-        switch (action.query.queryType) {
+        switch (action.payload.query.queryType) {
           case "boxedExtractorOrCombinerReturningObjectList":
           case "boxedExtractorOrCombinerReturningObject": {
-            const localQuery: BoxedExtractorOrCombinerReturningObjectOrObjectList = action.query;
+            const localQuery: BoxedExtractorOrCombinerReturningObjectOrObjectList = action.payload.query;
             const localStoreResult = yield* call(() =>
               localPersistenceStoreController.handleBoxedExtractorAction({
                 actionType: "runBoxedExtractorAction",
                 actionName: action.actionName,
-                applicationSection: action.applicationSection,
                 deploymentUuid: action.deploymentUuid,
                 endpoint: action.endpoint,
-                query: localQuery,
+                payload: {
+                  applicationSection: action.payload.applicationSection,
+                  query: localQuery,
+                }
               })
             );
             return yield localStoreResult;
             break;
           }
           case "boxedQueryWithExtractorCombinerTransformer": {
-            const localQuery: BoxedQueryWithExtractorCombinerTransformer = action.query;
+            const localQuery: BoxedQueryWithExtractorCombinerTransformer = action.payload.query;
             const localStoreResult = yield* call(() =>
               localPersistenceStoreController.handleBoxedQueryAction({
                 actionType: "runBoxedQueryAction",
                 actionName: action.actionName,
-                applicationSection: action.applicationSection,
                 deploymentUuid: action.deploymentUuid,
                 endpoint: action.endpoint,
-                query: localQuery,
+                payload: {
+                  applicationSection: action.payload.applicationSection,
+                  query: localQuery,
+                }
               })
             );
             return yield localStoreResult;

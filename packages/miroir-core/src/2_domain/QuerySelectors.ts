@@ -535,7 +535,7 @@ export async function handleBoxedExtractorAction(
     JSON.stringify(runBoxedExtractorAction, null, 2)
   );
   let queryResult: Domain2QueryReturnType<DomainElementSuccess>;
-  const extractor = runBoxedExtractorAction.query;
+  const extractor = runBoxedExtractorAction.payload.query;
   queryResult = await selectorMap.extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList(
     {
       extractorRunnerMap: selectorMap,
@@ -572,7 +572,7 @@ export async function handleBoxedQueryAction(
   let queryResult: Domain2QueryReturnType<DomainElementSuccess>;
   queryResult = await selectorMap.runQuery(
     {
-      extractor: runBoxedQueryAction.query,
+      extractor: runBoxedQueryAction.payload.query,
       extractorRunnerMap: selectorMap,
     }
   );

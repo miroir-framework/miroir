@@ -118,7 +118,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     // TODO: composite actions / queries could execute on different sections, how should this be dealt with? 
     // RIGHT NOW RESTRICT ALL SUBQUERIES OF A QUERY TO THE SAME SECTION !!!!
     const currentStore: PersistenceStoreDataSectionInterface | PersistenceStoreModelSectionInterface =
-      action.applicationSection == "data" ? this.dataStoreSection : this.modelStoreSection;
+      action.payload.applicationSection == "data" ? this.dataStoreSection : this.modelStoreSection;
     const result: Action2ReturnType = await currentStore.handleBoxedExtractorAction(action);
 
     log.info(this.logHeader,'handleBoxedExtractorAction','query',action, "result", JSON.stringify(result));
@@ -135,7 +135,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     // TODO: composite actions / queries could execute on different sections, how should this be dealt with? 
     // RIGHT NOW RESTRICT ALL SUBQUERIES OF A QUERY TO THE SAME SECTION !!!!
     const currentStore: PersistenceStoreDataSectionInterface | PersistenceStoreModelSectionInterface =
-      action.applicationSection == "data" ? this.dataStoreSection : this.modelStoreSection;
+      action.payload.applicationSection == "data" ? this.dataStoreSection : this.modelStoreSection;
     const result: Action2ReturnType = await currentStore.handleBoxedQueryAction(action);
 
     log.info(this.logHeader,'handleBoxedQueryAction done  for query',action, "result", JSON.stringify(result));
@@ -152,7 +152,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     // TODO: composite actions / queries could execute on different sections, how should this be dealt with? 
     // RIGHT NOW RESTRICT ALL SUBQUERIES OF A QUERY TO THE SAME SECTION !!!!
     const currentStore: PersistenceStoreDataSectionInterface | PersistenceStoreModelSectionInterface =
-      action.applicationSection == "data" ? this.dataStoreSection : this.modelStoreSection;
+      action.payload.applicationSection == "data" ? this.dataStoreSection : this.modelStoreSection;
       
     const result: Action2ReturnType = await currentStore.handleBoxedExtractorTemplateActionForServerONLY(action);
 
@@ -170,7 +170,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     // TODO: composite actions / queries could execute on different sections, how should this be dealt with? 
     // RIGHT NOW RESTRICT ALL SUBQUERIES OF A QUERY TO THE SAME SECTION !!!!
     const currentStore: PersistenceStoreDataSectionInterface | PersistenceStoreModelSectionInterface =
-      action.applicationSection == "data" ? this.dataStoreSection : this.modelStoreSection;
+      action.payload.applicationSection == "data" ? this.dataStoreSection : this.modelStoreSection;
       
     const result: Action2ReturnType = await currentStore.handleQueryTemplateActionForServerONLY(action);
 
@@ -188,7 +188,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     // TODO: composite actions / queries could execute on different sections, how should this be dealt with? 
     // RIGHT NOW RESTRICT ALL SUBQUERIES OF A QUERY TO THE SAME SECTION !!!!
     const currentStore: PersistenceStoreDataSectionInterface | PersistenceStoreModelSectionInterface =
-      action.applicationSection == "data" ? this.dataStoreSection : this.modelStoreSection;
+      action.payload.applicationSection == "data" ? this.dataStoreSection : this.modelStoreSection;
       
     const result: Action2ReturnType = await currentStore.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(action);
 

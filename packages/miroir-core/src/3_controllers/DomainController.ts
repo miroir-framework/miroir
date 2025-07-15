@@ -529,7 +529,7 @@ export class DomainController implements DomainControllerInterface {
         "actionType=",
         runBoxedExtractorOrQueryAction?.actionType,
         "queryExecutionStrategy=",
-        runBoxedExtractorOrQueryAction.queryExecutionStrategy,
+        runBoxedExtractorOrQueryAction.payload.queryExecutionStrategy,
         "objects=",
         JSON.stringify((runBoxedExtractorOrQueryAction as any)["objects"], null, 2)
       );
@@ -570,13 +570,13 @@ export class DomainController implements DomainControllerInterface {
         // );
         const executionStrategy =
           // runBoxedExtractorOrQueryAction.queryExecutionStrategy ?? "localCacheOrFail";
-          runBoxedExtractorOrQueryAction.queryExecutionStrategy ?? "storage";
+          runBoxedExtractorOrQueryAction.payload.queryExecutionStrategy ?? "storage";
         switch (executionStrategy) {
           case "ServerCache":
           case "localCacheOrFetch": {
             throw new Error(
               "DomainController handleBoxedExtractorOrQueryAction could not handle queryExecutionStrategy " +
-                runBoxedExtractorOrQueryAction.queryExecutionStrategy
+                runBoxedExtractorOrQueryAction.payload.queryExecutionStrategy
             );
           }
           case "localCacheOrFail": {
@@ -614,7 +614,7 @@ export class DomainController implements DomainControllerInterface {
           default: {
             throw new Error(
               "DomainController handleBoxedExtractorOrQueryAction unknown queryExecutionStrategy " +
-                runBoxedExtractorOrQueryAction.queryExecutionStrategy
+                runBoxedExtractorOrQueryAction.payload.queryExecutionStrategy
             );
             break;
           }

@@ -213,8 +213,9 @@
                       }
                     ]
                   },
-                  "errors": {
+                  "actionErrors": {
                     "type": "union",
+                    "discriminator": "type",
                     "optional": true,
                     "definition": [
                       {

@@ -491,22 +491,24 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       actionType: "runBoxedExtractorAction",
       endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
       deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-      applicationSection: "data",
       actionName: "runQuery",
-      query: {
-        queryType: "boxedExtractorOrCombinerReturningObject",
-        deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-        pageParams: {},
-        queryParams: {},
-        contextResults: {},
-        select: {
-          extractorOrCombinerType: "extractorForObjectByDirectReference",
-          parentUuid: entityMenu.uuid,
-          parentName: entityMenu.name,
-          applicationSection: "model",
-          instanceUuid: "eaac459c-6c2b-475c-8ae4-c6c3032dae00", // This is the uuid of the menuDefaultMiroir instance
+      payload: {
+        applicationSection: "data",
+        query: {
+          queryType: "boxedExtractorOrCombinerReturningObject",
+          deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+          pageParams: {},
+          queryParams: {},
+          contextResults: {},
+          select: {
+            extractorOrCombinerType: "extractorForObjectByDirectReference",
+            parentUuid: entityMenu.uuid,
+            parentName: entityMenu.name,
+            applicationSection: "model",
+            instanceUuid: "eaac459c-6c2b-475c-8ae4-c6c3032dae00", // This is the uuid of the menuDefaultMiroir instance
+          },
         },
-      },
+      }
     },
   },
   "runBoxedQueryAction is parsable": {
@@ -515,25 +517,27 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       actionType: "runBoxedQueryAction",
       endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
       deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-      applicationSection: "data",
       actionName: "runQuery",
-      query: {
-        queryType: "boxedQueryWithExtractorCombinerTransformer",
-        deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-        pageParams: {},
-        queryParams: {},
-        contextResults: {},
-        extractors: {
-          extractorForObjectByDirectReference: {
-            extractorOrCombinerType: "extractorForObjectByDirectReference",
-            parentUuid: entityMenu.uuid,
-            parentName: entityMenu.name,
-            applicationSection: "model",
-            instanceUuid: "eaac459c-6c2b-475c-8ae4-c6c3032dae00", // This is the uuid of the menuDefaultMiroir instance
+      payload: {
+        applicationSection: "data",
+        query: {
+          queryType: "boxedQueryWithExtractorCombinerTransformer",
+          deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+          pageParams: {},
+          queryParams: {},
+          contextResults: {},
+          extractors: {
+            extractorForObjectByDirectReference: {
+              extractorOrCombinerType: "extractorForObjectByDirectReference",
+              parentUuid: entityMenu.uuid,
+              parentName: entityMenu.name,
+              applicationSection: "model",
+              instanceUuid: "eaac459c-6c2b-475c-8ae4-c6c3032dae00", // This is the uuid of the menuDefaultMiroir instance
+            },
           },
+          combiners: {},
         },
-        combiners: {},
-      },
+      }
     },
   },
   // ##############################################################################################

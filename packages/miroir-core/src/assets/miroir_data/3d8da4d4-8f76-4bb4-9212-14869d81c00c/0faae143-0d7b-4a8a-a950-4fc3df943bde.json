@@ -9,46 +9,48 @@
     "actions": [
       {
         "actionParameters": {
-          "type": "object",
-          "definition": {
-            "actionType": { "type": "literal", "definition": "runBoxedQueryTemplateOrBoxedExtractorTemplateAction" },
-            "actionName": { "type": "literal", "definition": "runQuery" },
-            "actionLabel": { "type": "string", "optional": true },
-            "endpoint": { "type": "literal", "definition": "9e404b3c-368c-40cb-be8b-e3c28550c25e" },
-            "applicationSection": {
-              "type": "schemaReference",
-              "optional": true,
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "applicationSection"
-              }
-            },
-            "deploymentUuid": {
-              "type": "uuid",
-              "tag": {
-                "value": { "id": 1, "canBeTemplate": true, "defaultLabel": "Uuid", "editable": false }
-              }
-            },
-            "query": {
-              "type": "union",
-              "definition": [
-                {
-                  "type": "schemaReference",
-                  "optional": false,
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "boxedExtractorTemplateReturningObjectOrObjectList"
-                  }
-                },
-                {
-                  "type": "schemaReference",
-                  "optional": false,
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "boxedQueryTemplateWithExtractorCombinerTransformer"
-                  }
+          "actionType": { "type": "literal", "definition": "runBoxedQueryTemplateOrBoxedExtractorTemplateAction" },
+          "actionName": { "type": "literal", "definition": "runQuery" },
+          "actionLabel": { "type": "string", "optional": true },
+          "endpoint": { "type": "literal", "definition": "9e404b3c-368c-40cb-be8b-e3c28550c25e" },
+          "deploymentUuid": {
+            "type": "uuid",
+            "tag": {
+              "value": { "id": 1, "canBeTemplate": true, "defaultLabel": "Uuid", "editable": false }
+            }
+          },
+          "payload": {
+            "type": "object",
+            "definition": {
+              "applicationSection": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "applicationSection"
                 }
-              ]
+              },
+              "query": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "schemaReference",
+                    "optional": false,
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "boxedExtractorTemplateReturningObjectOrObjectList"
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "optional": false,
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "boxedQueryTemplateWithExtractorCombinerTransformer"
+                    }
+                  }
+                ]
+              }
             }
           }
         },
@@ -59,88 +61,53 @@
       },
       {
         "actionParameters": {
-          "type": "object",
-          "definition": {
-            "actionType": { "type": "literal", "definition": "runBoxedExtractorOrQueryAction" },
-            "actionName": { "type": "literal", "definition": "runQuery" },
-            "actionLabel": { "type": "string", "optional": true },
-            "endpoint": { "type": "literal", "definition": "9e404b3c-368c-40cb-be8b-e3c28550c25e" },
-            "applicationSection": {
-              "type": "schemaReference",
-              "optional": true,
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "applicationSection"
-              }
-            },
-            "deploymentUuid": {
-              "type": "uuid",
-              "tag": {
-                "value": { "id": 1, "canBeTemplate": true, "defaultLabel": "Uuid", "editable": false }
-              }
-            },
-            "queryExecutionStrategy": {
-              "type": "enum",
-              "optional": true,
-              "definition": ["localCacheOrFail", "localCacheOrFetch", "ServerCache", "storage"]
-            },
-            "query": {
-              "type": "union",
-              "discriminator": "queryType",
-              "definition": [
-                {
-                  "type": "schemaReference",
-                  "optional": false,
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "boxedExtractorOrCombinerReturningObjectOrObjectList"
-                  }
-                },
-                {
-                  "type": "schemaReference",
-                  "optional": false,
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "boxedQueryWithExtractorCombinerTransformer"
-                  }
+          "actionType": { "type": "literal", "definition": "runBoxedExtractorOrQueryAction" },
+          "actionName": { "type": "literal", "definition": "runQuery" },
+          "actionLabel": { "type": "string", "optional": true },
+          "endpoint": { "type": "literal", "definition": "9e404b3c-368c-40cb-be8b-e3c28550c25e" },
+          "deploymentUuid": {
+            "type": "uuid",
+            "tag": {
+              "value": { "id": 1, "canBeTemplate": true, "defaultLabel": "Uuid", "editable": false }
+            }
+          },
+          "payload": {
+            "type": "object",
+            "definition": {
+              "applicationSection": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "applicationSection"
                 }
-              ]
-            }
-          }
-        },
-        "actionErrors": {
-          "type": "literal",
-          "definition": "FailedToCreateInstance"
-        }
-      },
-      {
-        "actionParameters": {
-          "type": "object",
-          "definition": {
-            "actionType": { "type": "literal", "definition": "runBoxedQueryTemplateAction" },
-            "actionName": { "type": "literal", "definition": "runQuery" },
-            "actionLabel": { "type": "string", "optional": true },
-            "endpoint": { "type": "literal", "definition": "9e404b3c-368c-40cb-be8b-e3c28550c25e" },
-            "applicationSection": {
-              "type": "schemaReference",
-              "optional": true,
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "applicationSection"
-              }
-            },
-            "deploymentUuid": {
-              "type": "uuid",
-              "tag": {
-                "value": { "id": 1, "canBeTemplate": true, "defaultLabel": "Uuid", "editable": false }
-              }
-            },
-            "query": {
-              "type": "schemaReference",
-              "optional": false,
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "boxedQueryTemplateWithExtractorCombinerTransformer"
+              },
+              "queryExecutionStrategy": {
+                "type": "enum",
+                "optional": true,
+                "definition": ["localCacheOrFail", "localCacheOrFetch", "ServerCache", "storage"]
+              },
+              "query": {
+                "type": "union",
+                "discriminator": "queryType",
+                "definition": [
+                  {
+                    "type": "schemaReference",
+                    "optional": false,
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "boxedExtractorOrCombinerReturningObjectOrObjectList"
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "optional": false,
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "boxedQueryWithExtractorCombinerTransformer"
+                    }
+                  }
+                ]
               }
             }
           }
@@ -152,31 +119,34 @@
       },
       {
         "actionParameters": {
-          "type": "object",
-          "definition": {
-            "actionType": { "type": "literal", "definition": "runBoxedExtractorTemplateAction" },
-            "actionName": { "type": "literal", "definition": "runQuery" },
-            "endpoint": { "type": "literal", "definition": "9e404b3c-368c-40cb-be8b-e3c28550c25e" },
-            "applicationSection": {
-              "type": "schemaReference",
-              "optional": true,
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "applicationSection"
-              }
-            },
-            "deploymentUuid": {
-              "type": "uuid",
-              "tag": {
-                "value": { "id": 1, "canBeTemplate": true, "defaultLabel": "Uuid", "editable": false }
-              }
-            },
-            "query": {
-              "type": "schemaReference",
-              "optional": false,
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "boxedExtractorTemplateReturningObjectOrObjectList"
+          "actionType": { "type": "literal", "definition": "runBoxedQueryTemplateAction" },
+          "actionName": { "type": "literal", "definition": "runQuery" },
+          "actionLabel": { "type": "string", "optional": true },
+          "endpoint": { "type": "literal", "definition": "9e404b3c-368c-40cb-be8b-e3c28550c25e" },
+          "deploymentUuid": {
+            "type": "uuid",
+            "tag": {
+              "value": { "id": 1, "canBeTemplate": true, "defaultLabel": "Uuid", "editable": false }
+            }
+          },
+          "payload": {
+            "type": "object",
+            "definition": {
+              "applicationSection": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "applicationSection"
+                }
+              },
+              "query": {
+                "type": "schemaReference",
+                "optional": false,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "boxedQueryTemplateWithExtractorCombinerTransformer"
+                }
               }
             }
           }
@@ -188,37 +158,33 @@
       },
       {
         "actionParameters": {
-          "type": "object",
-          "definition": {
-            "actionType": { "type": "literal", "definition": "runBoxedQueryAction" },
-            "actionName": { "type": "literal", "definition": "runQuery" },
-            "actionLabel": { "type": "string", "optional": true },
-            "endpoint": { "type": "literal", "definition": "9e404b3c-368c-40cb-be8b-e3c28550c25e" },
-            "applicationSection": {
-              "type": "schemaReference",
-              "optional": true,
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "applicationSection"
-              }
-            },
-            "deploymentUuid": {
-              "type": "uuid",
-              "tag": {
-                "value": { "id": 1, "canBeTemplate": true, "defaultLabel": "Uuid", "editable": false }
-              }
-            },
-            "queryExecutionStrategy": {
-              "type": "enum",
-              "optional": true,
-              "definition": ["localCacheOrFail", "localCacheOrFetch", "ServerCache", "storage"]
-            },
-            "query": {
-              "type": "schemaReference",
-              "optional": false,
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "boxedQueryWithExtractorCombinerTransformer"
+          "actionType": { "type": "literal", "definition": "runBoxedExtractorTemplateAction" },
+          "actionName": { "type": "literal", "definition": "runQuery" },
+          "endpoint": { "type": "literal", "definition": "9e404b3c-368c-40cb-be8b-e3c28550c25e" },
+          "deploymentUuid": {
+            "type": "uuid",
+            "tag": {
+              "value": { "id": 1, "canBeTemplate": true, "defaultLabel": "Uuid", "editable": false }
+            }
+          },
+          "payload": {
+            "type": "object",
+            "definition": {
+              "applicationSection": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "applicationSection"
+                }
+              },
+              "query": {
+                "type": "schemaReference",
+                "optional": false,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "boxedExtractorTemplateReturningObjectOrObjectList"
+                }
               }
             }
           }
@@ -230,32 +196,78 @@
       },
       {
         "actionParameters": {
-          "type": "object",
-          "definition": {
-            "actionType": { "type": "literal", "definition": "runBoxedExtractorAction" },
-            "actionName": { "type": "literal", "definition": "runQuery" },
-            "actionLabel": { "type": "string", "optional": true },
-            "endpoint": { "type": "literal", "definition": "9e404b3c-368c-40cb-be8b-e3c28550c25e" },
-            "applicationSection": {
-              "type": "schemaReference",
-              "optional": true,
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "applicationSection"
+          "actionType": { "type": "literal", "definition": "runBoxedQueryAction" },
+          "actionName": { "type": "literal", "definition": "runQuery" },
+          "actionLabel": { "type": "string", "optional": true },
+          "endpoint": { "type": "literal", "definition": "9e404b3c-368c-40cb-be8b-e3c28550c25e" },
+          "deploymentUuid": {
+            "type": "uuid",
+            "tag": {
+              "value": { "id": 1, "canBeTemplate": true, "defaultLabel": "Uuid", "editable": false }
+            }
+          },
+          "payload": {
+            "type": "object",
+            "definition": {
+              "applicationSection": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "applicationSection"
+                }
+              },
+              "queryExecutionStrategy": {
+                "type": "enum",
+                "optional": true,
+                "definition": ["localCacheOrFail", "localCacheOrFetch", "ServerCache", "storage"]
+              },
+              "query": {
+                "type": "schemaReference",
+                "optional": false,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "boxedQueryWithExtractorCombinerTransformer"
+                }
               }
-            },
-            "deploymentUuid": {
-              "type": "uuid",
-              "tag": {
-                "value": { "id": 1, "canBeTemplate": true, "defaultLabel": "Uuid", "editable": false }
-              }
-            },
-            "query": {
-              "type": "schemaReference",
-              "optional": false,
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "boxedExtractorOrCombinerReturningObjectOrObjectList"
+            }
+          }
+        },
+        "actionErrors": {
+          "type": "literal",
+          "definition": "FailedToCreateInstance"
+        }
+      },
+      {
+        "actionParameters": {
+          "actionType": { "type": "literal", "definition": "runBoxedExtractorAction" },
+          "actionName": { "type": "literal", "definition": "runQuery" },
+          "actionLabel": { "type": "string", "optional": true },
+          "endpoint": { "type": "literal", "definition": "9e404b3c-368c-40cb-be8b-e3c28550c25e" },
+          "deploymentUuid": {
+            "type": "uuid",
+            "tag": {
+              "value": { "id": 1, "canBeTemplate": true, "defaultLabel": "Uuid", "editable": false }
+            }
+          },
+          "payload": {
+            "type": "object",
+            "definition": {
+              "applicationSection": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "applicationSection"
+                }
+              },
+              "query": {
+                "type": "schemaReference",
+                "optional": false,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "boxedExtractorOrCombinerReturningObjectOrObjectList"
+                }
               }
             }
           }
