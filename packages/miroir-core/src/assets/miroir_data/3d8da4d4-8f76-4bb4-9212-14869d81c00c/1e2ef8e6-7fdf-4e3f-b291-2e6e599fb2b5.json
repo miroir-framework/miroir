@@ -2,7 +2,6 @@
   "uuid": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
   "parentName": "Endpoint",
   "parentUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
-  "endpointUuid": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
   "name": "DomainEndpoint",
   "version": "1",
   "description": "Domain Endpoint",

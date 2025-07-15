@@ -46265,6 +46265,10 @@ export const miroirFundamentalJzodSchema = {
                 "editable": false
               }
             },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
             "definition": [
               {
                 "type": "uuid",
@@ -46411,6 +46415,10 @@ export const miroirFundamentalJzodSchema = {
                 "editable": false
               }
             },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
             "definition": [
               {
                 "type": "string",
@@ -46444,6 +46452,10 @@ export const miroirFundamentalJzodSchema = {
                 "editable": false
               }
             },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
             "definition": [
               {
                 "type": "uuid",
@@ -46970,6 +46982,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -47058,6 +47074,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -47106,6 +47126,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -47154,6 +47178,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -47202,6 +47230,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -47250,6 +47282,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -47302,6 +47338,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -47407,6 +47447,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -47482,6 +47526,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -47515,6 +47563,10 @@ export const miroirFundamentalJzodSchema = {
                           "canBeTemplate": true
                         }
                       },
+                      "discriminator": [
+                        "transformerType",
+                        "interpolation"
+                      ],
                       "definition": [
                         {
                           "type": "schemaReference",
@@ -47545,6 +47597,10 @@ export const miroirFundamentalJzodSchema = {
                           "canBeTemplate": true
                         }
                       },
+                      "discriminator": [
+                        "transformerType",
+                        "interpolation"
+                      ],
                       "definition": [
                         {
                           "type": "schemaReference",
@@ -47598,6 +47654,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -47662,6 +47722,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -47731,6 +47795,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -47808,6 +47876,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -47889,6 +47961,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -47937,6 +48013,10 @@ export const miroirFundamentalJzodSchema = {
                       "canBeTemplate": true
                     }
                   },
+                  "discriminator": [
+                    "transformerType",
+                    "interpolation"
+                  ],
                   "definition": [
                     {
                       "type": "schemaReference",
@@ -47989,6 +48069,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -48055,6 +48139,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -48130,6 +48218,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -48201,6 +48293,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -48270,6 +48366,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -48351,6 +48451,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -48399,6 +48503,10 @@ export const miroirFundamentalJzodSchema = {
                       "canBeTemplate": true
                     }
                   },
+                  "discriminator": [
+                    "transformerType",
+                    "interpolation"
+                  ],
                   "definition": [
                     {
                       "type": "schemaReference",
@@ -48614,6 +48722,10 @@ export const miroirFundamentalJzodSchema = {
                 "editable": false
               }
             },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
             "definition": [
               {
                 "type": "uuid",
@@ -48692,6 +48804,10 @@ export const miroirFundamentalJzodSchema = {
                 "editable": false
               }
             },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
             "definition": [
               {
                 "type": "uuid",
@@ -48760,6 +48876,10 @@ export const miroirFundamentalJzodSchema = {
                 "editable": false
               }
             },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
             "definition": [
               {
                 "type": "uuid",
@@ -49039,6 +49159,10 @@ export const miroirFundamentalJzodSchema = {
                 "canBeTemplate": true
               }
             },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
             "definition": [
               {
                 "type": "string",
@@ -49071,6 +49195,10 @@ export const miroirFundamentalJzodSchema = {
                 "canBeTemplate": true
               }
             },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
             "definition": [
               {
                 "type": "string",
@@ -49109,6 +49237,10 @@ export const miroirFundamentalJzodSchema = {
                   "canBeTemplate": true
                 }
               },
+              "discriminator": [
+                "transformerType",
+                "interpolation"
+              ],
               "definition": [
                 {
                   "type": "schemaReference",
@@ -49874,6 +50006,10 @@ export const miroirFundamentalJzodSchema = {
                 "editable": false
               }
             },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
             "definition": [
               {
                 "type": "uuid",
@@ -51379,6 +51515,10 @@ export const miroirFundamentalJzodSchema = {
                 "editable": false
               }
             },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
             "definition": [
               {
                 "type": "string",
@@ -51412,6 +51552,10 @@ export const miroirFundamentalJzodSchema = {
                 "editable": false
               }
             },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
             "definition": [
               {
                 "type": "uuid",
@@ -52692,6 +52836,10 @@ export const miroirFundamentalJzodSchema = {
                 "editable": false
               }
             },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
             "definition": [
               {
                 "type": "uuid",
@@ -52837,6 +52985,10 @@ export const miroirFundamentalJzodSchema = {
                 "editable": false
               }
             },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
             "definition": [
               {
                 "type": "string",
@@ -52869,6 +53021,10 @@ export const miroirFundamentalJzodSchema = {
                 "editable": false
               }
             },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
             "definition": [
               {
                 "type": "uuid",
@@ -53394,6 +53550,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -53481,6 +53641,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -53528,6 +53692,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -53575,6 +53743,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -53622,6 +53794,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -53669,6 +53845,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -53720,6 +53900,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -53824,6 +54008,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -53898,6 +54086,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -53930,6 +54122,10 @@ export const miroirFundamentalJzodSchema = {
                           "canBeTemplate": true
                         }
                       },
+                      "discriminator": [
+                        "transformerType",
+                        "interpolation"
+                      ],
                       "definition": [
                         {
                           "type": "schemaReference",
@@ -53959,6 +54155,10 @@ export const miroirFundamentalJzodSchema = {
                           "canBeTemplate": true
                         }
                       },
+                      "discriminator": [
+                        "transformerType",
+                        "interpolation"
+                      ],
                       "definition": [
                         {
                           "type": "schemaReference",
@@ -54011,6 +54211,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -54074,6 +54278,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -54142,6 +54350,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -54218,6 +54430,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -54298,6 +54514,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -54345,6 +54565,10 @@ export const miroirFundamentalJzodSchema = {
                       "canBeTemplate": true
                     }
                   },
+                  "discriminator": [
+                    "transformerType",
+                    "interpolation"
+                  ],
                   "definition": [
                     {
                       "type": "schemaReference",
@@ -54396,6 +54620,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -54461,6 +54689,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -54535,6 +54767,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -54605,6 +54841,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -54673,6 +54913,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -54753,6 +54997,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -54800,6 +55048,10 @@ export const miroirFundamentalJzodSchema = {
                       "canBeTemplate": true
                     }
                   },
+                  "discriminator": [
+                    "transformerType",
+                    "interpolation"
+                  ],
                   "definition": [
                     {
                       "type": "schemaReference",
@@ -55014,6 +55266,10 @@ export const miroirFundamentalJzodSchema = {
                 "editable": false
               }
             },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
             "definition": [
               {
                 "type": "uuid",
@@ -55091,6 +55347,10 @@ export const miroirFundamentalJzodSchema = {
                 "editable": false
               }
             },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
             "definition": [
               {
                 "type": "uuid",
@@ -55158,6 +55418,10 @@ export const miroirFundamentalJzodSchema = {
                 "editable": false
               }
             },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
             "definition": [
               {
                 "type": "uuid",
@@ -55436,6 +55700,10 @@ export const miroirFundamentalJzodSchema = {
                 "canBeTemplate": true
               }
             },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
             "definition": [
               {
                 "type": "string",
@@ -55467,6 +55735,10 @@ export const miroirFundamentalJzodSchema = {
                 "canBeTemplate": true
               }
             },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
             "definition": [
               {
                 "type": "string",
@@ -55504,6 +55776,10 @@ export const miroirFundamentalJzodSchema = {
                   "canBeTemplate": true
                 }
               },
+              "discriminator": [
+                "transformerType",
+                "interpolation"
+              ],
               "definition": [
                 {
                   "type": "schemaReference",
@@ -56268,6 +56544,10 @@ export const miroirFundamentalJzodSchema = {
                 "editable": false
               }
             },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
             "definition": [
               {
                 "type": "uuid",
@@ -57772,6 +58052,10 @@ export const miroirFundamentalJzodSchema = {
                 "editable": false
               }
             },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
             "definition": [
               {
                 "type": "string",
@@ -57804,6 +58088,10 @@ export const miroirFundamentalJzodSchema = {
                 "editable": false
               }
             },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
             "definition": [
               {
                 "type": "uuid",
@@ -59083,6 +59371,10 @@ export const miroirFundamentalJzodSchema = {
                 "editable": false
               }
             },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
             "definition": [
               {
                 "type": "uuid",
@@ -59229,6 +59521,10 @@ export const miroirFundamentalJzodSchema = {
                 "editable": false
               }
             },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
             "definition": [
               {
                 "type": "string",
@@ -59262,6 +59558,10 @@ export const miroirFundamentalJzodSchema = {
                 "editable": false
               }
             },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
             "definition": [
               {
                 "type": "uuid",
@@ -59788,6 +60088,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -59876,6 +60180,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -59924,6 +60232,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -59972,6 +60284,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -60020,6 +60336,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -60068,6 +60388,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -60120,6 +60444,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -60225,6 +60553,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -60300,6 +60632,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -60333,6 +60669,10 @@ export const miroirFundamentalJzodSchema = {
                           "canBeTemplate": true
                         }
                       },
+                      "discriminator": [
+                        "transformerType",
+                        "interpolation"
+                      ],
                       "definition": [
                         {
                           "type": "schemaReference",
@@ -60363,6 +60703,10 @@ export const miroirFundamentalJzodSchema = {
                           "canBeTemplate": true
                         }
                       },
+                      "discriminator": [
+                        "transformerType",
+                        "interpolation"
+                      ],
                       "definition": [
                         {
                           "type": "schemaReference",
@@ -60416,6 +60760,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -60480,6 +60828,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -60549,6 +60901,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -60626,6 +60982,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -60707,6 +61067,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -60755,6 +61119,10 @@ export const miroirFundamentalJzodSchema = {
                       "canBeTemplate": true
                     }
                   },
+                  "discriminator": [
+                    "transformerType",
+                    "interpolation"
+                  ],
                   "definition": [
                     {
                       "type": "schemaReference",
@@ -60807,6 +61175,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -60873,6 +61245,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -60948,6 +61324,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -61019,6 +61399,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -61088,6 +61472,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -61169,6 +61557,10 @@ export const miroirFundamentalJzodSchema = {
                     "editable": false
                   }
                 },
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
                 "definition": [
                   {
                     "type": "uuid",
@@ -61217,6 +61609,10 @@ export const miroirFundamentalJzodSchema = {
                       "canBeTemplate": true
                     }
                   },
+                  "discriminator": [
+                    "transformerType",
+                    "interpolation"
+                  ],
                   "definition": [
                     {
                       "type": "schemaReference",
@@ -61432,6 +61828,10 @@ export const miroirFundamentalJzodSchema = {
                 "editable": false
               }
             },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
             "definition": [
               {
                 "type": "uuid",
@@ -61510,6 +61910,10 @@ export const miroirFundamentalJzodSchema = {
                 "editable": false
               }
             },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
             "definition": [
               {
                 "type": "uuid",
@@ -61578,6 +61982,10 @@ export const miroirFundamentalJzodSchema = {
                 "editable": false
               }
             },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
             "definition": [
               {
                 "type": "uuid",
@@ -61857,6 +62265,10 @@ export const miroirFundamentalJzodSchema = {
                 "canBeTemplate": true
               }
             },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
             "definition": [
               {
                 "type": "string",
@@ -61889,6 +62301,10 @@ export const miroirFundamentalJzodSchema = {
                 "canBeTemplate": true
               }
             },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
             "definition": [
               {
                 "type": "string",
@@ -61927,6 +62343,10 @@ export const miroirFundamentalJzodSchema = {
                   "canBeTemplate": true
                 }
               },
+              "discriminator": [
+                "transformerType",
+                "interpolation"
+              ],
               "definition": [
                 {
                   "type": "schemaReference",
@@ -62692,6 +63112,10 @@ export const miroirFundamentalJzodSchema = {
                 "editable": false
               }
             },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
             "definition": [
               {
                 "type": "uuid",
@@ -64197,6 +64621,10 @@ export const miroirFundamentalJzodSchema = {
                 "editable": false
               }
             },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
             "definition": [
               {
                 "type": "string",
@@ -64230,6 +64658,10 @@ export const miroirFundamentalJzodSchema = {
                 "editable": false
               }
             },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
             "definition": [
               {
                 "type": "uuid",
@@ -65654,6 +66086,10 @@ export const miroirFundamentalJzodSchema = {
       },
       "compositeActionTemplate": {
         "type": "union",
+        "discriminator": [
+          "transformerType",
+          "interpolation"
+        ],
         "definition": [
           {
             "type": "schemaReference",

@@ -2,7 +2,6 @@
   "uuid": "a93598b3-19b6-42e8-828c-f02042d212d4",
   "parentName": "Endpoint",
   "parentUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
-  "endpointUuid": "a93598b3-19b6-42e8-828c-f02042d212d4",
   "name": "PersistenceEndpoint",
   "version": "1",
   "description": "Persistence Endpoint",

@@ -2,7 +2,6 @@
   "uuid": "a9139e2d-a714-4c9c-bdee-c104488e2eaa",
   "parentName": "Endpoint",
   "parentUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
-  "endpointUuid": "3b31cf8d-5847-4b82-9dbf-22bc5fc9ae99",
   "name": "TestEndpoint",
   "version": "1",
   "description": "Test Endpoint",

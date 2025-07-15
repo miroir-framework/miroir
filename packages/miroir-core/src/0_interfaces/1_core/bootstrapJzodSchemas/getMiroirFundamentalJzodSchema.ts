@@ -404,6 +404,7 @@ function createLocalizedInnerResolutionStoreForExtendedSchemas(
   localizedResolutionStore: JzodReference,
   extendedSchemas: string[],
   carryOnSchemaReference: JzodReference,
+  carryOnSchemaDiscriminator: undefined | string | string[] = undefined,
   resolveReferencesWithCarryOn: JzodReferenceResolutionFunction,
   prefix: string = "carryOn_",
   alwaysPropagate: boolean = false,
@@ -427,6 +428,7 @@ function createLocalizedInnerResolutionStoreForExtendedSchemas(
       const appliedLimitedCarryOnResult = applyLimitedCarryOnSchemaOnLevel(
         localizedResolutionStore.context[e],
         carryOnSchemaReference,
+        carryOnSchemaDiscriminator,
         alwaysPropagate,
         false, // applyOnFirstLevel is false, since the result will be an object that is used in an "extend" clause
         prefix, // carryOnPrefix
@@ -468,6 +470,7 @@ function createLocalizedInnerResolutionStoreWithCarryOn(
   localizedResolutionStore: JzodReference,
   extendedSchemas: string[],
   carryOnSchemaReference: JzodReference,
+  carryOnSchemaDiscriminator: undefined | string | string[] = undefined,
   resolveReferencesWithCarryOn: JzodReferenceResolutionFunction,
   prefix: string = "carryOn_",
   alwaysPropagate: boolean = true,
@@ -477,6 +480,7 @@ function createLocalizedInnerResolutionStoreWithCarryOn(
         const schemaWithCarryOn = applyLimitedCarryOnSchemaOnLevel(
           f[1] as any,
           carryOnSchemaReference as any,
+          carryOnSchemaDiscriminator,
           alwaysPropagate, // alwaysPropagate
           true, // applyOnFirstLevel
           prefix, // carryOnPrefix
@@ -515,6 +519,7 @@ function createLocalizedInnerResolutionStoreWithCarryOn(
 function createDomainActionCarryOnSchemaResolver(
   domainAction: JzodElement,
   carryOnSchemaReference: JzodReference,
+  carryOnSchemaDiscriminator: undefined | string | string[] = undefined,
   domainActionDependencySet: Set<string>,
   prefix: string,
   alwaysPropagate: boolean,
@@ -555,6 +560,7 @@ function createDomainActionCarryOnSchemaResolver(
     carryOnDomainActionDependenciesJzodReference,
     extendedSchemas,
     carryOnSchemaReference,
+    carryOnSchemaDiscriminator,
     resolveReferencesWithCarryOn.bind(
       undefined,
       {
@@ -577,6 +583,7 @@ function createDomainActionCarryOnSchemaResolver(
     carryOnDomainActionDependenciesJzodReference,
     extendedSchemas,
     carryOnSchemaReference,
+    carryOnSchemaDiscriminator,
     resolveReferencesWithCarryOn.bind(undefined, {
       [miroirFundamentalJzodSchemaUuid]: carryOnDomainActionDependenciesJzodReference,
     }),
@@ -601,6 +608,8 @@ function createDomainActionCarryOnSchemaResolver(
         ),
       },
     },
+    // ["transformerType", "interpolation"], // carryOnSchemaDiscriminator
+    carryOnSchemaDiscriminator,
     false, // alwaysPropagate
     false, // applyOnFirstLevel
     prefix, // carryOnPrefix,
@@ -3710,6 +3719,7 @@ export function getMiroirFundamentalJzodSchema(
       oldCompositeActionDependenciesJzodReference,
       extendedSchemas,
       transformerForBuildCarryOnSchemaReference,
+      undefined, // carryOnSchemaDiscriminator
       resolveReferencesWithCarryOn.bind(
         undefined,
         {
@@ -3730,6 +3740,7 @@ export function getMiroirFundamentalJzodSchema(
       oldCompositeActionDependenciesJzodReference,
       extendedSchemas,
       transformerForBuildCarryOnSchemaReference,
+      undefined, // carryOnSchemaDiscriminator
       resolveReferencesWithCarryOn.bind(undefined, {
         [miroirFundamentalJzodSchemaUuid]: oldCompositeActionDependenciesJzodReference,
       }),
@@ -3786,6 +3797,7 @@ export function getMiroirFundamentalJzodSchema(
   } = createDomainActionCarryOnSchemaResolver(
     domainAction,
     transformerForRuntimeDomainActionSchemaReference,
+    ["transformerType", "interpolation"],
     domainActionDependencySet,
     runtimeDomainActionReferencePrefix,
     false, // alwaysPropagate
@@ -3799,6 +3811,7 @@ export function getMiroirFundamentalJzodSchema(
   } = createDomainActionCarryOnSchemaResolver(
     domainAction,
     transformerForBuildCarryOnSchemaReference,
+    ["transformerType", "interpolation"],
     domainActionDependencySet,
     "buildDomainAction_",
     false, // alwaysPropagate
@@ -3821,6 +3834,7 @@ export function getMiroirFundamentalJzodSchema(
         relativePath: "transformerForBuildPlusRuntimeCarryOnObject",
       },
     },
+    ["transformerType", "interpolation"],
     domainActionDependencySet,
     "buildPlusRuntimeDomainAction_",
     false, // alwaysPropagate
@@ -3845,7 +3859,8 @@ export function getMiroirFundamentalJzodSchema(
         ...buildPlusRuntimeDomainActionLocalizedInnerResolutionStorePlainReferences,
         transformerForBuildCarryOnObject: transformerForBuildCarryOnSchema,
         transformerForRuntimeCarryOnObject: transformerForRuntimeCarryOnSchema,
-        transformerForBuildPlusRuntimeCarryOnObject: miroirFundamentalJzodSchema.definition.context.transformerForBuildPlusRuntime as any,
+        transformerForBuildPlusRuntimeCarryOnObject: miroirFundamentalJzodSchema.definition.context
+          .transformerForBuildPlusRuntime as any,
         ...(() => {
           // defining a function, which is called immediately (just one time)
           const compositeActionSchemaBuilder = applyLimitedCarryOnSchema(
@@ -3859,11 +3874,15 @@ export function getMiroirFundamentalJzodSchema(
               },
             },
             transformerForBuildCarryOnSchemaReference as any,
+            ["transformerType", "interpolation"],
             true, // alwaysPropagate
             undefined, // carryOnPrefix,
             undefined, // reference prefix
             undefined, // reference suffix
-            resolveReferencesWithCarryOn.bind(undefined, oldCompositeActionDependenciesJzodReference)
+            resolveReferencesWithCarryOn.bind(
+              undefined,
+              oldCompositeActionDependenciesJzodReference
+            )
           );
           return {
             ...compositeActionSchemaBuilder.resolvedReferences,

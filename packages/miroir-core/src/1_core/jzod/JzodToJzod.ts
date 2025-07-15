@@ -30,6 +30,7 @@ export function forgeCarryOnReferenceName(
 export function applyLimitedCarryOnSchema(
   baseSchema: JzodElement,
   carryOnSchema: JzodElement,
+  carryOnSchemaDiscriminator: undefined | string | string[] = undefined,
   alwaysPropagate: boolean = true,
   carryOnPrefix?: string | undefined,
   localReferencePrefix?: string | undefined,
@@ -40,6 +41,7 @@ export function applyLimitedCarryOnSchema(
   return applyLimitedCarryOnSchemaOnLevel(
     baseSchema,
     carryOnSchema,
+    carryOnSchemaDiscriminator,
     alwaysPropagate,
     true, // applyOnFirstLevel,
     carryOnPrefix, // carryOnPrefix,
@@ -84,6 +86,7 @@ export interface ApplyCarryOnSchemaOnLevelReturnType {
 export function applyLimitedCarryOnSchemaOnLevel(
   baseSchema: JzodElement,
   carryOnSchema: JzodElement,
+  carryOnSchemaDiscriminator: undefined | string | string[] = undefined,
   alwaysPropagate: boolean = true,
   applyOnFirstLevel: boolean,
   carryOnPrefix?: string | undefined,
@@ -142,6 +145,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
             valueSchema: applyLimitedCarryOnSchemaOnLevel(
               castTag.schema.valueSchema, // hard-coded type for jzodBaseSchema.extra is "any", it is replaced in any "concrete" jzodSchema definition
               carryOnSchema,
+              carryOnSchemaDiscriminator,
               alwaysPropagate,
               false, // applyOnFirstLevel
               carryOnPrefix,
@@ -189,6 +193,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
             ...baseSchema,
             tag: convertedTag,
             type: "union",
+            discriminator: carryOnSchemaDiscriminator,
             definition: [baseSchema, carryOnSchema],
           },
           hasBeenApplied: true,
@@ -212,6 +217,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
       const convertedSubSchema = applyLimitedCarryOnSchemaOnLevel(
         baseSchema.definition,
         carryOnSchema,
+        carryOnSchemaDiscriminator,
         alwaysPropagate,
         true, // applyOnFirstLevel
         carryOnPrefix,
@@ -243,6 +249,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
             ...baseSchema,
             tag: convertedTag,
             type: "union",
+            discriminator: carryOnSchemaDiscriminator,
             definition: [
               {
                 ...baseSchema,
@@ -276,6 +283,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
       const convertedSubSchema = applyLimitedCarryOnSchemaOnLevel(
         baseSchema.definition,
         carryOnSchema,
+        carryOnSchemaDiscriminator,
         alwaysPropagate,
         true, // applyOnFirstLevel
         carryOnPrefix,
@@ -301,6 +309,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
             ...baseSchema,
             tag: convertedTag,
             type: "union",
+            discriminator: carryOnSchemaDiscriminator,
             definition: [
               {
                 ...baseSchema,
@@ -334,6 +343,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
       const convertedSubSchema = applyLimitedCarryOnSchemaOnLevel(
         baseSchema.definition,
         carryOnSchema,
+        carryOnSchemaDiscriminator,
         alwaysPropagate,
         true, // applyOnFirstLevel
         carryOnPrefix,
@@ -354,6 +364,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
             ...baseSchema,
             tag: convertedTag,
             type: "union",
+            discriminator: carryOnSchemaDiscriminator,
             definition: [
               {
                 ...baseSchema,
@@ -389,6 +400,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
         const convertedSubSchema = applyLimitedCarryOnSchemaOnLevel(
           subSchema,
           carryOnSchema,
+          carryOnSchemaDiscriminator,
           alwaysPropagate,
           true, //applyOnFirstLevel
           carryOnPrefix,
@@ -415,6 +427,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
             ...baseSchema,
             tag: convertedTag,
             type: "union",
+            discriminator: carryOnSchemaDiscriminator,
             definition: [
               {
                 ...baseSchema,
@@ -447,6 +460,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
         applyLimitedCarryOnSchemaOnLevel(
           e,
           carryOnSchema,
+          carryOnSchemaDiscriminator,
           alwaysPropagate,
           false, // applyOnFirstLevel, no need to apply since result is a union, and carryOnSchema is added to union (array) definition
           carryOnPrefix,
@@ -471,6 +485,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
             ...baseSchema,
             tag: convertedTag,
             type: "union",
+            discriminator: baseSchema.discriminator??carryOnSchemaDiscriminator,
             definition: [...subConvertedSchemas.map((e) => e.resultSchema), carryOnSchema],
           } as any,
           hasBeenApplied: true,
@@ -482,6 +497,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
             ...baseSchema,
             tag: convertedTag,
             type: "union",
+            // discriminator: subConvertedSchemas.some((e) => e.hasBeenApplied)?carryOnSchemaDiscriminator: baseSchema.discriminator,
             definition: [...subConvertedSchemas.map((e) => e.resultSchema)], // do not include carryOnSchema as !applyOnFirstLevel and canBeTemplate is false or undefined
           } as any,
           hasBeenApplied: subConvertedSchemas.some((e) => e.hasBeenApplied),
@@ -499,6 +515,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
         const convertedSubSchema = applyLimitedCarryOnSchemaOnLevel(
           subSchema[1],
           carryOnSchema,
+          carryOnSchemaDiscriminator,
           alwaysPropagate,
           true, // applyOnFirstLevel
           carryOnPrefix,
@@ -523,6 +540,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
                 applyLimitedCarryOnSchemaOnLevel(
                   baseSchema.extend,
                   carryOnSchema,
+                  carryOnSchemaDiscriminator,
                   alwaysPropagate,
                   false, // applyOnFirstLevel
                   carryOnPrefix,
@@ -537,6 +555,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
                   applyLimitedCarryOnSchemaOnLevel(
                     e,
                     carryOnSchema,
+                    carryOnSchemaDiscriminator,
                     alwaysPropagate,
                     false, // applyOnFirstLevel
                     carryOnPrefix,
@@ -569,6 +588,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
             // extra: baseSchema.extra,
             tag: convertedTag,
             type: "union",
+            discriminator: carryOnSchemaDiscriminator,
             definition: [
               carryOnSchema,
               {
@@ -665,6 +685,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
           const convertedReference = applyLimitedCarryOnSchemaOnLevel(
             resolvedReference,
             carryOnSchema,
+            carryOnSchemaDiscriminator,
             alwaysPropagate,
             true, // applyOnFirstLevel
             carryOnPrefix,
@@ -714,6 +735,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
         const convertedSubSchema = applyLimitedCarryOnSchemaOnLevel(
           contextSubSchema[1],
           carryOnSchema,
+          carryOnSchemaDiscriminator,
           alwaysPropagate,
           true, // applyOnFirstLevel
           carryOnPrefix,
@@ -748,6 +770,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
           resultSchema: {
             type: "union",
             tag: convertedTag,
+            discriminator: carryOnSchemaDiscriminator,
             definition: [
               {
                 ...baseSchema,

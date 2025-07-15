@@ -30,6 +30,7 @@ function runTest(
   const testResult = applyLimitedCarryOnSchema(
     t.testJzodSchema,
     t.carryOnJzodSchema,
+    undefined, // carryOnSchemaDiscriminator
     false, // alwaysPropagate
     undefined, // carryOnPrefix
     undefined, // prefixForReference

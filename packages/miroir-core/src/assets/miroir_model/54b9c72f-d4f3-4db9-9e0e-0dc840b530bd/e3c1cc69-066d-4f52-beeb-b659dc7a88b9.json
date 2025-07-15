@@ -5,7 +5,7 @@
   "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "entityUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
   "name": "Endpoint",
-  "conceptLevel": "MetaModel",
+  "conceptLevel": "Model",
   "description": "definition of an Endpoint",
   "viewAttributes": [
     "name",
@@ -13,6 +13,7 @@
     "transactionalEndpoint",
     "uuid"
   ],
+  "defaultInstanceDetailsReportUuid": "0c62ec35-01f9-4824-8119-afa710dba715",
   "jzodSchema": {
     "type": "object",
     "definition": {

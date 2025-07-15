@@ -2,7 +2,6 @@
   "uuid": "ddd9c928-2ceb-4f67-971b-5898090412d6",
   "parentName": "Endpoint",
   "parentUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
-  "endpointUuid": "a04f7b8a-cdec-4f43-b08c-388f70fdd6ba",
   "name": "ApplicationEndpoint",
   "version": "1",
   "description": "SelfApplication Endpoint",
