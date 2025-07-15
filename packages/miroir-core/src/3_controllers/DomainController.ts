@@ -121,16 +121,18 @@ export async function resetAndInitApplicationDeployment(
       actionType: "initModel",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       deploymentUuid: selfAdminConfigurationDeployment.uuid,
-      params: {
-        dataStoreType: selfAdminConfigurationDeployment.uuid == adminConfigurationDeploymentMiroir.uuid?"miroir":"app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
-        metaModel: defaultMiroirMetaModel,
-        // TODO: this is wrong, selfApplication, selfApplication version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
-        selfApplication: selfApplicationMiroir,
-        // selfApplicationDeploymentConfiguration: selfAdminConfigurationDeployment,
-        applicationModelBranch: selfApplicationModelBranchMiroirMasterBranch,
-        // applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationMiroir,
-        applicationVersion: selfApplicationVersionInitialMiroirVersion,
-      },
+      payload : {
+        params: {
+          dataStoreType: selfAdminConfigurationDeployment.uuid == adminConfigurationDeploymentMiroir.uuid?"miroir":"app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
+          metaModel: defaultMiroirMetaModel,
+          // TODO: this is wrong, selfApplication, selfApplication version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
+          selfApplication: selfApplicationMiroir,
+          // selfApplicationDeploymentConfiguration: selfAdminConfigurationDeployment,
+          applicationModelBranch: selfApplicationModelBranchMiroirMasterBranch,
+          // applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationMiroir,
+          applicationVersion: selfApplicationVersionInitialMiroirVersion,
+        },
+      }
     }, defaultMiroirMetaModel);
   }
   log.info(
@@ -945,7 +947,7 @@ export class DomainController implements DomainControllerInterface {
         case "createEntity":
         case "renameEntity":
         case "dropEntity": {
-          if (modelAction.transactional == false) {
+          if (modelAction.payload.transactional == false) {
             // the modelAction is not transactional, we update the persistentStore directly
             log.warn("handleModelAction running for non-transactional action!");
             await this.callUtil.callRemotePersistenceAction(
@@ -1081,7 +1083,10 @@ export class DomainController implements DomainControllerInterface {
                     {}, // context update
                     {
                       ...replayAction,
-                      transactional: false,
+                      payload: {
+                        ...replayAction.payload,
+                        transactional: false,
+                      } as any, // TODO: remove as any
                     }
                   );
                   if (replayActionResult instanceof Action2Error) {

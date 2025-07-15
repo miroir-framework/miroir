@@ -33,10 +33,10 @@ export function getObjectUniondiscriminatorValuesFromResolvedSchema(
           // return (a.definition as any)[(unfoldedRawSchema as any).discriminator].definition}
           if (!branch || !branch.definition || !branch.definition[discriminator]) {
             throw new Error(
-              "objectUniondiscriminatorValues found object branch without discriminator: " + 
+              "objectUniondiscriminatorValues found object branch without discriminator '" + discriminator + "': " + 
               JSON.stringify(branch, null, 2) +
               " in recursivelyUnfoldedRawSchemaList: " + 
-              recursivelyUnfoldedRawSchemaList
+              JSON.stringify(recursivelyUnfoldedRawSchemaList, null, 2)
             );
             // return [];
           }

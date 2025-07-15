@@ -1223,11 +1223,15 @@ export function getMiroirFundamentalJzodSchema(
             parentName: {
               type: "string",
               optional: true,
-              tag: { value: { id: 1, defaultLabel: "Parent Name", editable: false, canBeTemplate: true } },
+              tag: {
+                value: { id: 1, defaultLabel: "Parent Name", editable: false, canBeTemplate: true },
+              },
             },
             parentUuid: {
               type: "string",
-              tag: { value: { id: 2, defaultLabel: "Parent Name", editable: false, canBeTemplate: true } },
+              tag: {
+                value: { id: 2, defaultLabel: "Parent Name", editable: false, canBeTemplate: true },
+              },
             },
             applicationSection: {
               type: "schemaReference",
@@ -1241,7 +1245,7 @@ export function getMiroirFundamentalJzodSchema(
               type: "array",
               definition: {
                 type: "schemaReference",
-                tag: { value: {canBeTemplate: true} },
+                tag: { value: { canBeTemplate: true } },
                 definition: {
                   absolutePath: miroirFundamentalJzodSchemaUuid,
                   relativePath: "entityInstance",
@@ -2230,10 +2234,12 @@ export function getMiroirFundamentalJzodSchema(
               // TODO: REPLACE WITH APPLICATION UUID OR LEAVE IT OPTIONAL
               type: "uuid",
               tag: {
-                value: { 
-                  id: 1, 
+                value: {
+                  id: 1,
                   canBeTemplate: true,
-                  defaultLabel: "Uuid", editable: false },
+                  defaultLabel: "Uuid",
+                  editable: false,
+                },
               },
             },
             pageParams: {
@@ -2964,39 +2970,69 @@ export function getMiroirFundamentalJzodSchema(
           ],
         },
         modelActionInitModelParams: modelEndpointVersionV1.definition.actions.find(
-          (a: any) => a.actionParameters.definition.actionType.definition == "initModel"
-        )?.actionParameters.definition.params,
-        modelActionCommit: modelEndpointVersionV1.definition.actions.find(
-          (a: any) => a.actionParameters.definition.actionType.definition == "commit"
-        )?.actionParameters,
-        modelActionRollback: modelEndpointVersionV1.definition.actions.find(
-          (a: any) => a.actionParameters.definition.actionType.definition == "rollback"
-        )?.actionParameters,
-        modelActionInitModel: modelEndpointVersionV1.definition.actions.find(
-          (a: any) => a.actionParameters.definition.actionType.definition == "initModel"
-        )?.actionParameters,
-        modelActionResetModel: modelEndpointVersionV1.definition.actions.find(
-          (a: any) => a.actionParameters.definition.actionType.definition == "resetModel"
-        )?.actionParameters,
-        modelActionResetData: modelEndpointVersionV1.definition.actions.find(
-          (a: any) => a.actionParameters.definition.actionType.definition == "resetData"
-        )?.actionParameters,
-        modelActionAlterEntityAttribute: modelEndpointVersionV1.definition.actions.find(
-          (a: any) => a.actionParameters.definition.actionType.definition == "alterEntityAttribute"
-        )?.actionParameters,
-        modelActionCreateEntity: modelEndpointVersionV1.definition.actions.find(
-          (a: any) => a.actionParameters.definition.actionType.definition == "createEntity"
-        )?.actionParameters,
-        modelActionDropEntity: modelEndpointVersionV1.definition.actions.find(
-          (a: any) => a.actionParameters.definition.actionType.definition == "dropEntity"
-        )?.actionParameters,
-        modelActionRenameEntity: modelEndpointVersionV1.definition.actions.find(
-          (a: any) => a.actionParameters.definition.actionType.definition == "renameEntity"
-        )?.actionParameters,
+          (a: any) => a.actionParameters.actionType.definition == "initModel"
+        )?.actionParameters.payload.definition.params,
+        modelActionCommit: {
+          type: "object",
+          definition: modelEndpointVersionV1.definition.actions.find(
+            (a: any) => a.actionParameters.actionType.definition == "commit"
+          )?.actionParameters,
+        },
+        modelActionRollback: {
+          type: "object",
+          definition: modelEndpointVersionV1.definition.actions.find(
+            (a: any) => a.actionParameters.actionType.definition == "rollback"
+          )?.actionParameters,
+        },
+        modelActionInitModel: {
+          type: "object",
+          definition: modelEndpointVersionV1.definition.actions.find(
+            (a: any) => a.actionParameters.actionType.definition == "initModel"
+          )?.actionParameters,
+        },
+        modelActionResetModel: {
+          type: "object",
+          definition: modelEndpointVersionV1.definition.actions.find(
+            (a: any) => a.actionParameters.actionType.definition == "resetModel"
+          )?.actionParameters,
+        },
+        modelActionResetData: {
+          type: "object",
+          definition: modelEndpointVersionV1.definition.actions.find(
+            (a: any) => a.actionParameters.actionType.definition == "resetData"
+          )?.actionParameters,
+        },
+        modelActionAlterEntityAttribute: {
+          type: "object",
+          definition: modelEndpointVersionV1.definition.actions.find(
+            (a: any) => a.actionParameters.actionType.definition == "alterEntityAttribute"
+          )?.actionParameters,
+        },
+        modelActionCreateEntity: {
+          type: "object",
+          definition: modelEndpointVersionV1.definition.actions.find(
+            (a: any) => a.actionParameters.actionType.definition == "createEntity"
+          )?.actionParameters,
+        },
+        modelActionDropEntity: {
+          type: "object",
+          definition: modelEndpointVersionV1.definition.actions.find(
+            (a: any) => a.actionParameters.actionType.definition == "dropEntity"
+          )?.actionParameters,
+        },
+        modelActionRenameEntity: {
+          type: "object",
+          definition: modelEndpointVersionV1.definition.actions.find(
+            (a: any) => a.actionParameters.actionType.definition == "renameEntity"
+          )?.actionParameters,
+        },
         modelAction: {
           type: "union",
           discriminator: "actionType",
-          definition: modelEndpointVersionV1.definition.actions.map((e: any) => e.actionParameters),
+          definition: modelEndpointVersionV1.definition.actions.map((e: any) => ({
+            type: "object",
+            definition: e.actionParameters,
+          })),
         },
         testAction_runTestCompositeAction: testEndpointVersionV1.definition.actions.find(
           (a: any) =>

@@ -133,23 +133,25 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       actionType: "initModel",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-      params: {
-        dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
-        // metaModel: defaultMiroirMetaModel,
-        metaModel: {
-          entities: [],
-          entityDefinitions: [],
-          jzodSchemas: [],
-          menus: [],
-          applicationVersions: [],
-          reports: [],
-          applicationVersionCrossEntityDefinition: [],
+      payload: {
+        params: {
+          dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
+          // metaModel: defaultMiroirMetaModel,
+          metaModel: {
+            entities: [],
+            entityDefinitions: [],
+            jzodSchemas: [],
+            menus: [],
+            applicationVersions: [],
+            reports: [],
+            applicationVersionCrossEntityDefinition: [],
+          },
+          // TODO: this is wrong, selfApplication, selfApplication version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
+          selfApplication: testApplicationConfig.selfApplication,
+          applicationModelBranch: testApplicationConfig.applicationModelBranch,
+          applicationVersion: testApplicationConfig.applicationVersion,
         },
-        // TODO: this is wrong, selfApplication, selfApplication version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
-        selfApplication: testApplicationConfig.selfApplication,
-        applicationModelBranch: testApplicationConfig.applicationModelBranch,
-        applicationVersion: testApplicationConfig.applicationVersion,
-      },
+      }
     },
   },
   "resetModel ModelAction is parsable": {
@@ -174,19 +176,21 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       actionType: "alterEntityAttribute",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-      entityDefinitionUuid: "00000000-0000-0000-0000-000000000001",
-      entityName: "newEntity",
-      entityUuid: "00000000-0000-0000-0000-000000000002",
-      addColumns: [
-        {
-          name: "aNewColumnForTest",
-          definition: {
-            type: "number",
-            optional: true,
-            tag: { value: { id: 6, defaultLabel: "Gender (narrow-minded)", editable: true } },
+      payload: {
+        entityDefinitionUuid: "00000000-0000-0000-0000-000000000001",
+        entityName: "newEntity",
+        entityUuid: "00000000-0000-0000-0000-000000000002",
+        addColumns: [
+          {
+            name: "aNewColumnForTest",
+            definition: {
+              type: "number",
+              optional: true,
+              tag: { value: { id: 6, defaultLabel: "Gender (narrow-minded)", editable: true } },
+            },
           },
-        },
-      ],
+        ],
+      }
     },
   },
   "renameEntity ModelAction is parsable": {
@@ -195,10 +199,12 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       actionType: "renameEntity",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-      entityDefinitionUuid: "00000000-0000-0000-0000-000000000001",
-      entityName: "newEntity",
-      entityUuid: "00000000-0000-0000-0000-000000000002",
-      targetValue: "renamedEntity",
+      payload: {
+        entityDefinitionUuid: "00000000-0000-0000-0000-000000000001",
+        entityName: "newEntity",
+        entityUuid: "00000000-0000-0000-0000-000000000002",
+        targetValue: "renamedEntity",
+      }
     },
   },
   "createEntity ModelAction is parsable": {
@@ -207,12 +213,14 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       actionType: "createEntity",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-      entities: [
-        {
-          entity: entityEntity as Entity,
-          entityDefinition: entityDefinitionEntity as EntityDefinition,
-        },
-      ],
+      payload: {
+        entities: [
+          {
+            entity: entityEntity as Entity,
+            entityDefinition: entityDefinitionEntity as EntityDefinition,
+          },
+        ],
+      }
     },
   },
   "dropEntity ModelAction is parsable": {
@@ -221,8 +229,10 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       actionType: "dropEntity",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-      entityDefinitionUuid: "00000000-0000-0000-0000-000000000001",
-      entityUuid: "00000000-0000-0000-0000-000000000002",
+      payload: {
+        entityDefinitionUuid: "00000000-0000-0000-0000-000000000001",
+        entityUuid: "00000000-0000-0000-0000-000000000002",
+      }
     },
   },
   // ##############################################################################################

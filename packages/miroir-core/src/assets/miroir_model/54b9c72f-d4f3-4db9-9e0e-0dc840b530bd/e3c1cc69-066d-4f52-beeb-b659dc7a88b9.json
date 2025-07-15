@@ -128,6 +128,7 @@
                       },
                       "actionName": {
                         "type": "schemaReference",
+                        "optional": true,
                         "definition": {
                           "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
                           "relativePath": "jzodLiteral"
@@ -150,6 +151,7 @@
                       },
                       "configuration": {
                         "type": "schemaReference",
+                        "optional": true,
                         "definition": {
                           "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
                           "relativePath": "jzodElement"
@@ -159,7 +161,15 @@
                         "type": "schemaReference",
                         "definition": {
                           "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                          "relativePath": "jzodAttributePlainStringWithValidations"
+                          "relativePath": "jzodPlainAttribute"
+                        }
+                      },
+                      "payload": {
+                        "type": "schemaReference",
+                        "optional": true,
+                        "definition": {
+                          "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                          "relativePath": "jzodObject"
                         }
                       }
                     }

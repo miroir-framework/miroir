@@ -134,7 +134,7 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
       log.info(this.logHeader, "renameEntityClean", update);
       const currentEntity: Action2EntityInstanceReturnType = await this.getInstance(
         entityEntity.uuid,
-        update.entityUuid
+        update.payload.entityUuid
       );
       if (currentEntity instanceof Action2Error) {
         return currentEntity
@@ -143,13 +143,13 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
         return Promise.resolve(
           new Action2Error(
             "FailedToDeployModule",
-            `renameEntityClean failed for section: data, entityUuid ${update.entityUuid}, error: ${currentEntity.returnedDomainElement.queryFailure}, ${currentEntity.returnedDomainElement.failureMessage}`
+            `renameEntityClean failed for section: data, entityUuid ${update.payload.entityUuid}, error: ${currentEntity.returnedDomainElement.queryFailure}, ${currentEntity.returnedDomainElement.failureMessage}`
           )
         );
       }
       const currentEntityDefinition: Action2EntityInstanceReturnType = await this.getInstance(
         entityEntityDefinition.uuid,
-        update.entityDefinitionUuid
+        update.payload.entityDefinitionUuid
       );
 
       if (currentEntityDefinition instanceof Action2Error) {
@@ -159,18 +159,18 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
       if (currentEntityDefinition.returnedDomainElement instanceof Domain2ElementFailed) {
         return Promise.resolve(new Action2Error(
           "FailedToDeployModule",
-          `renameEntityClean failed for section: data, entityUuid ${update.entityDefinitionUuid}, error: ${currentEntityDefinition.returnedDomainElement.queryFailure}, ${currentEntityDefinition.returnedDomainElement.failureMessage}`
+          `renameEntityClean failed for section: data, entityUuid ${update.payload.entityDefinitionUuid}, error: ${currentEntityDefinition.returnedDomainElement.queryFailure}, ${currentEntityDefinition.returnedDomainElement.failureMessage}`
         ));
       }
-      const modifiedEntity:EntityInstanceWithName = Object.assign({},currentEntity.returnedDomainElement,{name:update.targetValue});
-      const modifiedEntityDefinition:EntityDefinition = Object.assign({},currentEntityDefinition.returnedDomainElement as EntityDefinition,{name:update.targetValue});
+      const modifiedEntity:EntityInstanceWithName = Object.assign({},currentEntity.returnedDomainElement,{name:update.payload.targetValue});
+      const modifiedEntityDefinition:EntityDefinition = Object.assign({},currentEntityDefinition.returnedDomainElement as EntityDefinition,{name:update.payload.targetValue});
 
       await this.upsertInstance(entityEntity.uuid, modifiedEntity);
       await this.upsertInstance(entityEntityDefinition.uuid, modifiedEntityDefinition);
 
       await this.dataStore.renameStorageSpaceForInstancesOfEntity(
         (currentEntity.returnedDomainElement as EntityInstanceWithName).name,
-        update.targetValue,
+        update.payload.targetValue,
         modifiedEntity,
         modifiedEntityDefinition
       );
@@ -182,7 +182,7 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
       log.info(this.logHeader, "alterEntityAttribute", update);
       const currentEntityDefinition: Action2EntityInstanceReturnType = await this.getInstance(
         entityEntityDefinition.uuid,
-        update.entityDefinitionUuid
+        update.payload.entityDefinitionUuid
       );
       if (currentEntityDefinition instanceof Action2Error) {
         return currentEntityDefinition
@@ -190,15 +190,18 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
       if (currentEntityDefinition.returnedDomainElement instanceof Domain2ElementFailed) {
         return Promise.resolve(new Action2Error(
           "FailedToDeployModule",
-          `alterEntityAttribute failed for section: data, entityUuid ${update.entityDefinitionUuid}, error: ${currentEntityDefinition.returnedDomainElement.queryFailure}, ${currentEntityDefinition.returnedDomainElement.failureMessage}`
+          `alterEntityAttribute failed for section: data, entityUuid ${update.payload.entityDefinitionUuid}, error: ${currentEntityDefinition.returnedDomainElement.queryFailure}, ${currentEntityDefinition.returnedDomainElement.failureMessage}`
         ));
       }
       const localEntityDefinition: EntityDefinition = currentEntityDefinition.returnedDomainElement as EntityDefinition;
-      const localEntityJzodSchemaDefinition = update.removeColumns != undefined && Array.isArray(update.removeColumns)?
-        Object.fromEntries(
-          Object.entries(localEntityDefinition.jzodSchema.definition).filter((i) => update.removeColumns??([] as string[]).includes(i[0]))
-        )
-        : localEntityDefinition.jzodSchema.definition;
+      const localEntityJzodSchemaDefinition =
+        update.payload.removeColumns != undefined && Array.isArray(update.payload.removeColumns)
+          ? Object.fromEntries(
+              Object.entries(localEntityDefinition.jzodSchema.definition).filter(
+                (i) => update.payload.removeColumns ?? ([] as string[]).includes(i[0])
+              )
+            )
+          : localEntityDefinition.jzodSchema.definition;
       const modifiedEntityDefinition: EntityDefinition = Object.assign(
         {},
         localEntityDefinition,
@@ -207,7 +210,7 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
             type: "object",
             definition: {
               ...localEntityJzodSchemaDefinition,
-              ...(update.addColumns?Object.fromEntries(update.addColumns.map(c=>[c.name, c.definition])):{})
+              ...(update.payload.addColumns?Object.fromEntries(update.payload.addColumns.map(c=>[c.name, c.definition])):{})
             },
           },
         }

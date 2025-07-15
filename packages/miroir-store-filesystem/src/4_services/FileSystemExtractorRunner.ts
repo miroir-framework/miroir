@@ -136,6 +136,7 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
         const referenceObject = transformer_InnerReference_resolve(
           "runtime",
           { transformerType: "contextReference", referenceName: querySelectorParams.objectReference },
+          "value",
           selectorParams.extractor.queryParams,
           selectorParams.extractor.contextResults
         );

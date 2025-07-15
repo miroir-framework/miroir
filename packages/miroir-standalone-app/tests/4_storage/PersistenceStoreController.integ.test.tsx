@@ -443,10 +443,12 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
       actionType: "renameEntity",
       deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-      entityUuid: entityAuthor.uuid, 
-      entityName: entityAuthor.name,
-      entityDefinitionUuid: entityDefinitionAuthor.uuid,
-      targetValue: entityAuthor.name + "ssss"
+      payload: {
+        entityUuid: entityAuthor.uuid, 
+        entityName: entityAuthor.name,
+        entityDefinitionUuid: entityDefinitionAuthor.uuid,
+        targetValue: entityAuthor.name + "ssss"
+      }
     };
 
     await chainVitestSteps(
@@ -532,9 +534,11 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
       actionType: "dropEntity",
       deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-      entityUuid: entityAuthor.uuid, 
-      // entityName: entityAuthor.name,
-      entityDefinitionUuid: entityDefinitionAuthor.uuid
+      payload: {
+        entityUuid: entityAuthor.uuid, 
+        // entityName: entityAuthor.name,
+        entityDefinitionUuid: entityDefinitionAuthor.uuid
+      }
      };
 
     
@@ -550,51 +554,60 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
       //   undefined, // expected result
       // )
       // .then(
-        // (v) => chainVitestSteps(
-        "fetchEntities",
-        {},
-        async () => await localAppPersistenceStoreController.getInstances("model",entityEntity.uuid),
-        (a, p) => (a as any).returnedDomainElement.instances as MetaEntity[],
-        "entities", // name to give to result
-        // "entityInstanceCollection", // expected result.elementType
-        undefined,
-        undefined, // test result
-        // )
-      )
-      .then (
-        (v) => chainVitestSteps(
+      // (v) => chainVitestSteps(
+      "fetchEntities",
+      {},
+      async () => await localAppPersistenceStoreController.getInstances("model", entityEntity.uuid),
+      (a, p) => (a as any).returnedDomainElement.instances as MetaEntity[],
+      "entities", // name to give to result
+      // "entityInstanceCollection", // expected result.elementType
+      undefined,
+      undefined // test result
+      // )
+    )
+      .then((v) =>
+        chainVitestSteps(
           "fetchEntityDefinitions",
           v,
-          async () => await localAppPersistenceStoreController.getInstances("model", entityEntityDefinition.uuid),
+          async () =>
+            await localAppPersistenceStoreController.getInstances(
+              "model",
+              entityEntityDefinition.uuid
+            ),
           (a, p) => (a as any).returnedDomainElement.instances as EntityDefinition[],
           "entityDefinitions", // name to give to result
           // "entityInstanceCollection", // expected result.elementType
           undefined,
-          undefined, // expected result
+          undefined // expected result
         )
       )
-      .then (
-      (v) => chainVitestSteps(
-      "dropAuthorEntity",
-      {},
-      async () => await localAppPersistenceStoreController.dropEntity(modelActionDropEntity.entityUuid),
-      undefined,
-      undefined, // name to give to result
-      undefined, // expected result.elementType
-      undefined // expected result
+      .then((v) =>
+        chainVitestSteps(
+          "dropAuthorEntity",
+          {},
+          async () =>
+            await localAppPersistenceStoreController.dropEntity(
+              modelActionDropEntity.payload.entityUuid
+            ),
+          undefined,
+          undefined, // name to give to result
+          undefined, // expected result.elementType
+          undefined // expected result
+        )
       )
-    ).then((v) =>
-      chainVitestSteps(
-        "actualTest_getInstancesAndCheckResult",
-        v,
-        async () => await localAppPersistenceStoreController.getInstances("model", entityEntity.uuid),
-        (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.instances),
-        undefined, // name to give to result
-        // "entityInstanceCollection",
-        undefined,
-        []
-      )
-    );
+      .then((v) =>
+        chainVitestSteps(
+          "actualTest_getInstancesAndCheckResult",
+          v,
+          async () =>
+            await localAppPersistenceStoreController.getInstances("model", entityEntity.uuid),
+          (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.instances),
+          undefined, // name to give to result
+          // "entityInstanceCollection",
+          undefined,
+          []
+        )
+      );
   });
 
   // ################################################################################################
@@ -615,21 +628,23 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
       actionType: "alterEntityAttribute",
       deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-      entityUuid: entityAuthor.uuid, 
-      entityDefinitionUuid: entityDefinitionAuthor.uuid,
-      entityName: entityAuthor.name,
-      // entityAttributeId: 6,
-      // entityAttributeName: "icon",
-      // entityAttributeRename: "icons",
-      addColumns: [
-        {
-          "name": "icons",
-          "definition": iconsDefinition
-        }
-      ],
-      // update: {
-      //   "type": "number", "optional": true, "tag": { "id":6, "defaultLabel": "Gender (narrow-minded)", "editable": true }
-      // }
+      payload: {
+        entityUuid: entityAuthor.uuid, 
+        entityDefinitionUuid: entityDefinitionAuthor.uuid,
+        entityName: entityAuthor.name,
+        // entityAttributeId: 6,
+        // entityAttributeName: "icon",
+        // entityAttributeRename: "icons",
+        addColumns: [
+          {
+            "name": "icons",
+            "definition": iconsDefinition
+          }
+        ],
+        // update: {
+        //   "type": "number", "optional": true, "tag": { "id":6, "defaultLabel": "Gender (narrow-minded)", "editable": true }
+        // }
+      }
     };
 
     await chainVitestSteps(
@@ -646,7 +661,11 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
         chainVitestSteps(
           "fetchEntityDefinitions",
           v,
-          async () => await localAppPersistenceStoreController.getInstances("model", entityEntityDefinition.uuid),
+          async () =>
+            await localAppPersistenceStoreController.getInstances(
+              "model",
+              entityEntityDefinition.uuid
+            ),
           (a, p) => (a as any).returnedDomainElement.instances as EntityDefinition[],
           "entityDefinitions", // name to give to result
           // "entityInstanceCollection", // expected result.elementType
@@ -658,7 +677,10 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
         chainVitestSteps(
           "fetchEntityDefinitions",
           v,
-          async () => await localAppPersistenceStoreController.alterEntityAttribute(modelActionAlterAttribute),
+          async () =>
+            await localAppPersistenceStoreController.alterEntityAttribute(
+              modelActionAlterAttribute
+            ),
           undefined,
           undefined, // name to give to result
           undefined, // expected result.elementType
@@ -669,8 +691,15 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
         chainVitestSteps(
           "getEntityInstancesToCheckResult",
           v,
-          async () => await localAppPersistenceStoreController.getInstances("model", entityEntityDefinition.uuid),
-          (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.instances, ["icon"]),
+          async () =>
+            await localAppPersistenceStoreController.getInstances(
+              "model",
+              entityEntityDefinition.uuid
+            ),
+          (a) =>
+            ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.instances, [
+              "icon",
+            ]),
           undefined, // name to give to result
           // "entityInstanceCollection",
           undefined,
@@ -682,7 +711,7 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
                 definition: {
                   ...Object.fromEntries(
                     Object.entries(entityDefinitionAuthor.jzodSchema.definition).filter(
-                      (i) => !modelActionAlterAttribute.removeColumns?.includes(i[0])
+                      (i) => !modelActionAlterAttribute.payload.removeColumns?.includes(i[0])
                     )
                   ),
                   icons: iconsDefinition,

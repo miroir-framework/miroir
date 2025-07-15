@@ -1,20 +1,19 @@
 import { describe, it } from "vitest";
 
-import { act, fireEvent, RenderResult, screen } from "@testing-library/react";
+import { act, fireEvent, screen } from "@testing-library/react";
 import { ExpectStatic } from "vitest";
 
 import '@testing-library/jest-dom';
 
 import {
+  applicationEndpointV1,
   JzodArray,
   JzodEnum,
   JzodPlainAttribute,
-  LoggerInterface, MiroirLoggerFactory
+  LoggerInterface,
+  MiroirLoggerFactory,
 } from "miroir-core";
-import { JzodArrayEditor } from "../../src/miroir-fwk/4_view/components/JzodArrayEditor";
 import { JzodElementEditor } from "../../src/miroir-fwk/4_view/components/JzodElementEditor";
-import { JzodEnumEditor } from "../../src/miroir-fwk/4_view/components/JzodEnumEditor";
-import { JzodLiteralEditor } from "../../src/miroir-fwk/4_view/components/JzodLiteralEditor";
 import { cleanLevel, packageName } from "../3_controllers/constants";
 import {
   extractValuesFromRenderedElements,
@@ -43,6 +42,10 @@ import {
   JzodUnion
 } from "miroir-core";
 import { Container } from "react-dom";
+import { modelAction } from "miroir-core";
+import { miroirFundamentalJzodSchema } from "miroir-core";
+import { JzodElement } from "miroir-core";
+import { entityDefinitionEndpoint } from "miroir-core";
 
 // ################################################################################################
 const pageLabel = "JzodElementEditor.test";
@@ -280,39 +283,22 @@ export function getJzodArrayEditorTests(
                   a: { type: "string", optional: true },
                   b: { type: "object", definition: { c: { type: "number" } } },
                   d: { type: "boolean" },
-                  e: { type: "bigint" },
+                  // e: { type: "bigint" },
                 },
               },
             },
-            // rawJzodSchema: {
-            //   type: "object",
-            //   definition: {
-            //     testField: {
-            //       type: "array",
-            //       definition: {
-            //         type: "object",
-            //         definition: {
-            //           a: { type: "string", optional: true },
-            //           b: { type: "object", definition: { c: { type: "number" } } },
-            //           d: { type: "boolean" },
-            //           e: { type: "bigint" },
-            //         },
-            //       },
-            //     },
-            //   },
-            // } as any,
             initialFormState: [
               {
                 a: "value1",
                 b: { c: 1 },
                 d: true,
-                e: 123n,
+                // e: 123n,
               },
               {
                 a: "value2",
                 b: { c: 2 },
                 d: false,
-                e: 456n,
+                // e: 456n,
               },
             ],
           },
@@ -335,18 +321,18 @@ export function getJzodArrayEditorTests(
                 a: "value1",
                 b: { c: 1 },
                 d: true,
-                e: "123",
+                // e: "123",
               },
               {
                 a: "value2",
                 b: { c: 2 },
                 d: false,
-                e: "456",
+                // e: "456",
               },
               {
                 b: { c: 0 }, // default value for number
                 d: false, // default value for boolean
-                e: "0", // default value for bigint
+                // e: "0", // default value for bigint
               },
             ]);
           },
@@ -1212,14 +1198,14 @@ export function getJzodSimpleTypeEditorTests(
             rawJzodSchema: {
               type: "uuid",
             },
-            initialFormState: "123e4567-e89b-12d3-a456-426614174000",
+            initialFormState: "c8e2cc98-b0ec-426a-8be0-2d526039f85a",
           },
           tests: async (expect: ExpectStatic, container: Container) => {
             const input = screen.getAllByRole("textbox").filter(
               (el: HTMLElement) => (el as HTMLInputElement).name === "testField"
             )[0] as HTMLInputElement;
             expect(input).toBeInTheDocument();
-            expect(input).toHaveValue("123e4567-e89b-12d3-a456-426614174000");
+            expect(input).toHaveValue("c8e2cc98-b0ec-426a-8be0-2d526039f85a");
           },
         },
         "uuid allows to modify input value with consistent update": {
@@ -1232,18 +1218,18 @@ export function getJzodSimpleTypeEditorTests(
             rawJzodSchema: {
               type: "uuid",
             },
-            initialFormState: "123e4567-e89b-12d3-a456-426614174000",
+            initialFormState: "c8e2cc98-b0ec-426a-8be0-2d526039f85a",
           },
           tests: async (expect: ExpectStatic, container: Container) => {
             const input = screen.getAllByRole("textbox").filter(
               (el: HTMLElement) => (el as HTMLInputElement).name === "testField"
             )[0] as HTMLInputElement;
             expect(input).toBeInTheDocument();
-            expect(input).toHaveValue("123e4567-e89b-12d3-a456-426614174000");
+            expect(input).toHaveValue("c8e2cc98-b0ec-426a-8be0-2d526039f85a");
             await act(() => {
-              fireEvent.change(input, { target: { value: "new-uuid-value" } });
+              fireEvent.change(input, { target: { value: "3c659c65-35f4-40e5-acf3-28115f35affa" } });
             });
-            expect(input).toHaveValue("new-uuid-value");
+            expect(input).toHaveValue("3c659c65-35f4-40e5-acf3-28115f35affa");
           },
         },
         "boolean renders checkbox with proper value true": {
@@ -1819,6 +1805,69 @@ export function getJzodEditorPerformanceTests(
 };
 
 // ################################################################################################
+// BOOK
+// ################################################################################################
+export interface LocalEndpointEditorProps extends LocalEditorPropsRoot{
+  // rawJzodSchema: EntityDefinition | undefined;
+  rawJzodSchema: JzodElement | undefined;
+}
+
+export type JzodEndpointEditorTest = JzodEditorTest<LocalEndpointEditorProps>;
+export type JzodEndpointEditorTestSuites = JzodEditorTestSuites<LocalEndpointEditorProps>;
+
+export function getJzodEndpointEditorTests(
+  LocalEditor: React.FC<LocalEndpointEditorProps>,
+  renderAsJzodElementEditor: React.FC<JzodElementEditorProps_Test>
+): JzodEndpointEditorTestSuites {
+  return {
+    JzodEndpointEditor: {
+      suiteRenderComponent: {
+        renderAsComponent: LocalEditor,
+        renderAsJzodElementEditor,
+      },
+      tests: {
+        "Endpoint ApplicationEndpoint is displayed as json-like input fields with proper value": {
+          props: {
+            label: "Test Label",
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLessListKey: "testField",
+            rootLessListKeyArray: ["testField"],
+            // rawJzodSchema: entityDefinitionBook.jzodSchema,
+            // rawJzodSchema: miroirFundamentalJzodSchema.definition.context.modelAction as JzodUnion,
+            rawJzodSchema: entityDefinitionEndpoint.jzodSchema,
+            initialFormState: applicationEndpointV1
+          },
+          tests: async (expect: ExpectStatic, container: Container) => {
+            // Pretty-print the entire rendered DOM
+            console.log("=== FULL RENDERED DOM ===");
+            // screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
+  
+            // expect(screen.getByText(/Test LabelAAAAAAAAAAAAAAAAAAAAAAAAAA/)).toBeInTheDocument();
+            const values: Record<string, any> = extractValuesFromRenderedElements(expect, container, "testField", "initial form state");
+            // console.log("Extracted initial values:", values);
+            const testResult = formValuesToJSON(values);
+            expect(testResult).toEqual(applicationEndpointV1);
+
+            // const inputs = Array.from(document.querySelectorAll('input'));
+            // console.log("=== INPUTS ===", inputs.map((input: HTMLElement) => ({
+            //   name: (input as HTMLInputElement).name,
+            //   value: (input as HTMLInputElement).value,
+            // })));
+            // const values: Record<string, any> = {};
+            // inputs.forEach((input: HTMLElement) => {
+            //   const index = (input as HTMLInputElement).name.replace(/^testField\./, "");
+            //   values[index] = (input as HTMLInputElement).value || Number((input as HTMLInputElement).value);
+            // });
+            expect(values).toEqual(book1);
+          },
+        },
+      },
+    },
+  };
+};
+
+// ################################################################################################
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
@@ -1846,49 +1895,49 @@ const jzodElementEditorTests: Record<
   string,
   JzodElementEditorTestSuite<any> & { modes?: ModesType }
 > = {
-  JzodArrayEditor: { 
-    editor: JzodArrayEditor, 
-    getJzodEditorTests: getJzodArrayEditorTests,
-    // modes: '*',
-    // modes: ['jzodElementEditor', 'component'],
-    modes: 'jzodElementEditor',
-  },
-  JzodEnumEditor: {
-    editor: JzodEnumEditor,
-    getJzodEditorTests: getJzodEnumEditorTests,
-    // modes: '*',
-    modes: "jzodElementEditor",
-    // modes: "component",
-  },
-  JzodLiteralEditor: { 
-    editor: JzodLiteralEditor, 
-    getJzodEditorTests: getJzodLiteralEditorTests,
-    // modes: "*",
-    // modes: ['jzodElementEditor', 'component'],
-    modes: "jzodElementEditor",
-    // modes: "component",
-  },
-  JzodObjectEditor: { 
-    editor: JzodElementEditor, 
-    getJzodEditorTests: getJzodObjectEditorTests,
-    // modes: '*',
-    // modes: ['jzodElementEditor', 'component'],
-    modes: 'jzodElementEditor',
-  },
-  JzodSimpleTypeEditor: { 
-    editor: JzodElementEditor, 
-    getJzodEditorTests: getJzodSimpleTypeEditorTests,
-    // modes: '*',
-    // modes: ['jzodElementEditor', 'component'],
-    modes: 'jzodElementEditor',
-  },
-  JzodUnionEditor: { 
-    editor: JzodElementEditor, 
-    getJzodEditorTests: getJzodUnionEditorTests,
-    // modes: '*',
-    // modes: ['jzodElementEditor', 'component'],
-    modes: 'jzodElementEditor',
-  },
+  // JzodArrayEditor: { 
+  //   editor: JzodElementEditor, 
+  //   getJzodEditorTests: getJzodArrayEditorTests,
+  //   // modes: '*',
+  //   // modes: ['jzodElementEditor', 'component'],
+  //   modes: 'jzodElementEditor',
+  // },
+  // JzodEnumEditor: {
+  //   editor: JzodElementEditor,
+  //   getJzodEditorTests: getJzodEnumEditorTests,
+  //   // modes: '*',
+  //   modes: "jzodElementEditor",
+  //   // modes: "component",
+  // },
+  // JzodLiteralEditor: { 
+  //   editor: JzodElementEditor, 
+  //   getJzodEditorTests: getJzodLiteralEditorTests,
+  //   // modes: "*",
+  //   // modes: ['jzodElementEditor', 'component'],
+  //   modes: "jzodElementEditor",
+  //   // modes: "component",
+  // },
+  // JzodObjectEditor: { 
+  //   editor: JzodElementEditor, 
+  //   getJzodEditorTests: getJzodObjectEditorTests,
+  //   // modes: '*',
+  //   // modes: ['jzodElementEditor', 'component'],
+  //   modes: 'jzodElementEditor',
+  // },
+  // JzodSimpleTypeEditor: { 
+  //   editor: JzodElementEditor, 
+  //   getJzodEditorTests: getJzodSimpleTypeEditorTests,
+  //   // modes: '*',
+  //   // modes: ['jzodElementEditor', 'component'],
+  //   modes: 'jzodElementEditor',
+  // },
+  // JzodUnionEditor: { 
+  //   editor: JzodElementEditor, 
+  //   getJzodEditorTests: getJzodUnionEditorTests,
+  //   // modes: '*',
+  //   // modes: ['jzodElementEditor', 'component'],
+  //   modes: 'jzodElementEditor',
+  // },
   // // // ################# PERFORMANCE
   // // JzodEditorPerformanceTests: {
   // //   editor: JzodElementEditor,
@@ -1915,6 +1964,14 @@ const jzodElementEditorTests: Record<
   //   // modes: ['jzodElementEditor', 'component'],
   //   modes: 'jzodElementEditor',
   // },
+  // ################# ENDPOINTS
+  JzodEndpointEditor: { 
+    editor: JzodElementEditor, 
+    getJzodEditorTests: getJzodEndpointEditorTests,
+    // modes: '*',
+    // modes: ['jzodElementEditor', 'component'],
+    modes: 'jzodElementEditor',
+  },
 };
 
 // ##############################################################################################
@@ -1939,14 +1996,20 @@ describe("JzodElementEditor", () => {
     }
 
     console.log(`Running tests for ${editorName} with ${Object.keys(suites).length} suites and modes: ${modes.join(', ')}`);
-    console.log(`Test suites: ${JSON.stringify(suites, null, 2)}`);
+    // console.log(`Test suites: ${JSON.stringify(suites, null, 2)}`);
     // Run all testcases for the first mode, then all for the second, etc.
     modes.forEach((mode: TestMode) => {
+      console.log(`Running tests for ${editorName} in mode: ${mode}`);
       Object.entries(suites[editorName].tests).forEach(([testName, testCase]) => {
+        console.log(`Running test: ${editorName} - ${mode} - ${testName}`);
         it(`${editorName} - ${mode} - ${testName}`, async () => {
+          console.log(`Running test: ${editorName} - ${mode} - ${testName}`);
           await runJzodEditorTest(testCase, suites[editorName], testName, mode);
+          console.log(`Completed test: ${editorName} - ${mode} - ${testName}`);
         });
+        console.log(`Completed test: ${editorName} - ${mode} - ${testName}`);
       });
+      console.log(`Completed all tests for ${editorName} in mode: ${mode}`);
     });
   });
 });

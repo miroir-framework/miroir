@@ -251,6 +251,7 @@ export function getLocalEditor<
   JzodEditorProps extends JzodEditorPropsRoot,
   LocalEditorProps extends LocalEditorPropsRoot
 >(pageLabel: string, Compo: React.FC<JzodEditorProps>): React.FC<LocalEditorProps> {
+  console.log("getLocalEditor", "pageLabel", pageLabel);
   const result: React.FC<LocalEditorProps> = (props: LocalEditorProps) => {
     const initialFormState: any = { [props.name]: props.initialFormState };
     // const [formState, setFormState] = useState<any>(initialFormState); // TODO: UNIFY!!!
@@ -345,6 +346,7 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
     rawJzodSchema,
   }) => {
     // const [formHelperState, setformHelperState] = useMiroirContextformHelperState();
+    console.log("getJzodElementEditorForTest", "rawJzodSchema", rawJzodSchema);
     JzodElementEditorForTestRenderCount++;
     const context = useMiroirContextService();
 
@@ -678,13 +680,14 @@ export function getWrapperForLocalJzodElementEditor(
   );
 
   console.log(
-    "getWrapperForLocalJzodElementEditor",
+    "getWrapperForLocalJzodElementEditor FINISHED PREPARING LOCAL CACHE",
     "resultForLoadingMiroirMetaModel",
     resultForLoadingMiroirMetaModel,
     "resultForLoadingLibraryApplicationModel",
     resultForLoadingLibraryApplicationModel,
     "resultForLoadingLibraryApplicationInstances",
     resultForLoadingLibraryApplicationInstances,
+    "localCache.getInnerStore().getState()",
     localCache.getInnerStore().getState()
   );  
   // localCache.setInstancesForEntityUuidIndex(
@@ -697,6 +700,8 @@ export function getWrapperForLocalJzodElementEditor(
 
   // ###############################################
   return (props: { children?: React.ReactNode }) => {
+    console.log("############################################## getWrapperForLocalJzodElementEditor returned", "props", props);
+    // console.log
     const domainController: DomainControllerInterface = {
       handleAction,
       // add other methods if needed
@@ -761,8 +766,15 @@ export async function runJzodEditorTest(
   testSuite: JzodEditorTestSuite<any>,
   testName: string,
   // renderAs: "component" | "jzodElementEditor" = "jzodElementEditor"
-  renderAs: TestMode
+  renderAs: TestMode 
 ) {
+  console.log(
+    "runJzodEditorTest start",
+    "testName",
+    testName,
+    "renderAs",
+    renderAs,
+  );
   const ComponentToRender: React.FC<any> | undefined =
     renderAs == "jzodElementEditor"
       ? testCase.renderComponent?.renderAsJzodElementEditor ??
@@ -774,6 +786,9 @@ export async function runJzodEditorTest(
       `Test case ${testName} does not have a renderAsJzodElementEditor or renderAsComponent function, skipping test: ${testName}`
     );
   }
+  console.log("runJzodEditorTest", "found ComponentToRender"
+    // , ComponentToRender
+  );
   const testCaseSpecificProps =
     renderAs == "jzodElementEditor" ? testCase.jzodElementEditorProps : testCase.componentProps;
   const props: JzodElementEditorProps_Test | undefined =
@@ -817,6 +832,11 @@ export async function runJzodEditorTest(
   } else {
     console.warn(`Test case ${testName} does not have props defined, skipping test: ${testName}`);
   }
+  console.log(
+    "runJzodEditorTest end",
+    "testName",
+    testName,
+  );
 }
 
 // ################################################################################################

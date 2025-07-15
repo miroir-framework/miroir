@@ -692,10 +692,10 @@ export function jzodUnionResolvedTypeForObject(
       discriminator,
       valuePath: currentValuePath,
       typePath: currentTypePath,
+      innerError: selectUnionResult,
       value: valueObject,
       concreteUnrolledJzodSchemas,
       unionChoices: objectUnionChoices,
-      innerError: selectUnionResult,
     };
   }
 
@@ -1304,7 +1304,7 @@ export function jzodTypeCheck(
       return foundErrors.length > 0
         ? {
             status: "error",
-            error: "jzodTypeCheck failed to match object value with schema",
+            error: `jzodTypeCheck failed to match value with ${jzodSchema.type} schema`,
             rawJzodSchemaType: jzodSchema.type,
             valuePath: currentValuePath,
             typePath: currentTypePath,
@@ -1356,7 +1356,7 @@ export function jzodTypeCheck(
       } else {
         return {
           status: "error",
-          error: "jzodTypeCheck failed to match object value with schema",
+          error: `jzodTypeCheck failed to match value with ${jzodSchema.type} schema`,
           rawJzodSchemaType: jzodSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
@@ -1387,7 +1387,7 @@ export function jzodTypeCheck(
       if ( !Array.isArray(valueObject)) {
         return {
           status: "error",
-          error: "jzodTypeCheck failed to match object value with schema",
+          error: `jzodTypeCheck failed to match value with ${jzodSchema.type} schema`,
           rawJzodSchemaType: jzodSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
@@ -1424,7 +1424,7 @@ export function jzodTypeCheck(
       return foundErrors.length > 0
         ? {
             status: "error",
-            error: "jzodTypeCheck failed to match object value with schema",
+            error: `jzodTypeCheck failed to match value with ${jzodSchema.type} schema`,
             rawJzodSchemaType: jzodSchema.type,
             valuePath: currentValuePath,
             typePath: currentTypePath,
@@ -1451,7 +1451,7 @@ export function jzodTypeCheck(
       if ( !Array.isArray(valueObject)) {
         return {
           status: "error",
-          error: "jzodTypeCheck failed to match object value with schema",
+          error: `jzodTypeCheck failed to match value with ${jzodSchema.type} schema`,
           rawJzodSchemaType: jzodSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
@@ -1499,7 +1499,7 @@ export function jzodTypeCheck(
             return subSchema.status == "error"
               ? {
                   status: "error",
-                  error: "jzodTypeCheck failed to match object value with schema",
+          error: `jzodTypeCheck failed to match value with ${jzodSchema.type} schema`,
                   rawJzodSchemaType: jzodSchema.type,
                   valuePath: [...currentValuePath, index],
                   typePath: [...currentTypePath, index],
@@ -1523,7 +1523,7 @@ export function jzodTypeCheck(
         return foundErrors.length > 0
           ? {
               status: "error",
-              error: "jzodTypeCheck failed to match object value with schema",
+          error: `jzodTypeCheck failed to match value with ${jzodSchema.type} schema`,
               rawJzodSchemaType: jzodSchema.type,
               valuePath: currentValuePath,
               typePath: currentTypePath,
@@ -1568,7 +1568,7 @@ export function jzodTypeCheck(
       if (typeof valueObject != "string" || !isValidUUID(valueObject)) {
         return {
           status: "error",
-          error: "jzodTypeCheck failed to match object value with schema",
+          error: `jzodTypeCheck failed to match value with ${jzodSchema.type} schema`,
           rawJzodSchemaType: jzodSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
@@ -1590,7 +1590,7 @@ export function jzodTypeCheck(
       if (typeof valueObject != "string") {
         return {
           status: "error",
-          error: "jzodTypeCheck failed to match object value with schema",
+          error: `jzodTypeCheck failed to match value with ${jzodSchema.type} schema`,
           rawJzodSchemaType: jzodSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
@@ -1610,7 +1610,7 @@ export function jzodTypeCheck(
       if (typeof valueObject != "number") {
         return {
           status: "error",
-          error: "jzodTypeCheck failed to match object value with schema",
+          error: `jzodTypeCheck failed to match value with ${jzodSchema.type} schema`,
           rawJzodSchemaType: jzodSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
@@ -1630,7 +1630,7 @@ export function jzodTypeCheck(
       if (typeof valueObject != "bigint") {
         return {
           status: "error",
-          error: "jzodTypeCheck failed to match object value with schema",
+          error: `jzodTypeCheck failed to match value with ${jzodSchema.type} schema`,
           rawJzodSchemaType: jzodSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
@@ -1650,7 +1650,7 @@ export function jzodTypeCheck(
       if (typeof valueObject != "boolean") {
         return {
           status: "error",
-          error: "jzodTypeCheck failed to match object value with schema",
+          error: `jzodTypeCheck failed to match value with ${jzodSchema.type} schema`,
           rawJzodSchemaType: jzodSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
@@ -1670,7 +1670,7 @@ export function jzodTypeCheck(
       if (!(valueObject instanceof Date)) {
         return {
           status: "error",
-          error: "jzodTypeCheck failed to match object value with schema",
+          error: `jzodTypeCheck failed to match value with ${jzodSchema.type} schema`,
           rawJzodSchemaType: jzodSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
@@ -1716,7 +1716,7 @@ export function jzodTypeCheck(
       // );
       return {
         status: "error",
-        error: "jzodTypeCheck failed to match object value with schema",
+          error: `jzodTypeCheck failed to match value with undefined schema type`,
         rawJzodSchemaType: "not supported",
         valuePath: currentValuePath,
         typePath: currentTypePath,

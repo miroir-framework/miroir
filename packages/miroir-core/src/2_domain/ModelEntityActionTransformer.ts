@@ -43,7 +43,7 @@ export class ModelEntityActionTransformer{
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             applicationSection: "model",
             objects: [
-              ...modelAction.entities.flatMap(
+              ...modelAction.payload.entities.flatMap(
                 a => [
                   {
                     parentName:entityEntity.name,
@@ -77,13 +77,13 @@ export class ModelEntityActionTransformer{
                 parentName: entityEntity.name,
                 parentUuid: entityEntity.uuid,
                 applicationSection: "model",
-                instances: [{ parentUuid: entityEntity.uuid, uuid: modelAction.entityUuid }],
+                instances: [{ parentUuid: entityEntity.uuid, uuid: modelAction.payload.entityUuid }],
               },
               {
                 parentName: entityEntityDefinition.name,
                 parentUuid: entityEntityDefinition.uuid,
                 applicationSection: "model",
-                instances: [{ parentUuid: entityEntityDefinition.uuid, uuid: modelAction.entityDefinitionUuid }],
+                instances: [{ parentUuid: entityEntityDefinition.uuid, uuid: modelAction.payload.entityDefinitionUuid }],
               },
             ],
           },
@@ -94,11 +94,11 @@ export class ModelEntityActionTransformer{
       {
         log.info("modelActionToLocalCacheInstanceAction currentModel ", JSON.stringify(currentModel));
 
-        const currentEntity = currentModel.entities.find(e=>e.uuid==modelAction.entityUuid);
-        const currentEntityDefinition = currentModel.entityDefinitions.find(e=>e.uuid==modelAction.entityDefinitionUuid);
+        const currentEntity = currentModel.entities.find(e=>e.uuid==modelAction.payload.entityUuid);
+        const currentEntityDefinition = currentModel.entityDefinitions.find(e=>e.uuid==modelAction.payload.entityDefinitionUuid);
         log.info("modelActionToLocalCacheInstanceAction found currentEntity ", currentEntity, "currentEntityDefinition", currentEntityDefinition);
-        const modifiedEntity:EntityInstanceWithName = Object.assign({},currentEntity,{name:modelAction.targetValue});
-        const modifiedEntityDefinition:EntityInstanceWithName = Object.assign({},currentEntityDefinition,{name:modelAction.targetValue});
+        const modifiedEntity:EntityInstanceWithName = Object.assign({},currentEntity,{name:modelAction.payload.targetValue});
+        const modifiedEntityDefinition:EntityInstanceWithName = Object.assign({},currentEntityDefinition,{name:modelAction.payload.targetValue});
         if (currentEntity && currentEntityDefinition) {
           const objects: EntityInstanceCollection[] = [
             {
@@ -135,8 +135,8 @@ export class ModelEntityActionTransformer{
       case "alterEntityAttribute": {
         log.info("modelActionToLocalCacheInstanceAction currentModel ", JSON.stringify(currentModel));
 
-        const currentEntity = currentModel.entities.find(e=>e.uuid==modelAction.entityUuid);
-        const currentEntityDefinition = currentModel.entityDefinitions.find(e=>e.uuid==modelAction.entityDefinitionUuid);
+        const currentEntity = currentModel.entities.find(e=>e.uuid==modelAction.payload.entityUuid);
+        const currentEntityDefinition = currentModel.entityDefinitions.find(e=>e.uuid==modelAction.payload.entityDefinitionUuid);
         // log.info(
         //   "modelActionToLocalCacheInstanceAction alterEntityAttribute found currentEntity ",
         //   currentEntity,
@@ -145,10 +145,10 @@ export class ModelEntityActionTransformer{
         // );
         if (currentEntity && currentEntityDefinition) {
           const localEntityJzodSchemaDefinition =
-            modelAction.removeColumns != undefined && Array.isArray(modelAction.removeColumns)
+            modelAction.payload.removeColumns != undefined && Array.isArray(modelAction.payload.removeColumns)
               ? Object.fromEntries(
                   Object.entries(currentEntityDefinition.jzodSchema.definition).filter(
-                    (i) => modelAction.removeColumns ?? ([] as string[]).includes(i[0])
+                    (i) => modelAction.payload.removeColumns ?? ([] as string[]).includes(i[0])
                   )
                 )
               : currentEntityDefinition.jzodSchema.definition;
@@ -157,8 +157,8 @@ export class ModelEntityActionTransformer{
               type: "object",
               definition: {
                 ...localEntityJzodSchemaDefinition,
-                ...(modelAction.addColumns
-                  ? Object.fromEntries(modelAction.addColumns.map((c) => [c.name, c.definition]))
+                ...(modelAction.payload.addColumns
+                  ? Object.fromEntries(modelAction.payload.addColumns.map((c) => [c.name, c.definition]))
                   : {}),
               },
             },
@@ -182,7 +182,13 @@ export class ModelEntityActionTransformer{
               objects
             },
           ];
-          log.info("modelActionToLocalCacheInstanceAction returning for ", deploymentUuid, modelAction,"result=", JSON.stringify(result, null, 2))
+          log.info(
+            "modelActionToLocalCacheInstanceAction returning for ",
+            deploymentUuid,
+            modelAction,
+            "result=",
+            JSON.stringify(result, null, 2)
+          );
 
           return result;
         } else {

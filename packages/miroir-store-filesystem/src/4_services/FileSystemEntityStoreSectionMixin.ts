@@ -202,7 +202,7 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
       // const currentValue = await this.localUuidIndexedDb.resolvePathOnObject(cudUpdate.objects[0].instances[0].parentUuid,cudUpdate.objects[0].instances[0].uuid);
       const currentEntity: Action2EntityInstanceReturnType = await this.getInstance(
         entityEntity.uuid,
-        update.entityUuid
+        update.payload.entityUuid
       );
       if (currentEntity instanceof Action2Error) {
         return currentEntity
@@ -210,12 +210,12 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
       if (currentEntity.returnedDomainElement instanceof Domain2ElementFailed) {
         return Promise.resolve(new Action2Error(
           "FailedToDeployModule",
-          `renameEntityClean failed for section: data, entityUuid ${update.entityUuid}, error: ${currentEntity.returnedDomainElement.queryFailure}, ${currentEntity.returnedDomainElement.failureMessage}`
+          `renameEntityClean failed for section: data, entityUuid ${update.payload.entityUuid}, error: ${currentEntity.returnedDomainElement.queryFailure}, ${currentEntity.returnedDomainElement.failureMessage}`
         ));
       }
       const currentEntityDefinition: Action2EntityInstanceReturnType = await this.getInstance(
         entityEntityDefinition.uuid,
-        update.entityDefinitionUuid
+        update.payload.entityDefinitionUuid
       );
 
       if (currentEntityDefinition instanceof Action2Error) {
@@ -224,18 +224,18 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
       if (currentEntityDefinition.returnedDomainElement instanceof Domain2ElementFailed) {
         return Promise.resolve(new Action2Error(
           "FailedToDeployModule",
-          `renameEntityClean failed for section: data, entityUuid ${update.entityDefinitionUuid}, error: ${currentEntityDefinition.returnedDomainElement.queryFailure}, ${currentEntityDefinition.returnedDomainElement.failureMessage}`
+          `renameEntityClean failed for section: data, entityUuid ${update.payload.entityDefinitionUuid}, error: ${currentEntityDefinition.returnedDomainElement.queryFailure}, ${currentEntityDefinition.returnedDomainElement.failureMessage}`
         ));
       }
       const modifiedEntity: EntityInstanceWithName = Object.assign(
         {},
         currentEntity.returnedDomainElement,
-        { name: update.targetValue }
+        { name: update.payload.targetValue }
       );
       const modifiedEntityDefinition: EntityDefinition = Object.assign(
         {},
         currentEntityDefinition.returnedDomainElement as EntityDefinition,
-        { name: update.targetValue }
+        { name: update.payload.targetValue }
       );
 
       await this.upsertInstance(entityEntity.uuid, modifiedEntity);
@@ -243,7 +243,7 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
 
       await this.dataStore.renameStorageSpaceForInstancesOfEntity(
         (currentEntity.returnedDomainElement as EntityInstanceWithName).name,
-        update.targetValue,
+        update.payload.targetValue,
         modifiedEntity,
         modifiedEntityDefinition
       );
@@ -255,39 +255,39 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
       log.info(this.logHeader, "alterEntityAttribute", update);
       const currentEntityDefinition: Action2EntityInstanceReturnType = await this.getInstance(
         entityEntityDefinition.uuid,
-        update.entityDefinitionUuid
+        update.payload.entityDefinitionUuid
       );
       if (currentEntityDefinition instanceof Action2Error) {
         return currentEntityDefinition
       }
       if (currentEntityDefinition.returnedDomainElement instanceof Domain2ElementFailed) {
-        return Promise.resolve(new Action2Error(
-          "FailedToDeployModule",
-          `alterEntityAttribute failed for section: data, entityUuid ${update.entityDefinitionUuid}, error: ${currentEntityDefinition.returnedDomainElement.queryFailure}, ${currentEntityDefinition.returnedDomainElement.failureMessage}`
-        ));
+        return Promise.resolve(
+          new Action2Error(
+            "FailedToDeployModule",
+            `alterEntityAttribute failed for section: data, entityUuid ${update.payload.entityDefinitionUuid}, error: ${currentEntityDefinition.returnedDomainElement.queryFailure}, ${currentEntityDefinition.returnedDomainElement.failureMessage}`
+          )
+        );
       }
       const localEntityDefinition: EntityDefinition = currentEntityDefinition.returnedDomainElement as EntityDefinition;
       const localEntityJzodSchemaDefinition =
-        update.removeColumns != undefined && Array.isArray(update.removeColumns)
+        update.payload.removeColumns != undefined && Array.isArray(update.payload.removeColumns)
           ? Object.fromEntries(
               Object.entries(localEntityDefinition.jzodSchema.definition).filter(
-                (i) => update.removeColumns ?? ([] as string[]).includes(i[0])
+                (i) => update.payload.removeColumns ?? ([] as string[]).includes(i[0])
               )
             )
           : localEntityDefinition.jzodSchema.definition;
-      const modifiedEntityDefinition: EntityDefinition = Object.assign(
-        {},
-        localEntityDefinition,
-        {
-          jzodSchema: {
-            type: "object",
-            definition: {
-              ...localEntityJzodSchemaDefinition,
-              ...(update.addColumns?Object.fromEntries(update.addColumns.map(c=>[c.name, c.definition])):{})
-            },
+      const modifiedEntityDefinition: EntityDefinition = Object.assign({}, localEntityDefinition, {
+        jzodSchema: {
+          type: "object",
+          definition: {
+            ...localEntityJzodSchemaDefinition,
+            ...(update.payload.addColumns
+              ? Object.fromEntries(update.payload.addColumns.map((c) => [c.name, c.definition]))
+              : {}),
           },
-        }
-      );
+        },
+      });
 
       log.info("alterEntityAttribute modifiedEntityDefinition", JSON.stringify(modifiedEntityDefinition, undefined, 2));
     

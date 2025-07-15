@@ -70,7 +70,7 @@ export async function modelActionStoreRunnerNotUsed(
     }
     case "initModel": {
       const modelActionInitModel = body as ModelActionInitModel;
-      const params: ModelActionInitModelParams = modelActionInitModel.params;
+      const params: ModelActionInitModelParams = modelActionInitModel.payload.params;
       log.debug("modelActionStoreRunnerNotUsed initModel params", params);
 
       if (params.dataStoreType == "miroir") {

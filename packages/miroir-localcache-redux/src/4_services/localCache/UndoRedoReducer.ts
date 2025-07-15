@@ -265,7 +265,7 @@ function handleModelAction(
     case "renameEntity":
     case "createEntity":
     case "dropEntity": {
-      if (action.payload.transactional == false) {
+      if (action.payload.payload.transactional == false) {
         return callNextReducer(innerReducer, state, action as any);        
       } else {
         const localAction: PayloadAction<ModelActionReplayableAction> = action as PayloadAction<ModelActionReplayableAction>;

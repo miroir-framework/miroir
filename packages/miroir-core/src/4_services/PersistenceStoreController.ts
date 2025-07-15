@@ -215,7 +215,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
         switch (persistenceStoreControllerAction.actionType) {
           case "dropEntity": {
             // await targetProxy.dropEntity(update.modelEntityUpdate.entityUuid);
-            await this.dropEntity(persistenceStoreControllerAction.entityUuid);
+            await this.dropEntity(persistenceStoreControllerAction.payload.entityUuid);
             break;
           }
           case "renameEntity": {
@@ -244,7 +244,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
           }
           case "initModel": {
             const modelActionInitModel = persistenceStoreControllerAction as ModelActionInitModel;
-            const params: ModelActionInitModelParams = modelActionInitModel.params;
+            const params: ModelActionInitModelParams = modelActionInitModel.payload.params;
             log.debug("handleAction initModel params", params);
       
             await this.initApplicationDeploymentStore(params);
@@ -256,9 +256,9 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
             throw new Error("handleAction could not handle action" + JSON.stringify(persistenceStoreControllerAction));
           }
           case "createEntity": {
-            log.debug("handleAction applyModelEntityUpdates createEntity inserting", persistenceStoreControllerAction.entities);
+            log.debug("handleAction applyModelEntityUpdates createEntity inserting", persistenceStoreControllerAction.payload.entities);
             // await targetProxy.createEntity(update.entity, update.entityDefinition);
-            await this.createEntities(persistenceStoreControllerAction.entities);
+            await this.createEntities(persistenceStoreControllerAction.payload.entities);
             break;
           }
           default:

@@ -167,14 +167,16 @@ const beforeAll = async () => {
       actionType: "initModel",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       deploymentUuid: paramAdminConfigurationDeploymentUuid,
-      params: {
-        dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
-        metaModel: defaultMiroirMetaModel,
-        // TODO: this is wrong, selfApplication, selfApplication version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
-        selfApplication: testApplicationConfig.selfApplication,
-        applicationModelBranch: testApplicationConfig.applicationModelBranch,
-        applicationVersion: testApplicationConfig.applicationVersion,
-      },
+      payload: {
+        params: {
+          dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
+          metaModel: defaultMiroirMetaModel,
+          // TODO: this is wrong, selfApplication, selfApplication version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
+          selfApplication: testApplicationConfig.selfApplication,
+          applicationModelBranch: testApplicationConfig.applicationModelBranch,
+          applicationVersion: testApplicationConfig.applicationVersion,
+        },
+      }
     });
     // }, defaultMiroirMetaModel);
     await persistenceStoreController.handleAction({
@@ -182,7 +184,9 @@ const beforeAll = async () => {
       actionLabel: "CreateLibraryStoreEntities",
       deploymentUuid: paramAdminConfigurationDeploymentUuid,
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-      entities: libraryEntitesAndInstances,
+      payload: {
+        entities: libraryEntitesAndInstances,
+      }
     });
     await persistenceStoreController.handleAction({
       actionType: "createInstance",

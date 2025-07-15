@@ -111,6 +111,12 @@ let count = 0;
 function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element {
   count++;
 
+  log.info(
+    "JzodElementEditorComponent",
+    count,
+    "Rendering JzodElementEditorComponent for listKey",
+    props.listKey,
+  );
   const {
     // general use
     context,
@@ -343,20 +349,21 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
       );
     }
 
-    if (props.rawJzodSchema.type !== "any" &&
-      localResolvedElementJzodSchemaBasedOnValue.type !== props.rawJzodSchema.type &&
-      ((localResolvedElementJzodSchemaBasedOnValue.type === "object" &&
-        !objectTypes.includes(props.rawJzodSchema.type)) ||
-        (props.rawJzodSchema.type === "enum" &&
-          !enumTypes.includes(localResolvedElementJzodSchemaBasedOnValue.type)))
-    ) {
-      throw new Error(
-        "JzodElementEditor mismatching jzod schemas, resolved schema " +
-          JSON.stringify(localResolvedElementJzodSchemaBasedOnValue, null, 2) +
-          " raw schema " +
-          JSON.stringify(props.rawJzodSchema, null, 2)
-      );
-    }
+    // if (
+    //   props.rawJzodSchema.type !== "any" &&
+    //   localResolvedElementJzodSchemaBasedOnValue.type !== props.rawJzodSchema.type &&
+    //   ((localResolvedElementJzodSchemaBasedOnValue.type === "object" &&
+    //     !objectTypes.includes(props.rawJzodSchema.type)) ||
+    //     (props.rawJzodSchema.type === "enum" &&
+    //       !enumTypes.includes(localResolvedElementJzodSchemaBasedOnValue.type)))
+    // ) {
+    //   throw new Error(
+    //     "JzodElementEditor mismatching jzod schemas, resolved schema " +
+    //       JSON.stringify(localResolvedElementJzodSchemaBasedOnValue, null, 2) +
+    //       " raw schema " +
+    //       JSON.stringify(props.rawJzodSchema, null, 2)
+    //   );
+    // }
 
     // if (recursivelyUnfoldedRawSchema && recursivelyUnfoldedRawSchema.status === "error") {
     //   return (

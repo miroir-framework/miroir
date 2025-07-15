@@ -304,7 +304,9 @@ export function resetAndinitializeDeploymentCompositeAction(
         actionLabel: "initStore",
         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
         deploymentUuid: deploymentUuid,
-        params: initApplicationParameters,
+        payload: {
+          params: initApplicationParameters,
+        }
       },
       {
         actionType: "rollback",
@@ -317,7 +319,9 @@ export function resetAndinitializeDeploymentCompositeAction(
         actionLabel: "CreateLibraryStoreEntities",
         deploymentUuid: deploymentUuid,
         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-        entities: appEntitesAndInstances,
+        payload: {
+          entities: appEntitesAndInstances,
+        }
       },
       {
         actionType: "commit",
@@ -374,7 +378,9 @@ export async function addEntitiesAndInstancesForRealServer(
     actionType: "createEntity",
     deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-    entities: entities
+    payload: {
+      entities: entities
+    }
   };
 
   if (act) {

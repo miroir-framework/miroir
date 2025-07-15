@@ -76,7 +76,6 @@ export class CallUtils {
     },
     action: PersistenceAction
   ): Promise<Record<string, any> | Action2Error> {
-    // if (action.actionType !== "modelAction" || action.actionName !== "initModel") {
     if (action.actionType !== "initModel") {
       log.info("CallUtils callRemotePersistenceAction called with",
         "action",
