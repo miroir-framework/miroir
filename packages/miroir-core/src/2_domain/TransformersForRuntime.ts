@@ -446,13 +446,13 @@ function transformerForBuild_list_listMapperToList_apply(
       innerError: resolvedApplyTo
     });
   }
-  log.info(
-    "transformerForBuild_list_listMapperToList_apply",
-    "step",
-    step,
-    "extractorTransformer resolvedReference",
-    resolvedApplyTo
-  );
+  // log.info(
+  //   "transformerForBuild_list_listMapperToList_apply",
+  //   "step",
+  //   step,
+  //   "extractorTransformer resolvedReference",
+  //   resolvedApplyTo
+  // );
   const resultArray:any[] = [];
 
   if (Array.isArray(resolvedApplyTo)) {
@@ -513,14 +513,14 @@ function transformer_object_listReducerToSpreadObject_apply(
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
 ): Domain2QueryReturnType<any> {
-  log.info(
-    "transformer_object_listReducerToSpreadObject_apply called for transformer",
-    transformer,
-    "queryParams",
-    JSON.stringify(queryParams, null, 2),
-    "contextResults",
-    JSON.stringify(contextResults, null, 2)
-  );
+  // log.info(
+  //   "transformer_object_listReducerToSpreadObject_apply called for transformer",
+  //   transformer,
+  //   "queryParams",
+  //   JSON.stringify(queryParams, null, 2),
+  //   "contextResults",
+  //   JSON.stringify(contextResults, null, 2)
+  // );
   const resolvedReference = resolveApplyTo_legacy(transformer, step, resolveBuildTransformersTo, queryParams, contextResults, label);
 
   if (resolvedReference instanceof Domain2ElementFailed) {
@@ -571,14 +571,14 @@ function transformer_object_listReducerToIndexObject_apply(
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>
 ): Domain2QueryReturnType<any> {
-  log.info(
-    "transformer_object_listReducerToIndexObject_apply called for transformer",
-    transformer,
-    "queryParams",
-    JSON.stringify(queryParams, null, 2),
-    "contextResults",
-    JSON.stringify(contextResults, null, 2)
-  );
+  // log.info(
+  //   "transformer_object_listReducerToIndexObject_apply called for transformer",
+  //   transformer,
+  //   "queryParams",
+  //   JSON.stringify(queryParams, null, 2),
+  //   "contextResults",
+  //   JSON.stringify(contextResults, null, 2)
+  // );
   const resolvedReference = resolveApplyTo_legacy(
     transformer,
     step,
@@ -615,15 +615,15 @@ function handleTransformer_object_fullTemplate(
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>
 ): Domain2QueryReturnType<DomainElementString | DomainElementInstanceArray> {
-  log.info(
-    "transformer_object_fullTemplate called with objectName=",
-    objectName,
-    // "transformerForBuild=",
-    // // transformerForBuild,
-    // JSON.stringify(transformerForBuild, null, 2)
-    // // "innerEntry",
-    // // JSON.stringify(innerEntry, null, 2)
-  );
+  // log.info(
+  //   "transformer_object_fullTemplate called with objectName=",
+  //   objectName,
+  //   // "transformerForBuild=",
+  //   // // transformerForBuild,
+  //   // JSON.stringify(transformerForBuild, null, 2)
+  //   // // "innerEntry",
+  //   // // JSON.stringify(innerEntry, null, 2)
+  // );
   const resolvedApplyTo = resolveApplyTo(
     step,
     objectName,
@@ -704,22 +704,22 @@ function handleTransformer_object_fullTemplate(
             ? (innerEntry.attributeValue as any).applyFunction(renderedRightValue)
             : renderedRightValue,
       };
-      log.info(
-        "transformer_object_fullTemplate",
-        step,
-        "innerEntry",
-        JSON.stringify(innerEntry, null, 2),
-        // "innerEntry.attributeKey",
-        // JSON.stringify(innerEntry.attributeKey, null, 2),
-        "leftValue",
-        JSON.stringify(leftValue, null, 2),
-        "renderedRightValue",
-        JSON.stringify(renderedRightValue, null, 2),
-        "rightValue",
-        JSON.stringify(rightValue, null, 2),
-        "contextResults",
-        JSON.stringify(contextResults, null, 2)
-      );
+      // log.info(
+      //   "transformer_object_fullTemplate",
+      //   step,
+      //   "innerEntry",
+      //   JSON.stringify(innerEntry, null, 2),
+      //   // "innerEntry.attributeKey",
+      //   // JSON.stringify(innerEntry.attributeKey, null, 2),
+      //   "leftValue",
+      //   JSON.stringify(leftValue, null, 2),
+      //   "renderedRightValue",
+      //   JSON.stringify(renderedRightValue, null, 2),
+      //   "rightValue",
+      //   JSON.stringify(rightValue, null, 2),
+      //   "contextResults",
+      //   JSON.stringify(contextResults, null, 2)
+      // );
       return [leftValue, rightValue];
     }
   );
@@ -1034,15 +1034,15 @@ export function transformer_InnerReference_resolve(
       break;
     }
   }
-  log.info(
-    "transformer_InnerReference_resolve resolved for",
-    "step",
-    step,
-    "transformerInnerReference=",
-    JSON.stringify(transformerInnerReference, null, 2),
-    "result",
-    JSON.stringify(result, null, 2),
-  );
+  // log.info(
+  //   "transformer_InnerReference_resolve resolved for",
+  //   "step",
+  //   step,
+  //   "transformerInnerReference=",
+  //   JSON.stringify(transformerInnerReference, null, 2),
+  //   "result",
+  //   JSON.stringify(result, null, 2),
+  // );
   return result;
 };
 
@@ -1220,10 +1220,10 @@ export function handleCountTransformer(
     contextResults,
     label
   );
-  log.info(
-    "handleCountTransformer extractorTransformer count resolvedReference=",
-    resolvedReference
-  );
+  // log.info(
+  //   "handleCountTransformer extractorTransformer count resolvedReference=",
+  //   resolvedReference
+  // );
   if (resolvedReference instanceof Domain2ElementFailed) {
     log.error(
       "handleCountTransformer extractorTransformer count can not apply to failed resolvedReference",
@@ -1252,10 +1252,10 @@ export function handleCountTransformer(
     });
   }
 
-  log.info(
-    "handleCountTransformer extractorTransformer count resolvedReference",
-    resolvedReference.length
-  );
+  // log.info(
+  //   "handleCountTransformer extractorTransformer count resolvedReference",
+  //   resolvedReference.length
+  // );
   // const sortByAttribute = transformer.orderBy
   //   ? (a: any[]) =>
   //       a.sort((a, b) =>
@@ -1277,10 +1277,10 @@ export function handleCountTransformer(
     }
     return [Object.fromEntries(result.entries())];
   } else {
-    log.info(
-      "handleCountTransformer extractorTransformer count without groupBy resolvedReference",
-      resolvedReference.length
-    );
+    // log.info(
+    //   "handleCountTransformer extractorTransformer count without groupBy resolvedReference",
+    //   resolvedReference.length
+    // );
     return [{ count: resolvedReference.length }];
   }
   // break;
@@ -1353,12 +1353,12 @@ export function handleUniqueTransformer(
   const resultDomainElement: Domain2QueryReturnType<any> = sortByAttribute(
     [...result].map((e) => ({ [transformer.attribute]: e }))
   );
-  log.info(
-    "handleUniqueTransformer extractorTransformer unique",
-    label,
-    "result",
-    resultDomainElement
-  );
+  // log.info(
+  //   "handleUniqueTransformer extractorTransformer unique",
+  //   label,
+  //   "result",
+  //   resultDomainElement
+  // );
   return resultDomainElement;
 }
 
@@ -1430,16 +1430,16 @@ export function handleListPickElementTransformer(
     // });
   } else {
     const result = sortedResultArray[transformer.index];
-    log.info(
-      "handleListPickElementTransformer extractorTransformer listPickElement sorted resolvedReference",
-      sortedResultArray,
-      "index",
-      transformer.index,
-      "result",
-      result,
-      "transformer",
-      JSON.stringify(transformer, null, 2)
-    );
+    // log.info(
+    //   "handleListPickElementTransformer extractorTransformer listPickElement sorted resolvedReference",
+    //   sortedResultArray,
+    //   "index",
+    //   transformer.index,
+    //   "result",
+    //   result,
+    //   "transformer",
+    //   JSON.stringify(transformer, null, 2)
+    // );
     return result;
   }
   // } catch (error) {
@@ -1493,14 +1493,14 @@ export function handleTransformer_FreeObjectTemplate(
       innerError: hasFailures,
     });
   }
-  log.info(
-    "handleTransformer_FreeObjectTemplate freeObjectTemplate for",
-    label,
-    "step",
-    step,
-    "result",
-    JSON.stringify(transformer, null, 2)
-  );
+  // log.info(
+  //   "handleTransformer_FreeObjectTemplate freeObjectTemplate for",
+  //   label,
+  //   "step",
+  //   step,
+  //   "result",
+  //   JSON.stringify(transformer, null, 2)
+  // );
   return result;
 }
 
@@ -1523,7 +1523,7 @@ export function handleTransformer_objectEntries(
     contextResults,
     label
   );
-  log.info("handleTransformer_objectEntries referencedExtractor=", resolvedReference);
+  // log.info("handleTransformer_objectEntries referencedExtractor=", resolvedReference);
 
   if (resolvedReference instanceof Domain2ElementFailed) {
     log.error(
@@ -1553,10 +1553,10 @@ export function handleTransformer_objectEntries(
     );
     return failure;
   }
-  log.info(
-    "handleTransformer_objectEntries resolvedReference",
-    resolvedReference
-  );
+  // log.info(
+  //   "handleTransformer_objectEntries resolvedReference",
+  //   resolvedReference
+  // );
   return Object.entries(resolvedReference);
 }
 
@@ -1604,10 +1604,10 @@ export function handleTransformer_objectValues(
         "handleTransformer_objectValues resolvedReference is not an object: " + typeof resolvedReference,
     });
   }
-  log.info(
-    "handleTransformer_objectValues resolvedReference",
-    resolvedReference
-  );
+  // log.info(
+  //   "handleTransformer_objectValues resolvedReference",
+  //   resolvedReference
+  // );
   return Object.values(resolvedReference);
 }
 
@@ -1626,16 +1626,16 @@ export function handleTransformer_dataflowObject(
   for (const [key, value] of Object.entries(transformer.definition)) {
     // const currentContext = label ? { ...contextResults, [label]: resultObject } : { ...contextResults, ...resultObject }
     const currentContext = { ...contextResults, ...resultObject };
-    log.info(
-      "handleTransformer_dataflowObject labeled",
-      label,
-      "key",
-      key,
-      "step",
-      step,
-      "calling with context",
-      JSON.stringify(Object.keys(currentContext ?? {}), null, 2)
-    );
+    // log.info(
+    //   "handleTransformer_dataflowObject labeled",
+    //   label,
+    //   "key",
+    //   key,
+    //   "step",
+    //   step,
+    //   "calling with context",
+    //   JSON.stringify(Object.keys(currentContext ?? {}), null, 2)
+    // );
     resultObject[key] = defaultTransformers.transformer_extended_apply(
       step,
       key,
@@ -2384,12 +2384,12 @@ export function transformer_extended_apply_wrapper(
       queryParams,
       contextResults,
     );
-    log.info(
-      "transformer_extended_apply_wrapper called for",
-      label,
-      "transformer_extended_apply result",
-      JSON.stringify(result, null, 2),
-    );  
+    // log.info(
+    //   "transformer_extended_apply_wrapper called for",
+    //   label,
+    //   "transformer_extended_apply result",
+    //   JSON.stringify(result, null, 2),
+    // );  
     if (result instanceof Domain2ElementFailed) {
       log.error(
         "transformer_extended_apply_wrapper failed for",
@@ -2409,12 +2409,12 @@ export function transformer_extended_apply_wrapper(
         queryContext: "failed to transform object attribute",
       });
     } else {
-      log.info(
-        "transformer_extended_apply_wrapper called for",
-        label,
-        "transformer_extended_apply result",
-        JSON.stringify(result, null, 2),
-      );
+      // log.info(
+      //   "transformer_extended_apply_wrapper called for",
+      //   label,
+      //   "transformer_extended_apply result",
+      //   JSON.stringify(result, null, 2),
+      // );
       return result;
     }
   } catch (e) {

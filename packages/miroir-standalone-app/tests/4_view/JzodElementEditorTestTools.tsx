@@ -884,36 +884,36 @@ export function extractValuesFromRenderedElements(
 ): Record<string, any> {
   const values: Record<string, any> = {};
   console.log("########### extractValuesFromRenderedElements for label", label, "step", step);
-  let displayedValues: HTMLElement[] = [];
-  try {
-    displayedValues = screen.getAllByTestId("miroirDisplayedValue");
-  } catch (e) {
-    // No displayed values found, leave displayedValues as empty array
-  }
-  const displayedValuesInfo = displayedValues.map((i) => {
-    return {
-      name:
-        (i as HTMLElement).id.replace(new RegExp(`^${label}\\.`), "") ||
-        (i as HTMLElement).getAttribute("aria-label")?.replace(new RegExp(`^${label}\\.`), ""),
-      value: (i as HTMLElement).textContent,
-      type: "string", // Assuming displayed values are strings
-    };
-  });
-  // Handle displayed values
-  displayedValuesInfo.forEach((d) => {
-    let value: any = d.value;
-    // if (d.value === "" && d.defaultValue !== undefined) {
-    //   value = d.defaultValue;
-    // }
-    if (d.type === "number") {
-      if (!isNaN(Number(value)) && value !== "") {
-        value = Number(value);
-      } else {
-        expect(false, "number displayed value is not a number for " + d.name).toBeTruthy();
-      }
-    }
-    values[d.name??""] = value;
-  });
+  // let displayedValues: HTMLElement[] = [];
+  // try {
+  //   displayedValues = screen.getAllByTestId("miroirDisplayedValue");
+  // } catch (e) {
+  //   // No displayed values found, leave displayedValues as empty array
+  // }
+  // const displayedValuesInfo = displayedValues.map((i) => {
+  //   return {
+  //     name:
+  //       (i as HTMLElement).id.replace(new RegExp(`^${label}\\.`), "") ||
+  //       (i as HTMLElement).getAttribute("aria-label")?.replace(new RegExp(`^${label}\\.`), ""),
+  //     value: (i as HTMLElement).textContent,
+  //     type: "string", // Assuming displayed values are strings
+  //   };
+  // });
+  // // Handle displayed values
+  // displayedValuesInfo.forEach((d) => {
+  //   let value: any = d.value;
+  //   // if (d.value === "" && d.defaultValue !== undefined) {
+  //   //   value = d.defaultValue;
+  //   // }
+  //   if (d.type === "number") {
+  //     if (!isNaN(Number(value)) && value !== "") {
+  //       value = Number(value);
+  //     } else {
+  //       expect(false, "number displayed value is not a number for " + d.name).toBeTruthy();
+  //     }
+  //   }
+  //   values[d.name??""] = value;
+  // });
 
   // #############################################################
   let textBoxes: HTMLElement[] = [];

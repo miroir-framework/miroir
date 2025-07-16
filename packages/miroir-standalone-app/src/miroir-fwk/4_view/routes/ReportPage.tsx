@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Params, useParams } from 'react-router-dom';
 
 import {
@@ -60,6 +60,9 @@ let ReportPageCount = 0;
 export const ReportPage = () => {
   const pageParams: Params<ReportUrlParamKeys> = useParams<ReportUrlParamKeys>();
   const context = useMiroirContextService();
+  
+  // State to control performance display visibility (off by default)
+  const [showPerformanceDisplay, setShowPerformanceDisplay] = useState(false);
 
   ReportPageCount++;
   log.info("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& ReportPage rendering count", ReportPageCount, "params", pageParams);
@@ -220,6 +223,16 @@ export const ReportPage = () => {
         <div>
           <h3>erreurs: {JSON.stringify(errorLog)}</h3>
         </div>
+        <div style={{ marginBottom: '10px' }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <input
+              type="checkbox"
+              checked={showPerformanceDisplay}
+              onChange={(e) => setShowPerformanceDisplay(e.target.checked)}
+            />
+            Show Performance Metrics
+          </label>
+        </div>
         {/* <div>ReportPage displayed:{count}</div>
         <div>ReportPage reportUuid: {params.reportUuid} </div> */}
         {
@@ -239,7 +252,7 @@ export const ReportPage = () => {
                 pageParams={pageParams}
                 reportDefinition={currentMiroirReport?.definition}
               />
-              <PerformanceDisplayContainer />
+              {showPerformanceDisplay && <PerformanceDisplayContainer />}
             </>
           ) : (
             <span style={{ color: "red" }}>

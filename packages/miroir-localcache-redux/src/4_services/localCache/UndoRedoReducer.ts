@@ -486,10 +486,7 @@ export function createUndoRedoReducer(innerReducer: InnerReducerInterface): Redu
 // TODO: should it really memoize? Doen't this imply caching the whole value, which can be really large? Or is it juste the selector?
 export const selectCurrentTransaction: () => (state: ReduxStateWithUndoRedo) => ReduxStateChanges[] =
   () => {
-    return createSelector(
-      (state: ReduxStateWithUndoRedo) => {
-        return state.pastModelPatches;
-      },
-      (items: ReduxStateChanges[]) => items
-    );
+    return (state: ReduxStateWithUndoRedo) => {
+      return state.pastModelPatches;
+    };
   };
