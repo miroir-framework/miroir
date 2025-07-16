@@ -1029,18 +1029,18 @@ export function jzodTypeCheck(
               (a.type == typeof valueObject)
           );
           if (resultJzodSchema) {
-            log.info(
-              "jzodTypeCheck object at",
-              currentValuePath.join("."),
-              "type:",
-              JSON.stringify(resultJzodSchema, null, 2),
-              "validates",
-              JSON.stringify(
-                valueObject,
-                (key, value) =>typeof value === "bigint" ? value.toString() : value,
-                2
-              )
-            );
+            // log.info(
+            //   "jzodTypeCheck object at",
+            //   currentValuePath.join("."),
+            //   "type:",
+            //   JSON.stringify(resultJzodSchema, null, 2),
+            //   "validates",
+            //   JSON.stringify(
+            //     valueObject,
+            //     (key, value) =>typeof value === "bigint" ? value.toString() : value,
+            //     2
+            //   )
+            // );
             return {
               status: "ok",
               valuePath: currentValuePath,

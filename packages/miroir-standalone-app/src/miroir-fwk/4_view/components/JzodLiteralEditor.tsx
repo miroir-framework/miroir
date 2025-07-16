@@ -77,21 +77,21 @@ export const JzodLiteralEditor = React.memo<JzodLiteralEditorProps>(function Jzo
 
     const currentAttributeName = rootLessListKeyArray[rootLessListKeyArray.length - 1];
 
-    log.info(
-      "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ handleSelectLiteralChange event",
-      event.target.value,
-      "rootLessListKey",
-      rootLessListKey,
-      "attribute",
-      currentAttributeName,
-      "name",
-      name,
-      "unionInformation",
-      unionInformation,
-      // JSON.stringify(unionInformation, null, 2),
-      "formik.values",
-      formik.values
-    );
+    // log.info(
+    //   "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ handleSelectLiteralChange event",
+    //   event.target.value,
+    //   "rootLessListKey",
+    //   rootLessListKey,
+    //   "attribute",
+    //   currentAttributeName,
+    //   "name",
+    //   name,
+    //   "unionInformation",
+    //   unionInformation,
+    //   // JSON.stringify(unionInformation, null, 2),
+    //   "formik.values",
+    //   formik.values
+    // );
 
     const newJzodSchema: JzodElement | undefined = // attribute is either discriminator or sub-discriminator
       unionInformation.objectBranches.find(
@@ -109,14 +109,14 @@ export const JzodLiteralEditor = React.memo<JzodLiteralEditorProps>(function Jzo
           JSON.stringify(unionInformation.jzodSchema)
       );
     } else {
-      log.info(
-        "handleSelectLiteralChange found newJzodSchema",
-        newJzodSchema,
-        "for discriminator",
-        unionInformation.discriminator,
-        "value",
-        event.target.value
-      );
+      // log.info(
+      //   "handleSelectLiteralChange found newJzodSchema",
+      //   newJzodSchema,
+      //   "for discriminator",
+      //   unionInformation.discriminator,
+      //   "value",
+      //   event.target.value
+      // );
     }
     const newJzodSchemaWithOptional = unionInformation.jzodSchema.optional
       ? {
@@ -134,12 +134,12 @@ export const JzodLiteralEditor = React.memo<JzodLiteralEditorProps>(function Jzo
           miroirMetaModel
         )
       : undefined;
-    log.info(
-      "handleSelectLiteralChange defaultValue",
-      defaultValue,
-      "formik.values",
-      JSON.stringify(formik.values, null, 2)
-    );
+    // log.info(
+    //   "handleSelectLiteralChange defaultValue",
+    //   defaultValue,
+    //   "formik.values",
+    //   JSON.stringify(formik.values, null, 2)
+    // );
     formik.setFieldValue(
       // replacing parent value (the object containing the discriminator Literal)
       rootLessListKeyArray.slice(0, rootLessListKeyArray.length - 1).join("."),

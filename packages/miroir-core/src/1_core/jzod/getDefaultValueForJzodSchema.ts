@@ -20,7 +20,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 export function getDefaultValueForJzodSchema(
   jzodSchema:JzodElement
 ): any {
-  log.info("getDefaultValueForJzodSchema called with jzodSchema", jzodSchema)
+  // log.info("getDefaultValueForJzodSchema called with jzodSchema", jzodSchema)
   if (jzodSchema.optional) {
     return undefined
   }
@@ -165,10 +165,10 @@ export function getDefaultValueForJzodSchemaWithResolution(
   miroirMetaModel?: MetaModel,
   relativeReferenceJzodContext?: { [k: string]: JzodElement }
 ): any {
-  log.info(
-    "getDefaultValueForJzodSchemaWithResolution called with jzodSchema",
-    jzodSchema
-  );
+  // log.info(
+  //   "getDefaultValueForJzodSchemaWithResolution called with jzodSchema",
+  //   jzodSchema
+  // );
   if (jzodSchema.optional) {
     return undefined;
   }
@@ -182,10 +182,10 @@ export function getDefaultValueForJzodSchemaWithResolution(
         miroirMetaModel,
         relativeReferenceJzodContext
       );
-      log.info(
-        "getDefaultValueForJzodSchemaWithResolution called with resolvedObjectType",
-        resolvedObjectType
-      );
+      // log.info(
+      //   "getDefaultValueForJzodSchemaWithResolution called with resolvedObjectType",
+      //   resolvedObjectType
+      // );
       const result = Object.fromEntries(
         // Object.entries(jzodSchema.definition)
         Object.entries(resolvedObjectType.definition)
@@ -201,10 +201,10 @@ export function getDefaultValueForJzodSchemaWithResolution(
             ),
           ])
       );
-      log.info(
-        "getDefaultValueForJzodSchemaWithResolution result",
-        result
-      );
+      // log.info(
+      //   "getDefaultValueForJzodSchemaWithResolution result",
+      //   result
+      // );
       return result;
     }
     case "string": {

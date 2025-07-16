@@ -1,42 +1,24 @@
-import { expect, ExpectStatic, vi } from "vitest";
 import { ThemeProvider } from "@emotion/react";
 import { createTheme, StyledEngineProvider } from "@mui/material";
 import { blue } from "@mui/material/colors";
-import { act, fireEvent, render, RenderResult, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { Formik, FormikProps } from "formik";
 import { Profiler, useCallback, useMemo } from "react";
 import { Provider } from "react-redux";
-
-import {
-  adminConfigurationDeploymentMiroir,
-  ConfigurationService,
-  DomainControllerInterface,
-  JzodArray,
-  JzodElement,
-  JzodEnum,
-  JzodPlainAttribute,
-  JzodSchema,
-  jzodTypeCheck,
-  LocalCacheInterface,
-  MiroirContext,
-  miroirFundamentalJzodSchema,
-  PersistenceStoreControllerManager,
-  ResolvedJzodSchemaReturnType
-} from "miroir-core";
-import { LocalCache, PersistenceReduxSaga } from "miroir-localcache-redux";
+import { expect, ExpectStatic, vi } from "vitest";
 
 import {
   Action2ReturnType,
-  book1,
+  adminConfigurationDeploymentMiroir,
+  ConfigurationService,
   defaultMiroirMetaModel,
+  DomainControllerInterface,
   entityAuthor,
   entityBook,
   entityCountry,
-  EntityDefinition,
   entityDefinitionAuthor,
   entityDefinitionBook,
   entityDefinitionCountry,
-  entityDefinitionEntityDefinition,
   entityDefinitionPublisher,
   entityEntity,
   entityEntityDefinition,
@@ -45,15 +27,12 @@ import {
   entityPublisher,
   entityReport,
   entitySelfApplicationVersion,
-  JzodAttributePlainDateWithValidations,
-  JzodAttributePlainNumberWithValidations,
-  JzodAttributePlainStringWithValidations,
-  JzodObject,
-  JzodRecord,
-  JzodTuple,
-  JzodUnion,
+  JzodElement,
+  LocalCacheInterface,
   menuDefaultLibrary,
   MetaModel,
+  MiroirContext,
+  PersistenceStoreControllerManager,
   reportAuthorDetails,
   reportAuthorList,
   reportBookDetails,
@@ -63,6 +42,10 @@ import {
   reportPublisherList,
   selfApplicationDeploymentLibrary
 } from "miroir-core";
+import { LocalCache, PersistenceReduxSaga } from "miroir-localcache-redux";
+
+import { rootLessListKeyMap } from "miroir-core";
+import { Container } from "react-dom";
 import { JzodElementEditor } from "../../src/miroir-fwk/4_view/components/JzodElementEditor";
 import { JzodEditorPropsRoot } from "../../src/miroir-fwk/4_view/components/JzodElementEditorInterface";
 import { MiroirContextReactProvider, useMiroirContextService } from "../../src/miroir-fwk/4_view/MiroirContextReactProvider";
@@ -70,8 +53,6 @@ import { useCurrentModel } from "../../src/miroir-fwk/4_view/ReduxHooks";
 import { emptyObject } from "../../src/miroir-fwk/4_view/routes/Tools";
 import { libraryApplicationInstances } from "../../src/miroir-fwk/4_view/uploadBooksAndReports";
 import { TestMode } from "./JzodElementEditor.test";
-import { Container } from "react-dom";
-import { rootLessListKeyMap } from "miroir-core";
 
 export const testThemeParams = {
   palette: {

@@ -318,20 +318,20 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
         localResolvedElementJzodSchemaBasedOnValue
       );
     }
-    log.info(
-      "addExtraRecordEntry clicked!",
-      rootLessListKey,
-      itemsOrder,
-      Object.keys(localResolvedElementJzodSchemaBasedOnValue.definition),
-      "formik",
-      formik.values
-    );
+    // log.info(
+    //   "addExtraRecordEntry clicked!",
+    //   rootLessListKey,
+    //   itemsOrder,
+    //   Object.keys(localResolvedElementJzodSchemaBasedOnValue.definition),
+    //   "formik",
+    //   formik.values
+    // );
     if (unfoldedRawSchema.type != "record" || rawJzodSchema?.type != "record") {
       throw "addExtraRecordEntry called for non-record type: " + unfoldedRawSchema.type;
     }
 
     const newAttributeType: JzodElement = (rawJzodSchema as JzodRecord)?.definition;
-    log.info("addExtraRecordEntry newAttributeType", JSON.stringify(newAttributeType, null, 2));
+    // log.info("addExtraRecordEntry newAttributeType", JSON.stringify(newAttributeType, null, 2));
     const newAttributeValue = currentMiroirFundamentalJzodSchema
       ? measuredGetDefaultValueForJzodSchemaWithResolution(
           unfoldedRawSchema.definition,
@@ -343,20 +343,20 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
 
     const currentValue = resolvePathOnObject(formik.values, rootLessListKeyArray);
     const newRecordValue: any = { ["newRecordEntry"]: newAttributeValue, ...currentValue };
-    log.info("addExtraRecordEntry", "newValue", newRecordValue);
+    // log.info("addExtraRecordEntry", "newValue", newRecordValue);
 
     const newItemsOrder = getItemsOrder(newRecordValue, rawJzodSchema);
-    log.info("addExtraRecordEntry", "itemsOrder", itemsOrder, "newItemsOrder", newItemsOrder);
+    // log.info("addExtraRecordEntry", "itemsOrder", itemsOrder, "newItemsOrder", newItemsOrder);
 
     formik.setFieldValue(rootLessListKey, newRecordValue);
-    log.info(
-      "addExtraRecordEntry clicked2!",
-      listKey,
-      itemsOrder,
-      Object.keys(localResolvedElementJzodSchemaBasedOnValue.definition),
-      "formik",
-      formik.values
-    );
+    // log.info(
+    //   "addExtraRecordEntry clicked2!",
+    //   listKey,
+    //   itemsOrder,
+    //   Object.keys(localResolvedElementJzodSchemaBasedOnValue.definition),
+    //   "formik",
+    //   formik.values
+    // );
   }, [
     props,
     itemsOrder,
@@ -374,22 +374,22 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
       if (localResolvedElementJzodSchemaBasedOnValue?.type != "object") {
         throw "addObjectOptionalAttribute called for non-object type: " + unfoldedRawSchema.type;
       }
-      log.info(
-        "addObjectOptionalAttribute clicked!",
-        listKey,
-        itemsOrder,
-        Object.keys(localResolvedElementJzodSchemaBasedOnValue.definition),
-        "formik",
-        formik.values,
-        // "unfoldedrawSchema",
-        // JSON.stringify(unfoldedRawSchema, null, 2),
-        // "discriminatedSchemaForObject",
-        // JSON.stringify(discriminatedSchemaForObject, null, 2),
-        "undefinedOptionalAttributes",
-        undefinedOptionalAttributes,
-        "attributeName",
-        attributeName
-      );
+      // log.info(
+      //   "addObjectOptionalAttribute clicked!",
+      //   listKey,
+      //   itemsOrder,
+      //   Object.keys(localResolvedElementJzodSchemaBasedOnValue.definition),
+      //   "formik",
+      //   formik.values,
+      //   // "unfoldedrawSchema",
+      //   // JSON.stringify(unfoldedRawSchema, null, 2),
+      //   // "discriminatedSchemaForObject",
+      //   // JSON.stringify(discriminatedSchemaForObject, null, 2),
+      //   "undefinedOptionalAttributes",
+      //   undefinedOptionalAttributes,
+      //   "attributeName",
+      //   attributeName
+      // );
       const currentObjectValue = resolvePathOnObject(formik.values, rootLessListKeyArray);
       // const newAttributeType: JzodElement = resolvePathOnObject(rawJzodSchema, [
       // const newAttributeType: JzodElement = resolvePathOnObject(unfoldedRawSchema, [
@@ -416,24 +416,24 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
         discriminatedSchemaForObject ?? unfoldedRawSchema
       );
 
-      log.info(
-        "addObjectOptionalAttribute clicked2!",
-        listKey,
-        itemsOrder,
-        Object.keys(localResolvedElementJzodSchemaBasedOnValue.definition),
-        "newAttributeType",
-        newAttributeType,
-        "newObjectValue",
-        newObjectValue,
-        "newItemsOrder",
-        newItemsOrder
-      );
+      // log.info(
+      //   "addObjectOptionalAttribute clicked2!",
+      //   listKey,
+      //   itemsOrder,
+      //   Object.keys(localResolvedElementJzodSchemaBasedOnValue.definition),
+      //   "newAttributeType",
+      //   newAttributeType,
+      //   "newObjectValue",
+      //   newObjectValue,
+      //   "newItemsOrder",
+      //   newItemsOrder
+      // );
       if (rootLessListKey) {
         formik.setFieldValue(rootLessListKey, newObjectValue, false);
       } else {
         formik.setValues(newObjectValue, false);
       }
-      log.info("addObjectOptionalAttribute clicked3 DONE!");
+      // log.info("addObjectOptionalAttribute clicked3 DONE!");
     },
     [
       props,

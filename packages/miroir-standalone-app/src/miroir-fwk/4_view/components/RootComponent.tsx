@@ -5,6 +5,8 @@ import {
   MenuItem,
   Select,
   SelectChangeEvent,
+  Snackbar,
+  Alert,
   Toolbar
 } from "@mui/material";
 import { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
@@ -148,6 +150,10 @@ export const RootComponent = (props: RootComponentProps) => {
   count++;
   const [drawerIsOpen, setDrawerIsOpen] = useState(true);
   const [sidebarWidth, setSidebarWidth] = useState(SidebarWidth);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error" | "info">("info");
+  
   log.info(
     "##################################### rendering root component",
     "count",
@@ -194,6 +200,26 @@ export const RootComponent = (props: RootComponentProps) => {
   const handleSidebarWidthChange = useMemo(() => (width: number) => {
     setSidebarWidth(width);
   }, [setSidebarWidth]);
+
+  const showSnackbar = useMemo(() => (message: string, severity: "success" | "error" | "info" = "info") => {
+    setSnackbarMessage(message);
+    setSnackbarSeverity(severity);
+    setSnackbarOpen(true);
+  }, []);
+
+  const handleSnackbarClose = useMemo(() => () => {
+    setSnackbarOpen(false);
+  }, []);
+
+  const handleAsyncAction = useMemo(() => async (action: () => Promise<any>, successMessage: string, actionName: string) => {
+    try {
+      await action();
+      showSnackbar(successMessage, "success");
+    } catch (error) {
+      log.error(`Error in ${actionName}:`, error);
+      showSnackbar(`Error in ${actionName}: ${error}`, "error");
+    }
+  }, [showSnackbar]);
 
 
   return (
@@ -256,7 +282,7 @@ export const RootComponent = (props: RootComponentProps) => {
 
                 <span>
                   <button
-                    onClick={async () => {
+                    onClick={() => handleAsyncAction(async () => {
                       log.info(
                         "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ OPENSTORE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
                       );
@@ -283,12 +309,12 @@ export const RootComponent = (props: RootComponentProps) => {
                       log.info(
                         "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ OPENSTORE DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
                       );
-                    }}
+                    }, "Database opened successfully", "open database")}
                   >
                     Open database
                   </button>
                   <button
-                    onClick={async () => {
+                    onClick={() => handleAsyncAction(async () => {
                       if (!miroirConfig) {
                         throw new Error(
                           "no miroirConfig given, it has to be given on the command line starting the server!"
@@ -391,12 +417,12 @@ export const RootComponent = (props: RootComponentProps) => {
                           deploymentUuid: (c as any).uuid,
                         }, defaultMiroirMetaModel);
                       }
-                    }}
+                    }, "Miroir & App configurations fetched successfully", "fetch configurations")}
                   >
                     fetch Miroir & App configurations from database
                   </button>
                   <button
-                    onClick={async () => {
+                    onClick={() => handleAsyncAction(async () => {
                       log.info("fetching instances from datastore for deployment", adminConfigurationDeploymentMiroir);
                       await domainController.handleAction({
                         // actionType: "modelAction",
@@ -404,12 +430,12 @@ export const RootComponent = (props: RootComponentProps) => {
                         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                         deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
                       }, defaultMiroirMetaModel);
-                    }}
+                    }, "Admin configuration fetched successfully", "fetch admin configuration")}
                   >
                     fetch Admin configuration from database
                   </button>
                   <button
-                    onClick={async () => {
+                    onClick={() => handleAsyncAction(async () => {
                       // await uploadBooksAndReports(domainController, defaultMiroirMetaModel);
                       await domainController.handleAction({
                         // actionType: "modelAction",
@@ -423,14 +449,14 @@ export const RootComponent = (props: RootComponentProps) => {
                         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                       }, defaultMiroirMetaModel);
-                    }}
+                    }, "Server local cache loaded successfully", "load server local cache")}
                   >
                     Load server local cache
                   </button>
                   {/* commit miroir */}
                   <span>
                     <button
-                      onClick={async () => {
+                      onClick={() => handleAsyncAction(async () => {
                         await domainController.handleAction(
                           {
                             // actionType: "modelAction",
@@ -440,7 +466,7 @@ export const RootComponent = (props: RootComponentProps) => {
                           },
                           defaultMiroirMetaModel
                         );
-                      }}
+                      }, "Miroir committed successfully", "commit miroir")}
                     >
                       Commit Miroir
                     </button>
@@ -448,7 +474,7 @@ export const RootComponent = (props: RootComponentProps) => {
                   {/* Commit Library app */}
                   <span>
                     <button
-                      onClick={async () => {
+                      onClick={() => handleAsyncAction(async () => {
                         await domainController.handleAction(
                           {
                             // actionType: "modelAction",
@@ -458,7 +484,7 @@ export const RootComponent = (props: RootComponentProps) => {
                           },
                           defaultMiroirMetaModel
                         );
-                      }}
+                      }, "Library app committed successfully", "commit library app")}
                     >
                       Commit Library app
                     </button>
@@ -617,6 +643,21 @@ export const RootComponent = (props: RootComponentProps) => {
         {/* <Box sx={{ display: 'flex', flexDirection:"row", width: 1 }}> */}
         {/* </Box> */}
       </MuiBox>
+      
+      <Snackbar 
+        open={snackbarOpen} 
+        autoHideDuration={6000} 
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert 
+          onClose={handleSnackbarClose} 
+          severity={snackbarSeverity} 
+          sx={{ width: '100%' }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };
