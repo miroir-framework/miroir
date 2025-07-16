@@ -2,6 +2,7 @@ import { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import { Formik, FormikProps } from 'formik';
 import { EditorView } from '@codemirror/view';
 import ReactCodeMirror from '@uiw/react-codemirror';
+import { performanceMetrics } from 'miroir-core';
 
 import {
   ApplicationSection,
@@ -48,12 +49,56 @@ import {
 } from "../ReduxHooks.js";
 import { JzodElementDisplay } from './JzodElementDisplay.js';
 import { JzodElementEditor } from './JzodElementEditor.js';
+import {
+  measuredGetApplicationSection,
+  measuredGetQueryRunnerParamsForDeploymentEntityState,
+  measuredJzodTypeCheck,
+  measuredRootLessListKeyMap,
+} from "../tools/performanceInstrumentation.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportSectionEntityInstance")
 ).then((logger: LoggerInterface) => {log = logger});
 
+
+// Performance metrics display component
+const PerformanceMetricsDisplay = () => {
+  // Only render if we have performance metrics to display
+  if (Object.keys(performanceMetrics).length === 0) return null;
+
+  return (
+    <div style={{ 
+      fontSize: '0.8rem', 
+      color: '#333', 
+      position: 'absolute', 
+      right: '10px', 
+      top: '10px',
+      background: 'rgba(255,255,255,0.9)',
+      padding: '6px',
+      border: '1px solid #ddd',
+      borderRadius: '4px',
+      zIndex: 1000,
+      maxWidth: '300px',
+      boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+    }}>
+      <div style={{ fontWeight: 'bold', borderBottom: '1px solid #eee', marginBottom: '4px', paddingBottom: '2px' }}>
+        Performance Metrics
+      </div>
+      {Object.entries(performanceMetrics).map(([funcName, metrics]: [string, any]) => (
+        <div key={funcName} style={{ marginTop: '4px', fontSize: '0.75rem' }}>
+          <div style={{ fontWeight: 'bold' }}>{funcName}:</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'auto auto', gap: '0 8px' }}>
+            <span>Calls:</span><span>{metrics.callCount}</span>
+            <span>Total:</span><span>{metrics.totalTime.toFixed(1)}ms</span>
+            <span>Avg:</span><span>{(metrics.totalTime / metrics.callCount).toFixed(2)}ms</span>
+            <span>Min/Max:</span><span>{metrics.minDuration.toFixed(1)}ms / {metrics.maxDuration.toFixed(1)}ms</span>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
 
 export interface ReportSectionEntityInstanceProps {
   instance?: EntityInstance,
@@ -149,7 +194,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
         currentReportTargetEntityDefinition?.jzodSchema &&
         instance &&
         currentModel
-          ? jzodTypeCheck(
+          ? measuredJzodTypeCheck(
               currentReportTargetEntityDefinition?.jzodSchema,
               instance,
               [], // currentValuePath
@@ -235,7 +280,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   
   const foreignKeyObjectsFetchQueryParams: SyncQueryRunnerParams<DeploymentEntityState> = useMemo(
     () =>
-      getQueryRunnerParamsForDeploymentEntityState(
+      measuredGetQueryRunnerParamsForDeploymentEntityState(
         props.deploymentUuid &&
           resolvedJzodSchema &&
           resolvedJzodSchema.status == "ok" &&
@@ -250,7 +295,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
               extractors: {
                 [resolvedJzodSchema.resolvedSchema.tag?.value?.targetEntity]: {
                   extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                  applicationSection: getApplicationSection(
+                  applicationSection: measuredGetApplicationSection(
                     props.deploymentUuid,
                     resolvedJzodSchema.resolvedSchema.tag?.value?.targetEntity
                   ),
@@ -439,7 +484,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                           resolvedJzodSchema.status == "ok" &&
                           formik.values &&
                           currentModel
-                            ? rootLessListKeyMap(
+                            ? measuredRootLessListKeyMap(
                                 "",
                                 currentReportTargetEntityDefinition?.jzodSchema,
                                 undefined, // resolvedJzodSchema.resolvedSchema may not correspond to the value in formik.values
@@ -565,6 +610,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
             </div>
           )}
         </div>
+        <PerformanceMetricsDisplay />
       </>
     );
   } else {

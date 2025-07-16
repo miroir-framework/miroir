@@ -32,6 +32,7 @@ import {
   StyledSelect
 } from "./Style.js";
 import { ErrorFallbackComponent } from "./ErrorFallbackComponent.js";
+import { measuredUseJzodElementEditorHooks } from "../tools/performanceInstrumentation.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -146,7 +147,8 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
     stringSelectList,
     // object
     definedOptionalAttributes,
-  } = useJzodElementEditorHooks(props, count, "JzodElementEditor");
+  // } = useJzodElementEditorHooks(props, count, "JzodElementEditor");
+  } = measuredUseJzodElementEditorHooks(props, count, "JzodElementEditor");
   
 
   // Handle switch for structured element display

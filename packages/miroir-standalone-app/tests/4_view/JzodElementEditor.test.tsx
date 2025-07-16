@@ -1841,7 +1841,7 @@ export function getJzodEndpointEditorTests(
           tests: async (expect: ExpectStatic, container: Container) => {
             // Pretty-print the entire rendered DOM
             console.log("=== FULL RENDERED DOM ===");
-            // screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
+            screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
   
             // expect(screen.getByText(/Test LabelAAAAAAAAAAAAAAAAAAAAAAAAAA/)).toBeInTheDocument();
             const values: Record<string, any> = extractValuesFromRenderedElements(expect, container, "testField", "initial form state");

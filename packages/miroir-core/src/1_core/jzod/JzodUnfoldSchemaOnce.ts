@@ -166,30 +166,28 @@ export function unfoldJzodSchemaOnce(
 ): UnfoldJzodSchemaOnceReturnType {
   const startTime = performance.now();
   recursionLevel++;
-  const currentRecursionLevel = recursionLevel;
+  // const currentRecursionLevel = recursionLevel;
   
-  log.info(
-    `unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] called for type`,
-    jzodSchema?.type,
-    "path",
-    "'" + path.join(".") + "'",
-    "depth",
-    depth,
-    "schema",
-    JSON.stringify(jzodSchema, null, 2),
-    "object keys:",
-    jzodSchema?.type == "object"
-      ? JSON.stringify(Object.keys((jzodSchema as any).definition ?? {}), null, 2)
-      : "not an object",
-    // "rootSchema",
-    // rootSchema
-  );
+  // log.info(
+  //   `unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] called for type`,
+  //   jzodSchema?.type,
+  //   "path",
+  //   "'" + path.join(".") + "'",
+  //   "depth",
+  //   depth,
+  //   "schema",
+  //   JSON.stringify(jzodSchema, null, 2),
+  //   "object keys:",
+  //   jzodSchema?.type == "object"
+  //     ? JSON.stringify(Object.keys((jzodSchema as any).definition ?? {}), null, 2)
+  //     : "not an object",
+  // );
 
   if (!jzodSchema) {
     recursionLevel--;
     const endTime = performance.now();
     const executionTime = endTime - startTime;
-    log.info(`unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] execution time: ${executionTime.toFixed(2)}ms - returning never type`);
+    // log.info(`unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] execution time: ${executionTime.toFixed(2)}ms - returning never type`);
     return { status: "ok", element: { type: "never" } }
   }
 
@@ -203,11 +201,11 @@ export function unfoldJzodSchemaOnce(
     recursionLevel--;
     const endTime = performance.now();
     const executionTime = endTime - startTime;
-    log.info(
-      `unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] execution time: ${executionTime.toFixed(
-        2
-      )}ms - returning never type for sub-union`
-    );
+    // log.info(
+    //   `unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] execution time: ${executionTime.toFixed(
+    //     2
+    //   )}ms - returning never type for sub-union`
+    // );
     return {
       status: "ok",
       element: jzodSchema,
@@ -270,7 +268,7 @@ export function unfoldJzodSchemaOnce(
       recursionLevel--;
       const endTime = performance.now();
       const executionTime = endTime - startTime;
-      log.info(`unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] execution time: ${executionTime.toFixed(2)}ms - schemaReference resolved`);
+      // log.info(`unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] execution time: ${executionTime.toFixed(2)}ms - schemaReference resolved`);
       return { status: "ok", element: resultJzodSchema};
       break;
     }
@@ -361,7 +359,7 @@ export function unfoldJzodSchemaOnce(
       recursionLevel--;
       const endTime = performance.now();
       const executionTime = endTime - startTime;
-      log.info(`unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] execution time: ${executionTime.toFixed(2)}ms - object resolved`);
+      // log.info(`unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] execution time: ${executionTime.toFixed(2)}ms - object resolved`);
       return {status: "ok", element: resultElement};
       break;
     }
@@ -409,7 +407,7 @@ export function unfoldJzodSchemaOnce(
         recursionLevel--;
         const endTime = performance.now();
         const executionTime = endTime - startTime;
-        log.info(`unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] execution time: ${executionTime.toFixed(2)}ms - union failed`);
+        // log.info(`unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] execution time: ${executionTime.toFixed(2)}ms - union failed`);
         return {
           status: "error",
           error:
@@ -454,7 +452,7 @@ export function unfoldJzodSchemaOnce(
         recursionLevel--;
         const endTime = performance.now();
         const executionTime = endTime - startTime;
-        log.info(`unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] execution time: ${executionTime.toFixed(2)}ms - sub-union failed`);
+        // log.info(`unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] execution time: ${executionTime.toFixed(2)}ms - sub-union failed`);
         return {
           status: "error",
           error:
@@ -476,7 +474,7 @@ export function unfoldJzodSchemaOnce(
       recursionLevel--;
       const endTime = performance.now();
       const executionTime = endTime - startTime;
-      log.info(`unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] execution time: ${executionTime.toFixed(2)}ms - union resolved`);
+      // log.info(`unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] execution time: ${executionTime.toFixed(2)}ms - union resolved`);
       return { status: "ok", element: resultElement}
       break;
     }
@@ -501,7 +499,7 @@ export function unfoldJzodSchemaOnce(
         recursionLevel--;
         const endTime = performance.now();
         const executionTime = endTime - startTime;
-        log.info(`unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] execution time: ${executionTime.toFixed(2)}ms - record resolved`);
+        // log.info(`unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] execution time: ${executionTime.toFixed(2)}ms - record resolved`);
         return result
       } else {
         log.warn(
@@ -512,7 +510,7 @@ export function unfoldJzodSchemaOnce(
         recursionLevel--;
         const endTime = performance.now();
         const executionTime = endTime - startTime;
-        log.info(`unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] execution time: ${executionTime.toFixed(2)}ms - record failed`);
+        // log.info(`unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] execution time: ${executionTime.toFixed(2)}ms - record failed`);
         return { status: "ok", element: { type: "never" } }
       }
       break;
@@ -521,7 +519,7 @@ export function unfoldJzodSchemaOnce(
       recursionLevel--;
       const endTime = performance.now();
       const executionTime = endTime - startTime;
-      log.info(`unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] execution time: ${executionTime.toFixed(2)}ms - literal resolved`);
+      // log.info(`unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] execution time: ${executionTime.toFixed(2)}ms - literal resolved`);
       return { status: "ok", element: jzodSchema };
       break;
     }
@@ -529,7 +527,7 @@ export function unfoldJzodSchemaOnce(
       recursionLevel--;
       const endTime = performance.now();
       const executionTime = endTime - startTime;
-      log.info(`unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] execution time: ${executionTime.toFixed(2)}ms - enum resolved`);
+      // log.info(`unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] execution time: ${executionTime.toFixed(2)}ms - enum resolved`);
       return { status: "ok", element: jzodSchema };
     }
     case "tuple": {
@@ -551,7 +549,7 @@ export function unfoldJzodSchemaOnce(
         recursionLevel--;
         const endTime = performance.now();
         const executionTime = endTime - startTime;
-        log.info(`unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] execution time: ${executionTime.toFixed(2)}ms - tuple failed`);
+        // log.info(`unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] execution time: ${executionTime.toFixed(2)}ms - tuple failed`);
         return {
           status: "error",
           error: "unfoldJzodSchemaOnce can not handle tuple schema " +
@@ -561,7 +559,7 @@ export function unfoldJzodSchemaOnce(
       recursionLevel--;
       const endTime = performance.now();
       const executionTime = endTime - startTime;
-      log.info(`unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] execution time: ${executionTime.toFixed(2)}ms - tuple resolved`);
+      // log.info(`unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] execution time: ${executionTime.toFixed(2)}ms - tuple resolved`);
       return {
         status: "ok",
         element: {
@@ -588,7 +586,7 @@ export function unfoldJzodSchemaOnce(
         recursionLevel--;
         const endTime = performance.now();
         const executionTime = endTime - startTime;
-        log.info(`unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] execution time: ${executionTime.toFixed(2)}ms - array resolved`);
+        // log.info(`unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] execution time: ${executionTime.toFixed(2)}ms - array resolved`);
         return {
           status: "ok",
           element: {
@@ -608,7 +606,7 @@ export function unfoldJzodSchemaOnce(
         recursionLevel--;
         const endTime = performance.now();
         const executionTime = endTime - startTime;
-        log.info(`unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] execution time: ${executionTime.toFixed(2)}ms - array failed`);
+        // log.info(`unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] execution time: ${executionTime.toFixed(2)}ms - array failed`);
         return { status: "ok", element: { type: "never" }}
       }
       break;
@@ -637,12 +635,11 @@ export function unfoldJzodSchemaOnce(
       recursionLevel--;
       const endTime = performance.now();
       const executionTime = endTime - startTime;
-      log.info(`unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] execution time: ${executionTime.toFixed(2)}ms - ${jzodSchema.type} resolved`);
+      // log.info(`unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] execution time: ${executionTime.toFixed(2)}ms - ${jzodSchema.type} resolved`);
       return {status: "ok", element: jzodSchema}
     }
     default: {
-      log.trace("unfoldJzodSchemaOnce could not resolve schemaReferences once for ", jzodSchema
-      )
+      // log.trace("unfoldJzodSchemaOnce could not resolve schemaReferences once for ", jzodSchema)
       throw new Error(
         "unfoldJzodSchemaOnce could not resolve schemaReferences once for " +
         JSON.stringify(jzodSchema)

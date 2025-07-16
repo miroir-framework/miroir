@@ -15,6 +15,7 @@ import { useJzodElementEditorHooks } from "./JzodElementEditorHooks";
 import { JzodAnyEditorProps } from "./JzodElementEditorInterface";
 import { ChangeValueTypeSelect } from "./ChangeValueTypeSelect";
 import { JzodElement, JzodSchema } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { measuredUseJzodElementEditorHooks } from "../tools/performanceInstrumentation";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -45,7 +46,8 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
     // indentLevel,
     // visible = true, // added visibility prop
   } = props;
-    const { formik, currentModel, miroirMetaModel } = useJzodElementEditorHooks(
+    // const { formik, currentModel, miroirMetaModel } = useJzodElementEditorHooks(
+    const { formik, currentModel, miroirMetaModel } = measuredUseJzodElementEditorHooks(
       props,
       JzodAnyEditorRenderCount,
       "JzodAnyEditor"

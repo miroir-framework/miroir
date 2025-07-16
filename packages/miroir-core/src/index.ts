@@ -850,6 +850,10 @@ export {
   ignorePostgresExtraAttributesOnObject,
   ignorePostgresExtraAttributesOnRecord,
 } from "./4_services/otherTools.js";
+export {
+  performanceMetrics,
+  measurePerformance,
+} from "./4_services/performanceMetrics.js";
 export { miroirCoreStartup } from "./startup.js";
 export {
   circularReplacer,

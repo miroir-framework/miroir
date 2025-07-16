@@ -2454,20 +2454,22 @@ interface testFormat {
                 referenceName: "testDeploymentUuid",
               },
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              entities: [
-                {
-                  entity: {
-                    transformerType: "parameterReference",
-                    interpolation: "build",
-                    referenceName: "createEntity_newEntity",
+              payload: {
+                entities: [
+                  {
+                    entity: {
+                      transformerType: "parameterReference",
+                      interpolation: "build",
+                      referenceName: "createEntity_newEntity",
+                    },
+                    entityDefinition: {
+                      transformerType: "parameterReference",
+                      interpolation: "build",
+                      referenceName: "createEntity_newEntityDefinition",
+                    },
                   },
-                  entityDefinition: {
-                    transformerType: "parameterReference",
-                    interpolation: "build",
-                    referenceName: "createEntity_newEntityDefinition",
-                  },
-                },
-              ],
+                ],
+              }
             },
           ],
         },
@@ -2527,51 +2529,56 @@ interface testFormat {
                       "type": "literal",
                       "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
                     },
-                    "entities": {
-                      "type": "tuple",
-                      "definition": [
-                        {
-                          "type": "object",
-                          "definition": {
-                            "entity": {
+                    "payload": {
+                      type: "object",
+                      definition: {
+                        "entities": {
+                          "type": "tuple",
+                          "definition": [
+                            {
                               "type": "object",
                               "definition": {
-                                "transformerType": {
-                                  "type": "literal",
-                                  "definition": "parameterReference"
+                                "entity": {
+                                  "type": "object",
+                                  "definition": {
+                                    "transformerType": {
+                                      "type": "literal",
+                                      "definition": "parameterReference"
+                                    },
+                                    "interpolation": {
+                                      "type": "literal",
+                                      "optional": true,
+                                      "definition": "build"
+                                    },
+                                    "referenceName": {
+                                      "optional": true,
+                                      "type": "string"
+                                    }
+                                  }
                                 },
-                                "interpolation": {
-                                  "type": "literal",
-                                  "optional": true,
-                                  "definition": "build"
-                                },
-                                "referenceName": {
-                                  "optional": true,
-                                  "type": "string"
-                                }
-                              }
-                            },
-                            "entityDefinition": {
-                              "type": "object",
-                              "definition": {
-                                "transformerType": {
-                                  "type": "literal",
-                                  "definition": "parameterReference"
-                                },
-                                "interpolation": {
-                                  "type": "literal",
-                                  "optional": true,
-                                  "definition": "build"
-                                },
-                                "referenceName": {
-                                  "optional": true,
-                                  "type": "string"
+                                "entityDefinition": {
+                                  "type": "object",
+                                  "definition": {
+                                    "transformerType": {
+                                      "type": "literal",
+                                      "definition": "parameterReference"
+                                    },
+                                    "interpolation": {
+                                      "type": "literal",
+                                      "optional": true,
+                                      "definition": "build"
+                                    },
+                                    "referenceName": {
+                                      "optional": true,
+                                      "type": "string"
+                                    }
+                                  }
                                 }
                               }
                             }
-                          }
+                          ]
                         }
-                      ]
+                      }
                     }
                   }
                 }

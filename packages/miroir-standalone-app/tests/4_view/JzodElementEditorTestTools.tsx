@@ -884,36 +884,37 @@ export function extractValuesFromRenderedElements(
 ): Record<string, any> {
   const values: Record<string, any> = {};
   console.log("########### extractValuesFromRenderedElements for label", label, "step", step);
-  // let displayedValues: HTMLElement[] = [];
-  // try {
-  //   displayedValues = screen.getAllByTestId("miroirDisplayedValue");
-  // } catch (e) {
-  //   // No displayed values found, leave displayedValues as empty array
-  // }
-  // const displayedValuesInfo = displayedValues.map((i) => {
-  //   return {
-  //     name:
-  //       (i as HTMLElement).id.replace(new RegExp(`^${label}\\.`), "") ||
-  //       (i as HTMLElement).getAttribute("aria-label")?.replace(new RegExp(`^${label}\\.`), ""),
-  //     value: (i as HTMLElement).textContent,
-  //     type: "string", // Assuming displayed values are strings
-  //   };
-  // });
+  let displayedValues: HTMLElement[] = [];
+  try {
+    displayedValues = screen.getAllByTestId("miroirDisplayedValue");
+  } catch (e) {
+    // No displayed values found, leave displayedValues as empty array
+  }
+  const displayedValuesInfo = displayedValues.map((i) => {
+    return {
+      name:
+        (i as HTMLElement).id.replace(new RegExp(`^${label}\\.`), "") ||
+        (i as HTMLElement).getAttribute("aria-label")?.replace(new RegExp(`^${label}\\.`), ""),
+      value: (i as HTMLElement).textContent,
+      type: "string", // Assuming displayed values are strings
+    };
+  });
   // Handle displayed values
-  // displayedValuesInfo.forEach((d) => {
-  //   let value: any = d.value;
-  //   // if (d.value === "" && d.defaultValue !== undefined) {
-  //   //   value = d.defaultValue;
-  //   // }
-  //   if (d.type === "number") {
-  //     if (!isNaN(Number(value)) && value !== "") {
-  //       value = Number(value);
-  //     } else {
-  //       expect(false, "number displayed value is not a number for " + d.name).toBeTruthy();
-  //     }
-  //   }
-  //   values[d.name??""] = value;
-  // });
+  displayedValuesInfo.forEach((d) => {
+    let value: any = d.value;
+    // if (d.value === "" && d.defaultValue !== undefined) {
+    //   value = d.defaultValue;
+    // }
+    if (d.type === "number") {
+      if (!isNaN(Number(value)) && value !== "") {
+        value = Number(value);
+      } else {
+        expect(false, "number displayed value is not a number for " + d.name).toBeTruthy();
+      }
+    }
+    values[d.name??""] = value;
+  });
+
   // #############################################################
   let textBoxes: HTMLElement[] = [];
   try {
@@ -934,6 +935,20 @@ export function extractValuesFromRenderedElements(
     };
   });
   console.log("textBoxes", textBoxesInfo);
+  textBoxesInfo.forEach((c) => {
+    let value: any = c.value;
+    if (c.value === "" && c.defaultValue !== undefined) {
+      value = c.defaultValue;
+    }
+    if (c.type === "number") {
+      if (!isNaN(Number(value)) && value !== "") {
+        value = Number(value);
+      } else {
+        expect(false, "number textBox content is not a number for " + c.name).toBeTruthy();
+      }
+    }
+    values[c.name] = value;
+  });
 
   // #############################################################
   let checkboxes: HTMLElement[] = [];
@@ -951,6 +966,9 @@ export function extractValuesFromRenderedElements(
     };
   });
   console.log("checkboxes", checkboxesInfo);
+  checkboxesInfo.forEach((c) => {
+    values[c.name] = c.checked;
+  });
 
   // #############################################################
   let comboboxes: HTMLElement[] = [];
@@ -969,6 +987,9 @@ export function extractValuesFromRenderedElements(
     };
   });
   console.log("comboboxes", comboBoxInfo);
+  comboBoxInfo.forEach((c) => {
+    values[c.name] = c.value;
+  });
 
   // #############################################################
   let options: HTMLElement[] = [];
@@ -989,32 +1010,6 @@ export function extractValuesFromRenderedElements(
     };
   });
   console.log("options", optionsInfo);
-
-  // #############################################################
-  textBoxesInfo.forEach((c) => {
-    let value: any = c.value;
-    if (c.value === "" && c.defaultValue !== undefined) {
-      value = c.defaultValue;
-    }
-    if (c.type === "number") {
-      if (!isNaN(Number(value)) && value !== "") {
-        value = Number(value);
-      } else {
-        expect(false, "number textBox content is not a number for " + c.name).toBeTruthy();
-      }
-    }
-    values[c.name] = value;
-  });
-  // Handle boolean checkboxes
-  checkboxesInfo.forEach((c) => {
-    values[c.name] = c.checked;
-  });
-  // Handle comboboxes (select elements)
-  comboBoxInfo.forEach((c) => {
-    values[c.name] = c.value;
-  });
-  // Optionally, you could add optionsInfo to the return value if needed
-  // values["_options"] = optionsInfo;
   optionsInfo.forEach((o) => {
     // values[o.name as any] = o.value;
     if (values[label] === undefined) {
@@ -1022,6 +1017,7 @@ export function extractValuesFromRenderedElements(
     }
     values[label].push(o.value);
   });
+
   console.log("extractValuesFromRenderedElements values", values);
   return values;
 }

@@ -1,5 +1,5 @@
 import { ErrorBoundary } from "react-error-boundary";
-import React, { FC, useCallback, useMemo, useState } from "react";
+import React, { FC, useCallback, useMemo, useState, useRef } from "react";
 import Clear from "@mui/icons-material/Clear";
 import InfoOutlined from "@mui/icons-material/InfoOutlined";
 
@@ -28,6 +28,11 @@ import { SizedButton, SizedAddBox, SmallIconButton, getItemsOrder } from "./Styl
 import { ErrorFallbackComponent } from "./ErrorFallbackComponent";
 import { packageName } from "../../../constants";
 import { cleanLevel } from "../constants";
+import {
+  measuredGetDefaultValueForJzodSchemaWithResolution,
+  measuredUnfoldJzodSchemaOnce,
+  measuredUseJzodElementEditorHooks,
+} from "../tools/performanceInstrumentation";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -36,20 +41,45 @@ MiroirLoggerFactory.registerLoggerToStart(
   log = logger;
 });
 
+// Performance tracking for unfoldJzodSchemaOnce - legacy approach
+let totalUnfoldTime = 0;
+let unfoldCallCount = 0;
 
-// let count: number = 0;
+// // Legacy wrapper function redirects to our new generalized approach
+// function measureUnfoldPerformance(
+//   miroirFundamentalJzodSchema: any,
+//   schema: any,
+//   path: any[],
+//   unfoldingReference: any[],
+//   rootSchema: any,
+//   depth: number,
+//   currentModel: any,
+//   miroirMetaModel: any
+// ): UnfoldJzodSchemaOnceReturnType {
+//   // Just call the measured version created with our higher-order function
+//   return measuredUnfoldJzodSchemaOnce(
+//     miroirFundamentalJzodSchema,
+//     schema,
+//     path,
+//     unfoldingReference,
+//     rootSchema,
+//     depth,
+//     currentModel,
+//     miroirMetaModel
+//   );
+// }
 
 // Editable attribute name component with local state management
-// const EditableAttributeName = React.memo(({ 
-const EditableAttributeName: FC<{ 
+// const EditableAttributeName = React.memo(({
+const EditableAttributeName: FC<{
   initialValue: string;
   onCommit: (newValue: string) => void;
   rootLessListKey: string;
-}> = ({ 
-  initialValue, 
+}> = ({
+  initialValue,
   onCommit,
-  rootLessListKey
-}: { 
+  rootLessListKey,
+}: {
   initialValue: string;
   onCommit: (newValue: string) => void;
   rootLessListKey: string;
@@ -67,15 +97,18 @@ const EditableAttributeName: FC<{
     setIsEditing(false);
   }, [localValue, initialValue, onCommit]);
 
-  const handleKeyDown = useCallback((event: React.KeyboardEvent) => {
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      handleCommit();
-    } else if (event.key === 'Escape') {
-      setLocalValue(initialValue);
-      setIsEditing(false);
-    }
-  }, [handleCommit, initialValue]);
+  const handleKeyDown = useCallback(
+    (event: React.KeyboardEvent) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        handleCommit();
+      } else if (event.key === "Escape") {
+        setLocalValue(initialValue);
+        setIsEditing(false);
+      }
+    },
+    [handleCommit, initialValue]
+  );
 
   // Update local value if the initial value changes (external update)
   React.useEffect(() => {
@@ -88,20 +121,20 @@ const EditableAttributeName: FC<{
     <input
       type="text"
       value={localValue}
-      name={"meta-"+ rootLessListKey + "-NAME"}
-      aria-label={"meta-"+ rootLessListKey + "-NAME"}
+      name={"meta-" + rootLessListKey + "-NAME"}
+      aria-label={"meta-" + rootLessListKey + "-NAME"}
       onChange={(e) => setLocalValue(e.target.value)}
       onFocus={() => setIsEditing(true)}
       onBlur={handleCommit}
       onKeyDown={handleKeyDown}
       style={{
-        border: '1px solid #ccc',
-        borderRadius: '4px',
-        padding: '2px 4px',
-        fontSize: 'inherit',
-        fontFamily: 'inherit',
-        minWidth: '60px',
-        width: `${Math.max(60, localValue.length * 8 + 16)}px`
+        border: "1px solid #ccc",
+        borderRadius: "4px",
+        padding: "2px 4px",
+        fontSize: "inherit",
+        fontFamily: "inherit",
+        minWidth: "60px",
+        width: `${Math.max(60, localValue.length * 8 + 16)}px`,
       }}
     />
   );
@@ -120,7 +153,7 @@ const EditableAttributeName: FC<{
 // ##############################################################################################
 export function JzodObjectEditor(props: JzodObjectEditorProps) {
   const [count, setCount] = useState(0);
-  
+
   React.useEffect(() => {
     setCount((prevCount) => prevCount + 1);
   }, [props]);
@@ -177,92 +210,105 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     definedOptionalAttributes,
     stringSelectList,
     undefinedOptionalAttributes,
-  } = useJzodElementEditorHooks(props, count, "JzodElementEditor");
+    // } = useJzodElementEditorHooks(props, count, "JzodElementEditor");
+  } = measuredUseJzodElementEditorHooks(props, count, "JzodElementEditor");
 
   const currentMiroirFundamentalJzodSchema = context.miroirFundamentalJzodSchema;
   const usedIndentLevel: number = indentLevel ? indentLevel : 0;
 
   // Early return if component can't be rendered properly
   const canRenderObject = useMemo(() => {
-    if (!localResolvedElementJzodSchemaBasedOnValue || 
-        localResolvedElementJzodSchemaBasedOnValue.type !== "object") {
+    if (
+      !localResolvedElementJzodSchemaBasedOnValue ||
+      localResolvedElementJzodSchemaBasedOnValue.type !== "object"
+    ) {
       return false;
     }
     return true;
   }, [localResolvedElementJzodSchemaBasedOnValue]);
 
-  const currentValue = useMemo(() => 
-    resolvePathOnObject(formik.values, rootLessListKeyArray), 
+  const currentValue = useMemo(
+    () => resolvePathOnObject(formik.values, rootLessListKeyArray),
     [formik.values, rootLessListKeyArray]
   );
 
   // ##############################################################################################
-    // JzodSchemaTooltip
-  const jzodSchemaTooltip: JSX.Element = useMemo(
-    () => canRenderObject?(
-      <span
-        title={`
-${parentType} / ${unfoldedRawSchema.type} / ${localResolvedElementJzodSchemaBasedOnValue?.type}
+  // JzodSchemaTooltip
+  //   const jzodSchemaTooltip: JSX.Element = useMemo(
+  //     () => canRenderObject?(
+  //       <span
+  //         title={`
+  // ${parentType} / ${unfoldedRawSchema.type} / ${localResolvedElementJzodSchemaBasedOnValue?.type}
 
-${JSON.stringify(props.rawJzodSchema, null, 2)}`}
-        style={{
-          display: "inline-flex",
-          alignItems: "center",
-          color: "#888",
-          background: "#fff",
-          borderRadius: "50%",
-          padding: "2px",
-          border: "1px solid #ddd",
-          fontSize: "18px",
-          width: "24px",
-          height: "24px",
-          justifyContent: "center",
-        }}
-      >
-        <span style={{ display: "flex", alignItems: "center" }}>
-          <InfoOutlined fontSize="small" sx={{ color: "#888" }} />
-        </span>
-      </span>
-      // </span>
-    ):<></>,
-    [props.rawJzodSchema]
-  );
+  // ${JSON.stringify(props.rawJzodSchema, null, 2)}`}
+  //         style={{
+  //           display: "inline-flex",
+  //           alignItems: "center",
+  //           color: "#888",
+  //           background: "#fff",
+  //           borderRadius: "50%",
+  //           padding: "2px",
+  //           border: "1px solid #ddd",
+  //           fontSize: "18px",
+  //           width: "24px",
+  //           height: "24px",
+  //           justifyContent: "center",
+  //         }}
+  //       >
+  //         <span style={{ display: "flex", alignItems: "center" }}>
+  //           <InfoOutlined fontSize="small" sx={{ color: "#888" }} />
+  //         </span>
+  //       </span>
+  //       // </span>
+  //     ):<></>,
+  //     [props.rawJzodSchema]
+  //   );
 
   // ##############################################################################################
   // Handle attribute name changes for Record objects
-  const handleAttributeNameChange = useCallback((newAttributeName: string, attributeRootLessListKeyArray: string[]) => {
-    const localAttributeRootLessListKeyArray: string[] = attributeRootLessListKeyArray.slice();
-    const oldAttributeName = localAttributeRootLessListKeyArray[localAttributeRootLessListKeyArray.length - 1];
-    
-    log.info(
-      "handleAttributeNameChange renaming attribute",
-      oldAttributeName,
-      "into",
-      newAttributeName,
-      "current Value",
-      formik.values,
-      "attributeRootLessListKeyArray",
-      attributeRootLessListKeyArray
-    );
+  const handleAttributeNameChange = useCallback(
+    (newAttributeName: string, attributeRootLessListKeyArray: string[]) => {
+      const localAttributeRootLessListKeyArray: string[] = attributeRootLessListKeyArray.slice();
+      const oldAttributeName =
+        localAttributeRootLessListKeyArray[localAttributeRootLessListKeyArray.length - 1];
 
-    // Get the value at the old attribute path
-    const subObject = resolvePathOnObject(formik.values, localAttributeRootLessListKeyArray);
-    
-    // Delete the old attribute path
-    const newFormState1: any = deleteObjectAtPath(formik.values, localAttributeRootLessListKeyArray);
-    
-    // Create new path with the new attribute name
-    const newPath = localAttributeRootLessListKeyArray.slice(0, localAttributeRootLessListKeyArray.length - 1);
-    newPath.push(newAttributeName);
-    
-    // Set the value at the new attribute path
-    const newFormState2: any = alterObjectAtPath(newFormState1, newPath, subObject);
-    
-    log.info("handleAttributeNameChange newFormState2", newFormState2);
-    
-    // Update formik values
-    formik.setValues(newFormState2);
-  }, [formik.values, formik.setValues]);
+      log.info(
+        "handleAttributeNameChange renaming attribute",
+        oldAttributeName,
+        "into",
+        newAttributeName,
+        "current Value",
+        formik.values,
+        "attributeRootLessListKeyArray",
+        attributeRootLessListKeyArray
+      );
+
+      // Get the value at the old attribute path
+      const subObject = resolvePathOnObject(formik.values, localAttributeRootLessListKeyArray);
+
+      // Delete the old attribute path
+      const newFormState1: any = deleteObjectAtPath(
+        formik.values,
+        localAttributeRootLessListKeyArray
+      );
+
+      // Create new path with the new attribute name
+      const newPath = localAttributeRootLessListKeyArray.slice(
+        0,
+        localAttributeRootLessListKeyArray.length - 1
+      );
+      newPath.push(newAttributeName);
+
+      // Set the value at the new attribute path
+      const newFormState2: any = alterObjectAtPath(newFormState1, newPath, subObject);
+
+      log.info("handleAttributeNameChange newFormState2", newFormState2);
+
+      // Update formik values
+      formik.setValues(newFormState2);
+    },
+    [formik.values, formik.setValues]
+  );
 
   // ##############################################################################################
   const addExtraRecordEntry = useCallback(async () => {
@@ -287,7 +333,7 @@ ${JSON.stringify(props.rawJzodSchema, null, 2)}`}
     const newAttributeType: JzodElement = (rawJzodSchema as JzodRecord)?.definition;
     log.info("addExtraRecordEntry newAttributeType", JSON.stringify(newAttributeType, null, 2));
     const newAttributeValue = currentMiroirFundamentalJzodSchema
-      ? getDefaultValueForJzodSchemaWithResolution(
+      ? measuredGetDefaultValueForJzodSchemaWithResolution(
           unfoldedRawSchema.definition,
           currentMiroirFundamentalJzodSchema,
           currentModel,
@@ -323,91 +369,95 @@ ${JSON.stringify(props.rawJzodSchema, null, 2)}`}
   ]);
 
   // ##############################################################################################
-  const addObjectOptionalAttribute = useCallback(async (attributeName: string) => {
-    if (localResolvedElementJzodSchemaBasedOnValue?.type != "object") {
-      throw "addObjectOptionalAttribute called for non-object type: " + unfoldedRawSchema.type;
-    }
-    log.info(
-      "addObjectOptionalAttribute clicked!",
-      listKey,
+  const addObjectOptionalAttribute = useCallback(
+    async (attributeName: string) => {
+      if (localResolvedElementJzodSchemaBasedOnValue?.type != "object") {
+        throw "addObjectOptionalAttribute called for non-object type: " + unfoldedRawSchema.type;
+      }
+      log.info(
+        "addObjectOptionalAttribute clicked!",
+        listKey,
+        itemsOrder,
+        Object.keys(localResolvedElementJzodSchemaBasedOnValue.definition),
+        "formik",
+        formik.values,
+        // "unfoldedrawSchema",
+        // JSON.stringify(unfoldedRawSchema, null, 2),
+        // "discriminatedSchemaForObject",
+        // JSON.stringify(discriminatedSchemaForObject, null, 2),
+        "undefinedOptionalAttributes",
+        undefinedOptionalAttributes,
+        "attributeName",
+        attributeName
+      );
+      const currentObjectValue = resolvePathOnObject(formik.values, rootLessListKeyArray);
+      // const newAttributeType: JzodElement = resolvePathOnObject(rawJzodSchema, [
+      // const newAttributeType: JzodElement = resolvePathOnObject(unfoldedRawSchema, [
+      const newAttributeType: JzodElement = resolvePathOnObject(
+        discriminatedSchemaForObject ?? unfoldedRawSchema,
+        ["definition", attributeName]
+      );
+      // const newAttributeValue = getDefaultValueForJzodSchema(newAttributeType)
+      const newAttributeValue = currentMiroirFundamentalJzodSchema
+        ? measuredGetDefaultValueForJzodSchemaWithResolution(
+            newAttributeType,
+            currentMiroirFundamentalJzodSchema,
+            currentModel,
+            miroirMetaModel
+          )
+        : undefined;
+
+      const newObjectValue = {
+        ...currentObjectValue,
+        [attributeName]: newAttributeValue,
+      };
+      const newItemsOrder = getItemsOrder(
+        newObjectValue,
+        discriminatedSchemaForObject ?? unfoldedRawSchema
+      );
+
+      log.info(
+        "addObjectOptionalAttribute clicked2!",
+        listKey,
+        itemsOrder,
+        Object.keys(localResolvedElementJzodSchemaBasedOnValue.definition),
+        "newAttributeType",
+        newAttributeType,
+        "newObjectValue",
+        newObjectValue,
+        "newItemsOrder",
+        newItemsOrder
+      );
+      if (rootLessListKey) {
+        formik.setFieldValue(rootLessListKey, newObjectValue, false);
+      } else {
+        formik.setValues(newObjectValue, false);
+      }
+      log.info("addObjectOptionalAttribute clicked3 DONE!");
+    },
+    [
+      props,
       itemsOrder,
-      Object.keys(localResolvedElementJzodSchemaBasedOnValue.definition),
-      "formik",
+      localResolvedElementJzodSchemaBasedOnValue,
+      unfoldedRawSchema,
+      currentMiroirFundamentalJzodSchema,
+      currentModel,
+      miroirMetaModel,
       formik.values,
-      // "unfoldedrawSchema",
-      // JSON.stringify(unfoldedRawSchema, null, 2),
-      // "discriminatedSchemaForObject",
-      // JSON.stringify(discriminatedSchemaForObject, null, 2),
-      "undefinedOptionalAttributes",
+      formik.setFieldValue,
       undefinedOptionalAttributes,
-      "attributeName",
-      attributeName
-    );
-    const currentObjectValue = resolvePathOnObject(formik.values, rootLessListKeyArray);
-    // const newAttributeType: JzodElement = resolvePathOnObject(rawJzodSchema, [
-    // const newAttributeType: JzodElement = resolvePathOnObject(unfoldedRawSchema, [
-    const newAttributeType: JzodElement = resolvePathOnObject(discriminatedSchemaForObject??unfoldedRawSchema, [
-      "definition",
-      attributeName,
-    ]);
-    // const newAttributeValue = getDefaultValueForJzodSchema(newAttributeType)
-    const newAttributeValue = currentMiroirFundamentalJzodSchema
-      ? getDefaultValueForJzodSchemaWithResolution(
-          newAttributeType,
-          currentMiroirFundamentalJzodSchema,
-          currentModel,
-          miroirMetaModel
-        )
-      : undefined;
-
-    const newObjectValue = {
-      ...currentObjectValue,
-      [attributeName]: newAttributeValue,
-    };
-    const newItemsOrder = getItemsOrder(newObjectValue, discriminatedSchemaForObject??unfoldedRawSchema);
-
-    log.info(
-      "addObjectOptionalAttribute clicked2!",
-      listKey,
-      itemsOrder,
-      Object.keys(localResolvedElementJzodSchemaBasedOnValue.definition),
-      "newAttributeType",
-      newAttributeType,
-      "newObjectValue",
-      newObjectValue,
-      "newItemsOrder",
-      newItemsOrder,
-    );
-    if (rootLessListKey) {
-      formik.setFieldValue(rootLessListKey, newObjectValue, false);
-    } else {
-      formik.setValues(newObjectValue, false);
-    }
-    log.info(
-      "addObjectOptionalAttribute clicked3 DONE!",
-    );
-  }, [ 
-    props,
-    itemsOrder,
-    localResolvedElementJzodSchemaBasedOnValue,
-    unfoldedRawSchema,
-    currentMiroirFundamentalJzodSchema,
-    currentModel,
-    miroirMetaModel,
-    formik.values,
-    formik.setFieldValue,
-    undefinedOptionalAttributes
-  ]);
+    ]
+  );
 
   // ##############################################################################################
   const deleteElement = (rootLessListKeyArray: (string | number)[]) => () => {
     if (rootLessListKeyArray.length > 0) {
       const newFormState: any = deleteObjectAtPath(formik.values, rootLessListKeyArray);
       formik.setValues(newFormState);
-      log.info("Removed optional attribute:", rootLessListKeyArray.join('.'));
+      log.info("Removed optional attribute:", rootLessListKeyArray.join("."));
     }
   };
-  
+
   // ##############################################################################################
   // Render error state if we can't properly render an object
   if (!canRenderObject) {
@@ -420,7 +470,7 @@ ${JSON.stringify(props.rawJzodSchema, null, 2)}`}
       </div>
     );
   }
-  
+
   // ##############################################################################################
   // Memoize the array of rendered attributes to prevent unnecessary re-renders
   // const attributeElements = useMemo(() => {
@@ -549,31 +599,34 @@ ${JSON.stringify(props.rawJzodSchema, null, 2)}`}
                 concreteObjectRawJzodSchema.type == "object" &&
                 concreteObjectRawJzodSchema.extend
               ) {
-                const resolvedConcreteObjectJzodSchemaTmp = useMemo(
-                  () => {
-                    log.info("getJzodElementEditorHooks unfoldJzodSchemaOnce FROM JZOD OBJECT EDITOR", "count", count, "call");
+                const resolvedConcreteObjectJzodSchemaTmp = useMemo(() => {
+                  log.info(
+                    "getJzodElementEditorHooks unfoldJzodSchemaOnce FROM JZOD OBJECT EDITOR",
+                    "count",
+                    count,
+                    "call"
+                  );
 
-                    return currentMiroirFundamentalJzodSchema
-                      ? // ? unfoldJzodSchemaOnce(
-                        unfoldJzodSchemaOnce(
-                          currentMiroirFundamentalJzodSchema,
-                          concreteObjectRawJzodSchema,
-                          [], // path
-                          [], // unfoldingReference
-                          concreteObjectRawJzodSchema, // rootSchema
-                          0, // depth
-                          currentModel,
-                          miroirMetaModel
-                        )
-                      : undefined;
-                  },
-                  [
-                    currentMiroirFundamentalJzodSchema,
-                    concreteObjectRawJzodSchema,
-                    currentModel,
-                    miroirMetaModel,
-                  ]
-                );
+                  return currentMiroirFundamentalJzodSchema
+                    ? // ? unfoldJzodSchemaOnce(
+                      // measureUnfoldPerformance(
+                      measuredUnfoldJzodSchemaOnce(
+                        currentMiroirFundamentalJzodSchema,
+                        concreteObjectRawJzodSchema,
+                        [], // path
+                        [], // unfoldingReference
+                        concreteObjectRawJzodSchema, // rootSchema
+                        0, // depth
+                        currentModel,
+                        miroirMetaModel
+                      )
+                    : undefined;
+                }, [
+                  currentMiroirFundamentalJzodSchema,
+                  concreteObjectRawJzodSchema,
+                  currentModel,
+                  miroirMetaModel,
+                ]);
 
                 if (
                   !resolvedConcreteObjectJzodSchemaTmp ||
@@ -630,6 +683,7 @@ ${JSON.stringify(props.rawJzodSchema, null, 2)}`}
               id={attributeRootLessListKey + ".label"}
               key={attributeRootLessListKey + ".label"}
               data-testid="miroirDisplayedValue"
+              // data-testid="miroirInput"
               style={{
                 minWidth: "120px",
                 flexShrink: 0,
@@ -688,7 +742,7 @@ ${JSON.stringify(props.rawJzodSchema, null, 2)}`}
                   parentType={unfoldedRawSchema?.type}
                   deleteButtonElement={
                     <>
-                      {/* {attributeRootLessListKey}#{unfoldedAttributeRawSchema.type}.{unfoldedAttributeRawSchema.optional? "optional" : "required"} */}
+                      {/* {attributeRootLessListKey}#{unfoldedAttributeRawJzodSchema.type}.{unfoldedAttributeRawJzodSchema.optional? "optional" : "required"} */}
                       <SmallIconButton
                         id={attributeRootLessListKey + "-removeOptionalAttributeOrRecordEntry"}
                         aria-label={
@@ -714,12 +768,42 @@ ${JSON.stringify(props.rawJzodSchema, null, 2)}`}
         })}
     </>
   );
-  ;
-  
   return (
     <div id={rootLessListKey} key={rootLessListKey}>
       {/* <span>JzodObjectEditor: {count}</span> */}
       <div>
+        {/* Performance statistics */}
+        {/* {Object.keys(performanceMetrics).length > 0 && (
+          <div style={{ 
+            fontSize: '0.8rem', 
+            color: '#333', 
+            position: 'absolute', 
+            right: '10px', 
+            top: '10px',
+            background: 'rgba(255,255,255,0.9)',
+            padding: '6px',
+            border: '1px solid #ddd',
+            borderRadius: '4px',
+            zIndex: 1000,
+            maxWidth: '300px',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+          }}>
+            <div style={{ fontWeight: 'bold', borderBottom: '1px solid #eee', marginBottom: '4px', paddingBottom: '2px' }}>
+              Performance Metrics
+            </div>
+            {Object.entries(performanceMetrics).map(([funcName, metrics]) => (
+              <div key={funcName} style={{ marginTop: '4px', fontSize: '0.75rem' }}>
+                <div style={{ fontWeight: 'bold' }}>{funcName}:</div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'auto auto', gap: '0 8px' }}>
+                  <span>Calls:</span><span>{metrics.callCount}</span>
+                  <span>Total:</span><span>{metrics.totalTime.toFixed(1)}ms</span>
+                  <span>Avg:</span><span>{(metrics.totalTime / metrics.callCount).toFixed(2)}ms</span>
+                  <span>Min/Max:</span><span>{metrics.minDuration.toFixed(1)}ms / {metrics.maxDuration.toFixed(1)}ms</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )} */}
         <span
           style={{
             display: "flex",
@@ -833,7 +917,7 @@ ${JSON.stringify(props.rawJzodSchema, null, 2)}`}
           >
             {deleteButtonElement ?? <></>}
             {displayAsStructuredElementSwitch ?? <></>}
-            {jzodSchemaTooltip ?? <></>}
+            {/* {jzodSchemaTooltip ?? <></>} */}
           </span>
         </span>
         {/* <div>ICIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII</div> */}
