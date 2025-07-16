@@ -163,17 +163,17 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
   let unfoldedRawSchemaReturnType: UnfoldJzodSchemaOnceReturnType | undefined;
   try {
     unfoldedRawSchemaReturnType = useMemo(() => {
-      log.info("getJzodElementEditorHooks unfoldJzodSchemaOnce", "count", count, "call, caller", caller);
-      if (count == 3) {
-        log.info(
-          "getJzodElementEditorHooks unfoldJzodSchemaOnce",
-          "count",
-          count,
-          props.rootLessListKey,
-          "props.rawJzodSchema",
-          JSON.stringify(props.rawJzodSchema, null, 2),
-        );
-      }
+      // log.info("getJzodElementEditorHooks unfoldJzodSchemaOnce", "count", count, "call, caller", caller);
+      // if (count == 3) {
+      //   log.info(
+      //     "getJzodElementEditorHooks unfoldJzodSchemaOnce",
+      //     "count",
+      //     count,
+      //     props.rootLessListKey,
+      //     "props.rawJzodSchema",
+      //     JSON.stringify(props.rawJzodSchema, null, 2),
+      //   );
+      // }
       const result = context.miroirFundamentalJzodSchema
         ? measuredUnfoldJzodSchemaOnce(
         // ? unfoldJzodSchemaOnce(
@@ -187,7 +187,7 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
             miroirMetaModel
           )
         : undefined;
-      log.info("getJzodElementEditorHooks unfoldJzodSchemaOnce", "count", count, "done, caller", caller);
+      // log.info("getJzodElementEditorHooks unfoldJzodSchemaOnce", "count", count, "done, caller", caller);
       return {
         ...result,
         valuePath: [],

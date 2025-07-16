@@ -59,16 +59,16 @@ export function measurePerformance<T extends (...args: any[]) => any>(
     metrics.maxDuration = Math.max(metrics.maxDuration, duration);
     metrics.minDuration = Math.min(metrics.minDuration, duration);
     
-    if (metrics.callCount % logFrequency === 0) {
-      log.info(
-        `${funcName} performance - Call #${metrics.callCount}, ` +
-        `Duration: ${duration.toFixed(2)}ms, ` +
-        `Total: ${metrics.totalTime.toFixed(2)}ms, ` +
-        `Avg: ${(metrics.totalTime / metrics.callCount).toFixed(2)}ms, ` +
-        `Min: ${metrics.minDuration.toFixed(2)}ms, ` +
-        `Max: ${metrics.maxDuration.toFixed(2)}ms`
-      );
-    }
+    // if (metrics.callCount % logFrequency === 0) {
+    //   log.info(
+    //     `${funcName} performance - Call #${metrics.callCount}, ` +
+    //     `Duration: ${duration.toFixed(2)}ms, ` +
+    //     `Total: ${metrics.totalTime.toFixed(2)}ms, ` +
+    //     `Avg: ${(metrics.totalTime / metrics.callCount).toFixed(2)}ms, ` +
+    //     `Min: ${metrics.minDuration.toFixed(2)}ms, ` +
+    //     `Max: ${metrics.maxDuration.toFixed(2)}ms`
+    //   );
+    // }
     
     return result;
   };

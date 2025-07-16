@@ -22,6 +22,20 @@ const emptyRenderMetrics: RenderPerformanceMetricsElement = {
 export class RenderPerformanceMetrics {
   // private static renderMetrics: Record<string, RenderPerformanceMetricsElement> = {};
   static renderMetrics: Record<string, RenderPerformanceMetricsElement> = {};
+  static changeCallbacks: (() => void)[] = [];
+
+  static addChangeCallback(callback: () => void) {
+    this.changeCallbacks.push(callback);
+  }
+
+  static removeChangeCallback(callback: () => void) {
+    this.changeCallbacks = this.changeCallbacks.filter(cb => cb !== callback);
+  }
+
+  static notifyCallbacks() {
+    // console.log('RenderPerformanceMetrics notifying callbacks, count:', this.changeCallbacks.length);
+    this.changeCallbacks.forEach(callback => callback());
+  }
 
   static resetMetrics() {
     this.renderMetrics = this.renderMetrics
@@ -39,6 +53,7 @@ export class RenderPerformanceMetrics {
           ])
         )
       : {};
+    this.notifyCallbacks();
   }
   // static trackRender(componentKey: string, renderTime: number): RenderPerformanceMetricsElement {
   //   return trackRenderPerformance(componentKey, renderTime);
@@ -59,6 +74,8 @@ export class RenderPerformanceMetrics {
     metrics.maxRenderTime = Math.max(metrics.maxRenderTime, renderTime);
     metrics.minRenderTime = Math.min(metrics.minRenderTime, renderTime);
     metrics.averageRenderTime = metrics.totalRenderTime / metrics.renderCount;
+    
+    this.notifyCallbacks();
     return metrics;
   }
 
@@ -140,7 +157,7 @@ export class RenderPerformanceMetrics {
             padding: "4px 0",
           }}
         >
-          JzodElementEditor Performance Stats
+          ReportPage Performance Stats
         </div>
         <div style={{ marginBottom: "8px", padding: "4px 0", borderBottom: "1px solid #eee" }}>
           <div>

@@ -202,13 +202,13 @@ export function rootLessListKeyMap(
     localResolvedElementJzodSchemaBasedOnValue = resolvedElementJzodSchemaBasedOnValue;
   }
 
-  log.info(
-    "rootLessListKeyMap found localResolvedElementJzodSchemaBasedOnValue",
-    localResolvedElementJzodSchemaBasedOnValue,
-    "for rootLessListKey",
-    rootLessListKey,
-    // JSON.stringify(localResolvedElementJzodSchemaBasedOnValue, null, 2)
-  );
+  // log.info(
+  //   "rootLessListKeyMap found localResolvedElementJzodSchemaBasedOnValue",
+  //   localResolvedElementJzodSchemaBasedOnValue,
+  //   "for rootLessListKey",
+  //   rootLessListKey,
+  //   // JSON.stringify(localResolvedElementJzodSchemaBasedOnValue, null, 2)
+  // );
   const result: Record<string, { resolvedElementJzodSchema: JzodElement }> = {};
   mapResolveJzodSchemaToValueKeys(
     localResolvedElementJzodSchemaBasedOnValue,
@@ -217,14 +217,13 @@ export function rootLessListKeyMap(
     result
   );
 
-  // log.info("rootLessListKeyMap result", JSON.stringify(result, null, 2))
-  log.info(
-    "rootLessListKeyMap result",
-    result,
-    "for rootLessListKey",
-    rootLessListKey,
-    "currentValue",
-    currentValue
-  );
+  // log.info(
+  //   "rootLessListKeyMap result",
+  //   result,
+  //   "for rootLessListKey",
+  //   rootLessListKey,
+  //   "currentValue",
+  //   currentValue
+  // );
   return result;
 }

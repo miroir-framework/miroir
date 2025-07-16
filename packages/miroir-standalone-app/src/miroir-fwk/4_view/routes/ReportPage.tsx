@@ -22,6 +22,7 @@ import {
 import { adminConfigurationDeploymentParis, deployments, packageName, ReportUrlParamKeys } from "../../../constants.js";
 import { useCurrentModel } from '../ReduxHooks.js';
 import { ReportView } from '../components/ReportView.js';
+import { PerformanceDisplayContainer } from '../components/PerformanceDisplayContainer.js';
 import { cleanLevel } from '../constants.js';
 import { RenderPerformanceMetrics } from '../tools/renderPerformanceMeasure.js';
 
@@ -168,8 +169,17 @@ export const ReportPage = () => {
   );
 
   useEffect(() => {
-    RenderPerformanceMetrics.resetMetrics();
-    log.info("RenderPerformanceMetrics reset");
+    // Only reset metrics if we're navigating to a different report
+    // This preserves metrics for the current page
+    const currentKey = `${pageParams.deploymentUuid}-${pageParams.applicationSection}-${pageParams.reportUuid}-${pageParams.instanceUuid}`;
+    
+    // Store the current key to compare with previous
+    const previousKey = sessionStorage.getItem('currentReportKey');
+    if (previousKey && previousKey !== currentKey) {
+      RenderPerformanceMetrics.resetMetrics();
+      log.info("RenderPerformanceMetrics reset for new report");
+    }
+    sessionStorage.setItem('currentReportKey', currentKey);
   }, [
     pageParams.instanceUuid,
     pageParams.reportUuid,
@@ -203,8 +213,10 @@ export const ReportPage = () => {
 
   if (pageParams.applicationSection) {
     log.info("ReportPage rendering count", ReportPageCount, "params", pageParams);
+    log.info("ReportPage current metrics:", RenderPerformanceMetrics.renderMetrics);
     return (
       <div>
+        <PerformanceDisplayContainer />
         <span>ReportPage: {ReportPageCount}</span>
         <div>
           <h3>erreurs: {JSON.stringify(errorLog)}</h3>
@@ -228,6 +240,7 @@ export const ReportPage = () => {
                 pageParams={pageParams}
                 reportDefinition={currentMiroirReport?.definition}
               />
+              <PerformanceDisplayContainer />
             </>
           ) : (
             <span style={{ color: "red" }}>

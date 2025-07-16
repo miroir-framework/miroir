@@ -2,7 +2,6 @@ import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { Formik, FormikProps } from 'formik';
 import { EditorView } from '@codemirror/view';
 import ReactCodeMirror from '@uiw/react-codemirror';
-import { performanceMetrics } from 'miroir-core';
 
 import {
   ApplicationSection,
@@ -64,43 +63,43 @@ MiroirLoggerFactory.registerLoggerToStart(
 ).then((logger: LoggerInterface) => {log = logger});
 
 
-// Performance metrics display component
-const PerformanceMetricsDisplay = () => {
-  // Only render if we have performance metrics to display
-  if (Object.keys(performanceMetrics).length === 0) return null;
+// // Performance metrics display component
+// const PerformanceMetricsDisplay = () => {
+//   // Only render if we have performance metrics to display
+//   if (Object.keys(performanceMetrics).length === 0) return null;
 
-  return (
-    <div style={{ 
-      fontSize: '0.8rem', 
-      color: '#333', 
-      position: 'absolute', 
-      right: '10px', 
-      top: '10px',
-      background: 'rgba(255,255,255,0.9)',
-      padding: '6px',
-      border: '1px solid #ddd',
-      borderRadius: '4px',
-      zIndex: 1000,
-      maxWidth: '300px',
-      boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-    }}>
-      <div style={{ fontWeight: 'bold', borderBottom: '1px solid #eee', marginBottom: '4px', paddingBottom: '2px' }}>
-        Performance Metrics
-      </div>
-      {Object.entries(performanceMetrics).map(([funcName, metrics]: [string, any]) => (
-        <div key={funcName} style={{ marginTop: '4px', fontSize: '0.75rem' }}>
-          <div style={{ fontWeight: 'bold' }}>{funcName}:</div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'auto auto', gap: '0 8px' }}>
-            <span>Calls:</span><span>{metrics.callCount}</span>
-            <span>Total:</span><span>{metrics.totalTime.toFixed(1)}ms</span>
-            <span>Avg:</span><span>{(metrics.totalTime / metrics.callCount).toFixed(2)}ms</span>
-            <span>Min/Max:</span><span>{metrics.minDuration.toFixed(1)}ms / {metrics.maxDuration.toFixed(1)}ms</span>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-};
+//   return (
+//     <div style={{ 
+//       fontSize: '0.8rem', 
+//       color: '#333', 
+//       position: 'absolute', 
+//       right: '10px', 
+//       top: '10px',
+//       background: 'rgba(255,255,255,0.9)',
+//       padding: '6px',
+//       border: '1px solid #ddd',
+//       borderRadius: '4px',
+//       zIndex: 1000,
+//       maxWidth: '300px',
+//       boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+//     }}>
+//       <div style={{ fontWeight: 'bold', borderBottom: '1px solid #eee', marginBottom: '4px', paddingBottom: '2px' }}>
+//         Performance Metrics
+//       </div>
+//       {Object.entries(performanceMetrics).map(([funcName, metrics]: [string, any]) => (
+//         <div key={funcName} style={{ marginTop: '4px', fontSize: '0.75rem' }}>
+//           <div style={{ fontWeight: 'bold' }}>{funcName}:</div>
+//           <div style={{ display: 'grid', gridTemplateColumns: 'auto auto', gap: '0 8px' }}>
+//             <span>Calls:</span><span>{metrics.callCount}</span>
+//             <span>Total:</span><span>{metrics.totalTime.toFixed(1)}ms</span>
+//             <span>Avg:</span><span>{(metrics.totalTime / metrics.callCount).toFixed(2)}ms</span>
+//             <span>Min/Max:</span><span>{metrics.minDuration.toFixed(1)}ms / {metrics.maxDuration.toFixed(1)}ms</span>
+//           </div>
+//         </div>
+//       ))}
+//     </div>
+//   );
+// };
 
 export interface ReportSectionEntityInstanceProps {
   instance?: EntityInstance,
@@ -118,19 +117,19 @@ let ReportSectionEntityInstanceCount = 0
 // ###############################################################################################################
 export const ReportSectionEntityInstance = (props: ReportSectionEntityInstanceProps) => {
   const renderStartTime = performance.now();
-  // const componentKey = `ReportSectionEntityInstance-${props.entityUuid}`;
-  // const componentKey = `ReportSectionEntityInstance-${props.instance?.uuid || props.entityUuid}`;
-
-
+  
   const errorLog = useErrorLogService();
   const context = useMiroirContextService();
 
-  log.info(
-    "++++++++++++++++++++++++++++++++ render",
-    ReportSectionEntityInstanceCount++,
-    "with props",
-    props
-  );
+  // Track performance immediately for initial render
+  const componentKey = `ReportSectionEntityInstance-${props.instance?.uuid || props.entityUuid}`;
+  
+  // log.info(
+  //   "++++++++++++++++++++++++++++++++ render",
+  //   ReportSectionEntityInstanceCount++,
+  //   "with props",
+  //   props
+  // );
 
   const [displayAsStructuredElement, setDisplayAsStructuredElement] = useState(true);
   const [displayEditor, setDisplayEditor] = useState(true);
@@ -155,10 +154,10 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const currentReportDeploymentSectionEntities: Entity[] = currentModel.entities; // Entities are always defined in the 'model' section
   const currentReportDeploymentSectionEntityDefinitions: EntityDefinition[] = currentModel.entityDefinitions; // EntityDefinitions are always defined in the 'model' section
 
-  log.info(
-    "ReportSectionEntityInstance currentReportDeploymentSectionEntities",
-    currentReportDeploymentSectionEntities
-  );
+  // log.info(
+  //   "ReportSectionEntityInstance currentReportDeploymentSectionEntities",
+  //   currentReportDeploymentSectionEntities
+  // );
 
   const currentReportTargetEntity: Entity | undefined = currentReportDeploymentSectionEntities?.find(
     (e) => e?.uuid === props.entityUuid
@@ -231,16 +230,14 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     }
     return result;
   }, [props, currentReportTargetEntityDefinition, instance, context]);
-  log.info(
-    "ReportSectionEntityInstance jzodTypeCheck done, resolvedJzodSchema",
-    resolvedJzodSchema,
-  );
+  // log.info(
+  //   "ReportSectionEntityInstance jzodTypeCheck done, resolvedJzodSchema",
+  //   resolvedJzodSchema,
+  // );
 
   useEffect(() => {
     // Track render performance at the end of render
-    // if (props.instance) {
     if (props.instance?.uuid) {
-      const componentKey = `ReportSectionEntityInstance-${props.instance?.uuid || props.entityUuid}`
       const renderEndTime = performance.now();
       const renderDuration = renderEndTime - renderStartTime;
       const currentMetrics = RenderPerformanceMetrics.trackRenderPerformance(componentKey, renderDuration);
@@ -429,20 +426,27 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   //   // setdialogOuterFormObject(JSON.parse(values))
   //   log.info('edit code done');
   // }, []);
-  log.info("ReportSectionEntityInstance start rendering!");
-  const globalRenderPerformanceDisplayElement = useMemo(() => {
-    return (
-      <RenderPerformanceMetrics.GlobalRenderPerformanceDisplay
-        renderMetrics={RenderPerformanceMetrics.renderMetrics}
-      />
-    );
-  }, [props.instance, props.entityUuid, RenderPerformanceMetrics.renderMetrics]);
+  // log.info("ReportSectionEntityInstance start rendering!");
+  
+  // Track performance immediately for faster feedback
+  // if (props.instance?.uuid) {
+  //   const renderEndTime = performance.now();
+  //   const renderDuration = renderEndTime - renderStartTime;
+  //   const currentMetrics = RenderPerformanceMetrics.trackRenderPerformance(componentKey, renderDuration);
+    
+  //   log.info(
+  //     `ReportSectionEntityInstance immediate tracking - ${componentKey}: ` +
+  //       `#${currentMetrics.renderCount} renders, ` +
+  //       `Current: ${renderDuration.toFixed(2)}ms, ` +
+  //       `Total: ${currentMetrics.totalRenderTime.toFixed(2)}ms, ` +
+  //       `Avg: ${currentMetrics.averageRenderTime.toFixed(2)}ms`
+  //   );
+  // }
+  
   // ##############################################################################################
   if (instance) {
     return (
       <div>
-        {/* <RenderPerformanceMetrics.GlobalRenderPerformanceDisplay /> */}
-        { globalRenderPerformanceDisplayElement }
         <div>
           {/* <RenderPerformanceDisplay componentKey={componentKey} indentLevel={0} /> */}
 
@@ -654,7 +658,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
             </div>
           )}
         </div>
-        <PerformanceMetricsDisplay />
+        {/* <PerformanceMetricsDisplay /> */}
       </div>
     );
   } else {

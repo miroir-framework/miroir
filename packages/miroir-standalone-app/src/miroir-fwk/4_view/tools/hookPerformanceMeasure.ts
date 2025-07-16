@@ -44,6 +44,6 @@ export const measuredGetDefaultValueForJzodSchemaWithResolution = measurePerform
 export const measuredUseJzodElementEditorHooks = measurePerformance(
   'useJzodElementEditorHooks',
   useJzodElementEditorHooks,
-  5
+  500
 );
 

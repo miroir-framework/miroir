@@ -33,7 +33,7 @@ export function getObjectUniondiscriminatorValuesFromResolvedSchema(
           // return (a.definition as any)[(unfoldedRawSchema as any).discriminator].definition}
           if (!branch || !branch.definition || !branch.definition[discriminator]) {
             throw new Error(
-              "objectUniondiscriminatorValues found object branch without discriminator '" + discriminator + "': " + 
+              "getObjectUniondiscriminatorValuesFromResolvedSchema found object branch without discriminator '" + discriminator + "': " + 
               JSON.stringify(branch, null, 2) +
               " in recursivelyUnfoldedRawSchemaList: " + 
               JSON.stringify(recursivelyUnfoldedRawSchemaList, null, 2)
@@ -80,7 +80,7 @@ export function getObjectUniondiscriminatorValuesFromResolvedSchema(
             case "union":
             default: {
               throw new Error(
-                "objectUniondiscriminatorValues could not handle union branch object:" +
+                "getObjectUniondiscriminatorValuesFromResolvedSchema could not handle union branch object:" +
                 " discriminator " +
                   discriminator +
                 // " discriminator type " +
@@ -99,7 +99,7 @@ export function getObjectUniondiscriminatorValuesFromResolvedSchema(
         })
       ),
     ];
-    log.info("objectUniondiscriminatorValues found ", result);
+    // log.info("getObjectUniondiscriminatorValuesFromResolvedSchema found ", result);
     return result;
   } else {
     return [];

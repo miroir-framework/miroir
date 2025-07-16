@@ -41,7 +41,7 @@ export class CallUtils {
     // asynchronous although it is not necessary, only to keep the same signature as callRemotePersistenceAction
     const result: Action2ReturnType = this.persistenceStoreLocalOrRemote.handleLocalCacheAction(action);
     
-    log.info("callLocalCacheAction received result", result);
+    // log.info("callLocalCacheAction received result", result);
     if (result && result["status"] == "error") {
       //ensure the proper persistence of errors in the local storage, for it to be accessible by view components.
       // Problem: what if the local storage is not accessible? => store it in a in-memory effect.
@@ -76,21 +76,21 @@ export class CallUtils {
     },
     action: PersistenceAction
   ): Promise<Record<string, any> | Action2Error> {
-    if (action.actionType !== "initModel") {
-      log.info("CallUtils callRemotePersistenceAction called with",
-        "action",
-        JSON.stringify(action, null, 2)
-      );
-    } 
-    // else {
+    // if (action.actionType !== "initModel") {
     //   log.info("CallUtils callRemotePersistenceAction called with",
     //     "action",
-    //     action.actionType,
-    //     action.actionName
+    //     JSON.stringify(action, null, 2)
     //   );
-    // }
+    // } 
+    // // else {
+    // //   log.info("CallUtils callRemotePersistenceAction called with",
+    // //     "action",
+    // //     action.actionType,
+    // //     action.actionName
+    // //   );
+    // // }
     const result: Action2ReturnType = await this.persistenceStoreLocalOrRemote.handlePersistenceAction(action);
-    log.info("CallUtils callRemotePersistenceAction received result", result);
+    // log.info("CallUtils callRemotePersistenceAction received result", result);
     if (result["status"] == "error") {
       //ensure the proper persistence of errors in the local storage, for it to be accessible by view components.
       // Problem: what if the local storage is not accessible? => store it in a in-memory effect.

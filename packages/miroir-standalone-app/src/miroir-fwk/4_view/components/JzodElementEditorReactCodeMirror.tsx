@@ -45,10 +45,10 @@ const JzodElementEditorReactCodeMirrorComponent: React.FC<JzodElementEditorReact
     );
   }
    useEffect(() => {
-    log.info(
-      "JzodElementEditorReactCodeMirrorComponent mounted with initialValue:",
-      initialValue
-    );
+    // log.info(
+    //   "JzodElementEditorReactCodeMirrorComponent mounted with initialValue:",
+    //   initialValue
+    // );
     if (initialValue) {
       setCodeMirrorValue(initialValue);
       try {

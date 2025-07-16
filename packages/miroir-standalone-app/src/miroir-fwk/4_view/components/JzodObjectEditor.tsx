@@ -600,12 +600,12 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
                 concreteObjectRawJzodSchema.extend
               ) {
                 const resolvedConcreteObjectJzodSchemaTmp = useMemo(() => {
-                  log.info(
-                    "getJzodElementEditorHooks unfoldJzodSchemaOnce FROM JZOD OBJECT EDITOR",
-                    "count",
-                    count,
-                    "call"
-                  );
+                  // log.info(
+                  //   "getJzodElementEditorHooks unfoldJzodSchemaOnce FROM JZOD OBJECT EDITOR",
+                  //   "count",
+                  //   count,
+                  //   "call"
+                  // );
 
                   return currentMiroirFundamentalJzodSchema
                     ? // ? unfoldJzodSchemaOnce(

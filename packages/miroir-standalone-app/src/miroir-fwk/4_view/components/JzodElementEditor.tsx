@@ -126,12 +126,12 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
   // Create a unique key for this component instance
   const componentKey = `JzodElementEditor-${props.rootLessListKey || 'ROOT'}`;
 
-  log.info(
-    "JzodElementEditorComponent",
-    count,
-    "Rendering JzodElementEditorComponent for listKey",
-    props.listKey,
-  );
+  // log.info(
+  //   "JzodElementEditorComponent",
+  //   count,
+  //   "Rendering JzodElementEditorComponent for listKey",
+  //   props.listKey,
+  // );
   const {
     // general use
     context,
@@ -248,23 +248,23 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
   );
 
 
-  log.info("JzodElementEditor",
-    count,
-    "Rendering JzodElementEditor for listKey",
-    props.listKey,
-    "objectOrArrayOrAny",
-    objectOrArrayOrAny,
-    "displayAsStructuredElement",
-    displayAsStructuredElement,
-    "hideSubJzodEditor",
-    hideSubJzodEditor,
-    "displayCodeEditor",
-    displayCodeEditor,
-    "currentValue",
-    currentValue,
-    "localResolvedElementJzodSchemaBasedOnValue",
-    localResolvedElementJzodSchemaBasedOnValue,
-  )
+  // log.info("JzodElementEditor",
+  //   count,
+  //   "Rendering JzodElementEditor for listKey",
+  //   props.listKey,
+  //   "objectOrArrayOrAny",
+  //   objectOrArrayOrAny,
+  //   "displayAsStructuredElement",
+  //   displayAsStructuredElement,
+  //   "hideSubJzodEditor",
+  //   hideSubJzodEditor,
+  //   "displayCodeEditor",
+  //   displayCodeEditor,
+  //   "currentValue",
+  //   currentValue,
+  //   "localResolvedElementJzodSchemaBasedOnValue",
+  //   localResolvedElementJzodSchemaBasedOnValue,
+  // )
 
   // Code editor element
   const codeEditor: JSX.Element = useMemo(
@@ -652,12 +652,12 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
         );
       }
       case "date": {
-        log.info(
-          "JzodElementEditorComponent: Rendering date input for listKey",
-          props.listKey,
-          "with value",
-          currentValue
-        );
+        // log.info(
+        //   "JzodElementEditorComponent: Rendering date input for listKey",
+        //   props.listKey,
+        //   "with value",
+        //   currentValue
+        // );
         
         // Convert string to Date if needed or use existing Date
         const dateValue = typeof currentValue === 'string' 
