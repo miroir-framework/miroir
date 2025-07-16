@@ -23,6 +23,7 @@ import { adminConfigurationDeploymentParis, deployments, packageName, ReportUrlP
 import { useCurrentModel } from '../ReduxHooks.js';
 import { ReportView } from '../components/ReportView.js';
 import { cleanLevel } from '../constants.js';
+import { RenderPerformanceMetrics } from '../tools/renderPerformanceMeasure.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -165,6 +166,16 @@ export const ReportPage = () => {
   useEffect(() =>
     context.setDeploymentUuidToReportsEntitiesDefinitionsMapping(deploymentUuidToReportsEntitiesDefinitionsMapping)
   );
+
+  useEffect(() => {
+    RenderPerformanceMetrics.resetMetrics();
+    log.info("RenderPerformanceMetrics reset");
+  }, [
+    pageParams.instanceUuid,
+    pageParams.reportUuid,
+    pageParams.deploymentUuid,
+    pageParams.applicationSection,
+  ]);
 
   log.info("context.deploymentUuidToReportsEntitiesDefinitionsMapping", context.deploymentUuidToReportsEntitiesDefinitionsMapping);
 

@@ -55,7 +55,8 @@ import {
   measuredJzodTypeCheck,
   measuredRootLessListKeyMap,
 } from "../tools/hookPerformanceMeasure.js";
-import { GlobalRenderPerformanceDisplay, RenderPerformanceDisplay, trackRenderPerformance } from '../tools/renderPerformanceMeasure.js';
+import { RenderPerformanceMetrics } from '../tools/renderPerformanceMeasure.js';
+// import { GlobalRenderPerformanceDisplay, RenderPerformanceDisplay, trackRenderPerformance } from '../tools/renderPerformanceMeasure.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -117,7 +118,8 @@ let ReportSectionEntityInstanceCount = 0
 // ###############################################################################################################
 export const ReportSectionEntityInstance = (props: ReportSectionEntityInstanceProps) => {
   const renderStartTime = performance.now();
-  const componentKey = `ReportSectionEntityInstance-${props.entityUuid}`;
+  // const componentKey = `ReportSectionEntityInstance-${props.entityUuid}`;
+  // const componentKey = `ReportSectionEntityInstance-${props.instance?.uuid || props.entityUuid}`;
 
 
   const errorLog = useErrorLogService();
@@ -236,24 +238,29 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
 
   useEffect(() => {
     // Track render performance at the end of render
-    const renderEndTime = performance.now();
-    const renderDuration = renderEndTime - renderStartTime;
-    const currentMetrics = trackRenderPerformance(componentKey, renderDuration);
-
-    // Log performance every 50 renders or if render took longer than 10ms
-    if (currentMetrics.renderCount % 50 === 0 || renderDuration > 10) {
-      log.info(
-        `ReportSectionEntityInstance render performance - ${componentKey}: ` +
-          `#${currentMetrics.renderCount} renders, ` +
-          `Current: ${renderDuration.toFixed(2)}ms, ` +
-          `Total: ${currentMetrics.totalRenderTime.toFixed(2)}ms, ` +
-          `Avg: ${currentMetrics.averageRenderTime.toFixed(2)}ms, ` +
-          `Min/Max: ${currentMetrics.minRenderTime.toFixed(
-            2
-          )}ms/${currentMetrics.maxRenderTime.toFixed(2)}ms`
-      );
+    // if (props.instance) {
+    if (props.instance?.uuid) {
+      const componentKey = `ReportSectionEntityInstance-${props.instance?.uuid || props.entityUuid}`
+      const renderEndTime = performance.now();
+      const renderDuration = renderEndTime - renderStartTime;
+      const currentMetrics = RenderPerformanceMetrics.trackRenderPerformance(componentKey, renderDuration);
+  
+      // Log performance every 50 renders or if render took longer than 10ms
+      if (currentMetrics.renderCount % 50 === 0 || renderDuration > 10) {
+        log.info(
+          `ReportSectionEntityInstance render performance - ${componentKey}: ` +
+            `#${currentMetrics.renderCount} renders, ` +
+            `Current: ${renderDuration.toFixed(2)}ms, ` +
+            `Total: ${currentMetrics.totalRenderTime.toFixed(2)}ms, ` +
+            `Avg: ${currentMetrics.averageRenderTime.toFixed(2)}ms, ` +
+            `Min/Max: ${currentMetrics.minRenderTime.toFixed(
+              2
+            )}ms/${currentMetrics.maxRenderTime.toFixed(2)}ms`
+        );
+      }
     }
-  });
+  }, [props.instance, props.entityUuid]);
+  // });
   
   if (!resolvedJzodSchema || resolvedJzodSchema.status != "ok") {
     log.error(
@@ -423,11 +430,19 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   //   log.info('edit code done');
   // }, []);
   log.info("ReportSectionEntityInstance start rendering!");
+  const globalRenderPerformanceDisplayElement = useMemo(() => {
+    return (
+      <RenderPerformanceMetrics.GlobalRenderPerformanceDisplay
+        renderMetrics={RenderPerformanceMetrics.renderMetrics}
+      />
+    );
+  }, [props.instance, props.entityUuid, RenderPerformanceMetrics.renderMetrics]);
   // ##############################################################################################
   if (instance) {
     return (
       <div>
-        <GlobalRenderPerformanceDisplay />
+        {/* <RenderPerformanceMetrics.GlobalRenderPerformanceDisplay /> */}
+        { globalRenderPerformanceDisplayElement }
         <div>
           {/* <RenderPerformanceDisplay componentKey={componentKey} indentLevel={0} /> */}
 

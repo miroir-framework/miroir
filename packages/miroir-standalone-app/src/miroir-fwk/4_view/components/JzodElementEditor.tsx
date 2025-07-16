@@ -33,11 +33,7 @@ import {
 } from "./Style.js";
 import { ErrorFallbackComponent } from "./ErrorFallbackComponent.js";
 import { measuredUseJzodElementEditorHooks } from "../tools/hookPerformanceMeasure.js";
-import {
-  GlobalRenderPerformanceDisplay,
-  RenderPerformanceDisplay,
-  trackRenderPerformance,
-} from "../tools/renderPerformanceMeasure.js";
+import { RenderPerformanceMetrics } from "../tools/renderPerformanceMeasure.js";
 
 
 
@@ -273,7 +269,15 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
   // Code editor element
   const codeEditor: JSX.Element = useMemo(
     () =>
-      !isUnderTest ? (
+      !isUnderTest
+      && (
+        props.resolvedElementJzodSchema?.type == "object" ||
+        props.resolvedElementJzodSchema?.type == "record" ||
+        props.resolvedElementJzodSchema?.type == "array" ||
+        props.resolvedElementJzodSchema?.type == "tuple" ||
+        props.resolvedElementJzodSchema?.type == "any"
+      )
+      ? (
         <JzodElementEditorReactCodeMirror
           initialValue={JSON.stringify(currentValue, null, 2)}
           codeMirrorValue={codeMirrorValue}
@@ -780,7 +784,7 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
 
   return (
     <span>
-      {props.rootLessListKey === '' && <RenderPerformanceDisplay componentKey={componentKey} indentLevel={props.indentLevel} />}
+      {props.rootLessListKey === '' && <RenderPerformanceMetrics.RenderPerformanceDisplay componentKey={componentKey} indentLevel={props.indentLevel} />}
       {/* {props.rootLessListKey === '' && <GlobalRenderPerformanceDisplay />} */}
       {/* <span>JzodEditor: {count}</span> */}
       <ErrorBoundary

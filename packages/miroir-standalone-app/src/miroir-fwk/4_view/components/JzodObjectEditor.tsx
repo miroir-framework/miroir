@@ -773,37 +773,6 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
       {/* <span>JzodObjectEditor: {count}</span> */}
       <div>
         {/* Performance statistics */}
-        {/* {Object.keys(performanceMetrics).length > 0 && (
-          <div style={{ 
-            fontSize: '0.8rem', 
-            color: '#333', 
-            position: 'absolute', 
-            right: '10px', 
-            top: '10px',
-            background: 'rgba(255,255,255,0.9)',
-            padding: '6px',
-            border: '1px solid #ddd',
-            borderRadius: '4px',
-            zIndex: 1000,
-            maxWidth: '300px',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-          }}>
-            <div style={{ fontWeight: 'bold', borderBottom: '1px solid #eee', marginBottom: '4px', paddingBottom: '2px' }}>
-              Performance Metrics
-            </div>
-            {Object.entries(performanceMetrics).map(([funcName, metrics]) => (
-              <div key={funcName} style={{ marginTop: '4px', fontSize: '0.75rem' }}>
-                <div style={{ fontWeight: 'bold' }}>{funcName}:</div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'auto auto', gap: '0 8px' }}>
-                  <span>Calls:</span><span>{metrics.callCount}</span>
-                  <span>Total:</span><span>{metrics.totalTime.toFixed(1)}ms</span>
-                  <span>Avg:</span><span>{(metrics.totalTime / metrics.callCount).toFixed(2)}ms</span>
-                  <span>Min/Max:</span><span>{metrics.minDuration.toFixed(1)}ms / {metrics.maxDuration.toFixed(1)}ms</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        )} */}
         <span
           style={{
             display: "flex",
