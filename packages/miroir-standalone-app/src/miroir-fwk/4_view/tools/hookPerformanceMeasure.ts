@@ -10,35 +10,35 @@ import {
 import { useJzodElementEditorHooks } from "../components/JzodElementEditorHooks";
 
 // Create measured versions of key functions used in this component
-export const measuredJzodTypeCheck = measurePerformance("jzodTypeCheck", jzodTypeCheck, 5);
+export const measuredJzodTypeCheck = measurePerformance("jzodTypeCheck", jzodTypeCheck, 100);
 export const measuredRootLessListKeyMap = measurePerformance(
   "rootLessListKeyMap",
   rootLessListKeyMap,
-  5
+  100
 );
 export const measuredGetApplicationSection = measurePerformance(
   "getApplicationSection",
   getApplicationSection,
-  10
+  100
 );
 export const measuredGetQueryRunnerParamsForDeploymentEntityState = measurePerformance(
   "getQueryRunnerParamsForDeploymentEntityState",
   getQueryRunnerParamsForDeploymentEntityState,
-  5
+  100
 );
 
 // Measure unfoldJzodSchemaOnce using our new higher-order function
 export const measuredUnfoldJzodSchemaOnce = measurePerformance(
   'unfoldJzodSchemaOnce',
   unfoldJzodSchemaOnce,
-  10
+  100
 );
 
 // Example of how to measure other core functions with performance tracking
 export const measuredGetDefaultValueForJzodSchemaWithResolution = measurePerformance(
   'getDefaultValueForJzodSchemaWithResolution',
   getDefaultValueForJzodSchemaWithResolution,
-  5
+  100
 );
 
 export const measuredUseJzodElementEditorHooks = measurePerformance(

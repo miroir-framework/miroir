@@ -240,20 +240,24 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     if (props.instance?.uuid) {
       const renderEndTime = performance.now();
       const renderDuration = renderEndTime - renderStartTime;
-      const currentMetrics = RenderPerformanceMetrics.trackRenderPerformance(componentKey, renderDuration);
-  
-      // Log performance every 50 renders or if render took longer than 10ms
-      if (currentMetrics.renderCount % 50 === 0 || renderDuration > 10) {
-        log.info(
-          `ReportSectionEntityInstance render performance - ${componentKey}: ` +
-            `#${currentMetrics.renderCount} renders, ` +
-            `Current: ${renderDuration.toFixed(2)}ms, ` +
-            `Total: ${currentMetrics.totalRenderTime.toFixed(2)}ms, ` +
-            `Avg: ${currentMetrics.averageRenderTime.toFixed(2)}ms, ` +
-            `Min/Max: ${currentMetrics.minRenderTime.toFixed(
-              2
-            )}ms/${currentMetrics.maxRenderTime.toFixed(2)}ms`
-        );
+      
+      // Only track performance if render took longer than 5ms or every 100 renders
+      if (renderDuration > 5) {
+        const currentMetrics = RenderPerformanceMetrics.trackRenderPerformance(componentKey, renderDuration);
+    
+        // Log performance every 100 renders or if render took longer than 15ms
+        if (currentMetrics.renderCount % 100 === 0 || renderDuration > 15) {
+          log.info(
+            `ReportSectionEntityInstance render performance - ${componentKey}: ` +
+              `#${currentMetrics.renderCount} renders, ` +
+              `Current: ${renderDuration.toFixed(2)}ms, ` +
+              `Total: ${currentMetrics.totalRenderTime.toFixed(2)}ms, ` +
+              `Avg: ${currentMetrics.averageRenderTime.toFixed(2)}ms, ` +
+              `Min/Max: ${currentMetrics.minRenderTime.toFixed(
+                2
+              )}ms/${currentMetrics.maxRenderTime.toFixed(2)}ms`
+          );
+        }
       }
     }
   }, [props.instance, props.entityUuid]);

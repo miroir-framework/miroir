@@ -23,6 +23,7 @@ export class RenderPerformanceMetrics {
   // private static renderMetrics: Record<string, RenderPerformanceMetricsElement> = {};
   static renderMetrics: Record<string, RenderPerformanceMetricsElement> = {};
   static changeCallbacks: (() => void)[] = [];
+  static notifyTimer: NodeJS.Timeout | null = null;
 
   static addChangeCallback(callback: () => void) {
     this.changeCallbacks.push(callback);
@@ -33,11 +34,25 @@ export class RenderPerformanceMetrics {
   }
 
   static notifyCallbacks() {
-    // console.log('RenderPerformanceMetrics notifying callbacks, count:', this.changeCallbacks.length);
-    this.changeCallbacks.forEach(callback => callback());
+    // Throttle notifications to avoid excessive re-renders
+    if (this.notifyTimer) {
+      return;
+    }
+    
+    this.notifyTimer = setTimeout(() => {
+      // console.log('RenderPerformanceMetrics notifying callbacks, count:', this.changeCallbacks.length);
+      this.changeCallbacks.forEach(callback => callback());
+      this.notifyTimer = null;
+    }, 100); // Throttle to 100ms
   }
 
   static resetMetrics() {
+    // Clear any pending timer
+    if (this.notifyTimer) {
+      clearTimeout(this.notifyTimer);
+      this.notifyTimer = null;
+    }
+    
     this.renderMetrics = this.renderMetrics
       ? Object.fromEntries(
           Object.keys(this.renderMetrics).map((k) => [

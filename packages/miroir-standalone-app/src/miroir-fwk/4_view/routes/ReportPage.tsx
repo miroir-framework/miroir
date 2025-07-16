@@ -161,7 +161,7 @@ export const ReportPage = () => {
     ),
     // [miroirMetaModel, libraryAppModel, adminAppModel, test1AppModel, test4AppModel, parisAppModel]
     // [miroirMetaModel, libraryAppModel, adminAppModel, test1AppModel, test4AppModel ]
-    [miroirMetaModel, libraryAppModel, adminAppModel ]
+    [miroirMetaModel, libraryAppModel, adminAppModel, parisAppModel ]
   );
 
   useEffect(() =>
@@ -216,7 +216,6 @@ export const ReportPage = () => {
     log.info("ReportPage current metrics:", RenderPerformanceMetrics.renderMetrics);
     return (
       <div>
-        <PerformanceDisplayContainer />
         <span>ReportPage: {ReportPageCount}</span>
         <div>
           <h3>erreurs: {JSON.stringify(errorLog)}</h3>
