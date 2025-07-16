@@ -1,4 +1,4 @@
-import { ChangeEvent, useCallback, useMemo, useState } from 'react';
+import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { Formik, FormikProps } from 'formik';
 import { EditorView } from '@codemirror/view';
 import ReactCodeMirror from '@uiw/react-codemirror';
@@ -54,7 +54,8 @@ import {
   measuredGetQueryRunnerParamsForDeploymentEntityState,
   measuredJzodTypeCheck,
   measuredRootLessListKeyMap,
-} from "../tools/performanceInstrumentation.js";
+} from "../tools/hookPerformanceMeasure.js";
+import { GlobalRenderPerformanceDisplay, RenderPerformanceDisplay, trackRenderPerformance } from '../tools/renderPerformanceMeasure.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -115,6 +116,10 @@ const codeMirrorExtensions = [javascript()];
 let ReportSectionEntityInstanceCount = 0
 // ###############################################################################################################
 export const ReportSectionEntityInstance = (props: ReportSectionEntityInstanceProps) => {
+  const renderStartTime = performance.now();
+  const componentKey = `ReportSectionEntityInstance-${props.entityUuid}`;
+
+
   const errorLog = useErrorLogService();
   const context = useMiroirContextService();
 
@@ -229,6 +234,27 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     resolvedJzodSchema,
   );
 
+  useEffect(() => {
+    // Track render performance at the end of render
+    const renderEndTime = performance.now();
+    const renderDuration = renderEndTime - renderStartTime;
+    const currentMetrics = trackRenderPerformance(componentKey, renderDuration);
+
+    // Log performance every 50 renders or if render took longer than 10ms
+    if (currentMetrics.renderCount % 50 === 0 || renderDuration > 10) {
+      log.info(
+        `ReportSectionEntityInstance render performance - ${componentKey}: ` +
+          `#${currentMetrics.renderCount} renders, ` +
+          `Current: ${renderDuration.toFixed(2)}ms, ` +
+          `Total: ${currentMetrics.totalRenderTime.toFixed(2)}ms, ` +
+          `Avg: ${currentMetrics.averageRenderTime.toFixed(2)}ms, ` +
+          `Min/Max: ${currentMetrics.minRenderTime.toFixed(
+            2
+          )}ms/${currentMetrics.maxRenderTime.toFixed(2)}ms`
+      );
+    }
+  });
+  
   if (!resolvedJzodSchema || resolvedJzodSchema.status != "ok") {
     log.error(
       "ReportSectionEntityInstance could not resolve jzod schema",
@@ -400,8 +426,11 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   // ##############################################################################################
   if (instance) {
     return (
-      <>
+      <div>
+        <GlobalRenderPerformanceDisplay />
         <div>
+          {/* <RenderPerformanceDisplay componentKey={componentKey} indentLevel={0} /> */}
+
           <p>ReportSectionEntityInstance: {ReportSectionEntityInstanceCount}</p>
           <div>
             {typeError ? "typeError: " : ""}
@@ -611,7 +640,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
           )}
         </div>
         <PerformanceMetricsDisplay />
-      </>
+      </div>
     );
   } else {
     return <>ReportSectionEntityInstance: No instance to display!</>;

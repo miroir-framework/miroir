@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { ErrorBoundary, withErrorBoundary } from "react-error-boundary";
 
 import ExpandLess from "@mui/icons-material/ExpandLess";
@@ -32,7 +32,15 @@ import {
   StyledSelect
 } from "./Style.js";
 import { ErrorFallbackComponent } from "./ErrorFallbackComponent.js";
-import { measuredUseJzodElementEditorHooks } from "../tools/performanceInstrumentation.js";
+import { measuredUseJzodElementEditorHooks } from "../tools/hookPerformanceMeasure.js";
+import {
+  GlobalRenderPerformanceDisplay,
+  RenderPerformanceDisplay,
+  trackRenderPerformance,
+} from "../tools/renderPerformanceMeasure.js";
+
+
+
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -110,11 +118,17 @@ ExpandOrFoldObjectAttributes.displayName = "ExpandOrFoldObjectAttributes";
 // let count = 0;
 
 function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element {
+  // Start measuring render time
+  const renderStartTime = performance.now();
+  
   // count++;
   const [count, setCount] = useState(0);
   React.useEffect(() => {
     setCount((prevCount) => prevCount + 1);
   }, [props]);
+
+  // Create a unique key for this component instance
+  const componentKey = `JzodElementEditor-${props.rootLessListKey || 'ROOT'}`;
 
   log.info(
     "JzodElementEditorComponent",
@@ -193,28 +207,6 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
     ]
   );
   
-  // const localResolvedElementJzodSchemaBasedOnValue = rootLessListKeyMap[props.rootLessListKey]?.resolvedElementJzodSchema;
-  // if (!localResolvedElementJzodSchemaBasedOnValue) {
-  //   log.error(
-  //     "JzodElementEditorComponent",
-  //     count,
-  //     "No resolved schema found for rootLessListKey",
-  //     props.rootLessListKey,
-  //     "with value",
-  //     currentValue,
-  //     "and props.localRootLessListKeyMap",
-  //     JSON.stringify(props.localRootLessListKeyMap, null, 2),
-  //   );
-  //   return (
-  //     <div>
-  //       Could not find resolved schema for item: {props.rootLessListKey}
-  //       <br />
-  //       value {JSON.stringify(currentValue, null, 2)}
-  //       <br />
-  //       raw Jzod schema: {JSON.stringify(props.rawJzodSchema, null, 2)}
-  //     </div>
-  //   );
-  // }
   // Determine if the element is an object, array or any type
   const objectOrArrayOrAny = useMemo(() => 
     !localResolvedElementJzodSchemaBasedOnValue || ["any", "object", "record", "array", "tuple"].includes(
@@ -354,35 +346,6 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
         </div>
       );
     }
-
-    // if (
-    //   props.rawJzodSchema.type !== "any" &&
-    //   localResolvedElementJzodSchemaBasedOnValue.type !== props.rawJzodSchema.type &&
-    //   ((localResolvedElementJzodSchemaBasedOnValue.type === "object" &&
-    //     !objectTypes.includes(props.rawJzodSchema.type)) ||
-    //     (props.rawJzodSchema.type === "enum" &&
-    //       !enumTypes.includes(localResolvedElementJzodSchemaBasedOnValue.type)))
-    // ) {
-    //   throw new Error(
-    //     "JzodElementEditor mismatching jzod schemas, resolved schema " +
-    //       JSON.stringify(localResolvedElementJzodSchemaBasedOnValue, null, 2) +
-    //       " raw schema " +
-    //       JSON.stringify(props.rawJzodSchema, null, 2)
-    //   );
-    // }
-
-    // if (recursivelyUnfoldedRawSchema && recursivelyUnfoldedRawSchema.status === "error") {
-    //   return (
-    //     <div>
-    //       <p>
-    //         Error unfolding union schema {props.listKey} {count}:
-    //       </p>
-    //       <pre style={{ color: "red" }}>
-    //         {JSON.stringify(recursivelyUnfoldedRawSchema, null, 2)}
-    //       </pre>
-    //     </div>
-    //   );
-    // }
 
     // Handle "any" type
     if (props.rawJzodSchema?.type === "any" && !props.insideAny) {
@@ -796,12 +759,29 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
     return <></>;
   }
 
+  // useEffect(() => {
+  //     // Track render performance at the end of render
+  //   const renderEndTime = performance.now();
+  //   const renderDuration = renderEndTime - renderStartTime;
+  //   const currentMetrics = trackRenderPerformance(componentKey, renderDuration);
+
+  //   // Log performance every 50 renders or if render took longer than 10ms
+  //   if (currentMetrics.renderCount % 50 === 0 || renderDuration > 10) {
+  //     log.info(
+  //       `JzodElementEditor render performance - ${componentKey}: ` +
+  //       `#${currentMetrics.renderCount} renders, ` +
+  //       `Current: ${renderDuration.toFixed(2)}ms, ` +
+  //       `Total: ${currentMetrics.totalRenderTime.toFixed(2)}ms, ` +
+  //       `Avg: ${currentMetrics.averageRenderTime.toFixed(2)}ms, ` +
+  //       `Min/Max: ${currentMetrics.minRenderTime.toFixed(2)}ms/${currentMetrics.maxRenderTime.toFixed(2)}ms`
+  //     );
+  //   }
+  // });
+
   return (
     <span>
-      {/* hideSubJzodEditor: {hideSubJzodEditor ? "true" : "false"}{" "}
-      displayCodeEditor: {displayCodeEditor ? "true" : "false"}{" "}
-      displayAsStructuredElement: {displayAsStructuredElement ? "true" : "false"}{" "}
-      <br /> */}
+      {props.rootLessListKey === '' && <RenderPerformanceDisplay componentKey={componentKey} indentLevel={props.indentLevel} />}
+      {/* {props.rootLessListKey === '' && <GlobalRenderPerformanceDisplay />} */}
       {/* <span>JzodEditor: {count}</span> */}
       <ErrorBoundary
         FallbackComponent={({ error, resetErrorBoundary }) => (

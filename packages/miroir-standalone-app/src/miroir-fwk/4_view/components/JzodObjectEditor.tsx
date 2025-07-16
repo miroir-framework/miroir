@@ -32,7 +32,7 @@ import {
   measuredGetDefaultValueForJzodSchemaWithResolution,
   measuredUnfoldJzodSchemaOnce,
   measuredUseJzodElementEditorHooks,
-} from "../tools/performanceInstrumentation";
+} from "../tools/hookPerformanceMeasure";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

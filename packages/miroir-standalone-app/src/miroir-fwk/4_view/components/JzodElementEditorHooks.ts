@@ -39,7 +39,7 @@ import { getItemsOrder } from "./Style";
 import { packageName } from "../../../constants";
 import { cleanLevel } from "../constants";
 import { JzodObject } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { measuredUnfoldJzodSchemaOnce } from "../tools/performanceInstrumentation";
+import { measuredUnfoldJzodSchemaOnce } from "../tools/hookPerformanceMeasure";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

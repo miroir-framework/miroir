@@ -15,7 +15,7 @@ import { useJzodElementEditorHooks } from "./JzodElementEditorHooks";
 import { JzodAnyEditorProps } from "./JzodElementEditorInterface";
 import { ChangeValueTypeSelect } from "./ChangeValueTypeSelect";
 import { JzodElement, JzodSchema } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { measuredUseJzodElementEditorHooks } from "../tools/performanceInstrumentation";
+import { measuredUseJzodElementEditorHooks } from "../tools/hookPerformanceMeasure";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
