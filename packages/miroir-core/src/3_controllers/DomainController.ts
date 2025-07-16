@@ -406,68 +406,57 @@ export class DomainController implements DomainControllerInterface {
               uuid: e.entity.uuid,
             }))
           );
-          let instances: EntityInstanceCollection[] = []; //TODO: replace with functional implementation
-          let latestInstances: EntityInstanceCollection | undefined = undefined; //TODO: replace with functional implementation
-          for (const e of toFetchEntities) {
-            // makes sequential calls to interface. Make parallel calls instead using Promise.all?
+
+          // Batch all persistence operations for React 18 automatic batching
+          const fetchPromises = toFetchEntities.map((e) => {
             log.info(
-              "DomainController loadConfigurationFromPersistenceStore fecthing instances from server for entity",
+              "DomainController loadConfigurationFromPersistenceStore fetching instances from server for entity",
               JSON.stringify(e, undefined, 2)
             );
-            await this.callUtil
-              .callRemotePersistenceAction(
-                {}, // context
-                {
-                  addResultToContextAsName: "entityInstanceCollection",
-                  expectedDomainElementType: "entityInstanceCollection",
-                }, // context update
-                {
-                  actionType: "RestPersistenceAction",
-                  actionName: "read",
-                  endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
-                  deploymentUuid,
-                  parentName: e.entity.name,
-                  parentUuid: e.entity.uuid,
-                  section: e.section,
-                }
-              )
-              .then((context: Record<string, any>) => {
-                // TODO: is logging whithin this function independent of logging configuration?
-                // log.trace(
-                //   "DomainController loadConfigurationFromRemoteDataStore found instances for entity",
-                //   e.entity["name"],
-                //   entityInstanceCollection
-                // );
-                log.info(
-                  "DomainController loadConfigurationFromPersistenceStore found instances for section",
-                  e.section,
-                  "entity",
-                  e.entity.name
-                );
-                instances.push(context["entityInstanceCollection"].returnedDomainElement);
-                latestInstances = context["entityInstanceCollection"].returnedDomainElement;
-                return context;
-              })
-              .then((context: Record<string, any>) => {
-                if (!latestInstances) {
-                  throw new Error(
-                    "DomainController loadConfigurationFromPersistenceStore could not fetch entity instance list " +
-                      // JSON.stringify(context.dataEntitiesFromModelSection.map((e: any) => e.name), undefined, 2)
-                      JSON.stringify(context.dataEntitiesFromModelSection, undefined, 2)
-                  );
-                }
-                return this.callUtil.callLocalCacheAction(
-                  context, // context
-                  {}, // context update
-                  {
-                    actionType: "loadNewInstancesInLocalCache",
-                    deploymentUuid,
-                    endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-                    objects: [latestInstances],
-                  }
-                );
-              })
-              .catch((reason) => log.error(reason));
+            return this.callUtil.callRemotePersistenceAction(
+              {}, // context
+              {
+                addResultToContextAsName: "entityInstanceCollection",
+                expectedDomainElementType: "entityInstanceCollection",
+              }, // context update
+              {
+                actionType: "RestPersistenceAction",
+                actionName: "read",
+                endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
+                deploymentUuid,
+                parentName: e.entity.name,
+                parentUuid: e.entity.uuid,
+                section: e.section,
+              }
+            ).then((context: Record<string, any>) => {
+              log.info(
+                "DomainController loadConfigurationFromPersistenceStore found instances for section",
+                e.section,
+                "entity",
+                e.entity.name
+              );
+              return context["entityInstanceCollection"].returnedDomainElement;
+            }).catch((reason) => {
+              log.error("Failed to fetch entity instances for", e.entity.name, reason);
+              throw reason;
+            });
+          });
+
+          // Wait for all fetch operations to complete
+          const allInstances = await Promise.all(fetchPromises);
+
+          // Batch all local cache updates in a single operation to leverage React 18's automatic batching
+          if (allInstances.length > 0) {
+            await this.callUtil.callLocalCacheAction(
+              context, // context
+              {}, // context update
+              {
+                actionType: "loadNewInstancesInLocalCache",
+                deploymentUuid,
+                endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                objects: allInstances,
+              }
+            );
           }
 
           // removes current transaction
