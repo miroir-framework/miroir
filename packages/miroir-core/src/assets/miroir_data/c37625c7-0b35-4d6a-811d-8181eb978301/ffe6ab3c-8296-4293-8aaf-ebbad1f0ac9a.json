@@ -349,12 +349,12 @@
                 "actionType": "runBoxedExtractorOrQueryAction",
                 "actionName": "runQuery",
                 "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                "applicationSection": "model",
                 "deploymentUuid": {
                   "transformerType": "parameterReference",
                   "interpolation": "build",
                   "referenceName": "testDeploymentUuid"
                 },
+                "applicationSection": "model",
                 "query": {
                   "queryType": "boxedQueryWithExtractorCombinerTransformer",
                   "deploymentUuid": {

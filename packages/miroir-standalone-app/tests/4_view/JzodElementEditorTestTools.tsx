@@ -418,6 +418,7 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
                   ? rootLessListKeyMap(
                       "",
                       effectiveRawJzodSchema,
+                      undefined, // resolvedJzodSchema,
                       currentModel,
                       currentMiroirModel,
                       context.miroirFundamentalJzodSchema,

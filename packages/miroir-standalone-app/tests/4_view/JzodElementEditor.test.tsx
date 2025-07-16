@@ -1805,7 +1805,7 @@ export function getJzodEditorPerformanceTests(
 };
 
 // ################################################################################################
-// BOOK
+// ENDPOINT
 // ################################################################################################
 export interface LocalEndpointEditorProps extends LocalEditorPropsRoot{
   // rawJzodSchema: EntityDefinition | undefined;
@@ -1968,6 +1968,7 @@ const jzodElementEditorTests: Record<
   JzodEndpointEditor: { 
     editor: JzodElementEditor, 
     getJzodEditorTests: getJzodEndpointEditorTests,
+    performanceTests: true,
     // modes: '*',
     // modes: ['jzodElementEditor', 'component'],
     modes: 'jzodElementEditor',

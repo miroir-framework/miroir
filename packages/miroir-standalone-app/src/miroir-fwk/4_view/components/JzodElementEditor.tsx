@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { ErrorBoundary, withErrorBoundary } from "react-error-boundary";
 
 import ExpandLess from "@mui/icons-material/ExpandLess";
@@ -106,10 +106,14 @@ ExpandOrFoldObjectAttributes.displayName = "ExpandOrFoldObjectAttributes";
 // #####################################################################################################
 // #####################################################################################################
 // #####################################################################################################
-let count = 0;
+// let count = 0;
 
 function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element {
-  count++;
+  // count++;
+  const [count, setCount] = useState(0);
+  React.useEffect(() => {
+    setCount((prevCount) => prevCount + 1);
+  }, [props]);
 
   log.info(
     "JzodElementEditorComponent",
@@ -796,6 +800,7 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
       displayCodeEditor: {displayCodeEditor ? "true" : "false"}{" "}
       displayAsStructuredElement: {displayAsStructuredElement ? "true" : "false"}{" "}
       <br /> */}
+      {/* <span>JzodEditor: {count}</span> */}
       <ErrorBoundary
         FallbackComponent={({ error, resetErrorBoundary }) => (
           <ErrorFallbackComponent

@@ -21,7 +21,7 @@ describe("rootLessListKeyMap", () => {
   it("inconsistency: string value and  object schema should throw an error", () => {
     // Mock data
     const rootLessListKey = "testKey";
-    const resolvedJzodSchema: JzodObject = {
+    const rawJzodSchema: JzodObject = {
       type: "object",
       definition: {
         name: { type: "string" },
@@ -33,20 +33,22 @@ describe("rootLessListKeyMap", () => {
     expect(() =>
       rootLessListKeyMap(
         rootLessListKey,
-        resolvedJzodSchema,
+        rawJzodSchema,
+        undefined, // No resolved schema based on value
         mockCurrentModel,
         mockMiroirMetaModel,
         mockMiroirFundamentalJzodSchema,
         currentValue
       )
-    ).toThrow(/could not resolve jzod schema/);
+    // ).toThrow(/could not resolve jzod schema/);
+    ).toThrow(/could not jzodTypeCheck/);
   });
 
   // ##############################################################################################
   it("should handle an empty object value", () => {
     // Mock data
     const rootLessListKey = "testKey";
-    const resolvedJzodSchema: JzodObject = {
+    const rawJzodSchema: JzodObject = {
       type: "object",
       definition: {},
     };
@@ -55,7 +57,8 @@ describe("rootLessListKeyMap", () => {
     // Execute function
     const result = rootLessListKeyMap(
       rootLessListKey,
-      resolvedJzodSchema,
+      rawJzodSchema,
+      undefined, // No resolved schema based on value
       mockCurrentModel,
       mockMiroirMetaModel,
       mockMiroirFundamentalJzodSchema,
@@ -64,7 +67,7 @@ describe("rootLessListKeyMap", () => {
 
     expect(result).toEqual({
       [rootLessListKey]: {
-        resolvedElementJzodSchema: resolvedJzodSchema,
+        resolvedElementJzodSchema: rawJzodSchema,
       },
     });
   });
@@ -73,7 +76,7 @@ describe("rootLessListKeyMap", () => {
   it("should handle an empty array value", () => {
     // Mock data
     const rootLessListKey = "testKey";
-    const resolvedJzodSchema: JzodElement = {
+    const rawJzodSchema: JzodElement = {
       type: "array",
       definition: { type: "any" },
     };
@@ -81,7 +84,8 @@ describe("rootLessListKeyMap", () => {
     // Execute function
     const result = rootLessListKeyMap(
       rootLessListKey,
-      resolvedJzodSchema,
+      rawJzodSchema,
+      undefined, // No resolved schema based on value
       mockCurrentModel,
       mockMiroirMetaModel,
       mockMiroirFundamentalJzodSchema,
@@ -101,7 +105,7 @@ describe("rootLessListKeyMap", () => {
   it("simple object value: should return a map with the root key and resolved schema", () => {
     // Mock data
     const rootLessListKey = "testKey";
-    const resolvedJzodSchema: JzodObject = {
+    const rawJzodSchema: JzodObject = {
       type: "object",
       definition: {
         name: { type: "string" },
@@ -113,7 +117,8 @@ describe("rootLessListKeyMap", () => {
     // Execute function
     const result = rootLessListKeyMap(
       rootLessListKey,
-      resolvedJzodSchema,
+      rawJzodSchema,
+      undefined, // No resolved schema based on value
       mockCurrentModel,
       mockMiroirMetaModel,
       mockMiroirFundamentalJzodSchema,
@@ -122,7 +127,7 @@ describe("rootLessListKeyMap", () => {
 
     expect(result).toEqual({
       [rootLessListKey]: {
-        resolvedElementJzodSchema: resolvedJzodSchema,
+        resolvedElementJzodSchema: rawJzodSchema,
       },
       [rootLessListKey + ".name"]: {
         resolvedElementJzodSchema: {
@@ -141,7 +146,7 @@ describe("rootLessListKeyMap", () => {
   it("should handle a nested object value", () => {
     // Mock data
     const rootLessListKey = "testKey";
-    const resolvedJzodSchema: JzodObject = {
+    const rawJzodSchema: JzodObject = {
       type: "object",
       definition: {
         person: {
@@ -172,7 +177,8 @@ describe("rootLessListKeyMap", () => {
     // Execute function
     const result = rootLessListKeyMap(
       rootLessListKey,
-      resolvedJzodSchema,
+      rawJzodSchema,
+      undefined, // No resolved schema based on value
       mockCurrentModel,
       mockMiroirMetaModel,
       mockMiroirFundamentalJzodSchema,
@@ -181,16 +187,16 @@ describe("rootLessListKeyMap", () => {
 
     expect(result).toEqual({
       [rootLessListKey]: {
-        resolvedElementJzodSchema: resolvedJzodSchema,
+        resolvedElementJzodSchema: rawJzodSchema,
       },
       [rootLessListKey + ".person"]: {
-        resolvedElementJzodSchema: resolvedJzodSchema.definition.person,
+        resolvedElementJzodSchema: rawJzodSchema.definition.person,
       },
       [rootLessListKey + ".person.name"]: {
         resolvedElementJzodSchema: { type: "string" },
       },
       [rootLessListKey + ".person.address"]: {
-        resolvedElementJzodSchema: (resolvedJzodSchema.definition.person as JzodObject).definition.address,
+        resolvedElementJzodSchema: (rawJzodSchema.definition.person as JzodObject).definition.address,
       },
       [rootLessListKey + ".person.address.city"]: {
         resolvedElementJzodSchema: { type: "string" },
@@ -205,7 +211,7 @@ describe("rootLessListKeyMap", () => {
   it("simple array value: should return a map with the root key and resolved schema", () => {
     // Mock data
     const rootLessListKey = "testKey";
-    const resolvedJzodSchema: JzodElement = {
+    const rawJzodSchema: JzodElement = {
       type: "array",
       definition: { type: "string" },
     };
@@ -214,7 +220,8 @@ describe("rootLessListKeyMap", () => {
     // Execute function
     const result = rootLessListKeyMap(
       rootLessListKey,
-      resolvedJzodSchema,
+      rawJzodSchema,
+      undefined, // No resolved schema based on value
       mockCurrentModel,
       mockMiroirMetaModel,
       mockMiroirFundamentalJzodSchema,
@@ -248,7 +255,7 @@ describe("rootLessListKeyMap", () => {
   it("simple tuple value: should return a map with the root key and resolved schema", () => {
     // Mock data
     const rootLessListKey = "testKey";
-    const resolvedJzodSchema: JzodElement = {
+    const rawJzodSchema: JzodElement = {
       type: "tuple",
       definition: [
         { type: "string" },
@@ -260,7 +267,8 @@ describe("rootLessListKeyMap", () => {
     // Execute function
     const result = rootLessListKeyMap(
       rootLessListKey,
-      resolvedJzodSchema,
+      rawJzodSchema,
+      undefined, // No resolved schema based on value
       mockCurrentModel,
       mockMiroirMetaModel,
       mockMiroirFundamentalJzodSchema,
@@ -269,7 +277,7 @@ describe("rootLessListKeyMap", () => {
 
     expect(result).toEqual({
       [rootLessListKey]: {
-        resolvedElementJzodSchema: resolvedJzodSchema,
+        resolvedElementJzodSchema: rawJzodSchema,
       },
       [rootLessListKey + ".0"]: {
         resolvedElementJzodSchema: { type: "string" },
@@ -284,7 +292,7 @@ describe("rootLessListKeyMap", () => {
   it("simple tuple inside an array value: should return a map with the root key and resolved schema", () => {
     // Mock data
     const rootLessListKey = "testKey";
-    const resolvedJzodSchema: JzodElement = {
+    const rawJzodSchema: JzodElement = {
       type: "array",
       definition: {
         type: "tuple",
@@ -302,7 +310,8 @@ describe("rootLessListKeyMap", () => {
     // Execute function
     const result = rootLessListKeyMap(
       rootLessListKey,
-      resolvedJzodSchema,
+      rawJzodSchema,
+      undefined, // No resolved schema based on value
       mockCurrentModel,
       mockMiroirMetaModel,
       mockMiroirFundamentalJzodSchema,
@@ -413,6 +422,7 @@ describe("rootLessListKeyMap", () => {
     const result = rootLessListKeyMap(
       // rootLessListKey,
       "",
+      rawJzodSchema,
       resolvedJzodSchemaByHand,
       mockCurrentModel,
       mockMiroirMetaModel,

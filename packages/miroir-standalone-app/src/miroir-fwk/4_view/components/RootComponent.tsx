@@ -344,8 +344,10 @@ export const RootComponent = (props: RootComponentProps) => {
                             actionName: "runQuery",
                             deploymentUuid:adminConfigurationDeploymentAdmin.uuid,
                             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                            applicationSection: "data",
-                            query: adminDeploymentsQuery
+                            payload: {
+                              applicationSection: "data",
+                              query: adminDeploymentsQuery
+                            }
                           }
                         )
                       ;

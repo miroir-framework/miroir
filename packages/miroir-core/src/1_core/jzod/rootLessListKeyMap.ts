@@ -154,46 +154,53 @@ function mapResolveJzodSchemaToValueKeys(
 export function rootLessListKeyMap(
   rootLessListKey: string,
   rawJzodSchema: JzodElement | undefined,
+  resolvedElementJzodSchemaBasedOnValue: JzodElement | undefined,
   currentModel: MetaModel,
   miroirMetaModel: MetaModel,
   miroirFundamentalJzodSchema: JzodSchema,
   currentValue: any // current value of the jzod element
 ): Record<string, { resolvedElementJzodSchema: JzodElement }> {
-  const returnedLocalResolvedElementJzodSchemaBasedOnValue:
-    | ResolvedJzodSchemaReturnType
-    | undefined = rawJzodSchema
-    ? jzodTypeCheck(
-        rawJzodSchema,
-        currentValue,
-        [], // currentValuePath
-        [], // currentTypePath
-        miroirFundamentalJzodSchema,
-        currentModel,
-        miroirMetaModel,
-        {}
-      )
-    : undefined;
+  let localResolvedElementJzodSchemaBasedOnValue: JzodElement;
 
-  if (
-    !returnedLocalResolvedElementJzodSchemaBasedOnValue ||
-    returnedLocalResolvedElementJzodSchemaBasedOnValue.status == "error"
-  ) {
-    throw new Error(
-      "rootLessListKeyMap " +
-        "path '" +
-        rootLessListKey +
-        "' could not jzodTypeCheck for " +
-        " currentValue " +
-        // JSON.stringify(currentValue, null, 2) +
-        JSON.stringify(currentValue, null, 2) +
-        " rawJzodSchema " +
-        JSON.stringify(rawJzodSchema, null, 2) +
-        " returnedLocalResolvedElementJzodSchemaBasedOnValue " +
-        JSON.stringify(returnedLocalResolvedElementJzodSchemaBasedOnValue, null, 2)
-    );
+  if (!resolvedElementJzodSchemaBasedOnValue) {
+    const returnedLocalResolvedElementJzodSchemaBasedOnValue:
+      | ResolvedJzodSchemaReturnType
+      | undefined = rawJzodSchema
+      ? jzodTypeCheck(
+          rawJzodSchema,
+          currentValue,
+          [], // currentValuePath
+          [], // currentTypePath
+          miroirFundamentalJzodSchema,
+          currentModel,
+          miroirMetaModel,
+          {}
+        )
+      : undefined;
+
+    if (
+      !returnedLocalResolvedElementJzodSchemaBasedOnValue ||
+      returnedLocalResolvedElementJzodSchemaBasedOnValue.status == "error"
+    ) {
+      throw new Error(
+        "rootLessListKeyMap " +
+          "path '" +
+          rootLessListKey +
+          "' could not jzodTypeCheck for " +
+          " currentValue " +
+          // JSON.stringify(currentValue, null, 2) +
+          JSON.stringify(currentValue, null, 2) +
+          " rawJzodSchema " +
+          JSON.stringify(rawJzodSchema, null, 2) +
+          " returnedLocalResolvedElementJzodSchemaBasedOnValue " +
+          JSON.stringify(returnedLocalResolvedElementJzodSchemaBasedOnValue, null, 2)
+      );
+    }
+    localResolvedElementJzodSchemaBasedOnValue =
+      returnedLocalResolvedElementJzodSchemaBasedOnValue.resolvedSchema;
+  } else {
+    localResolvedElementJzodSchemaBasedOnValue = resolvedElementJzodSchemaBasedOnValue;
   }
-  const localResolvedElementJzodSchemaBasedOnValue: JzodElement =
-    returnedLocalResolvedElementJzodSchemaBasedOnValue.resolvedSchema;
 
   log.info(
     "rootLessListKeyMap found localResolvedElementJzodSchemaBasedOnValue",
@@ -211,6 +218,13 @@ export function rootLessListKeyMap(
   );
 
   // log.info("rootLessListKeyMap result", JSON.stringify(result, null, 2))
-  log.info("rootLessListKeyMap result", result, "for rootLessListKey", rootLessListKey, "currentValue", currentValue);
+  log.info(
+    "rootLessListKeyMap result",
+    result,
+    "for rootLessListKey",
+    rootLessListKey,
+    "currentValue",
+    currentValue
+  );
   return result;
 }

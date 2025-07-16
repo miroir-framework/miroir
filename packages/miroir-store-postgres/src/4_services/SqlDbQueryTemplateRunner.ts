@@ -93,7 +93,12 @@ export class SqlDbExtractTemplateRunner {
 
   // ##############################################################################################
   async handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(runBoxedQueryTemplateOrBoxedExtractorTemplateAction: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction): Promise<Action2ReturnType> {
-    log.info(this.logHeader, "handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY", "runBoxedQueryTemplateOrBoxedExtractorTemplateAction", JSON.stringify(runBoxedQueryTemplateOrBoxedExtractorTemplateAction, null, 2));
+    log.info(
+      this.logHeader,
+      "handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY",
+      "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
+      JSON.stringify(runBoxedQueryTemplateOrBoxedExtractorTemplateAction, null, 2)
+    );
     return handleBoxedExtractorTemplateOrQueryTemplateAction("SqlDbQueryTemplateRunner", runBoxedQueryTemplateOrBoxedExtractorTemplateAction, this.extractorRunnerMapForServerOnly);
   }
 

@@ -53,14 +53,14 @@ const miroirExpression: JzodElement = {
 // ] as any[]; //type for Admin SelfApplication Deployment Entity Definition
 
 
-let count = 0;
+let ReportPageCount = 0;
 // ###############################################################################################################
 export const ReportPage = () => {
   const pageParams: Params<ReportUrlParamKeys> = useParams<ReportUrlParamKeys>();
   const context = useMiroirContextService();
 
-  count++;
-  log.info("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& ReportPage rendering count", count, "params", pageParams);
+  ReportPageCount++;
+  log.info("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& ReportPage rendering count", ReportPageCount, "params", pageParams);
   useEffect(() => context.setDeploymentUuid(pageParams.deploymentUuid ? pageParams.deploymentUuid : ""));
   useEffect(() => context.setApplicationSection((pageParams.applicationSection as ApplicationSection) ?? "data"));
 
@@ -191,9 +191,10 @@ export const ReportPage = () => {
   log.info("currentMiroirReport", currentMiroirReport);
 
   if (pageParams.applicationSection) {
-    log.info("ReportPage rendering count", count, "params", pageParams);
+    log.info("ReportPage rendering count", ReportPageCount, "params", pageParams);
     return (
       <div>
+        <span>ReportPage: {ReportPageCount}</span>
         <div>
           <h3>erreurs: {JSON.stringify(errorLog)}</h3>
         </div>

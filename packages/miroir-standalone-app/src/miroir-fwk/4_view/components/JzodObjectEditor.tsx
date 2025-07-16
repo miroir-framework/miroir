@@ -37,7 +37,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 });
 
 
-let count: number = 0;
+// let count: number = 0;
 
 // Editable attribute name component with local state management
 // const EditableAttributeName = React.memo(({ 
@@ -119,6 +119,12 @@ const EditableAttributeName: FC<{
 // ##############################################################################################
 // ##############################################################################################
 export function JzodObjectEditor(props: JzodObjectEditorProps) {
+  const [count, setCount] = useState(0);
+  
+  React.useEffect(() => {
+    setCount((prevCount) => prevCount + 1);
+  }, [props]);
+
   const {
     name,
     listKey,
@@ -137,7 +143,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     parentType, // used to control the parent type of the element, used for record elements
   } = props;
 
-  count++;
+  // count++;
   // log.info(
   //   "JzodObjectEditor render",
   //   count,
@@ -712,6 +718,7 @@ ${JSON.stringify(props.rawJzodSchema, null, 2)}`}
   
   return (
     <div id={rootLessListKey} key={rootLessListKey}>
+      {/* <span>JzodObjectEditor: {count}</span> */}
       <div>
         <span
           style={{

@@ -194,66 +194,42 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     // return <>ReportSectionEntityInstance: could not resolve jzod schema: {JSON.stringify(resolvedJzodSchema)}</>;
     // typeError = <>ReportSectionEntityInstance: could not resolve jzod schema: {JSON.stringify(resolvedJzodSchema, null, 2)}</>;
     // Calculate the maximum line width for fixed sizing
-  const jsonString = JSON.stringify(resolvedJzodSchema, null, 2);
-  const lines = jsonString.split('\n');
-  const maxLineLength = Math.max(...lines.map(line => line.length));
-  const fixedWidth = Math.min(Math.max(maxLineLength * 0.6, 1200), 1800); // 0.6px per character, min 400px, max 1200px
-  
-  typeError = (
-    <ReactCodeMirror
-      editable={false}
-      height="100ex"
-      style={{ 
-        width: `${fixedWidth}px`, // Fixed width based on content
-        maxWidth: '90vw' // Prevent overflow on small screens
-      }}
-      value={jsonString}
-      extensions={[
-        ...codeMirrorExtensions,
-        EditorView.lineWrapping, // Enable line wrapping
-        EditorView.theme({
-          ".cm-editor": {
-            width: `${fixedWidth}px`,
-          },
-          ".cm-scroller": {
-            width: "100%",
-            overflowX: "auto", // Enable horizontal scrolling if needed
-          },
-          ".cm-content": {
-            minWidth: `${fixedWidth}px`,
-          }
-        }),
-      ]}
-      basicSetup={{
-        foldGutter: true,
-        lineNumbers: true,
-      }}
-    />
-  );
-    // typeError = (
-    //   <ReactCodeMirror
-    //     editable={false}
-    //     height="100ex"
-    //     style={{ maxWidth: '80%' }}
-    //     value={`${JSON.stringify(resolvedJzodSchema, null, 2)}`}
-    //     extensions={[
-    //       ...codeMirrorExtensions,
-    //       EditorView.lineWrapping, // Enable line wrapping
-    //       EditorView.theme({
-    //         ".cm-editor": {
-    //           maxWidth: "80%",
-    //         },
-    //         ".cm-scroller": {
-    //           maxWidth: "100%",
-    //         },
-    //       }),
-    //     ]}
-    //     basicSetup={{
-    //       foldGutter: true,
-    //       lineNumbers: true,
-    //     }}
-    //   />
-    // );
+    const jsonString = JSON.stringify(resolvedJzodSchema, null, 2);
+    const lines = jsonString.split("\n");
+    const maxLineLength = Math.max(...lines.map((line) => line.length));
+    const fixedWidth = Math.min(Math.max(maxLineLength * 0.6, 1200), 1800); // 0.6px per character, min 400px, max 1200px
+
+    typeError = (
+      <ReactCodeMirror
+        editable={false}
+        height="100ex"
+        style={{
+          width: `${fixedWidth}px`, // Fixed width based on content
+          maxWidth: "90vw", // Prevent overflow on small screens
+        }}
+        value={jsonString}
+        extensions={[
+          ...codeMirrorExtensions,
+          EditorView.lineWrapping, // Enable line wrapping
+          EditorView.theme({
+            ".cm-editor": {
+              width: `${fixedWidth}px`,
+            },
+            ".cm-scroller": {
+              width: "100%",
+              overflowX: "auto", // Enable horizontal scrolling if needed
+            },
+            ".cm-content": {
+              minWidth: `${fixedWidth}px`,
+            },
+          }),
+        ]}
+        basicSetup={{
+          foldGutter: true,
+          lineNumbers: true,
+        }}
+      />
+    );
   }
 
   
@@ -299,14 +275,14 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     );
   
   // ##############################################################################################
-  const handleDisplayAsStructuredElementSwitchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setDisplayAsStructuredElement(event.target.checked);
-  };
+  // const handleDisplayAsStructuredElementSwitchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   setDisplayAsStructuredElement(event.target.checked);
+  // };
   
   // ##############################################################################################
-  const handleDisplayEditorSwitchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleDisplayEditorSwitchChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     setDisplayEditor(event.target.checked);
-  };
+  },[setDisplayEditor]);
   
   // ##############################################################################################
   const onEditFormObject = useCallback(
@@ -381,10 +357,11 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     return (
       <>
         <div>
-          {/* <p>
-        ReportSectionEntityInstance
-        </p> */}
-          <div>{typeError?"typeError: ": ""}<pre>{typeError??<></>}</pre></div>
+          <p>ReportSectionEntityInstance: {ReportSectionEntityInstanceCount}</p>
+          <div>
+            {typeError ? "typeError: " : ""}
+            <pre>{typeError ?? <></>}</pre>
+          </div>
 
           {/* <div>
             <pre>
@@ -410,8 +387,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
           <div>
             <span>
               displayAsStructuredElement: {displayAsStructuredElement ? "true" : "false"}{" "}
-              displayEditor: {displayEditor ? "true" : "false"}{" "}
-              hasTypeError: {typeError ? "true" : "false"}{" "}
+              displayEditor: {displayEditor ? "true" : "false"} hasTypeError:{" "}
+              {typeError ? "true" : "false"}{" "}
             </span>
           </div>
           <h1>
@@ -420,10 +397,9 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
           {currentReportTargetEntity &&
           currentEnumJzodSchemaResolver &&
           currentReportTargetEntityDefinition &&
-          context.applicationSection
-          // resolvedJzodSchema &&
-          // (resolvedJzodSchema as any)?.status == "ok"
-          ? (
+          context.applicationSection ? (
+            // resolvedJzodSchema &&
+            // (resolvedJzodSchema as any)?.status == "ok"
             displayEditor ? (
               <div>
                 <Formik
@@ -459,11 +435,14 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                         const result =
                           context.miroirFundamentalJzodSchema != undefined &&
                           currentReportTargetEntityDefinition?.jzodSchema &&
+                          resolvedJzodSchema &&
+                          resolvedJzodSchema.status == "ok" &&
                           formik.values &&
                           currentModel
                             ? rootLessListKeyMap(
                                 "",
                                 currentReportTargetEntityDefinition?.jzodSchema,
+                                undefined, // resolvedJzodSchema.resolvedSchema may not correspond to the value in formik.values
                                 currentModel,
                                 currentMiroirModel,
                                 context.miroirFundamentalJzodSchema,
@@ -474,14 +453,14 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                           "ReportSectionEntityInstance dynamicLocalRootLessListKeyMap result",
                           result,
                           "for currentReportTargetEntityDefinition",
-                          currentReportTargetEntityDefinition?.name,
+                          currentReportTargetEntityDefinition?.name
                         );
                         return result;
                       } catch (e) {
                         log.warn(
                           "ReportSectionEntityInstance dynamicLocalRootLessListKeyMap error",
                           ReportSectionEntityInstanceCount,
-                          e,
+                          e
                           // "props",
                           // props,
                           // "context",
