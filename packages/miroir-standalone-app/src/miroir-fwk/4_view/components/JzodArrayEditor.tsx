@@ -23,6 +23,7 @@ import { ExpandOrFoldObjectAttributes, JzodElementEditor } from "./JzodElementEd
 import { JzodArrayEditorProps } from "./JzodElementEditorInterface";
 import { SizedAddBox, SizedButton } from "./Style";
 import { J } from "vitest/dist/chunks/environment.LoooBwUu";
+import { JzodUnion } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -46,6 +47,7 @@ interface JzodArrayMoveButtonProps {
   // setformHelperState: (state: any) => void;
 }
 
+// ################################################################################################
 export const JzodArrayEditorMoveButton: React.FC<JzodArrayMoveButtonProps> = ({
   direction,
   index,
@@ -92,6 +94,12 @@ export const JzodArrayEditorMoveButton: React.FC<JzodArrayMoveButtonProps> = ({
   );
 };
 
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
 let jzodArrayEditorRenderCount: number = 0;
 export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
   // props: JzodArrayEditorProps
@@ -224,6 +232,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
   );
   // ##############################################################################################
   const arrayItems: JSX.Element = useMemo(()=>(
+  // const arrayItems: JSX.Element = (
     <div
       id={listKey + ".inner"}
       key={listKey + ".inner"}
@@ -243,52 +252,126 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
           //   "attribute",
           //   attribute,
           // );
-          const currentArrayElementRawDefinition: JzodElement | undefined =
-          // const currentArrayElementRawDefinition: UnfoldJzodSchemaOnceReturnType | undefined =
+          // const currentArrayElementRawDefinition: JzodElement | undefined =
+          const currentArrayElementRawDefinition: UnfoldJzodSchemaOnceReturnType | undefined =
             // useMemo(
-            //   () =>
-            context.miroirFundamentalJzodSchema
-              ? // const currentArrayElementRawDefinition= context.miroirFundamentalJzodSchema
-                rawJzodSchema?.type == "array"
-                ? // ? unfoldJzodSchemaOnce(
-                  // unfoldJzodSchemaOnce(
-                  //   context.miroirFundamentalJzodSchema,
-                    rawJzodSchema.definition
-                  //   currentModel,
-                  //   miroirMetaModel
-                  // )
-                : rawJzodSchema?.type == "tuple"
-                ? // ? unfoldJzodSchemaOnce(
-                  // unfoldJzodSchemaOnce(
-                  //   context.miroirFundamentalJzodSchema as any, // OK: dereferencing prevents correct type-checking.
-                    rawJzodSchema.definition[index]
-                  //   currentModel,
-                  //   miroirMetaModel
-                  // )
-                : undefined
-              : undefined;
-                  ;
-            //   [rawJzodSchema, currentModel, miroirMetaModel]
+              (() => {
+                if (!context.miroirFundamentalJzodSchema) {
+                  return undefined;
+                }
+                switch (rawJzodSchema?.type) {
+                  case "array": {
+                    return unfoldJzodSchemaOnce(
+                      context.miroirFundamentalJzodSchema,
+                      rawJzodSchema.definition,
+                      [], // path
+                      [], // unfoldingReference
+                      rawJzodSchema, // rootSchema
+                      0,
+                      currentModel,
+                      miroirMetaModel
+                    );
+                  }
+                  case "tuple": {
+                    return unfoldJzodSchemaOnce(
+                      context.miroirFundamentalJzodSchema as any,
+                      rawJzodSchema.definition[index],
+                      [], // path
+                      [], // unfoldingReference
+                      rawJzodSchema, // rootSchema
+                      0,
+                      currentModel,
+                      miroirMetaModel
+                    );
+                  }
+                  case "union": {
+                    const findFirstArrayInUnion = (union: JzodUnion): JzodArray | undefined => {
+                      const topLevelArray = union.definition.find(e => e.type === "array");
+                      if (topLevelArray) {
+                        return topLevelArray as JzodArray;
+                      }
+                      for (const e of union.definition) {
+                        if (e.type === "union") {
+                          const found = findFirstArrayInUnion(e as JzodUnion);
+                          if (found) {
+                            return found;
+                          }
+                        }
+                      }
+                      return undefined;
+                      // throw new Error(
+                      //   "JzodArrayEditor could not find an array in union schema " +
+                      //     JSON.stringify(union, null, 2)
+                      // );
+                    }
+                    const arraySchema = findFirstArrayInUnion(rawJzodSchema as JzodUnion);
+                    if (!arraySchema) {
+                      return undefined;
+                      // throw new Error(
+                      //   "JzodArrayEditor could not find an array in union schema " +
+                      //     JSON.stringify(rawJzodSchema, null, 2)
+                      // );
+                      // return {
+                      //   status: "error",
+                      //   element: undefined,
+                      //   error: new Error(
+                      //     "JzodArrayEditor could not find an array in union schema " +
+                      //       JSON.stringify(rawJzodSchema, null, 2)
+                      //   )
+                      // }
+                    }
+                    return unfoldJzodSchemaOnce(
+                      context.miroirFundamentalJzodSchema as any,
+                      arraySchema.definition,
+                      [], // path
+                      [], // unfoldingReference
+                      rawJzodSchema, // rootSchema
+                      0,
+                      currentModel,
+                      miroirMetaModel
+                    );
+                  }
+                  default:
+                    return undefined;
+                }
+              })();
+              // },
+              // [rawJzodSchema, currentModel, miroirMetaModel]
             // );
-          // const resolutionError =
-          //   currentArrayElementRawDefinition && currentArrayElementRawDefinition.status != "ok";
-          // if (!currentArrayElementRawDefinition || resolutionError) {
-          //   throw new Error(
-          //     "JzodArrayEditor could not unfold jzod schema: " +
-          //       JSON.stringify(currentArrayElementRawDefinition, null, 2) +
-          //       " at " +
-          //       JSON.stringify(resolutionError, null, 2)
-          //   );
-          // }
+          const resolutionError =
+            currentArrayElementRawDefinition && currentArrayElementRawDefinition.status != "ok";
+          if (!currentArrayElementRawDefinition || resolutionError) {
+            throw new Error(
+              "JzodArrayEditor could not unfold jzod schema for " +
+                rootLessListKey +
+                " index " +
+                index +
+                " context.miroirFundamentalSchema is defined " +
+                !!context.miroirFundamentalJzodSchema +
+                " with rawJzodSchema " +
+                JSON.stringify(rawJzodSchema, null, 2) +
+                " and currentArrayElementRawDefinition " +
+                JSON.stringify(currentArrayElementRawDefinition, null, 2) +
+                " at " +
+                JSON.stringify(resolutionError, null, 2)
+            );
+          }
 
           // log.info(
+          //   "JzodArrayEditor array attribute",
+          //   "rootLessListKey",
+          //   rootLessListKey,
           //   "array [",
           //   index,
           //   "]",
-          //   "found schema",
-          //   JSON.stringify(currentArrayElementRawDefinition, null, 2),
+          //   "found raw schema",
+          //   // JSON.stringify(currentArrayElementRawDefinition, null, 2),
+          //   currentArrayElementRawDefinition,
+          //   "for rawJzodSchema",
+          //   rawJzodSchema,
           //   "for value",
-          //   JSON.stringify(attributeParam[1], null, 2)
+          //   attributeParam[1],
+          //   // JSON.stringify(attributeParam[1], null, 2)
           // );
           return (
             <div key={rootLessListKey + "." + index}>
@@ -329,8 +412,8 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
                     rootLessListKey.length > 0 ? rootLessListKey + "." + index : "" + index
                   }
                   rootLessListKeyArray={[...rootLessListKeyArray, "" + index]}
-                  // rawJzodSchema={currentArrayElementRawDefinition.element}
-                  rawJzodSchema={currentArrayElementRawDefinition}
+                  rawJzodSchema={currentArrayElementRawDefinition.element}
+                  // rawJzodSchema={currentArrayElementRawDefinition}
                   resolvedElementJzodSchema={
                     resolvedElementJzodSchema?.type == "array"
                       ? ((resolvedElementJzodSchema as JzodArray)?.definition as any)
@@ -346,7 +429,9 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
           );
         })}
     </div>
-  ), [
+  )
+  // );
+  , [
     // listKey,
     rootLessListKey,
     // rootLessListKeyArray,
@@ -365,7 +450,8 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     insideAny,
     displayAsStructuredElementSwitch,
     // formik.values[rootLessListKey],
-  ]);
+  ])
+  ;
   // ##############################################################################################
   return (
     <div id={rootLessListKey} key={rootLessListKey}>

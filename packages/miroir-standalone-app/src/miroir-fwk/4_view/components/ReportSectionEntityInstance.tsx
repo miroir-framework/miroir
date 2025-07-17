@@ -191,47 +191,48 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   // log.info("ReportSectionEntityInstance currentReportTargetEntityDefinition", currentReportTargetEntityDefinition);
   // log.info("ReportSectionEntityInstance currentModel", currentModel);
   // log.info("ReportSectionEntityInstance currentMiroirModel", currentMiroirModel);
-  let typeError: JSX.Element | undefined = undefined;
-  const resolvedJzodSchema: ResolvedJzodSchemaReturnType | undefined = useMemo(() => {
-    let result: ResolvedJzodSchemaReturnType | undefined = undefined;
-    try {
-      result =
-        context.miroirFundamentalJzodSchema &&
-        currentReportTargetEntityDefinition?.jzodSchema &&
-        instance &&
-        currentModel
-          ? measuredJzodTypeCheck(
-              currentReportTargetEntityDefinition?.jzodSchema,
-              instance,
-              [], // currentValuePath
-              [], // currentTypePath
-              context.miroirFundamentalJzodSchema,
-              currentModel,
-              currentMiroirModel,
-              {}
-            )
-          : undefined;
-    } catch (e) {
-      log.error(
-        "ReportSectionEntityInstance useMemo error",
-        // JSON.stringify(e, Object.getOwnPropertyNames(e)),
-        e,
-        "props",
-        props,
-        "context",
-        context
-      );
-      result = {
-        status: "error",
-        valuePath: [],
-        typePath: [],
-        error: JSON.stringify(e, Object.getOwnPropertyNames(e)),
-      };
-    }
-    return result;
-  }, [props, currentReportTargetEntityDefinition, instance, context]);
+
+  // let typeError: JSX.Element | undefined = undefined;
+  // const resolvedJzodSchema: ResolvedJzodSchemaReturnType | undefined = useMemo(() => {
+  //   let result: ResolvedJzodSchemaReturnType | undefined = undefined;
+  //   try {
+  //     result =
+  //       context.miroirFundamentalJzodSchema &&
+  //       currentReportTargetEntityDefinition?.jzodSchema &&
+  //       instance &&
+  //       currentModel
+  //         ? measuredJzodTypeCheck(
+  //             currentReportTargetEntityDefinition?.jzodSchema,
+  //             instance,
+  //             [], // currentValuePath
+  //             [], // currentTypePath
+  //             context.miroirFundamentalJzodSchema,
+  //             currentModel,
+  //             currentMiroirModel,
+  //             {}
+  //           )
+  //         : undefined;
+  //   } catch (e) {
+  //     log.error(
+  //       "ReportSectionEntityInstance useMemo error",
+  //       // JSON.stringify(e, Object.getOwnPropertyNames(e)),
+  //       e,
+  //       "props",
+  //       props,
+  //       "context",
+  //       context
+  //     );
+  //     result = {
+  //       status: "error",
+  //       valuePath: [],
+  //       typePath: [],
+  //       error: JSON.stringify(e, Object.getOwnPropertyNames(e)),
+  //     };
+  //   }
+  //   return result;
+  // }, [props, currentReportTargetEntityDefinition, instance, context]);
   // log.info(
-  //   "ReportSectionEntityInstance jzodTypeCheck done, resolvedJzodSchema",
+  //   "ReportSectionEntityInstance jzodTypeCheck done for render", ReportSectionEntityInstanceCount ,"resolvedJzodSchema",
   //   resolvedJzodSchema,
   // );
 
@@ -263,95 +264,95 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   }, [props.instance, props.entityUuid]);
   // });
   
-  if (!resolvedJzodSchema || resolvedJzodSchema.status != "ok") {
-    log.error(
-      "ReportSectionEntityInstance could not resolve jzod schema",
-      // props,
-      // context,
-      resolvedJzodSchema
-    );
-    // return <>ReportSectionEntityInstance: could not resolve jzod schema: {JSON.stringify(resolvedJzodSchema)}</>;
-    // typeError = <>ReportSectionEntityInstance: could not resolve jzod schema: {JSON.stringify(resolvedJzodSchema, null, 2)}</>;
-    // Calculate the maximum line width for fixed sizing
-    const jsonString = JSON.stringify(resolvedJzodSchema, null, 2);
-    const lines = jsonString.split("\n");
-    const maxLineLength = Math.max(...lines.map((line) => line.length));
-    const fixedWidth = Math.min(Math.max(maxLineLength * 0.6, 1200), 1800); // 0.6px per character, min 400px, max 1200px
+  // if (!resolvedJzodSchema || resolvedJzodSchema.status != "ok") {
+  //   log.error(
+  //     "ReportSectionEntityInstance could not resolve jzod schema",
+  //     // props,
+  //     // context,
+  //     resolvedJzodSchema
+  //   );
+  //   // return <>ReportSectionEntityInstance: could not resolve jzod schema: {JSON.stringify(resolvedJzodSchema)}</>;
+  //   // typeError = <>ReportSectionEntityInstance: could not resolve jzod schema: {JSON.stringify(resolvedJzodSchema, null, 2)}</>;
+  //   // Calculate the maximum line width for fixed sizing
+  //   const jsonString = JSON.stringify(resolvedJzodSchema, null, 2);
+  //   const lines = jsonString.split("\n");
+  //   const maxLineLength = Math.max(...lines.map((line) => line.length));
+  //   const fixedWidth = Math.min(Math.max(maxLineLength * 0.6, 1200), 1800); // 0.6px per character, min 400px, max 1200px
 
-    typeError = (
-      <ReactCodeMirror
-        editable={false}
-        height="100ex"
-        style={{
-          width: `${fixedWidth}px`, // Fixed width based on content
-          maxWidth: "90vw", // Prevent overflow on small screens
-        }}
-        value={jsonString}
-        extensions={[
-          ...codeMirrorExtensions,
-          EditorView.lineWrapping, // Enable line wrapping
-          EditorView.theme({
-            ".cm-editor": {
-              width: `${fixedWidth}px`,
-            },
-            ".cm-scroller": {
-              width: "100%",
-              overflowX: "auto", // Enable horizontal scrolling if needed
-            },
-            ".cm-content": {
-              minWidth: `${fixedWidth}px`,
-            },
-          }),
-        ]}
-        basicSetup={{
-          foldGutter: true,
-          lineNumbers: true,
-        }}
-      />
-    );
-  }
+  //   typeError = (
+  //     <ReactCodeMirror
+  //       editable={false}
+  //       height="100ex"
+  //       style={{
+  //         width: `${fixedWidth}px`, // Fixed width based on content
+  //         maxWidth: "90vw", // Prevent overflow on small screens
+  //       }}
+  //       value={jsonString}
+  //       extensions={[
+  //         ...codeMirrorExtensions,
+  //         EditorView.lineWrapping, // Enable line wrapping
+  //         EditorView.theme({
+  //           ".cm-editor": {
+  //             width: `${fixedWidth}px`,
+  //           },
+  //           ".cm-scroller": {
+  //             width: "100%",
+  //             overflowX: "auto", // Enable horizontal scrolling if needed
+  //           },
+  //           ".cm-content": {
+  //             minWidth: `${fixedWidth}px`,
+  //           },
+  //         }),
+  //       ]}
+  //       basicSetup={{
+  //         foldGutter: true,
+  //         lineNumbers: true,
+  //       }}
+  //     />
+  //   );
+  // }
 
   
-  const foreignKeyObjectsFetchQueryParams: SyncQueryRunnerParams<DeploymentEntityState> = useMemo(
-    () =>
-      measuredGetQueryRunnerParamsForDeploymentEntityState(
-        props.deploymentUuid &&
-          resolvedJzodSchema &&
-          resolvedJzodSchema.status == "ok" &&
-          resolvedJzodSchema.resolvedSchema.type == "uuid" &&
-          resolvedJzodSchema.resolvedSchema.tag?.value?.targetEntity
-          ? {
-              queryType: "boxedQueryWithExtractorCombinerTransformer",
-              deploymentUuid: props.deploymentUuid,
-              pageParams: {},
-              queryParams: {},
-              contextResults: {},
-              extractors: {
-                [resolvedJzodSchema.resolvedSchema.tag?.value?.targetEntity]: {
-                  extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                  applicationSection: measuredGetApplicationSection(
-                    props.deploymentUuid,
-                    resolvedJzodSchema.resolvedSchema.tag?.value?.targetEntity
-                  ),
-                  parentName: "",
-                  parentUuid: resolvedJzodSchema.resolvedSchema.tag?.value?.targetEntity,
-                },
-              },
-            }
-          : dummyDomainManyQueryWithDeploymentUuid,
-        deploymentEntityStateSelectorMap
-      ),
-    [deploymentEntityStateSelectorMap, props.deploymentUuid, resolvedJzodSchema]
-  );
+  // const foreignKeyObjectsFetchQueryParams: SyncQueryRunnerParams<DeploymentEntityState> = useMemo(
+  //   () =>
+  //     measuredGetQueryRunnerParamsForDeploymentEntityState(
+  //       props.deploymentUuid &&
+  //         resolvedJzodSchema &&
+  //         resolvedJzodSchema.status == "ok" &&
+  //         resolvedJzodSchema.resolvedSchema.type == "uuid" &&
+  //         resolvedJzodSchema.resolvedSchema.tag?.value?.targetEntity
+  //         ? {
+  //             queryType: "boxedQueryWithExtractorCombinerTransformer",
+  //             deploymentUuid: props.deploymentUuid,
+  //             pageParams: {},
+  //             queryParams: {},
+  //             contextResults: {},
+  //             extractors: {
+  //               [resolvedJzodSchema.resolvedSchema.tag?.value?.targetEntity]: {
+  //                 extractorOrCombinerType: "extractorByEntityReturningObjectList",
+  //                 applicationSection: measuredGetApplicationSection(
+  //                   props.deploymentUuid,
+  //                   resolvedJzodSchema.resolvedSchema.tag?.value?.targetEntity
+  //                 ),
+  //                 parentName: "",
+  //                 parentUuid: resolvedJzodSchema.resolvedSchema.tag?.value?.targetEntity,
+  //               },
+  //             },
+  //           }
+  //         : dummyDomainManyQueryWithDeploymentUuid,
+  //       deploymentEntityStateSelectorMap
+  //     ),
+  //   [deploymentEntityStateSelectorMap, props.deploymentUuid, resolvedJzodSchema]
+  // );
   
-  const foreignKeyObjects: Record<string, EntityInstancesUuidIndex> =
-    useDeploymentEntityStateQuerySelectorForCleanedResult(
-      deploymentEntityStateSelectorMap.runQuery as SyncQueryRunner<
-        DeploymentEntityState,
-        Domain2QueryReturnType<DomainElementSuccess>
-      >,
-      foreignKeyObjectsFetchQueryParams
-    );
+  // const foreignKeyObjects: Record<string, EntityInstancesUuidIndex> =
+  //   useDeploymentEntityStateQuerySelectorForCleanedResult(
+  //     deploymentEntityStateSelectorMap.runQuery as SyncQueryRunner<
+  //       DeploymentEntityState,
+  //       Domain2QueryReturnType<DomainElementSuccess>
+  //     >,
+  //     foreignKeyObjectsFetchQueryParams
+  //   );
   
   // ##############################################################################################
   // const handleDisplayAsStructuredElementSwitchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -424,29 +425,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     [domainController, props]
   );
   
-  // // ##############################################################################################
-  // const onCodeEditorChange = useCallback((values:any, viewUpdate:any) => {
-  //   log.info('edit code received value:', values);
-  //   // setdialogOuterFormObject(JSON.parse(values))
-  //   log.info('edit code done');
-  // }, []);
-  // log.info("ReportSectionEntityInstance start rendering!");
-  
-  // Track performance immediately for faster feedback
-  // if (props.instance?.uuid) {
-  //   const renderEndTime = performance.now();
-  //   const renderDuration = renderEndTime - renderStartTime;
-  //   const currentMetrics = RenderPerformanceMetrics.trackRenderPerformance(componentKey, renderDuration);
-    
-  //   log.info(
-  //     `ReportSectionEntityInstance immediate tracking - ${componentKey}: ` +
-  //       `#${currentMetrics.renderCount} renders, ` +
-  //       `Current: ${renderDuration.toFixed(2)}ms, ` +
-  //       `Total: ${currentMetrics.totalRenderTime.toFixed(2)}ms, ` +
-  //       `Avg: ${currentMetrics.averageRenderTime.toFixed(2)}ms`
-  //   );
-  // }
-  
   // ##############################################################################################
   if (instance) {
     return (
@@ -455,10 +433,10 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
           {/* <RenderPerformanceDisplay componentKey={componentKey} indentLevel={0} /> */}
 
           <p>ReportSectionEntityInstance: {ReportSectionEntityInstanceCount}</p>
-          <div>
+          {/* <div>
             {typeError ? "typeError: " : ""}
             <pre>{typeError ?? <></>}</pre>
-          </div>
+          </div> */}
 
           {/* <div>
             <pre>
@@ -485,7 +463,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
             <span>
               displayAsStructuredElement: {displayAsStructuredElement ? "true" : "false"}{" "}
               displayEditor: {displayEditor ? "true" : "false"} hasTypeError:{" "}
-              {typeError ? "true" : "false"}{" "}
+              {/* {typeError ? "true" : "false"}{" "} */}
             </span>
           </div>
           <h1>
@@ -527,6 +505,97 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                 >
                   {(formik: FormikProps<Record<string, any>>) => {
                     // Create a memoized localRootLessListKeyMap that updates when formik values change
+                      let typeError: JSX.Element | undefined = undefined;
+                      const resolvedJzodSchema: ResolvedJzodSchemaReturnType | undefined = useMemo(() => {
+                        let result: ResolvedJzodSchemaReturnType | undefined = undefined;
+                        try {
+                          result =
+                            context.miroirFundamentalJzodSchema &&
+                            currentReportTargetEntityDefinition?.jzodSchema &&
+                            formik.values &&
+                            currentModel
+                              ? measuredJzodTypeCheck(
+                                  currentReportTargetEntityDefinition?.jzodSchema,
+                                  formik.values,
+                                  [], // currentValuePath
+                                  [], // currentTypePath
+                                  context.miroirFundamentalJzodSchema,
+                                  currentModel,
+                                  currentMiroirModel,
+                                  {}
+                                )
+                              : undefined;
+                        } catch (e) {
+                          log.error(
+                            "ReportSectionEntityInstance useMemo error",
+                            // JSON.stringify(e, Object.getOwnPropertyNames(e)),
+                            e,
+                            "props",
+                            props,
+                            "context",
+                            context
+                          );
+                          result = {
+                            status: "error",
+                            valuePath: [],
+                            typePath: [],
+                            error: JSON.stringify(e, Object.getOwnPropertyNames(e)),
+                          };
+                        }
+                        return result;
+                      }, [props, currentReportTargetEntityDefinition, instance, context]);
+                      log.info(
+                        "ReportSectionEntityInstance jzodTypeCheck done for render", ReportSectionEntityInstanceCount ,"resolvedJzodSchema",
+                        resolvedJzodSchema,
+                      );
+                      if (!resolvedJzodSchema || resolvedJzodSchema.status != "ok") {
+                        log.error(
+                          "ReportSectionEntityInstance could not resolve jzod schema",
+                          // props,
+                          // context,
+                          resolvedJzodSchema
+                        );
+                        // return <>ReportSectionEntityInstance: could not resolve jzod schema: {JSON.stringify(resolvedJzodSchema)}</>;
+                        // typeError = <>ReportSectionEntityInstance: could not resolve jzod schema: {JSON.stringify(resolvedJzodSchema, null, 2)}</>;
+                        // Calculate the maximum line width for fixed sizing
+                        const jsonString = JSON.stringify(resolvedJzodSchema, null, 2);
+                        const lines = jsonString.split("\n");
+                        const maxLineLength = Math.max(...lines.map((line) => line.length));
+                        const fixedWidth = Math.min(Math.max(maxLineLength * 0.6, 1200), 1800); // 0.6px per character, min 400px, max 1200px
+
+                        typeError = (
+                          <ReactCodeMirror
+                            editable={false}
+                            height="100ex"
+                            style={{
+                              width: `${fixedWidth}px`, // Fixed width based on content
+                              maxWidth: "90vw", // Prevent overflow on small screens
+                            }}
+                            value={jsonString}
+                            extensions={[
+                              ...codeMirrorExtensions,
+                              EditorView.lineWrapping, // Enable line wrapping
+                              EditorView.theme({
+                                ".cm-editor": {
+                                  width: `${fixedWidth}px`,
+                                },
+                                ".cm-scroller": {
+                                  width: "100%",
+                                  overflowX: "auto", // Enable horizontal scrolling if needed
+                                },
+                                ".cm-content": {
+                                  minWidth: `${fixedWidth}px`,
+                                },
+                              }),
+                            ]}
+                            basicSetup={{
+                              foldGutter: true,
+                              lineNumbers: true,
+                            }}
+                          />
+                        );
+                      }
+
                     const dynamicLocalRootLessListKeyMap = useMemo(() => {
                       try {
                         const result =
@@ -539,7 +608,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                             ? measuredRootLessListKeyMap(
                                 "",
                                 currentReportTargetEntityDefinition?.jzodSchema,
-                                undefined, // resolvedJzodSchema.resolvedSchema may not correspond to the value in formik.values
+                                resolvedJzodSchema.resolvedSchema,
                                 currentModel,
                                 currentMiroirModel,
                                 context.miroirFundamentalJzodSchema,
@@ -550,7 +619,9 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                           "ReportSectionEntityInstance dynamicLocalRootLessListKeyMap result",
                           result,
                           "for currentReportTargetEntityDefinition",
-                          currentReportTargetEntityDefinition?.name
+                          currentReportTargetEntityDefinition?.name,
+                          "formik.values",
+                          formik.values
                         );
                         return result;
                       } catch (e) {
@@ -572,9 +643,53 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                       context.miroirFundamentalJzodSchema,
                       formik.values,
                     ]);
+                    const foreignKeyObjectsFetchQueryParams: SyncQueryRunnerParams<DeploymentEntityState> = useMemo(
+                      () =>
+                        measuredGetQueryRunnerParamsForDeploymentEntityState(
+                          props.deploymentUuid &&
+                            resolvedJzodSchema &&
+                            resolvedJzodSchema.status == "ok" &&
+                            resolvedJzodSchema.resolvedSchema.type == "uuid" &&
+                            resolvedJzodSchema.resolvedSchema.tag?.value?.targetEntity
+                            ? {
+                                queryType: "boxedQueryWithExtractorCombinerTransformer",
+                                deploymentUuid: props.deploymentUuid,
+                                pageParams: {},
+                                queryParams: {},
+                                contextResults: {},
+                                extractors: {
+                                  [resolvedJzodSchema.resolvedSchema.tag?.value?.targetEntity]: {
+                                    extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                                    applicationSection: measuredGetApplicationSection(
+                                      props.deploymentUuid,
+                                      resolvedJzodSchema.resolvedSchema.tag?.value?.targetEntity
+                                    ),
+                                    parentName: "",
+                                    parentUuid: resolvedJzodSchema.resolvedSchema.tag?.value?.targetEntity,
+                                  },
+                                },
+                              }
+                            : dummyDomainManyQueryWithDeploymentUuid,
+                          deploymentEntityStateSelectorMap
+                        ),
+                      [deploymentEntityStateSelectorMap, props.deploymentUuid, resolvedJzodSchema]
+                    );
+                    
+                    const foreignKeyObjects: Record<string, EntityInstancesUuidIndex> =
+                      useDeploymentEntityStateQuerySelectorForCleanedResult(
+                        deploymentEntityStateSelectorMap.runQuery as SyncQueryRunner<
+                          DeploymentEntityState,
+                          Domain2QueryReturnType<DomainElementSuccess>
+                        >,
+                        foreignKeyObjectsFetchQueryParams
+                      );
 
                     return (
                       <>
+                        <div>
+                          {typeError ? "typeError: " : ""}
+                          <pre>{typeError ?? <></>}</pre>
+                        </div>
                         <form id={"form." + pageLabel} onSubmit={formik.handleSubmit}>
                           <div>
                             <JzodElementEditor
@@ -617,21 +732,26 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
               </div>
             ) : (
               <div>
+                {/* <div>
+                  {typeError ? "typeError: " : ""}
+                  <pre>{typeError ?? <></>}</pre>
+                </div> */}
                 {displayAsStructuredElement ? (
-                  <JzodElementDisplay
-                    path={instance?.name}
-                    name={instance?.name}
-                    deploymentUuid={props.deploymentUuid}
-                    // prop drilling!
-                    applicationSection={context.applicationSection as ApplicationSection}
-                    entityUuid={props.entityUuid}
-                    element={instance}
-                    // rootJzodSchema={currentReportTargetEntityDefinition?.jzodSchema}
-                    elementJzodSchema={currentReportTargetEntityDefinition?.jzodSchema}
-                    resolvedElementJzodSchema={(resolvedJzodSchema as any)?.resolvedSchema}
-                    currentReportDeploymentSectionEntities={currentReportDeploymentSectionEntities}
-                    currentEnumJzodSchemaResolver={currentEnumJzodSchemaResolver}
-                  ></JzodElementDisplay>
+                  <div>Can not display non-editor as structured element</div>
+                  // <JzodElementDisplay
+                  //   path={instance?.name}
+                  //   name={instance?.name}
+                  //   deploymentUuid={props.deploymentUuid}
+                  //   // prop drilling!
+                  //   applicationSection={context.applicationSection as ApplicationSection}
+                  //   entityUuid={props.entityUuid}
+                  //   element={instance}
+                  //   // rootJzodSchema={currentReportTargetEntityDefinition?.jzodSchema}
+                  //   elementJzodSchema={currentReportTargetEntityDefinition?.jzodSchema}
+                  //   resolvedElementJzodSchema={(resolvedJzodSchema as any)?.resolvedSchema}
+                  //   currentReportDeploymentSectionEntities={currentReportDeploymentSectionEntities}
+                  //   currentEnumJzodSchemaResolver={currentEnumJzodSchemaResolver}
+                  // ></JzodElementDisplay>
                 ) : (
                   <div>
                     <pre>{JSON.stringify(instance, null, 2)}</pre>
@@ -649,7 +769,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                 target entity:{" "}
                 {currentReportTargetEntity?.name ?? "report target entity not found!"}
               </div>
-              <div>resolved schema: {JSON.stringify(resolvedJzodSchema)}</div>
+              {/* <div>resolved schema: {JSON.stringify(resolvedJzodSchema)}</div> */}
               <div style={{ whiteSpace: "pre-line" }}>
                 target entity definition:{" "}
                 {currentReportTargetEntityDefinition?.name ??

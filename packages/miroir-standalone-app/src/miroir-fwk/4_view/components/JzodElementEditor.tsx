@@ -309,12 +309,14 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
       return null;
     }
 
-    if (!localResolvedElementJzodSchemaBasedOnValue || !props.rawJzodSchema) {
+    // if (!localResolvedElementJzodSchemaBasedOnValue || !props.rawJzodSchema) {
+    if (!localResolvedElementJzodSchemaBasedOnValue) {
       return (
         <div>
           Could not find schema for item: {props.rootLessListKey}
           <br />
-          value {formik.values[props.rootLessListKey]}
+          {/* value {formik.values[props.rootLessListKey]} */}
+          value <pre>{JSON.stringify(currentValue, null, 2)}</pre>
           <br />
           raw Jzod schema: {JSON.stringify(props.rawJzodSchema)}
           <br />
@@ -350,10 +352,10 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
     //   "with value",
     //   currentValue,
     //   "and resolved schema",
-    //   // localResolvedElementJzodSchemaBasedOnValue,
-    //   JSON.stringify(localResolvedElementJzodSchemaBasedOnValue, null, 2),
-    //   "and props.localRootLessListKeyMap",
-    //   JSON.stringify(props.localRootLessListKeyMap, null, 2)
+    //   localResolvedElementJzodSchemaBasedOnValue,
+    //   // JSON.stringify(localResolvedElementJzodSchemaBasedOnValue, null, 2),
+    //   // "and props.localRootLessListKeyMap",
+    //   // JSON.stringify(props.localRootLessListKeyMap, null, 2)
     // );
     // Generate element based on schema type
     switch (localResolvedElementJzodSchemaBasedOnValue.type) {
@@ -392,10 +394,10 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
             key={props.rootLessListKey}
             rootLessListKeyArray={props.rootLessListKeyArray}
             rootLessListKey={props.rootLessListKey}
-            rawJzodSchema={props.rawJzodSchema}
-            resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
             localRootLessListKeyMap={props.localRootLessListKeyMap}
+            rawJzodSchema={props.rawJzodSchema}
             unfoldedRawSchema={unfoldedRawSchema as any}
+            resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
             indentLevel={props.indentLevel + 1}
             itemsOrder={itemsOrder}
             hiddenFormItems={hiddenFormItems}
@@ -771,6 +773,7 @@ function JzodElementEditorComponent(props: JzodElementEditorProps): JSX.Element 
               currentValue,
               formikValues: formik.values,
               rawJzodSchema: props.rawJzodSchema,
+              unfoldedJzodSchema: unfoldedRawSchema,
               localResolvedElementJzodSchemaBasedOnValue,
             }}
           />

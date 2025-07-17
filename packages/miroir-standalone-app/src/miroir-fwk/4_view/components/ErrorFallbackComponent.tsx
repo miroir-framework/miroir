@@ -1,5 +1,5 @@
 import React from "react";
-import { resolvePathOnObject, LoggerInterface, MiroirLoggerFactory } from "miroir-core";
+import { resolvePathOnObject, LoggerInterface, MiroirLoggerFactory, unfoldJzodSchemaOnce } from "miroir-core";
 import { packageName } from "../../../constants";
 import { cleanLevel } from "../constants";
 
@@ -23,6 +23,7 @@ export interface ErrorFallbackComponentProps {
     currentValue?: any;
     formikValues?: any;
     rawJzodSchema?: any;
+    unfoldedJzodSchema?: any;
     localResolvedElementJzodSchemaBasedOnValue?: any;
   };
 }
@@ -42,6 +43,7 @@ export const ErrorFallbackComponent: React.FC<ErrorFallbackComponentProps> = ({
     currentValue,
     formikValues,
     rawJzodSchema,
+    unfoldedJzodSchema,
     localResolvedElementJzodSchemaBasedOnValue
   } = context;
 
@@ -91,7 +93,12 @@ export const ErrorFallbackComponent: React.FC<ErrorFallbackComponentProps> = ({
             {rootLessListKey} rawJzodSchema: <pre>{JSON.stringify(rawJzodSchema, null, 2)}</pre>
           </div>
         )}
-        <div key="6"></div>
+        {rawJzodSchema && (
+          <div key="6">
+            {rootLessListKey} unfoldedJzodSchema: <pre>{JSON.stringify(unfoldedJzodSchema, null, 2)}</pre>
+          </div>
+        )}
+        <div key="7"></div>
         {localResolvedElementJzodSchemaBasedOnValue && (
           <>
             {rootLessListKey} resolved type:{" "}

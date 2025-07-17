@@ -231,7 +231,16 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
   }
   const unfoldedRawSchema: JzodElement = unfoldedRawSchemaReturnType.element;
 
-  // log.info("getJzodElementEditorHooks after unfoldJzodSchemaOnce", dbgInt++, "count", count, "caller", caller);
+  // log.info(
+  //   "getJzodElementEditorHooks unfoldedRawSchema",
+  //   props.rootLessListKey,
+  //   "unfoldedRawSchema",
+  //   unfoldedRawSchema,
+  //   "props.rawJzodSchema",
+  //   props.rawJzodSchema,
+  //   "props.resolvedElementJzodSchema",
+  //   props.resolvedElementJzodSchema,
+  // );
   const recursivelyUnfoldedRawSchema: JzodUnion_RecursivelyUnfold_ReturnType | undefined =
     useMemo(() => {
       if (

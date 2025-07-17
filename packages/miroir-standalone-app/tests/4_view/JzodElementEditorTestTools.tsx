@@ -682,7 +682,7 @@ export function getWrapperForLocalJzodElementEditor(
 
   // ###############################################
   return (props: { children?: React.ReactNode }) => {
-    console.log("############################################## getWrapperForLocalJzodElementEditor returned", "props", props);
+    // console.log("############################################## getWrapperForLocalJzodElementEditor returned", "props", props);
     // console.log
     const domainController: DomainControllerInterface = {
       handleAction,

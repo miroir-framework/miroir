@@ -461,6 +461,12 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
   // ##############################################################################################
   // Render error state if we can't properly render an object
   if (!canRenderObject) {
+    log.error(
+      "JzodObjectEditor cannot render object",
+      rootLessListKey,
+      "localResolvedElementJzodSchemaBasedOnValue",
+      localResolvedElementJzodSchemaBasedOnValue
+    );
     return (
       <div>
         <span className="error">
@@ -510,6 +516,19 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
             currentAttributeDefinition?.tag?.value?.defaultLabel ?? attribute[0];
 
           // determine raw schema of attribute
+          // log.info(
+          //   "JzodElementEditor determine raw schema of attribute",
+          //   // "listKey",
+          //   // listKey,
+          //   // "attribute",
+          //   // attribute[0],
+          //   "attributeListKey",
+          //   attributeListKey,
+          //   "unfoldedRawSchema",
+          //   unfoldedRawSchema,
+          //   "rawJzodSchema",
+          //   rawJzodSchema,
+          // );
           switch (unfoldedRawSchema?.type) {
             case "any": {
               attributeRawJzodSchema = unfoldedRawSchema;
@@ -656,14 +675,16 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
             }
             default: {
               throw new Error(
-                "JzodElementEditor unfoldedRawSchema.type incorrect for object " +
+                "JzodElementEditor unfoldedRawSchema.type incorrect for object, listKey=" +
                   listKey +
-                  " attribute " +
+                  ", attribute='" +
                   attribute[0] +
-                  " attributeListKey " +
+                  "' attributeListKey='" +
                   attributeListKey +
-                  " unfoldedRawSchema?.type " +
-                  unfoldedRawSchema?.type
+                  "', unfoldedRawSchema?.type " +
+                  unfoldedRawSchema?.type + 
+                  ", unfoldedRawSchema " +
+                  JSON.stringify(unfoldedRawSchema)
               );
             }
           }
