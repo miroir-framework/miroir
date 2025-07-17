@@ -10,9 +10,10 @@ import {
   MiroirLoggerFactory,
   resolvePathOnObject,
   unfoldJzodSchemaOnce,
-  UnfoldJzodSchemaOnceReturnType
+  UnfoldJzodSchemaOnceReturnType,
+  UnfoldJzodSchemaOnceReturnTypeOK
 } from "miroir-core";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState, useEffect } from "react";
 import { packageName } from "../../../constants";
 import { cleanLevel } from "../constants";
 import {
@@ -91,6 +92,126 @@ export const JzodArrayEditorMoveButton: React.FC<JzodArrayMoveButtonProps> = ({
     >
       {direction === "up" ? "^" : "v"}
     </button>
+  );
+};
+
+// ################################################################################################
+// Progressive Array Item Component
+// ################################################################################################
+interface ProgressiveArrayItemProps {
+  index: number;
+  listKey: string;
+  rootLessListKey: string;
+  rootLessListKeyArray: (string | number)[];
+  currentArrayElementRawDefinition: UnfoldJzodSchemaOnceReturnTypeOK;
+  resolvedElementJzodSchema: JzodElement | undefined;
+  usedIndentLevel: number;
+  currentDeploymentUuid: string | undefined;
+  currentApplicationSection: string | undefined;
+  localRootLessListKeyMap: any;
+  foreignKeyObjects: any;
+  insideAny: boolean | undefined;
+  parentUnfoldedRawSchema: any;
+  itemsOrder: number[];
+  formik: FormikContextType<Record<string, any>>;
+  currentValue: any;
+}
+
+const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
+  index,
+  listKey,
+  rootLessListKey,
+  rootLessListKeyArray,
+  currentArrayElementRawDefinition,
+  resolvedElementJzodSchema,
+  usedIndentLevel,
+  currentDeploymentUuid,
+  currentApplicationSection,
+  localRootLessListKeyMap,
+  foreignKeyObjects,
+  insideAny,
+  parentUnfoldedRawSchema,
+  itemsOrder,
+  formik,
+  currentValue,
+}) => {
+  const isTestMode = process.env.VITE_TEST_MODE === 'true';
+  // const [isRendered, setIsRendered] = useState(false);
+  const [isRendered, setIsRendered] = useState(isTestMode);
+
+
+  useEffect(() => {
+    // Skip progressive rendering in test mode
+    if (isTestMode) {
+      // setIsRendered(true);
+      return;
+    }
+
+    // Use requestIdleCallback if available, otherwise setTimeout
+    const scheduleRender = () => {
+      if (typeof requestIdleCallback !== 'undefined') {
+        requestIdleCallback(() => setIsRendered(true), { timeout: 100 });
+      } else {
+        setTimeout(() => setIsRendered(true), 0);
+      }
+    };
+
+    scheduleRender();
+  }, []);
+
+  return (
+    <div key={rootLessListKey + "." + index}>
+      <div key={listKey + "." + index} style={{ marginLeft: `calc(${indentShift})` }}>
+        {!isRendered ? (
+          <div style={{ fontStyle: 'italic', color: '#666', padding: '4px' }}>
+            Loading array item {index}...
+          </div>
+        ) : (
+          <>
+            <JzodArrayEditorMoveButton
+              direction="down"
+              index={index}
+              itemsOrder={itemsOrder as number[]}
+              listKey={listKey}
+              rootLessListKey={rootLessListKey}
+              formik={formik}
+              currentValue={currentValue}
+            />
+            <JzodArrayEditorMoveButton
+              direction="up"
+              index={index}
+              itemsOrder={itemsOrder as number[]}
+              listKey={listKey}
+              rootLessListKey={rootLessListKey}
+              formik={formik}
+              currentValue={currentValue}
+            />
+            <JzodElementEditor
+              name={"" + index}
+              listKey={listKey + "." + index}
+              indentLevel={usedIndentLevel + 1}
+              labelElement={<></>}
+              currentDeploymentUuid={currentDeploymentUuid}
+              currentApplicationSection={currentApplicationSection as any}
+              rootLessListKey={
+                rootLessListKey.length > 0 ? rootLessListKey + "." + index : "" + index
+              }
+              rootLessListKeyArray={[...rootLessListKeyArray, "" + index]}
+              rawJzodSchema={currentArrayElementRawDefinition.element}
+              resolvedElementJzodSchema={
+                resolvedElementJzodSchema?.type == "array"
+                  ? ((resolvedElementJzodSchema as JzodArray)?.definition as any)
+                  : ((resolvedElementJzodSchema as JzodTuple).definition[index] as JzodElement)
+              }
+              localRootLessListKeyMap={localRootLessListKeyMap}
+              foreignKeyObjects={foreignKeyObjects}
+              insideAny={insideAny}
+              parentType={parentUnfoldedRawSchema.type}
+            />
+          </>
+        )}
+      </div>
+    </div>
   );
 };
 
@@ -389,58 +510,25 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
           //   // JSON.stringify(attributeParam[1], null, 2)
           // );
           return (
-            <div key={rootLessListKey + "." + index}>
-              {/* <div>
-                    <pre>
-                      JzodArray: {JSON.stringify(resolvedElementJzodSchema, null, 2)}
-                    </pre>
-                  </div> */}
-              <div key={listKey + "." + index} style={{ marginLeft: `calc(${indentShift})` }}>
-                <JzodArrayEditorMoveButton
-                  direction="down"
-                  index={index}
-                  itemsOrder={itemsOrder as number[]}
-                  listKey={listKey}
-                  rootLessListKey={rootLessListKey}
-                  formik={formik}
-                  currentValue={currentValue}
-                />
-                <JzodArrayEditorMoveButton
-                  direction="up"
-                  index={index}
-                  itemsOrder={itemsOrder as number[]}
-                  listKey={listKey}
-                  rootLessListKey={rootLessListKey}
-                  formik={formik}
-                  currentValue={currentValue}
-                />
-                <JzodElementEditor
-                  name={"" + index}
-                  listKey={listKey + "." + index}
-                  indentLevel={usedIndentLevel + 1}
-                  // labelElement={<span>{resolvedElementJzodSchema?.tag?.value?.defaultLabel}</span>}
-                  labelElement={<></>}
-                  // paramMiroirFundamentalJzodSchema={paramMiroirFundamentalJzodSchema}
-                  currentDeploymentUuid={currentDeploymentUuid}
-                  currentApplicationSection={currentApplicationSection}
-                  rootLessListKey={
-                    rootLessListKey.length > 0 ? rootLessListKey + "." + index : "" + index
-                  }
-                  rootLessListKeyArray={[...rootLessListKeyArray, "" + index]}
-                  rawJzodSchema={currentArrayElementRawDefinition.element}
-                  // rawJzodSchema={currentArrayElementRawDefinition}
-                  resolvedElementJzodSchema={
-                    resolvedElementJzodSchema?.type == "array"
-                      ? ((resolvedElementJzodSchema as JzodArray)?.definition as any)
-                      : ((resolvedElementJzodSchema as JzodTuple).definition[index] as JzodElement)
-                  } // TODO: wrong type seen for props.resolvedJzodSchema! (cannot be undefined, really)
-                  localRootLessListKeyMap={localRootLessListKeyMap}
-                  foreignKeyObjects={foreignKeyObjects}
-                  insideAny={insideAny}
-                  parentType={parentUnfoldedRawSchema.type} // used to control the parent type of the element, used for array items
-                />
-              </div>
-            </div>
+            <ProgressiveArrayItem
+              key={rootLessListKey + "." + index}
+              index={index}
+              listKey={listKey}
+              rootLessListKey={rootLessListKey}
+              rootLessListKeyArray={rootLessListKeyArray}
+              currentArrayElementRawDefinition={currentArrayElementRawDefinition}
+              resolvedElementJzodSchema={resolvedElementJzodSchema}
+              usedIndentLevel={usedIndentLevel}
+              currentDeploymentUuid={currentDeploymentUuid}
+              currentApplicationSection={currentApplicationSection}
+              localRootLessListKeyMap={localRootLessListKeyMap}
+              foreignKeyObjects={foreignKeyObjects}
+              insideAny={insideAny}
+              parentUnfoldedRawSchema={parentUnfoldedRawSchema}
+              itemsOrder={itemsOrder}
+              formik={formik}
+              currentValue={currentValue}
+            />
           );
         })}
     </div>
