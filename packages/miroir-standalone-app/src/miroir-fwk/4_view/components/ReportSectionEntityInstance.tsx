@@ -378,17 +378,19 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
               instanceAction: {
                 // actionType: "instanceAction",
                 actionType: "updateInstance",
-                applicationSection: "model",
                 deploymentUuid: props.deploymentUuid,
                 endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-                objects: [
-                  {
-                    parentName: data.name,
-                    parentUuid: data.parentUuid,
-                    applicationSection: props.applicationSection,
-                    instances: [data],
-                  },
-                ],
+                payload: {
+                  applicationSection: "model",
+                  objects: [
+                    {
+                      parentName: data.name,
+                      parentUuid: data.parentUuid,
+                      applicationSection: props.applicationSection,
+                      instances: [data],
+                    },
+                  ],
+                }
               },
             },
             // props.tableComponentReportType == "EntityInstance" ? currentModel : undefined
@@ -398,21 +400,23 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
           const updateAction: InstanceAction = {
             // actionType: "instanceAction",
             actionType: "updateInstance",
-            applicationSection: props.applicationSection
-              ? props.applicationSection
-              : "data",
             deploymentUuid: props.deploymentUuid,
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-            objects: [
-              {
-                parentName: data.name,
-                parentUuid: data.parentUuid,
-                applicationSection: props.applicationSection
-                  ? props.applicationSection
-                  : "data",
-                instances: [data],
-              },
-            ],
+            payload: {
+              applicationSection: props.applicationSection
+                ? props.applicationSection
+                : "data",
+              objects: [
+                {
+                  parentName: data.name,
+                  parentUuid: data.parentUuid,
+                  applicationSection: props.applicationSection
+                    ? props.applicationSection
+                    : "data",
+                  instances: [data],
+                },
+              ],
+            }
           };
           await domainController.handleAction(updateAction);
         }

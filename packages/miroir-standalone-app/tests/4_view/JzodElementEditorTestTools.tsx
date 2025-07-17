@@ -52,7 +52,23 @@ import { MiroirContextReactProvider, useMiroirContextService } from "../../src/m
 import { useCurrentModel } from "../../src/miroir-fwk/4_view/ReduxHooks";
 import { emptyObject } from "../../src/miroir-fwk/4_view/routes/Tools";
 import { libraryApplicationInstances } from "../../src/miroir-fwk/4_view/uploadBooksAndReports";
-import { TestMode } from "./JzodElementEditor.test";
+
+export type TestMode = 'jzodElementEditor' | 'component';
+export type TestModeStar = 'jzodElementEditor' | 'component' | '*';
+
+export const allTestModes: TestMode[] = ['jzodElementEditor', 'component'];
+
+export interface JzodElementEditorTestSuite<LocalEditorProps extends Record<string, any>> {
+  editor: React.FC<any>;
+  performanceTests?: boolean;
+  getJzodEditorTests: (
+    LocalEditor: React.FC<LocalEditorProps>,
+    jzodElementEditor: React.FC<JzodElementEditorProps_Test>
+  ) => JzodEditorTestSuites<LocalEditorProps>;
+}
+
+export type ModesType = TestModeStar | TestMode[];
+
 
 export const testThemeParams = {
   palette: {
@@ -505,50 +521,52 @@ export function getWrapperForLocalJzodElementEditor(
     deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
     // deploymentUuid: applicationDeploymentAdmin.uuid,
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-    objects: [
-      {
-        parentName: entityEntity.name,
-        parentUuid: entityEntity.uuid,
-        applicationSection: "model",
-        instances: defaultMiroirMetaModel.entities
-      },
-      {
-        parentName: entityEntityDefinition.name,
-        parentUuid: entityEntityDefinition.uuid,
-        applicationSection: "model",
-        instances: defaultMiroirMetaModel.entityDefinitions
-      },
-      {
-        parentName: entityJzodSchema.name,
-        parentUuid: entityJzodSchema.uuid,
-        applicationSection: "data",
-        instances: defaultMiroirMetaModel.jzodSchemas
-      },
-      {
-        parentName: entityMenu.name,
-        parentUuid: entityMenu.uuid,
-        applicationSection: "data",
-        instances: defaultMiroirMetaModel.menus
-      },
-      {
-        parentName: entitySelfApplicationVersion.name,
-        parentUuid: entitySelfApplicationVersion.uuid,
-        applicationSection: "data",
-        instances: defaultMiroirMetaModel.applicationVersions
-      },
-      {
-        parentName: entityReport.name,
-        parentUuid: entityReport.uuid,
-        applicationSection: "data",
-        instances: defaultMiroirMetaModel.reports
-      },
-      // {
-      //   parentName: applicationVersionCrossEntityDefinitionSchema.name,
-      //   parentUuid: ApplicationVersionCrossEntityDefinitionSchema.uuid,
-      //   applicationSection: "model",
-      //   instances: defaultMiroirMetaModel.applicationVersionCrossEntityDefinition
-      // },
-    ],
+    payload: {
+      objects: [
+        {
+          parentName: entityEntity.name,
+          parentUuid: entityEntity.uuid,
+          applicationSection: "model",
+          instances: defaultMiroirMetaModel.entities
+        },
+        {
+          parentName: entityEntityDefinition.name,
+          parentUuid: entityEntityDefinition.uuid,
+          applicationSection: "model",
+          instances: defaultMiroirMetaModel.entityDefinitions
+        },
+        {
+          parentName: entityJzodSchema.name,
+          parentUuid: entityJzodSchema.uuid,
+          applicationSection: "data",
+          instances: defaultMiroirMetaModel.jzodSchemas
+        },
+        {
+          parentName: entityMenu.name,
+          parentUuid: entityMenu.uuid,
+          applicationSection: "data",
+          instances: defaultMiroirMetaModel.menus
+        },
+        {
+          parentName: entitySelfApplicationVersion.name,
+          parentUuid: entitySelfApplicationVersion.uuid,
+          applicationSection: "data",
+          instances: defaultMiroirMetaModel.applicationVersions
+        },
+        {
+          parentName: entityReport.name,
+          parentUuid: entityReport.uuid,
+          applicationSection: "data",
+          instances: defaultMiroirMetaModel.reports
+        },
+        // {
+        //   parentName: applicationVersionCrossEntityDefinitionSchema.name,
+        //   parentUuid: ApplicationVersionCrossEntityDefinitionSchema.uuid,
+        //   applicationSection: "model",
+        //   instances: defaultMiroirMetaModel.applicationVersionCrossEntityDefinition
+        // },
+      ],
+    }
   });
   if (resultForLoadingMiroirMetaModel.status !== "ok") {
     throw new Error(
@@ -568,63 +586,65 @@ export function getWrapperForLocalJzodElementEditor(
     actionType: "loadNewInstancesInLocalCache",
     deploymentUuid: selfApplicationDeploymentLibrary.uuid,
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-    objects: [
-      {
-        parentName: entityEntity.name,
-        parentUuid: entityEntity.uuid,
-        applicationSection: "model",
-        instances: [
-          entityAuthor,
-          entityBook,
-          entityCountry,
-          entityPublisher
-        ]
-      },
-      {
-        parentName: entityEntityDefinition.name,
-        parentUuid: entityEntityDefinition.uuid,
-        applicationSection: "model",
-        instances: [
-          entityDefinitionBook,
-          entityDefinitionAuthor,
-          entityDefinitionCountry,
-          entityDefinitionPublisher,
-        ]
-      },
-      {
-        parentName: entityMenu.name,
-        parentUuid: entityMenu.uuid,
-        applicationSection: "model",
-        instances: [menuDefaultLibrary]
-      },
-      // {
-      //   parentName: entitySelfApplicationVersion.name,
-      //   parentUuid: entitySelfApplicationVersion.uuid,
-      //   applicationSection: "model",
-      //   instances: defaultMiroirMetaModel.applicationVersions
-      // },
-      {
-        parentName: entityReport.name,
-        parentUuid: entityReport.uuid,
-        applicationSection: "model",
-        instances: [
-            reportAuthorList,
-            reportAuthorDetails,
-            reportBookList,
-            reportBookDetails,
-            reportBookInstance,
-            reportCountryList,
-            reportPublisherList,
-        ],
-      },
-      // {
-      //   parentName: applicationVersionCrossEntityDefinitionSchema.name,
-      //   parentUuid: ApplicationVersionCrossEntityDefinitionSchema.uuid,
-      //   applicationSection: "model",
-      //   instances: defaultMiroirMetaModel.applicationVersionCrossEntityDefinition
-      // },
-      ...libraryApplicationInstances
-    ],
+    payload: {
+      objects: [
+        {
+          parentName: entityEntity.name,
+          parentUuid: entityEntity.uuid,
+          applicationSection: "model",
+          instances: [
+            entityAuthor,
+            entityBook,
+            entityCountry,
+            entityPublisher
+          ]
+        },
+        {
+          parentName: entityEntityDefinition.name,
+          parentUuid: entityEntityDefinition.uuid,
+          applicationSection: "model",
+          instances: [
+            entityDefinitionBook,
+            entityDefinitionAuthor,
+            entityDefinitionCountry,
+            entityDefinitionPublisher,
+          ]
+        },
+        {
+          parentName: entityMenu.name,
+          parentUuid: entityMenu.uuid,
+          applicationSection: "model",
+          instances: [menuDefaultLibrary]
+        },
+        // {
+        //   parentName: entitySelfApplicationVersion.name,
+        //   parentUuid: entitySelfApplicationVersion.uuid,
+        //   applicationSection: "model",
+        //   instances: defaultMiroirMetaModel.applicationVersions
+        // },
+        {
+          parentName: entityReport.name,
+          parentUuid: entityReport.uuid,
+          applicationSection: "model",
+          instances: [
+              reportAuthorList,
+              reportAuthorDetails,
+              reportBookList,
+              reportBookDetails,
+              reportBookInstance,
+              reportCountryList,
+              reportPublisherList,
+          ],
+        },
+        // {
+        //   parentName: applicationVersionCrossEntityDefinitionSchema.name,
+        //   parentUuid: ApplicationVersionCrossEntityDefinitionSchema.uuid,
+        //   applicationSection: "model",
+        //   instances: defaultMiroirMetaModel.applicationVersionCrossEntityDefinition
+        // },
+        ...libraryApplicationInstances
+      ],
+    }
   });
   if (resultForLoadingLibraryApplicationModel.status !== "ok") {
     throw new Error(
@@ -644,7 +664,9 @@ export function getWrapperForLocalJzodElementEditor(
     actionType: "loadNewInstancesInLocalCache",
     deploymentUuid: selfApplicationDeploymentLibrary.uuid,
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-    objects: libraryApplicationInstances,
+    payload: {
+      objects: libraryApplicationInstances,
+    }
   });
 
   if (resultForLoadingLibraryApplicationInstances.status !== "ok") {

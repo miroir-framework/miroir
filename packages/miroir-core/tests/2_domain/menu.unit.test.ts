@@ -41,7 +41,7 @@ export const transformerTestSuite_applicativeTransformers: TransformerTestSuite 
           parentName: "Menu",
           parentUuid: "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
           name: "MiroirMenu",
-          defaultLabel: "Meta-Model",
+          defaultLabel: "Library Menu",
           description: "This is the default menu allowing to explore the Miroir Meta-Model.",
           definition: {
             menuType: "complexMenu",
@@ -104,7 +104,7 @@ export const transformerTestSuite_applicativeTransformers: TransformerTestSuite 
         parentName: "Menu",
         parentUuid: "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
         name: "MiroirMenu",
-        defaultLabel: "Meta-Model",
+        defaultLabel: "Library Menu",
         description: "This is the default menu allowing to explore the Miroir Meta-Model.",
         definition: {
           menuType: "complexMenu",

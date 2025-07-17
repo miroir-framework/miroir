@@ -439,60 +439,64 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                     referenceName: "testDeploymentUuid",
                   },
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  entities: [
-                    {
-                      entity: {
-                        transformerType: "parameterReference",
-                        interpolation: "build",
-                        referenceName: "createEntity_newEntity",
+                  payload: {
+                    entities: [
+                      {
+                        entity: {
+                          transformerType: "parameterReference",
+                          interpolation: "build",
+                          referenceName: "createEntity_newEntity",
+                        },
+                        entityDefinition: {
+                          transformerType: "parameterReference",
+                          interpolation: "build",
+                          referenceName: "createEntity_newEntityDefinition",
+                        },
                       },
-                      entityDefinition: {
-                        transformerType: "parameterReference",
-                        interpolation: "build",
-                        referenceName: "createEntity_newEntityDefinition",
-                      },
-                    },
-                  ],
+                    ],
+                  }
                 },
                 {
                   actionType: "transactionalInstanceAction",
                   actionLabel: "createReports",
                   instanceAction: {
                     actionType: "createInstance",
-                    applicationSection: "model",
                     deploymentUuid: {
                       transformerType: "parameterReference",
                       interpolation: "build",
                       referenceName: "testDeploymentUuid",
                     },
                     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-                    objects: [
-                      {
-                        parentName: {
-                          transformerType: "parameterReference",
-                          interpolation: "build",
-                          referencePath: ["newEntityListReport", "parentName"],
-                        },
-                        parentUuid: {
-                          transformerType: "parameterReference",
-                          interpolation: "build",
-                          referencePath: ["newEntityListReport", "parentUuid"],
-                        },
-                        applicationSection: "model",
-                        instances: [
-                          {
+                    payload: {
+                      applicationSection: "model",
+                      objects: [
+                        {
+                          parentName: {
                             transformerType: "parameterReference",
                             interpolation: "build",
-                            referenceName: "newEntityListReport",
+                            referencePath: ["newEntityListReport", "parentName"],
                           },
-                          {
+                          parentUuid: {
                             transformerType: "parameterReference",
                             interpolation: "build",
-                            referenceName: "newEntityDetailsReport",
+                            referencePath: ["newEntityListReport", "parentUuid"],
                           },
-                        ],
-                      },
-                    ],
+                          applicationSection: "model",
+                          instances: [
+                            {
+                              transformerType: "parameterReference",
+                              interpolation: "build",
+                              referenceName: "newEntityListReport",
+                            },
+                            {
+                              transformerType: "parameterReference",
+                              interpolation: "build",
+                              referenceName: "newEntityDetailsReport",
+                            },
+                          ],
+                        },
+                      ],
+                    },
                   },
                 },
                 {
@@ -513,45 +517,47 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                     actionType: "runBoxedExtractorOrQueryAction",
                     actionName: "runQuery",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                    applicationSection: "model",
                     deploymentUuid: {
                       transformerType: "parameterReference",
                       interpolation: "build",
                       referenceName: "testDeploymentUuid",
                     },
-                    query: {
-                      queryType: "boxedQueryWithExtractorCombinerTransformer",
-                      deploymentUuid: {
-                        transformerType: "parameterReference",
-                        interpolation: "build",
-                        referenceName: "testDeploymentUuid",
-                      },
-                      pageParams: {
-                        currentDeploymentUuid: {
+                    payload: {
+                      applicationSection: "model",
+                      query: {
+                        queryType: "boxedQueryWithExtractorCombinerTransformer",
+                        deploymentUuid: {
                           transformerType: "parameterReference",
                           interpolation: "build",
                           referenceName: "testDeploymentUuid",
                         },
-                      },
-                      queryParams: {},
-                      contextResults: {},
-                      extractors: {
-                        entityDefinitions: {
-                          extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                          applicationSection: "model",
-                          parentName: {
+                        pageParams: {
+                          currentDeploymentUuid: {
                             transformerType: "parameterReference",
                             interpolation: "build",
-                            referencePath: ["entityEntityDefinition", "name"],
+                            referenceName: "testDeploymentUuid",
                           },
-                          parentUuid: {
-                            transformerType: "parameterReference",
-                            interpolation: "build",
-                            referencePath: ["entityEntityDefinition", "uuid"],
-                          },
-                          orderBy: {
-                            attributeName: "name",
-                            direction: "ASC",
+                        },
+                        queryParams: {},
+                        contextResults: {},
+                        extractors: {
+                          entityDefinitions: {
+                            extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                            applicationSection: "model",
+                            parentName: {
+                              transformerType: "parameterReference",
+                              interpolation: "build",
+                              referencePath: ["entityEntityDefinition", "name"],
+                            },
+                            parentUuid: {
+                              transformerType: "parameterReference",
+                              interpolation: "build",
+                              referencePath: ["entityEntityDefinition", "uuid"],
+                            },
+                            orderBy: {
+                              attributeName: "name",
+                              direction: "ASC",
+                            },
                           },
                         },
                       },
@@ -566,45 +572,47 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                     actionType: "runBoxedExtractorOrQueryAction",
                     actionName: "runQuery",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                    applicationSection: "model",
                     deploymentUuid: {
                       transformerType: "parameterReference",
                       interpolation: "build",
                       referenceName: "testDeploymentUuid",
                     },
-                    query: {
-                      queryType: "boxedQueryWithExtractorCombinerTransformer",
-                      deploymentUuid: {
-                        transformerType: "parameterReference",
-                        interpolation: "build",
-                        referenceName: "testDeploymentUuid",
-                      },
-                      pageParams: {
-                        currentDeploymentUuid: {
+                    payload: {
+                      applicationSection: "model",
+                      query: {
+                        queryType: "boxedQueryWithExtractorCombinerTransformer",
+                        deploymentUuid: {
                           transformerType: "parameterReference",
                           interpolation: "build",
                           referenceName: "testDeploymentUuid",
                         },
-                      },
-                      queryParams: {},
-                      contextResults: {},
-                      extractors: {
-                        entities: {
-                          extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                          applicationSection: "model",
-                          parentName: {
+                        pageParams: {
+                          currentDeploymentUuid: {
                             transformerType: "parameterReference",
                             interpolation: "build",
-                            referencePath: ["entityEntity", "name"],
+                            referenceName: "testDeploymentUuid",
                           },
-                          parentUuid: {
-                            transformerType: "parameterReference",
-                            interpolation: "build",
-                            referencePath: ["entityEntity", "uuid"],
-                          },
-                          orderBy: {
-                            attributeName: "name",
-                            direction: "ASC",
+                        },
+                        queryParams: {},
+                        contextResults: {},
+                        extractors: {
+                          entities: {
+                            extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                            applicationSection: "model",
+                            parentName: {
+                              transformerType: "parameterReference",
+                              interpolation: "build",
+                              referencePath: ["entityEntity", "name"],
+                            },
+                            parentUuid: {
+                              transformerType: "parameterReference",
+                              interpolation: "build",
+                              referencePath: ["entityEntity", "uuid"],
+                            },
+                            orderBy: {
+                              attributeName: "name",
+                              direction: "ASC",
+                            },
                           },
                         },
                       },
@@ -619,46 +627,48 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                     actionType: "runBoxedExtractorOrQueryAction",
                     actionName: "runQuery",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                    applicationSection: "model",
                     deploymentUuid: {
                       transformerType: "parameterReference",
                       interpolation: "build",
                       referenceName: "testDeploymentUuid",
                     },
-                    query: {
-                      queryType: "boxedQueryWithExtractorCombinerTransformer",
-                      deploymentUuid: {
-                        transformerType: "parameterReference",
-                        interpolation: "build",
-                        referenceName: "testDeploymentUuid",
-                      },
-                      pageParams: {
-                        currentDeploymentUuid: {
+                    payload: {
+                      applicationSection: "model",
+                      query: {
+                        queryType: "boxedQueryWithExtractorCombinerTransformer",
+                        deploymentUuid: {
                           transformerType: "parameterReference",
                           interpolation: "build",
                           referenceName: "testDeploymentUuid",
                         },
-                      },
-                      runAsSql: true,
-                      queryParams: {},
-                      contextResults: {},
-                      extractors: {
-                        reports: {
-                          extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                          applicationSection: "model",
-                          parentName: {
+                        pageParams: {
+                          currentDeploymentUuid: {
                             transformerType: "parameterReference",
                             interpolation: "build",
-                            referencePath: ["entityReport", "name"],
+                            referenceName: "testDeploymentUuid",
                           },
-                          parentUuid: {
-                            transformerType: "parameterReference",
-                            interpolation: "build",
-                            referencePath: ["entityReport", "uuid"],
-                          },
-                          orderBy: {
-                            attributeName: "name",
-                            direction: "ASC",
+                        },
+                        runAsSql: true,
+                        queryParams: {},
+                        contextResults: {},
+                        extractors: {
+                          reports: {
+                            extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                            applicationSection: "model",
+                            parentName: {
+                              transformerType: "parameterReference",
+                              interpolation: "build",
+                              referencePath: ["entityReport", "name"],
+                            },
+                            parentUuid: {
+                              transformerType: "parameterReference",
+                              interpolation: "build",
+                              referencePath: ["entityReport", "uuid"],
+                            },
+                            orderBy: {
+                              attributeName: "name",
+                              direction: "ASC",
+                            },
                           },
                         },
                       },
@@ -673,89 +683,91 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                     actionType: "runBoxedQueryAction",
                     actionName: "runQuery",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                    applicationSection: "model",
                     deploymentUuid: {
                       transformerType: "parameterReference",
                       interpolation: "build",
                       referenceName: "testDeploymentUuid",
                     },
-                    query: {
-                      queryType: "boxedQueryWithExtractorCombinerTransformer",
-                      deploymentUuid: {
-                        transformerType: "parameterReference",
-                        interpolation: "build",
-                        referenceName: "testDeploymentUuid",
-                      },
-                      pageParams: {},
-                      queryParams: {},
-                      contextResults: {},
-                      extractors: {
-                        menuList: {
-                          extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                          applicationSection: "model",
-                          parentName: {
-                            transformerType: "parameterReference",
-                            interpolation: "build",
-                            referencePath: ["entityMenu", "name"],
-                          },
-                          parentUuid: {
-                            transformerType: "parameterReference",
-                            interpolation: "build",
-                            referencePath: ["entityMenu", "uuid"],
+                    payload: {
+                      applicationSection: "model",
+                      query: {
+                        queryType: "boxedQueryWithExtractorCombinerTransformer",
+                        deploymentUuid: {
+                          transformerType: "parameterReference",
+                          interpolation: "build",
+                          referenceName: "testDeploymentUuid",
+                        },
+                        pageParams: {},
+                        queryParams: {},
+                        contextResults: {},
+                        extractors: {
+                          menuList: {
+                            extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                            applicationSection: "model",
+                            parentName: {
+                              transformerType: "parameterReference",
+                              interpolation: "build",
+                              referencePath: ["entityMenu", "name"],
+                            },
+                            parentUuid: {
+                              transformerType: "parameterReference",
+                              interpolation: "build",
+                              referencePath: ["entityMenu", "uuid"],
+                            },
                           },
                         },
-                      },
-                      runtimeTransformers: {
-                        menu: {
-                          transformerType: "listPickElement",
-                          interpolation: "runtime",
-                          applyTo: {
-                            referenceType: "referencedTransformer",
-                            reference: {
+                        runtimeTransformers: {
+                          menu: {
+                            transformerType: "listPickElement",
+                            interpolation: "runtime",
+                            applyTo: {
+                              referenceType: "referencedTransformer",
+                              reference: {
+                                transformerType: "contextReference",
+                                interpolation: "runtime",
+                                referenceName: "menuList",
+                              },
+                            },
+                            index: 0,
+                          },
+                          menuItem: {
+                            transformerType: "freeObjectTemplate",
+                            interpolation: "runtime",
+                            definition: {
+                              reportUuid: {
+                                transformerType: "parameterReference",
+                                interpolation: "build",
+                                referenceName: "createEntity_newEntityListReportUuid",
+                              },
+                              label: {
+                                transformerType: "mustacheStringTemplate",
+                                interpolation: "build",
+                                definition: "List of {{newEntityName}}s",
+                              },
+                              section: "data",
+                              selfApplication: {
+                                transformerType: "parameterReference",
+                                interpolation: "build",
+                                referencePath: ["adminConfigurationDeploymentParis", "uuid"],
+                              },
+                              icon: "local_drink",
+                            },
+                          },
+                          updatedMenu: {
+                            transformerType: "transformer_menu_addItem",
+                            interpolation: "runtime",
+                            menuItemReference: {
                               transformerType: "contextReference",
                               interpolation: "runtime",
-                              referenceName: "menuList",
+                              referenceName: "menuItem",
                             },
-                          },
-                          index: 0,
-                        },
-                        menuItem: {
-                          transformerType: "freeObjectTemplate",
-                          interpolation: "runtime",
-                          definition: {
-                            reportUuid: {
-                              transformerType: "parameterReference",
-                              interpolation: "build",
-                              referenceName: "createEntity_newEntityListReportUuid",
+                            menuReference: {
+                              transformerType: "contextReference",
+                              interpolation: "runtime",
+                              referenceName: "menu",
                             },
-                            label: {
-                              transformerType: "mustacheStringTemplate",
-                              interpolation: "build",
-                              definition: "List of {{newEntityName}}s",
-                            },
-                            section: "data",
-                            selfApplication: {
-                              transformerType: "parameterReference",
-                              interpolation: "build",
-                              referencePath: ["adminConfigurationDeploymentParis", "uuid"],
-                            },
-                            icon: "local_drink",
+                            menuSectionItemInsertionIndex: -1,
                           },
-                        },
-                        updatedMenu: {
-                          transformerType: "transformer_menu_addItem",
-                          interpolation: "runtime",
-                          menuItemReference: {
-                            transformerType: "contextReference",
-                            interpolation: "runtime",
-                            referenceName: "menuItem",
-                          },
-                          menuReference: {
-                            transformerType: "contextReference",
-                            interpolation: "runtime",
-                            referenceName: "menu",
-                          },
-                          menuSectionItemInsertionIndex: -1,
                         },
                       },
                     },
@@ -766,35 +778,37 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                   actionLabel: "updateMenu",
                   instanceAction: {
                     actionType: "updateInstance",
-                    applicationSection: "model",
                     deploymentUuid: {
                       transformerType: "parameterReference",
                       interpolation: "build",
                       referenceName: "testDeploymentUuid",
                     },
                     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-                    objects: [
-                      {
-                        parentName: {
-                          transformerType: "parameterReference",
-                          interpolation: "build",
-                          referencePath: ["entityMenu", "name"],
-                        },
-                        parentUuid: {
-                          transformerType: "parameterReference",
-                          interpolation: "build",
-                          referencePath: ["entityMenu", "uuid"],
-                        },
-                        applicationSection: "model",
-                        instances: [
-                          {
-                            transformerType: "contextReference",
-                            interpolation: "runtime",
-                            referencePath: ["menuUpdateQueryResult", "updatedMenu"],
+                    payload: {
+                      applicationSection: "model",
+                      objects: [
+                        {
+                          parentName: {
+                            transformerType: "parameterReference",
+                            interpolation: "build",
+                            referencePath: ["entityMenu", "name"],
                           },
-                        ],
-                      },
-                    ],
+                          parentUuid: {
+                            transformerType: "parameterReference",
+                            interpolation: "build",
+                            referencePath: ["entityMenu", "uuid"],
+                          },
+                          applicationSection: "model",
+                          instances: [
+                            {
+                              transformerType: "contextReference",
+                              interpolation: "runtime",
+                              referencePath: ["menuUpdateQueryResult", "updatedMenu"],
+                            },
+                          ],
+                        },
+                      ],
+                    },
                   },
                 },
                 {
@@ -815,31 +829,33 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                     actionType: "runBoxedQueryAction",
                     actionName: "runQuery",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                    applicationSection: "model",
                     deploymentUuid: {
                       transformerType: "parameterReference",
                       interpolation: "build",
                       referenceName: "testDeploymentUuid",
                     },
-                    query: {
-                      queryType: "boxedQueryWithExtractorCombinerTransformer",
-                      deploymentUuid: {
-                        transformerType: "parameterReference",
-                        interpolation: "build",
-                        referenceName: "testDeploymentUuid",
-                      },
-                      pageParams: {},
-                      queryParams: {},
-                      contextResults: {},
-                      extractors: {
-                        menuList: {
-                          extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                          applicationSection: "model",
-                          parentName: "Menu",
-                          parentUuid: {
-                            transformerType: "parameterReference",
-                            interpolation: "build",
-                            referencePath: ["entityMenu", "uuid"],
+                    payload: {
+                      applicationSection: "model",
+                      query: {
+                        queryType: "boxedQueryWithExtractorCombinerTransformer",
+                        deploymentUuid: {
+                          transformerType: "parameterReference",
+                          interpolation: "build",
+                          referenceName: "testDeploymentUuid",
+                        },
+                        pageParams: {},
+                        queryParams: {},
+                        contextResults: {},
+                        extractors: {
+                          menuList: {
+                            extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                            applicationSection: "model",
+                            parentName: "Menu",
+                            parentUuid: {
+                              transformerType: "parameterReference",
+                              interpolation: "build",
+                              referencePath: ["entityMenu", "uuid"],
+                            },
                           },
                         },
                       },
@@ -995,7 +1011,7 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                         parentUuid: "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
                         parentDefinitionVersionUuid: null,
                         name: "LibraryMenu",
-                        defaultLabel: "Meta-Model",
+                        defaultLabel: "Library Menu",
                         description:
                           "This is the default menu allowing to explore the Library SelfApplication.",
                         definition: {
@@ -1091,7 +1107,8 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
               },
             ],
           },
-        } as any, // TODO: remove any
+        }
+        // } as any, // TODO: remove any
       },
       // } as TestActionParams,
     },

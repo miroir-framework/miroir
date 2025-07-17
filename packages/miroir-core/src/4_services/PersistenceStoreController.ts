@@ -271,7 +271,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
       // case "instanceAction": {
       case "createInstance":
       case "updateInstance": {
-        for (const instanceCollection of persistenceStoreControllerAction.objects) {
+        for (const instanceCollection of persistenceStoreControllerAction.payload.objects) {
           for (const instance of instanceCollection.instances) {
             await this.upsertInstance(instanceCollection.applicationSection,instance)
           }
@@ -279,7 +279,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
         break;
       }
       case "deleteInstance": {
-        for (const instanceCollection of persistenceStoreControllerAction.objects) {
+        for (const instanceCollection of persistenceStoreControllerAction.payload.objects) {
           await this.deleteInstances(instanceCollection.applicationSection,instanceCollection.instances)
         }
         break;
@@ -291,16 +291,16 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
       }
       case "getInstance": {
         return this.getInstance(
-          persistenceStoreControllerAction.applicationSection,
-          persistenceStoreControllerAction.parentUuid,
-          persistenceStoreControllerAction.uuid
+          persistenceStoreControllerAction.payload.applicationSection,
+          persistenceStoreControllerAction.payload.parentUuid,
+          persistenceStoreControllerAction.payload.uuid
         );
         break;
       }
       case "getInstances": {
         return this.getInstances(
-          persistenceStoreControllerAction.applicationSection,
-          persistenceStoreControllerAction.parentUuid
+          persistenceStoreControllerAction.payload.applicationSection,
+          persistenceStoreControllerAction.payload.parentUuid
         );
         break;
         // TODO: check await calls for errors!

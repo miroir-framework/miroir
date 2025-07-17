@@ -41,25 +41,27 @@ export class ModelEntityActionTransformer{
             // actionName: "createInstance",
             deploymentUuid: modelAction.deploymentUuid,
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-            applicationSection: "model",
-            objects: [
-              ...modelAction.payload.entities.flatMap(
-                a => [
-                  {
-                    parentName:entityEntity.name,
-                    parentUuid:entityEntity.uuid,
-                    applicationSection:'model' as ApplicationSection,
-                    instances:[a.entity]
-                  },
-                  {
-                    parentName:entityEntityDefinition.name,
-                    parentUuid:entityEntityDefinition.uuid,
-                    applicationSection:'model' as ApplicationSection, 
-                    instances:[a.entityDefinition]
-                  },
-                ]
-              )
-            ]
+            payload: {
+              applicationSection: "model",
+              objects: [
+                ...modelAction.payload.entities.flatMap(
+                  a => [
+                    {
+                      parentName:entityEntity.name,
+                      parentUuid:entityEntity.uuid,
+                      applicationSection:'model' as ApplicationSection,
+                      instances:[a.entity]
+                    },
+                    {
+                      parentName:entityEntityDefinition.name,
+                      parentUuid:entityEntityDefinition.uuid,
+                      applicationSection:'model' as ApplicationSection, 
+                      instances:[a.entityDefinition]
+                    },
+                  ]
+                )
+              ]
+            }
           }
         ];
         break;
@@ -71,21 +73,23 @@ export class ModelEntityActionTransformer{
             actionType: "deleteInstance",
             deploymentUuid: modelAction.deploymentUuid,
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-            applicationSection: "model",
-            objects: [
-              {
-                parentName: entityEntity.name,
-                parentUuid: entityEntity.uuid,
-                applicationSection: "model",
-                instances: [{ parentUuid: entityEntity.uuid, uuid: modelAction.payload.entityUuid }],
-              },
-              {
-                parentName: entityEntityDefinition.name,
-                parentUuid: entityEntityDefinition.uuid,
-                applicationSection: "model",
-                instances: [{ parentUuid: entityEntityDefinition.uuid, uuid: modelAction.payload.entityDefinitionUuid }],
-              },
-            ],
+            payload: {
+              applicationSection: "model",
+              objects: [
+                {
+                  parentName: entityEntity.name,
+                  parentUuid: entityEntity.uuid,
+                  applicationSection: "model",
+                  instances: [{ parentUuid: entityEntity.uuid, uuid: modelAction.payload.entityUuid }],
+                },
+                {
+                  parentName: entityEntityDefinition.name,
+                  parentUuid: entityEntityDefinition.uuid,
+                  applicationSection: "model",
+                  instances: [{ parentUuid: entityEntityDefinition.uuid, uuid: modelAction.payload.entityDefinitionUuid }],
+                },
+              ],
+            }
           },
         ];
         break;
@@ -119,8 +123,10 @@ export class ModelEntityActionTransformer{
               actionType: "updateInstance",
               endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
               deploymentUuid,
-              applicationSection: "model",
-              objects
+              payload: {
+                applicationSection: "model",
+                objects
+              }
             },
           ];
           log.info("modelActionToLocalCacheInstanceAction returning for ", deploymentUuid, modelAction,"result=", result)
@@ -178,8 +184,10 @@ export class ModelEntityActionTransformer{
               actionType: "updateInstance",
               deploymentUuid: modelAction.deploymentUuid,
               endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-              applicationSection: "model",
-              objects
+              payload: {
+                applicationSection: "model",
+                objects
+              }
             },
           ];
           log.info(

@@ -14209,28 +14209,33 @@ export const miroirFundamentalJzodSchema = {
                   }
                 }
               },
-              "applicationSection": {
-                "type": "schemaReference",
+              "payload": {
+                "type": "object",
                 "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "applicationSection"
-                }
-              },
-              "objects": {
-                "type": "array",
-                "tag": {
-                  "value": {
-                    "id": 2,
-                    "defaultLabel": "Entity Instances to create",
-                    "editable": true
-                  }
-                },
-                "definition": {
-                  "type": "schemaReference",
-                  "optional": false,
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "entityInstanceCollection"
+                  "applicationSection": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "applicationSection"
+                    }
+                  },
+                  "objects": {
+                    "type": "array",
+                    "tag": {
+                      "value": {
+                        "id": 2,
+                        "defaultLabel": "Entity Instances to create",
+                        "editable": true
+                      }
+                    },
+                    "definition": {
+                      "type": "schemaReference",
+                      "optional": false,
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "entityInstanceCollection"
+                      }
+                    }
                   }
                 }
               }
@@ -14262,32 +14267,37 @@ export const miroirFundamentalJzodSchema = {
                 "type": "literal",
                 "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
               },
-              "applicationSection": {
-                "type": "schemaReference",
+              "payload": {
+                "type": "object",
                 "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "applicationSection"
-                }
-              },
-              "includeInTransaction": {
-                "type": "boolean",
-                "optional": true
-              },
-              "objects": {
-                "type": "array",
-                "tag": {
-                  "value": {
-                    "id": 2,
-                    "defaultLabel": "Entity Instances to delete",
-                    "editable": true
-                  }
-                },
-                "definition": {
-                  "type": "schemaReference",
-                  "optional": false,
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "entityInstanceCollection"
+                  "applicationSection": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "applicationSection"
+                    }
+                  },
+                  "includeInTransaction": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "objects": {
+                    "type": "array",
+                    "tag": {
+                      "value": {
+                        "id": 2,
+                        "defaultLabel": "Entity Instances to delete",
+                        "editable": true
+                      }
+                    },
+                    "definition": {
+                      "type": "schemaReference",
+                      "optional": false,
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "entityInstanceCollection"
+                      }
+                    }
                   }
                 }
               }
@@ -14319,37 +14329,42 @@ export const miroirFundamentalJzodSchema = {
                   }
                 }
               },
-              "applicationSection": {
-                "type": "schemaReference",
+              "payload": {
+                "type": "object",
                 "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "applicationSection"
-                }
-              },
-              "includeInTransaction": {
-                "type": "boolean",
-                "optional": true
-              },
-              "objects": {
-                "type": "array",
-                "tag": {
-                  "value": {
-                    "id": 2,
-                    "defaultLabel": "Entity Instances to update",
-                    "editable": true
-                  }
-                },
-                "definition": {
-                  "type": "schemaReference",
-                  "optional": false,
-                  "tag": {
-                    "value": {
-                      "canBeTemplate": true
+                  "applicationSection": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "applicationSection"
                     }
                   },
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "entityInstanceCollection"
+                  "includeInTransaction": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "objects": {
+                    "type": "array",
+                    "tag": {
+                      "value": {
+                        "id": 2,
+                        "defaultLabel": "Entity Instances to update",
+                        "editable": true
+                      }
+                    },
+                    "definition": {
+                      "type": "schemaReference",
+                      "optional": false,
+                      "tag": {
+                        "value": {
+                          "canBeTemplate": true
+                        }
+                      },
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "entityInstanceCollection"
+                      }
+                    }
                   }
                 }
               }
@@ -14387,28 +14402,33 @@ export const miroirFundamentalJzodSchema = {
                   }
                 }
               },
-              "applicationSection": {
-                "type": "schemaReference",
+              "payload": {
+                "type": "object",
                 "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "applicationSection"
-                }
-              },
-              "objects": {
-                "type": "array",
-                "tag": {
-                  "value": {
-                    "id": 2,
-                    "defaultLabel": "Entity Instances to create",
-                    "editable": true
-                  }
-                },
-                "definition": {
-                  "type": "schemaReference",
-                  "optional": false,
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "entityInstanceCollection"
+                  "applicationSection": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "applicationSection"
+                    }
+                  },
+                  "objects": {
+                    "type": "array",
+                    "tag": {
+                      "value": {
+                        "id": 2,
+                        "defaultLabel": "Entity Instances to create",
+                        "editable": true
+                      }
+                    },
+                    "definition": {
+                      "type": "schemaReference",
+                      "optional": false,
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "entityInstanceCollection"
+                      }
+                    }
                   }
                 }
               }
@@ -14440,32 +14460,37 @@ export const miroirFundamentalJzodSchema = {
                 "type": "literal",
                 "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
               },
-              "applicationSection": {
-                "type": "schemaReference",
+              "payload": {
+                "type": "object",
                 "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "applicationSection"
-                }
-              },
-              "includeInTransaction": {
-                "type": "boolean",
-                "optional": true
-              },
-              "objects": {
-                "type": "array",
-                "tag": {
-                  "value": {
-                    "id": 2,
-                    "defaultLabel": "Entity Instances to delete",
-                    "editable": true
-                  }
-                },
-                "definition": {
-                  "type": "schemaReference",
-                  "optional": false,
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "entityInstanceCollection"
+                  "applicationSection": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "applicationSection"
+                    }
+                  },
+                  "includeInTransaction": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "objects": {
+                    "type": "array",
+                    "tag": {
+                      "value": {
+                        "id": 2,
+                        "defaultLabel": "Entity Instances to delete",
+                        "editable": true
+                      }
+                    },
+                    "definition": {
+                      "type": "schemaReference",
+                      "optional": false,
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "entityInstanceCollection"
+                      }
+                    }
                   }
                 }
               }
@@ -14497,32 +14522,37 @@ export const miroirFundamentalJzodSchema = {
                 "type": "literal",
                 "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
               },
-              "applicationSection": {
-                "type": "schemaReference",
+              "payload": {
+                "type": "object",
                 "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "applicationSection"
-                }
-              },
-              "includeInTransaction": {
-                "type": "boolean",
-                "optional": true
-              },
-              "objects": {
-                "type": "array",
-                "tag": {
-                  "value": {
-                    "id": 2,
-                    "defaultLabel": "Entity Instances to delete",
-                    "editable": true
-                  }
-                },
-                "definition": {
-                  "type": "schemaReference",
-                  "optional": false,
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "entityInstanceCollection"
+                  "applicationSection": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "applicationSection"
+                    }
+                  },
+                  "includeInTransaction": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "objects": {
+                    "type": "array",
+                    "tag": {
+                      "value": {
+                        "id": 2,
+                        "defaultLabel": "Entity Instances to delete",
+                        "editable": true
+                      }
+                    },
+                    "definition": {
+                      "type": "schemaReference",
+                      "optional": false,
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "entityInstanceCollection"
+                      }
+                    }
                   }
                 }
               }
@@ -14554,37 +14584,42 @@ export const miroirFundamentalJzodSchema = {
                   }
                 }
               },
-              "applicationSection": {
-                "type": "schemaReference",
+              "payload": {
+                "type": "object",
                 "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "applicationSection"
-                }
-              },
-              "includeInTransaction": {
-                "type": "boolean",
-                "optional": true
-              },
-              "objects": {
-                "type": "array",
-                "tag": {
-                  "value": {
-                    "id": 2,
-                    "defaultLabel": "Entity Instances to update",
-                    "editable": true
-                  }
-                },
-                "definition": {
-                  "type": "schemaReference",
-                  "optional": false,
-                  "tag": {
-                    "value": {
-                      "canBeTemplate": true
+                  "applicationSection": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "applicationSection"
                     }
                   },
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "entityInstanceCollection"
+                  "includeInTransaction": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "objects": {
+                    "type": "array",
+                    "tag": {
+                      "value": {
+                        "id": 2,
+                        "defaultLabel": "Entity Instances to update",
+                        "editable": true
+                      }
+                    },
+                    "definition": {
+                      "type": "schemaReference",
+                      "optional": false,
+                      "tag": {
+                        "value": {
+                          "canBeTemplate": true
+                        }
+                      },
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "entityInstanceCollection"
+                      }
+                    }
                   }
                 }
               }
@@ -14616,21 +14651,26 @@ export const miroirFundamentalJzodSchema = {
                   }
                 }
               },
-              "objects": {
-                "type": "array",
-                "tag": {
-                  "value": {
-                    "id": 2,
-                    "defaultLabel": "Entity Instances to place in the local cache",
-                    "editable": true
-                  }
-                },
+              "payload": {
+                "type": "object",
                 "definition": {
-                  "type": "schemaReference",
-                  "optional": false,
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "entityInstanceCollection"
+                  "objects": {
+                    "type": "array",
+                    "tag": {
+                      "value": {
+                        "id": 2,
+                        "defaultLabel": "Entity Instances to place in the local cache",
+                        "editable": true
+                      }
+                    },
+                    "definition": {
+                      "type": "schemaReference",
+                      "optional": false,
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "entityInstanceCollection"
+                      }
+                    }
                   }
                 }
               }
@@ -14662,30 +14702,35 @@ export const miroirFundamentalJzodSchema = {
                   }
                 }
               },
-              "applicationSection": {
-                "type": "schemaReference",
+              "payload": {
+                "type": "object",
                 "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "applicationSection"
-                }
-              },
-              "parentUuid": {
-                "type": "uuid",
-                "tag": {
-                  "value": {
-                    "id": 1,
-                    "defaultLabel": "Uuid",
-                    "editable": false
-                  }
-                }
-              },
-              "uuid": {
-                "type": "uuid",
-                "tag": {
-                  "value": {
-                    "id": 1,
-                    "defaultLabel": "Uuid",
-                    "editable": false
+                  "applicationSection": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "applicationSection"
+                    }
+                  },
+                  "parentUuid": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "defaultLabel": "Uuid",
+                        "editable": false
+                      }
+                    }
+                  },
+                  "uuid": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "defaultLabel": "Uuid",
+                        "editable": false
+                      }
+                    }
                   }
                 }
               }
@@ -14717,20 +14762,25 @@ export const miroirFundamentalJzodSchema = {
                   }
                 }
               },
-              "applicationSection": {
-                "type": "schemaReference",
+              "payload": {
+                "type": "object",
                 "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "applicationSection"
-                }
-              },
-              "parentUuid": {
-                "type": "uuid",
-                "tag": {
-                  "value": {
-                    "id": 1,
-                    "defaultLabel": "Uuid",
-                    "editable": false
+                  "applicationSection": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "applicationSection"
+                    }
+                  },
+                  "parentUuid": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "defaultLabel": "Uuid",
+                        "editable": false
+                      }
+                    }
                   }
                 }
               }
@@ -23771,69 +23821,85 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "applicationSection": {
+              "payload": {
                 "type": "union",
                 "definition": [
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                    },
-                    "context": {}
-                  },
                   {
                     "type": "schemaReference",
                     "definition": {
                       "relativePath": "transformerForBuildCarryOnObject"
                     }
-                  }
-                ]
-              },
-              "objects": {
-                "type": "union",
-                "tag": {
-                  "value": {
-                    "id": 2,
-                    "defaultLabel": "Entity Instances to create",
-                    "editable": true
-                  }
-                },
-                "definition": [
+                  },
                   {
-                    "type": "array",
-                    "tag": {
-                      "value": {
-                        "id": 2,
-                        "defaultLabel": "Entity Instances to create",
-                        "editable": true
-                      }
-                    },
+                    "type": "object",
                     "definition": {
-                      "type": "union",
-                      "definition": [
-                        {
-                          "type": "schemaReference",
-                          "optional": false,
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                      "applicationSection": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                            },
+                            "context": {}
                           },
-                          "context": {}
-                        },
-                        {
-                          "type": "schemaReference",
-                          "definition": {
-                            "relativePath": "transformerForBuildCarryOnObject"
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
                           }
-                        }
-                      ]
-                    }
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "transformerForBuildCarryOnObject"
+                        ]
+                      },
+                      "objects": {
+                        "type": "union",
+                        "tag": {
+                          "value": {
+                            "id": 2,
+                            "defaultLabel": "Entity Instances to create",
+                            "editable": true
+                          }
+                        },
+                        "definition": [
+                          {
+                            "type": "array",
+                            "tag": {
+                              "value": {
+                                "id": 2,
+                                "defaultLabel": "Entity Instances to create",
+                                "editable": true
+                              }
+                            },
+                            "definition": {
+                              "type": "union",
+                              "definition": [
+                                {
+                                  "type": "schemaReference",
+                                  "optional": false,
+                                  "definition": {
+                                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                    "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                                  },
+                                  "context": {}
+                                },
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "transformerForBuildCarryOnObject"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          }
+                        ]
+                      }
                     }
                   }
                 ]
@@ -23919,85 +23985,101 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "applicationSection": {
+              "payload": {
                 "type": "union",
                 "definition": [
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                    },
-                    "context": {}
-                  },
                   {
                     "type": "schemaReference",
                     "definition": {
                       "relativePath": "transformerForBuildCarryOnObject"
                     }
-                  }
-                ]
-              },
-              "includeInTransaction": {
-                "type": "union",
-                "optional": true,
-                "definition": [
-                  {
-                    "type": "boolean",
-                    "optional": true
                   },
                   {
-                    "type": "schemaReference",
+                    "type": "object",
                     "definition": {
-                      "relativePath": "transformerForBuildCarryOnObject"
-                    }
-                  }
-                ]
-              },
-              "objects": {
-                "type": "union",
-                "tag": {
-                  "value": {
-                    "id": 2,
-                    "defaultLabel": "Entity Instances to delete",
-                    "editable": true
-                  }
-                },
-                "definition": [
-                  {
-                    "type": "array",
-                    "tag": {
-                      "value": {
-                        "id": 2,
-                        "defaultLabel": "Entity Instances to delete",
-                        "editable": true
-                      }
-                    },
-                    "definition": {
-                      "type": "union",
-                      "definition": [
-                        {
-                          "type": "schemaReference",
-                          "optional": false,
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                      "applicationSection": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                            },
+                            "context": {}
                           },
-                          "context": {}
-                        },
-                        {
-                          "type": "schemaReference",
-                          "definition": {
-                            "relativePath": "transformerForBuildCarryOnObject"
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
                           }
-                        }
-                      ]
-                    }
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "transformerForBuildCarryOnObject"
+                        ]
+                      },
+                      "includeInTransaction": {
+                        "type": "union",
+                        "optional": true,
+                        "definition": [
+                          {
+                            "type": "boolean",
+                            "optional": true
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          }
+                        ]
+                      },
+                      "objects": {
+                        "type": "union",
+                        "tag": {
+                          "value": {
+                            "id": 2,
+                            "defaultLabel": "Entity Instances to delete",
+                            "editable": true
+                          }
+                        },
+                        "definition": [
+                          {
+                            "type": "array",
+                            "tag": {
+                              "value": {
+                                "id": 2,
+                                "defaultLabel": "Entity Instances to delete",
+                                "editable": true
+                              }
+                            },
+                            "definition": {
+                              "type": "union",
+                              "definition": [
+                                {
+                                  "type": "schemaReference",
+                                  "optional": false,
+                                  "definition": {
+                                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                    "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                                  },
+                                  "context": {}
+                                },
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "transformerForBuildCarryOnObject"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          }
+                        ]
+                      }
                     }
                   }
                 ]
@@ -24083,85 +24165,101 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "applicationSection": {
+              "payload": {
                 "type": "union",
                 "definition": [
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                    },
-                    "context": {}
-                  },
                   {
                     "type": "schemaReference",
                     "definition": {
                       "relativePath": "transformerForBuildCarryOnObject"
                     }
-                  }
-                ]
-              },
-              "includeInTransaction": {
-                "type": "union",
-                "optional": true,
-                "definition": [
-                  {
-                    "type": "boolean",
-                    "optional": true
                   },
                   {
-                    "type": "schemaReference",
+                    "type": "object",
                     "definition": {
-                      "relativePath": "transformerForBuildCarryOnObject"
-                    }
-                  }
-                ]
-              },
-              "objects": {
-                "type": "union",
-                "tag": {
-                  "value": {
-                    "id": 2,
-                    "defaultLabel": "Entity Instances to delete",
-                    "editable": true
-                  }
-                },
-                "definition": [
-                  {
-                    "type": "array",
-                    "tag": {
-                      "value": {
-                        "id": 2,
-                        "defaultLabel": "Entity Instances to delete",
-                        "editable": true
-                      }
-                    },
-                    "definition": {
-                      "type": "union",
-                      "definition": [
-                        {
-                          "type": "schemaReference",
-                          "optional": false,
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                      "applicationSection": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                            },
+                            "context": {}
                           },
-                          "context": {}
-                        },
-                        {
-                          "type": "schemaReference",
-                          "definition": {
-                            "relativePath": "transformerForBuildCarryOnObject"
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
                           }
-                        }
-                      ]
-                    }
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "transformerForBuildCarryOnObject"
+                        ]
+                      },
+                      "includeInTransaction": {
+                        "type": "union",
+                        "optional": true,
+                        "definition": [
+                          {
+                            "type": "boolean",
+                            "optional": true
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          }
+                        ]
+                      },
+                      "objects": {
+                        "type": "union",
+                        "tag": {
+                          "value": {
+                            "id": 2,
+                            "defaultLabel": "Entity Instances to delete",
+                            "editable": true
+                          }
+                        },
+                        "definition": [
+                          {
+                            "type": "array",
+                            "tag": {
+                              "value": {
+                                "id": 2,
+                                "defaultLabel": "Entity Instances to delete",
+                                "editable": true
+                              }
+                            },
+                            "definition": {
+                              "type": "union",
+                              "definition": [
+                                {
+                                  "type": "schemaReference",
+                                  "optional": false,
+                                  "definition": {
+                                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                    "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                                  },
+                                  "context": {}
+                                },
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "transformerForBuildCarryOnObject"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          }
+                        ]
+                      }
                     }
                   }
                 ]
@@ -24247,95 +24345,111 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "applicationSection": {
+              "payload": {
                 "type": "union",
                 "definition": [
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                    },
-                    "context": {}
-                  },
                   {
                     "type": "schemaReference",
                     "definition": {
                       "relativePath": "transformerForBuildCarryOnObject"
                     }
-                  }
-                ]
-              },
-              "includeInTransaction": {
-                "type": "union",
-                "optional": true,
-                "definition": [
-                  {
-                    "type": "boolean",
-                    "optional": true
                   },
                   {
-                    "type": "schemaReference",
+                    "type": "object",
                     "definition": {
-                      "relativePath": "transformerForBuildCarryOnObject"
-                    }
-                  }
-                ]
-              },
-              "objects": {
-                "type": "union",
-                "tag": {
-                  "value": {
-                    "id": 2,
-                    "defaultLabel": "Entity Instances to update",
-                    "editable": true
-                  }
-                },
-                "definition": [
-                  {
-                    "type": "array",
-                    "tag": {
-                      "value": {
-                        "id": 2,
-                        "defaultLabel": "Entity Instances to update",
-                        "editable": true
-                      }
-                    },
-                    "definition": {
-                      "type": "union",
-                      "tag": {
-                        "value": {
-                          "canBeTemplate": true
-                        }
+                      "applicationSection": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                            },
+                            "context": {}
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          }
+                        ]
                       },
-                      "definition": [
-                        {
-                          "type": "schemaReference",
-                          "optional": false,
-                          "tag": {
-                            "value": {
-                              "canBeTemplate": true
+                      "includeInTransaction": {
+                        "type": "union",
+                        "optional": true,
+                        "definition": [
+                          {
+                            "type": "boolean",
+                            "optional": true
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          }
+                        ]
+                      },
+                      "objects": {
+                        "type": "union",
+                        "tag": {
+                          "value": {
+                            "id": 2,
+                            "defaultLabel": "Entity Instances to update",
+                            "editable": true
+                          }
+                        },
+                        "definition": [
+                          {
+                            "type": "array",
+                            "tag": {
+                              "value": {
+                                "id": 2,
+                                "defaultLabel": "Entity Instances to update",
+                                "editable": true
+                              }
+                            },
+                            "definition": {
+                              "type": "union",
+                              "tag": {
+                                "value": {
+                                  "canBeTemplate": true
+                                }
+                              },
+                              "definition": [
+                                {
+                                  "type": "schemaReference",
+                                  "optional": false,
+                                  "tag": {
+                                    "value": {
+                                      "canBeTemplate": true
+                                    }
+                                  },
+                                  "definition": {
+                                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                    "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                                  },
+                                  "context": {}
+                                },
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "transformerForBuildCarryOnObject"
+                                  }
+                                }
+                              ]
                             }
                           },
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
-                          },
-                          "context": {}
-                        },
-                        {
-                          "type": "schemaReference",
-                          "definition": {
-                            "relativePath": "transformerForBuildCarryOnObject"
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
                           }
-                        }
-                      ]
-                    }
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "transformerForBuildCarryOnObject"
+                        ]
+                      }
                     }
                   }
                 ]
@@ -24421,50 +24535,66 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "objects": {
+              "payload": {
                 "type": "union",
-                "tag": {
-                  "value": {
-                    "id": 2,
-                    "defaultLabel": "Entity Instances to place in the local cache",
-                    "editable": true
-                  }
-                },
                 "definition": [
-                  {
-                    "type": "array",
-                    "tag": {
-                      "value": {
-                        "id": 2,
-                        "defaultLabel": "Entity Instances to place in the local cache",
-                        "editable": true
-                      }
-                    },
-                    "definition": {
-                      "type": "union",
-                      "definition": [
-                        {
-                          "type": "schemaReference",
-                          "optional": false,
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
-                          },
-                          "context": {}
-                        },
-                        {
-                          "type": "schemaReference",
-                          "definition": {
-                            "relativePath": "transformerForBuildCarryOnObject"
-                          }
-                        }
-                      ]
-                    }
-                  },
                   {
                     "type": "schemaReference",
                     "definition": {
                       "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "definition": {
+                      "objects": {
+                        "type": "union",
+                        "tag": {
+                          "value": {
+                            "id": 2,
+                            "defaultLabel": "Entity Instances to place in the local cache",
+                            "editable": true
+                          }
+                        },
+                        "definition": [
+                          {
+                            "type": "array",
+                            "tag": {
+                              "value": {
+                                "id": 2,
+                                "defaultLabel": "Entity Instances to place in the local cache",
+                                "editable": true
+                              }
+                            },
+                            "definition": {
+                              "type": "union",
+                              "definition": [
+                                {
+                                  "type": "schemaReference",
+                                  "optional": false,
+                                  "definition": {
+                                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                    "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                                  },
+                                  "context": {}
+                                },
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "transformerForBuildCarryOnObject"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          }
+                        ]
+                      }
                     }
                   }
                 ]
@@ -24550,77 +24680,93 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "applicationSection": {
+              "payload": {
                 "type": "union",
                 "definition": [
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                    },
-                    "context": {}
-                  },
                   {
                     "type": "schemaReference",
                     "definition": {
                       "relativePath": "transformerForBuildCarryOnObject"
                     }
-                  }
-                ]
-              },
-              "parentUuid": {
-                "type": "union",
-                "tag": {
-                  "value": {
-                    "id": 1,
-                    "defaultLabel": "Uuid",
-                    "editable": false
-                  }
-                },
-                "definition": [
+                  },
                   {
-                    "type": "uuid",
-                    "tag": {
-                      "value": {
-                        "id": 1,
-                        "defaultLabel": "Uuid",
-                        "editable": false
+                    "type": "object",
+                    "definition": {
+                      "applicationSection": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                            },
+                            "context": {}
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          }
+                        ]
+                      },
+                      "parentUuid": {
+                        "type": "union",
+                        "tag": {
+                          "value": {
+                            "id": 1,
+                            "defaultLabel": "Uuid",
+                            "editable": false
+                          }
+                        },
+                        "definition": [
+                          {
+                            "type": "uuid",
+                            "tag": {
+                              "value": {
+                                "id": 1,
+                                "defaultLabel": "Uuid",
+                                "editable": false
+                              }
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          }
+                        ]
+                      },
+                      "uuid": {
+                        "type": "union",
+                        "tag": {
+                          "value": {
+                            "id": 1,
+                            "defaultLabel": "Uuid",
+                            "editable": false
+                          }
+                        },
+                        "definition": [
+                          {
+                            "type": "uuid",
+                            "tag": {
+                              "value": {
+                                "id": 1,
+                                "defaultLabel": "Uuid",
+                                "editable": false
+                              }
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          }
+                        ]
                       }
-                    }
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "transformerForBuildCarryOnObject"
-                    }
-                  }
-                ]
-              },
-              "uuid": {
-                "type": "union",
-                "tag": {
-                  "value": {
-                    "id": 1,
-                    "defaultLabel": "Uuid",
-                    "editable": false
-                  }
-                },
-                "definition": [
-                  {
-                    "type": "uuid",
-                    "tag": {
-                      "value": {
-                        "id": 1,
-                        "defaultLabel": "Uuid",
-                        "editable": false
-                      }
-                    }
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "transformerForBuildCarryOnObject"
                     }
                   }
                 ]
@@ -24706,49 +24852,65 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "applicationSection": {
+              "payload": {
                 "type": "union",
                 "definition": [
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                    },
-                    "context": {}
-                  },
                   {
                     "type": "schemaReference",
                     "definition": {
                       "relativePath": "transformerForBuildCarryOnObject"
                     }
-                  }
-                ]
-              },
-              "parentUuid": {
-                "type": "union",
-                "tag": {
-                  "value": {
-                    "id": 1,
-                    "defaultLabel": "Uuid",
-                    "editable": false
-                  }
-                },
-                "definition": [
+                  },
                   {
-                    "type": "uuid",
-                    "tag": {
-                      "value": {
-                        "id": 1,
-                        "defaultLabel": "Uuid",
-                        "editable": false
+                    "type": "object",
+                    "definition": {
+                      "applicationSection": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                            },
+                            "context": {}
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          }
+                        ]
+                      },
+                      "parentUuid": {
+                        "type": "union",
+                        "tag": {
+                          "value": {
+                            "id": 1,
+                            "defaultLabel": "Uuid",
+                            "editable": false
+                          }
+                        },
+                        "definition": [
+                          {
+                            "type": "uuid",
+                            "tag": {
+                              "value": {
+                                "id": 1,
+                                "defaultLabel": "Uuid",
+                                "editable": false
+                              }
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          }
+                        ]
                       }
-                    }
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "transformerForBuildCarryOnObject"
                     }
                   }
                 ]
@@ -24846,69 +25008,85 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "applicationSection": {
+              "payload": {
                 "type": "union",
                 "definition": [
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                    },
-                    "context": {}
-                  },
                   {
                     "type": "schemaReference",
                     "definition": {
                       "relativePath": "transformerForBuildCarryOnObject"
                     }
-                  }
-                ]
-              },
-              "objects": {
-                "type": "union",
-                "tag": {
-                  "value": {
-                    "id": 2,
-                    "defaultLabel": "Entity Instances to create",
-                    "editable": true
-                  }
-                },
-                "definition": [
+                  },
                   {
-                    "type": "array",
-                    "tag": {
-                      "value": {
-                        "id": 2,
-                        "defaultLabel": "Entity Instances to create",
-                        "editable": true
-                      }
-                    },
+                    "type": "object",
                     "definition": {
-                      "type": "union",
-                      "definition": [
-                        {
-                          "type": "schemaReference",
-                          "optional": false,
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                      "applicationSection": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                            },
+                            "context": {}
                           },
-                          "context": {}
-                        },
-                        {
-                          "type": "schemaReference",
-                          "definition": {
-                            "relativePath": "transformerForBuildCarryOnObject"
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
                           }
-                        }
-                      ]
-                    }
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "transformerForBuildCarryOnObject"
+                        ]
+                      },
+                      "objects": {
+                        "type": "union",
+                        "tag": {
+                          "value": {
+                            "id": 2,
+                            "defaultLabel": "Entity Instances to create",
+                            "editable": true
+                          }
+                        },
+                        "definition": [
+                          {
+                            "type": "array",
+                            "tag": {
+                              "value": {
+                                "id": 2,
+                                "defaultLabel": "Entity Instances to create",
+                                "editable": true
+                              }
+                            },
+                            "definition": {
+                              "type": "union",
+                              "definition": [
+                                {
+                                  "type": "schemaReference",
+                                  "optional": false,
+                                  "definition": {
+                                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                    "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                                  },
+                                  "context": {}
+                                },
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "transformerForBuildCarryOnObject"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          }
+                        ]
+                      }
                     }
                   }
                 ]
@@ -24994,85 +25172,101 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "applicationSection": {
+              "payload": {
                 "type": "union",
                 "definition": [
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                    },
-                    "context": {}
-                  },
                   {
                     "type": "schemaReference",
                     "definition": {
                       "relativePath": "transformerForBuildCarryOnObject"
                     }
-                  }
-                ]
-              },
-              "includeInTransaction": {
-                "type": "union",
-                "optional": true,
-                "definition": [
-                  {
-                    "type": "boolean",
-                    "optional": true
                   },
                   {
-                    "type": "schemaReference",
+                    "type": "object",
                     "definition": {
-                      "relativePath": "transformerForBuildCarryOnObject"
-                    }
-                  }
-                ]
-              },
-              "objects": {
-                "type": "union",
-                "tag": {
-                  "value": {
-                    "id": 2,
-                    "defaultLabel": "Entity Instances to delete",
-                    "editable": true
-                  }
-                },
-                "definition": [
-                  {
-                    "type": "array",
-                    "tag": {
-                      "value": {
-                        "id": 2,
-                        "defaultLabel": "Entity Instances to delete",
-                        "editable": true
-                      }
-                    },
-                    "definition": {
-                      "type": "union",
-                      "definition": [
-                        {
-                          "type": "schemaReference",
-                          "optional": false,
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                      "applicationSection": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                            },
+                            "context": {}
                           },
-                          "context": {}
-                        },
-                        {
-                          "type": "schemaReference",
-                          "definition": {
-                            "relativePath": "transformerForBuildCarryOnObject"
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
                           }
-                        }
-                      ]
-                    }
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "transformerForBuildCarryOnObject"
+                        ]
+                      },
+                      "includeInTransaction": {
+                        "type": "union",
+                        "optional": true,
+                        "definition": [
+                          {
+                            "type": "boolean",
+                            "optional": true
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          }
+                        ]
+                      },
+                      "objects": {
+                        "type": "union",
+                        "tag": {
+                          "value": {
+                            "id": 2,
+                            "defaultLabel": "Entity Instances to delete",
+                            "editable": true
+                          }
+                        },
+                        "definition": [
+                          {
+                            "type": "array",
+                            "tag": {
+                              "value": {
+                                "id": 2,
+                                "defaultLabel": "Entity Instances to delete",
+                                "editable": true
+                              }
+                            },
+                            "definition": {
+                              "type": "union",
+                              "definition": [
+                                {
+                                  "type": "schemaReference",
+                                  "optional": false,
+                                  "definition": {
+                                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                    "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                                  },
+                                  "context": {}
+                                },
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "transformerForBuildCarryOnObject"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          }
+                        ]
+                      }
                     }
                   }
                 ]
@@ -25158,95 +25352,111 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "applicationSection": {
+              "payload": {
                 "type": "union",
                 "definition": [
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                    },
-                    "context": {}
-                  },
                   {
                     "type": "schemaReference",
                     "definition": {
                       "relativePath": "transformerForBuildCarryOnObject"
                     }
-                  }
-                ]
-              },
-              "includeInTransaction": {
-                "type": "union",
-                "optional": true,
-                "definition": [
-                  {
-                    "type": "boolean",
-                    "optional": true
                   },
                   {
-                    "type": "schemaReference",
+                    "type": "object",
                     "definition": {
-                      "relativePath": "transformerForBuildCarryOnObject"
-                    }
-                  }
-                ]
-              },
-              "objects": {
-                "type": "union",
-                "tag": {
-                  "value": {
-                    "id": 2,
-                    "defaultLabel": "Entity Instances to update",
-                    "editable": true
-                  }
-                },
-                "definition": [
-                  {
-                    "type": "array",
-                    "tag": {
-                      "value": {
-                        "id": 2,
-                        "defaultLabel": "Entity Instances to update",
-                        "editable": true
-                      }
-                    },
-                    "definition": {
-                      "type": "union",
-                      "tag": {
-                        "value": {
-                          "canBeTemplate": true
-                        }
+                      "applicationSection": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                            },
+                            "context": {}
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          }
+                        ]
                       },
-                      "definition": [
-                        {
-                          "type": "schemaReference",
-                          "optional": false,
-                          "tag": {
-                            "value": {
-                              "canBeTemplate": true
+                      "includeInTransaction": {
+                        "type": "union",
+                        "optional": true,
+                        "definition": [
+                          {
+                            "type": "boolean",
+                            "optional": true
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          }
+                        ]
+                      },
+                      "objects": {
+                        "type": "union",
+                        "tag": {
+                          "value": {
+                            "id": 2,
+                            "defaultLabel": "Entity Instances to update",
+                            "editable": true
+                          }
+                        },
+                        "definition": [
+                          {
+                            "type": "array",
+                            "tag": {
+                              "value": {
+                                "id": 2,
+                                "defaultLabel": "Entity Instances to update",
+                                "editable": true
+                              }
+                            },
+                            "definition": {
+                              "type": "union",
+                              "tag": {
+                                "value": {
+                                  "canBeTemplate": true
+                                }
+                              },
+                              "definition": [
+                                {
+                                  "type": "schemaReference",
+                                  "optional": false,
+                                  "tag": {
+                                    "value": {
+                                      "canBeTemplate": true
+                                    }
+                                  },
+                                  "definition": {
+                                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                    "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                                  },
+                                  "context": {}
+                                },
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "transformerForBuildCarryOnObject"
+                                  }
+                                }
+                              ]
                             }
                           },
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
-                          },
-                          "context": {}
-                        },
-                        {
-                          "type": "schemaReference",
-                          "definition": {
-                            "relativePath": "transformerForBuildCarryOnObject"
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
                           }
-                        }
-                      ]
-                    }
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "transformerForBuildCarryOnObject"
+                        ]
+                      }
                     }
                   }
                 ]
@@ -48002,28 +48212,33 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "applicationSection": {
-                "type": "schemaReference",
+              "payload": {
+                "type": "object",
                 "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                }
-              },
-              "objects": {
-                "type": "array",
-                "tag": {
-                  "value": {
-                    "id": 2,
-                    "defaultLabel": "Entity Instances to create",
-                    "editable": true
-                  }
-                },
-                "definition": {
-                  "type": "schemaReference",
-                  "optional": false,
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                  "applicationSection": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                    }
+                  },
+                  "objects": {
+                    "type": "array",
+                    "tag": {
+                      "value": {
+                        "id": 2,
+                        "defaultLabel": "Entity Instances to create",
+                        "editable": true
+                      }
+                    },
+                    "definition": {
+                      "type": "schemaReference",
+                      "optional": false,
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                      }
+                    }
                   }
                 }
               }
@@ -48079,32 +48294,37 @@ export const miroirFundamentalJzodSchema = {
                 "type": "literal",
                 "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
               },
-              "applicationSection": {
-                "type": "schemaReference",
+              "payload": {
+                "type": "object",
                 "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                }
-              },
-              "includeInTransaction": {
-                "type": "boolean",
-                "optional": true
-              },
-              "objects": {
-                "type": "array",
-                "tag": {
-                  "value": {
-                    "id": 2,
-                    "defaultLabel": "Entity Instances to delete",
-                    "editable": true
-                  }
-                },
-                "definition": {
-                  "type": "schemaReference",
-                  "optional": false,
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                  "applicationSection": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                    }
+                  },
+                  "includeInTransaction": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "objects": {
+                    "type": "array",
+                    "tag": {
+                      "value": {
+                        "id": 2,
+                        "defaultLabel": "Entity Instances to delete",
+                        "editable": true
+                      }
+                    },
+                    "definition": {
+                      "type": "schemaReference",
+                      "optional": false,
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                      }
+                    }
                   }
                 }
               }
@@ -48160,32 +48380,37 @@ export const miroirFundamentalJzodSchema = {
                 "type": "literal",
                 "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
               },
-              "applicationSection": {
-                "type": "schemaReference",
+              "payload": {
+                "type": "object",
                 "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                }
-              },
-              "includeInTransaction": {
-                "type": "boolean",
-                "optional": true
-              },
-              "objects": {
-                "type": "array",
-                "tag": {
-                  "value": {
-                    "id": 2,
-                    "defaultLabel": "Entity Instances to delete",
-                    "editable": true
-                  }
-                },
-                "definition": {
-                  "type": "schemaReference",
-                  "optional": false,
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                  "applicationSection": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                    }
+                  },
+                  "includeInTransaction": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "objects": {
+                    "type": "array",
+                    "tag": {
+                      "value": {
+                        "id": 2,
+                        "defaultLabel": "Entity Instances to delete",
+                        "editable": true
+                      }
+                    },
+                    "definition": {
+                      "type": "schemaReference",
+                      "optional": false,
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                      }
+                    }
                   }
                 }
               }
@@ -48241,60 +48466,65 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "applicationSection": {
-                "type": "schemaReference",
+              "payload": {
+                "type": "object",
                 "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                }
-              },
-              "includeInTransaction": {
-                "type": "boolean",
-                "optional": true
-              },
-              "objects": {
-                "type": "array",
-                "tag": {
-                  "value": {
-                    "id": 2,
-                    "defaultLabel": "Entity Instances to update",
-                    "editable": true
-                  }
-                },
-                "definition": {
-                  "type": "union",
-                  "tag": {
-                    "value": {
-                      "canBeTemplate": true
+                  "applicationSection": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
                     }
                   },
-                  "discriminator": [
-                    "transformerType",
-                    "interpolation"
-                  ],
-                  "definition": [
-                    {
-                      "type": "schemaReference",
-                      "optional": false,
+                  "includeInTransaction": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "objects": {
+                    "type": "array",
+                    "tag": {
+                      "value": {
+                        "id": 2,
+                        "defaultLabel": "Entity Instances to update",
+                        "editable": true
+                      }
+                    },
+                    "definition": {
+                      "type": "union",
                       "tag": {
                         "value": {
                           "canBeTemplate": true
                         }
                       },
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
-                      },
-                      "context": {}
-                    },
-                    {
-                      "type": "schemaReference",
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "transformerForRuntime"
-                      }
+                      "discriminator": [
+                        "transformerType",
+                        "interpolation"
+                      ],
+                      "definition": [
+                        {
+                          "type": "schemaReference",
+                          "optional": false,
+                          "tag": {
+                            "value": {
+                              "canBeTemplate": true
+                            }
+                          },
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                          },
+                          "context": {}
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "transformerForRuntime"
+                          }
+                        }
+                      ]
                     }
-                  ]
+                  }
                 }
               }
             }
@@ -48349,21 +48579,26 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "objects": {
-                "type": "array",
-                "tag": {
-                  "value": {
-                    "id": 2,
-                    "defaultLabel": "Entity Instances to place in the local cache",
-                    "editable": true
-                  }
-                },
+              "payload": {
+                "type": "object",
                 "definition": {
-                  "type": "schemaReference",
-                  "optional": false,
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                  "objects": {
+                    "type": "array",
+                    "tag": {
+                      "value": {
+                        "id": 2,
+                        "defaultLabel": "Entity Instances to place in the local cache",
+                        "editable": true
+                      }
+                    },
+                    "definition": {
+                      "type": "schemaReference",
+                      "optional": false,
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                      }
+                    }
                   }
                 }
               }
@@ -48419,30 +48654,35 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "applicationSection": {
-                "type": "schemaReference",
+              "payload": {
+                "type": "object",
                 "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                }
-              },
-              "parentUuid": {
-                "type": "uuid",
-                "tag": {
-                  "value": {
-                    "id": 1,
-                    "defaultLabel": "Uuid",
-                    "editable": false
-                  }
-                }
-              },
-              "uuid": {
-                "type": "uuid",
-                "tag": {
-                  "value": {
-                    "id": 1,
-                    "defaultLabel": "Uuid",
-                    "editable": false
+                  "applicationSection": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                    }
+                  },
+                  "parentUuid": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "defaultLabel": "Uuid",
+                        "editable": false
+                      }
+                    }
+                  },
+                  "uuid": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "defaultLabel": "Uuid",
+                        "editable": false
+                      }
+                    }
                   }
                 }
               }
@@ -48498,20 +48738,25 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "applicationSection": {
-                "type": "schemaReference",
+              "payload": {
+                "type": "object",
                 "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                }
-              },
-              "parentUuid": {
-                "type": "uuid",
-                "tag": {
-                  "value": {
-                    "id": 1,
-                    "defaultLabel": "Uuid",
-                    "editable": false
+                  "applicationSection": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                    }
+                  },
+                  "parentUuid": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "defaultLabel": "Uuid",
+                        "editable": false
+                      }
+                    }
                   }
                 }
               }
@@ -48573,28 +48818,33 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "applicationSection": {
-                "type": "schemaReference",
+              "payload": {
+                "type": "object",
                 "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                }
-              },
-              "objects": {
-                "type": "array",
-                "tag": {
-                  "value": {
-                    "id": 2,
-                    "defaultLabel": "Entity Instances to create",
-                    "editable": true
-                  }
-                },
-                "definition": {
-                  "type": "schemaReference",
-                  "optional": false,
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                  "applicationSection": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                    }
+                  },
+                  "objects": {
+                    "type": "array",
+                    "tag": {
+                      "value": {
+                        "id": 2,
+                        "defaultLabel": "Entity Instances to create",
+                        "editable": true
+                      }
+                    },
+                    "definition": {
+                      "type": "schemaReference",
+                      "optional": false,
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                      }
+                    }
                   }
                 }
               }
@@ -48650,32 +48900,37 @@ export const miroirFundamentalJzodSchema = {
                 "type": "literal",
                 "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
               },
-              "applicationSection": {
-                "type": "schemaReference",
+              "payload": {
+                "type": "object",
                 "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                }
-              },
-              "includeInTransaction": {
-                "type": "boolean",
-                "optional": true
-              },
-              "objects": {
-                "type": "array",
-                "tag": {
-                  "value": {
-                    "id": 2,
-                    "defaultLabel": "Entity Instances to delete",
-                    "editable": true
-                  }
-                },
-                "definition": {
-                  "type": "schemaReference",
-                  "optional": false,
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                  "applicationSection": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                    }
+                  },
+                  "includeInTransaction": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "objects": {
+                    "type": "array",
+                    "tag": {
+                      "value": {
+                        "id": 2,
+                        "defaultLabel": "Entity Instances to delete",
+                        "editable": true
+                      }
+                    },
+                    "definition": {
+                      "type": "schemaReference",
+                      "optional": false,
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                      }
+                    }
                   }
                 }
               }
@@ -48731,60 +48986,65 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "applicationSection": {
-                "type": "schemaReference",
+              "payload": {
+                "type": "object",
                 "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                }
-              },
-              "includeInTransaction": {
-                "type": "boolean",
-                "optional": true
-              },
-              "objects": {
-                "type": "array",
-                "tag": {
-                  "value": {
-                    "id": 2,
-                    "defaultLabel": "Entity Instances to update",
-                    "editable": true
-                  }
-                },
-                "definition": {
-                  "type": "union",
-                  "tag": {
-                    "value": {
-                      "canBeTemplate": true
+                  "applicationSection": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
                     }
                   },
-                  "discriminator": [
-                    "transformerType",
-                    "interpolation"
-                  ],
-                  "definition": [
-                    {
-                      "type": "schemaReference",
-                      "optional": false,
+                  "includeInTransaction": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "objects": {
+                    "type": "array",
+                    "tag": {
+                      "value": {
+                        "id": 2,
+                        "defaultLabel": "Entity Instances to update",
+                        "editable": true
+                      }
+                    },
+                    "definition": {
+                      "type": "union",
                       "tag": {
                         "value": {
                           "canBeTemplate": true
                         }
                       },
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
-                      },
-                      "context": {}
-                    },
-                    {
-                      "type": "schemaReference",
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "transformerForRuntime"
-                      }
+                      "discriminator": [
+                        "transformerType",
+                        "interpolation"
+                      ],
+                      "definition": [
+                        {
+                          "type": "schemaReference",
+                          "optional": false,
+                          "tag": {
+                            "value": {
+                              "canBeTemplate": true
+                            }
+                          },
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                          },
+                          "context": {}
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "transformerForRuntime"
+                          }
+                        }
+                      ]
                     }
-                  ]
+                  }
                 }
               }
             }
@@ -54597,28 +54857,33 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "applicationSection": {
-                "type": "schemaReference",
+              "payload": {
+                "type": "object",
                 "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                }
-              },
-              "objects": {
-                "type": "array",
-                "tag": {
-                  "value": {
-                    "id": 2,
-                    "defaultLabel": "Entity Instances to create",
-                    "editable": true
-                  }
-                },
-                "definition": {
-                  "type": "schemaReference",
-                  "optional": false,
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                  "applicationSection": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                    }
+                  },
+                  "objects": {
+                    "type": "array",
+                    "tag": {
+                      "value": {
+                        "id": 2,
+                        "defaultLabel": "Entity Instances to create",
+                        "editable": true
+                      }
+                    },
+                    "definition": {
+                      "type": "schemaReference",
+                      "optional": false,
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                      }
+                    }
                   }
                 }
               }
@@ -54673,32 +54938,37 @@ export const miroirFundamentalJzodSchema = {
                 "type": "literal",
                 "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
               },
-              "applicationSection": {
-                "type": "schemaReference",
+              "payload": {
+                "type": "object",
                 "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                }
-              },
-              "includeInTransaction": {
-                "type": "boolean",
-                "optional": true
-              },
-              "objects": {
-                "type": "array",
-                "tag": {
-                  "value": {
-                    "id": 2,
-                    "defaultLabel": "Entity Instances to delete",
-                    "editable": true
-                  }
-                },
-                "definition": {
-                  "type": "schemaReference",
-                  "optional": false,
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                  "applicationSection": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                    }
+                  },
+                  "includeInTransaction": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "objects": {
+                    "type": "array",
+                    "tag": {
+                      "value": {
+                        "id": 2,
+                        "defaultLabel": "Entity Instances to delete",
+                        "editable": true
+                      }
+                    },
+                    "definition": {
+                      "type": "schemaReference",
+                      "optional": false,
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                      }
+                    }
                   }
                 }
               }
@@ -54753,32 +55023,37 @@ export const miroirFundamentalJzodSchema = {
                 "type": "literal",
                 "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
               },
-              "applicationSection": {
-                "type": "schemaReference",
+              "payload": {
+                "type": "object",
                 "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                }
-              },
-              "includeInTransaction": {
-                "type": "boolean",
-                "optional": true
-              },
-              "objects": {
-                "type": "array",
-                "tag": {
-                  "value": {
-                    "id": 2,
-                    "defaultLabel": "Entity Instances to delete",
-                    "editable": true
-                  }
-                },
-                "definition": {
-                  "type": "schemaReference",
-                  "optional": false,
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                  "applicationSection": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                    }
+                  },
+                  "includeInTransaction": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "objects": {
+                    "type": "array",
+                    "tag": {
+                      "value": {
+                        "id": 2,
+                        "defaultLabel": "Entity Instances to delete",
+                        "editable": true
+                      }
+                    },
+                    "definition": {
+                      "type": "schemaReference",
+                      "optional": false,
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                      }
+                    }
                   }
                 }
               }
@@ -54833,59 +55108,64 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "applicationSection": {
-                "type": "schemaReference",
+              "payload": {
+                "type": "object",
                 "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                }
-              },
-              "includeInTransaction": {
-                "type": "boolean",
-                "optional": true
-              },
-              "objects": {
-                "type": "array",
-                "tag": {
-                  "value": {
-                    "id": 2,
-                    "defaultLabel": "Entity Instances to update",
-                    "editable": true
-                  }
-                },
-                "definition": {
-                  "type": "union",
-                  "tag": {
-                    "value": {
-                      "canBeTemplate": true
+                  "applicationSection": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
                     }
                   },
-                  "discriminator": [
-                    "transformerType",
-                    "interpolation"
-                  ],
-                  "definition": [
-                    {
-                      "type": "schemaReference",
-                      "optional": false,
+                  "includeInTransaction": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "objects": {
+                    "type": "array",
+                    "tag": {
+                      "value": {
+                        "id": 2,
+                        "defaultLabel": "Entity Instances to update",
+                        "editable": true
+                      }
+                    },
+                    "definition": {
+                      "type": "union",
                       "tag": {
                         "value": {
                           "canBeTemplate": true
                         }
                       },
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
-                      },
-                      "context": {}
-                    },
-                    {
-                      "type": "schemaReference",
-                      "definition": {
-                        "relativePath": "transformerForBuildCarryOnObject"
-                      }
+                      "discriminator": [
+                        "transformerType",
+                        "interpolation"
+                      ],
+                      "definition": [
+                        {
+                          "type": "schemaReference",
+                          "optional": false,
+                          "tag": {
+                            "value": {
+                              "canBeTemplate": true
+                            }
+                          },
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                          },
+                          "context": {}
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "transformerForBuildCarryOnObject"
+                          }
+                        }
+                      ]
                     }
-                  ]
+                  }
                 }
               }
             }
@@ -54939,21 +55219,26 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "objects": {
-                "type": "array",
-                "tag": {
-                  "value": {
-                    "id": 2,
-                    "defaultLabel": "Entity Instances to place in the local cache",
-                    "editable": true
-                  }
-                },
+              "payload": {
+                "type": "object",
                 "definition": {
-                  "type": "schemaReference",
-                  "optional": false,
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                  "objects": {
+                    "type": "array",
+                    "tag": {
+                      "value": {
+                        "id": 2,
+                        "defaultLabel": "Entity Instances to place in the local cache",
+                        "editable": true
+                      }
+                    },
+                    "definition": {
+                      "type": "schemaReference",
+                      "optional": false,
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                      }
+                    }
                   }
                 }
               }
@@ -55008,30 +55293,35 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "applicationSection": {
-                "type": "schemaReference",
+              "payload": {
+                "type": "object",
                 "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                }
-              },
-              "parentUuid": {
-                "type": "uuid",
-                "tag": {
-                  "value": {
-                    "id": 1,
-                    "defaultLabel": "Uuid",
-                    "editable": false
-                  }
-                }
-              },
-              "uuid": {
-                "type": "uuid",
-                "tag": {
-                  "value": {
-                    "id": 1,
-                    "defaultLabel": "Uuid",
-                    "editable": false
+                  "applicationSection": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                    }
+                  },
+                  "parentUuid": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "defaultLabel": "Uuid",
+                        "editable": false
+                      }
+                    }
+                  },
+                  "uuid": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "defaultLabel": "Uuid",
+                        "editable": false
+                      }
+                    }
                   }
                 }
               }
@@ -55086,20 +55376,25 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "applicationSection": {
-                "type": "schemaReference",
+              "payload": {
+                "type": "object",
                 "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                }
-              },
-              "parentUuid": {
-                "type": "uuid",
-                "tag": {
-                  "value": {
-                    "id": 1,
-                    "defaultLabel": "Uuid",
-                    "editable": false
+                  "applicationSection": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                    }
+                  },
+                  "parentUuid": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "defaultLabel": "Uuid",
+                        "editable": false
+                      }
+                    }
                   }
                 }
               }
@@ -55160,28 +55455,33 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "applicationSection": {
-                "type": "schemaReference",
+              "payload": {
+                "type": "object",
                 "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                }
-              },
-              "objects": {
-                "type": "array",
-                "tag": {
-                  "value": {
-                    "id": 2,
-                    "defaultLabel": "Entity Instances to create",
-                    "editable": true
-                  }
-                },
-                "definition": {
-                  "type": "schemaReference",
-                  "optional": false,
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                  "applicationSection": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                    }
+                  },
+                  "objects": {
+                    "type": "array",
+                    "tag": {
+                      "value": {
+                        "id": 2,
+                        "defaultLabel": "Entity Instances to create",
+                        "editable": true
+                      }
+                    },
+                    "definition": {
+                      "type": "schemaReference",
+                      "optional": false,
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                      }
+                    }
                   }
                 }
               }
@@ -55236,32 +55536,37 @@ export const miroirFundamentalJzodSchema = {
                 "type": "literal",
                 "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
               },
-              "applicationSection": {
-                "type": "schemaReference",
+              "payload": {
+                "type": "object",
                 "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                }
-              },
-              "includeInTransaction": {
-                "type": "boolean",
-                "optional": true
-              },
-              "objects": {
-                "type": "array",
-                "tag": {
-                  "value": {
-                    "id": 2,
-                    "defaultLabel": "Entity Instances to delete",
-                    "editable": true
-                  }
-                },
-                "definition": {
-                  "type": "schemaReference",
-                  "optional": false,
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                  "applicationSection": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                    }
+                  },
+                  "includeInTransaction": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "objects": {
+                    "type": "array",
+                    "tag": {
+                      "value": {
+                        "id": 2,
+                        "defaultLabel": "Entity Instances to delete",
+                        "editable": true
+                      }
+                    },
+                    "definition": {
+                      "type": "schemaReference",
+                      "optional": false,
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                      }
+                    }
                   }
                 }
               }
@@ -55316,59 +55621,64 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "applicationSection": {
-                "type": "schemaReference",
+              "payload": {
+                "type": "object",
                 "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                }
-              },
-              "includeInTransaction": {
-                "type": "boolean",
-                "optional": true
-              },
-              "objects": {
-                "type": "array",
-                "tag": {
-                  "value": {
-                    "id": 2,
-                    "defaultLabel": "Entity Instances to update",
-                    "editable": true
-                  }
-                },
-                "definition": {
-                  "type": "union",
-                  "tag": {
-                    "value": {
-                      "canBeTemplate": true
+                  "applicationSection": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
                     }
                   },
-                  "discriminator": [
-                    "transformerType",
-                    "interpolation"
-                  ],
-                  "definition": [
-                    {
-                      "type": "schemaReference",
-                      "optional": false,
+                  "includeInTransaction": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "objects": {
+                    "type": "array",
+                    "tag": {
+                      "value": {
+                        "id": 2,
+                        "defaultLabel": "Entity Instances to update",
+                        "editable": true
+                      }
+                    },
+                    "definition": {
+                      "type": "union",
                       "tag": {
                         "value": {
                           "canBeTemplate": true
                         }
                       },
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
-                      },
-                      "context": {}
-                    },
-                    {
-                      "type": "schemaReference",
-                      "definition": {
-                        "relativePath": "transformerForBuildCarryOnObject"
-                      }
+                      "discriminator": [
+                        "transformerType",
+                        "interpolation"
+                      ],
+                      "definition": [
+                        {
+                          "type": "schemaReference",
+                          "optional": false,
+                          "tag": {
+                            "value": {
+                              "canBeTemplate": true
+                            }
+                          },
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                          },
+                          "context": {}
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "transformerForBuildCarryOnObject"
+                          }
+                        }
+                      ]
                     }
-                  ]
+                  }
                 }
               }
             }
@@ -61188,28 +61498,33 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "applicationSection": {
-                "type": "schemaReference",
+              "payload": {
+                "type": "object",
                 "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                }
-              },
-              "objects": {
-                "type": "array",
-                "tag": {
-                  "value": {
-                    "id": 2,
-                    "defaultLabel": "Entity Instances to create",
-                    "editable": true
-                  }
-                },
-                "definition": {
-                  "type": "schemaReference",
-                  "optional": false,
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                  "applicationSection": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                    }
+                  },
+                  "objects": {
+                    "type": "array",
+                    "tag": {
+                      "value": {
+                        "id": 2,
+                        "defaultLabel": "Entity Instances to create",
+                        "editable": true
+                      }
+                    },
+                    "definition": {
+                      "type": "schemaReference",
+                      "optional": false,
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                      }
+                    }
                   }
                 }
               }
@@ -61265,32 +61580,37 @@ export const miroirFundamentalJzodSchema = {
                 "type": "literal",
                 "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
               },
-              "applicationSection": {
-                "type": "schemaReference",
+              "payload": {
+                "type": "object",
                 "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                }
-              },
-              "includeInTransaction": {
-                "type": "boolean",
-                "optional": true
-              },
-              "objects": {
-                "type": "array",
-                "tag": {
-                  "value": {
-                    "id": 2,
-                    "defaultLabel": "Entity Instances to delete",
-                    "editable": true
-                  }
-                },
-                "definition": {
-                  "type": "schemaReference",
-                  "optional": false,
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                  "applicationSection": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                    }
+                  },
+                  "includeInTransaction": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "objects": {
+                    "type": "array",
+                    "tag": {
+                      "value": {
+                        "id": 2,
+                        "defaultLabel": "Entity Instances to delete",
+                        "editable": true
+                      }
+                    },
+                    "definition": {
+                      "type": "schemaReference",
+                      "optional": false,
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                      }
+                    }
                   }
                 }
               }
@@ -61346,32 +61666,37 @@ export const miroirFundamentalJzodSchema = {
                 "type": "literal",
                 "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
               },
-              "applicationSection": {
-                "type": "schemaReference",
+              "payload": {
+                "type": "object",
                 "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                }
-              },
-              "includeInTransaction": {
-                "type": "boolean",
-                "optional": true
-              },
-              "objects": {
-                "type": "array",
-                "tag": {
-                  "value": {
-                    "id": 2,
-                    "defaultLabel": "Entity Instances to delete",
-                    "editable": true
-                  }
-                },
-                "definition": {
-                  "type": "schemaReference",
-                  "optional": false,
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                  "applicationSection": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                    }
+                  },
+                  "includeInTransaction": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "objects": {
+                    "type": "array",
+                    "tag": {
+                      "value": {
+                        "id": 2,
+                        "defaultLabel": "Entity Instances to delete",
+                        "editable": true
+                      }
+                    },
+                    "definition": {
+                      "type": "schemaReference",
+                      "optional": false,
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                      }
+                    }
                   }
                 }
               }
@@ -61427,60 +61752,65 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "applicationSection": {
-                "type": "schemaReference",
+              "payload": {
+                "type": "object",
                 "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                }
-              },
-              "includeInTransaction": {
-                "type": "boolean",
-                "optional": true
-              },
-              "objects": {
-                "type": "array",
-                "tag": {
-                  "value": {
-                    "id": 2,
-                    "defaultLabel": "Entity Instances to update",
-                    "editable": true
-                  }
-                },
-                "definition": {
-                  "type": "union",
-                  "tag": {
-                    "value": {
-                      "canBeTemplate": true
+                  "applicationSection": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
                     }
                   },
-                  "discriminator": [
-                    "transformerType",
-                    "interpolation"
-                  ],
-                  "definition": [
-                    {
-                      "type": "schemaReference",
-                      "optional": false,
+                  "includeInTransaction": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "objects": {
+                    "type": "array",
+                    "tag": {
+                      "value": {
+                        "id": 2,
+                        "defaultLabel": "Entity Instances to update",
+                        "editable": true
+                      }
+                    },
+                    "definition": {
+                      "type": "union",
                       "tag": {
                         "value": {
                           "canBeTemplate": true
                         }
                       },
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
-                      },
-                      "context": {}
-                    },
-                    {
-                      "type": "schemaReference",
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "transformerForBuildPlusRuntimeCarryOnObject"
-                      }
+                      "discriminator": [
+                        "transformerType",
+                        "interpolation"
+                      ],
+                      "definition": [
+                        {
+                          "type": "schemaReference",
+                          "optional": false,
+                          "tag": {
+                            "value": {
+                              "canBeTemplate": true
+                            }
+                          },
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                          },
+                          "context": {}
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "transformerForBuildPlusRuntimeCarryOnObject"
+                          }
+                        }
+                      ]
                     }
-                  ]
+                  }
                 }
               }
             }
@@ -61535,21 +61865,26 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "objects": {
-                "type": "array",
-                "tag": {
-                  "value": {
-                    "id": 2,
-                    "defaultLabel": "Entity Instances to place in the local cache",
-                    "editable": true
-                  }
-                },
+              "payload": {
+                "type": "object",
                 "definition": {
-                  "type": "schemaReference",
-                  "optional": false,
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                  "objects": {
+                    "type": "array",
+                    "tag": {
+                      "value": {
+                        "id": 2,
+                        "defaultLabel": "Entity Instances to place in the local cache",
+                        "editable": true
+                      }
+                    },
+                    "definition": {
+                      "type": "schemaReference",
+                      "optional": false,
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                      }
+                    }
                   }
                 }
               }
@@ -61605,30 +61940,35 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "applicationSection": {
-                "type": "schemaReference",
+              "payload": {
+                "type": "object",
                 "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                }
-              },
-              "parentUuid": {
-                "type": "uuid",
-                "tag": {
-                  "value": {
-                    "id": 1,
-                    "defaultLabel": "Uuid",
-                    "editable": false
-                  }
-                }
-              },
-              "uuid": {
-                "type": "uuid",
-                "tag": {
-                  "value": {
-                    "id": 1,
-                    "defaultLabel": "Uuid",
-                    "editable": false
+                  "applicationSection": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                    }
+                  },
+                  "parentUuid": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "defaultLabel": "Uuid",
+                        "editable": false
+                      }
+                    }
+                  },
+                  "uuid": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "defaultLabel": "Uuid",
+                        "editable": false
+                      }
+                    }
                   }
                 }
               }
@@ -61684,20 +62024,25 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "applicationSection": {
-                "type": "schemaReference",
+              "payload": {
+                "type": "object",
                 "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                }
-              },
-              "parentUuid": {
-                "type": "uuid",
-                "tag": {
-                  "value": {
-                    "id": 1,
-                    "defaultLabel": "Uuid",
-                    "editable": false
+                  "applicationSection": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                    }
+                  },
+                  "parentUuid": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "defaultLabel": "Uuid",
+                        "editable": false
+                      }
+                    }
                   }
                 }
               }
@@ -61759,28 +62104,33 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "applicationSection": {
-                "type": "schemaReference",
+              "payload": {
+                "type": "object",
                 "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                }
-              },
-              "objects": {
-                "type": "array",
-                "tag": {
-                  "value": {
-                    "id": 2,
-                    "defaultLabel": "Entity Instances to create",
-                    "editable": true
-                  }
-                },
-                "definition": {
-                  "type": "schemaReference",
-                  "optional": false,
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                  "applicationSection": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                    }
+                  },
+                  "objects": {
+                    "type": "array",
+                    "tag": {
+                      "value": {
+                        "id": 2,
+                        "defaultLabel": "Entity Instances to create",
+                        "editable": true
+                      }
+                    },
+                    "definition": {
+                      "type": "schemaReference",
+                      "optional": false,
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                      }
+                    }
                   }
                 }
               }
@@ -61836,32 +62186,37 @@ export const miroirFundamentalJzodSchema = {
                 "type": "literal",
                 "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
               },
-              "applicationSection": {
-                "type": "schemaReference",
+              "payload": {
+                "type": "object",
                 "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                }
-              },
-              "includeInTransaction": {
-                "type": "boolean",
-                "optional": true
-              },
-              "objects": {
-                "type": "array",
-                "tag": {
-                  "value": {
-                    "id": 2,
-                    "defaultLabel": "Entity Instances to delete",
-                    "editable": true
-                  }
-                },
-                "definition": {
-                  "type": "schemaReference",
-                  "optional": false,
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                  "applicationSection": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                    }
+                  },
+                  "includeInTransaction": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "objects": {
+                    "type": "array",
+                    "tag": {
+                      "value": {
+                        "id": 2,
+                        "defaultLabel": "Entity Instances to delete",
+                        "editable": true
+                      }
+                    },
+                    "definition": {
+                      "type": "schemaReference",
+                      "optional": false,
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                      }
+                    }
                   }
                 }
               }
@@ -61917,60 +62272,65 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "applicationSection": {
-                "type": "schemaReference",
+              "payload": {
+                "type": "object",
                 "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                }
-              },
-              "includeInTransaction": {
-                "type": "boolean",
-                "optional": true
-              },
-              "objects": {
-                "type": "array",
-                "tag": {
-                  "value": {
-                    "id": 2,
-                    "defaultLabel": "Entity Instances to update",
-                    "editable": true
-                  }
-                },
-                "definition": {
-                  "type": "union",
-                  "tag": {
-                    "value": {
-                      "canBeTemplate": true
+                  "applicationSection": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
                     }
                   },
-                  "discriminator": [
-                    "transformerType",
-                    "interpolation"
-                  ],
-                  "definition": [
-                    {
-                      "type": "schemaReference",
-                      "optional": false,
+                  "includeInTransaction": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "objects": {
+                    "type": "array",
+                    "tag": {
+                      "value": {
+                        "id": 2,
+                        "defaultLabel": "Entity Instances to update",
+                        "editable": true
+                      }
+                    },
+                    "definition": {
+                      "type": "union",
                       "tag": {
                         "value": {
                           "canBeTemplate": true
                         }
                       },
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
-                      },
-                      "context": {}
-                    },
-                    {
-                      "type": "schemaReference",
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "transformerForBuildPlusRuntimeCarryOnObject"
-                      }
+                      "discriminator": [
+                        "transformerType",
+                        "interpolation"
+                      ],
+                      "definition": [
+                        {
+                          "type": "schemaReference",
+                          "optional": false,
+                          "tag": {
+                            "value": {
+                              "canBeTemplate": true
+                            }
+                          },
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                          },
+                          "context": {}
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "transformerForBuildPlusRuntimeCarryOnObject"
+                          }
+                        }
+                      ]
                     }
-                  ]
+                  }
                 }
               }
             }

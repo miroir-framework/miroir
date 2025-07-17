@@ -40,7 +40,6 @@ import {
   resetAndinitializeDeploymentCompositeAction,
   runTestOrTestSuite,
   setupMiroirTest,
-  TestCompositeActionParams
 } from "../../src/miroir-fwk/4-tests/tests-utils.js";
 
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
@@ -66,6 +65,7 @@ import { cleanLevel } from "./constants.js";
 import { LocalCacheInterface } from "miroir-core";
 import { loadTestConfigFiles } from "../utils/fileTools.js";
 import { TestSuiteResult } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { TestCompositeActionParams } from "miroir-core";
 
 const env: any = (import.meta as any).env;
 console.log("@@@@@@@@@@@@@@@@@@ env", env);
@@ -258,29 +258,31 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionType: "runBoxedExtractorOrQueryAction",
                   actionName: "runQuery",
                   endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                  applicationSection: "model", // TODO: give only selfApplication section in individual queries?
                   deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                  query: {
-                    queryType: "boxedQueryWithExtractorCombinerTransformer",
-                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                    pageParams: {
-                      currentDeploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                    },
-                    queryParams: {},
-                    contextResults: {},
-                    extractors: {
-                      entities: {
-                        extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                        applicationSection: "model",
-                        parentName: entityEntity.name,
-                        parentUuid: entityEntity.uuid,
-                        orderBy: {
-                          attributeName: "name",
-                          direction: "ASC",
+                  payload: {
+                    applicationSection: "model", // TODO: give only selfApplication section in individual queries?
+                    query: {
+                      queryType: "boxedQueryWithExtractorCombinerTransformer",
+                      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                      pageParams: {
+                        currentDeploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                      },
+                      queryParams: {},
+                      contextResults: {},
+                      extractors: {
+                        entities: {
+                          extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                          applicationSection: "model",
+                          parentName: entityEntity.name,
+                          parentUuid: entityEntity.uuid,
+                          orderBy: {
+                            attributeName: "name",
+                            direction: "ASC",
+                          },
                         },
                       },
                     },
-                  },
+                  }
                 },
               },
             ],
@@ -340,14 +342,16 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 // actionType: "modelAction",
                 actionType: "createEntity",
                 actionLabel: "addEntityAuthor",
-                deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                entities: [
-                  {
-                    entity: entityAuthor as Entity,
-                    entityDefinition: entityDefinitionAuthor as EntityDefinition,
-                  },
-                ],
+                deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                payload: {
+                  entities: [
+                    {
+                      entity: entityAuthor as Entity,
+                      entityDefinition: entityDefinitionAuthor as EntityDefinition,
+                    },
+                  ],
+                }
               },
               {
                 actionType: "commit",
@@ -365,25 +369,27 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionType: "runBoxedExtractorOrQueryAction",
                   actionName: "runQuery",
                   endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                  applicationSection: "model", // TODO: give only selfApplication section in individual queries?
                   deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                  query: {
-                    queryType: "boxedQueryWithExtractorCombinerTransformer",
-                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                    pageParams: {
-                      currentDeploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                    },
-                    queryParams: {},
-                    contextResults: {},
-                    extractors: {
-                      entities: {
-                        extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                        applicationSection: "model",
-                        parentName: entityEntity.name,
-                        parentUuid: entityEntity.uuid,
-                        orderBy: {
-                          attributeName: "name",
-                          direction: "ASC",
+                  payload: {
+                    applicationSection: "model", // TODO: give only selfApplication section in individual queries?
+                    query: {
+                      queryType: "boxedQueryWithExtractorCombinerTransformer",
+                      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                      pageParams: {
+                        currentDeploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                      },
+                      queryParams: {},
+                      contextResults: {},
+                      extractors: {
+                        entities: {
+                          extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                          applicationSection: "model",
+                          parentName: entityEntity.name,
+                          parentUuid: entityEntity.uuid,
+                          orderBy: {
+                            attributeName: "name",
+                            direction: "ASC",
+                          },
                         },
                       },
                     },
@@ -463,12 +469,14 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 actionLabel: "addEntityAuthor",
                 deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                entities: [
-                  {
-                    entity: entityAuthor as Entity,
-                    entityDefinition: entityDefinitionAuthor as EntityDefinition,
-                  },
-                ],
+                payload: {
+                  entities: [
+                    {
+                      entity: entityAuthor as Entity,
+                      entityDefinition: entityDefinitionAuthor as EntityDefinition,
+                    },
+                  ],
+                }
               },
               {
                 actionType: "rollback",
@@ -485,29 +493,31 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionType: "runBoxedExtractorOrQueryAction",
                   actionName: "runQuery",
                   endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                  applicationSection: "model", // TODO: give only selfApplication section in individual queries?
                   deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                  query: {
-                    queryType: "boxedQueryWithExtractorCombinerTransformer",
-                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                    pageParams: {
-                      currentDeploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                    },
-                    queryParams: {},
-                    contextResults: {},
-                    extractors: {
-                      entities: {
-                        extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                        applicationSection: "model",
-                        parentName: entityEntity.name,
-                        parentUuid: entityEntity.uuid,
-                        orderBy: {
-                          attributeName: "name",
-                          direction: "ASC",
+                  payload: {
+                    applicationSection: "model", // TODO: give only selfApplication section in individual queries?
+                    query: {
+                      queryType: "boxedQueryWithExtractorCombinerTransformer",
+                      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                      pageParams: {
+                        currentDeploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                      },
+                      queryParams: {},
+                      contextResults: {},
+                      extractors: {
+                        entities: {
+                          extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                          applicationSection: "model",
+                          parentName: entityEntity.name,
+                          parentUuid: entityEntity.uuid,
+                          orderBy: {
+                            attributeName: "name",
+                            direction: "ASC",
+                          },
                         },
                       },
                     },
-                  },
+                  }
                 },
               },
             ],
@@ -569,12 +579,14 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 actionLabel: "addEntityAuthor",
                 deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                entities: [
-                  {
-                    entity: entityAuthor as Entity,
-                    entityDefinition: entityDefinitionAuthor as EntityDefinition,
-                  },
-                ],
+                payload: {
+                  entities: [
+                    {
+                      entity: entityAuthor as Entity,
+                      entityDefinition: entityDefinitionAuthor as EntityDefinition,
+                    },
+                  ],
+                }
               },
               {
                 actionType: "compositeRunBoxedExtractorOrQueryAction",
@@ -584,30 +596,32 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionType: "runBoxedExtractorOrQueryAction",
                   actionName: "runQuery",
                   endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                  queryExecutionStrategy: "localCacheOrFail",
-                  applicationSection: "model", // TODO: give only selfApplication section in individual queries?
                   deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                  query: {
-                    queryType: "boxedQueryWithExtractorCombinerTransformer",
-                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                    pageParams: {
-                      currentDeploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                    },
-                    queryParams: {},
-                    contextResults: {},
-                    extractors: {
-                      entities: {
-                        extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                        applicationSection: "model",
-                        parentName: entityEntity.name,
-                        parentUuid: entityEntity.uuid,
-                        orderBy: {
-                          attributeName: "name",
-                          direction: "ASC",
+                  payload: {
+                    applicationSection: "model", // TODO: give only selfApplication section in individual queries?
+                    queryExecutionStrategy: "localCacheOrFail",
+                    query: {
+                      queryType: "boxedQueryWithExtractorCombinerTransformer",
+                      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                      pageParams: {
+                        currentDeploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                      },
+                      queryParams: {},
+                      contextResults: {},
+                      extractors: {
+                        entities: {
+                          extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                          applicationSection: "model",
+                          parentName: entityEntity.name,
+                          parentUuid: entityEntity.uuid,
+                          orderBy: {
+                            attributeName: "name",
+                            direction: "ASC",
+                          },
                         },
                       },
                     },
-                  },
+                  }
                 },
               },
               {
@@ -618,30 +632,32 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionType: "runBoxedExtractorOrQueryAction",
                   actionName: "runQuery",
                   endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                  queryExecutionStrategy: "storage",
-                  applicationSection: "model", // TODO: give only selfApplication section in individual queries?
                   deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                  query: {
-                    queryType: "boxedQueryWithExtractorCombinerTransformer",
-                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                    pageParams: {
-                      currentDeploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                    },
-                    queryParams: {},
-                    contextResults: {},
-                    extractors: {
-                      entities: {
-                        extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                        applicationSection: "model",
-                        parentName: entityEntity.name,
-                        parentUuid: entityEntity.uuid,
-                        orderBy: {
-                          attributeName: "name",
-                          direction: "ASC",
+                  payload: {
+                    queryExecutionStrategy: "storage",
+                    applicationSection: "model", // TODO: give only selfApplication section in individual queries?
+                    query: {
+                      queryType: "boxedQueryWithExtractorCombinerTransformer",
+                      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                      pageParams: {
+                        currentDeploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                      },
+                      queryParams: {},
+                      contextResults: {},
+                      extractors: {
+                        entities: {
+                          extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                          applicationSection: "model",
+                          parentName: entityEntity.name,
+                          parentUuid: entityEntity.uuid,
+                          orderBy: {
+                            attributeName: "name",
+                            direction: "ASC",
+                          },
                         },
                       },
                     },
-                  },
+                  }
                 },
               },
             ],
@@ -756,8 +772,10 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 actionLabel: "dropEntityPublisher",
                 deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                entityUuid: entityPublisher.uuid,
-                entityDefinitionUuid: entityDefinitionPublisher.uuid,
+                payload: {
+                  entityUuid: entityPublisher.uuid,
+                  entityDefinitionUuid: entityDefinitionPublisher.uuid,
+                }
               },
               {
                 actionType: "commit",
@@ -775,30 +793,32 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionType: "runBoxedExtractorOrQueryAction",
                   actionName: "runQuery",
                   endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                  applicationSection: "model", // TODO: give only selfApplication section in individual queries?
                   deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                  queryExecutionStrategy: "storage",
-                  query: {
-                    queryType: "boxedQueryWithExtractorCombinerTransformer",
-                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                    pageParams: {
-                      currentDeploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                    },
-                    queryParams: {},
-                    contextResults: {},
-                    extractors: {
-                      entities: {
-                        extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                        applicationSection: "model",
-                        parentName: entityEntity.name,
-                        parentUuid: entityEntity.uuid,
-                        orderBy: {
-                          attributeName: "name",
-                          direction: "ASC",
+                  payload: {
+                    applicationSection: "model", // TODO: give only selfApplication section in individual queries?
+                    queryExecutionStrategy: "storage",
+                    query: {
+                      queryType: "boxedQueryWithExtractorCombinerTransformer",
+                      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                      pageParams: {
+                        currentDeploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                      },
+                      queryParams: {},
+                      contextResults: {},
+                      extractors: {
+                        entities: {
+                          extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                          applicationSection: "model",
+                          parentName: entityEntity.name,
+                          parentUuid: entityEntity.uuid,
+                          orderBy: {
+                            attributeName: "name",
+                            direction: "ASC",
+                          },
                         },
                       },
                     },
-                  },
+                  }
                 },
               },
             ],
@@ -878,10 +898,12 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 actionLabel: "dropEntityPublisher",
                 deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                entityUuid: entityPublisher.uuid,
-                entityDefinitionUuid: entityDefinitionPublisher.uuid,
-                entityName: "Publisher",
-                targetValue: "Publishers",
+                payload: {
+                  entityUuid: entityPublisher.uuid,
+                  entityDefinitionUuid: entityDefinitionPublisher.uuid,
+                  entityName: "Publisher",
+                  targetValue: "Publishers",
+                }
               },
               {
                 actionType: "commit",
@@ -899,30 +921,32 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionType: "runBoxedExtractorOrQueryAction",
                   actionName: "runQuery",
                   endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                  applicationSection: "model", // TODO: give only selfApplication section in individual queries?
                   deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                  queryExecutionStrategy: "storage",
-                  query: {
-                    queryType: "boxedQueryWithExtractorCombinerTransformer",
-                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                    pageParams: {
-                      currentDeploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                    },
-                    queryParams: {},
-                    contextResults: {},
-                    extractors: {
-                      entities: {
-                        extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                        applicationSection: "model",
-                        parentName: entityEntity.name,
-                        parentUuid: entityEntity.uuid,
-                        orderBy: {
-                          attributeName: "name",
-                          direction: "ASC",
+                  payload: {
+                    applicationSection: "model", // TODO: give only selfApplication section in individual queries?
+                    queryExecutionStrategy: "storage",
+                    query: {
+                      queryType: "boxedQueryWithExtractorCombinerTransformer",
+                      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                      pageParams: {
+                        currentDeploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                      },
+                      queryParams: {},
+                      contextResults: {},
+                      extractors: {
+                        entities: {
+                          extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                          applicationSection: "model",
+                          parentName: entityEntity.name,
+                          parentUuid: entityEntity.uuid,
+                          orderBy: {
+                            attributeName: "name",
+                            direction: "ASC",
+                          },
                         },
                       },
                     },
-                  },
+                  }
                 },
               },
             ],
@@ -1003,15 +1027,17 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 actionLabel: "alterEntityPublisher",
                 deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                entityName: entityPublisher.name,
-                entityUuid: entityPublisher.uuid,
-                entityDefinitionUuid: entityDefinitionPublisher.uuid,
-                addColumns: [
-                  {
-                    name: "aNewColumnForTest",
-                    definition: columnForTestDefinition,
-                  },
-                ],
+                payload: {
+                  entityName: entityPublisher.name,
+                  entityUuid: entityPublisher.uuid,
+                  entityDefinitionUuid: entityDefinitionPublisher.uuid,
+                  addColumns: [
+                    {
+                      name: "aNewColumnForTest",
+                      definition: columnForTestDefinition,
+                    },
+                  ],
+                }
               },
               {
                 actionType: "commit",
@@ -1029,30 +1055,32 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionType: "runBoxedExtractorOrQueryAction",
                   actionName: "runQuery",
                   endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                  applicationSection: "model", // TODO: give only selfApplication section in individual queries?
                   deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                  queryExecutionStrategy: "storage",
-                  query: {
-                    queryType: "boxedQueryWithExtractorCombinerTransformer",
-                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                    pageParams: {
-                      currentDeploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                    },
-                    queryParams: {},
-                    contextResults: {},
-                    extractors: {
-                      entityDefinitions: {
-                        extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                        applicationSection: "model",
-                        parentName: entityEntityDefinition.name,
-                        parentUuid: entityEntityDefinition.uuid,
-                        orderBy: {
-                          attributeName: "name",
-                          direction: "ASC",
+                  payload: {
+                    applicationSection: "model", // TODO: give only selfApplication section in individual queries?
+                    queryExecutionStrategy: "storage",
+                    query: {
+                      queryType: "boxedQueryWithExtractorCombinerTransformer",
+                      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                      pageParams: {
+                        currentDeploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                      },
+                      queryParams: {},
+                      contextResults: {},
+                      extractors: {
+                        entityDefinitions: {
+                          extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                          applicationSection: "model",
+                          parentName: entityEntityDefinition.name,
+                          parentUuid: entityEntityDefinition.uuid,
+                          orderBy: {
+                            attributeName: "name",
+                            direction: "ASC",
+                          },
                         },
                       },
                     },
-                  },
+                  }
                 },
               },
               {
@@ -1064,30 +1092,32 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionType: "runBoxedExtractorOrQueryAction",
                   actionName: "runQuery",
                   endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                  applicationSection: "model", // TODO: give only selfApplication section in individual queries?
                   deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                  queryExecutionStrategy: "storage",
-                  query: {
-                    queryType: "boxedQueryWithExtractorCombinerTransformer",
-                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                    pageParams: {
-                      currentDeploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                    },
-                    queryParams: {},
-                    contextResults: {},
-                    extractors: {
-                      entityDefinitions: {
-                        extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                        applicationSection: "model",
-                        parentName: entityEntityDefinition.name,
-                        parentUuid: entityEntityDefinition.uuid,
-                        orderBy: {
-                          attributeName: "name",
-                          direction: "ASC",
+                  payload: {
+                    applicationSection: "model", // TODO: give only selfApplication section in individual queries?
+                    queryExecutionStrategy: "storage",
+                    query: {
+                      queryType: "boxedQueryWithExtractorCombinerTransformer",
+                      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                      pageParams: {
+                        currentDeploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                      },
+                      queryParams: {},
+                      contextResults: {},
+                      extractors: {
+                        entityDefinitions: {
+                          extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                          applicationSection: "model",
+                          parentName: entityEntityDefinition.name,
+                          parentUuid: entityEntityDefinition.uuid,
+                          orderBy: {
+                            attributeName: "name",
+                            direction: "ASC",
+                          },
                         },
                       },
                     },
-                  },
+                  }
                 },
               },
             ],

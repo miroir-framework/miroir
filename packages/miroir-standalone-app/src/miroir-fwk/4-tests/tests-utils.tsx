@@ -333,16 +333,18 @@ export function resetAndinitializeDeploymentCompositeAction(
         actionType: "createInstance",
         actionLabel: "CreateLibraryStoreInstances",
         endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-        applicationSection: "data",
         deploymentUuid: deploymentUuid,
-        objects: appEntitesAndInstances.map((e) => {
-          return {
-            parentName: e.entity.name,
-            parentUuid: e.entity.uuid,
-            applicationSection: "data",
-            instances: e.instances,
-          };
-        }),
+        payload: {
+          applicationSection: "data",
+          objects: appEntitesAndInstances.map((e) => {
+            return {
+              parentName: e.entity.name,
+              parentUuid: e.entity.uuid,
+              applicationSection: "data",
+              instances: e.instances,
+            };
+          }),
+        }
       },
     ],
   };
@@ -411,16 +413,18 @@ export async function addEntitiesAndInstancesForRealServer(
     // actionType: "instanceAction",
     actionType: "createInstance",
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-    applicationSection: "data",
     deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-    objects: entities.map((e) => {
-      return {
-        parentName: e.entity.name,
-        parentUuid: e.entity.uuid,
-        applicationSection: "data",
-        instances: e.instances,
-      };
-    })
+    payload: {
+      applicationSection: "data",
+      objects: entities.map((e) => {
+        return {
+          parentName: e.entity.name,
+          parentUuid: e.entity.uuid,
+          applicationSection: "data",
+          instances: e.instances,
+        };
+      })
+    }
   };
 
   if (act) {

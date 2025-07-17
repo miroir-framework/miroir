@@ -376,10 +376,10 @@ function handleInstanceAction(
     // switch (instanceAction.actionName) {
     switch (instanceAction.actionType) {
     case "createInstance": {
-      for (let instanceCollection of instanceAction.objects ?? ([] as EntityInstanceCollection[])) {
+      for (let instanceCollection of instanceAction.payload.objects ?? ([] as EntityInstanceCollection[])) {
         const instanceCollectionEntityIndex = getDeploymentEntityStateIndex(
           instanceAction.deploymentUuid,
-          instanceAction.applicationSection,
+          instanceAction.payload.applicationSection,
           instanceCollection.parentUuid
         );
         log.debug(
@@ -393,7 +393,7 @@ function handleInstanceAction(
 
         const sliceEntityAdapter:EntityAdapter<EntityInstance, string> = initializeLocalCacheSliceStateWithEntityAdapter(
           instanceAction.deploymentUuid,
-          instanceAction.applicationSection,
+          instanceAction.payload.applicationSection,
           instanceCollection.parentUuid,
           "current",
           state
@@ -412,7 +412,7 @@ function handleInstanceAction(
           instanceCollection.instances.forEach((i: EntityInstance) =>
             initializeLocalCacheSliceStateWithEntityAdapter(
               instanceAction.deploymentUuid,
-              instanceAction.applicationSection,
+              instanceAction.payload.applicationSection,
               i["uuid"],
               "current",
               state
@@ -424,7 +424,7 @@ function handleInstanceAction(
       break;
     }
     case "deleteInstance": {
-      for (let instanceCollection of instanceAction.objects) {
+      for (let instanceCollection of instanceAction.payload.objects) {
         try {
           log.debug(
             "localCacheSliceObject handleInstanceAction delete called for instanceCollection",
@@ -433,7 +433,7 @@ function handleInstanceAction(
 
           const instanceCollectionEntityIndex = getDeploymentEntityStateIndex(
             instanceAction.deploymentUuid,
-            instanceAction.applicationSection,
+            instanceAction.payload.applicationSection,
             instanceCollection.parentUuid
           );
 
@@ -444,7 +444,7 @@ function handleInstanceAction(
 
           const sliceEntityAdapter = initializeLocalCacheSliceStateWithEntityAdapter(
             instanceAction.deploymentUuid,
-            instanceAction.applicationSection,
+            instanceAction.payload.applicationSection,
             instanceCollection.parentUuid,
             "current",
             state
@@ -480,15 +480,15 @@ function handleInstanceAction(
       break;
     }
     case "updateInstance": {
-      for (let instanceCollection of instanceAction.objects) {
+      for (let instanceCollection of instanceAction.payload.objects) {
         const instanceCollectionEntityIndex = getDeploymentEntityStateIndex(
           instanceAction.deploymentUuid,
-          instanceAction.applicationSection,
+          instanceAction.payload.applicationSection,
           instanceCollection.parentUuid
         );
         const sliceEntityAdapter = initializeLocalCacheSliceStateWithEntityAdapter(
           instanceAction.deploymentUuid,
-          instanceAction.applicationSection,
+          instanceAction.payload.applicationSection,
           instanceCollection.parentUuid,
           "current",
           state
@@ -505,7 +505,7 @@ function handleInstanceAction(
     }
     case "loadNewInstancesInLocalCache": {
       // log.info("localCacheSlice handleInstanceAction loadNewInstancesInLocalCache called!");
-      for (const instanceCollection of instanceAction.objects) {
+      for (const instanceCollection of instanceAction.payload.objects) {
         loadNewEntityInstancesInLocalCache(
           instanceAction.deploymentUuid,
           instanceCollection.applicationSection,

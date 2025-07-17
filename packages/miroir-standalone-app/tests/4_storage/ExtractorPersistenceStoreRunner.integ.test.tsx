@@ -309,21 +309,23 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
             actionName: "runQuery",
             deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-            applicationSection: applicationSection,
-            query: {
-              queryType: "boxedExtractorOrCombinerReturningObject",
-              pageParams: {},
-              queryParams: {},
-              contextResults: {},
-              deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-              select: {
-                extractorOrCombinerType: "extractorForObjectByDirectReference",
-                applicationSection: "model",
-                parentName: "Entity",
-                parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                instanceUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+            payload: {
+              applicationSection: applicationSection,
+              query: {
+                queryType: "boxedExtractorOrCombinerReturningObject",
+                pageParams: {},
+                queryParams: {},
+                contextResults: {},
+                deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                select: {
+                  extractorOrCombinerType: "extractorForObjectByDirectReference",
+                  applicationSection: "model",
+                  parentName: "Entity",
+                  parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                  instanceUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                },
               },
-            },
+            }
           }
         );
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
@@ -358,23 +360,25 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-          applicationSection: applicationSection,
-          query: {
-            queryType: "boxedQueryWithExtractorCombinerTransformer",
-            pageParams: {},
-            queryParams: {},
-            contextResults: {},
-            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-            extractors: {
-              entities: {
-                extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                applicationSection: applicationSection,
-                parentName: "Entity",
-                parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-
+          payload: {
+            applicationSection: applicationSection,
+            query: {
+              queryType: "boxedQueryWithExtractorCombinerTransformer",
+              pageParams: {},
+              queryParams: {},
+              contextResults: {},
+              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+              extractors: {
+                entities: {
+                  extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                  applicationSection: applicationSection,
+                  parentName: "Entity",
+                  parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  
+                },
               },
             },
-          },
+          }
         });
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult; // == "ok" ? queryResult : {status: "error", error: queryResult.error};
@@ -492,7 +496,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
           parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
           parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
           name: "Query",
-          selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+          selfApplication: "21840247-b5b1-4344-baec-f818f4797d92",
           conceptLevel: "Model",
           description: "A Query",
         },
@@ -512,22 +516,24 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-          applicationSection: applicationSection,
-          query: {
-            queryType: "boxedQueryWithExtractorCombinerTransformer",
-            pageParams: {},
-            queryParams: {},
-            contextResults: {},
-            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-            extractors: {
-              entities: {
-                extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                applicationSection: applicationSection,
-                parentName: entityEntity.name,
-                parentUuid: entityEntity.uuid,
+          payload: {
+            applicationSection: applicationSection,
+            query: {
+              queryType: "boxedQueryWithExtractorCombinerTransformer",
+              pageParams: {},
+              queryParams: {},
+              contextResults: {},
+              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+              extractors: {
+                entities: {
+                  extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                  applicationSection: applicationSection,
+                  parentName: entityEntity.name,
+                  parentUuid: entityEntity.uuid,
+                },
               },
             },
-          },
+          }
         });
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult; // == "ok" ? queryResult : {status: "error", error: queryResult.error};
@@ -557,22 +563,24 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-          applicationSection: applicationSection,
-          query: {
-            queryType: "boxedQueryWithExtractorCombinerTransformer",
-            pageParams: {},
-            queryParams: {},
-            contextResults: {},
-            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-            extractors: {
-              menus: {
-                extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                applicationSection: applicationSection,
-                parentName: "Menu",
-                parentUuid: entityMenu.uuid,
+          payload: {
+            applicationSection: applicationSection,
+            query: {
+              queryType: "boxedQueryWithExtractorCombinerTransformer",
+              pageParams: {},
+              queryParams: {},
+              contextResults: {},
+              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+              extractors: {
+                menus: {
+                  extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                  applicationSection: applicationSection,
+                  parentName: "Menu",
+                  parentUuid: entityMenu.uuid,
+                },
               },
             },
-          },
+          }
         });
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult; // == "ok" ? queryResult : {status: "error", error: queryResult.error};
@@ -589,7 +597,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
           parentName: "Menu",
           parentUuid: "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
           name: "LibraryMenu",
-          defaultLabel: "Meta-Model",
+          defaultLabel: "Library Menu",
           description: "This is the default menu allowing to explore the Library SelfApplication.",
           definition: {
             menuType: "complexMenu",
@@ -675,27 +683,29 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-          applicationSection: applicationSection,
-          query: {
-            queryType: "boxedQueryWithExtractorCombinerTransformer",
-            pageParams: {},
-            queryParams: {},
-            contextResults: {},
-            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-            extractors: {
-              entities: {
-                extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                applicationSection: applicationSection,
-                parentName: "Entity",
-                parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                filter: {
-                  attributeName: "name",
-                  // value: "or",
-                  value: "en",
+          payload: {
+            applicationSection: applicationSection,
+            query: {
+              queryType: "boxedQueryWithExtractorCombinerTransformer",
+              pageParams: {},
+              queryParams: {},
+              contextResults: {},
+              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+              extractors: {
+                entities: {
+                  extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                  applicationSection: applicationSection,
+                  parentName: "Entity",
+                  parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                  filter: {
+                    attributeName: "name",
+                    // value: "or",
+                    value: "en",
+                  },
                 },
               },
             },
-          },
+          }
         });
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult;
@@ -725,39 +735,41 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-          applicationSection: applicationSection,
-          query: {
-            queryType: "boxedQueryWithExtractorCombinerTransformer",
-            pageParams: {},
-            queryParams: {},
-            contextResults: {},
-            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-            extractors: {
-              books: {
-                extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                applicationSection: applicationSection,
-                parentName: "Book",
-                parentUuid: entityBook.uuid,
-              },
-            },
-            runtimeTransformers: {
-              uniqueAuthors: {
-                transformerType: "unique",
-                interpolation: "runtime",
-                applyTo: {
-                  referenceType: "referencedTransformer",
-                  reference: {
-                    transformerType: "contextReference",
-                    interpolation: "runtime",
-                    referenceName: "books",
-                  }
+          payload: {
+            applicationSection: applicationSection,
+            query: {
+              queryType: "boxedQueryWithExtractorCombinerTransformer",
+              pageParams: {},
+              queryParams: {},
+              contextResults: {},
+              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+              extractors: {
+                books: {
+                  extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                  applicationSection: applicationSection,
+                  parentName: "Book",
+                  parentUuid: entityBook.uuid,
                 },
-                // referencedTransformer: "books",
-                attribute: "author",
-                orderBy: "author",
+              },
+              runtimeTransformers: {
+                uniqueAuthors: {
+                  transformerType: "unique",
+                  interpolation: "runtime",
+                  applyTo: {
+                    referenceType: "referencedTransformer",
+                    reference: {
+                      transformerType: "contextReference",
+                      interpolation: "runtime",
+                      referenceName: "books",
+                    }
+                  },
+                  // referencedTransformer: "books",
+                  attribute: "author",
+                  orderBy: "author",
+                },
               },
             },
-          },
+          }
         });
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult;
@@ -786,37 +798,39 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-          applicationSection: applicationSection,
-          query: {
-            queryType: "boxedQueryWithExtractorCombinerTransformer",
-            pageParams: {},
-            queryParams: {},
-            contextResults: {},
-            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-            extractors: {
-              books: {
-                extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                applicationSection: applicationSection,
-                parentName: "Book",
-                parentUuid: entityBook.uuid,
-              },
-            },
-            runtimeTransformers: {
-              uniqueAuthors: {
-                interpolation: "runtime",
-                transformerType: "count",
-                applyTo: {
-                  referenceType: "referencedTransformer",
-                  reference: {
-                    transformerType: "contextReference",
-                    interpolation: "runtime",
-                    referenceName: "books",
-                  }
+          payload: {
+            applicationSection: applicationSection,
+            query: {
+              queryType: "boxedQueryWithExtractorCombinerTransformer",
+              pageParams: {},
+              queryParams: {},
+              contextResults: {},
+              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+              extractors: {
+                books: {
+                  extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                  applicationSection: applicationSection,
+                  parentName: "Book",
+                  parentUuid: entityBook.uuid,
                 },
-                // referencedTransformer: "books",
+              },
+              runtimeTransformers: {
+                uniqueAuthors: {
+                  interpolation: "runtime",
+                  transformerType: "count",
+                  applyTo: {
+                    referenceType: "referencedTransformer",
+                    reference: {
+                      transformerType: "contextReference",
+                      interpolation: "runtime",
+                      referenceName: "books",
+                    }
+                  },
+                  // referencedTransformer: "books",
+                },
               },
             },
-          },
+          }
         });
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult;
@@ -844,38 +858,40 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-          applicationSection: applicationSection,
-          query: {
-            queryType: "boxedQueryWithExtractorCombinerTransformer",
-            pageParams: {},
-            queryParams: {},
-            contextResults: {},
-            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-            extractors: {
-              books: {
-                extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                applicationSection: applicationSection,
-                parentName: "Book",
-                parentUuid: entityBook.uuid,
-              },
-            },
-            runtimeTransformers: {
-              countBooksByAuthors: {
-                applyTo: {
-                  referenceType: "referencedTransformer",
-                  reference: {
-                    transformerType: "contextReference",
-                    interpolation: "runtime",
-                    referenceName: "books",
-                  },
+          payload: {
+            applicationSection: applicationSection,
+            query: {
+              queryType: "boxedQueryWithExtractorCombinerTransformer",
+              pageParams: {},
+              queryParams: {},
+              contextResults: {},
+              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+              extractors: {
+                books: {
+                  extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                  applicationSection: applicationSection,
+                  parentName: "Book",
+                  parentUuid: entityBook.uuid,
                 },
-                transformerType: "count",
-                interpolation: "runtime",
-                groupBy: "author",
-                // orderBy: "author",
+              },
+              runtimeTransformers: {
+                countBooksByAuthors: {
+                  applyTo: {
+                    referenceType: "referencedTransformer",
+                    reference: {
+                      transformerType: "contextReference",
+                      interpolation: "runtime",
+                      referenceName: "books",
+                    },
+                  },
+                  transformerType: "count",
+                  interpolation: "runtime",
+                  groupBy: "author",
+                  // orderBy: "author",
+                },
               },
             },
-          },
+          }
         });
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult;
@@ -911,63 +927,65 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-          applicationSection: applicationSection,
-          query: {
-            queryType: "boxedQueryWithExtractorCombinerTransformer",
-            pageParams: {},
-            queryParams: {},
-            contextResults: {},
-            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-            extractors: {
-              book: {
-                extractorOrCombinerType: "extractorForObjectByDirectReference",
-                applicationSection: applicationSection,
-                parentName: "Book",
-                parentUuid: entityBook.uuid,
-                instanceUuid: book2.uuid,
-              },
-            },
-            runtimeTransformers: {
-              newBook: {
-                transformerType: "object_fullTemplate",
-                interpolation: "runtime",
-                applyTo: {
-                  referenceType: "referencedTransformer",
-                  reference: {
-                    transformerType: "contextReference",
-                    interpolation: "runtime",
-                    referenceName: "book",
-                  }
+          payload: {
+            applicationSection: applicationSection,
+            query: {
+              queryType: "boxedQueryWithExtractorCombinerTransformer",
+              pageParams: {},
+              queryParams: {},
+              contextResults: {},
+              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+              extractors: {
+                book: {
+                  extractorOrCombinerType: "extractorForObjectByDirectReference",
+                  applicationSection: applicationSection,
+                  parentName: "Book",
+                  parentUuid: entityBook.uuid,
+                  instanceUuid: book2.uuid,
                 },
-                referenceToOuterObject: "book",
-                definition: [
-                  {
-                    attributeKey: {
+              },
+              runtimeTransformers: {
+                newBook: {
+                  transformerType: "object_fullTemplate",
+                  interpolation: "runtime",
+                  applyTo: {
+                    referenceType: "referencedTransformer",
+                    reference: {
+                      transformerType: "contextReference",
                       interpolation: "runtime",
-                      transformerType: "constantString",
-                      value: "uuid",
-                    },
-                    attributeValue: {
-                      interpolation: "runtime",
-                      transformerType: "newUuid",
-                    },
+                      referenceName: "book",
+                    }
                   },
-                  {
-                    attributeKey: {
-                      interpolation: "runtime",
-                      transformerType: "constantString",
-                      value: "name",
+                  referenceToOuterObject: "book",
+                  definition: [
+                    {
+                      attributeKey: {
+                        interpolation: "runtime",
+                        transformerType: "constantString",
+                        value: "uuid",
+                      },
+                      attributeValue: {
+                        interpolation: "runtime",
+                        transformerType: "newUuid",
+                      },
                     },
-                    attributeValue: {
-                      interpolation: "runtime",
-                      transformerType: "mustacheStringTemplate",
-                      definition: "{{book.name}}",
+                    {
+                      attributeKey: {
+                        interpolation: "runtime",
+                        transformerType: "constantString",
+                        value: "name",
+                      },
+                      attributeValue: {
+                        interpolation: "runtime",
+                        transformerType: "mustacheStringTemplate",
+                        definition: "{{book.name}}",
+                      },
                     },
-                  },
-                ],
+                  ],
+                },
               },
             },
-          },
+          }
         });
         console.log(expect.getState().currentTestName, "queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult;
@@ -993,36 +1011,38 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-          applicationSection: applicationSection,
-          query: {
-            queryType: "boxedQueryWithExtractorCombinerTransformer",
-            pageParams: {},
-            queryParams: {},
-            contextResults: {},
-            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-            extractors: {
-              book: {
-                extractorOrCombinerType: "extractorForObjectByDirectReference",
-                applicationSection: applicationSection,
-                parentName: "Book",
-                parentUuid: entityBook.uuid,
-                instanceUuid: book2.uuid
+          payload: {
+            applicationSection: applicationSection,
+            query: {
+              queryType: "boxedQueryWithExtractorCombinerTransformer",
+              pageParams: {},
+              queryParams: {},
+              contextResults: {},
+              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+              extractors: {
+                book: {
+                  extractorOrCombinerType: "extractorForObjectByDirectReference",
+                  applicationSection: applicationSection,
+                  parentName: "Book",
+                  parentUuid: entityBook.uuid,
+                  instanceUuid: book2.uuid
+                },
+              },
+              combiners: {
+                publisher: {
+                  extractorOrCombinerType: "combinerForObjectByRelation",
+                  parentName: "Publisher",
+                  parentUuid: "a027c379-8468-43a5-ba4d-bf618be25cab",
+                  objectReference: "book",
+                  // objectReference: {
+                  //   transformerType: "contextReference"
+                  //   referenceName: "book"
+                  // },
+                  AttributeOfObjectToCompareToReferenceUuid: "publisher",
+                },
               },
             },
-            combiners: {
-              publisher: {
-                extractorOrCombinerType: "combinerForObjectByRelation",
-                parentName: "Publisher",
-                parentUuid: "a027c379-8468-43a5-ba4d-bf618be25cab",
-                objectReference: "book",
-                // objectReference: {
-                //   transformerType: "contextReference"
-                //   referenceName: "book"
-                // },
-                AttributeOfObjectToCompareToReferenceUuid: "publisher",
-              },
-            },
-          },
+          }
         });
         console.log(expect.getState().currentTestName, "queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult;
@@ -1049,32 +1069,34 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-          applicationSection: applicationSection,
-          query: {
-            queryType: "boxedQueryWithExtractorCombinerTransformer",
-            pageParams: {},
-            queryParams: {},
-            contextResults: {},
-            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-            extractors: {
-              author: {
-                extractorOrCombinerType: "extractorForObjectByDirectReference",
-                applicationSection: applicationSection,
-                parentName: entityAuthor.name,
-                parentUuid: entityAuthor.uuid,
-                instanceUuid: author2.uuid
+          payload: {
+            applicationSection: applicationSection,
+            query: {
+              queryType: "boxedQueryWithExtractorCombinerTransformer",
+              pageParams: {},
+              queryParams: {},
+              contextResults: {},
+              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+              extractors: {
+                author: {
+                  extractorOrCombinerType: "extractorForObjectByDirectReference",
+                  applicationSection: applicationSection,
+                  parentName: entityAuthor.name,
+                  parentUuid: entityAuthor.uuid,
+                  instanceUuid: author2.uuid
+                },
+              },
+              combiners: {
+                booksOfAuthor: { //join with only constant references
+                  extractorOrCombinerType: "combinerByRelationReturningObjectList",
+                  parentName: entityBook.name,
+                  parentUuid: entityBook.uuid,
+                  objectReference: "author",
+                  AttributeOfListObjectToCompareToReferenceUuid: "author",
+                },
               },
             },
-            combiners: {
-              booksOfAuthor: { //join with only constant references
-                extractorOrCombinerType: "combinerByRelationReturningObjectList",
-                parentName: entityBook.name,
-                parentUuid: entityBook.uuid,
-                objectReference: "author",
-                AttributeOfListObjectToCompareToReferenceUuid: "author",
-              },
-            },
-          },
+          }
         });
         console.log(expect.getState().currentTestName, "queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult;
@@ -1213,40 +1235,42 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-          applicationSection: applicationSection,
-          query: {
-            queryType: "boxedQueryWithExtractorCombinerTransformer",
-            pageParams: {},
-            queryParams: {
-              // instanceUuid: "c6852e89-3c3c-447f-b827-4b5b9d830975",
-            },
-            contextResults: {},
-            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-            extractors: {
-              book: {
-                extractorOrCombinerType: "extractorForObjectByDirectReference",
-                parentName: "Book",
-                parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-                instanceUuid: "c6852e89-3c3c-447f-b827-4b5b9d830975",
+          payload: {
+            applicationSection: applicationSection,
+            query: {
+              queryType: "boxedQueryWithExtractorCombinerTransformer",
+              pageParams: {},
+              queryParams: {
+                // instanceUuid: "c6852e89-3c3c-447f-b827-4b5b9d830975",
+              },
+              contextResults: {},
+              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+              extractors: {
+                book: {
+                  extractorOrCombinerType: "extractorForObjectByDirectReference",
+                  parentName: "Book",
+                  parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                  instanceUuid: "c6852e89-3c3c-447f-b827-4b5b9d830975",
+                },
+              },
+              combiners: {
+                author: {
+                  extractorOrCombinerType: "combinerForObjectByRelation",
+                  parentName: "Author",
+                  parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                  objectReference: "book",
+                  AttributeOfObjectToCompareToReferenceUuid: "author",
+                },
+                booksOfAuthor: {
+                  extractorOrCombinerType: "combinerByRelationReturningObjectList",
+                  parentName: "Book",
+                  parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                  objectReference: "author",
+                  AttributeOfListObjectToCompareToReferenceUuid: "author",
+                },
               },
             },
-            combiners: {
-              author: {
-                extractorOrCombinerType: "combinerForObjectByRelation",
-                parentName: "Author",
-                parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-                objectReference: "book",
-                AttributeOfObjectToCompareToReferenceUuid: "author",
-              },
-              booksOfAuthor: {
-                extractorOrCombinerType: "combinerByRelationReturningObjectList",
-                parentName: "Book",
-                parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-                objectReference: "author",
-                AttributeOfListObjectToCompareToReferenceUuid: "author",
-              },
-            },
-          },
+          }
         });
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult;
@@ -1294,39 +1318,41 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
           actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-          applicationSection: applicationSection,
-          query: {
-            queryType: "boxedQueryWithExtractorCombinerTransformer",
-            pageParams: {},
-            queryParams: {},
-            contextResults: {},
-            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-            extractors: {
-              books: {
-                extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                applicationSection: applicationSection,
-                parentName: "Book",
-                parentUuid: entityBook.uuid,
-              },
-            },
-            runtimeTransformers: {
-              firstBook: {
-                transformerType: "listPickElement",
-                interpolation: "runtime",
-                applyTo: {
-                  referenceType: "referencedTransformer",
-                  reference: {
-                    transformerType: "contextReference",
-                    interpolation: "runtime",
-                    referenceName: "books",
-                  }
+          payload: {
+            applicationSection: applicationSection,
+            query: {
+              queryType: "boxedQueryWithExtractorCombinerTransformer",
+              pageParams: {},
+              queryParams: {},
+              contextResults: {},
+              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+              extractors: {
+                books: {
+                  extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                  applicationSection: applicationSection,
+                  parentName: "Book",
+                  parentUuid: entityBook.uuid,
                 },
-                // referencedTransformer: "books",
-                index: 0,
-                orderBy: "name",
+              },
+              runtimeTransformers: {
+                firstBook: {
+                  transformerType: "listPickElement",
+                  interpolation: "runtime",
+                  applyTo: {
+                    referenceType: "referencedTransformer",
+                    reference: {
+                      transformerType: "contextReference",
+                      interpolation: "runtime",
+                      referenceName: "books",
+                    }
+                  },
+                  // referencedTransformer: "books",
+                  index: 0,
+                  orderBy: "name",
+                },
               },
             },
-          },
+          }
         });
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult;

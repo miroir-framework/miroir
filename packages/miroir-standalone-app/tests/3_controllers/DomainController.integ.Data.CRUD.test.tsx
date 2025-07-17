@@ -49,7 +49,6 @@ import {
   resetAndinitializeDeploymentCompositeAction,
   runTestOrTestSuite,
   setupMiroirTest,
-  TestCompositeActionParams,
 } from "../../src/miroir-fwk/4-tests/tests-utils.js";
 
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
@@ -70,6 +69,7 @@ import {
 import { cleanLevel, packageName } from "./constants.js";
 import { loadTestConfigFiles } from "../utils/fileTools.js";
 import { TestSuiteResult } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { TestCompositeActionParams } from "miroir-core";
 
 const env: any = (import.meta as any).env;
 
@@ -255,29 +255,31 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionType: "runBoxedExtractorOrQueryAction",
                   actionName: "runQuery",
                   endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                  applicationSection: "data", // TODO: give only selfApplication section in individual queries?
                   deploymentUuid: testApplicationDeploymentUuid,
-                  query: {
-                    queryType: "boxedQueryWithExtractorCombinerTransformer",
-                    deploymentUuid: testApplicationDeploymentUuid,
-                    pageParams: {
-                      currentDeploymentUuid: testApplicationDeploymentUuid,
-                    },
-                    queryParams: {},
-                    contextResults: {},
-                    extractors: {
-                      books: {
-                        extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                        applicationSection: "data",
-                        parentName: "Book",
-                        parentUuid: entityBook.uuid,
-                        orderBy: {
-                          attributeName: "uuid",
-                          direction: "ASC",
+                  payload: {
+                    applicationSection: "data", // TODO: give only selfApplication section in individual queries?
+                    query: {
+                      queryType: "boxedQueryWithExtractorCombinerTransformer",
+                      deploymentUuid: testApplicationDeploymentUuid,
+                      pageParams: {
+                        currentDeploymentUuid: testApplicationDeploymentUuid,
+                      },
+                      queryParams: {},
+                      contextResults: {},
+                      extractors: {
+                        books: {
+                          extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                          applicationSection: "data",
+                          parentName: "Book",
+                          parentUuid: entityBook.uuid,
+                          orderBy: {
+                            attributeName: "uuid",
+                            direction: "ASC",
+                          },
                         },
                       },
                     },
-                  },
+                  }
                 },
               },
             ],
@@ -364,16 +366,18 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 actionType: "createInstance",
                 actionLabel: "addBook3",
                 endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-                applicationSection: "data",
                 deploymentUuid: testApplicationDeploymentUuid,
-                objects: [
-                  {
-                    parentName: book3.parentName,
-                    parentUuid: book3.parentUuid,
-                    applicationSection: "data",
-                    instances: [book3 as EntityInstance],
-                  },
-                ],
+                payload: {
+                  applicationSection: "data",
+                  objects: [
+                    {
+                      parentName: book3.parentName,
+                      parentUuid: book3.parentUuid,
+                      applicationSection: "data",
+                      instances: [book3 as EntityInstance],
+                    },
+                  ],
+                }
               },
               {
                 actionType: "compositeRunBoxedExtractorOrQueryAction",
@@ -383,29 +387,31 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionType: "runBoxedExtractorOrQueryAction",
                   actionName: "runQuery",
                   endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                  applicationSection: "data", // TODO: give only selfApplication section in individual queries?
                   deploymentUuid: testApplicationDeploymentUuid,
-                  query: {
-                    queryType: "boxedQueryWithExtractorCombinerTransformer",
-                    deploymentUuid: testApplicationDeploymentUuid,
-                    pageParams: {
-                      currentDeploymentUuid: testApplicationDeploymentUuid,
-                    },
-                    queryParams: {},
-                    contextResults: {},
-                    extractors: {
-                      books: {
-                        extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                        applicationSection: "data",
-                        parentName: "Book",
-                        parentUuid: entityBook.uuid,
-                        orderBy: {
-                          attributeName: "uuid",
-                          direction: "ASC",
+                  payload: {
+                    applicationSection: "data", // TODO: give only selfApplication section in individual queries?
+                    query: {
+                      queryType: "boxedQueryWithExtractorCombinerTransformer",
+                      deploymentUuid: testApplicationDeploymentUuid,
+                      pageParams: {
+                        currentDeploymentUuid: testApplicationDeploymentUuid,
+                      },
+                      queryParams: {},
+                      contextResults: {},
+                      extractors: {
+                        books: {
+                          extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                          applicationSection: "data",
+                          parentName: "Book",
+                          parentUuid: entityBook.uuid,
+                          orderBy: {
+                            attributeName: "uuid",
+                            direction: "ASC",
+                          },
                         },
                       },
                     },
-                  },
+                  }
                 },
               },
             ],
@@ -480,16 +486,18 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 actionType: "createInstance",
                 actionLabel: "addBook3",
                 endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-                applicationSection: "data",
                 deploymentUuid: testApplicationDeploymentUuid,
-                objects: [
-                  {
-                    parentName: book3.parentName,
-                    parentUuid: book3.parentUuid,
-                    applicationSection: "data",
-                    instances: [book3 as EntityInstance],
-                  },
-                ],
+                payload: {
+                  applicationSection: "data",
+                  objects: [
+                    {
+                      parentName: book3.parentName,
+                      parentUuid: book3.parentUuid,
+                      applicationSection: "data",
+                      instances: [book3 as EntityInstance],
+                    },
+                  ],
+                }
               },
               {
                 actionType: "compositeRunBoxedExtractorOrQueryAction",
@@ -499,29 +507,31 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionType: "runBoxedExtractorOrQueryAction",
                   actionName: "runQuery",
                   endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                  applicationSection: "data", // TODO: give only selfApplication section in individual queries?
                   deploymentUuid: testApplicationDeploymentUuid,
-                  query: {
-                    queryType: "boxedQueryWithExtractorCombinerTransformer",
-                    deploymentUuid: testApplicationDeploymentUuid,
-                    pageParams: {
-                      currentDeploymentUuid: testApplicationDeploymentUuid,
-                    },
-                    queryParams: {},
-                    contextResults: {},
-                    extractors: {
-                      books: {
-                        extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                        applicationSection: "data",
-                        parentName: "Book",
-                        parentUuid: entityBook.uuid,
-                        orderBy: {
-                          attributeName: "uuid",
-                          direction: "ASC",
+                  payload: {
+                    applicationSection: "data", // TODO: give only selfApplication section in individual queries?
+                    query: {
+                      queryType: "boxedQueryWithExtractorCombinerTransformer",
+                      deploymentUuid: testApplicationDeploymentUuid,
+                      pageParams: {
+                        currentDeploymentUuid: testApplicationDeploymentUuid,
+                      },
+                      queryParams: {},
+                      contextResults: {},
+                      extractors: {
+                        books: {
+                          extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                          applicationSection: "data",
+                          parentName: "Book",
+                          parentUuid: entityBook.uuid,
+                          orderBy: {
+                            attributeName: "uuid",
+                            direction: "ASC",
+                          },
                         },
                       },
                     },
-                  },
+                  }
                 },
               },
             ],
@@ -596,16 +606,18 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 actionType: "deleteInstance",
                 actionLabel: "deleteBook2",
                 endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-                applicationSection: "data",
                 deploymentUuid: testApplicationDeploymentUuid,
-                objects: [
-                  {
-                    parentName: book2.parentName,
-                    parentUuid: book2.parentUuid,
-                    applicationSection: "data",
-                    instances: [book2 as EntityInstance],
-                  },
-                ],
+                payload: {
+                  applicationSection: "data",
+                  objects: [
+                    {
+                      parentName: book2.parentName,
+                      parentUuid: book2.parentUuid,
+                      applicationSection: "data",
+                      instances: [book2 as EntityInstance],
+                    },
+                  ],
+                }
               },
               {
                 actionType: "compositeRunBoxedExtractorOrQueryAction",
@@ -615,29 +627,31 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionType: "runBoxedExtractorOrQueryAction",
                   actionName: "runQuery",
                   endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                  applicationSection: "data", // TODO: give only selfApplication section in individual queries?
                   deploymentUuid: testApplicationDeploymentUuid,
-                  query: {
-                    queryType: "boxedQueryWithExtractorCombinerTransformer",
-                    deploymentUuid: testApplicationDeploymentUuid,
-                    pageParams: {
-                      currentDeploymentUuid: testApplicationDeploymentUuid,
-                    },
-                    queryParams: {},
-                    contextResults: {},
-                    extractors: {
-                      books: {
-                        extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                        applicationSection: "data",
-                        parentName: "Book",
-                        parentUuid: entityBook.uuid,
-                        orderBy: {
-                          attributeName: "uuid",
-                          direction: "ASC",
+                  payload: {
+                    applicationSection: "data", // TODO: give only selfApplication section in individual queries?
+                    query: {
+                      queryType: "boxedQueryWithExtractorCombinerTransformer",
+                      deploymentUuid: testApplicationDeploymentUuid,
+                      pageParams: {
+                        currentDeploymentUuid: testApplicationDeploymentUuid,
+                      },
+                      queryParams: {},
+                      contextResults: {},
+                      extractors: {
+                        books: {
+                          extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                          applicationSection: "data",
+                          parentName: "Book",
+                          parentUuid: entityBook.uuid,
+                          orderBy: {
+                            attributeName: "uuid",
+                            direction: "ASC",
+                          },
                         },
                       },
                     },
-                  },
+                  }
                 },
               },
             ],
@@ -719,16 +733,18 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 actionType: "deleteInstance",
                 actionLabel: "addBook3",
                 endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-                applicationSection: "data",
                 deploymentUuid: testApplicationDeploymentUuid,
-                objects: [
-                  {
-                    parentName: book2.parentName,
-                    parentUuid: book2.parentUuid,
-                    applicationSection: "data",
-                    instances: [book2 as EntityInstance],
-                  },
-                ],
+                payload: {
+                  applicationSection: "data",
+                  objects: [
+                    {
+                      parentName: book2.parentName,
+                      parentUuid: book2.parentUuid,
+                      applicationSection: "data",
+                      instances: [book2 as EntityInstance],
+                    },
+                  ],
+                }
               },
               {
                 actionType: "rollback",
@@ -745,29 +761,31 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionType: "runBoxedExtractorOrQueryAction",
                   actionName: "runQuery",
                   endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                  applicationSection: "data", // TODO: give only selfApplication section in individual queries?
                   deploymentUuid: testApplicationDeploymentUuid,
-                  query: {
-                    queryType: "boxedQueryWithExtractorCombinerTransformer",
-                    deploymentUuid: testApplicationDeploymentUuid,
-                    pageParams: {
-                      currentDeploymentUuid: testApplicationDeploymentUuid,
-                    },
-                    queryParams: {},
-                    contextResults: {},
-                    extractors: {
-                      books: {
-                        extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                        applicationSection: "data",
-                        parentName: "Book",
-                        parentUuid: entityBook.uuid,
-                        orderBy: {
-                          attributeName: "uuid",
-                          direction: "ASC",
+                  payload: {
+                    applicationSection: "data", // TODO: give only selfApplication section in individual queries?
+                    query: {
+                      queryType: "boxedQueryWithExtractorCombinerTransformer",
+                      deploymentUuid: testApplicationDeploymentUuid,
+                      pageParams: {
+                        currentDeploymentUuid: testApplicationDeploymentUuid,
+                      },
+                      queryParams: {},
+                      contextResults: {},
+                      extractors: {
+                        books: {
+                          extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                          applicationSection: "data",
+                          parentName: "Book",
+                          parentUuid: entityBook.uuid,
+                          orderBy: {
+                            attributeName: "uuid",
+                            direction: "ASC",
+                          },
                         },
                       },
                     },
-                  },
+                  }
                 },
               },
             ],
@@ -849,21 +867,23 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 actionType: "updateInstance",
                 actionLabel: "updateBook2",
                 endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-                applicationSection: "data",
                 deploymentUuid: testApplicationDeploymentUuid,
-                objects: [
-                  {
-                    parentName: book4.parentName,
-                    parentUuid: book4.parentUuid,
-                    applicationSection: "data",
-                    instances: [
-                      Object.assign({}, book4, {
-                        name: "Tthe Bride Wore Blackk",
-                        author: "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
-                      }) as EntityInstance,
-                    ],
-                  },
-                ],
+                payload: {
+                  applicationSection: "data",
+                  objects: [
+                    {
+                      parentName: book4.parentName,
+                      parentUuid: book4.parentUuid,
+                      applicationSection: "data",
+                      instances: [
+                        Object.assign({}, book4, {
+                          name: "Tthe Bride Wore Blackk",
+                          author: "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+                        }) as EntityInstance,
+                      ],
+                    },
+                  ],
+                }
               },
               {
                 actionType: "compositeRunBoxedExtractorOrQueryAction",
@@ -873,29 +893,31 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionType: "runBoxedExtractorOrQueryAction",
                   actionName: "runQuery",
                   endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                  applicationSection: "data", // TODO: give only selfApplication section in individual queries?
                   deploymentUuid: testApplicationDeploymentUuid,
-                  query: {
-                    queryType: "boxedQueryWithExtractorCombinerTransformer",
-                    deploymentUuid: testApplicationDeploymentUuid,
-                    pageParams: {
-                      currentDeploymentUuid: testApplicationDeploymentUuid,
-                    },
-                    queryParams: {},
-                    contextResults: {},
-                    extractors: {
-                      books: {
-                        extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                        applicationSection: "data",
-                        parentName: "Book",
-                        parentUuid: entityBook.uuid,
-                        orderBy: {
-                          attributeName: "uuid",
-                          direction: "ASC",
+                  payload: {
+                    applicationSection: "data", // TODO: give only selfApplication section in individual queries?
+                    query: {
+                      queryType: "boxedQueryWithExtractorCombinerTransformer",
+                      deploymentUuid: testApplicationDeploymentUuid,
+                      pageParams: {
+                        currentDeploymentUuid: testApplicationDeploymentUuid,
+                      },
+                      queryParams: {},
+                      contextResults: {},
+                      extractors: {
+                        books: {
+                          extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                          applicationSection: "data",
+                          parentName: "Book",
+                          parentUuid: entityBook.uuid,
+                          orderBy: {
+                            attributeName: "uuid",
+                            direction: "ASC",
+                          },
                         },
                       },
                     },
-                  },
+                  }
                 },
               },
             ],

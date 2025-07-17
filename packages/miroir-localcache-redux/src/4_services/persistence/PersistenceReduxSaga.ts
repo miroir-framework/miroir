@@ -383,20 +383,22 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
         const localStoreAction: PersistenceStoreControllerAction = {
           // actionType: "instanceAction",
           actionType: actionMap[action.actionName],
-          applicationSection: action.section,
           parentName: action.parentName ?? "",
           parentUuid: action.parentUuid ?? "",
           deploymentUuid: action.deploymentUuid,
           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-          objects: [
-            {
-              // type issue: read action does not have "objects" attribute
-              parentName: action.parentName ?? "",
-              parentUuid: action.parentUuid ?? "",
-              applicationSection: action.section,
-              instances: (Array.isArray(action.objects) ? action.objects : []) as EntityInstance[],
-            },
-          ],
+          payload: {
+            applicationSection: action.section,
+            objects: [
+              {
+                // type issue: read action does not have "objects" attribute
+                parentName: action.parentName ?? "",
+                parentUuid: action.parentUuid ?? "",
+                applicationSection: action.section,
+                instances: (Array.isArray(action.objects) ? action.objects : []) as EntityInstance[],
+              },
+            ],
+          }
         } as PersistenceStoreControllerAction;
         log.info(
           "PersistenceActionReduxSaga innerHandlePersistenceActionForLocalPersistenceStore handle RestPersistenceAction",

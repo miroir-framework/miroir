@@ -72,14 +72,17 @@ import {
   resetAndinitializeDeploymentCompositeAction,
   runTestOrTestSuite,
   setupMiroirTest,
-  TestCompositeActionParams
 } from "../../src/miroir-fwk/4-tests/tests-utils.js";
 import { cleanLevel, packageName } from './constants.js';
 import { adminConfigurationDeploymentParis } from '../../src/constants.js';
 import { transform } from 'typescript';
-import { CompositeRunTestAssertion } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js';
-import { testOnLibrary_deleteLibraryDeployment, testOnLibrary_resetLibraryDeployment } from '../../src/miroir-fwk/4-tests/tests-utils-testOnLibrary.js';
+import { CompositeRunTestAssertion } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import {
+  testOnLibrary_deleteLibraryDeployment,
+  testOnLibrary_resetLibraryDeployment,
+} from "../../src/miroir-fwk/4-tests/tests-utils-testOnLibrary.js";
 import { loadTestConfigFiles } from '../utils/fileTools.js';
+import { TestCompositeActionParams } from 'miroir-core';
 
 let domainController: DomainControllerInterface | undefined = undefined;
 let localCache: LocalCacheInterface | undefined = undefined;
@@ -603,12 +606,14 @@ const createEntityCompositeAction: CompositeAction = {
       actionLabel: "createEntity",
       deploymentUuid: testAdminConfigurationDeploymentUuid,
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-      entities: [
-        {
-          entity: createEntity_newEntity,
-          entityDefinition: createEntity_newEntityDefinition,
-        },
-      ],
+      payload: {
+        entities: [
+          {
+            entity: createEntity_newEntity,
+            entityDefinition: createEntity_newEntityDefinition,
+          },
+        ],
+      },
     },
   ],
 };
@@ -833,84 +838,86 @@ const createReportsCompositeAction: DomainAction = {
   instanceAction: {
     // actionType: "instanceAction",
     actionType: "createInstance",
-    applicationSection: "model",
     deploymentUuid: testAdminConfigurationDeploymentUuid,
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-    objects: [
-      {
-        parentName: newEntityListReport.parentName,
-        parentUuid: newEntityListReport.parentUuid,
-        applicationSection: "model",
-        instances: [
-          // List of new entity instances Report Definition
-          {
-            uuid: createEntity_newEntityListReportUuid,
-            selfApplication: testSelfApplicationUuid,
-            parentName: "Report",
-            parentUuid: entityReport.uuid,
-            conceptLevel: "Model",
-            name: newEntityName + "List",
-            defaultLabel: "List of " + newEntityName + "s",
-            type: "list",
-            definition: {
-              extractors: {
-                instanceList: {
-                  extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                  parentName: newEntityName,
-                  parentUuid: createEntity_newEntity.uuid,
+    payload: {
+      applicationSection: "model",
+      objects: [
+        {
+          parentName: newEntityListReport.parentName,
+          parentUuid: newEntityListReport.parentUuid,
+          applicationSection: "model",
+          instances: [
+            // List of new entity instances Report Definition
+            {
+              uuid: createEntity_newEntityListReportUuid,
+              selfApplication: testSelfApplicationUuid,
+              parentName: "Report",
+              parentUuid: entityReport.uuid,
+              conceptLevel: "Model",
+              name: newEntityName + "List",
+              defaultLabel: "List of " + newEntityName + "s",
+              type: "list",
+              definition: {
+                extractors: {
+                  instanceList: {
+                    extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                    parentName: newEntityName,
+                    parentUuid: createEntity_newEntity.uuid,
+                  },
+                },
+                section: {
+                  type: "objectListReportSection",
+                  definition: {
+                    label: newEntityName + "s",
+                    parentUuid: createEntity_newEntity.uuid,
+                    fetchedDataReference: "instanceList",
+                  },
                 },
               },
-              section: {
-                type: "objectListReportSection",
-                definition: {
-                  label: newEntityName + "s",
-                  parentUuid: createEntity_newEntity.uuid,
-                  fetchedDataReference: "instanceList",
-                },
-              },
-            },
-          } as EntityInstance,
-          newEntityDetailsReport as any as Report, // TODO: update report type to accomodate for "parentUuid" in ExtractorOrCombinerTemplate
-          // // Details of an entity instance Report Definition
-          // {
-          //   uuid: createEntity_newEntityDetailsReportUuid,
-          //   selfApplication: testSelfApplicationUuid,
-          //   parentName: entityReport.name,
-          //   parentUuid: entityReport.uuid,
-          //   conceptLevel: "Model",
-          //   name: newEntityName + "Details",
-          //   defaultLabel: "Details of " + newEntityName,
-          //   definition: {
-          //     extractorTemplates: {
-          //       elementToDisplay: {
-          //         extractorTemplateType: "extractorForObjectByDirectReference",
-          //         parentName: newEntityName,
-          //         parentUuid: newEntityUuid,
-          //         instanceUuid: {
-          //           transformerType: "contextReference",
-          //           interpolation: "runtime",
-          //           referenceName: "instanceUuid",
-          //         }
-          //       },
-          //     },
-          //   },
-          //   section: {
-          //     type: "list",
-          //     definition: [
-          //       {
-          //         type: "objectInstanceReportSection",
-          //         definition: {
-          //           label: "My " + newEntityName,
-          //           parentUuid: newEntityUuid,
-          //           fetchedDataReference: "elementToDisplay",
-          //         },
-          //       },
-          //     ],
-          //   },
-          // } as EntityInstance,
-        ],
-      },
-    ],
+            } as EntityInstance,
+            newEntityDetailsReport as any as Report, // TODO: update report type to accomodate for "parentUuid" in ExtractorOrCombinerTemplate
+            // // Details of an entity instance Report Definition
+            // {
+            //   uuid: createEntity_newEntityDetailsReportUuid,
+            //   selfApplication: testSelfApplicationUuid,
+            //   parentName: entityReport.name,
+            //   parentUuid: entityReport.uuid,
+            //   conceptLevel: "Model",
+            //   name: newEntityName + "Details",
+            //   defaultLabel: "Details of " + newEntityName,
+            //   definition: {
+            //     extractorTemplates: {
+            //       elementToDisplay: {
+            //         extractorTemplateType: "extractorForObjectByDirectReference",
+            //         parentName: newEntityName,
+            //         parentUuid: newEntityUuid,
+            //         instanceUuid: {
+            //           transformerType: "contextReference",
+            //           interpolation: "runtime",
+            //           referenceName: "instanceUuid",
+            //         }
+            //       },
+            //     },
+            //   },
+            //   section: {
+            //     type: "list",
+            //     definition: [
+            //       {
+            //         type: "objectInstanceReportSection",
+            //         definition: {
+            //           label: "My " + newEntityName,
+            //           parentUuid: newEntityUuid,
+            //           fetchedDataReference: "elementToDisplay",
+            //         },
+            //       },
+            //     ],
+            //   },
+            // } as EntityInstance,
+          ],
+        },
+      ],
+    },
   },
 };
 
@@ -1255,7 +1262,7 @@ const testSuites: Record<string, TestCompositeActionParams> = {
                       parentUuid: "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
                       parentDefinitionVersionUuid: null,
                       name: "LibraryMenu",
-                      defaultLabel: "Meta-Model",
+                      defaultLabel: "Library Menu",
                       description:
                         "This is the default menu allowing to explore the Library SelfApplication.",
                       definition: {

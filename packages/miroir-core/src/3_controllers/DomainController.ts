@@ -454,7 +454,9 @@ export class DomainController implements DomainControllerInterface {
                 actionType: "loadNewInstancesInLocalCache",
                 deploymentUuid,
                 endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-                objects: allInstances,
+                payload: {
+                  objects: allInstances,
+                }
               }
             );
           }
@@ -1047,10 +1049,12 @@ export class DomainController implements DomainControllerInterface {
                         replayAction.instanceAction.actionType.toString() as CRUDActionName,
                       endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
                       deploymentUuid,
-                      section: replayAction.instanceAction.applicationSection,
-                      parentName: replayAction.instanceAction.objects[0].parentName,
-                      parentUuid: replayAction.instanceAction.objects[0].parentUuid,
-                      objects: replayAction.instanceAction.objects[0].instances,
+                      // payload: {
+                        section: replayAction.instanceAction.payload.applicationSection,
+                        parentName: replayAction.instanceAction.payload.objects[0].parentName,
+                        parentUuid: replayAction.instanceAction.payload.objects[0].parentUuid,
+                        objects: replayAction.instanceAction.payload.objects[0].instances,
+                      // }
                     }
                   );
                   if (replayActionResult instanceof Action2Error) {
@@ -1124,14 +1128,16 @@ export class DomainController implements DomainControllerInterface {
                     actionType: "createInstance",
                     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                     deploymentUuid: modelAction.deploymentUuid,
-                    applicationSection: "model",
-                    objects: [
-                      {
-                        parentUuid: newModelVersion.parentUuid,
-                        applicationSection: sectionOfapplicationEntities,
-                        instances: [newModelVersion],
-                      },
-                    ],
+                    payload: {
+                      applicationSection: "model",
+                      objects: [
+                        {
+                          parentUuid: newModelVersion.parentUuid,
+                          applicationSection: sectionOfapplicationEntities,
+                          instances: [newModelVersion],
+                        },
+                      ],
+                    }
                   }
                 );
               })

@@ -16,15 +16,19 @@ import {
 import { JzodElementEditor } from "../../src/miroir-fwk/4_view/components/JzodElementEditor";
 import { cleanLevel, packageName } from "../3_controllers/constants";
 import {
+  allTestModes,
   extractValuesFromRenderedElements,
   formValuesToJSON,
   getJzodEditorTestSuites,
   JzodEditorTest,
   JzodEditorTestSuites,
   JzodElementEditorProps_Test,
+  JzodElementEditorTestSuite,
   LocalEditorPropsRoot,
   LocalLiteralEditorProps,
-  runJzodEditorTest
+  ModesType,
+  runJzodEditorTest,
+  TestMode
 } from "./JzodElementEditorTestTools";
 
 
@@ -1963,22 +1967,6 @@ export function getJzodEndpointEditorTests(
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
-export type TestMode = 'jzodElementEditor' | 'component';
-export type TestModeStar = 'jzodElementEditor' | 'component' | '*';
-
-const allTestModes: TestMode[] = ['jzodElementEditor', 'component'];
-
-export interface JzodElementEditorTestSuite<LocalEditorProps extends Record<string, any>> {
-  editor: React.FC<any>;
-  performanceTests?: boolean;
-  getJzodEditorTests: (
-    LocalEditor: React.FC<LocalEditorProps>,
-    jzodElementEditor: React.FC<JzodElementEditorProps_Test>
-  ) => JzodEditorTestSuites<LocalEditorProps>;
-}
-
-type ModesType = TestModeStar | TestMode[];
-
 // ##############################################################################################
 const jzodElementEditorTests: Record<
   string,

@@ -1,5 +1,5 @@
 // import { describe, it, expect, beforeEach } from 'vitest';
-import { TestAssertionResult } from '../../src/0_interfaces/4-services/TestInterface';
+import { TestAssertionResult } from '../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType';
 import { LoggerGlobalContext } from '../../src/4_services/LoggerContext';
 import { TestSuiteContext } from '../../src/4_services/TestSuiteContext';
 

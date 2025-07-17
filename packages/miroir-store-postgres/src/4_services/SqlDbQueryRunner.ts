@@ -327,12 +327,20 @@ export class SqlDbQueryRunner {
 
 // ##############################################################################################
   async handleBoxedExtractorAction(runBoxedExtractorAction: RunBoxedExtractorAction): Promise<Action2ReturnType> {
-    log.info(this.logHeader, "handleBoxedExtractorAction", "runBoxedExtractorAction", JSON.stringify(runBoxedExtractorAction, null, 2));
+    log.info(
+      this.logHeader,
+      "handleBoxedExtractorAction",
+      "runBoxedExtractorAction",
+      JSON.stringify(runBoxedExtractorAction, null, 2)
+    );
     let queryResult: Domain2QueryReturnType<DomainElementSuccess>;
-    queryResult = await this.inMemoryImplementationExtractorRunnerMap.extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList({
-      extractor: runBoxedExtractorAction.query,
-      extractorRunnerMap: this.inMemoryImplementationExtractorRunnerMap,
-    });
+    queryResult =
+      await this.inMemoryImplementationExtractorRunnerMap.extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList(
+        {
+          extractor: runBoxedExtractorAction.payload.query,
+          extractorRunnerMap: this.inMemoryImplementationExtractorRunnerMap,
+        }
+      );
     if (queryResult instanceof Domain2ElementFailed) {
       log.info("handleBoxedExtractorAction failed to run extractor, failure:", JSON.stringify(queryResult));
       return Promise.resolve(new Action2Error(
@@ -363,14 +371,14 @@ export class SqlDbQueryRunner {
       JSON.stringify(runBoxedQueryAction, null, 2)
     );
     let queryResult: Domain2QueryReturnType<DomainElementSuccess>;
-    if (runBoxedQueryAction.query.runAsSql) {
+    if (runBoxedQueryAction.payload.query.runAsSql) {
       queryResult = await this.dbImplementationExtractorRunnerMap.runQuery({
-        extractor: runBoxedQueryAction.query,
+        extractor: runBoxedQueryAction.payload.query,
         extractorRunnerMap: this.dbImplementationExtractorRunnerMap,
       });
     } else {
       queryResult = await this.inMemoryImplementationExtractorRunnerMap.runQuery({
-        extractor: runBoxedQueryAction.query,
+        extractor: runBoxedQueryAction.payload.query,
         extractorRunnerMap: this.inMemoryImplementationExtractorRunnerMap,
       });
     }

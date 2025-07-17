@@ -1198,22 +1198,22 @@ export function getMiroirFundamentalJzodSchema(
           definition: {
             uuid: {
               type: "uuid",
-              tag: { value: { id: 1, defaultLabel: "Uuid", editable: false } },
+              tag: { value: { id: 1, defaultLabel: "Uuid", editable: false, canBeTemplate: true } },
             },
             parentName: {
               type: "string",
               optional: true,
-              tag: { value: { id: 2, defaultLabel: "Entity Name", editable: false } },
+              tag: { value: { id: 2, defaultLabel: "Entity Name", editable: false, canBeTemplate: true } },
             },
             parentUuid: {
               type: "uuid",
-              tag: { value: { id: 3, defaultLabel: "Entity Uuid", editable: false } },
+              tag: { value: { id: 3, defaultLabel: "Entity Uuid", editable: false, canBeTemplate: true } },
             },
             conceptLevel: {
               type: "enum",
               definition: ["MetaModel", "Model", "Data"],
               optional: true,
-              tag: { value: { id: 4, defaultLabel: "Concept Level", editable: false } },
+              tag: { value: { id: 4, defaultLabel: "Concept Level", editable: false, canBeTemplate: true } },
             },
           },
         },
@@ -3047,23 +3047,23 @@ export function getMiroirFundamentalJzodSchema(
           definition: instanceEndpointVersionV1.definition.actions
             .filter((e: any) =>
               ["createInstance", "updateInstance", "deleteInstance"].includes(
-                e.actionParameters.definition.actionType.definition
+                e.actionParameters.actionType.definition
               )
             )
-            .map((e: any) => e.actionParameters),
+            .map((e: any) => ({type: "object", definition: e.actionParameters})),
         },
         instanceAction: {
           type: "union",
           discriminator: "actionType",
           definition: instanceEndpointVersionV1.definition.actions.map(
-            (e: any) => e.actionParameters
+            (e: any) => ({ type: "object", definition: e.actionParameters})
           ),
         },
         undoRedoAction: {
           type: "union",
           discriminator: "actionType",
           definition: undoRedoEndpointVersionV1.definition.actions.map(
-            (e: any) => e.actionParameters
+            (e: any) => ({ type: "object", definition: e.actionParameters})
           ),
         },
         transactionalInstanceAction: domainEndpointVersionV1.definition.actions.find(

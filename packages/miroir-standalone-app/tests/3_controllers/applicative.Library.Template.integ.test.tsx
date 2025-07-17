@@ -68,10 +68,12 @@ import {
   resetAndinitializeDeploymentCompositeAction,
   runTestOrTestSuite,
   setupMiroirTest,
-  TestCompositeActionParams
 } from "../../src/miroir-fwk/4-tests/tests-utils.js";
 import { cleanLevel, packageName } from './constants.js';
-import { testOnLibrary_deleteLibraryDeployment, testOnLibrary_resetLibraryDeployment } from '../../src/miroir-fwk/4-tests/tests-utils-testOnLibrary.js';
+import {
+  testOnLibrary_deleteLibraryDeployment,
+  testOnLibrary_resetLibraryDeployment,
+} from "../../src/miroir-fwk/4-tests/tests-utils-testOnLibrary.js";
 import { CompositeActionTemplate } from 'miroir-core';
 import { TransactionalInstanceAction } from 'miroir-core';
 import { CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction } from 'miroir-core';
@@ -82,6 +84,7 @@ import { runTransformerTestSuite } from 'miroir-core';
 import { TransformerForBuildOrRuntime } from 'miroir-core';
 import { entityMenu } from 'miroir-core';
 import { loadTestConfigFiles } from '../utils/fileTools.js';
+import { TestCompositeActionParams } from 'miroir-core';
 
 let domainController: DomainControllerInterface | undefined = undefined;
 let localCache: LocalCacheInterface | undefined = undefined;
@@ -216,7 +219,7 @@ afterAll(
     // console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done deleteAndCloseApplicationDeployments")
 
     // console.log("globalTestSuiteResults:\n", Object.values(globalTestSuiteResults).map((r) => "\"" + r.testLabel + "\": " + r.testResult).join("\n"));
-    displayTestSuiteResultsDetails(expect,Object.keys(testTemplateSuites)[0]);
+    displayTestSuiteResultsDetails(expect,Object.keys(testTemplateSuitesDEFUNCT!!!)[0]);
   }
 )
 
@@ -645,20 +648,22 @@ const createEntityCompositeActionTemplate: CompositeActionTemplate = {
         referenceName: "testAdminConfigurationDeploymentUuid",
       },
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-      entities: [
-        {
-          entity: {
-            transformerType: "parameterReference",
-            interpolation: "build",
-            referenceName: "createEntity_newEntity",
+      payload: {
+        entities: [
+          {
+            entity: {
+              transformerType: "parameterReference",
+              interpolation: "build",
+              referenceName: "createEntity_newEntity",
+            },
+            entityDefinition: {
+              transformerType: "parameterReference",
+              interpolation: "build",
+              referenceName: "createEntity_newEntityDefinition",
+            },
           },
-          entityDefinition: {
-            transformerType: "parameterReference",
-            interpolation: "build",
-            referenceName: "createEntity_newEntityDefinition",
-          },
-        },
-      ],
+        ],
+      }
     },
   ],
 };
@@ -1127,7 +1132,7 @@ const createReportsCompositeActionTemplateAssertions = [
 // ###############################################################################################
 // ###############################################################################################
 // ###############################################################################################
-const testTemplateSuites: Record<string, TestCompositeActionParams> = {
+const testTemplateSuitesDEFUNCT: Record<string, TestCompositeActionParams> = {
   [testSuiteName]: {
     testActionType: "testCompositeActionTemplateSuite",
     deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
@@ -1566,7 +1571,7 @@ if (RUN_TEST == testSuiteName) {
   if (!domainController) {
     throw new Error("running test domainController is not defined!");
   }
-  for (const [currentTestSuiteName, testAction] of Object.entries(testTemplateSuites)) {
+  for (const [currentTestSuiteName, testAction] of Object.entries(testTemplateSuitesDEFUNCT!!!)) {
     const testSuiteResults = await runTestOrTestSuite(localCache, domainController, testAction);
     if (!testSuiteResults || testSuiteResults.status !== "ok") {
       vitest.expect(testSuiteResults?.status, `${currentTestSuiteName} failed!`).toBe("ok");

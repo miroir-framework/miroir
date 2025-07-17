@@ -81,7 +81,12 @@ export class TestSuiteContext {
   // ##############################################################################################
   public static getTestSuiteResult(testSuite: string): TestSuiteResult {
     if (!TestSuiteContext.testAssertionsResults[testSuite]) {
-      throw new Error("TestSuite is not defined: " + testSuite + " in results " + JSON.stringify(TestSuiteContext.testAssertionsResults, null, 2));
+      throw new Error(
+        "TestSuite is not defined: " +
+          testSuite +
+          " in results " +
+          JSON.stringify(TestSuiteContext.testAssertionsResults, null, 2)
+      );
     }
     const testsResults: TestsResults = {};
     for (const test in TestSuiteContext.testAssertionsResults[testSuite]) {

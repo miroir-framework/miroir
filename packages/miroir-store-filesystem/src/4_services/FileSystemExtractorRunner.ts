@@ -69,7 +69,7 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
     let queryResult: Domain2QueryReturnType<DomainElementSuccess>;
     queryResult = await this.selectorMap.extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList(
       {
-        extractor: runBoxedExtractorAction.query,
+        extractor: runBoxedExtractorAction.payload.query,
         extractorRunnerMap: this.selectorMap,
       }
     );
@@ -91,7 +91,7 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
     let queryResult: Domain2QueryReturnType<DomainElementSuccess>;
     queryResult = await this.selectorMap.runQuery(
       {
-        extractor: runBoxedQueryAction.query,
+        extractor: runBoxedQueryAction.payload.query,
         extractorRunnerMap: this.selectorMap,
       }
     );
