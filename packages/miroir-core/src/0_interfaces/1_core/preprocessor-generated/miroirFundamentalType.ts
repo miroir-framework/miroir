@@ -4463,21 +4463,12 @@ export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition = Tran
     icon?: ((string | undefined) | TransformerForBuildCarryOnObject) | undefined;
     jzodSchema: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject | TransformerForBuildCarryOnObject;
 };
-export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection =
-  | TransformerForBuildCarryOnObject
-  | {
-      parentName?: ((string | undefined) | TransformerForBuildCarryOnObject) | undefined;
-      parentUuid: string | TransformerForBuildCarryOnObject;
-      applicationSection:
-        | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection
-        | TransformerForBuildCarryOnObject;
-      instances:
-        | (
-            | CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance
-            | TransformerForBuildCarryOnObject
-          )[]
-        | TransformerForBuildCarryOnObject;
-    };
+export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection = TransformerForBuildCarryOnObject | {
+    parentName?: ((string | undefined) | TransformerForBuildCarryOnObject) | undefined;
+    parentUuid: string | TransformerForBuildCarryOnObject;
+    applicationSection: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection | TransformerForBuildCarryOnObject;
+    instances: (CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance | TransformerForBuildCarryOnObject)[] | TransformerForBuildCarryOnObject;
+};
 export type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_shippingBox = TransformerForBuildCarryOnObject | {
     deploymentUuid: string | TransformerForBuildCarryOnObject;
     pageParams: {
@@ -6990,7 +6981,12 @@ export type RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_metaModel =
 };
 export type RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_dataStoreType = DataStoreType;
 export type RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selfApplication = SelfApplication;
-export type RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance = EntityInstance;
+export type RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance = {
+    uuid: string | TransformerForRuntime;
+    parentName?: ((string | undefined) | TransformerForRuntime) | undefined;
+    parentUuid: string | TransformerForRuntime;
+    conceptLevel?: ((("MetaModel" | "Model" | "Data") | undefined) | TransformerForRuntime) | undefined;
+};
 export type RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement = JzodElement;
 export type RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity = Entity;
 export type RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition = EntityDefinition;
@@ -8253,7 +8249,12 @@ export type BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_metaModel = {
 };
 export type BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_dataStoreType = DataStoreType;
 export type BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selfApplication = SelfApplication;
-export type BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance = EntityInstance;
+export type BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance = {
+    uuid: string | TransformerForBuildCarryOnObject;
+    parentName?: ((string | undefined) | TransformerForBuildCarryOnObject) | undefined;
+    parentUuid: string | TransformerForBuildCarryOnObject;
+    conceptLevel?: ((("MetaModel" | "Model" | "Data") | undefined) | TransformerForBuildCarryOnObject) | undefined;
+};
 export type BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement = JzodElement;
 export type BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity = Entity;
 export type BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition = EntityDefinition;
@@ -9516,19 +9517,21 @@ export type BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_me
 };
 export type BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_dataStoreType = DataStoreType;
 export type BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selfApplication = SelfApplication;
-export type BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance = EntityInstance;
+export type BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance = {
+    uuid: string | TransformerForBuildPlusRuntimeCarryOnObject;
+    parentName?: ((string | undefined) | TransformerForBuildPlusRuntimeCarryOnObject) | undefined;
+    parentUuid: string | TransformerForBuildPlusRuntimeCarryOnObject;
+    conceptLevel?: ((("MetaModel" | "Model" | "Data") | undefined) | TransformerForBuildPlusRuntimeCarryOnObject) | undefined;
+};
 export type BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement = JzodElement;
 export type BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity = Entity;
 export type BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition = EntityDefinition;
 export type BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection = ApplicationSection;
 export type BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection = {
-  parentName?: ((string | undefined) | TransformerForBuildPlusRuntimeCarryOnObject) | undefined;
-  parentUuid: string | TransformerForBuildPlusRuntimeCarryOnObject;
-  applicationSection: BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection;
-  instances: (
-    | BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance
-    | TransformerForBuildPlusRuntimeCarryOnObject
-  )[];
+    parentName?: ((string | undefined) | TransformerForBuildPlusRuntimeCarryOnObject) | undefined;
+    parentUuid: string | TransformerForBuildPlusRuntimeCarryOnObject;
+    applicationSection: BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection;
+    instances: (BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance | TransformerForBuildPlusRuntimeCarryOnObject)[];
 };
 export type BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedQueryWithExtractorCombinerTransformer = {
     deploymentUuid: string | TransformerForBuildPlusRuntimeCarryOnObject;
@@ -10557,7 +10560,7 @@ export const runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_bundleActi
 export const runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_metaModel: z.ZodType<RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_metaModel> = z.object({applicationVersions:z.array(z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationVersion)), applicationVersionCrossEntityDefinition:z.array(z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), conceptLevel:z.enum(["MetaModel","Model","Data"]).optional(), applicationVersion:z.string().uuid(), entityDefinition:z.string().uuid()}).strict()), entities:z.array(z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity)), entityDefinitions:z.array(z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition)), jzodSchemas:z.array(z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodSchema)), menus:z.array(z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_menu)), reports:z.array(z.lazy(() =>runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_report))}).strict();
 export const runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_dataStoreType: z.ZodType<RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_dataStoreType> = z.lazy(() =>dataStoreType);
 export const runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selfApplication: z.ZodType<RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selfApplication> = z.lazy(() =>selfApplication);
-export const runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance: z.ZodType<RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance> = z.lazy(() =>entityInstance);
+export const runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance: z.ZodType<RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance> = z.object({uuid:z.union([z.string().uuid(), z.lazy(() =>transformerForRuntime)]), parentName:z.union([z.string().optional(), z.lazy(() =>transformerForRuntime)]).optional(), parentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForRuntime)]), conceptLevel:z.union([z.enum(["MetaModel","Model","Data"]).optional(), z.lazy(() =>transformerForRuntime)]).optional()});
 export const runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement: z.ZodType<RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement> = z.lazy(() =>jzodElement);
 export const runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity: z.ZodType<RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity> = z.lazy(() =>entity);
 export const runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition: z.ZodType<RuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition> = z.lazy(() =>entityDefinition);
@@ -10801,7 +10804,7 @@ export const buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_bundleAction
 export const buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_metaModel: z.ZodType<BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_metaModel> = z.object({applicationVersions:z.array(z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationVersion)), applicationVersionCrossEntityDefinition:z.array(z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), conceptLevel:z.enum(["MetaModel","Model","Data"]).optional(), applicationVersion:z.string().uuid(), entityDefinition:z.string().uuid()}).strict()), entities:z.array(z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity)), entityDefinitions:z.array(z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition)), jzodSchemas:z.array(z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodSchema)), menus:z.array(z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_menu)), reports:z.array(z.lazy(() =>buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_report))}).strict();
 export const buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_dataStoreType: z.ZodType<BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_dataStoreType> = z.lazy(() =>dataStoreType);
 export const buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selfApplication: z.ZodType<BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selfApplication> = z.lazy(() =>selfApplication);
-export const buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance: z.ZodType<BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance> = z.lazy(() =>entityInstance);
+export const buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance: z.ZodType<BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance> = z.object({uuid:z.union([z.string().uuid(), z.lazy(() =>transformerForBuildCarryOnObject)]), parentName:z.union([z.string().optional(), z.lazy(() =>transformerForBuildCarryOnObject)]).optional(), parentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForBuildCarryOnObject)]), conceptLevel:z.union([z.enum(["MetaModel","Model","Data"]).optional(), z.lazy(() =>transformerForBuildCarryOnObject)]).optional()});
 export const buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement: z.ZodType<BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement> = z.lazy(() =>jzodElement);
 export const buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity: z.ZodType<BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity> = z.lazy(() =>entity);
 export const buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition: z.ZodType<BuildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition> = z.lazy(() =>entityDefinition);
@@ -11045,7 +11048,7 @@ export const buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_b
 export const buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_metaModel: z.ZodType<BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_metaModel> = z.object({applicationVersions:z.array(z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationVersion)), applicationVersionCrossEntityDefinition:z.array(z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), conceptLevel:z.enum(["MetaModel","Model","Data"]).optional(), applicationVersion:z.string().uuid(), entityDefinition:z.string().uuid()}).strict()), entities:z.array(z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity)), entityDefinitions:z.array(z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition)), jzodSchemas:z.array(z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodSchema)), menus:z.array(z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_menu)), reports:z.array(z.lazy(() =>buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_report))}).strict();
 export const buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_dataStoreType: z.ZodType<BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_dataStoreType> = z.lazy(() =>dataStoreType);
 export const buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selfApplication: z.ZodType<BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selfApplication> = z.lazy(() =>selfApplication);
-export const buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance: z.ZodType<BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance> = z.lazy(() =>entityInstance);
+export const buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance: z.ZodType<BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance> = z.object({uuid:z.union([z.string().uuid(), z.lazy(() =>transformerForBuildPlusRuntimeCarryOnObject)]), parentName:z.union([z.string().optional(), z.lazy(() =>transformerForBuildPlusRuntimeCarryOnObject)]).optional(), parentUuid:z.union([z.string().uuid(), z.lazy(() =>transformerForBuildPlusRuntimeCarryOnObject)]), conceptLevel:z.union([z.enum(["MetaModel","Model","Data"]).optional(), z.lazy(() =>transformerForBuildPlusRuntimeCarryOnObject)]).optional()});
 export const buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement: z.ZodType<BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement> = z.lazy(() =>jzodElement);
 export const buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity: z.ZodType<BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity> = z.lazy(() =>entity);
 export const buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition: z.ZodType<BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition> = z.lazy(() =>entityDefinition);

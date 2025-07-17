@@ -341,20 +341,35 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
           const resolutionError =
             currentArrayElementRawDefinition && currentArrayElementRawDefinition.status != "ok";
           if (!currentArrayElementRawDefinition || resolutionError) {
-            throw new Error(
-              "JzodArrayEditor could not unfold jzod schema for " +
-                rootLessListKey +
-                " index " +
-                index +
-                " context.miroirFundamentalSchema is defined " +
-                !!context.miroirFundamentalJzodSchema +
-                " with rawJzodSchema " +
-                JSON.stringify(rawJzodSchema, null, 2) +
-                " and currentArrayElementRawDefinition " +
-                JSON.stringify(currentArrayElementRawDefinition, null, 2) +
-                " at " +
-                JSON.stringify(resolutionError, null, 2)
-            );
+            // throw new Error(
+            //   "JzodArrayEditor could not unfold jzod schema for " +
+            //     rootLessListKey +
+            //     " index " +
+            //     index +
+            //     " context.miroirFundamentalSchema is defined " +
+            //     !!context.miroirFundamentalJzodSchema +
+            //     " with rawJzodSchema " +
+            //     JSON.stringify(rawJzodSchema, null, 2) +
+            //     " and currentArrayElementRawDefinition " +
+            //     JSON.stringify(currentArrayElementRawDefinition, null, 2) +
+            //     " at " +
+            //     JSON.stringify(resolutionError, null, 2)
+            // );
+            return (
+              <div key={rootLessListKey + "." + index}>
+                <span>
+                  JzodArrayEditor: Error unfolding Jzod schema for {rootLessListKey} index {index}:
+                  <br />
+                  {currentArrayElementRawDefinition?.error ||
+                    "Unknown error unfolding Jzod schema for " + rootLessListKey + " index " + index}
+                  <br />
+                  <span style={{ color: "red" }}>
+                    {JSON.stringify(currentArrayElementRawDefinition, null, 2)}
+                  </span>
+                </span>
+              </div>
+
+            )
           }
 
           // log.info(

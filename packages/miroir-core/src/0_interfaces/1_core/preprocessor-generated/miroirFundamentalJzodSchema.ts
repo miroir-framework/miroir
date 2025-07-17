@@ -2340,7 +2340,7 @@ export const miroirFundamentalJzodSchema = {
           "valueJzodSchema": {
             "type": "schemaReference",
             "definition": {
-              "absolutePath": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "jzodElement"
             }
           },
@@ -3592,7 +3592,7 @@ export const miroirFundamentalJzodSchema = {
           "valueJzodSchema": {
             "type": "schemaReference",
             "definition": {
-              "absolutePath": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "jzodElement"
             }
           },
@@ -4861,7 +4861,7 @@ export const miroirFundamentalJzodSchema = {
           "valueJzodSchema": {
             "type": "schemaReference",
             "definition": {
-              "absolutePath": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "jzodElement"
             }
           },
@@ -6263,7 +6263,8 @@ export const miroirFundamentalJzodSchema = {
               "value": {
                 "id": 1,
                 "defaultLabel": "Uuid",
-                "editable": false
+                "editable": false,
+                "canBeTemplate": true
               }
             }
           },
@@ -6274,7 +6275,8 @@ export const miroirFundamentalJzodSchema = {
               "value": {
                 "id": 2,
                 "defaultLabel": "Entity Name",
-                "editable": false
+                "editable": false,
+                "canBeTemplate": true
               }
             }
           },
@@ -6284,7 +6286,8 @@ export const miroirFundamentalJzodSchema = {
               "value": {
                 "id": 3,
                 "defaultLabel": "Entity Uuid",
-                "editable": false
+                "editable": false,
+                "canBeTemplate": true
               }
             }
           },
@@ -6300,7 +6303,8 @@ export const miroirFundamentalJzodSchema = {
               "value": {
                 "id": 4,
                 "defaultLabel": "Concept Level",
-                "editable": false
+                "editable": false,
+                "canBeTemplate": true
               }
             }
           }
@@ -27020,7 +27024,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 1,
                     "defaultLabel": "Uuid",
-                    "editable": false
+                    "editable": false,
+                    "canBeTemplate": true
                   }
                 },
                 "definition": [
@@ -27030,7 +27035,8 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 1,
                         "defaultLabel": "Uuid",
-                        "editable": false
+                        "editable": false,
+                        "canBeTemplate": true
                       }
                     }
                   },
@@ -27049,7 +27055,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 2,
                     "defaultLabel": "Entity Name",
-                    "editable": false
+                    "editable": false,
+                    "canBeTemplate": true
                   }
                 },
                 "definition": [
@@ -27060,7 +27067,8 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 2,
                         "defaultLabel": "Entity Name",
-                        "editable": false
+                        "editable": false,
+                        "canBeTemplate": true
                       }
                     }
                   },
@@ -27078,7 +27086,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 3,
                     "defaultLabel": "Entity Uuid",
-                    "editable": false
+                    "editable": false,
+                    "canBeTemplate": true
                   }
                 },
                 "definition": [
@@ -27088,7 +27097,8 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 3,
                         "defaultLabel": "Entity Uuid",
-                        "editable": false
+                        "editable": false,
+                        "canBeTemplate": true
                       }
                     }
                   },
@@ -27115,7 +27125,8 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 4,
                         "defaultLabel": "Concept Level",
-                        "editable": false
+                        "editable": false,
+                        "canBeTemplate": true
                       }
                     }
                   },
@@ -27131,7 +27142,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 4,
                     "defaultLabel": "Concept Level",
-                    "editable": false
+                    "editable": false,
+                    "canBeTemplate": true
                   }
                 }
               }
@@ -49641,10 +49653,158 @@ export const miroirFundamentalJzodSchema = {
         }
       },
       "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance": {
-        "type": "schemaReference",
+        "type": "object",
+        "nonStrict": true,
         "definition": {
-          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "entityInstance"
+          "uuid": {
+            "type": "union",
+            "tag": {
+              "value": {
+                "id": 1,
+                "defaultLabel": "Uuid",
+                "editable": false,
+                "canBeTemplate": true
+              }
+            },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
+            "definition": [
+              {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Uuid",
+                    "editable": false,
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "transformerForRuntime"
+                }
+              }
+            ]
+          },
+          "parentName": {
+            "type": "union",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 2,
+                "defaultLabel": "Entity Name",
+                "editable": false,
+                "canBeTemplate": true
+              }
+            },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
+            "definition": [
+              {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 2,
+                    "defaultLabel": "Entity Name",
+                    "editable": false,
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "transformerForRuntime"
+                }
+              }
+            ]
+          },
+          "parentUuid": {
+            "type": "union",
+            "tag": {
+              "value": {
+                "id": 3,
+                "defaultLabel": "Entity Uuid",
+                "editable": false,
+                "canBeTemplate": true
+              }
+            },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
+            "definition": [
+              {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 3,
+                    "defaultLabel": "Entity Uuid",
+                    "editable": false,
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "transformerForRuntime"
+                }
+              }
+            ]
+          },
+          "conceptLevel": {
+            "type": "union",
+            "definition": [
+              {
+                "type": "enum",
+                "definition": [
+                  "MetaModel",
+                  "Model",
+                  "Data"
+                ],
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 4,
+                    "defaultLabel": "Concept Level",
+                    "editable": false,
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "transformerForRuntime"
+                }
+              }
+            ],
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 4,
+                "defaultLabel": "Concept Level",
+                "editable": false,
+                "canBeTemplate": true
+              }
+            },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ]
+          }
         }
       },
       "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement": {
@@ -56272,10 +56432,154 @@ export const miroirFundamentalJzodSchema = {
         }
       },
       "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance": {
-        "type": "schemaReference",
+        "type": "object",
+        "nonStrict": true,
         "definition": {
-          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "entityInstance"
+          "uuid": {
+            "type": "union",
+            "tag": {
+              "value": {
+                "id": 1,
+                "defaultLabel": "Uuid",
+                "editable": false,
+                "canBeTemplate": true
+              }
+            },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
+            "definition": [
+              {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Uuid",
+                    "editable": false,
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "transformerForBuildCarryOnObject"
+                }
+              }
+            ]
+          },
+          "parentName": {
+            "type": "union",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 2,
+                "defaultLabel": "Entity Name",
+                "editable": false,
+                "canBeTemplate": true
+              }
+            },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
+            "definition": [
+              {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 2,
+                    "defaultLabel": "Entity Name",
+                    "editable": false,
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "transformerForBuildCarryOnObject"
+                }
+              }
+            ]
+          },
+          "parentUuid": {
+            "type": "union",
+            "tag": {
+              "value": {
+                "id": 3,
+                "defaultLabel": "Entity Uuid",
+                "editable": false,
+                "canBeTemplate": true
+              }
+            },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
+            "definition": [
+              {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 3,
+                    "defaultLabel": "Entity Uuid",
+                    "editable": false,
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "transformerForBuildCarryOnObject"
+                }
+              }
+            ]
+          },
+          "conceptLevel": {
+            "type": "union",
+            "definition": [
+              {
+                "type": "enum",
+                "definition": [
+                  "MetaModel",
+                  "Model",
+                  "Data"
+                ],
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 4,
+                    "defaultLabel": "Concept Level",
+                    "editable": false,
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "transformerForBuildCarryOnObject"
+                }
+              }
+            ],
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 4,
+                "defaultLabel": "Concept Level",
+                "editable": false,
+                "canBeTemplate": true
+              }
+            },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ]
+          }
         }
       },
       "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement": {
@@ -62927,10 +63231,158 @@ export const miroirFundamentalJzodSchema = {
         }
       },
       "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance": {
-        "type": "schemaReference",
+        "type": "object",
+        "nonStrict": true,
         "definition": {
-          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "entityInstance"
+          "uuid": {
+            "type": "union",
+            "tag": {
+              "value": {
+                "id": 1,
+                "defaultLabel": "Uuid",
+                "editable": false,
+                "canBeTemplate": true
+              }
+            },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
+            "definition": [
+              {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Uuid",
+                    "editable": false,
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "transformerForBuildPlusRuntimeCarryOnObject"
+                }
+              }
+            ]
+          },
+          "parentName": {
+            "type": "union",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 2,
+                "defaultLabel": "Entity Name",
+                "editable": false,
+                "canBeTemplate": true
+              }
+            },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
+            "definition": [
+              {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 2,
+                    "defaultLabel": "Entity Name",
+                    "editable": false,
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "transformerForBuildPlusRuntimeCarryOnObject"
+                }
+              }
+            ]
+          },
+          "parentUuid": {
+            "type": "union",
+            "tag": {
+              "value": {
+                "id": 3,
+                "defaultLabel": "Entity Uuid",
+                "editable": false,
+                "canBeTemplate": true
+              }
+            },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
+            "definition": [
+              {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 3,
+                    "defaultLabel": "Entity Uuid",
+                    "editable": false,
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "transformerForBuildPlusRuntimeCarryOnObject"
+                }
+              }
+            ]
+          },
+          "conceptLevel": {
+            "type": "union",
+            "definition": [
+              {
+                "type": "enum",
+                "definition": [
+                  "MetaModel",
+                  "Model",
+                  "Data"
+                ],
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 4,
+                    "defaultLabel": "Concept Level",
+                    "editable": false,
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "transformerForBuildPlusRuntimeCarryOnObject"
+                }
+              }
+            ],
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 4,
+                "defaultLabel": "Concept Level",
+                "editable": false,
+                "canBeTemplate": true
+              }
+            },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ]
+          }
         }
       },
       "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement": {

@@ -1,7 +1,7 @@
 import { ThemeProvider } from "@emotion/react";
 import { createTheme, StyledEngineProvider } from "@mui/material";
 import { blue } from "@mui/material/colors";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor, act, fireEvent } from "@testing-library/react";
 import { Formik, FormikProps } from "formik";
 import { Profiler, useCallback, useMemo } from "react";
 import { Provider } from "react-redux";
@@ -177,6 +177,46 @@ export const testThemeParams = {
     //   }
     // }
   }
+};
+
+// Helper function to wait for progressive rendering to complete
+export const waitForProgressiveRendering = async () => {
+  // Wait for loading messages to disappear with more attempts
+  await waitFor(
+    () => {
+      // Check for any "Loading..." messages in the DOM using multiple approaches
+      // 1. Screen query for the regex pattern 
+      const loadingMessages = screen.queryAllByText(/Loading .+\.\.\./);
+      
+      // 2. Direct DOM search for any element containing "Loading" text
+      const loadingTexts = Array.from(document.querySelectorAll('*')).filter(el => 
+        el.textContent && /Loading\s+\w+\s*\.\.\./i.test(el.textContent.trim())
+      );
+      
+      const totalLoading = loadingMessages.length + loadingTexts.length;
+      if (totalLoading > 0) {
+        console.log(`Still waiting for ${totalLoading} loading elements to finish:`, 
+          loadingTexts.map(el => el.textContent?.trim()));
+        throw new Error(`Still loading: ${totalLoading} loading messages found`);
+      }
+    },
+    { timeout: 15000, interval: 150 } // 15 second timeout, check every 150ms
+  );
+  
+  // Additional delay to ensure rendering is complete after loading stops
+  await act(async () => {
+    await new Promise(resolve => setTimeout(resolve, 300));
+  });
+};
+
+// Helper function to wait after user interactions that might trigger progressive rendering
+export const waitAfterUserInteraction = async () => {
+  // Wait a bit longer after user interactions as they might trigger new progressive rendering
+  await waitForProgressiveRendering();
+  // Extra wait for form updates
+  await act(async () => {
+    await new Promise(resolve => setTimeout(resolve, 300));
+  });
 };
 
 export interface JzodElementEditorProps_Test {
@@ -826,13 +866,18 @@ export async function runJzodEditorTest(
   if (props) {
     // const container: Container<any, HTMLElement, HTMLElement> = render(<ComponentToRender {...props} />);
     const {container} = render(<ComponentToRender {...props} />);
+    
+    // Wait for progressive rendering to complete before running tests
+    await waitForProgressiveRendering();
+    
     const tests =
       typeof testCase.tests === "function"
         ? testCase.tests
         : (renderAs == "jzodElementEditor"
             ? testCase.tests.testAsJzodElementEditor
             : testCase.tests.testAsComponent) ?? ((expect: ExpectStatic) => {});
-    return tests(expect, container);
+            
+    return await tests(expect, container);
   } else {
     console.warn(`Test case ${testName} does not have props defined, skipping test: ${testName}`);
   }

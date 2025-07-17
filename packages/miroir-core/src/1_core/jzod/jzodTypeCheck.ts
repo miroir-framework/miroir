@@ -306,7 +306,8 @@ export interface SelectUnionBranchFromDiscriminatorReturnTypeError {
   error: string;
   discriminator?: string | string[] | undefined;
   discriminatorValues?: any;
-  possibleDiscriminators?: string[][];
+  // possibleDiscriminators?: string[][];
+  possibleDiscriminators?: (string | undefined)[][];
   valuePath: (string | number)[];
   typePath: (string | number)[];
   value?: any;
@@ -414,10 +415,12 @@ export function selectUnionBranchFromDiscriminator(
   //   flattenedUnionChoices
   //   // JSON.stringify(objectUnionChoices.map((e:any) => [e?.definition['transformerType'], e?.definition ]), null, 2),
   // );
+  const discriminatorValues = discriminators.map((d) => valueObject[d]);
+
   let i = 0;
   let chosenDiscriminator = [];
   let filteredFlattenedUnionChoices: JzodObject[] = flattenedUnionChoices;
-  let possibleDiscriminators: string[][] = [];
+  let possibleDiscriminators: (string | undefined)[][] = [];
   if (!discriminators || discriminators.length == 0) {
     // no discriminator, proceed by eliminating all choices that do not match the valueObject
     filteredFlattenedUnionChoices = flattenedUnionChoices.filter((objectChoice) => {
@@ -438,7 +441,8 @@ export function selectUnionBranchFromDiscriminator(
           ? // ||
             // objectChoice.definition[discriminator]?.type == "enum"
             objectChoice.definition[discriminator]?.definition
-          : "ERROR WHEN CHECKING DISCRIMINATOR " + discriminator
+          : undefined
+          // : "NO VALUE FOR DISCRIMINATOR " + discriminator
       );
       });
     // }
@@ -446,6 +450,7 @@ export function selectUnionBranchFromDiscriminator(
       const disc = discriminators[i];
       const newfilteredFlattenedUnionChoices = filteredFlattenedUnionChoices.filter(
         (a) =>
+          // (valueObject[disc] == undefined && a.type == "object" && a.definition[disc] == undefined) ||
           (
             a.type == "object" &&
             a.definition[disc]?.type == "literal" &&
@@ -470,7 +475,6 @@ export function selectUnionBranchFromDiscriminator(
     // );
   }
 
-  const discriminatorValues = discriminators.map((d) => valueObject[d]);
 
 
   if (filteredFlattenedUnionChoices.length == 0) {

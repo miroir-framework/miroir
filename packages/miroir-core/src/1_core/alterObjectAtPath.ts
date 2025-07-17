@@ -1,6 +1,6 @@
 export function alterObjectAtPath(
   object: any,
-  path: string[],
+  path: (string | number)[],
   value: any,
 ):any { // terminal recursion
   if (path.length == 0) {

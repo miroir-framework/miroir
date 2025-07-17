@@ -77,7 +77,7 @@ export const ErrorFallbackComponent: React.FC<ErrorFallbackComponentProps> = ({
         {attributeName && (
           <div key="3">attribute name {attributeName}</div>
         )}
-        {attributeName && currentValue && (
+        {/* {attributeName && currentValue && (
           <div>
             attribute value{" "}
             <pre>{JSON.stringify(currentValue[attributeName], null, 2)}</pre>
@@ -106,7 +106,7 @@ export const ErrorFallbackComponent: React.FC<ErrorFallbackComponentProps> = ({
               {JSON.stringify(localResolvedElementJzodSchemaBasedOnValue, null, 2)}
             </pre>
           </>
-        )}
+        )} */}
         <div>error {error.message}</div>
       </div>
     </div>
